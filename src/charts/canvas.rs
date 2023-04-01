@@ -5,47 +5,34 @@ use usvg::{
     TreeWriting, ViewBox, XmlOptions,
 };
 
+use super::color::Color;
 use super::util::*;
-
-#[derive(Clone, Debug, Default)]
-pub struct Point {
-    pub x: f64,
-    pub y: f64,
-}
-
-impl From<(f64, f64)> for Point {
-    fn from(value: (f64, f64)) -> Self {
-        Point {
-            x: value.0,
-            y: value.1,
-        }
-    }
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct Circle {
-    pub cx: f64,
-    pub cy: f64,
-    pub r: f64,
-}
-impl From<(f64, f64, f64)> for Circle {
-    fn from(value: (f64, f64, f64)) -> Self {
-        Circle {
-            cx: value.0,
-            cy: value.1,
-            r: value.2,
-        }
-    }
-}
 
 #[derive(Clone)]
 pub struct Canvas {
     // TODO 增加
     // 完整chart的style
     tree: Rc<Tree>,
-
     // margin
-    margin: Point,
+    margin: Margin,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct GridOption {
+    pub verticals: usize,
+    pub hidden_verticals: Vec<usize>,
+    pub horizontals: usize,
+    pub hidden_horizontals: Vec<usize>,
+}
+impl From<(usize, usize)> for GridOption {
+    fn from(value: (usize, usize)) -> Self {
+        GridOption {
+            verticals: value.0,
+            hidden_verticals: vec![0],
+            horizontals: value.1,
+            hidden_horizontals: vec![0],
+        }
+    }
 }
 
 impl Canvas {
@@ -62,25 +49,28 @@ impl Canvas {
 
         Ok(Canvas {
             tree,
-            margin: Point { x: 0.0, y: 0.0 },
+            margin: Margin::default(),
         })
     }
     fn append_kind(&self, kind: NodeKind) {
         self.tree.root.append_kind(kind);
     }
-    pub fn child(&self, margin: Point) -> Self {
+    pub fn width(&self) -> f64 {
+        self.tree.size.width() - self.margin.left - self.margin.right
+    }
+    pub fn height(&self) -> f64 {
+        self.tree.size.height() - self.margin.top - self.margin.bottom
+    }
+    pub fn child(&self, margin: Margin) -> Self {
         let tree = Rc::clone(&self.tree);
-        let mut m = margin.clone();
-        m.x += self.margin.x;
-        m.y += self.margin.y;
-
+        let m = self.margin.add(margin);
         Canvas { tree, margin: m }
     }
     pub fn line(&self, points: Vec<Point>, stroke: Stroke) -> Result<()> {
         let mut line = PathData::new();
         for (index, point) in points.iter().enumerate() {
-            let x = point.x + self.margin.x;
-            let y = point.y + self.margin.y;
+            let x = point.x + self.margin.left;
+            let y = point.y + self.margin.top;
             if x < 0.0 || x.is_infinite() {
                 return Err(Error {
                     message: "x value is invalid".to_string(),
@@ -106,7 +96,12 @@ impl Canvas {
         Ok(())
     }
     pub fn rect(&self, value: (f64, f64, f64, f64), fill: Fill) -> Result<()> {
-        let rect = new_rect(value.0, value.1, value.2, value.3)?;
+        let rect = new_rect(
+            self.margin.left + value.0,
+            self.margin.top + value.1,
+            value.2,
+            value.3,
+        )?;
         self.append_kind(NodeKind::Path(Path {
             fill: Some(fill),
             data: Rc::new(PathData::from_rect(rect)),
@@ -116,13 +111,52 @@ impl Canvas {
     }
     pub fn circles(&self, circles: Vec<Circle>, stroke: Stroke, fill: Fill) -> Result<()> {
         for item in circles.iter() {
-            let path = new_circle_path(item.cx, item.cy, item.r);
+            let path = new_circle_path(
+                self.margin.left + item.cx,
+                self.margin.top + item.cy,
+                item.r,
+            );
             self.append_kind(NodeKind::Path(Path {
                 fill: Some(fill.clone()),
                 stroke: Some(stroke.clone()),
                 data: Rc::new(path),
                 ..Path::default()
             }));
+        }
+        Ok(())
+    }
+    pub fn grid(&self, opt: GridOption, color: Color) -> Result<()> {
+        // 垂直线
+        let width = self.width();
+        let height = self.height();
+
+        let stroke = new_stroke(1.0, color);
+        if opt.verticals != 0 {
+            let unit = width / ((opt.verticals - 1) as f64);
+            let mut x = 0.0;
+            for i in 0..opt.verticals {
+                let points = vec![(x, 0.0).into(), (x, height).into()];
+                x += unit;
+                if opt.hidden_verticals.contains(&i) {
+                    continue;
+                }
+                self.line(points, stroke.clone())?;
+            }
+        }
+        if opt.horizontals != 0 {
+            let unit = height / ((opt.horizontals - 1) as f64);
+            let mut y = 0.0;
+            for i in 0..opt.horizontals {
+                let points = vec![
+                    (0.0, y).into(),
+                    (width, y).into(),
+                ];
+                y += unit;
+                if opt.hidden_horizontals.contains(&i) {
+                    continue;
+                }
+                self.line(points, stroke.clone())?;
+            }
         }
         Ok(())
     }

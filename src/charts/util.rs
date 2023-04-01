@@ -6,12 +6,99 @@ use super::color::Color;
 pub struct Error {
     pub message: String,
 }
-
 impl From<png::EncodingError> for Error {
     fn from(err: png::EncodingError) -> Self {
         Error {
             message: err.to_string(),
         }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+}
+impl From<(f64, f64)> for Point {
+    fn from(value: (f64, f64)) -> Self {
+        Point {
+            x: value.0,
+            y: value.1,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct Circle {
+    pub cx: f64,
+    pub cy: f64,
+    pub r: f64,
+}
+impl From<(f64, f64, f64)> for Circle {
+    fn from(value: (f64, f64, f64)) -> Self {
+        Circle {
+            cx: value.0,
+            cy: value.1,
+            r: value.2,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct Margin {
+    pub top: f64,
+    pub right: f64,
+    pub bottom: f64,
+    pub left: f64,
+}
+impl From<f64> for Margin {
+    fn from(value: f64) -> Self {
+        Margin {
+            top: value,
+            right: value,
+            bottom: value,
+            left: value,
+        }
+    }
+}
+impl From<(f64, f64)> for Margin {
+    fn from(value: (f64, f64)) -> Self {
+        Margin {
+            top: value.0,
+            right: value.1,
+            bottom: value.0,
+            left: value.1,
+        }
+    }
+}
+impl From<(f64, f64, f64)> for Margin {
+    fn from(value: (f64, f64, f64)) -> Self {
+        Margin {
+            top: value.0,
+            right: value.1,
+            bottom: value.2,
+            left: value.1,
+        }
+    }
+}
+impl From<(f64, f64, f64, f64)> for Margin {
+    fn from(value: (f64, f64, f64, f64)) -> Self {
+        Margin {
+            top: value.0,
+            right: value.1,
+            bottom: value.2,
+            left: value.3,
+        }
+    }
+}
+impl Margin {
+    pub fn add(&self, margin: Margin) -> Self {
+        let mut m = self.clone();
+        m.top += margin.top;
+        m.right += margin.right;
+        m.bottom += margin.bottom;
+        m.left += margin.left;
+        m
     }
 }
 
