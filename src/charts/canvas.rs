@@ -25,10 +25,10 @@ pub struct GridOption {
     pub hidden_horizontals: Vec<usize>,
 }
 impl From<(usize, usize)> for GridOption {
-    fn from(value: (usize, usize)) -> Self {
+    fn from(val: (usize, usize)) -> Self {
         GridOption {
-            verticals: value.0,
-            horizontals: value.1,
+            verticals: val.0,
+            horizontals: val.1,
             ..Default::default()
         }
     }
@@ -41,10 +41,10 @@ pub struct AxisOption {
     pub length: f64,
 }
 impl From<(Position, usize)> for AxisOption {
-    fn from(value: (Position, usize)) -> Self {
+    fn from(val: (Position, usize)) -> Self {
         AxisOption {
-            position: value.0,
-            count: value.1,
+            position: val.0,
+            count: val.1,
             length: 3.0,
         }
     }
@@ -118,15 +118,15 @@ impl Canvas {
         self.append_kind(path);
         Ok(())
     }
-    pub fn rect(&self, value: (f64, f64, f64, f64), fill: Color) -> Result<()> {
+    pub fn rect(&self, val: (f64, f64, f64, f64), fill: Color) -> Result<()> {
         if fill.is_transparent() {
             return Ok(());
         }
         let rect = new_rect(
-            self.margin.left + value.0,
-            self.margin.top + value.1,
-            value.2,
-            value.3,
+            self.margin.left + val.0,
+            self.margin.top + val.1,
+            val.2,
+            val.3,
         )?;
         self.append_kind(NodeKind::Path(Path {
             fill: Some(fill.into()),
@@ -256,20 +256,16 @@ impl Canvas {
     pub fn legend_dot_line(&self, color: Color) -> Result<()> {
         let width = 28.0;
         let height = 4.0;
-        self.rect((0.0, 0.0, width, height).into(), color.into())?;
+        self.rect((0.0, 0.0, width, height), color)?;
 
         let stroke = new_stroke(1.0, color);
-        self.circles(
-            vec![(width / 2.0, height / 2.0, 5.0).into()],
-            stroke,
-            color.into(),
-        )?;
+        self.circles(vec![(width / 2.0, height / 2.0, 5.0).into()], stroke, color)?;
         Ok(())
     }
     pub fn legend_rect(&self, color: Color) -> Result<()> {
         let width = 28.0;
         let height = 5.0;
-        self.rect((0.0, 0.0, width, height).into(), color.into())?;
+        self.rect((0.0, 0.0, width, height), color)?;
         Ok(())
     }
     pub fn to_svg(&self, background: Option<Color>) -> String {

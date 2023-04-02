@@ -57,10 +57,10 @@ impl Color {
     }
 }
 
-impl Into<Fill> for Color {
-    fn into(self) -> Fill {
+impl From<Color> for Fill {
+    fn from(val: Color) -> Self {
         let mut fill = Fill::default();
-        let (c, opacity) = self.divide();
+        let (c, opacity) = val.divide();
         fill.paint = Paint::Color(c);
         fill.opacity = opacity;
         fill

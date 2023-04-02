@@ -29,11 +29,8 @@ pub struct Point {
     pub y: f64,
 }
 impl From<(f64, f64)> for Point {
-    fn from(value: (f64, f64)) -> Self {
-        Point {
-            x: value.0,
-            y: value.1,
-        }
+    fn from(val: (f64, f64)) -> Self {
+        Point { x: val.0, y: val.1 }
     }
 }
 
@@ -44,69 +41,58 @@ pub struct Circle {
     pub r: f64,
 }
 impl From<(f64, f64, f64)> for Circle {
-    fn from(value: (f64, f64, f64)) -> Self {
+    fn from(val: (f64, f64, f64)) -> Self {
         Circle {
-            cx: value.0,
-            cy: value.1,
-            r: value.2,
+            cx: val.0,
+            cy: val.1,
+            r: val.2,
         }
     }
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct Margin {
+    pub left: f64,
     pub top: f64,
     pub right: f64,
     pub bottom: f64,
-    pub left: f64,
 }
 impl From<f64> for Margin {
-    fn from(value: f64) -> Self {
+    fn from(val: f64) -> Self {
         Margin {
-            top: value,
-            right: value,
-            bottom: value,
-            left: value,
+            left: val,
+            top: val,
+            right: val,
+            bottom: val,
         }
     }
 }
 impl From<(f64, f64)> for Margin {
-    fn from(value: (f64, f64)) -> Self {
+    fn from(val: (f64, f64)) -> Self {
         Margin {
-            top: value.0,
-            right: value.1,
-            bottom: value.0,
-            left: value.1,
-        }
-    }
-}
-impl From<(f64, f64, f64)> for Margin {
-    fn from(value: (f64, f64, f64)) -> Self {
-        Margin {
-            top: value.0,
-            right: value.1,
-            bottom: value.2,
-            left: value.1,
+            left: val.0,
+            top: val.1,
+            ..Default::default()
         }
     }
 }
 impl From<(f64, f64, f64, f64)> for Margin {
-    fn from(value: (f64, f64, f64, f64)) -> Self {
+    fn from(val: (f64, f64, f64, f64)) -> Self {
         Margin {
-            top: value.0,
-            right: value.1,
-            bottom: value.2,
-            left: value.3,
+            left: val.0,
+            top: val.1,
+            right: val.2,
+            bottom: val.3,
         }
     }
 }
 impl Margin {
     pub fn add(&self, margin: Margin) -> Self {
         let mut m = self.clone();
+        m.left += margin.left;
         m.top += margin.top;
         m.right += margin.right;
         m.bottom += margin.bottom;
-        m.left += margin.left;
         m
     }
 }
@@ -124,9 +110,9 @@ pub fn new_rect(x: f64, y: f64, width: f64, height: f64) -> Result<Rect> {
     if let Some(value) = Rect::new(x, y, width, height) {
         return Ok(value);
     }
-    return Err(Error {
+    Err(Error {
         message: "value of rect is invalid".to_string(),
-    });
+    })
 }
 
 pub fn new_stroke(width: f64, color: Color) -> Stroke {
