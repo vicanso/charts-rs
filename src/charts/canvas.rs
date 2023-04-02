@@ -1,8 +1,8 @@
 use std::rc::Rc;
 use tiny_skia::{Pixmap, Transform};
 use usvg::{
-    AspectRatio, Fill, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Rect, Size, Stroke,
-    Tree, TreeWriting, ViewBox, XmlOptions,
+    AspectRatio, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke, Tree,
+    TreeWriting, ViewBox, XmlOptions, Fill,
 };
 
 use super::color::Color;
@@ -253,10 +253,19 @@ impl Canvas {
         }
         Ok(())
     }
-    pub fn to_svg(&self) -> String {
-        self.tree.to_string(&XmlOptions::default())
+    pub fn to_svg(&self, background: Option<Color>) -> String {
+        let mut svg = self.tree.to_string(&XmlOptions::default());
+        if let Some(background_color) = background {
+            let fill = background_color.string();
+            let rect = format!(r#"    <rect width="100%" height="100%" fill="{fill}" />"#);
+            let mut arr:Vec<&str> = svg.split('\n').collect();
+            arr.insert(1, &rect);
+            svg = arr.join("\n");
+        }
+        
+        svg
     }
-    pub fn to_png(&self) -> Result<Vec<u8>> {
+    pub fn to_png(&self, background: Option<Color>) -> Result<Vec<u8>> {
         let size = self.tree.size.to_screen_size();
         let map = Pixmap::new(size.width(), size.height());
         if map.is_none() {
@@ -266,6 +275,14 @@ impl Canvas {
         }
         // 已保证不会为空
         let mut pixmap = map.unwrap();
+        if let Some(background_color) = background {
+            pixmap.fill(tiny_skia::Color::from_rgba8(
+                background_color.r,
+                background_color.g,
+                background_color.b,
+                background_color.a,
+            ));
+        }
 
         // 如果render失败
         if resvg::render(

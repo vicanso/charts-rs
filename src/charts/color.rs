@@ -51,6 +51,10 @@ impl Color {
     pub fn is_transparent(&self) -> bool {
         self.a == 0
     }
+    pub fn string(&self) -> String {
+        let fa = (self.a as f64) / 255.0;
+        format!("rgba({},{},{},{:.1})", self.r, self.g, self.b, fa)
+    }
 }
 
 impl Into<Fill> for Color {
