@@ -1,3 +1,5 @@
+use usvg::{Fill, Paint};
+
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Color {
     pub r: u8,
@@ -48,6 +50,16 @@ impl Color {
     }
     pub fn is_transparent(&self) -> bool {
         self.a == 0
+    }
+}
+
+impl Into<Fill> for Color {
+    fn into(self) -> Fill {
+        let mut fill = Fill::default();
+        let (c, opacity) = self.divide();
+        fill.paint = Paint::Color(c);
+        fill.opacity = opacity;
+        fill
     }
 }
 

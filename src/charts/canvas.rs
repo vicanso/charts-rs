@@ -1,8 +1,8 @@
 use std::rc::Rc;
 use tiny_skia::{Pixmap, Transform};
 use usvg::{
-    AspectRatio, Fill, Group, Node, NodeExt, NodeKind, Path, PathData, Rect, Size, Stroke, Tree,
-    TreeWriting, ViewBox, XmlOptions,
+    AspectRatio, Fill, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Rect, Size, Stroke,
+    Tree, TreeWriting, ViewBox, XmlOptions,
 };
 
 use super::color::Color;
@@ -13,7 +13,7 @@ pub struct Canvas {
     // TODO 增加
     // 完整chart的style
     tree: Rc<Tree>,
-    // margin
+    // margin of the canvas
     margin: Margin,
 }
 
@@ -28,9 +28,24 @@ impl From<(usize, usize)> for GridOption {
     fn from(value: (usize, usize)) -> Self {
         GridOption {
             verticals: value.0,
-            hidden_verticals: vec![0],
             horizontals: value.1,
-            hidden_horizontals: vec![0],
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct AxisOption {
+    pub position: Position,
+    pub count: usize,
+    pub length: f64,
+}
+impl From<(Position, usize)> for AxisOption {
+    fn from(value: (Position, usize)) -> Self {
+        AxisOption {
+            position: value.0,
+            count: value.1,
+            length: 3.0,
         }
     }
 }
@@ -52,6 +67,11 @@ impl Canvas {
             margin: Margin::default(),
         })
     }
+    pub fn new_with_margin(width: f64, height: f64, margin: Margin) -> Result<Self> {
+        let mut c = Canvas::new(width, height)?;
+        c.margin = margin;
+        Ok(c)
+    }
     fn append_kind(&self, kind: NodeKind) {
         self.tree.root.append_kind(kind);
     }
@@ -67,6 +87,9 @@ impl Canvas {
         Canvas { tree, margin: m }
     }
     pub fn line(&self, points: Vec<Point>, stroke: Stroke) -> Result<()> {
+        if stroke.opacity == Opacity::ZERO {
+            return Ok(());
+        }
         let mut line = PathData::new();
         for (index, point) in points.iter().enumerate() {
             let x = point.x + self.margin.left;
@@ -95,7 +118,10 @@ impl Canvas {
         self.append_kind(path);
         Ok(())
     }
-    pub fn rect(&self, value: (f64, f64, f64, f64), fill: Fill) -> Result<()> {
+    pub fn rect(&self, value: (f64, f64, f64, f64), fill: Color) -> Result<()> {
+        if fill.is_transparent() {
+            return Ok(());
+        }
         let rect = new_rect(
             self.margin.left + value.0,
             self.margin.top + value.1,
@@ -103,13 +129,13 @@ impl Canvas {
             value.3,
         )?;
         self.append_kind(NodeKind::Path(Path {
-            fill: Some(fill),
+            fill: Some(fill.into()),
             data: Rc::new(PathData::from_rect(rect)),
             ..Path::default()
         }));
         Ok(())
     }
-    pub fn circles(&self, circles: Vec<Circle>, stroke: Stroke, fill: Fill) -> Result<()> {
+    pub fn circles(&self, circles: Vec<Circle>, stroke: Stroke, fill: Color) -> Result<()> {
         for item in circles.iter() {
             let path = new_circle_path(
                 self.margin.left + item.cx,
@@ -117,7 +143,7 @@ impl Canvas {
                 item.r,
             );
             self.append_kind(NodeKind::Path(Path {
-                fill: Some(fill.clone()),
+                fill: Some(fill.into()),
                 stroke: Some(stroke.clone()),
                 data: Rc::new(path),
                 ..Path::default()
@@ -126,11 +152,14 @@ impl Canvas {
         Ok(())
     }
     pub fn grid(&self, opt: GridOption, color: Color) -> Result<()> {
-        // 垂直线
+        if color.is_transparent() {
+            return Ok(());
+        }
         let width = self.width();
         let height = self.height();
 
         let stroke = new_stroke(1.0, color);
+        // 垂直线
         if opt.verticals != 0 {
             let unit = width / ((opt.verticals - 1) as f64);
             let mut x = 0.0;
@@ -143,20 +172,84 @@ impl Canvas {
                 self.line(points, stroke.clone())?;
             }
         }
+        // 水平线
         if opt.horizontals != 0 {
             let unit = height / ((opt.horizontals - 1) as f64);
             let mut y = 0.0;
             for i in 0..opt.horizontals {
-                let points = vec![
-                    (0.0, y).into(),
-                    (width, y).into(),
-                ];
+                let points = vec![(0.0, y).into(), (width, y).into()];
                 y += unit;
                 if opt.hidden_horizontals.contains(&i) {
                     continue;
                 }
                 self.line(points, stroke.clone())?;
             }
+        }
+        Ok(())
+    }
+    pub fn axis(&self, opt: AxisOption, color: Color) -> Result<()> {
+        if opt.count == 0 {
+            return Err(Error {
+                message: "axis count should be > 0".to_string(),
+            });
+        }
+        if color.is_transparent() {
+            return Ok(());
+        }
+        let stroke = new_stroke(1.0, color);
+        let width = self.width();
+        let height = self.height();
+        let count = (opt.count - 1) as f64;
+        let unit_width = width / count;
+        let unit_height = height / count;
+        let mut points_list: Vec<Vec<Point>> = vec![];
+        let length = opt.length;
+        // line的时候会计算margin
+        // 因此此处无直接使用0
+        let mut x = 0.0;
+        let mut y = 0.0;
+        match opt.position {
+            Position::Left => {
+                // 刻度值
+                for _ in 0..opt.count {
+                    points_list.push(vec![(x, y).into(), (x + length, y).into()]);
+                    y += unit_height;
+                }
+                points_list.push(vec![(length, 0.0).into(), (length, height).into()]);
+            }
+            Position::Right => {
+                x = width - length;
+
+                // 刻度值
+                for _ in 0..=opt.count {
+                    points_list.push(vec![(x, y).into(), (x + length, y).into()]);
+                    y += unit_height;
+                }
+                points_list.push(vec![(x, 0.0).into(), (x, height).into()]);
+            }
+            Position::Top => {
+                // 刻度值
+                for _ in 0..opt.count {
+                    points_list.push(vec![(x, y).into(), (x, y + length).into()]);
+                    x += unit_width;
+                }
+                points_list.push(vec![(0.0, length).into(), (width, length).into()]);
+            }
+            _ => {
+                y = height - length;
+                // 刻度值
+                for _ in 0..opt.count {
+                    points_list.push(vec![(x, y).into(), (x, y + length).into()]);
+                    x += unit_width;
+                }
+                points_list.push(vec![
+                    (0.0, height - length).into(),
+                    (width, height - length).into(),
+                ]);
+            }
+        }
+        for points in points_list.iter() {
+            self.line(points.to_owned(), stroke.clone())?;
         }
         Ok(())
     }
