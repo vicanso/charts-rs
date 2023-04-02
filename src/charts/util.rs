@@ -140,14 +140,6 @@ pub fn new_stroke(width: f64, color: Color) -> Stroke {
     stroke
 }
 
-// pub fn new_fill(color: Color) -> Fill {
-//     let mut fill = Fill::default();
-//     let (c, opacity) = color.divide();
-//     fill.paint = Paint::Color(c);
-//     fill.opacity = opacity;
-//     fill
-// }
-
 pub fn new_circle_path(cx: f64, cy: f64, r: f64) -> PathData {
     let rx = r;
     let ry = r;

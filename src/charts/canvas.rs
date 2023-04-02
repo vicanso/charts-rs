@@ -1,8 +1,8 @@
 use std::rc::Rc;
 use tiny_skia::{Pixmap, Transform};
 use usvg::{
-    AspectRatio, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke, Tree,
-    TreeWriting, ViewBox, XmlOptions, Fill,
+    AspectRatio, Fill, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke, Tree,
+    TreeWriting, ViewBox, XmlOptions,
 };
 
 use super::color::Color;
@@ -253,16 +253,35 @@ impl Canvas {
         }
         Ok(())
     }
+    pub fn legend_dot_line(&self, color: Color) -> Result<()> {
+        let width = 28.0;
+        let height = 4.0;
+        self.rect((0.0, 0.0, width, height).into(), color.into())?;
+
+        let stroke = new_stroke(1.0, color);
+        self.circles(
+            vec![(width / 2.0, height / 2.0, 5.0).into()],
+            stroke,
+            color.into(),
+        )?;
+        Ok(())
+    }
+    pub fn legend_rect(&self, color: Color) -> Result<()> {
+        let width = 28.0;
+        let height = 5.0;
+        self.rect((0.0, 0.0, width, height).into(), color.into())?;
+        Ok(())
+    }
     pub fn to_svg(&self, background: Option<Color>) -> String {
         let mut svg = self.tree.to_string(&XmlOptions::default());
         if let Some(background_color) = background {
             let fill = background_color.string();
             let rect = format!(r#"    <rect width="100%" height="100%" fill="{fill}" />"#);
-            let mut arr:Vec<&str> = svg.split('\n').collect();
+            let mut arr: Vec<&str> = svg.split('\n').collect();
             arr.insert(1, &rect);
             svg = arr.join("\n");
         }
-        
+
         svg
     }
     pub fn to_png(&self, background: Option<Color>) -> Result<Vec<u8>> {
