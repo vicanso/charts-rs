@@ -51,15 +51,15 @@ impl From<(f64, f64, f64)> for Circle {
 }
 
 #[derive(Clone, Debug, Default)]
-pub struct Margin {
+pub struct Box {
     pub left: f64,
     pub top: f64,
     pub right: f64,
     pub bottom: f64,
 }
-impl From<f64> for Margin {
+impl From<f64> for Box {
     fn from(val: f64) -> Self {
-        Margin {
+        Box {
             left: val,
             top: val,
             right: val,
@@ -67,18 +67,28 @@ impl From<f64> for Margin {
         }
     }
 }
-impl From<(f64, f64)> for Margin {
+impl From<(f64, f64)> for Box {
     fn from(val: (f64, f64)) -> Self {
-        Margin {
+        Box {
             left: val.0,
             top: val.1,
             ..Default::default()
         }
     }
 }
-impl From<(f64, f64, f64, f64)> for Margin {
+impl From<(f64, f64, f64)> for Box {
+    fn from(val: (f64, f64, f64)) -> Self {
+        Box {
+            left: val.0,
+            top: val.1,
+            right: val.2,
+            ..Default::default()
+        }
+    }
+}
+impl From<(f64, f64, f64, f64)> for Box {
     fn from(val: (f64, f64, f64, f64)) -> Self {
-        Margin {
+        Box {
             left: val.0,
             top: val.1,
             right: val.2,
@@ -86,14 +96,42 @@ impl From<(f64, f64, f64, f64)> for Margin {
         }
     }
 }
-impl Margin {
-    pub fn add(&self, margin: Margin) -> Self {
-        let mut m = self.clone();
-        m.left += margin.left;
-        m.top += margin.top;
-        m.right += margin.right;
-        m.bottom += margin.bottom;
-        m
+impl Box {
+    pub fn new_neg_infinity() -> Self {
+        Box {
+            left: f64::INFINITY,
+            top: f64::INFINITY,
+            right: f64::NEG_INFINITY,
+            bottom: f64::NEG_INFINITY,
+        }
+    }
+    pub fn add(&self, data: Box) -> Self {
+        let mut b = self.clone();
+        b.left += data.left;
+        b.top += data.top;
+        b.right += data.right;
+        b.bottom += data.bottom;
+        b
+    }
+    pub fn merge(&mut self, data: Box) {
+        if data.left < self.left {
+            self.left = data.left
+        }
+        if data.top < self.top {
+            self.top = data.top
+        }
+        if data.right > self.right {
+            self.right = data.right
+        }
+        if data.bottom > self.bottom {
+            self.bottom = data.bottom
+        }
+    }
+    pub fn width(&self) -> f64 {
+        self.right - self.left
+    }
+    pub fn height(&self) -> f64 {
+        self.bottom - self.top
     }
 }
 

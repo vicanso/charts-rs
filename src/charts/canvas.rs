@@ -14,7 +14,7 @@ pub struct Canvas {
     // 完整chart的style
     tree: Rc<Tree>,
     // margin of the canvas
-    margin: Margin,
+    margin: Box,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -64,10 +64,10 @@ impl Canvas {
 
         Ok(Canvas {
             tree,
-            margin: Margin::default(),
+            margin: Box::default(),
         })
     }
-    pub fn new_with_margin(width: f64, height: f64, margin: Margin) -> Result<Self> {
+    pub fn new_with_margin(width: f64, height: f64, margin: Box) -> Result<Self> {
         let mut c = Canvas::new(width, height)?;
         c.margin = margin;
         Ok(c)
@@ -81,17 +81,25 @@ impl Canvas {
     pub fn height(&self) -> f64 {
         self.tree.size.height() - self.margin.top - self.margin.bottom
     }
-    pub fn child(&self, margin: Margin) -> Self {
+    pub fn child(&self, margin: Box) -> Self {
         let tree = Rc::clone(&self.tree);
         let m = self.margin.add(margin);
         Canvas { tree, margin: m }
     }
-    pub fn line(&self, points: Vec<Point>, stroke: Stroke) -> Result<()> {
+    pub fn line(&self, points: Vec<Point>, stroke: Stroke) -> Result<Box> {
         if stroke.opacity == Opacity::ZERO {
-            return Ok(());
+            return Ok(Box::default());
         }
         let mut line = PathData::new();
+        let mut b = Box::new_neg_infinity();
         for (index, point) in points.iter().enumerate() {
+            b.merge(Box {
+                left: point.x,
+                top: point.y,
+                right: point.x,
+                bottom: point.y,
+            });
+
             let x = point.x + self.margin.left;
             let y = point.y + self.margin.top;
             if x < 0.0 || x.is_infinite() {
@@ -104,6 +112,7 @@ impl Canvas {
                     message: "y value is invalid".to_string(),
                 });
             }
+
             if index == 0 {
                 line.push_move_to(x, y);
             } else {
@@ -116,11 +125,11 @@ impl Canvas {
             ..Path::default()
         });
         self.append_kind(path);
-        Ok(())
+        Ok(b)
     }
-    pub fn rect(&self, val: (f64, f64, f64, f64), fill: Color) -> Result<()> {
+    pub fn rect(&self, val: (f64, f64, f64, f64), fill: Color) -> Result<Box> {
         if fill.is_transparent() {
-            return Ok(());
+            return Ok(Box::default());
         }
         let rect = new_rect(
             self.margin.left + val.0,
@@ -128,15 +137,29 @@ impl Canvas {
             val.2,
             val.3,
         )?;
+
         self.append_kind(NodeKind::Path(Path {
             fill: Some(fill.into()),
             data: Rc::new(PathData::from_rect(rect)),
             ..Path::default()
         }));
-        Ok(())
+        Ok(Box {
+            left: val.0,
+            top: val.1,
+            right: val.0 + val.2,
+            bottom: val.1 + val.3,
+        })
     }
-    pub fn circles(&self, circles: Vec<Circle>, stroke: Stroke, fill: Color) -> Result<()> {
+    pub fn circles(&self, circles: Vec<Circle>, stroke: Stroke, fill: Color) -> Result<Box> {
+        let mut b = Box::new_neg_infinity();
         for item in circles.iter() {
+            let value = std::f64::consts::FRAC_PI_4.sin() * item.r;
+            b.merge(Box {
+                left: item.cx - value,
+                top: item.cy - value,
+                right: item.cx + value,
+                bottom: item.cy + value,
+            });
             let path = new_circle_path(
                 self.margin.left + item.cx,
                 self.margin.top + item.cy,
@@ -149,21 +172,28 @@ impl Canvas {
                 ..Path::default()
             }));
         }
-        Ok(())
+        Ok(b)
     }
-    pub fn grid(&self, opt: GridOption, color: Color) -> Result<()> {
+    pub fn grid(&self, opt: GridOption, color: Color) -> Result<Box> {
         if color.is_transparent() {
-            return Ok(());
+            return Ok(Box::default());
         }
         let width = self.width();
         let height = self.height();
 
+        let mut b = Box::new_neg_infinity();
         let stroke = new_stroke(1.0, color);
         // 垂直线
         if opt.verticals != 0 {
             let unit = width / ((opt.verticals - 1) as f64);
             let mut x = 0.0;
             for i in 0..opt.verticals {
+                b.merge(Box {
+                    left: x,
+                    top: 0.0,
+                    right: x,
+                    bottom: height,
+                });
                 let points = vec![(x, 0.0).into(), (x, height).into()];
                 x += unit;
                 if opt.hidden_verticals.contains(&i) {
@@ -177,6 +207,12 @@ impl Canvas {
             let unit = height / ((opt.horizontals - 1) as f64);
             let mut y = 0.0;
             for i in 0..opt.horizontals {
+                b.merge(Box {
+                    left: 0.0,
+                    top: y,
+                    right: width,
+                    bottom: y,
+                });
                 let points = vec![(0.0, y).into(), (width, y).into()];
                 y += unit;
                 if opt.hidden_horizontals.contains(&i) {
@@ -185,16 +221,16 @@ impl Canvas {
                 self.line(points, stroke.clone())?;
             }
         }
-        Ok(())
+        Ok(b)
     }
-    pub fn axis(&self, opt: AxisOption, color: Color) -> Result<()> {
+    pub fn axis(&self, opt: AxisOption, color: Color) -> Result<Box> {
         if opt.count == 0 {
             return Err(Error {
                 message: "axis count should be > 0".to_string(),
             });
         }
         if color.is_transparent() {
-            return Ok(());
+            return Ok(Box::default());
         }
         let stroke = new_stroke(1.0, color);
         let width = self.width();
@@ -205,11 +241,18 @@ impl Canvas {
         let mut points_list: Vec<Vec<Point>> = vec![];
         let length = opt.length;
         // line的时候会计算margin
-        // 因此此处无直接使用0
+        // 因此此处直接使用0
         let mut x = 0.0;
         let mut y = 0.0;
+        let mut b = Box::new_neg_infinity();
         match opt.position {
             Position::Left => {
+                b.merge(Box {
+                    left: 0.0,
+                    top: 0.0,
+                    right: length,
+                    bottom: height,
+                });
                 // 刻度值
                 for _ in 0..opt.count {
                     points_list.push(vec![(x, y).into(), (x + length, y).into()]);
@@ -218,6 +261,13 @@ impl Canvas {
                 points_list.push(vec![(length, 0.0).into(), (length, height).into()]);
             }
             Position::Right => {
+                b.merge(Box {
+                    left: width - length,
+                    top: 0.0,
+                    right: width,
+                    bottom: height,
+                });
+
                 x = width - length;
 
                 // 刻度值
@@ -228,6 +278,13 @@ impl Canvas {
                 points_list.push(vec![(x, 0.0).into(), (x, height).into()]);
             }
             Position::Top => {
+                b.merge(Box {
+                    left: 0.0,
+                    top: 0.0,
+                    right: width,
+                    bottom: length,
+                });
+
                 // 刻度值
                 for _ in 0..opt.count {
                     points_list.push(vec![(x, y).into(), (x, y + length).into()]);
@@ -236,6 +293,13 @@ impl Canvas {
                 points_list.push(vec![(0.0, length).into(), (width, length).into()]);
             }
             _ => {
+                b.merge(Box {
+                    left: 0.0,
+                    top: height - length,
+                    right: width,
+                    bottom: height,
+                });
+
                 y = height - length;
                 // 刻度值
                 for _ in 0..opt.count {
@@ -251,22 +315,35 @@ impl Canvas {
         for points in points_list.iter() {
             self.line(points.to_owned(), stroke.clone())?;
         }
-        Ok(())
+        Ok(b)
     }
-    pub fn legend_dot_line(&self, color: Color) -> Result<()> {
+    pub fn legend_dot_line(&self, color: Color) -> Result<Box> {
         let width = 28.0;
         let height = 4.0;
         self.rect((0.0, 0.0, width, height), color)?;
 
         let stroke = new_stroke(1.0, color);
         self.circles(vec![(width / 2.0, height / 2.0, 5.0).into()], stroke, color)?;
-        Ok(())
+        Ok(Box{
+            left: 0.0,
+            top: 0.0,
+            right: width,
+            // 设置为默认5.0
+            bottom: 5.0
+        })
     }
-    pub fn legend_rect(&self, color: Color) -> Result<()> {
+    pub fn legend_rect(&self, color: Color) -> Result<Box> {
         let width = 28.0;
         let height = 5.0;
         self.rect((0.0, 0.0, width, height), color)?;
-        Ok(())
+        Ok(Box{
+            left: 0.0,
+            top: 0.0,
+            right: width,
+            bottom: height,
+        })
+    }
+    pub fn text(&self) {
     }
     pub fn to_svg(&self, background: Option<Color>) -> String {
         let mut svg = self.tree.to_string(&XmlOptions::default());
@@ -277,7 +354,6 @@ impl Canvas {
             arr.insert(1, &rect);
             svg = arr.join("\n");
         }
-
         svg
     }
     pub fn to_png(&self, background: Option<Color>) -> Result<Vec<u8>> {
