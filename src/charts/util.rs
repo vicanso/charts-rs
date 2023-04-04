@@ -1,4 +1,10 @@
-use usvg::{Fill, Opacity, Paint, PathData, Rect, Size, Stroke, StrokeWidth};
+use strict_num::NonZeroPositiveF64;
+use usvg::{
+    fontdb::Family, AlignmentBaseline, BaselineShift, CharacterPosition, DominantBaseline, Fill,
+    Font, FontStretch, FontStyle, LengthAdjust, NodeKind, Opacity, Paint, PaintOrder, PathData,
+    Rect, Size, Stroke, StrokeWidth, Text, TextAnchor, TextChunk, TextDecoration, TextFlow,
+    TextRendering, TextSpan, Transform, Visibility, WritingMode,
+};
 
 use super::color::Color;
 
@@ -178,3 +184,73 @@ pub fn new_circle_path(cx: f64, cy: f64, r: f64) -> PathData {
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+pub struct TextOption {
+    pub font: Font,
+    pub font_size: NonZeroPositiveF64,
+    pub color: Color,
+    pub x: f64,
+    pub y: f64,
+}
+
+pub fn new_font_option(family: String, font_size: f64, color: Color) -> Result<TextOption> {
+    let value = NonZeroPositiveF64::new(font_size).ok_or(Error {
+        message: "font size should be > 0".to_string(),
+    })?;
+    Ok(TextOption {
+        font: Font {
+            families: family.split(',').map(|x| x.trim().to_string()).collect(),
+            style: FontStyle::Normal,
+            stretch: FontStretch::default(),
+            weight: 0,
+        },
+        color,
+        font_size: value,
+        x: 0.0,
+        y: 0.0,
+    })
+}
+
+pub fn new_text(text: String, opt: TextOption) -> Text {
+    let span = TextSpan {
+        start: 0,
+        end: text.len(),
+        fill: Some(opt.color.into()),
+        stroke: Some(new_stroke(1.0, opt.color)),
+        paint_order: PaintOrder::default(),
+        font: opt.font,
+        font_size: opt.font_size,
+        small_caps: false,
+        apply_kerning: false,
+        decoration: TextDecoration {
+            underline: None,
+            overline: None,
+            line_through: None,
+        },
+        dominant_baseline: DominantBaseline::default(),
+        alignment_baseline: AlignmentBaseline::default(),
+        baseline_shift: vec![BaselineShift::default()],
+        visibility: Visibility::default(),
+        letter_spacing: 0.0,
+        word_spacing: 0.0,
+        text_length: None,
+        length_adjust: LengthAdjust::default(),
+    };
+    let chunk = TextChunk {
+        x: None,
+        y: None,
+        anchor: TextAnchor::default(),
+        spans: vec![span],
+        text_flow: TextFlow::Linear,
+        text,
+    };
+    Text {
+        id: String::new(),
+        transform: Transform::new_translate(opt.x, opt.y),
+        rendering_mode: TextRendering::default(),
+        positions: vec![],
+        rotate: vec![],
+        writing_mode: WritingMode::LeftToRight,
+        chunks: vec![chunk],
+    }
+}

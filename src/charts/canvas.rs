@@ -1,8 +1,7 @@
 use std::rc::Rc;
-use tiny_skia::{Pixmap, Transform};
 use usvg::{
-    AspectRatio, Fill, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke, Tree,
-    TreeWriting, ViewBox, XmlOptions,
+    fontdb, AspectRatio, Fill, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke,
+    TextChunk, TextToPath, Transform, Tree, TreeTextToPath, TreeWriting, ViewBox, XmlOptions,
 };
 
 use super::color::Color;
@@ -15,6 +14,7 @@ pub struct Canvas {
     tree: Rc<Tree>,
     // margin of the canvas
     margin: Box,
+    db: Rc<fontdb::Database>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -61,10 +61,13 @@ impl Canvas {
             },
             root: Node::new(NodeKind::Group(Group::default())),
         });
+        let mut db = fontdb::Database::new();
+        db.load_system_fonts();
 
         Ok(Canvas {
             tree,
             margin: Box::default(),
+            db: Rc::new(db),
         })
     }
     pub fn new_with_margin(width: f64, height: f64, margin: Box) -> Result<Self> {
@@ -84,7 +87,11 @@ impl Canvas {
     pub fn child(&self, margin: Box) -> Self {
         let tree = Rc::clone(&self.tree);
         let m = self.margin.add(margin);
-        Canvas { tree, margin: m }
+        Canvas {
+            tree,
+            margin: m,
+            db: self.db.clone(),
+        }
     }
     pub fn line(&self, points: Vec<Point>, stroke: Stroke) -> Result<Box> {
         if stroke.opacity == Opacity::ZERO {
@@ -324,26 +331,47 @@ impl Canvas {
 
         let stroke = new_stroke(1.0, color);
         self.circles(vec![(width / 2.0, height / 2.0, 5.0).into()], stroke, color)?;
-        Ok(Box{
+        Ok(Box {
             left: 0.0,
             top: 0.0,
             right: width,
             // 设置为默认5.0
-            bottom: 5.0
+            bottom: 5.0,
         })
     }
     pub fn legend_rect(&self, color: Color) -> Result<Box> {
         let width = 28.0;
         let height = 5.0;
         self.rect((0.0, 0.0, width, height), color)?;
-        Ok(Box{
+        Ok(Box {
             left: 0.0,
             top: 0.0,
             right: width,
             bottom: height,
         })
     }
-    pub fn text(&self) {
+    pub fn text(&self, text: String, opt: TextOption) -> Result<Box> {
+        let mut option = opt;
+        option.x = self.margin.left;
+        option.y = self.margin.top;
+        let mut width = 0.0;
+        let mut height = 0.0;
+        let child = new_text(text, option)
+            .convert(&self.db, Transform::default())
+            .ok_or(Error {
+                message: "convert text fail".to_string(),
+            })?;
+        if let Some(value) = child.calculate_bbox() {
+            width = value.width();
+            height = value.height();
+        }
+        self.tree.root.append(child);
+
+        Ok(Box {
+            right: width,
+            bottom: height,
+            ..Default::default()
+        })
     }
     pub fn to_svg(&self, background: Option<Color>) -> String {
         let mut svg = self.tree.to_string(&XmlOptions::default());
@@ -358,7 +386,7 @@ impl Canvas {
     }
     pub fn to_png(&self, background: Option<Color>) -> Result<Vec<u8>> {
         let size = self.tree.size.to_screen_size();
-        let map = Pixmap::new(size.width(), size.height());
+        let map = tiny_skia::Pixmap::new(size.width(), size.height());
         if map.is_none() {
             return Err(Error {
                 message: "new pixmap fail".to_string(),
@@ -379,7 +407,7 @@ impl Canvas {
         if resvg::render(
             &self.tree,
             resvg::FitTo::Original,
-            Transform::default(),
+            tiny_skia::Transform::default(),
             pixmap.as_mut(),
         )
         .is_none()
