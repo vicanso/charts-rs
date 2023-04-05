@@ -7,6 +7,8 @@ use usvg::{
 use super::color::Color;
 use super::util::*;
 
+pub static LEGEND_WIDTH: f64 = 28.0;
+
 #[derive(Clone)]
 pub struct Canvas {
     // TODO 增加
@@ -325,30 +327,52 @@ impl Canvas {
         Ok(b)
     }
     pub fn legend_dot_line(&self, color: Color) -> Result<Box> {
-        let width = 28.0;
         let height = 4.0;
-        self.rect((0.0, 0.0, width, height), color)?;
+        self.rect((0.0, 0.0, LEGEND_WIDTH, height), color)?;
 
         let stroke = new_stroke(1.0, color);
-        self.circles(vec![(width / 2.0, height / 2.0, 5.0).into()], stroke, color)?;
+        self.circles(
+            vec![(LEGEND_WIDTH / 2.0, height / 2.0, 5.0).into()],
+            stroke,
+            color,
+        )?;
         Ok(Box {
             left: 0.0,
             top: 0.0,
-            right: width,
+            right: LEGEND_WIDTH,
             // 设置为默认5.0
             bottom: 5.0,
         })
     }
     pub fn legend_rect(&self, color: Color) -> Result<Box> {
-        let width = 28.0;
         let height = 5.0;
-        self.rect((0.0, 0.0, width, height), color)?;
+        self.rect((0.0, 0.0, LEGEND_WIDTH, height), color)?;
         Ok(Box {
             left: 0.0,
             top: 0.0,
-            right: width,
+            right: LEGEND_WIDTH,
             bottom: height,
         })
+    }
+    pub fn measure(&self, text: String, opt: TextOption) -> Result<Box> {
+        let t = new_text(text, opt);
+        // 偏移量加上字体大小
+        let child = t.convert(&self.db, Transform::default()).ok_or(Error {
+            message: "convert text fail".to_string(),
+        })?;
+        let b = if let Some(value) = child.calculate_bbox() {
+            Box {
+                left: 0.0,
+                top: 0.0,
+                right: value.width(),
+                bottom: value.height(),
+            }
+        } else {
+            Box {
+                ..Default::default()
+            }
+        };
+        Ok(b)
     }
     pub fn text(&self, text: String, opt: TextOption) -> Result<Box> {
         let font_size = opt.font_size.get();

@@ -1,4 +1,4 @@
-use super::canvas::Canvas;
+use super::canvas::{Canvas, LEGEND_WIDTH};
 use super::color::*;
 use super::util::*;
 
@@ -70,33 +70,21 @@ impl Chart {
             .clone()
             .unwrap_or_else(|| opt.families.clone());
         let font_size = opt.legend_font_size.unwrap_or(opt.font_size);
-        let color = opt
-            .legend_color
-            .clone()
-            .unwrap_or_else(|| opt.color.clone());
-        let mut left = 0.0;
-        let unit_offset = 10.0;
-        let icon_offset = 3.0;
+        let color = opt.legend_color.unwrap_or(opt.color);
 
-        let render_text = |text: String, margin_left: f64| -> Result<Box> {
-            let font_option = new_font_option(families.clone(), font_size, color)?;
-            let b = self
-                .canvas
-                .child(Box {
-                    left: margin_left,
-                    ..Default::default()
-                })
-                .text(text.clone(), font_option)?;
+        let get_font_option =
+            || -> Result<TextOption> { new_font_option(families.clone(), font_size, color) };
+        let render_text = |text: String, margin: Box| -> Result<Box> {
+            let font_option = get_font_option()?;
+            let b = self.canvas.child(margin).text(text, font_option)?;
             Ok(b)
         };
+        let measure_text =
+            |text: String| -> Result<Box> { self.canvas.measure(text, get_font_option()?) };
 
-        let render_legend_icon = |index: usize, margin_left: f64| -> Result<Box> {
+        let render_legend_icon = |index: usize, margin: Box| -> Result<Box> {
             let color = self.get_series_color(index);
-            let child = self.canvas.child(Box {
-                left: margin_left,
-                top: font_size / 2.0,
-                ..Default::default()
-            });
+            let child = self.canvas.child(margin);
             // 已保证不为空
             let b = match opt.legend_icon.clone().unwrap() {
                 LegendIcon::Rect => child.legend_rect(color)?,
@@ -109,21 +97,53 @@ impl Chart {
 
         let mut b = Box::new_neg_infinity();
 
+        let width = self.canvas.width();
+        let mut left = 0.0;
+        let mut top = 0.0;
+        let unit_offset = 10.0;
+        let icon_offset = 3.0;
+
         for (index, text) in opt.legend_labels.iter().enumerate() {
+            let mut legend_width = measure_text(text.clone())?.width();
             if should_render_icon {
-                let area = render_legend_icon(index, left)?;
+                legend_width += LEGEND_WIDTH;
+            }
+            // 换下一行
+            if left + legend_width > width {
+                top += font_size + icon_offset;
+                left = 0.0;
+            }
+
+            if should_render_icon {
+                let area = render_legend_icon(
+                    index,
+                    Box {
+                        left,
+                        top: top + font_size / 2.0,
+                        ..Default::default()
+                    },
+                )?;
                 left += area.width() + icon_offset;
                 b.merge(Box {
+                    top,
                     right: left,
-                    bottom: area.bottom,
+                    bottom: top + area.bottom,
                     ..Default::default()
                 });
             }
-            let area = render_text(text.clone(), left)?;
+            let area = render_text(
+                text.clone(),
+                Box {
+                    top,
+                    left,
+                    ..Default::default()
+                },
+            )?;
             left += area.width() + unit_offset;
             b.merge(Box {
+                top,
                 right: left,
-                bottom: area.bottom,
+                bottom: top + area.bottom,
                 ..Default::default()
             });
         }
