@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use usvg::{
-    fontdb, AspectRatio, Fill, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke,
-    TextChunk, TextToPath, Transform, Tree, TreeTextToPath, TreeWriting, ViewBox, XmlOptions,
+    fontdb, AspectRatio, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke,
+    TextToPath, Transform, Tree, TreeWriting, ViewBox, XmlOptions,
 };
 
 use super::color::Color;
@@ -351,16 +351,18 @@ impl Canvas {
         })
     }
     pub fn text(&self, text: String, opt: TextOption) -> Result<Box> {
+        let font_size = opt.font_size.get();
         let mut option = opt;
         option.x = self.margin.left;
         option.y = self.margin.top;
         let mut width = 0.0;
         let mut height = 0.0;
-        let child = new_text(text, option)
-            .convert(&self.db, Transform::default())
-            .ok_or(Error {
-                message: "convert text fail".to_string(),
-            })?;
+        let mut t = new_text(text, option);
+        // 偏移量加上字体大小
+        t.transform.f += font_size;
+        let child = t.convert(&self.db, Transform::default()).ok_or(Error {
+            message: "convert text fail".to_string(),
+        })?;
         if let Some(value) = child.calculate_bbox() {
             width = value.width();
             height = value.height();

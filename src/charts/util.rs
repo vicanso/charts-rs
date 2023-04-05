@@ -1,9 +1,8 @@
 use strict_num::NonZeroPositiveF64;
 use usvg::{
-    fontdb::Family, AlignmentBaseline, BaselineShift, CharacterPosition, DominantBaseline, Fill,
-    Font, FontStretch, FontStyle, LengthAdjust, NodeKind, Opacity, Paint, PaintOrder, PathData,
-    Rect, Size, Stroke, StrokeWidth, Text, TextAnchor, TextChunk, TextDecoration, TextFlow,
-    TextRendering, TextSpan, Transform, Visibility, WritingMode,
+    AlignmentBaseline, BaselineShift, DominantBaseline, Font, FontStretch, FontStyle, LengthAdjust,
+    Paint, PaintOrder, PathData, Rect, Size, Stroke, StrokeWidth, Text, TextAnchor, TextChunk,
+    TextDecoration, TextFlow, TextRendering, TextSpan, Transform, Visibility, WritingMode,
 };
 
 use super::color::Color;
@@ -15,6 +14,13 @@ pub enum Position {
     Top,
     #[default]
     Bottom,
+}
+
+#[derive(Clone, Debug, Default)]
+pub enum LegendIcon {
+    #[default]
+    LineDot,
+    Rect,
 }
 
 #[derive(Debug)]
