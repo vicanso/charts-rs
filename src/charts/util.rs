@@ -7,7 +7,7 @@ use usvg::{
 
 use super::color::Color;
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum Position {
     Left,
     Right,
@@ -16,7 +16,14 @@ pub enum Position {
     Bottom,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub enum Orientation {
+    #[default]
+    Horizontal,
+    Vertical,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum LegendIcon {
     #[default]
     LineDot,
