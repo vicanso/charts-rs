@@ -1,448 +1,132 @@
-use std::rc::Rc;
-use usvg::{
-    fontdb, AspectRatio, Group, Node, NodeExt, NodeKind, Opacity, Path, PathData, Stroke,
-    TextToPath, Transform, Tree, TreeWriting, ViewBox, XmlOptions,
-};
-
-use super::color::Color;
+use super::component::{generate_svg, Circle, Component, Line, Polygon, Polyline, Rect};
 use super::util::*;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-pub static LEGEND_WIDTH: f64 = 28.0;
-
-#[derive(Clone)]
 pub struct Canvas {
-    // TODO 增加
-    // 完整chart的style
-    tree: Rc<Tree>,
-    // margin of the canvas
-    margin: Box,
-    db: Rc<fontdb::Database>,
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct GridOption {
-    pub verticals: usize,
-    pub hidden_verticals: Vec<usize>,
-    pub horizontals: usize,
-    pub hidden_horizontals: Vec<usize>,
-}
-impl From<(usize, usize)> for GridOption {
-    fn from(val: (usize, usize)) -> Self {
-        GridOption {
-            verticals: val.0,
-            horizontals: val.1,
-            ..Default::default()
-        }
-    }
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct AxisOption {
-    pub position: Position,
-    pub count: usize,
-    pub length: f64,
-}
-impl From<(Position, usize)> for AxisOption {
-    fn from(val: (Position, usize)) -> Self {
-        AxisOption {
-            position: val.0,
-            count: val.1,
-            length: 3.0,
-        }
-    }
+    pub width: f64,
+    pub height: f64,
+    pub components: Rc<RefCell<Vec<Component>>>,
+    pub margin: Box,
 }
 
 impl Canvas {
-    pub fn new(width: f64, height: f64) -> Result<Self> {
-        let size = new_size(width, height)?;
-        let tree = Rc::new(Tree {
-            size,
-            view_box: ViewBox {
-                rect: size.to_rect(0.0, 0.0),
-                aspect: AspectRatio::default(),
-            },
-            root: Node::new(NodeKind::Group(Group::default())),
-        });
-        let mut db = fontdb::Database::new();
-        db.load_system_fonts();
-
-        Ok(Canvas {
-            tree,
+    pub fn new(width: f64, height: f64) -> Self {
+        Canvas {
+            width,
+            height,
+            components: Rc::new(RefCell::new(vec![])),
             margin: Box::default(),
-            db: Rc::new(db),
-        })
-    }
-    pub fn new_with_margin(width: f64, height: f64, margin: Box) -> Result<Self> {
-        let mut c = Canvas::new(width, height)?;
-        c.margin = margin;
-        Ok(c)
-    }
-    fn append_kind(&self, kind: NodeKind) {
-        self.tree.root.append_kind(kind);
+        }
     }
     pub fn width(&self) -> f64 {
-        self.tree.size.width() - self.margin.left - self.margin.right
+        self.width - self.margin.left - self.margin.right
     }
     pub fn height(&self) -> f64 {
-        self.tree.size.height() - self.margin.top - self.margin.bottom
+        self.height - self.margin.top - self.margin.bottom
     }
     pub fn child(&self, margin: Box) -> Self {
-        let tree = Rc::clone(&self.tree);
-        let m = self.margin.add(margin);
+        let mut m = self.margin.clone();
+        m.left += margin.left;
+        m.top += margin.top;
+        m.right += margin.right;
+        m.bottom += margin.bottom;
         Canvas {
-            tree,
+            width: self.width,
+            height: self.height,
+            components: Rc::clone(&self.components),
             margin: m,
-            db: self.db.clone(),
         }
     }
-    pub fn line(&self, points: Vec<Point>, stroke: Stroke) -> Result<Box> {
-        if stroke.opacity == Opacity::ZERO {
-            return Ok(Box::default());
-        }
-        let mut line = PathData::new();
-        let mut b = Box::new_neg_infinity();
-        for (index, point) in points.iter().enumerate() {
-            b.merge(Box {
-                left: point.x,
-                top: point.y,
-                right: point.x,
-                bottom: point.y,
-            });
-
-            let x = point.x + self.margin.left;
-            let y = point.y + self.margin.top;
-            if x < 0.0 || x.is_infinite() {
-                return Err(Error {
-                    message: "x value is invalid".to_string(),
-                });
-            }
-            if y < 0.0 || y.is_infinite() {
-                return Err(Error {
-                    message: "y value is invalid".to_string(),
-                });
-            }
-
-            if index == 0 {
-                line.push_move_to(x, y);
-            } else {
-                line.push_line_to(x, y);
-            }
-        }
-        let path = NodeKind::Path(Path {
-            data: Rc::new(line),
-            stroke: Some(stroke),
-            ..Path::default()
-        });
-        self.append_kind(path);
-        Ok(b)
+    pub fn line(&mut self, line: Line) {
+        let mut c = line;
+        c.left += self.margin.left;
+        c.right += self.margin.left;
+        c.top += self.margin.top;
+        c.bottom += self.margin.bottom;
+        self.append(Component::Line(c));
     }
-    pub fn rect(&self, val: (f64, f64, f64, f64), fill: Color) -> Result<Box> {
-        if fill.is_transparent() {
-            return Ok(Box::default());
-        }
-        let rect = new_rect(
-            self.margin.left + val.0,
-            self.margin.top + val.1,
-            val.2,
-            val.3,
-        )?;
-
-        self.append_kind(NodeKind::Path(Path {
-            fill: Some(fill.into()),
-            data: Rc::new(PathData::from_rect(rect)),
-            ..Path::default()
-        }));
-        Ok(Box {
-            left: val.0,
-            top: val.1,
-            right: val.0 + val.2,
-            bottom: val.1 + val.3,
-        })
+    pub fn rect(&mut self, rect: Rect) {
+        let mut c = rect;
+        c.left += self.margin.left;
+        c.top += self.margin.top;
+        self.append(Component::Rect(c))
     }
-    pub fn circles(&self, circles: Vec<Circle>, stroke: Stroke, fill: Color) -> Result<Box> {
-        let mut b = Box::new_neg_infinity();
-        for item in circles.iter() {
-            let value = std::f64::consts::FRAC_PI_4.sin() * item.r;
-            b.merge(Box {
-                left: item.cx - value,
-                top: item.cy - value,
-                right: item.cx + value,
-                bottom: item.cy + value,
-            });
-            let path = new_circle_path(
-                self.margin.left + item.cx,
-                self.margin.top + item.cy,
-                item.r,
-            );
-            self.append_kind(NodeKind::Path(Path {
-                fill: Some(fill.into()),
-                stroke: Some(stroke.clone()),
-                data: Rc::new(path),
-                ..Path::default()
-            }));
-        }
-        Ok(b)
-    }
-    pub fn grid(&self, opt: GridOption, color: Color) -> Result<Box> {
-        if color.is_transparent() {
-            return Ok(Box::default());
-        }
-        let width = self.width();
-        let height = self.height();
-
-        let mut b = Box::new_neg_infinity();
-        let stroke = new_stroke(1.0, color);
-        // 垂直线
-        if opt.verticals != 0 {
-            let unit = width / ((opt.verticals - 1) as f64);
-            let mut x = 0.0;
-            for i in 0..opt.verticals {
-                b.merge(Box {
-                    left: x,
-                    top: 0.0,
-                    right: x,
-                    bottom: height,
-                });
-                let points = vec![(x, 0.0).into(), (x, height).into()];
-                x += unit;
-                if opt.hidden_verticals.contains(&i) {
-                    continue;
-                }
-                self.line(points, stroke.clone())?;
-            }
-        }
-        // 水平线
-        if opt.horizontals != 0 {
-            let unit = height / ((opt.horizontals - 1) as f64);
-            let mut y = 0.0;
-            for i in 0..opt.horizontals {
-                b.merge(Box {
-                    left: 0.0,
-                    top: y,
-                    right: width,
-                    bottom: y,
-                });
-                let points = vec![(0.0, y).into(), (width, y).into()];
-                y += unit;
-                if opt.hidden_horizontals.contains(&i) {
-                    continue;
-                }
-                self.line(points, stroke.clone())?;
-            }
-        }
-        Ok(b)
-    }
-    pub fn axis(&self, opt: AxisOption, color: Color) -> Result<Box> {
-        if opt.count == 0 {
-            return Err(Error {
-                message: "axis count should be > 0".to_string(),
-            });
-        }
-        if color.is_transparent() {
-            return Ok(Box::default());
-        }
-        let stroke = new_stroke(1.0, color);
-        let width = self.width();
-        let height = self.height();
-        let count = (opt.count - 1) as f64;
-        let unit_width = width / count;
-        let unit_height = height / count;
-        let mut points_list: Vec<Vec<Point>> = vec![];
-        let length = opt.length;
-        // line的时候会计算margin
-        // 因此此处直接使用0
-        let mut x = 0.0;
-        let mut y = 0.0;
-        let mut b = Box::new_neg_infinity();
-        match opt.position {
-            Position::Left => {
-                b.merge(Box {
-                    left: 0.0,
-                    top: 0.0,
-                    right: length,
-                    bottom: height,
-                });
-                // 刻度值
-                for _ in 0..opt.count {
-                    points_list.push(vec![(x, y).into(), (x + length, y).into()]);
-                    y += unit_height;
-                }
-                points_list.push(vec![(length, 0.0).into(), (length, height).into()]);
-            }
-            Position::Right => {
-                b.merge(Box {
-                    left: width - length,
-                    top: 0.0,
-                    right: width,
-                    bottom: height,
-                });
-
-                x = width - length;
-
-                // 刻度值
-                for _ in 0..=opt.count {
-                    points_list.push(vec![(x, y).into(), (x + length, y).into()]);
-                    y += unit_height;
-                }
-                points_list.push(vec![(x, 0.0).into(), (x, height).into()]);
-            }
-            Position::Top => {
-                b.merge(Box {
-                    left: 0.0,
-                    top: 0.0,
-                    right: width,
-                    bottom: length,
-                });
-
-                // 刻度值
-                for _ in 0..opt.count {
-                    points_list.push(vec![(x, y).into(), (x, y + length).into()]);
-                    x += unit_width;
-                }
-                points_list.push(vec![(0.0, length).into(), (width, length).into()]);
-            }
-            _ => {
-                b.merge(Box {
-                    left: 0.0,
-                    top: height - length,
-                    right: width,
-                    bottom: height,
-                });
-
-                y = height - length;
-                // 刻度值
-                for _ in 0..opt.count {
-                    points_list.push(vec![(x, y).into(), (x, y + length).into()]);
-                    x += unit_width;
-                }
-                points_list.push(vec![
-                    (0.0, height - length).into(),
-                    (width, height - length).into(),
-                ]);
-            }
-        }
-        for points in points_list.iter() {
-            self.line(points.to_owned(), stroke.clone())?;
-        }
-        Ok(b)
-    }
-    pub fn legend_dot_line(&self, color: Color) -> Result<Box> {
-        let height = 4.0;
-        self.rect((0.0, 0.0, LEGEND_WIDTH, height), color)?;
-
-        let stroke = new_stroke(1.0, color);
-        self.circles(
-            vec![(LEGEND_WIDTH / 2.0, height / 2.0, 5.0).into()],
-            stroke,
-            color,
-        )?;
-        Ok(Box {
-            left: 0.0,
-            top: 0.0,
-            right: LEGEND_WIDTH,
-            // 设置为默认5.0
-            bottom: 5.0,
-        })
-    }
-    pub fn legend_rect(&self, color: Color) -> Result<Box> {
-        let height = 5.0;
-        self.rect((0.0, 0.0, LEGEND_WIDTH, height), color)?;
-        Ok(Box {
-            left: 0.0,
-            top: 0.0,
-            right: LEGEND_WIDTH,
-            bottom: height,
-        })
-    }
-    pub fn measure(&self, text: String, opt: TextOption) -> Result<Box> {
-        let t = new_text(text, opt);
-        // 偏移量加上字体大小
-        let child = t.convert(&self.db, Transform::default()).ok_or(Error {
-            message: "convert text fail".to_string(),
-        })?;
-        let b = if let Some(value) = child.calculate_bbox() {
-            Box {
-                left: 0.0,
-                top: 0.0,
-                right: value.width(),
-                bottom: value.height(),
-            }
-        } else {
-            Box {
-                ..Default::default()
-            }
-        };
-        Ok(b)
-    }
-    pub fn text(&self, text: String, opt: TextOption) -> Result<Box> {
-        let font_size = opt.font_size.get();
-        let mut option = opt;
-        option.x = self.margin.left;
-        option.y = self.margin.top;
-        let mut width = 0.0;
-        let mut height = 0.0;
-        let mut t = new_text(text, option);
-        // 偏移量加上字体大小
-        t.transform.f += font_size;
-        let child = t.convert(&self.db, Transform::default()).ok_or(Error {
-            message: "convert text fail".to_string(),
-        })?;
-        if let Some(value) = child.calculate_bbox() {
-            width = value.width();
-            height = value.height();
-        }
-        self.tree.root.append(child);
-
-        Ok(Box {
-            right: width,
-            bottom: height,
-            ..Default::default()
-        })
-    }
-    pub fn to_svg(&self, background: Option<Color>) -> String {
-        let mut svg = self.tree.to_string(&XmlOptions::default());
-        if let Some(background_color) = background {
-            let fill = background_color.string();
-            let rect = format!(r#"    <rect width="100%" height="100%" fill="{fill}" />"#);
-            let mut arr: Vec<&str> = svg.split('\n').collect();
-            arr.insert(1, &rect);
-            svg = arr.join("\n");
-        }
-        svg
-    }
-    pub fn to_png(&self, background: Option<Color>) -> Result<Vec<u8>> {
-        let size = self.tree.size.to_screen_size();
-        let map = tiny_skia::Pixmap::new(size.width(), size.height());
-        if map.is_none() {
-            return Err(Error {
-                message: "new pixmap fail".to_string(),
-            });
-        }
-        // 已保证不会为空
-        let mut pixmap = map.unwrap();
-        if let Some(background_color) = background {
-            pixmap.fill(tiny_skia::Color::from_rgba8(
-                background_color.r,
-                background_color.g,
-                background_color.b,
-                background_color.a,
-            ));
+    pub fn polyline(&mut self, polyline: Polyline) {
+        let mut c = polyline;
+        for p in c.points.iter_mut() {
+            p.x += self.margin.left;
+            p.y += self.margin.top
         }
 
-        // 如果render失败
-        if resvg::render(
-            &self.tree,
-            resvg::FitTo::Original,
-            tiny_skia::Transform::default(),
-            pixmap.as_mut(),
-        )
-        .is_none()
-        {
-            return Err(Error {
-                message: "render pixmap fail".to_string(),
-            });
+        self.append(Component::Polyline(c))
+    }
+    pub fn circle(&mut self, circle: Circle) {
+        let mut c = circle;
+        c.cx += self.margin.left;
+        c.cy += self.margin.top;
+        self.append(Component::Circle(c))
+    }
+    pub fn polygon(&mut self, polygon: Polygon) {
+        let mut c = polygon;
+        for p in c.points.iter_mut() {
+            p.x += self.margin.left;
+            p.y += self.margin.top
         }
-        let buf = pixmap.encode_png()?;
-        Ok(buf)
+        self.append(Component::Polygon(c))
+    }
+
+    pub fn append(&mut self, component: Component) {
+        let mut components = self.components.borrow_mut();
+        components.push(component);
+    }
+    pub fn svg(&self) -> String {
+        let mut data = vec![];
+        for c in self.components.borrow().iter() {
+            let value = match c {
+                Component::Line(line) => line.svg(),
+                Component::Rect(rect) => rect.svg(),
+                Component::Polyline(polyline) => polyline.svg(),
+                Component::Circle(circle) => circle.svg(),
+                Component::Polygon(polygon) => polygon.svg(),
+            };
+            data.push(value);
+        }
+        generate_svg(self.width, self.height, data.join("\n"))
     }
 }
+
+// /// Node's kind.
+// #[allow(missing_docs)]
+// #[derive(Clone, Debug)]
+// pub enum NodeKind {
+//     Group(Group),
+//     Path(Path),
+//     Image(Image),
+//     Text(Text),
+// }
+
+// fn draw_line<S: BackendStyle>(
+//     &mut self,
+//     from: BackendCoord,
+//     to: BackendCoord,
+//     style: &S,
+// ) -> Result<(), DrawingErrorKind<Self::ErrorType>> {
+//     if style.color().alpha == 0.0 {
+//         return Ok(());
+//     }
+//     self.open_tag(
+//         SVGTag::Line,
+//         &[
+//             ("opacity", &make_svg_opacity(style.color())),
+//             ("stroke", &make_svg_color(style.color())),
+//             ("stroke-width", &format!("{}", style.stroke_width())),
+//             ("x1", &format!("{}", from.0)),
+//             ("y1", &format!("{}", from.1)),
+//             ("x2", &format!("{}", to.0)),
+//             ("y2", &format!("{}", to.1)),
+//         ],
+//         true,
+//     );
+//     Ok(())
+// }

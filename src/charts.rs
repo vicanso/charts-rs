@@ -1,9 +1,9 @@
 mod canvas;
-mod chart;
 mod color;
+mod component;
 mod util;
 
-pub use canvas::{AxisOption, Canvas, GridOption};
-pub use chart::{Chart, ChartOption};
+pub use canvas::Canvas;
 pub use color::*;
+pub use component::{Circle, Line, Polygon, Polyline, Rect};
 pub use util::*;
