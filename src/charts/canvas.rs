@@ -1,4 +1,4 @@
-use super::component::{generate_svg, Circle, Component, Line, Polygon, Polyline, Rect};
+use super::component::{generate_svg, Circle, Component, Line, Polygon, Polyline, Rect, Text};
 use super::util::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -75,7 +75,16 @@ impl Canvas {
         }
         self.append(Component::Polygon(c))
     }
-
+    pub fn text(&mut self, text: Text) {
+        let mut c = text;
+        if let Some(x) = c.x  {
+            c.x = Some(x + self.margin.left);
+        }
+        if let Some(y) = c.y {
+            c.y = Some(y + self.margin.top);
+        }
+        self.append(Component::Text(c))
+    }
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
         components.push(component);
@@ -89,6 +98,7 @@ impl Canvas {
                 Component::Polyline(polyline) => polyline.svg(),
                 Component::Circle(circle) => circle.svg(),
                 Component::Polygon(polygon) => polygon.svg(),
+                Component::Text(text) => text.svg(),
             };
             data.push(value);
         }

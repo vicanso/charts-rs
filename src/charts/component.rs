@@ -9,15 +9,21 @@ static TAG_RECT: &str = "rect";
 static TAG_POLYLINE: &str = "polyline";
 static TAG_CIRCLE: &str = "circle";
 static TAG_POLYGON: &str = "polygon";
+static TAG_TEXT: &str = "text";
 
 static ATTR_VIEW_BOX: &str = "viewBox";
 static ATTR_XMLNS: &str = "xmlns";
 static ATTR_HEIGHT: &str = "height";
 static ATTR_WIDTH: &str = "width";
+static ATTR_FONT_FAMILY: &str = "font-family";
+static ATTR_FONT_SIZE: &str = "font-size";
+static ATTR_FONT_WEIGHT: &str = "font-weight";
+static ATTR_TRANSFORM: &str = "transform";
+static ATTR_OPACITY: &str = "opacity";
 static ATTR_STROKE_OPACITY: &str = "stroke-opacity";
+static ATTR_FILL_OPACITY: &str = "fill-opacity";
 static ATTR_STROKE_WIDTH: &str = "stroke-width";
 static ATTR_STROKE: &str = "stroke";
-static ATTR_OPACITY: &str = "opacity";
 static ATTR_X: &str = "x";
 static ATTR_Y: &str = "y";
 static ATTR_FILL: &str = "fill";
@@ -30,6 +36,8 @@ static ATTR_RY: &str = "ry";
 static ATTR_POINTS: &str = "points";
 static ATTR_CX: &str = "cx";
 static ATTR_CY: &str = "cy";
+static ATTR_DX: &str = "dx";
+static ATTR_DY: &str = "dy";
 static ATTR_R: &str = "r";
 
 #[derive(Clone, PartialEq, Debug, Default)]
@@ -97,6 +105,7 @@ pub enum Component {
     Polyline(Polyline),
     Circle(Circle),
     Polygon(Polygon),
+    Text(Text),
 }
 #[derive(Clone, PartialEq, Debug, Default)]
 
@@ -166,11 +175,17 @@ impl Rect {
 
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE.to_string(), color.hex()));
+            if !color.is_nontransparent() {
+                attrs.push((
+                    ATTR_STROKE_OPACITY.to_string(),
+                    format_float(color.opacity()),
+                ))
+            }
         }
         if let Some(color) = self.fill {
             attrs.push((ATTR_FILL.to_string(), color.hex()));
             if !color.is_nontransparent() {
-                attrs.push((ATTR_OPACITY.to_string(), format_float(color.opacity())))
+                attrs.push((ATTR_FILL_OPACITY.to_string(), format_float(color.opacity())))
             }
         }
 
@@ -216,7 +231,10 @@ impl Polyline {
             (ATTR_POINTS.to_string(), points.join(" ")),
         ];
         if !self.color.is_nontransparent() {
-            attrs.push((ATTR_OPACITY.to_string(), format_float(self.color.opacity())));
+            attrs.push((
+                ATTR_STROKE_OPACITY.to_string(),
+                format_float(self.color.opacity()),
+            ));
         }
 
         SVGTag {
@@ -251,12 +269,18 @@ impl Circle {
         ];
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE.to_string(), color.hex()));
+            if !color.is_nontransparent() {
+                attrs.push((
+                    ATTR_STROKE_OPACITY.to_string(),
+                    format_float(color.opacity()),
+                ));
+            }
         }
         let mut fill = "none".to_string();
         if let Some(color) = self.fill {
             fill = color.hex();
             if !color.is_nontransparent() {
-                attrs.push((ATTR_OPACITY.to_string(), format_float(color.opacity())));
+                attrs.push((ATTR_FILL_OPACITY.to_string(), format_float(color.opacity())));
             }
         }
         attrs.push((ATTR_FILL.to_string(), fill));
@@ -290,17 +314,80 @@ impl Polygon {
         let mut attrs = vec![(ATTR_POINTS.to_string(), points.join(" "))];
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE.to_string(), color.hex()));
+            if !color.is_nontransparent() {
+                attrs.push((
+                    ATTR_STROKE_OPACITY.to_string(),
+                    format_float(color.opacity()),
+                ));
+            }
         }
         if let Some(color) = self.fill {
             attrs.push((ATTR_FILL.to_string(), color.hex()));
             if !color.is_nontransparent() {
-                attrs.push((ATTR_OPACITY.to_string(), format_float(color.opacity())));
+                attrs.push((ATTR_FILL_OPACITY.to_string(), format_float(color.opacity())));
             }
         }
         SVGTag {
             tag: TAG_POLYGON.to_string(),
             attrs,
             data: None,
+        }
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct Text {
+    pub text: String,
+    pub font_family: String,
+    pub font_size: f64,
+    pub fill: Option<Color>,
+    pub x: Option<f64>,
+    pub y: Option<f64>,
+    pub dx: Option<f64>,
+    pub dy: Option<f64>,
+    pub font_weight: Option<String>,
+    pub transform: Option<String>,
+}
+
+impl Text {
+    pub fn svg(&self) -> String {
+        if self.text.is_empty() {
+            return "".to_string();
+        }
+        let mut attrs = vec![
+            (ATTR_FONT_FAMILY.to_string(), self.font_family.clone()),
+            (ATTR_FONT_SIZE.to_string(), format_float(self.font_size)),
+        ];
+        if let Some(value) = self.x {
+            attrs.push((ATTR_X.to_string(), format_float(value)));
+        }
+        if let Some(value) = self.y {
+            attrs.push((ATTR_Y.to_string(), format_float(value)));
+        }
+        if let Some(value) = self.dx {
+            attrs.push((ATTR_DX.to_string(), format_float(value)));
+        }
+        if let Some(value) = self.dy {
+            attrs.push((ATTR_DY.to_string(), format_float(value)));
+        }
+        if let Some(ref value) = self.font_weight {
+            attrs.push((ATTR_FONT_WEIGHT.to_string(), value.clone()));
+        }
+        if let Some(ref value) = self.transform {
+            attrs.push((ATTR_TRANSFORM.to_string(), value.clone()));
+        }
+        if let Some(fill) = self.fill {
+            attrs.push((ATTR_FILL.to_string(), fill.hex()));
+            if !fill.is_nontransparent() {
+                attrs.push((ATTR_OPACITY.to_string(), format_float(fill.opacity())))
+            }
+        }
+
+        SVGTag {
+            tag: TAG_TEXT.to_string(),
+            attrs,
+            data: Some(self.text.clone()),
         }
         .to_string()
     }
