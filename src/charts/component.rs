@@ -1,4 +1,5 @@
 use std::fmt;
+use substring::Substring;
 
 use super::color::*;
 use super::util::*;
@@ -40,35 +41,51 @@ static ATTR_DX: &str = "dx";
 static ATTR_DY: &str = "dy";
 static ATTR_R: &str = "r";
 
+fn convert_opacity(color: &Color) -> String {
+    if color.is_nontransparent() {
+        "".to_string()
+    } else {
+        format_float(color.opacity())
+    }
+}
+fn format_float(value: f64) -> String {
+    let str = format!("{:.1}", value);
+    if str.ends_with(".0") {
+        return str.substring(0, str.len() - 2).to_string();
+    }
+    str
+}
+fn format_option_float(value: Option<f64>) -> String {
+    if let Some(f) = value {
+        format_float(f)
+    } else {
+        "".to_string()
+    }
+}
+
 #[derive(Clone, PartialEq, Debug, Default)]
-struct SVGTag {
-    tag: String,
-    attrs: Vec<(String, String)>,
+struct SVGTag<'a> {
+    tag: &'a str,
+    attrs: Vec<(&'a str, String)>,
     data: Option<String>,
 }
 
 pub fn generate_svg(width: f64, height: f64, data: String) -> String {
     SVGTag::new(
-        TAG_SVG.to_string(),
+        TAG_SVG,
         data,
         vec![
-            (ATTR_WIDTH.to_string(), format!("{}", width)),
-            (ATTR_HEIGHT.to_string(), format!("{}", height)),
-            (
-                ATTR_VIEW_BOX.to_string(),
-                format!("0 0 {} {}", width, height),
-            ),
-            (
-                ATTR_XMLNS.to_string(),
-                "http://www.w3.org/2000/svg".to_string(),
-            ),
+            (ATTR_WIDTH, format!("{}", width)),
+            (ATTR_HEIGHT, format!("{}", height)),
+            (ATTR_VIEW_BOX, format!("0 0 {} {}", width, height)),
+            (ATTR_XMLNS, "http://www.w3.org/2000/svg".to_string()),
         ],
     )
     .to_string()
 }
 
-impl SVGTag {
-    pub fn new(tag: String, data: String, attrs: Vec<(String, String)>) -> Self {
+impl<'a> SVGTag<'a> {
+    pub fn new(tag: &'a str, data: String, attrs: Vec<(&'a str, String)>) -> Self {
         Self {
             tag,
             attrs,
@@ -77,11 +94,14 @@ impl SVGTag {
     }
 }
 
-impl fmt::Display for SVGTag {
+impl<'a> fmt::Display for SVGTag<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut value = "<".to_string();
-        value.push_str(&self.tag);
+        value.push_str(self.tag);
         for (k, v) in self.attrs.iter() {
+            if k.is_empty() || v.is_empty() {
+                continue;
+            }
             value.push(' ');
             value.push_str(k);
             value.push_str("=\"");
@@ -124,25 +144,17 @@ impl Line {
         if color.is_transparent() {
             return "".to_string();
         }
-        let mut attrs = vec![
-            (
-                ATTR_STROKE_WIDTH.to_string(),
-                format_float(self.stroke_width),
-            ),
-            (ATTR_STROKE.to_string(), color.hex()),
-            (ATTR_X1.to_string(), format_float(self.left)),
-            (ATTR_Y1.to_string(), format_float(self.top)),
-            (ATTR_X2.to_string(), format_float(self.right)),
-            (ATTR_Y2.to_string(), format_float(self.bottom)),
+        let attrs = vec![
+            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
+            (ATTR_STROKE, color.hex()),
+            (ATTR_X1, format_float(self.left)),
+            (ATTR_Y1, format_float(self.top)),
+            (ATTR_X2, format_float(self.right)),
+            (ATTR_Y2, format_float(self.bottom)),
+            (ATTR_STROKE_OPACITY, convert_opacity(color)),
         ];
-        if !color.is_nontransparent() {
-            attrs.push((
-                ATTR_STROKE_OPACITY.to_string(),
-                format_float(color.opacity()),
-            ));
-        }
         SVGTag {
-            tag: TAG_LINE.to_string(),
+            tag: TAG_LINE,
             attrs,
             data: None,
         }
@@ -167,36 +179,25 @@ impl Rect {
             return "".to_string();
         }
         let mut attrs = vec![
-            (ATTR_X.to_string(), format_float(self.left)),
-            (ATTR_Y.to_string(), format_float(self.top)),
-            (ATTR_WIDTH.to_string(), format_float(self.width)),
-            (ATTR_HEIGHT.to_string(), format_float(self.height)),
+            (ATTR_X, format_float(self.left)),
+            (ATTR_Y, format_float(self.top)),
+            (ATTR_WIDTH, format_float(self.width)),
+            (ATTR_HEIGHT, format_float(self.height)),
+            (ATTR_RX, format_option_float(self.rx)),
+            (ATTR_RY, format_option_float(self.ry)),
         ];
 
         if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE.to_string(), color.hex()));
-            if !color.is_nontransparent() {
-                attrs.push((
-                    ATTR_STROKE_OPACITY.to_string(),
-                    format_float(color.opacity()),
-                ))
-            }
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
         if let Some(color) = self.fill {
-            attrs.push((ATTR_FILL.to_string(), color.hex()));
-            if !color.is_nontransparent() {
-                attrs.push((ATTR_FILL_OPACITY.to_string(), format_float(color.opacity())))
-            }
+            attrs.push((ATTR_FILL, color.hex()));
+            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
         }
 
-        if let Some(rx) = self.rx {
-            attrs.push((ATTR_RX.to_string(), format_float(rx)));
-        }
-        if let Some(ry) = self.ry {
-            attrs.push((ATTR_RY.to_string(), format_float(ry)));
-        }
         SVGTag {
-            tag: TAG_RECT.to_string(),
+            tag: TAG_RECT,
             attrs,
             data: None,
         }
@@ -221,24 +222,16 @@ impl Polyline {
             .iter()
             .map(|p| format!("{},{}", format_float(p.x), format_float(p.y)))
             .collect();
-        let mut attrs = vec![
-            (ATTR_FILL.to_string(), "none".to_string()),
-            (ATTR_STROKE.to_string(), self.color.hex()),
-            (
-                ATTR_STROKE_WIDTH.to_string(),
-                format_float(self.stroke_width),
-            ),
-            (ATTR_POINTS.to_string(), points.join(" ")),
+        let attrs = vec![
+            (ATTR_FILL, "none".to_string()),
+            (ATTR_STROKE, self.color.hex()),
+            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
+            (ATTR_POINTS, points.join(" ")),
+            (ATTR_STROKE_OPACITY, convert_opacity(&self.color)),
         ];
-        if !self.color.is_nontransparent() {
-            attrs.push((
-                ATTR_STROKE_OPACITY.to_string(),
-                format_float(self.color.opacity()),
-            ));
-        }
 
         SVGTag {
-            tag: TAG_POLYLINE.to_string(),
+            tag: TAG_POLYLINE,
             attrs,
             data: None,
         }
@@ -259,34 +252,24 @@ pub struct Circle {
 impl Circle {
     pub fn svg(&self) -> String {
         let mut attrs = vec![
-            (ATTR_CX.to_string(), format_float(self.cx)),
-            (ATTR_CY.to_string(), format_float(self.cy)),
-            (ATTR_R.to_string(), format_float(self.r)),
-            (
-                ATTR_STROKE_WIDTH.to_string(),
-                format_float(self.stroke_width),
-            ),
+            (ATTR_CX, format_float(self.cx)),
+            (ATTR_CY, format_float(self.cy)),
+            (ATTR_R, format_float(self.r)),
+            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
         ];
         if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE.to_string(), color.hex()));
-            if !color.is_nontransparent() {
-                attrs.push((
-                    ATTR_STROKE_OPACITY.to_string(),
-                    format_float(color.opacity()),
-                ));
-            }
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
         let mut fill = "none".to_string();
         if let Some(color) = self.fill {
             fill = color.hex();
-            if !color.is_nontransparent() {
-                attrs.push((ATTR_FILL_OPACITY.to_string(), format_float(color.opacity())));
-            }
+            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
         }
-        attrs.push((ATTR_FILL.to_string(), fill));
+        attrs.push((ATTR_FILL, fill));
 
         SVGTag {
-            tag: TAG_CIRCLE.to_string(),
+            tag: TAG_CIRCLE,
             attrs,
             data: None,
         }
@@ -311,24 +294,17 @@ impl Polygon {
             .iter()
             .map(|p| format!("{},{}", format_float(p.x), format_float(p.y)))
             .collect();
-        let mut attrs = vec![(ATTR_POINTS.to_string(), points.join(" "))];
+        let mut attrs = vec![(ATTR_POINTS, points.join(" "))];
         if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE.to_string(), color.hex()));
-            if !color.is_nontransparent() {
-                attrs.push((
-                    ATTR_STROKE_OPACITY.to_string(),
-                    format_float(color.opacity()),
-                ));
-            }
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
         if let Some(color) = self.fill {
-            attrs.push((ATTR_FILL.to_string(), color.hex()));
-            if !color.is_nontransparent() {
-                attrs.push((ATTR_FILL_OPACITY.to_string(), format_float(color.opacity())));
-            }
+            attrs.push((ATTR_FILL, color.hex()));
+            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
         }
         SVGTag {
-            tag: TAG_POLYGON.to_string(),
+            tag: TAG_POLYGON,
             attrs,
             data: None,
         }
@@ -356,36 +332,25 @@ impl Text {
             return "".to_string();
         }
         let mut attrs = vec![
-            (ATTR_FONT_FAMILY.to_string(), self.font_family.clone()),
-            (ATTR_FONT_SIZE.to_string(), format_float(self.font_size)),
+            (ATTR_FONT_FAMILY, self.font_family.clone()),
+            (ATTR_FONT_SIZE, format_float(self.font_size)),
+            (ATTR_X, format_option_float(self.x)),
+            (ATTR_Y, format_option_float(self.y)),
+            (ATTR_DX, format_option_float(self.dx)),
+            (ATTR_DY, format_option_float(self.dy)),
+            (
+                ATTR_FONT_WEIGHT,
+                self.font_weight.clone().unwrap_or_default(),
+            ),
+            (ATTR_TRANSFORM, self.transform.clone().unwrap_or_default()),
         ];
-        if let Some(value) = self.x {
-            attrs.push((ATTR_X.to_string(), format_float(value)));
-        }
-        if let Some(value) = self.y {
-            attrs.push((ATTR_Y.to_string(), format_float(value)));
-        }
-        if let Some(value) = self.dx {
-            attrs.push((ATTR_DX.to_string(), format_float(value)));
-        }
-        if let Some(value) = self.dy {
-            attrs.push((ATTR_DY.to_string(), format_float(value)));
-        }
-        if let Some(ref value) = self.font_weight {
-            attrs.push((ATTR_FONT_WEIGHT.to_string(), value.clone()));
-        }
-        if let Some(ref value) = self.transform {
-            attrs.push((ATTR_TRANSFORM.to_string(), value.clone()));
-        }
         if let Some(fill) = self.fill {
-            attrs.push((ATTR_FILL.to_string(), fill.hex()));
-            if !fill.is_nontransparent() {
-                attrs.push((ATTR_OPACITY.to_string(), format_float(fill.opacity())))
-            }
+            attrs.push((ATTR_FILL, fill.hex()));
+            attrs.push((ATTR_OPACITY, convert_opacity(&fill)));
         }
 
         SVGTag {
-            tag: TAG_TEXT.to_string(),
+            tag: TAG_TEXT,
             attrs,
             data: Some(self.text.clone()),
         }

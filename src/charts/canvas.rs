@@ -77,7 +77,7 @@ impl Canvas {
     }
     pub fn text(&mut self, text: Text) {
         let mut c = text;
-        if let Some(x) = c.x  {
+        if let Some(x) = c.x {
             c.x = Some(x + self.margin.left);
         }
         if let Some(y) = c.y {
