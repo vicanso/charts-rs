@@ -1,4 +1,5 @@
 use super::component::{generate_svg, Circle, Component, Line, Polygon, Polyline, Rect, Text};
+use super::path::*;
 use super::util::*;
 use std::cell::RefCell;
 use std::rc::Rc;

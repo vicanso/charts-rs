@@ -1,3 +1,5 @@
+use substring::Substring;
+
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct Point {
     pub x: f64,
@@ -55,4 +57,12 @@ impl From<(f64, f64, f64, f64)> for Box {
             bottom: val.3,
         }
     }
+}
+
+pub fn format_float(value: f64) -> String {
+    let str = format!("{:.1}", value);
+    if str.ends_with(".0") {
+        return str.substring(0, str.len() - 2).to_string();
+    }
+    str
 }

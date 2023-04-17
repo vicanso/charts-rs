@@ -1,5 +1,4 @@
 use std::fmt;
-use substring::Substring;
 
 use super::color::*;
 use super::util::*;
@@ -48,13 +47,7 @@ fn convert_opacity(color: &Color) -> String {
         format_float(color.opacity())
     }
 }
-fn format_float(value: f64) -> String {
-    let str = format!("{:.1}", value);
-    if str.ends_with(".0") {
-        return str.substring(0, str.len() - 2).to_string();
-    }
-    str
-}
+
 fn format_option_float(value: Option<f64>) -> String {
     if let Some(f) = value {
         format_float(f)
