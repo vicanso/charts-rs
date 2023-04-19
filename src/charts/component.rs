@@ -1,6 +1,7 @@
 use std::fmt;
 
 use super::color::*;
+use super::path::*;
 use super::util::*;
 
 static TAG_SVG: &str = "svg";
@@ -10,6 +11,7 @@ static TAG_POLYLINE: &str = "polyline";
 static TAG_CIRCLE: &str = "circle";
 static TAG_POLYGON: &str = "polygon";
 static TAG_TEXT: &str = "text";
+static TAG_PATH: &str = "path";
 
 static ATTR_VIEW_BOX: &str = "viewBox";
 static ATTR_XMLNS: &str = "xmlns";
@@ -39,6 +41,7 @@ static ATTR_CY: &str = "cy";
 static ATTR_DX: &str = "dx";
 static ATTR_DY: &str = "dy";
 static ATTR_R: &str = "r";
+static ATTR_D: &str = "d";
 
 fn convert_opacity(color: &Color) -> String {
     if color.is_nontransparent() {
@@ -119,6 +122,7 @@ pub enum Component {
     Circle(Circle),
     Polygon(Polygon),
     Text(Text),
+    SmoothLine(SmoothLine),
 }
 #[derive(Clone, PartialEq, Debug, Default)]
 
@@ -346,6 +350,50 @@ impl Text {
             tag: TAG_TEXT,
             attrs,
             data: Some(self.text.clone()),
+        }
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct SmoothLine {
+    pub color: Option<Color>,
+    pub fill: Option<Color>,
+    pub points: Vec<Point>,
+    pub stroke_width: f64,
+}
+
+impl SmoothLine {
+    pub fn svg(&self) -> String {
+        if self.points.is_empty() || (self.color.is_none() && self.fill.is_none()) {
+            return "".to_string();
+        }
+        let path = SmoothCurve {
+            points: self.points.clone(),
+            ..Default::default()
+        }
+        .to_string();
+
+        let mut attrs = vec![];
+
+        if let Some(color) = self.color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
+        // 默认设置fill为none
+        let mut fill = "none".to_string();
+        if let Some(color) = self.fill {
+            fill = color.hex();
+            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+        }
+  
+        attrs.push((ATTR_FILL, fill));
+        attrs.push((ATTR_D, path));
+
+        SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            data: None,
         }
         .to_string()
     }

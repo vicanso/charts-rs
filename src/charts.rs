@@ -6,6 +6,6 @@ mod util;
 
 pub use canvas::Canvas;
 pub use color::*;
-pub use component::{Circle, Line, Polygon, Polyline, Rect, Text};
+pub use component::{Circle, Line, Polygon, Polyline, Rect, SmoothLine, Text};
 pub use path::*;
 pub use util::*;

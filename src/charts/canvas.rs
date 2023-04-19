@@ -1,5 +1,6 @@
-use super::component::{generate_svg, Circle, Component, Line, Polygon, Polyline, Rect, Text};
-use super::path::*;
+use super::component::{
+    generate_svg, Circle, Component, Line, Polygon, Polyline, Rect, SmoothLine, Text,
+};
 use super::util::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -86,6 +87,14 @@ impl Canvas {
         }
         self.append(Component::Text(c))
     }
+    pub fn smooth_line(&mut self, line: SmoothLine) {
+        let mut c = line;
+        for p in c.points.iter_mut() {
+            p.x += self.margin.left;
+            p.y += self.margin.top
+        }
+        self.append(Component::SmoothLine(c))
+    }
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
         components.push(component);
@@ -100,6 +109,7 @@ impl Canvas {
                 Component::Circle(circle) => circle.svg(),
                 Component::Polygon(polygon) => polygon.svg(),
                 Component::Text(text) => text.svg(),
+                Component::SmoothLine(line) => line.svg(),
             };
             data.push(value);
         }
