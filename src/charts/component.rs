@@ -123,6 +123,9 @@ pub enum Component {
     Polygon(Polygon),
     Text(Text),
     SmoothLine(SmoothLine),
+    StraightLine(StraightLine),
+    SmoothLineFill(SmoothLineFill),
+    StraightLineFill(StraightLineFill),
 }
 #[derive(Clone, PartialEq, Debug, Default)]
 
@@ -357,15 +360,14 @@ impl Text {
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct SmoothLine {
-    pub color: Option<Color>,
-    pub fill: Option<Color>,
+    pub color: Color,
     pub points: Vec<Point>,
     pub stroke_width: f64,
 }
 
 impl SmoothLine {
     pub fn svg(&self) -> String {
-        if self.points.is_empty() || (self.color.is_none() && self.fill.is_none()) {
+        if self.points.is_empty() || self.color.is_transparent() {
             return "".to_string();
         }
         let path = SmoothCurve {
@@ -374,21 +376,143 @@ impl SmoothLine {
         }
         .to_string();
 
-        let mut attrs = vec![];
+        let attrs = vec![
+            (ATTR_FILL, "none".to_string()),
+            (ATTR_D, path),
+            (ATTR_STROKE, self.color.hex()),
+            (ATTR_STROKE_OPACITY, convert_opacity(&self.color)),
+        ];
 
-        if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            data: None,
         }
-        // 默认设置fill为none
-        let mut fill = "none".to_string();
-        if let Some(color) = self.fill {
-            fill = color.hex();
-            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct SmoothLineFill {
+    pub fill: Color,
+    pub points: Vec<Point>,
+    pub bottom: f64,
+}
+
+impl SmoothLineFill {
+    pub fn svg(&self) -> String {
+        if self.points.is_empty() || self.fill.is_transparent() {
+            return "".to_string();
         }
-  
-        attrs.push((ATTR_FILL, fill));
-        attrs.push((ATTR_D, path));
+        let mut path = SmoothCurve {
+            points: self.points.clone(),
+            ..Default::default()
+        }
+        .to_string();
+
+        let last = self.points[self.points.len() - 1];
+        let first = self.points[0];
+        let fill_path = vec![
+            format!("M {} {}", format_float(last.x), format_float(last.y)),
+            format!("L {} {}", format_float(last.x), format_float(self.bottom)),
+            format!("L {} {}", format_float(first.x), format_float(self.bottom)),
+            format!("L {} {}", format_float(first.x), format_float(first.y)),
+        ]
+        .join(" ");
+        path.push_str(&fill_path);
+
+        let attrs = vec![
+            (ATTR_D, path),
+            (ATTR_FILL, self.fill.hex()),
+            (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
+        ];
+
+        SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            data: None,
+        }
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct StraightLine {
+    pub color: Color,
+    pub points: Vec<Point>,
+    pub stroke_width: f64,
+}
+
+impl StraightLine {
+    pub fn svg(&self) -> String {
+        if self.points.is_empty() || self.color.is_transparent() {
+            return "".to_string();
+        }
+        let mut arr = vec![];
+        for (index, p) in self.points.iter().enumerate() {
+            let mut action = "L";
+            if index == 0 {
+                action = "M"
+            }
+            arr.push(format!(
+                "{} {} {}",
+                action,
+                format_float(p.x),
+                format_float(p.y)
+            ));
+        }
+        let attrs = vec![
+            (ATTR_FILL, "none".to_string()),
+            (ATTR_D, arr.join(" ")),
+            (ATTR_STROKE, self.color.hex()),
+            (ATTR_STROKE_OPACITY, convert_opacity(&self.color)),
+        ];
+
+        SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            data: None,
+        }
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct StraightLineFill {
+    pub fill: Color,
+    pub points: Vec<Point>,
+    pub bottom: f64,
+}
+
+impl StraightLineFill {
+    pub fn svg(&self) -> String {
+        if self.points.is_empty() || self.fill.is_transparent() {
+            return "".to_string();
+        }
+        let mut points = self.points.clone();
+        let last = points[self.points.len() - 1];
+        let first = points[0];
+        points.push((last.x, self.bottom).into());
+        points.push((first.x, self.bottom).into());
+        points.push(first);
+        let mut arr = vec![];
+        for (index, p) in points.iter().enumerate() {
+            let mut action = "L";
+            if index == 0 {
+                action = "M"
+            }
+            arr.push(format!(
+                "{} {} {}",
+                action,
+                format_float(p.x),
+                format_float(p.y)
+            ));
+        }
+        let attrs = vec![
+            (ATTR_D, arr.join(" ")),
+            (ATTR_FILL, self.fill.hex()),
+            (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
+        ];
 
         SVGTag {
             tag: TAG_PATH,

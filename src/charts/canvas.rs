@@ -1,5 +1,6 @@
 use super::component::{
-    generate_svg, Circle, Component, Line, Polygon, Polyline, Rect, SmoothLine, Text,
+    generate_svg, Circle, Component, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill,
+    StraightLine, StraightLineFill, Text,
 };
 use super::util::*;
 use std::cell::RefCell;
@@ -95,6 +96,32 @@ impl Canvas {
         }
         self.append(Component::SmoothLine(c))
     }
+    pub fn straight_line(&mut self, line: StraightLine) {
+        let mut c = line;
+        for p in c.points.iter_mut() {
+            p.x += self.margin.left;
+            p.y += self.margin.top
+        }
+        self.append(Component::StraightLine(c))
+    }
+    pub fn smooth_line_fill(&mut self, fill: SmoothLineFill) {
+        let mut c = fill;
+        for p in c.points.iter_mut() {
+            p.x += self.margin.left;
+            p.y += self.margin.top
+        }
+        c.bottom += self.margin.top;
+        self.append(Component::SmoothLineFill(c))
+    }
+    pub fn straight_line_fill(&mut self, fill: StraightLineFill) {
+        let mut c = fill;
+        for p in c.points.iter_mut() {
+            p.x += self.margin.left;
+            p.y += self.margin.top
+        }
+        c.bottom += self.margin.top;
+        self.append(Component::StraightLineFill(c))
+    }
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
         components.push(component);
@@ -110,6 +137,9 @@ impl Canvas {
                 Component::Polygon(polygon) => polygon.svg(),
                 Component::Text(text) => text.svg(),
                 Component::SmoothLine(line) => line.svg(),
+                Component::StraightLine(line) => line.svg(),
+                Component::SmoothLineFill(fill) => fill.svg(),
+                Component::StraightLineFill(fill) => fill.svg(),
             };
             data.push(value);
         }
