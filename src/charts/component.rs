@@ -12,6 +12,7 @@ static TAG_CIRCLE: &str = "circle";
 static TAG_POLYGON: &str = "polygon";
 static TAG_TEXT: &str = "text";
 static TAG_PATH: &str = "path";
+static TAG_GROUP: &str = "g";
 
 static ATTR_VIEW_BOX: &str = "viewBox";
 static ATTR_XMLNS: &str = "xmlns";
@@ -126,11 +127,12 @@ pub enum Component {
     StraightLine(StraightLine),
     SmoothLineFill(SmoothLineFill),
     StraightLineFill(StraightLineFill),
+    Grid(Grid),
 }
 #[derive(Clone, PartialEq, Debug, Default)]
 
 pub struct Line {
-    pub color: Color,
+    pub color: Option<Color>,
     pub stroke_width: f64,
     pub left: f64,
     pub top: f64,
@@ -140,19 +142,20 @@ pub struct Line {
 
 impl Line {
     pub fn svg(&self) -> String {
-        let color = &self.color;
-        if color.is_transparent() {
+        if self.stroke_width <= 0.0 {
             return "".to_string();
         }
-        let attrs = vec![
+        let mut attrs = vec![
             (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
-            (ATTR_STROKE, color.hex()),
             (ATTR_X1, format_float(self.left)),
             (ATTR_Y1, format_float(self.top)),
             (ATTR_X2, format_float(self.right)),
             (ATTR_Y2, format_float(self.bottom)),
-            (ATTR_STROKE_OPACITY, convert_opacity(color)),
         ];
+        if let Some(color) = self.color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
         SVGTag {
             tag: TAG_LINE,
             attrs,
@@ -175,9 +178,6 @@ pub struct Rect {
 }
 impl Rect {
     pub fn svg(&self) -> String {
-        if self.color.is_none() && self.fill.is_none() {
-            return "".to_string();
-        }
         let mut attrs = vec![
             (ATTR_X, format_float(self.left)),
             (ATTR_Y, format_float(self.top)),
@@ -207,14 +207,14 @@ impl Rect {
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct Polyline {
-    pub color: Color,
+    pub color: Option<Color>,
     pub stroke_width: f64,
     pub points: Vec<Point>,
 }
 
 impl Polyline {
     pub fn svg(&self) -> String {
-        if self.color.is_transparent() {
+        if self.stroke_width <= 0.0 {
             return "".to_string();
         }
         let points: Vec<String> = self
@@ -222,13 +222,16 @@ impl Polyline {
             .iter()
             .map(|p| format!("{},{}", format_float(p.x), format_float(p.y)))
             .collect();
-        let attrs = vec![
+        let mut attrs = vec![
             (ATTR_FILL, "none".to_string()),
-            (ATTR_STROKE, self.color.hex()),
             (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
             (ATTR_POINTS, points.join(" ")),
-            (ATTR_STROKE_OPACITY, convert_opacity(&self.color)),
         ];
+
+        if let Some(color) = self.color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
 
         SVGTag {
             tag: TAG_POLYLINE,
@@ -286,7 +289,7 @@ pub struct Polygon {
 
 impl Polygon {
     pub fn svg(&self) -> String {
-        if self.fill.is_none() && self.color.is_none() {
+        if self.points.is_empty() {
             return "".to_string();
         }
         let points: Vec<String> = self
@@ -360,14 +363,14 @@ impl Text {
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct SmoothLine {
-    pub color: Color,
+    pub color: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f64,
 }
 
 impl SmoothLine {
     pub fn svg(&self) -> String {
-        if self.points.is_empty() || self.color.is_transparent() {
+        if self.points.is_empty() || self.stroke_width <= 0.0 {
             return "".to_string();
         }
         let path = SmoothCurve {
@@ -376,12 +379,11 @@ impl SmoothLine {
         }
         .to_string();
 
-        let attrs = vec![
-            (ATTR_FILL, "none".to_string()),
-            (ATTR_D, path),
-            (ATTR_STROKE, self.color.hex()),
-            (ATTR_STROKE_OPACITY, convert_opacity(&self.color)),
-        ];
+        let mut attrs = vec![(ATTR_FILL, "none".to_string()), (ATTR_D, path)];
+        if let Some(color) = self.color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
 
         SVGTag {
             tag: TAG_PATH,
@@ -438,14 +440,14 @@ impl SmoothLineFill {
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct StraightLine {
-    pub color: Color,
+    pub color: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f64,
 }
 
 impl StraightLine {
     pub fn svg(&self) -> String {
-        if self.points.is_empty() || self.color.is_transparent() {
+        if self.points.is_empty() || self.stroke_width <= 0.0 {
             return "".to_string();
         }
         let mut arr = vec![];
@@ -461,12 +463,11 @@ impl StraightLine {
                 format_float(p.y)
             ));
         }
-        let attrs = vec![
-            (ATTR_FILL, "none".to_string()),
-            (ATTR_D, arr.join(" ")),
-            (ATTR_STROKE, self.color.hex()),
-            (ATTR_STROKE_OPACITY, convert_opacity(&self.color)),
-        ];
+        let mut attrs = vec![(ATTR_FILL, "none".to_string()), (ATTR_D, arr.join(" "))];
+        if let Some(color) = self.color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
 
         SVGTag {
             tag: TAG_PATH,
@@ -518,6 +519,75 @@ impl StraightLineFill {
             tag: TAG_PATH,
             attrs,
             data: None,
+        }
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct Grid {
+    pub left: f64,
+    pub top: f64,
+    pub right: f64,
+    pub bottom: f64,
+    pub color: Option<Color>,
+    pub stroke_width: f64,
+    pub verticals: usize,
+    pub hidden_verticals: Vec<usize>,
+    pub horizontals: usize,
+    pub hidden_horizontals: Vec<usize>,
+}
+
+impl Grid {
+    pub fn svg(&self) -> String {
+        if (self.verticals == 0 && self.horizontals == 0) || self.stroke_width <= 0.0 {
+            return "".to_string();
+        }
+        let mut points = vec![];
+        if self.verticals != 0 {
+            let unit = (self.right - self.left) / (self.verticals) as f64;
+            for index in 0..=self.verticals {
+                if self.hidden_verticals.contains(&index) {
+                    continue;
+                }
+                let x = self.left + unit * index as f64;
+                points.push((x, self.top, x, self.bottom));
+            }
+        }
+        if self.horizontals != 0 {
+            let unit = (self.bottom - self.top) / (self.horizontals) as f64;
+            for index in 0..=self.horizontals {
+                if self.hidden_horizontals.contains(&index) {
+                    continue;
+                }
+                let y = self.top + unit * index as f64;
+                points.push((self.left, y, self.right, y));
+            }
+        }
+        let mut data = vec![];
+        for (left, top, right, bottom) in points.iter() {
+            let svg = Line {
+                color: None,
+                stroke_width: self.stroke_width,
+                left: left.to_owned(),
+                top: top.to_owned(),
+                right: right.to_owned(),
+                bottom: bottom.to_owned(),
+            }
+            .svg();
+            data.push(svg);
+        }
+
+        let mut attrs = vec![];
+        if let Some(color) = self.color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
+
+        SVGTag {
+            tag: TAG_GROUP,
+            attrs,
+            data: Some(data.join("")),
         }
         .to_string()
     }

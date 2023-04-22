@@ -1,6 +1,6 @@
 use super::component::{
-    generate_svg, Circle, Component, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill,
-    StraightLine, StraightLineFill, Text,
+    generate_svg, Circle, Component, Grid, Line, Polygon, Polyline, Rect, SmoothLine,
+    SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 use super::util::*;
 use std::cell::RefCell;
@@ -122,6 +122,14 @@ impl Canvas {
         c.bottom += self.margin.top;
         self.append(Component::StraightLineFill(c))
     }
+    pub fn grid(&mut self, grip: Grid) {
+        let mut c = grip;
+        c.left += self.margin.left;
+        c.right += self.margin.left;
+        c.top += self.margin.top;
+        c.bottom += self.margin.top;
+        self.append(Component::Grid(c))
+    }
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
         components.push(component);
@@ -140,44 +148,10 @@ impl Canvas {
                 Component::StraightLine(line) => line.svg(),
                 Component::SmoothLineFill(fill) => fill.svg(),
                 Component::StraightLineFill(fill) => fill.svg(),
+                Component::Grid(grid) => grid.svg(),
             };
             data.push(value);
         }
         generate_svg(self.width, self.height, data.join("\n"))
     }
 }
-
-// /// Node's kind.
-// #[allow(missing_docs)]
-// #[derive(Clone, Debug)]
-// pub enum NodeKind {
-//     Group(Group),
-//     Path(Path),
-//     Image(Image),
-//     Text(Text),
-// }
-
-// fn draw_line<S: BackendStyle>(
-//     &mut self,
-//     from: BackendCoord,
-//     to: BackendCoord,
-//     style: &S,
-// ) -> Result<(), DrawingErrorKind<Self::ErrorType>> {
-//     if style.color().alpha == 0.0 {
-//         return Ok(());
-//     }
-//     self.open_tag(
-//         SVGTag::Line,
-//         &[
-//             ("opacity", &make_svg_opacity(style.color())),
-//             ("stroke", &make_svg_color(style.color())),
-//             ("stroke-width", &format!("{}", style.stroke_width())),
-//             ("x1", &format!("{}", from.0)),
-//             ("y1", &format!("{}", from.1)),
-//             ("x2", &format!("{}", to.0)),
-//             ("y2", &format!("{}", to.1)),
-//         ],
-//         true,
-//     );
-//     Ok(())
-// }
