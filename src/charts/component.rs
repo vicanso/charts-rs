@@ -1,4 +1,5 @@
 use std::fmt;
+use std::vec;
 
 use super::color::*;
 use super::path::*;
@@ -128,8 +129,9 @@ pub enum Component {
     SmoothLineFill(SmoothLineFill),
     StraightLineFill(StraightLineFill),
     Grid(Grid),
+    Axis(Axis),
 }
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 
 pub struct Line {
     pub color: Option<Color>,
@@ -138,6 +140,19 @@ pub struct Line {
     pub top: f64,
     pub right: f64,
     pub bottom: f64,
+}
+
+impl Default for Line {
+    fn default() -> Self {
+        Line {
+            color: None,
+            stroke_width: 1.0,
+            left: 0.0,
+            top: 0.0,
+            right: 0.0,
+            bottom: 0.0,
+        }
+    }
 }
 
 impl Line {
@@ -205,11 +220,21 @@ impl Rect {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Polyline {
     pub color: Option<Color>,
     pub stroke_width: f64,
     pub points: Vec<Point>,
+}
+
+impl Default for Polyline {
+    fn default() -> Self {
+        Polyline {
+            color: None,
+            stroke_width: 1.0,
+            points: vec![],
+        }
+    }
 }
 
 impl Polyline {
@@ -242,7 +267,7 @@ impl Polyline {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Circle {
     pub color: Option<Color>,
     pub fill: Option<Color>,
@@ -250,6 +275,19 @@ pub struct Circle {
     pub cx: f64,
     pub cy: f64,
     pub r: f64,
+}
+
+impl Default for Circle {
+    fn default() -> Self {
+        Circle {
+            color: None,
+            fill: None,
+            stroke_width: 1.0,
+            cx: 0.0,
+            cy: 0.0,
+            r: 0.0,
+        }
+    }
 }
 
 impl Circle {
@@ -361,11 +399,21 @@ impl Text {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct SmoothLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f64,
+}
+
+impl Default for SmoothLine {
+    fn default() -> Self {
+        SmoothLine {
+            color: None,
+            points: vec![],
+            stroke_width: 1.0,
+        }
+    }
 }
 
 impl SmoothLine {
@@ -394,11 +442,21 @@ impl SmoothLine {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct SmoothLineFill {
     pub fill: Color,
     pub points: Vec<Point>,
     pub bottom: f64,
+}
+
+impl Default for SmoothLineFill {
+    fn default() -> Self {
+        SmoothLineFill {
+            fill: (255, 255, 255, 255).into(),
+            points: vec![],
+            bottom: 0.0,
+        }
+    }
 }
 
 impl SmoothLineFill {
@@ -438,11 +496,21 @@ impl SmoothLineFill {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct StraightLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f64,
+}
+
+impl Default for StraightLine {
+    fn default() -> Self {
+        StraightLine {
+            color: None,
+            points: vec![],
+            stroke_width: 1.0,
+        }
+    }
 }
 
 impl StraightLine {
@@ -588,6 +656,111 @@ impl Grid {
             tag: TAG_GROUP,
             attrs,
             data: Some(data.join("")),
+        }
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
+pub struct Axis {
+    pub position: Position,
+    pub split_number: usize,
+    pub data: Vec<String>,
+    pub stroke_color: Option<Color>,
+    pub left: f64,
+    pub top: f64,
+    pub width: f64,
+    pub height: f64,
+    pub tick_length: f64,
+}
+impl Default for Axis {
+    fn default() -> Self {
+        Axis {
+            position: Position::Bottom,
+            split_number: 0,
+            data: vec![],
+            stroke_color: None,
+            left: 0.0,
+            top: 0.0,
+            width: 0.0,
+            height: 0.0,
+            tick_length: 5.0,
+        }
+    }
+}
+
+impl Axis {
+    pub fn svg(&self) -> String {
+        let mut left = self.left;
+        let mut top = self.top;
+
+        let mut attrs = vec![];
+        if let Some(color) = self.stroke_color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
+
+        let stroke_width = 1.0;
+
+        let values = match self.position {
+            Position::Left => {
+                left += self.width;
+                (left, top, left, top + self.height)
+            }
+            Position::Top => (left, top, left + self.width, top),
+            Position::Right => (left, top, left + self.width, top),
+            Position::Bottom => (left, top, left + self.width, top),
+        };
+
+        let mut data = vec![Line {
+            stroke_width,
+            left: values.0,
+            top: values.1,
+            right: values.2,
+            bottom: values.3,
+            ..Default::default()
+        }
+        .svg()];
+
+        let is_horizontal = self.position == Position::Bottom || self.position == Position::Top;
+
+        let axis_length = if is_horizontal {
+            self.width
+        } else {
+            self.height
+        };
+        let unit = axis_length / self.split_number as f64;
+        for i in 0..=self.split_number {
+            let values = match self.position {
+                Position::Left => {
+                    let y = top + unit * i as f64;
+                    (left, y, left - self.tick_length, y)
+                }
+                Position::Top => (left, top, left + self.width, top),
+                Position::Right => (left, top, left + self.width, top),
+                Position::Bottom => {
+                    let x = left + unit * i as f64;
+                    (x, top, x, top + self.tick_length)
+                }
+            };
+
+            data.push(
+                Line {
+                    stroke_width,
+                    left: values.0,
+                    top: values.1,
+                    right: values.2,
+                    bottom: values.3,
+                    ..Default::default()
+                }
+                .svg(),
+            );
+        }
+
+        SVGTag {
+            tag: TAG_GROUP,
+            attrs,
+            data: Some(data.join("\n")),
         }
         .to_string()
     }

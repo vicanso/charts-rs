@@ -1,5 +1,5 @@
 use super::component::{
-    generate_svg, Circle, Component, Grid, Line, Polygon, Polyline, Rect, SmoothLine,
+    generate_svg, Axis, Circle, Component, Grid, Line, Polygon, Polyline, Rect, SmoothLine,
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 use super::util::*;
@@ -130,6 +130,12 @@ impl Canvas {
         c.bottom += self.margin.top;
         self.append(Component::Grid(c))
     }
+    pub fn axis(&mut self, axis: Axis) {
+        let mut c = axis;
+        c.left += self.margin.left;
+        c.top += self.margin.top;
+        self.append(Component::Axis(c))
+    }
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
         components.push(component);
@@ -138,17 +144,18 @@ impl Canvas {
         let mut data = vec![];
         for c in self.components.borrow().iter() {
             let value = match c {
-                Component::Line(line) => line.svg(),
-                Component::Rect(rect) => rect.svg(),
-                Component::Polyline(polyline) => polyline.svg(),
-                Component::Circle(circle) => circle.svg(),
-                Component::Polygon(polygon) => polygon.svg(),
-                Component::Text(text) => text.svg(),
-                Component::SmoothLine(line) => line.svg(),
-                Component::StraightLine(line) => line.svg(),
-                Component::SmoothLineFill(fill) => fill.svg(),
-                Component::StraightLineFill(fill) => fill.svg(),
-                Component::Grid(grid) => grid.svg(),
+                Component::Line(c) => c.svg(),
+                Component::Rect(c) => c.svg(),
+                Component::Polyline(c) => c.svg(),
+                Component::Circle(c) => c.svg(),
+                Component::Polygon(c) => c.svg(),
+                Component::Text(c) => c.svg(),
+                Component::SmoothLine(c) => c.svg(),
+                Component::StraightLine(c) => c.svg(),
+                Component::SmoothLineFill(c) => c.svg(),
+                Component::StraightLineFill(c) => c.svg(),
+                Component::Grid(c) => c.svg(),
+                Component::Axis(c) => c.svg(),
             };
             data.push(value);
         }

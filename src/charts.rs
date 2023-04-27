@@ -7,7 +7,7 @@ mod util;
 pub use canvas::Canvas;
 pub use color::*;
 pub use component::{
-    Circle, Grid, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine,
+    Axis, Circle, Grid, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine,
     StraightLineFill, Text,
 };
 pub use path::*;
