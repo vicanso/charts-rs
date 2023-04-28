@@ -672,6 +672,7 @@ pub struct Axis {
     pub width: f64,
     pub height: f64,
     pub tick_length: f64,
+    pub tick_interval: usize,
 }
 impl Default for Axis {
     fn default() -> Self {
@@ -685,14 +686,18 @@ impl Default for Axis {
             width: 0.0,
             height: 0.0,
             tick_length: 5.0,
+            tick_interval: 0,
         }
     }
 }
 
 impl Axis {
     pub fn svg(&self) -> String {
-        let mut left = self.left;
-        let mut top = self.top;
+        let left = self.left;
+        let top = self.top;
+        let width = self.width;
+        let height = self.height;
+        let tick_length = self.tick_length;
 
         let mut attrs = vec![];
         if let Some(color) = self.stroke_color {
@@ -704,12 +709,18 @@ impl Axis {
 
         let values = match self.position {
             Position::Left => {
-                left += self.width;
-                (left, top, left, top + self.height)
+                let x = left + width;
+                (x, top, x, top + height)
             }
-            Position::Top => (left, top, left + self.width, top),
-            Position::Right => (left, top, left + self.width, top),
-            Position::Bottom => (left, top, left + self.width, top),
+            Position::Top => {
+                let y = top + height;
+                (left, y, left + width, y)
+            }
+            Position::Right => {
+                let y = top + height;
+                (left, top, left, y)
+            }
+            Position::Bottom => (left, top, left + width, top),
         };
 
         let mut data = vec![Line {
@@ -730,17 +741,29 @@ impl Axis {
             self.height
         };
         let unit = axis_length / self.split_number as f64;
+        let tick_interval = self.tick_interval;
         for i in 0..=self.split_number {
+            if tick_interval != 0 && i % tick_interval != 0 {
+                continue;
+            }
             let values = match self.position {
                 Position::Left => {
                     let y = top + unit * i as f64;
-                    (left, y, left - self.tick_length, y)
+                    let x = left + width;
+                    (x, y, x - tick_length, y)
                 }
-                Position::Top => (left, top, left + self.width, top),
-                Position::Right => (left, top, left + self.width, top),
+                Position::Top => {
+                    let x = left + unit * i as f64;
+                    let y = top + height;
+                    (x, y - tick_length, x, y)
+                }
+                Position::Right => {
+                    let y = top + unit * i as f64;
+                    (left, y, left + tick_length, y)
+                }
                 Position::Bottom => {
                     let x = left + unit * i as f64;
-                    (x, top, x, top + self.tick_length)
+                    (x, top, x, top + tick_length)
                 }
             };
 
