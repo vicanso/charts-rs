@@ -681,6 +681,7 @@ pub struct Axis {
     pub font_family: String,
     pub data: Vec<String>,
     pub name_gap: f64,
+    pub name_rotate: f64,
     pub stroke_color: Option<Color>,
     pub left: f64,
     pub top: f64,
@@ -699,6 +700,7 @@ impl Default for Axis {
             data: vec![],
             stroke_color: None,
             name_gap: 5.0,
+            name_rotate: 0.0,
             left: 0.0,
             top: 0.0,
             width: 0.0,
@@ -716,6 +718,7 @@ impl Axis {
         let width = self.width;
         let height = self.height;
         let tick_length = self.tick_length;
+        // std::f64::consts::PI
 
         let mut attrs = vec![];
         if let Some(color) = self.stroke_color {
@@ -798,6 +801,7 @@ impl Axis {
             );
         }
         let font_size = self.font_size;
+        let name_rotate = self.name_rotate / std::f64::consts::FRAC_PI_2 * 180.0;
         if font_size > 0.0 && !self.data.is_empty() {
             let name_gap = self.name_gap;
             let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
@@ -805,16 +809,17 @@ impl Axis {
             for (index, text) in self.data.iter().enumerate() {
                 let b = font::measure_text(&f, font_size, text);
                 let unit_offset = unit * index as f64 + unit / 2.0;
+                let text_width = b.width();
 
                 let values = match self.position {
                     Position::Left => {
-                        let x = left + width - b.width() - name_gap;
+                        let x = left + width - text_width - name_gap;
                         let y = unit_offset + font_size / 2.0;
                         (x, y)
                     }
                     Position::Top => {
                         let y = top + height - name_gap;
-                        let x = unit_offset - b.width() / 2.0;
+                        let x = unit_offset - text_width / 2.0;
                         (x, y)
                     }
                     Position::Right => {
@@ -824,10 +829,17 @@ impl Axis {
                     }
                     Position::Bottom => {
                         let y = top + font_size + name_gap;
-                        let x = unit_offset - b.width() / 2.0;
+                        let x = unit_offset - text_width / 2.0;
                         (x, y)
                     }
                 };
+                let mut transform = None;
+                if name_rotate != 0.0 {
+                    let x = (values.0 + b.width() / 2.0) as i32;
+                    let y = (values.1 - b.height()) as i32;
+                    let a = name_rotate as i32;
+                    transform = Some(format!("rotate({a},{x},{y})"));
+                }
 
                 data.push(
                     Text {
@@ -836,6 +848,7 @@ impl Axis {
                         font_size: Some(self.font_size),
                         x: Some(values.0),
                         y: Some(values.1),
+                        transform,
                         ..Default::default()
                     }
                     .svg(),
