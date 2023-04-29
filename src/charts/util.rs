@@ -18,6 +18,15 @@ pub struct Box {
     pub right: f64,
     pub bottom: f64,
 }
+impl Box {
+    pub fn width(&self) -> f64 {
+        self.right - self.left
+    }
+    pub fn height(&self) -> f64 {
+        self.bottom - self.top
+    }
+}
+
 impl From<f64> for Box {
     fn from(val: f64) -> Self {
         Box {
