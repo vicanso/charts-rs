@@ -1,7 +1,9 @@
+use snafu::{ResultExt, Snafu};
 use std::fmt;
 use std::vec;
 
 use super::color::*;
+use super::font;
 use super::path::*;
 use super::util::*;
 
@@ -116,6 +118,14 @@ impl<'a> fmt::Display for SVGTag<'a> {
         write!(f, "{}", value)
     }
 }
+
+#[derive(Debug, Snafu)]
+pub enum Error {
+    #[snafu(display("Error get font: {source}"))]
+    GetFont { source: font::Error },
+}
+
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub enum Component {
     Line(Line),
@@ -356,8 +366,8 @@ impl Polygon {
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct Text {
     pub text: String,
-    pub font_family: String,
-    pub font_size: f64,
+    pub font_family: Option<String>,
+    pub font_size: Option<f64>,
     pub fill: Option<Color>,
     pub x: Option<f64>,
     pub y: Option<f64>,
@@ -373,8 +383,7 @@ impl Text {
             return "".to_string();
         }
         let mut attrs = vec![
-            (ATTR_FONT_FAMILY, self.font_family.clone()),
-            (ATTR_FONT_SIZE, format_float(self.font_size)),
+            (ATTR_FONT_SIZE, format_option_float(self.font_size)),
             (ATTR_X, format_option_float(self.x)),
             (ATTR_Y, format_option_float(self.y)),
             (ATTR_DX, format_option_float(self.dx)),
@@ -385,6 +394,9 @@ impl Text {
             ),
             (ATTR_TRANSFORM, self.transform.clone().unwrap_or_default()),
         ];
+        if let Some(ref font_family) = self.font_family {
+            attrs.push((ATTR_FONT_FAMILY, font_family.clone()));
+        }
         if let Some(fill) = self.fill {
             attrs.push((ATTR_FILL, fill.hex()));
             attrs.push((ATTR_OPACITY, convert_opacity(&fill)));
@@ -665,6 +677,8 @@ impl Grid {
 pub struct Axis {
     pub position: Position,
     pub split_number: usize,
+    pub font_size: f64,
+    pub font_family: String,
     pub data: Vec<String>,
     pub stroke_color: Option<Color>,
     pub left: f64,
@@ -679,6 +693,8 @@ impl Default for Axis {
         Axis {
             position: Position::Bottom,
             split_number: 0,
+            font_size: 14.0,
+            font_family: font::DEFAULT_FONT_FAMILY.to_string(),
             data: vec![],
             stroke_color: None,
             left: 0.0,
@@ -692,7 +708,7 @@ impl Default for Axis {
 }
 
 impl Axis {
-    pub fn svg(&self) -> String {
+    pub fn svg(&self) -> Result<String> {
         let left = self.left;
         let top = self.top;
         let width = self.width;
@@ -779,12 +795,33 @@ impl Axis {
                 .svg(),
             );
         }
+        if self.font_size > 0.0 && !self.data.is_empty() {
+            let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
+            let unit = axis_length / self.data.len() as f64;
+            let y = top + self.font_size;
+            for (index, text) in self.data.iter().enumerate() {
+                let b = font::measure_text(&f, self.font_size, text);
+                let mut x = unit * index as f64 + unit / 2.0;
+                x -= b.width() / 2.0;
+                data.push(
+                    Text {
+                        text: text.to_string(),
+                        font_family: Some(self.font_family.clone()),
+                        font_size: Some(self.font_size),
+                        x: Some(x),
+                        y: Some(y),
+                        ..Default::default()
+                    }
+                    .svg(),
+                );
+            }
+        }
 
-        SVGTag {
+        Ok(SVGTag {
             tag: TAG_GROUP,
             attrs,
             data: Some(data.join("\n")),
         }
-        .to_string()
+        .to_string())
     }
 }

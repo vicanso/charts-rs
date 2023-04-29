@@ -1,8 +1,8 @@
+use super::util::*;
 use fontdue::Font;
 use once_cell::sync::Lazy;
 use snafu::{ResultExt, Snafu};
 use std::{collections::HashMap, sync::Mutex, sync::MutexGuard};
-use super::util::*;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
@@ -18,13 +18,15 @@ pub enum Error {
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
+pub static DEFAULT_FONT_FAMILY: &str = "roboto";
+
 static GLOBAL_FONTS: Lazy<Mutex<HashMap<String, Font>>> = Lazy::new(|| {
     let mut m = HashMap::new();
     // 初始化roboto字体
     // 失败时直接出错
     let font = include_bytes!("../Roboto-Regular.ttf") as &[u8];
     let font = fontdue::Font::from_bytes(font, fontdue::FontSettings::default()).unwrap();
-    m.insert("roboto".to_string(), font);
+    m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
 
     Mutex::new(m)
 });
@@ -50,7 +52,7 @@ pub fn get_font(name: &str) -> Result<Font> {
     }
 }
 
-pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box{
+pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
     let px = font_size as f32;
     let mut width = 0;
     let mut height = 0;
@@ -61,7 +63,7 @@ pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box{
             height = metrics.height;
         }
     }
-    Box{
+    Box {
         right: width as f64,
         bottom: height as f64,
         ..Default::default()

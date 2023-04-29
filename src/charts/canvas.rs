@@ -2,9 +2,19 @@ use super::component::{
     generate_svg, Axis, Circle, Component, Grid, Line, Polygon, Polyline, Rect, SmoothLine,
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
+
 use super::util::*;
+use snafu::{ResultExt, Snafu};
 use std::cell::RefCell;
 use std::rc::Rc;
+
+#[derive(Debug, Snafu)]
+pub enum Error {
+    #[snafu(display("Error to svg: {source}"))]
+    ToSVG { source: super::component::Error },
+}
+
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub struct Canvas {
     pub width: f64,
@@ -140,7 +150,7 @@ impl Canvas {
         let mut components = self.components.borrow_mut();
         components.push(component);
     }
-    pub fn svg(&self) -> String {
+    pub fn svg(&self) -> Result<String> {
         let mut data = vec![];
         for c in self.components.borrow().iter() {
             let value = match c {
@@ -155,10 +165,10 @@ impl Canvas {
                 Component::SmoothLineFill(c) => c.svg(),
                 Component::StraightLineFill(c) => c.svg(),
                 Component::Grid(c) => c.svg(),
-                Component::Axis(c) => c.svg(),
+                Component::Axis(c) => c.svg().context(ToSVGSnafu)?,
             };
             data.push(value);
         }
-        generate_svg(self.width, self.height, data.join("\n"))
+        Ok(generate_svg(self.width, self.height, data.join("\n")))
     }
 }
