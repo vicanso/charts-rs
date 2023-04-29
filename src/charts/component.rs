@@ -680,6 +680,7 @@ pub struct Axis {
     pub font_size: f64,
     pub font_family: String,
     pub data: Vec<String>,
+    pub name_gap: f64,
     pub stroke_color: Option<Color>,
     pub left: f64,
     pub top: f64,
@@ -697,6 +698,7 @@ impl Default for Axis {
             font_family: font::DEFAULT_FONT_FAMILY.to_string(),
             data: vec![],
             stroke_color: None,
+            name_gap: 5.0,
             left: 0.0,
             top: 0.0,
             width: 0.0,
@@ -795,21 +797,45 @@ impl Axis {
                 .svg(),
             );
         }
-        if self.font_size > 0.0 && !self.data.is_empty() {
+        let font_size = self.font_size;
+        if font_size > 0.0 && !self.data.is_empty() {
+            let name_gap = self.name_gap;
             let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
             let unit = axis_length / self.data.len() as f64;
-            let y = top + self.font_size;
             for (index, text) in self.data.iter().enumerate() {
-                let b = font::measure_text(&f, self.font_size, text);
-                let mut x = unit * index as f64 + unit / 2.0;
-                x -= b.width() / 2.0;
+                let b = font::measure_text(&f, font_size, text);
+                let unit_offset = unit * index as f64 + unit / 2.0;
+
+                let values = match self.position {
+                    Position::Left => {
+                        let x = left + width - b.width() - name_gap;
+                        let y = unit_offset + font_size / 2.0;
+                        (x, y)
+                    }
+                    Position::Top => {
+                        let y = top + height - name_gap;
+                        let x = unit_offset - b.width() / 2.0;
+                        (x, y)
+                    }
+                    Position::Right => {
+                        let x = left + name_gap;
+                        let y = unit_offset + font_size / 2.0;
+                        (x, y)
+                    }
+                    Position::Bottom => {
+                        let y = top + font_size + name_gap;
+                        let x = unit_offset - b.width() / 2.0;
+                        (x, y)
+                    }
+                };
+
                 data.push(
                     Text {
                         text: text.to_string(),
                         font_family: Some(self.font_family.clone()),
                         font_size: Some(self.font_size),
-                        x: Some(x),
-                        y: Some(y),
+                        x: Some(values.0),
+                        y: Some(values.1),
                         ..Default::default()
                     }
                     .svg(),
