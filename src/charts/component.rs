@@ -688,6 +688,7 @@ pub struct Axis {
     pub width: f64,
     pub height: f64,
     pub tick_length: f64,
+    pub tick_start: usize,
     pub tick_interval: usize,
 }
 impl Default for Axis {
@@ -706,6 +707,7 @@ impl Default for Axis {
             width: 0.0,
             height: 0.0,
             tick_length: 5.0,
+            tick_start: 0,
             tick_interval: 0,
         }
     }
@@ -718,7 +720,6 @@ impl Axis {
         let width = self.width;
         let height = self.height;
         let tick_length = self.tick_length;
-        // std::f64::consts::PI
 
         let mut attrs = vec![];
         if let Some(color) = self.stroke_color {
@@ -763,10 +764,20 @@ impl Axis {
         };
         let unit = axis_length / self.split_number as f64;
         let tick_interval = self.tick_interval;
+        let tick_start = self.tick_start;
         for i in 0..=self.split_number {
-            if tick_interval != 0 && i % tick_interval != 0 {
+            if i < tick_start {
                 continue;
             }
+            let index = if i > tick_start {
+                i - tick_start
+            } else {
+                i
+            };
+            if i != tick_start && (tick_interval != 0 && index % tick_interval != 0) {
+                continue;
+            }
+        
             let values = match self.position {
                 Position::Left => {
                     let y = top + unit * i as f64;
