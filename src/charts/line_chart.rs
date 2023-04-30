@@ -1,7 +1,6 @@
 use super::color::*;
 use super::common::*;
 use super::component::*;
-use super::font::DEFAULT_FONT_FAMILY;
 use super::util::*;
 use super::Canvas;
 
@@ -12,6 +11,8 @@ pub struct LineChart {
     pub margin: Box,
     pub series_list: Vec<Series>,
     pub font_family: String,
+
+    // x axis
     pub x_axis_data: Vec<String>,
     pub x_axis_height: f64,
     pub x_axis_stroke_color: Color,
@@ -19,18 +20,23 @@ pub struct LineChart {
     pub x_axis_font_color: Color,
     pub x_axis_name_gap: f64,
     pub x_axis_name_rotate: f64,
+    // y axis
+    pub y_axis_font_size: f64,
+    pub y_axis_font_color: Color,
+    pub y_axis_width: f64,
+    pub y_axis_split_number: usize,
+    pub y_axis_name_gap: f64,
+
+    // grid
+    pub grid_stroke_color: Color,
+    pub grid_stroke_width: f64,
 }
 
 impl LineChart {
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> LineChart {
         let mut l = LineChart {
-            width: DEFAULT_WIDTH,
-            height: DEFAULT_HEIGHT,
-            margin: (5.0).into(),
-            font_family: DEFAULT_FONT_FAMILY.to_string(),
             series_list,
             x_axis_data,
-            x_axis_height: DEFAULT_X_AXIS_HEIGHT,
             ..Default::default()
         };
         l.fill_theme("".to_string());
@@ -38,21 +44,75 @@ impl LineChart {
     }
     pub fn fill_theme(&mut self, theme: String) {
         let t = get_theme(theme);
+
+        self.font_family = t.font_family;
+        self.margin = t.margin;
+        self.width = t.width;
+        self.height = t.height;
+
         self.x_axis_font_size = t.x_axis_font_size;
         self.x_axis_font_color = t.x_axis_font_color;
         self.x_axis_stroke_color = t.x_axis_stroke_color;
         self.x_axis_name_gap = t.x_axis_name_gap;
+        self.x_axis_height = t.x_axis_height;
+
+        self.y_axis_font_color = t.y_axis_font_color;
+        self.y_axis_font_size = t.y_axis_font_size;
+        self.y_axis_width = t.y_axis_width;
+        self.y_axis_split_number = t.y_axis_split_number;
+        self.y_axis_name_gap = t.y_axis_name_gap;
+
+        self.grid_stroke_color = t.grid_stroke_color;
+        self.grid_stroke_width = t.grid_stroke_width;
     }
     pub fn svg(&self) {
         let mut c = Canvas::new(self.width, self.height);
         c.margin = self.margin.clone();
+
+        c.grid(Grid {
+            left: self.y_axis_width,
+            right: c.width(),
+            bottom: c.height() - self.x_axis_height,
+            color: Some(self.grid_stroke_color),
+            stroke_width: self.grid_stroke_width,
+            horizontals: self.y_axis_split_number,
+            hidden_horizontals: vec![self.y_axis_split_number],
+            ..Default::default()
+        });
+
+        // y axis
+        c.axis(Axis {
+            position: Position::Left,
+            height: c.height() - self.x_axis_height,
+            width: self.y_axis_width,
+            split_number: self.y_axis_split_number,
+            font_family: self.font_family.clone(),
+            stroke_color: Some((0, 0, 0, 0).into()),
+            name_align: Align::Left,
+            name_gap: self.y_axis_name_gap,
+            font_color: Some(self.y_axis_font_color),
+            font_size: self.y_axis_font_size,
+            data: vec![
+                "300".to_string(),
+                "250".to_string(),
+                "200".to_string(),
+                "150".to_string(),
+                "100".to_string(),
+                "50".to_string(),
+                "0".to_string(),
+            ],
+            ..Default::default()
+        });
+
+        // x axis
         c.child(Box {
-            top: self.height - self.x_axis_height,
+            top: c.height() - self.x_axis_height,
+            left: self.y_axis_width,
             ..Default::default()
         })
         .axis(Axis {
             height: self.x_axis_height,
-            width: c.width(),
+            width: c.width() - self.y_axis_width,
             split_number: self.x_axis_data.len(),
             font_family: self.font_family.clone(),
             data: self.x_axis_data.clone(),

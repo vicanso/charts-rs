@@ -3,6 +3,7 @@ use std::fmt;
 use std::vec;
 
 use super::color::*;
+use super::common::*;
 use super::font;
 use super::path::*;
 use super::util::*;
@@ -682,6 +683,7 @@ pub struct Axis {
     pub font_color: Option<Color>,
     pub data: Vec<String>,
     pub name_gap: f64,
+    pub name_align: Align,
     pub name_rotate: f64,
     pub stroke_color: Option<Color>,
     pub left: f64,
@@ -704,6 +706,7 @@ impl Default for Axis {
             stroke_color: None,
             name_gap: 5.0,
             name_rotate: 0.0,
+            name_align: Align::Center,
             left: 0.0,
             top: 0.0,
             width: 0.0,
@@ -724,80 +727,35 @@ impl Axis {
         let tick_length = self.tick_length;
 
         let mut attrs = vec![];
+        let mut is_transparent = false;
         if let Some(color) = self.stroke_color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+
+            is_transparent = color.is_transparent();
         }
 
         let stroke_width = 1.0;
 
-        let values = match self.position {
-            Position::Left => {
-                let x = left + width;
-                (x, top, x, top + height)
-            }
-            Position::Top => {
-                let y = top + height;
-                (left, y, left + width, y)
-            }
-            Position::Right => {
-                let y = top + height;
-                (left, top, left, y)
-            }
-            Position::Bottom => (left, top, left + width, top),
-        };
-
-        let mut data = vec![Line {
-            stroke_width,
-            left: values.0,
-            top: values.1,
-            right: values.2,
-            bottom: values.3,
-            ..Default::default()
-        }
-        .svg()];
-
-        let is_horizontal = self.position == Position::Bottom || self.position == Position::Top;
-
-        let axis_length = if is_horizontal {
-            self.width
-        } else {
-            self.height
-        };
-        let unit = axis_length / self.split_number as f64;
-        let tick_interval = self.tick_interval;
-        let tick_start = self.tick_start;
-        for i in 0..=self.split_number {
-            if i < tick_start {
-                continue;
-            }
-            let index = if i > tick_start { i - tick_start } else { i };
-            if i != tick_start && (tick_interval != 0 && index % tick_interval != 0) {
-                continue;
-            }
-
+        let mut line_data = vec![];
+        if !is_transparent {
             let values = match self.position {
                 Position::Left => {
-                    let y = top + unit * i as f64;
                     let x = left + width;
-                    (x, y, x - tick_length, y)
+                    (x, top, x, top + height)
                 }
                 Position::Top => {
-                    let x = left + unit * i as f64;
                     let y = top + height;
-                    (x, y - tick_length, x, y)
+                    (left, y, left + width, y)
                 }
                 Position::Right => {
-                    let y = top + unit * i as f64;
-                    (left, y, left + tick_length, y)
+                    let y = top + height;
+                    (left, top, left, y)
                 }
-                Position::Bottom => {
-                    let x = left + unit * i as f64;
-                    (x, top, x, top + tick_length)
-                }
+                Position::Bottom => (left, top, left + width, top),
             };
 
-            data.push(
+            line_data.push(
                 Line {
                     stroke_width,
                     left: values.0,
@@ -807,38 +765,103 @@ impl Axis {
                     ..Default::default()
                 }
                 .svg(),
-            );
+            )
         }
+
+        let is_horizontal = self.position == Position::Bottom || self.position == Position::Top;
+
+        let axis_length = if is_horizontal {
+            self.width
+        } else {
+            self.height
+        };
+
+        if !is_transparent {
+            let unit = axis_length / self.split_number as f64;
+            let tick_interval = self.tick_interval;
+            let tick_start = self.tick_start;
+            for i in 0..=self.split_number {
+                if i < tick_start {
+                    continue;
+                }
+                let index = if i > tick_start { i - tick_start } else { i };
+                if i != tick_start && (tick_interval != 0 && index % tick_interval != 0) {
+                    continue;
+                }
+
+                let values = match self.position {
+                    Position::Left => {
+                        let y = top + unit * i as f64;
+                        let x = left + width;
+                        (x, y, x - tick_length, y)
+                    }
+                    Position::Top => {
+                        let x = left + unit * i as f64;
+                        let y = top + height;
+                        (x, y - tick_length, x, y)
+                    }
+                    Position::Right => {
+                        let y = top + unit * i as f64;
+                        (left, y, left + tick_length, y)
+                    }
+                    Position::Bottom => {
+                        let x = left + unit * i as f64;
+                        (x, top, x, top + tick_length)
+                    }
+                };
+
+                line_data.push(
+                    Line {
+                        stroke_width,
+                        left: values.0,
+                        top: values.1,
+                        right: values.2,
+                        bottom: values.3,
+                        ..Default::default()
+                    }
+                    .svg(),
+                );
+            }
+        }
+        let mut text_data = vec![];
         let font_size = self.font_size;
         let name_rotate = self.name_rotate / std::f64::consts::FRAC_PI_2 * 180.0;
         if font_size > 0.0 && !self.data.is_empty() {
             let name_gap = self.name_gap;
             let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
-            let unit = axis_length / self.data.len() as f64;
+            let mut data_len = self.data.len();
+            let is_name_align_start = self.name_align == Align::Left;
+            if is_name_align_start {
+                data_len -= 1;
+            }
+            let unit = axis_length / data_len as f64;
             for (index, text) in self.data.iter().enumerate() {
                 let b = font::measure_text(&f, font_size, text);
-                let unit_offset = unit * index as f64 + unit / 2.0;
+                let mut unit_offset = unit * index as f64 + unit / 2.0;
+                if is_name_align_start {
+                    unit_offset -= unit / 2.0;
+                }
                 let text_width = b.width();
 
                 let values = match self.position {
                     Position::Left => {
                         let x = left + width - text_width - name_gap;
-                        let y = unit_offset + font_size / 2.0;
+                        let y = top + unit_offset + font_size / 2.0;
                         (x, y)
                     }
                     Position::Top => {
                         let y = top + height - name_gap;
-                        let x = unit_offset - text_width / 2.0;
+                        let x = left + unit_offset - text_width / 2.0;
                         (x, y)
                     }
                     Position::Right => {
                         let x = left + name_gap;
-                        let y = unit_offset + font_size / 2.0;
+                        let y = top + unit_offset + font_size / 2.0;
                         (x, y)
                     }
                     Position::Bottom => {
                         let y = top + font_size + name_gap;
-                        let x = unit_offset - text_width / 2.0;
+                        let x = left + unit_offset - text_width / 2.0;
                         (x, y)
                     }
                 };
@@ -850,7 +873,7 @@ impl Axis {
                     transform = Some(format!("rotate({a},{x},{y})"));
                 }
 
-                data.push(
+                text_data.push(
                     Text {
                         text: text.to_string(),
                         font_family: Some(self.font_family.clone()),
@@ -864,12 +887,22 @@ impl Axis {
                     .svg(),
                 );
             }
-        }
-
+        };
         Ok(SVGTag {
             tag: TAG_GROUP,
-            attrs,
-            data: Some(data.join("\n")),
+            data: Some(
+                vec![
+                    SVGTag {
+                        tag: TAG_GROUP,
+                        attrs,
+                        data: Some(line_data.join("\n")),
+                    }
+                    .to_string(),
+                    text_data.join("\n"),
+                ]
+                .join("\n"),
+            ),
+            ..Default::default()
         }
         .to_string())
     }

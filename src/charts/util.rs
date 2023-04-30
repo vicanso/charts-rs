@@ -75,12 +75,3 @@ pub fn format_float(value: f64) -> String {
     }
     str
 }
-
-#[derive(Clone, PartialEq, Debug, Default)]
-pub enum Position {
-    #[default]
-    Left,
-    Top,
-    Right,
-    Bottom,
-}
