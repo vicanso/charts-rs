@@ -679,6 +679,7 @@ pub struct Axis {
     pub split_number: usize,
     pub font_size: f64,
     pub font_family: String,
+    pub font_color: Option<Color>,
     pub data: Vec<String>,
     pub name_gap: f64,
     pub name_rotate: f64,
@@ -699,6 +700,7 @@ impl Default for Axis {
             font_size: 14.0,
             font_family: font::DEFAULT_FONT_FAMILY.to_string(),
             data: vec![],
+            font_color: None,
             stroke_color: None,
             name_gap: 5.0,
             name_rotate: 0.0,
@@ -769,15 +771,11 @@ impl Axis {
             if i < tick_start {
                 continue;
             }
-            let index = if i > tick_start {
-                i - tick_start
-            } else {
-                i
-            };
+            let index = if i > tick_start { i - tick_start } else { i };
             if i != tick_start && (tick_interval != 0 && index % tick_interval != 0) {
                 continue;
             }
-        
+
             let values = match self.position {
                 Position::Left => {
                     let y = top + unit * i as f64;
@@ -857,6 +855,7 @@ impl Axis {
                         text: text.to_string(),
                         font_family: Some(self.font_family.clone()),
                         font_size: Some(self.font_size),
+                        fill: self.font_color,
                         x: Some(values.0),
                         y: Some(values.1),
                         transform,
