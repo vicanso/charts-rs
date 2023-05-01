@@ -440,7 +440,11 @@ impl SmoothLine {
         }
         .to_string();
 
-        let mut attrs = vec![(ATTR_FILL, "none".to_string()), (ATTR_D, path)];
+        let mut attrs = vec![
+            (ATTR_FILL, "none".to_string()),
+            (ATTR_D, path),
+            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
+        ];
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
@@ -544,7 +548,11 @@ impl StraightLine {
                 format_float(p.y)
             ));
         }
-        let mut attrs = vec![(ATTR_FILL, "none".to_string()), (ATTR_D, arr.join(" "))];
+        let mut attrs = vec![
+            (ATTR_FILL, "none".to_string()),
+            (ATTR_D, arr.join(" ")),
+            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
+        ];
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));

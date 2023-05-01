@@ -30,6 +30,10 @@ pub struct LineChart {
     // grid
     pub grid_stroke_color: Color,
     pub grid_stroke_width: f64,
+
+    // series
+    pub series_stroke_width: f64,
+    pub series_colors: Vec<Color>,
 }
 
 impl LineChart {
@@ -64,6 +68,9 @@ impl LineChart {
 
         self.grid_stroke_color = t.grid_stroke_color;
         self.grid_stroke_width = t.grid_stroke_width;
+
+        self.series_colors = t.series_colors;
+        self.series_stroke_width = t.series_stroke_width;
     }
     pub fn svg(&self) {
         let mut c = Canvas::new(self.width, self.height);
@@ -80,6 +87,16 @@ impl LineChart {
             ..Default::default()
         });
 
+        let mut data_list = vec![];
+        for series in self.series_list.iter() {
+            data_list.append(series.data.clone().as_mut());
+        }
+        let y_axis_values = get_axis_values(AxisValueParams {
+            data_list,
+            split_number: self.y_axis_split_number,
+            reverse: Some(true),
+            ..Default::default()
+        });
         // y axis
         c.axis(Axis {
             position: Position::Left,
@@ -92,15 +109,7 @@ impl LineChart {
             name_gap: self.y_axis_name_gap,
             font_color: Some(self.y_axis_font_color),
             font_size: self.y_axis_font_size,
-            data: vec![
-                "300".to_string(),
-                "250".to_string(),
-                "200".to_string(),
-                "150".to_string(),
-                "100".to_string(),
-                "50".to_string(),
-                "0".to_string(),
-            ],
+            data: y_axis_values.data.clone(),
             ..Default::default()
         });
 
@@ -123,6 +132,35 @@ impl LineChart {
             name_rotate: self.x_axis_name_rotate,
             ..Default::default()
         });
+
+        // line point
+        let max_height = c.height() - self.x_axis_height;
+
+        let mut series_canvas = c.child(Box {
+            left: self.y_axis_width,
+            ..Default::default()
+        });
+        for (index, series) in self.series_list.iter().enumerate() {
+            let unit_width = series_canvas.width() / series.data.len() as f64;
+            let mut points: Vec<Point> = vec![];
+            for (i, p) in series.data.iter().enumerate() {
+                // 居中
+                let x = unit_width * i as f64 + unit_width / 2.0;
+                let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
+                points.push((x, y).into());
+            }
+
+            let color = self
+                .series_colors
+                .get(index)
+                .unwrap_or_else(|| &self.series_colors[0])
+                .clone();
+            series_canvas.straight_line(StraightLine {
+                points,
+                color: Some(color),
+                stroke_width: self.series_stroke_width,
+            });
+        }
 
         println!("{}", c.svg().unwrap())
     }

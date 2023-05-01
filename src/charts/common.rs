@@ -14,6 +14,8 @@ pub static DEFAULT_Y_AXIS_NAME_GAP: f64 = 8.0;
 pub static DEFAULT_Y_AXIS_SPLIT_NUMBER: usize = 6;
 pub static DEFAULT_FONT_SIZE: f64 = 14.0;
 
+pub static DEFAULT_SERIES_STROKE_WIDTH: f64 = 2.0;
+
 #[derive(Clone, PartialEq, Debug, Default)]
 pub enum Position {
     #[default]
@@ -60,6 +62,10 @@ pub struct Theme {
     // grid
     pub grid_stroke_color: Color,
     pub grid_stroke_width: f64,
+
+    // series
+    pub series_stroke_width: f64,
+    pub series_colors: Vec<Color>,
 }
 
 static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
@@ -84,6 +90,19 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
 
         grid_stroke_color: (224, 230, 242).into(),
         grid_stroke_width: 1.0,
+
+        series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_colors: vec![
+            "#5470c6".into(),
+            "#91cc75".into(),
+            "#fac858".into(),
+            "#ee6666".into(),
+            "#73c0de".into(),
+            "#3ba272".into(),
+            "#fc8452".into(),
+            "#9a60b4".into(),
+            "#ea7ccc".into(),
+        ],
     }
 });
 
