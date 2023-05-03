@@ -423,35 +423,41 @@ fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
     arr.join("\n")
 }
 
-#[derive(Clone, PartialEq, Debug)]
-pub struct SmoothLine {
+struct BaseLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f64,
     pub symbol: Option<Symbol>,
+    pub is_smooth: bool,
 }
 
-impl Default for SmoothLine {
-    fn default() -> Self {
-        SmoothLine {
-            color: None,
-            points: vec![],
-            stroke_width: 1.0,
-            symbol: Some(Symbol::Circle(2.0, None)),
-        }
-    }
-}
-
-impl SmoothLine {
+impl BaseLine {
     pub fn svg(&self) -> String {
         if self.points.is_empty() || self.stroke_width <= 0.0 {
             return "".to_string();
         }
-        let path = SmoothCurve {
-            points: self.points.clone(),
-            ..Default::default()
-        }
-        .to_string();
+        let path = if self.is_smooth {
+            SmoothCurve {
+                points: self.points.clone(),
+                ..Default::default()
+            }
+            .to_string()
+        } else {
+            let mut arr = vec![];
+            for (index, p) in self.points.iter().enumerate() {
+                let mut action = "L";
+                if index == 0 {
+                    action = "M"
+                }
+                arr.push(format!(
+                    "{} {} {}",
+                    action,
+                    format_float(p.x),
+                    format_float(p.y)
+                ));
+            }
+            arr.join(" ")
+        };
 
         let mut attrs = vec![
             (ATTR_FILL, "none".to_string()),
@@ -495,6 +501,38 @@ impl SmoothLine {
             }
             .to_string()
         }
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
+pub struct SmoothLine {
+    pub color: Option<Color>,
+    pub points: Vec<Point>,
+    pub stroke_width: f64,
+    pub symbol: Option<Symbol>,
+}
+
+impl Default for SmoothLine {
+    fn default() -> Self {
+        SmoothLine {
+            color: None,
+            points: vec![],
+            stroke_width: 1.0,
+            symbol: Some(Symbol::Circle(2.0, None)),
+        }
+    }
+}
+
+impl SmoothLine {
+    pub fn svg(&self) -> String {
+        BaseLine {
+            color: self.color,
+            points: self.points.clone(),
+            stroke_width: self.stroke_width,
+            symbol: self.symbol.clone(),
+            is_smooth: true,
+        }
+        .svg()
     }
 }
 
@@ -573,64 +611,14 @@ impl Default for StraightLine {
 
 impl StraightLine {
     pub fn svg(&self) -> String {
-        if self.points.is_empty() || self.stroke_width <= 0.0 {
-            return "".to_string();
+        BaseLine {
+            color: self.color,
+            points: self.points.clone(),
+            stroke_width: self.stroke_width,
+            symbol: self.symbol.clone(),
+            is_smooth: false,
         }
-        let mut arr = vec![];
-        for (index, p) in self.points.iter().enumerate() {
-            let mut action = "L";
-            if index == 0 {
-                action = "M"
-            }
-            arr.push(format!(
-                "{} {} {}",
-                action,
-                format_float(p.x),
-                format_float(p.y)
-            ));
-        }
-        let mut attrs = vec![
-            (ATTR_FILL, "none".to_string()),
-            (ATTR_D, arr.join(" ")),
-            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
-        ];
-        if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
-        }
-        let symbol_svg = if let Some(ref symbol) = self.symbol {
-            match symbol {
-                Symbol::Circle(r, fill) => generate_circle_symbol(
-                    &self.points,
-                    Circle {
-                        color: self.color,
-                        fill: fill.to_owned(),
-                        stroke_width: self.stroke_width,
-                        r: r.to_owned(),
-                        ..Default::default()
-                    },
-                ),
-            }
-        } else {
-            "".to_string()
-        };
-        let line_svg = SVGTag {
-            tag: TAG_PATH,
-            attrs,
-            data: None,
-        }
-        .to_string();
-
-        if symbol_svg.is_empty() {
-            line_svg
-        } else {
-            SVGTag {
-                tag: TAG_GROUP,
-                data: Some(vec![line_svg, symbol_svg].join("\n")),
-                ..Default::default()
-            }
-            .to_string()
-        }
+        .svg()
     }
 }
 
