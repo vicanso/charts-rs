@@ -29,6 +29,9 @@ impl Color {
     pub fn is_nontransparent(&self) -> bool {
         self.a == 255
     }
+    pub fn white() -> Color {
+        (255, 255, 255).into()
+    }
 }
 
 impl From<(u8, u8, u8)> for Color {
@@ -59,7 +62,7 @@ fn parse_hex(hex: &str) -> u8 {
 impl From<&str> for Color {
     fn from(value: &str) -> Self {
         let mut c = Color::default();
-        if !value.starts_with("#") {
+        if !value.starts_with('#') {
             return c;
         }
         let hex = value.substring(1, value.len());

@@ -33,6 +33,11 @@ pub enum Align {
     Right,
 }
 
+#[derive(Clone, PartialEq, Debug)]
+pub enum Symbol {
+    Circle(f64, Option<Color>),
+}
+
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct Series {
     pub name: String,
@@ -46,6 +51,7 @@ pub struct Theme {
     pub margin: Box,
     pub width: f64,
     pub height: f64,
+    pub background_color: Color,
     // x axis
     pub x_axis_font_size: f64,
     pub x_axis_stroke_color: Color,
@@ -75,6 +81,7 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         margin: (5.0).into(),
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
+        background_color: Color::white(),
 
         x_axis_font_size: DEFAULT_FONT_SIZE,
         x_axis_stroke_color: black,

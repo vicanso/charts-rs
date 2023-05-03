@@ -11,6 +11,7 @@ pub struct LineChart {
     pub margin: Box,
     pub series_list: Vec<Series>,
     pub font_family: String,
+    pub background_color: Color,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -53,6 +54,7 @@ impl LineChart {
         self.margin = t.margin;
         self.width = t.width;
         self.height = t.height;
+        self.background_color = t.background_color;
 
         self.x_axis_font_size = t.x_axis_font_size;
         self.x_axis_font_color = t.x_axis_font_color;
@@ -150,15 +152,16 @@ impl LineChart {
                 points.push((x, y).into());
             }
 
-            let color = self
+            let color = *self
                 .series_colors
                 .get(index)
-                .unwrap_or_else(|| &self.series_colors[0])
-                .clone();
+                .unwrap_or_else(|| &self.series_colors[0]);
+            let symbol = Symbol::Circle(self.series_stroke_width, Some(self.background_color));
             series_canvas.straight_line(StraightLine {
                 points,
                 color: Some(color),
                 stroke_width: self.series_stroke_width,
+                symbol: Some(symbol),
             });
         }
 

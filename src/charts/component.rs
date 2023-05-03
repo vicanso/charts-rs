@@ -412,11 +412,23 @@ impl Text {
     }
 }
 
+fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
+    let mut arr = vec![];
+    for p in points.iter() {
+        let mut tmp = c.clone();
+        tmp.cx = p.x;
+        tmp.cy = p.y;
+        arr.push(tmp.svg());
+    }
+    arr.join("\n")
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct SmoothLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f64,
+    pub symbol: Option<Symbol>,
 }
 
 impl Default for SmoothLine {
@@ -425,6 +437,7 @@ impl Default for SmoothLine {
             color: None,
             points: vec![],
             stroke_width: 1.0,
+            symbol: Some(Symbol::Circle(2.0, None)),
         }
     }
 }
@@ -449,13 +462,39 @@ impl SmoothLine {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
-
-        SVGTag {
+        let line_svg = SVGTag {
             tag: TAG_PATH,
             attrs,
             data: None,
         }
-        .to_string()
+        .to_string();
+        let symbol_svg = if let Some(ref symbol) = self.symbol {
+            match symbol {
+                Symbol::Circle(r, fill) => generate_circle_symbol(
+                    &self.points,
+                    Circle {
+                        color: self.color,
+                        fill: fill.to_owned(),
+                        stroke_width: self.stroke_width,
+                        r: r.to_owned(),
+                        ..Default::default()
+                    },
+                ),
+            }
+        } else {
+            "".to_string()
+        };
+
+        if symbol_svg.is_empty() {
+            line_svg
+        } else {
+            SVGTag {
+                tag: TAG_GROUP,
+                data: Some(vec![line_svg, symbol_svg].join("\n")),
+                ..Default::default()
+            }
+            .to_string()
+        }
     }
 }
 
@@ -518,6 +557,7 @@ pub struct StraightLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f64,
+    pub symbol: Option<Symbol>,
 }
 
 impl Default for StraightLine {
@@ -526,6 +566,7 @@ impl Default for StraightLine {
             color: None,
             points: vec![],
             stroke_width: 1.0,
+            symbol: Some(Symbol::Circle(2.0, None)),
         }
     }
 }
@@ -557,13 +598,39 @@ impl StraightLine {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
-
-        SVGTag {
+        let symbol_svg = if let Some(ref symbol) = self.symbol {
+            match symbol {
+                Symbol::Circle(r, fill) => generate_circle_symbol(
+                    &self.points,
+                    Circle {
+                        color: self.color,
+                        fill: fill.to_owned(),
+                        stroke_width: self.stroke_width,
+                        r: r.to_owned(),
+                        ..Default::default()
+                    },
+                ),
+            }
+        } else {
+            "".to_string()
+        };
+        let line_svg = SVGTag {
             tag: TAG_PATH,
             attrs,
             data: None,
         }
-        .to_string()
+        .to_string();
+
+        if symbol_svg.is_empty() {
+            line_svg
+        } else {
+            SVGTag {
+                tag: TAG_GROUP,
+                data: Some(vec![line_svg, symbol_svg].join("\n")),
+                ..Default::default()
+            }
+            .to_string()
+        }
     }
 }
 
