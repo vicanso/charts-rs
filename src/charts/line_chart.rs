@@ -35,6 +35,9 @@ pub struct LineChart {
     // series
     pub series_stroke_width: f64,
     pub series_colors: Vec<Color>,
+    pub series_symbol: Option<Symbol>,
+    pub series_smooth: bool,
+    pub series_fill: bool,
 }
 
 impl LineChart {
@@ -73,15 +76,22 @@ impl LineChart {
 
         self.series_colors = t.series_colors;
         self.series_stroke_width = t.series_stroke_width;
+
+        self.series_symbol = Some(Symbol::Circle(
+            self.series_stroke_width,
+            Some(self.background_color),
+        ));
     }
     pub fn svg(&self) {
         let mut c = Canvas::new(self.width, self.height);
         c.margin = self.margin.clone();
+        let axis_height = c.height() - self.x_axis_height;
+        let axis_width = c.width() - self.y_axis_width;
 
         c.grid(Grid {
             left: self.y_axis_width,
-            right: c.width(),
-            bottom: c.height() - self.x_axis_height,
+            right: self.y_axis_width + axis_width,
+            bottom: axis_height,
             color: Some(self.grid_stroke_color),
             stroke_width: self.grid_stroke_width,
             horizontals: self.y_axis_split_number,
@@ -102,7 +112,7 @@ impl LineChart {
         // y axis
         c.axis(Axis {
             position: Position::Left,
-            height: c.height() - self.x_axis_height,
+            height: axis_height,
             width: self.y_axis_width,
             split_number: self.y_axis_split_number,
             font_family: self.font_family.clone(),
@@ -123,7 +133,7 @@ impl LineChart {
         })
         .axis(Axis {
             height: self.x_axis_height,
-            width: c.width() - self.y_axis_width,
+            width: axis_width,
             split_number: self.x_axis_data.len(),
             font_family: self.font_family.clone(),
             data: self.x_axis_data.clone(),
@@ -156,13 +166,33 @@ impl LineChart {
                 .series_colors
                 .get(index)
                 .unwrap_or_else(|| &self.series_colors[0]);
-            let symbol = Symbol::Circle(self.series_stroke_width, Some(self.background_color));
-            series_canvas.straight_line(StraightLine {
-                points,
-                color: Some(color),
-                stroke_width: self.series_stroke_width,
-                symbol: Some(symbol),
-            });
+
+            let fill = color.with_alpha(100);
+            if self.series_smooth {
+                series_canvas.smooth_line_fill(SmoothLineFill {
+                    fill,
+                    points: points.clone(),
+                    bottom: axis_height,
+                });
+                series_canvas.smooth_line(SmoothLine {
+                    points,
+                    color: Some(color),
+                    stroke_width: self.series_stroke_width,
+                    symbol: self.series_symbol.clone(),
+                });
+            } else {
+                series_canvas.straight_line_fill(StraightLineFill {
+                    fill,
+                    points: points.clone(),
+                    bottom: axis_height,
+                });
+                series_canvas.straight_line(StraightLine {
+                    points,
+                    color: Some(color),
+                    stroke_width: self.series_stroke_width,
+                    symbol: self.series_symbol.clone(),
+                });
+            }
         }
 
         println!("{}", c.svg().unwrap())
