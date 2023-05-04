@@ -52,12 +52,20 @@ pub struct Theme {
     pub width: f64,
     pub height: f64,
     pub background_color: Color,
+
+    // title
+    pub title_font_size: f64,
+    pub title_font_color: Color,
+    pub title_font_weight: Option<String>,
+    pub title_margin: Option<Box>,
+
     // x axis
     pub x_axis_font_size: f64,
     pub x_axis_stroke_color: Color,
     pub x_axis_font_color: Color,
     pub x_axis_name_gap: f64,
     pub x_axis_height: f64,
+
     // y axis
     pub y_axis_font_size: f64,
     pub y_axis_font_color: Color,
@@ -82,6 +90,11 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
         background_color: Color::white(),
+
+        title_font_color: (70, 70, 70).into(),
+        title_font_size: 18.0,
+        title_font_weight: Some("bold".to_string()),
+        title_margin: Some((10.0, 5.0, 10.0, 5.0).into()),
 
         x_axis_font_size: DEFAULT_FONT_SIZE,
         x_axis_stroke_color: black,

@@ -3,7 +3,7 @@ use super::component::{
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 
-use super::util::*;
+use super::{measure_text_width_family, util::*};
 use snafu::{ResultExt, Snafu};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -51,100 +51,166 @@ impl Canvas {
             margin: m,
         }
     }
-    pub fn line(&mut self, line: Line) {
+    pub fn line(&mut self, line: Line) -> Box {
         let mut c = line;
         c.left += self.margin.left;
         c.right += self.margin.left;
         c.top += self.margin.top;
         c.bottom += self.margin.bottom;
+        let b = Box {
+            left: c.left,
+            top: c.top,
+            right: c.right,
+            bottom: c.bottom,
+        };
         self.append(Component::Line(c));
+        b
     }
-    pub fn rect(&mut self, rect: Rect) {
+    pub fn rect(&mut self, rect: Rect) -> Box {
         let mut c = rect;
         c.left += self.margin.left;
         c.top += self.margin.top;
-        self.append(Component::Rect(c))
+        let b = Box {
+            left: c.left,
+            top: c.top,
+            right: c.left + c.width,
+            bottom: c.top + c.height,
+        };
+        self.append(Component::Rect(c));
+        b
     }
-    pub fn polyline(&mut self, polyline: Polyline) {
+    pub fn polyline(&mut self, polyline: Polyline) -> Box {
         let mut c = polyline;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
-            p.y += self.margin.top
+            p.y += self.margin.top;
         }
+        let b = get_box_of_points(&c.points);
 
-        self.append(Component::Polyline(c))
+        self.append(Component::Polyline(c));
+        b
     }
-    pub fn circle(&mut self, circle: Circle) {
+    pub fn circle(&mut self, circle: Circle) -> Box {
         let mut c = circle;
         c.cx += self.margin.left;
         c.cy += self.margin.top;
-        self.append(Component::Circle(c))
+        let b = Box {
+            left: c.cx - c.r,
+            top: c.cy - c.r,
+            right: c.cx + c.r,
+            bottom: c.cy + c.r,
+        };
+        self.append(Component::Circle(c));
+        b
     }
-    pub fn polygon(&mut self, polygon: Polygon) {
+    pub fn polygon(&mut self, polygon: Polygon) -> Box {
         let mut c = polygon;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
             p.y += self.margin.top
         }
-        self.append(Component::Polygon(c))
+        let b = get_box_of_points(&c.points);
+        self.append(Component::Polygon(c));
+        b
     }
-    pub fn text(&mut self, text: Text) {
+    pub fn text(&mut self, text: Text) -> Box {
+        let font_family = text.font_family.clone().unwrap_or_default();
+        let font_size = text.font_size.unwrap_or_default();
         let mut c = text;
+
         if let Some(x) = c.x {
             c.x = Some(x + self.margin.left);
+        } else {
+            c.x = Some(self.margin.left);
         }
         if let Some(y) = c.y {
             c.y = Some(y + self.margin.top);
+        } else {
+            c.y = Some(self.margin.top);
         }
-        self.append(Component::Text(c))
+        let mut b = Box {
+            left: c.x.unwrap_or_default(),
+            top: c.y.unwrap_or_default(),
+            ..Default::default()
+        };
+        if !font_family.is_empty() && font_size > 0.0 {
+            if let Ok(result) = measure_text_width_family(&font_family, font_size, &c.text) {
+                b.right = b.left + result.width();
+                b.bottom = b.top + result.height();
+            }
+        }
+        self.append(Component::Text(c));
+        b
     }
-    pub fn smooth_line(&mut self, line: SmoothLine) {
+    pub fn smooth_line(&mut self, line: SmoothLine) -> Box {
         let mut c = line;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
             p.y += self.margin.top
         }
-        self.append(Component::SmoothLine(c))
+        let b = get_box_of_points(&c.points);
+        self.append(Component::SmoothLine(c));
+        b
     }
-    pub fn straight_line(&mut self, line: StraightLine) {
+    pub fn straight_line(&mut self, line: StraightLine) -> Box {
         let mut c = line;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
             p.y += self.margin.top
         }
-        self.append(Component::StraightLine(c))
+        let b = get_box_of_points(&c.points);
+        self.append(Component::StraightLine(c));
+        b
     }
-    pub fn smooth_line_fill(&mut self, fill: SmoothLineFill) {
+    pub fn smooth_line_fill(&mut self, fill: SmoothLineFill) -> Box {
         let mut c = fill;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
             p.y += self.margin.top
         }
         c.bottom += self.margin.top;
-        self.append(Component::SmoothLineFill(c))
+        let b = get_box_of_points(&c.points);
+        self.append(Component::SmoothLineFill(c));
+        b
     }
-    pub fn straight_line_fill(&mut self, fill: StraightLineFill) {
+    pub fn straight_line_fill(&mut self, fill: StraightLineFill) -> Box {
         let mut c = fill;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
             p.y += self.margin.top
         }
         c.bottom += self.margin.top;
-        self.append(Component::StraightLineFill(c))
+        let b = get_box_of_points(&c.points);
+        self.append(Component::StraightLineFill(c));
+        b
     }
-    pub fn grid(&mut self, grip: Grid) {
+    pub fn grid(&mut self, grip: Grid) -> Box {
         let mut c = grip;
         c.left += self.margin.left;
         c.right += self.margin.left;
         c.top += self.margin.top;
         c.bottom += self.margin.top;
-        self.append(Component::Grid(c))
+        let b = Box {
+            left: c.left,
+            top: c.top,
+            right: c.right,
+            bottom: c.bottom,
+        };
+        self.append(Component::Grid(c));
+        b
     }
-    pub fn axis(&mut self, axis: Axis) {
+    pub fn axis(&mut self, axis: Axis) -> Box {
         let mut c = axis;
         c.left += self.margin.left;
         c.top += self.margin.top;
-        self.append(Component::Axis(c))
+        let b = Box {
+            left: c.left,
+            top: c.top,
+            right: c.left + c.width,
+            bottom: c.top + c.height,
+        };
+        self.append(Component::Axis(c));
+        b
     }
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();

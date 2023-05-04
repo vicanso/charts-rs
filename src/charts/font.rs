@@ -69,3 +69,8 @@ pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
         ..Default::default()
     }
 }
+
+pub fn measure_text_width_family(font_family: &str, font_size: f64, text: &str) -> Result<Box> {
+    let font = get_font(font_family)?;
+    Ok(measure_text(&font, font_size, text))
+}

@@ -1,3 +1,5 @@
+use crate::charts::measure_text_width_family;
+
 use super::color::*;
 use super::common::*;
 use super::component::*;
@@ -12,6 +14,13 @@ pub struct LineChart {
     pub series_list: Vec<Series>,
     pub font_family: String,
     pub background_color: Color,
+
+    // title
+    pub title_text: String,
+    pub title_font_size: f64,
+    pub title_font_color: Color,
+    pub title_font_weight: Option<String>,
+    pub title_margin: Option<Box>,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -59,6 +68,11 @@ impl LineChart {
         self.height = t.height;
         self.background_color = t.background_color;
 
+        self.title_font_color = t.title_font_color;
+        self.title_font_size = t.title_font_size;
+        self.title_font_weight = t.title_font_weight;
+        self.title_margin = t.title_margin;
+
         self.x_axis_font_size = t.x_axis_font_size;
         self.x_axis_font_color = t.x_axis_font_color;
         self.x_axis_stroke_color = t.x_axis_stroke_color;
@@ -85,8 +99,32 @@ impl LineChart {
     pub fn svg(&self) {
         let mut c = Canvas::new(self.width, self.height);
         c.margin = self.margin.clone();
-        let axis_height = c.height() - self.x_axis_height;
+
+        let mut axis_top = 0.0;
+
+        if !self.title_text.is_empty() {
+            let title_margin = self.title_margin.clone().unwrap_or_default();
+            let b = c.child(title_margin).text(Text {
+                text: self.title_text.clone(),
+                font_family: Some(self.font_family.clone()),
+                font_size: Some(self.title_font_size),
+                font_weight: self.title_font_weight.clone(),
+                fill: Some(self.title_font_color),
+                y: Some(self.title_font_size),
+                ..Default::default()
+            });
+            axis_top = b.outer_height();
+        }
+
+        let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - self.y_axis_width;
+        // 顶部文本区域
+        if axis_top > 0.0 {
+            c = c.child(Box {
+                top: axis_top,
+                ..Default::default()
+            });
+        }
 
         c.grid(Grid {
             left: self.y_axis_width,
@@ -168,12 +206,15 @@ impl LineChart {
                 .unwrap_or_else(|| &self.series_colors[0]);
 
             let fill = color.with_alpha(100);
+            let series_fill = self.series_fill;
             if self.series_smooth {
-                series_canvas.smooth_line_fill(SmoothLineFill {
-                    fill,
-                    points: points.clone(),
-                    bottom: axis_height,
-                });
+                if series_fill {
+                    series_canvas.smooth_line_fill(SmoothLineFill {
+                        fill,
+                        points: points.clone(),
+                        bottom: axis_height,
+                    });
+                }
                 series_canvas.smooth_line(SmoothLine {
                     points,
                     color: Some(color),
@@ -181,11 +222,13 @@ impl LineChart {
                     symbol: self.series_symbol.clone(),
                 });
             } else {
-                series_canvas.straight_line_fill(StraightLineFill {
-                    fill,
-                    points: points.clone(),
-                    bottom: axis_height,
-                });
+                if series_fill {
+                    series_canvas.straight_line_fill(StraightLineFill {
+                        fill,
+                        points: points.clone(),
+                        bottom: axis_height,
+                    });
+                }
                 series_canvas.straight_line(StraightLine {
                     points,
                     color: Some(color),

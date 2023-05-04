@@ -25,6 +25,12 @@ impl Box {
     pub fn height(&self) -> f64 {
         self.bottom - self.top
     }
+    pub fn outer_width(&self) -> f64 {
+        self.right
+    }
+    pub fn outer_height(&self) -> f64 {
+        self.bottom
+    }
 }
 
 impl From<f64> for Box {
@@ -154,4 +160,27 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         min: min,
         max: min + (unit * params.split_number) as f64,
     }
+}
+
+pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
+    let mut b = Box {
+        left: f64::MAX,
+        top: f64::MAX,
+        ..Default::default()
+    };
+    for p in points.iter() {
+        if p.x < b.left {
+            b.left = p.x;
+        }
+        if p.x > b.right {
+            b.right = p.x;
+        }
+        if p.y < b.top {
+            b.top = p.y;
+        }
+        if p.y > b.bottom {
+            b.bottom = p.y;
+        }
+    }
+    b
 }
