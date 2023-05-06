@@ -54,13 +54,13 @@ pub fn get_font(name: &str) -> Result<Font> {
 
 pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
     let px = font_size as f32;
-    let mut width = 0;
-    let mut height = 0;
+    let mut width = 0.0;
+    let mut height = 0.0;
     for ch in text.chars() {
         let metrics = font.metrics(ch, px);
-        width += metrics.width;
-        if metrics.height > height {
-            height = metrics.height;
+        width += metrics.advance_width;
+        if metrics.advance_height > height {
+            height = metrics.advance_height;
         }
     }
     Box {

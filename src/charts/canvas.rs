@@ -1,6 +1,6 @@
 use super::component::{
-    generate_svg, Axis, Circle, Component, Grid, Line, Polygon, Polyline, Rect, SmoothLine,
-    SmoothLineFill, StraightLine, StraightLineFill, Text,
+    generate_svg, Axis, Circle, Component, Grid, Legend, Line, Polygon, Polyline, Rect, SmoothLine,
+    SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_MARGIN, LEGEND_WIDTH,
 };
 
 use super::{measure_text_width_family, util::*};
@@ -212,6 +212,21 @@ impl Canvas {
         self.append(Component::Axis(c));
         b
     }
+    pub fn legend(&mut self, legend: Legend) -> Box {
+        let mut c = legend;
+        c.left += self.margin.left;
+        c.top += self.margin.top;
+        let measurement =
+            measure_text_width_family(&c.font_family, c.font_size, &c.text).unwrap_or_default();
+        let b = Box {
+            left: c.left,
+            top: c.top,
+            right: c.left + measurement.width() + LEGEND_WIDTH + LEGEND_MARGIN,
+            bottom: c.top + measurement.height(),
+        };
+        self.append(Component::Legend(c));
+        b
+    }
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
         components.push(component);
@@ -232,6 +247,7 @@ impl Canvas {
                 Component::StraightLineFill(c) => c.svg(),
                 Component::Grid(c) => c.svg(),
                 Component::Axis(c) => c.svg().context(ToSVGSnafu)?,
+                Component::Legend(c) => c.svg(),
             };
             data.push(value);
         }

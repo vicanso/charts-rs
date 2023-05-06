@@ -3,6 +3,8 @@ use crate::charts::measure_text_width_family;
 use super::color::*;
 use super::common::*;
 use super::component::*;
+use super::theme::get_default_theme;
+use super::theme::get_theme;
 use super::util::*;
 use super::Canvas;
 
@@ -14,6 +16,7 @@ pub struct LineChart {
     pub series_list: Vec<Series>,
     pub font_family: String,
     pub background_color: Color,
+    pub is_light: bool,
 
     // title
     pub title_text: String,
@@ -21,6 +24,10 @@ pub struct LineChart {
     pub title_font_color: Color,
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
+
+    // legend
+    pub legend_font_size: f64,
+    pub legend_font_color: Color,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -56,7 +63,7 @@ impl LineChart {
             x_axis_data,
             ..Default::default()
         };
-        l.fill_theme("".to_string());
+        l.fill_theme(get_default_theme());
         l
     }
     pub fn fill_theme(&mut self, theme: String) {
@@ -67,11 +74,15 @@ impl LineChart {
         self.width = t.width;
         self.height = t.height;
         self.background_color = t.background_color;
+        self.is_light = t.is_light;
 
         self.title_font_color = t.title_font_color;
         self.title_font_size = t.title_font_size;
         self.title_font_weight = t.title_font_weight;
         self.title_margin = t.title_margin;
+
+        self.legend_font_color = t.legend_font_color;
+        self.legend_font_size = t.legend_font_size;
 
         self.x_axis_font_size = t.x_axis_font_size;
         self.x_axis_font_color = t.x_axis_font_color;
@@ -109,11 +120,47 @@ impl LineChart {
                 font_family: Some(self.font_family.clone()),
                 font_size: Some(self.title_font_size),
                 font_weight: self.title_font_weight.clone(),
-                fill: Some(self.title_font_color),
+                font_color: Some(self.title_font_color),
                 y: Some(self.title_font_size),
                 ..Default::default()
             });
             axis_top = b.outer_height();
+        }
+
+        let mut left = 0.0;
+        let legends: Vec<&str> = self
+            .series_list
+            .iter()
+            .map(|item| item.name.as_str())
+            .collect();
+        let (legend_width, legend_width_list) =
+            measure_legends(&self.font_family, self.legend_font_size, &legends);
+        if legend_width < c.width() {
+            left = (c.width() - legend_width) / 2.0;
+        }
+        println!("{legend_width}");
+        println!("{legend_width_list:?}");
+        for (index, series) in self.series_list.iter().enumerate() {
+            let color = *self
+                .series_colors
+                .get(index)
+                .unwrap_or_else(|| &self.series_colors[0]);
+            let fill = if self.is_light {
+                Some(self.background_color)
+            } else {
+                Some(color)
+            };
+            let b = c.legend(Legend {
+                text: series.name.to_string(),
+                font_size: self.legend_font_size,
+                font_family: self.font_family.clone(),
+                font_color: Some(self.legend_font_color),
+                stroke_color: Some(color),
+                fill: fill,
+                left,
+                top: 0.0,
+            });
+            left += b.width() + LEGEND_MARGIN;
         }
 
         let axis_height = c.height() - self.x_axis_height - axis_top;

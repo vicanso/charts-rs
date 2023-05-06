@@ -5,6 +5,7 @@ use std::vec;
 use super::color::*;
 use super::common::*;
 use super::font;
+use super::measure_text_width_family;
 use super::path::*;
 use super::util::*;
 
@@ -141,6 +142,7 @@ pub enum Component {
     StraightLineFill(StraightLineFill),
     Grid(Grid),
     Axis(Axis),
+    Legend(Legend),
 }
 #[derive(Clone, PartialEq, Debug)]
 
@@ -280,7 +282,7 @@ impl Polyline {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Circle {
-    pub color: Option<Color>,
+    pub stroke_color: Option<Color>,
     pub fill: Option<Color>,
     pub stroke_width: f64,
     pub cx: f64,
@@ -291,7 +293,7 @@ pub struct Circle {
 impl Default for Circle {
     fn default() -> Self {
         Circle {
-            color: None,
+            stroke_color: None,
             fill: None,
             stroke_width: 1.0,
             cx: 0.0,
@@ -309,7 +311,7 @@ impl Circle {
             (ATTR_R, format_float(self.r)),
             (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
         ];
-        if let Some(color) = self.color {
+        if let Some(color) = self.stroke_color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
@@ -369,7 +371,7 @@ pub struct Text {
     pub text: String,
     pub font_family: Option<String>,
     pub font_size: Option<f64>,
-    pub fill: Option<Color>,
+    pub font_color: Option<Color>,
     pub x: Option<f64>,
     pub y: Option<f64>,
     pub dx: Option<f64>,
@@ -398,9 +400,9 @@ impl Text {
         if let Some(ref font_family) = self.font_family {
             attrs.push((ATTR_FONT_FAMILY, font_family.clone()));
         }
-        if let Some(fill) = self.fill {
-            attrs.push((ATTR_FILL, fill.hex()));
-            attrs.push((ATTR_OPACITY, convert_opacity(&fill)));
+        if let Some(color) = self.font_color {
+            attrs.push((ATTR_FILL, color.hex()));
+            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
         }
 
         SVGTag {
@@ -479,7 +481,7 @@ impl BaseLine {
                 Symbol::Circle(r, fill) => generate_circle_symbol(
                     &self.points,
                     Circle {
-                        color: self.color,
+                        stroke_color: self.color,
                         fill: fill.to_owned(),
                         stroke_width: self.stroke_width,
                         r: r.to_owned(),
@@ -941,7 +943,7 @@ impl Axis {
                         text: text.to_string(),
                         font_family: Some(self.font_family.clone()),
                         font_size: Some(self.font_size),
-                        fill: self.font_color,
+                        font_color: self.font_color,
                         x: Some(values.0),
                         y: Some(values.1),
                         transform,
@@ -968,5 +970,83 @@ impl Axis {
             ..Default::default()
         }
         .to_string())
+    }
+}
+
+pub(crate) static LEGEND_WIDTH: f64 = 25.0;
+pub(crate) static LEGEND_HEIGHT: f64 = 20.0;
+pub(crate) static LEGEND_TEXT_MARGIN: f64 = 3.0;
+pub(crate) static LEGEND_MARGIN: f64 = 8.0;
+
+pub(crate) fn measure_legends(
+    font_family: &str,
+    font_size: f64,
+    legends: &[&str],
+) -> (f64, Vec<f64>) {
+    let widths: Vec<f64> = legends
+        .iter()
+        .map(|item| {
+            let text_box = measure_text_width_family(font_family, font_size, item.to_owned())
+                .unwrap_or_default();
+            text_box.width() + LEGEND_WIDTH + LEGEND_TEXT_MARGIN
+        })
+        .collect();
+    let width: f64 = widths.iter().sum();
+    let margin = LEGEND_MARGIN * (legends.len() - 1) as f64;
+
+    (width + margin, widths)
+}
+
+#[derive(Clone, PartialEq, Debug)]
+pub struct Legend {
+    pub text: String,
+    pub font_size: f64,
+    pub font_family: String,
+    pub font_color: Option<Color>,
+    pub stroke_color: Option<Color>,
+    pub fill: Option<Color>,
+    pub left: f64,
+    pub top: f64,
+}
+impl Legend {
+    pub fn svg(&self) -> String {
+        let stroke_width = 2.0;
+        let line_svg = Line {
+            stroke_width,
+            color: self.stroke_color,
+            left: self.left,
+            top: self.top + LEGEND_HEIGHT / 2.0,
+            right: self.left + LEGEND_WIDTH,
+            bottom: self.top + LEGEND_HEIGHT / 2.0,
+            ..Default::default()
+        }
+        .svg();
+        let circle_svg = Circle {
+            stroke_width,
+            stroke_color: self.stroke_color,
+            fill: self.fill,
+            cx: self.left + LEGEND_WIDTH / 2.0,
+            cy: self.top + LEGEND_HEIGHT / 2.0,
+            r: 5.5,
+            ..Default::default()
+        }
+        .svg();
+        let text_svg = Text {
+            text: self.text.clone(),
+            font_family: Some(self.font_family.clone()),
+            font_color: self.font_color,
+            font_size: Some(self.font_size),
+            x: Some(self.left + LEGEND_WIDTH + LEGEND_TEXT_MARGIN),
+            y: Some(self.top + self.font_size),
+            font_weight: Some("bold".to_string()),
+            ..Default::default()
+        }
+        .svg();
+        SVGTag {
+            tag: TAG_GROUP,
+            data: Some(vec![line_svg, circle_svg, text_svg].join("\n")),
+            ..Default::default()
+        }
+        .to_string()
     }
 }
