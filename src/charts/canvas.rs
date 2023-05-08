@@ -116,6 +116,7 @@ impl Canvas {
     pub fn text(&mut self, text: Text) -> Box {
         let font_family = text.font_family.clone().unwrap_or_default();
         let font_size = text.font_size.unwrap_or_default();
+        let is_bold = text.font_weight.clone().is_some();
         let mut c = text;
 
         if let Some(x) = c.x {
@@ -134,7 +135,8 @@ impl Canvas {
             ..Default::default()
         };
         if !font_family.is_empty() && font_size > 0.0 {
-            if let Ok(result) = measure_text_width_family(&font_family, font_size, &c.text) {
+            if let Ok(result) = measure_text_width_family(&font_family, font_size, &c.text, is_bold)
+            {
                 b.right = b.left + result.width();
                 b.bottom = b.top + result.height();
             }
@@ -216,8 +218,8 @@ impl Canvas {
         let mut c = legend;
         c.left += self.margin.left;
         c.top += self.margin.top;
-        let measurement =
-            measure_text_width_family(&c.font_family, c.font_size, &c.text).unwrap_or_default();
+        let measurement = measure_text_width_family(&c.font_family, c.font_size, &c.text, false)
+            .unwrap_or_default();
         let b = Box {
             left: c.left,
             top: c.top,

@@ -18,13 +18,13 @@ pub enum Error {
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-pub static DEFAULT_FONT_FAMILY: &str = "roboto";
+pub static DEFAULT_FONT_FAMILY: &str = "Arial";
 
 static GLOBAL_FONTS: Lazy<Mutex<HashMap<String, Font>>> = Lazy::new(|| {
     let mut m = HashMap::new();
-    // 初始化roboto字体
+    // 初始化字体
     // 失败时直接出错
-    let font = include_bytes!("../Roboto-Regular.ttf") as &[u8];
+    let font = include_bytes!("../Arial.ttf") as &[u8];
     let font = fontdue::Font::from_bytes(font, fontdue::FontSettings::default()).unwrap();
     m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
 
@@ -52,16 +52,24 @@ pub fn get_font(name: &str) -> Result<Font> {
     }
 }
 
-pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
+pub fn measure_text(font: &Font, font_size: f64, text: &str, is_bold: bool) -> Box {
     let px = font_size as f32;
     let mut width = 0.0;
     let mut height = 0.0;
     for ch in text.chars() {
         let metrics = font.metrics(ch, px);
-        width += metrics.advance_width;
+        // println!("{ch}, {}", metrics.advance_width.ceil());
+        width += metrics.advance_width.ceil();
         if metrics.advance_height > height {
-            height = metrics.advance_height;
+            height = metrics.advance_height.ceil();
         }
+    }
+
+    // TODO 后续了解更好的计算方法
+    // 文本计算放大x倍
+    if is_bold {
+        width *= 1.05;
+        height *= 1.05;
     }
     Box {
         right: width as f64,
@@ -70,7 +78,12 @@ pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
     }
 }
 
-pub fn measure_text_width_family(font_family: &str, font_size: f64, text: &str) -> Result<Box> {
+pub fn measure_text_width_family(
+    font_family: &str,
+    font_size: f64,
+    text: &str,
+    is_bold: bool,
+) -> Result<Box> {
     let font = get_font(font_family)?;
-    Ok(measure_text(&font, font_size, text))
+    Ok(measure_text(&font, font_size, text, is_bold))
 }

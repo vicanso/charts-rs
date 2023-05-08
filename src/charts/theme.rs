@@ -1,9 +1,8 @@
 use super::color::Color;
+use super::common::Align;
 use super::font::DEFAULT_FONT_FAMILY;
 use super::util::Box;
-use once_cell::sync::Lazy;
-use std::cell::RefCell;
-use std::sync::Mutex;
+use once_cell::sync::{Lazy, OnceCell};
 
 pub static DEFAULT_WIDTH: f64 = 600.0;
 pub static DEFAULT_HEIGHT: f64 = 400.0;
@@ -19,24 +18,21 @@ pub static DEFAULT_FONT_SIZE: f64 = 14.0;
 pub static DEFAULT_SERIES_STROKE_WIDTH: f64 = 2.0;
 
 static E_CHART: &str = "echart";
-static DEFAULT_THEME: Lazy<Mutex<RefCell<String>>> =
-    Lazy::new(|| Mutex::new(RefCell::new(E_CHART.to_string())));
 
-pub fn get_default_theme() -> String {
-    if let Ok(value) = DEFAULT_THEME.lock() {
-        value.borrow().to_string()
-    } else {
-        E_CHART.to_string()
-    }
+pub fn get_or_init_default_theme(theme: Option<String>) -> String {
+    static DEFAULT_THEME: OnceCell<String> = OnceCell::new();
+    let value = DEFAULT_THEME.get_or_init(|| {
+        let v = theme.unwrap_or_default();
+        if v.is_empty() {
+            return E_CHART.to_string();
+        }
+        v
+    });
+    value.to_owned()
 }
 
-pub fn set_default_theme(theme: String) -> String {
-    if let Ok(value) = DEFAULT_THEME.lock() {
-        *value.borrow_mut() = theme.clone();
-        theme
-    } else {
-        "".to_string()
-    }
+pub fn get_default_theme() -> String {
+    get_or_init_default_theme(None)
 }
 
 #[derive(Clone, Debug, Default)]
@@ -58,6 +54,8 @@ pub struct Theme {
     // legend
     pub legend_font_size: f64,
     pub legend_font_color: Color,
+    pub legend_align: Align,
+    pub legend_margin: Option<Box>,
 
     // x axis
     pub x_axis_font_size: f64,
@@ -100,6 +98,8 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
 
         legend_font_size: 14.0,
         legend_font_color: font_color,
+        legend_align: Align::Center,
+        legend_margin: Some((15.0, 0.0).into()),
 
         x_axis_font_size: DEFAULT_FONT_SIZE,
         x_axis_stroke_color: black,

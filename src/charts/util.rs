@@ -136,19 +136,13 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         unit /= 10;
         base *= 10;
     }
-    let unit = if unit <= 1 {
-        base
-    } else if unit <= 2 {
-        base * 2
-    } else if unit <= 5 {
-        base * 5
-    } else {
-        base * 10
-    };
+
+    unit = if unit < 1 { base } else { base * (unit + 1) };
+    let split_unit = unit as usize;
 
     let mut data = vec![];
     for i in 0..=params.split_number {
-        let value = min + (i * unit) as f64;
+        let value = min + (i * split_unit) as f64;
         data.push(format_float(value));
     }
     if params.reverse.unwrap_or_default() {
@@ -158,7 +152,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     AxisValues {
         data,
         min: min,
-        max: min + (unit * params.split_number) as f64,
+        max: min + (split_unit * params.split_number) as f64,
     }
 }
 

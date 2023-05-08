@@ -28,6 +28,8 @@ pub struct LineChart {
     // legend
     pub legend_font_size: f64,
     pub legend_font_color: Color,
+    pub legend_align: Align,
+    pub legend_margin: Option<Box>,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -83,6 +85,8 @@ impl LineChart {
 
         self.legend_font_color = t.legend_font_color;
         self.legend_font_size = t.legend_font_size;
+        self.legend_align = t.legend_align;
+        self.legend_margin = t.legend_margin;
 
         self.x_axis_font_size = t.x_axis_font_size;
         self.x_axis_font_color = t.x_axis_font_color;
@@ -133,13 +137,16 @@ impl LineChart {
             .iter()
             .map(|item| item.name.as_str())
             .collect();
+        let mut legend_canvas = c.child(self.legend_margin.clone().unwrap_or_default());
         let (legend_width, legend_width_list) =
-            measure_legends(&self.font_family, self.legend_font_size, &legends);
-        if legend_width < c.width() {
-            left = (c.width() - legend_width) / 2.0;
+            measure_legends(&self.font_family, self.legend_font_size, &legends, false);
+        if legend_width < legend_canvas.width() {
+            left = match self.legend_align {
+                Align::Right => legend_canvas.width() - legend_width,
+                Align::Left => 0.0,
+                Align::Center => (legend_canvas.width() - legend_width) / 2.0,
+            };
         }
-        println!("{legend_width}");
-        println!("{legend_width_list:?}");
         for (index, series) in self.series_list.iter().enumerate() {
             let color = *self
                 .series_colors
@@ -150,7 +157,7 @@ impl LineChart {
             } else {
                 Some(color)
             };
-            let b = c.legend(Legend {
+            let b = legend_canvas.legend(Legend {
                 text: series.name.to_string(),
                 font_size: self.legend_font_size,
                 font_family: self.font_family.clone(),
