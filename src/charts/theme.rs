@@ -50,6 +50,13 @@ pub struct Theme {
     pub title_font_color: Color,
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
+    pub title_align: Align,
+
+    // sub title
+    pub sub_title_font_size: f64,
+    pub sub_title_font_color: Color,
+    pub sub_title_margin: Option<Box>,
+    pub sub_title_align: Align,
 
     // legend
     pub legend_font_size: f64,
@@ -94,12 +101,18 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         title_font_color: font_color,
         title_font_size: 18.0,
         title_font_weight: Some("bold".to_string()),
-        title_margin: Some((10.0, 5.0, 10.0, 5.0).into()),
+        title_margin: None,
+        title_align: Align::Center,
+
+        sub_title_font_color: font_color,
+        sub_title_font_size: 14.0,
+        sub_title_margin: None,
+        sub_title_align: Align::Center,
 
         legend_font_size: 14.0,
         legend_font_color: font_color,
         legend_align: Align::Center,
-        legend_margin: Some((15.0, 0.0).into()),
+        legend_margin: None,
 
         x_axis_font_size: DEFAULT_FONT_SIZE,
         x_axis_stroke_color: black,

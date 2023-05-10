@@ -58,8 +58,7 @@ pub fn measure_text(font: &Font, font_size: f64, text: &str, is_bold: bool) -> B
     let mut height = 0.0;
     for ch in text.chars() {
         let metrics = font.metrics(ch, px);
-        // println!("{ch}, {}", metrics.advance_width.ceil());
-        width += metrics.advance_width.ceil();
+        width += metrics.advance_width;
         if metrics.advance_height > height {
             height = metrics.advance_height.ceil();
         }

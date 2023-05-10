@@ -24,6 +24,14 @@ pub struct LineChart {
     pub title_font_color: Color,
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
+    pub title_align: Align,
+
+    // sub title
+    pub sub_title_text: String,
+    pub sub_title_font_size: f64,
+    pub sub_title_font_color: Color,
+    pub sub_title_margin: Option<Box>,
+    pub sub_title_align: Align,
 
     // legend
     pub legend_font_size: f64,
@@ -82,6 +90,12 @@ impl LineChart {
         self.title_font_size = t.title_font_size;
         self.title_font_weight = t.title_font_weight;
         self.title_margin = t.title_margin;
+        self.title_align = t.title_align;
+
+        self.sub_title_font_color = t.sub_title_font_color;
+        self.sub_title_font_size = t.sub_title_font_size;
+        self.sub_title_margin = t.sub_title_margin;
+        self.sub_title_align = t.sub_title_align;
 
         self.legend_font_color = t.legend_font_color;
         self.legend_font_size = t.legend_font_size;
@@ -115,10 +129,23 @@ impl LineChart {
         let mut c = Canvas::new(self.width, self.height);
         c.margin = self.margin.clone();
 
-        let mut axis_top = 0.0;
+        let mut title_height = 0.0;
 
         if !self.title_text.is_empty() {
             let title_margin = self.title_margin.clone().unwrap_or_default();
+            let mut x = 0.0;
+            if let Ok(title_box) = measure_text_width_family(
+                &self.font_family,
+                self.title_font_size,
+                &self.title_text,
+                true,
+            ) {
+                x = match self.title_align {
+                    Align::Center => (c.width() - title_box.width()) / 2.0,
+                    Align::Right => c.width() - title_box.width(),
+                    Align::Left => 0.0,
+                }
+            }
             let b = c.child(title_margin).text(Text {
                 text: self.title_text.clone(),
                 font_family: Some(self.font_family.clone()),
@@ -126,27 +153,64 @@ impl LineChart {
                 font_weight: self.title_font_weight.clone(),
                 font_color: Some(self.title_font_color),
                 y: Some(self.title_font_size),
+                x: Some(x),
                 ..Default::default()
             });
-            axis_top = b.outer_height();
+            title_height = b.outer_height();
         }
 
-        let mut left = 0.0;
+        if !self.sub_title_text.is_empty() {
+            let mut sub_title_margin = self.sub_title_margin.clone().unwrap_or_default();
+            let mut x = 0.0;
+            if let Ok(title_box) = measure_text_width_family(
+                &self.font_family,
+                self.sub_title_font_size,
+                &self.sub_title_text,
+                true,
+            ) {
+                x = match self.title_align {
+                    Align::Center => (c.width() - title_box.width()) / 2.0,
+                    Align::Right => c.width() - title_box.width(),
+                    Align::Left => 0.0,
+                }
+            }
+            sub_title_margin.top += title_height;
+            let b = c.child(sub_title_margin).text(Text {
+                text: self.sub_title_text.clone(),
+                font_family: Some(self.font_family.clone()),
+                font_size: Some(self.sub_title_font_size),
+                font_color: Some(self.sub_title_font_color),
+                y: Some(self.sub_title_font_size),
+                x: Some(x),
+                ..Default::default()
+            });
+            title_height = b.outer_height();
+        }
+
+        let mut legend_left = 0.0;
         let legends: Vec<&str> = self
             .series_list
             .iter()
             .map(|item| item.name.as_str())
             .collect();
-        let mut legend_canvas = c.child(self.legend_margin.clone().unwrap_or_default());
+        let legend_margin = self.legend_margin.clone().unwrap_or_default();
+        let legend_margin_value = legend_margin.top + legend_margin.bottom;
+        let mut legend_canvas = c.child(legend_margin);
         let (legend_width, legend_width_list) =
             measure_legends(&self.font_family, self.legend_font_size, &legends, false);
-        if legend_width < legend_canvas.width() {
-            left = match self.legend_align {
-                Align::Right => legend_canvas.width() - legend_width,
+        let legend_canvas_width = legend_canvas.width();
+        if legend_width < legend_canvas_width {
+            legend_left = match self.legend_align {
+                Align::Right => legend_canvas_width - legend_width,
                 Align::Left => 0.0,
-                Align::Center => (legend_canvas.width() - legend_width) / 2.0,
+                Align::Center => (legend_canvas_width - legend_width) / 2.0,
             };
+            if legend_left < 0.0 {
+                legend_left = 0.0;
+            }
         }
+        let legend_unit_height = self.legend_font_size + LEGEND_MARGIN;
+        let mut legend_top = 0.0;
         for (index, series) in self.series_list.iter().enumerate() {
             let color = *self
                 .series_colors
@@ -157,6 +221,10 @@ impl LineChart {
             } else {
                 Some(color)
             };
+            if legend_left + legend_width_list[index] > legend_canvas_width {
+                legend_left = 0.0;
+                legend_top += legend_unit_height;
+            }
             let b = legend_canvas.legend(Legend {
                 text: series.name.to_string(),
                 font_size: self.legend_font_size,
@@ -164,11 +232,18 @@ impl LineChart {
                 font_color: Some(self.legend_font_color),
                 stroke_color: Some(color),
                 fill: fill,
-                left,
-                top: 0.0,
+                left: legend_left,
+                top: legend_top,
             });
-            left += b.width() + LEGEND_MARGIN;
+            legend_left += b.width() + LEGEND_MARGIN;
         }
+
+        let legend_outer_height = legend_unit_height + legend_top + legend_margin_value;
+        let axis_top = if legend_outer_height > title_height {
+            legend_outer_height
+        } else {
+            title_height
+        };
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - self.y_axis_width;

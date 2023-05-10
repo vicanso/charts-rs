@@ -223,7 +223,7 @@ impl Canvas {
         let b = Box {
             left: c.left,
             top: c.top,
-            right: c.left + measurement.width() + LEGEND_WIDTH + LEGEND_MARGIN,
+            right: c.left + measurement.width() + LEGEND_WIDTH,
             bottom: c.top + measurement.height(),
         };
         self.append(Component::Legend(c));
