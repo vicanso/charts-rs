@@ -116,7 +116,7 @@ impl Canvas {
     pub fn text(&mut self, text: Text) -> Box {
         let font_family = text.font_family.clone().unwrap_or_default();
         let font_size = text.font_size.unwrap_or_default();
-        let is_bold = text.font_weight.clone().is_some();
+        let is_bold = text.font_weight.is_some();
         let mut c = text;
 
         if let Some(x) = c.x {
