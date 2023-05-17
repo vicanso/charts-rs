@@ -134,12 +134,9 @@ impl LineChart {
         if !self.title_text.is_empty() {
             let title_margin = self.title_margin.clone().unwrap_or_default();
             let mut x = 0.0;
-            if let Ok(title_box) = measure_text_width_family(
-                &self.font_family,
-                self.title_font_size,
-                &self.title_text,
-                true,
-            ) {
+            if let Ok(title_box) =
+                measure_text_width_family(&self.font_family, self.title_font_size, &self.title_text)
+            {
                 x = match self.title_align {
                     Align::Center => (c.width() - title_box.width()) / 2.0,
                     Align::Right => c.width() - title_box.width(),
@@ -166,7 +163,6 @@ impl LineChart {
                 &self.font_family,
                 self.sub_title_font_size,
                 &self.sub_title_text,
-                true,
             ) {
                 x = match self.title_align {
                     Align::Center => (c.width() - title_box.width()) / 2.0,
@@ -197,7 +193,7 @@ impl LineChart {
         let legend_margin_value = legend_margin.top + legend_margin.bottom;
         let mut legend_canvas = c.child(legend_margin);
         let (legend_width, legend_width_list) =
-            measure_legends(&self.font_family, self.legend_font_size, &legends, false);
+            measure_legends(&self.font_family, self.legend_font_size, &legends);
         let legend_canvas_width = legend_canvas.width();
         if legend_width < legend_canvas_width {
             legend_left = match self.legend_align {
@@ -231,7 +227,7 @@ impl LineChart {
                 font_family: self.font_family.clone(),
                 font_color: Some(self.legend_font_color),
                 stroke_color: Some(color),
-                fill: fill,
+                fill,
                 left: legend_left,
                 top: legend_top,
             });

@@ -1,3 +1,3 @@
 mod charts;
 
-pub use charts::Color;
+pub use charts::*;

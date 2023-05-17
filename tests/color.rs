@@ -42,9 +42,9 @@ mod tests {
         assert!(!c.is_nontransparent());
     }
     #[test]
-    fn color_white() {
-        let c = Color::white();
-        assert_eq!("rgba(255,255,255,1.0)", c.rgba());
+    fn color_static() {
+        assert_eq!("rgba(255,255,255,1.0)", Color::white().rgba());
+        assert_eq!("rgba(0,0,0,1.0)", Color::black().rgba());
     }
 
     #[test]

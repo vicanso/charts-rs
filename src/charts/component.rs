@@ -901,7 +901,7 @@ impl Axis {
             }
             let unit = axis_length / data_len as f64;
             for (index, text) in self.data.iter().enumerate() {
-                let b = font::measure_text(&f, font_size, text, false);
+                let b = font::measure_text(&f, font_size, text);
                 let mut unit_offset = unit * index as f64 + unit / 2.0;
                 if is_name_align_start {
                     unit_offset -= unit / 2.0;
@@ -982,14 +982,12 @@ pub(crate) fn measure_legends(
     font_family: &str,
     font_size: f64,
     legends: &[&str],
-    is_bold: bool,
 ) -> (f64, Vec<f64>) {
     let widths: Vec<f64> = legends
         .iter()
         .map(|item| {
-            let text_box =
-                measure_text_width_family(font_family, font_size, item.to_owned(), is_bold)
-                    .unwrap_or_default();
+            let text_box = measure_text_width_family(font_family, font_size, item.to_owned())
+                .unwrap_or_default();
             text_box.width() + LEGEND_WIDTH + LEGEND_TEXT_MARGIN
         })
         .collect();
@@ -1020,7 +1018,6 @@ impl Legend {
             top: self.top + LEGEND_HEIGHT / 2.0,
             right: self.left + LEGEND_WIDTH,
             bottom: self.top + LEGEND_HEIGHT / 2.0,
-            ..Default::default()
         }
         .svg();
         let circle_svg = Circle {
@@ -1030,7 +1027,6 @@ impl Legend {
             cx: self.left + LEGEND_WIDTH / 2.0,
             cy: self.top + LEGEND_HEIGHT / 2.0,
             r: 5.5,
-            ..Default::default()
         }
         .svg();
         let text_svg = Text {

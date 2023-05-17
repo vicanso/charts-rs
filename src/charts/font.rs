@@ -1,4 +1,5 @@
 use super::util::*;
+use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
 use fontdue::Font;
 use once_cell::sync::Lazy;
 use snafu::{ResultExt, Snafu};
@@ -10,8 +11,8 @@ pub enum Error {
     UnableGetLock {
         source: std::sync::PoisonError<MutexGuard<'static, HashMap<String, Font>>>,
     },
-    #[snafu(display("Error font not found"))]
-    FontNotFound {},
+    #[snafu(display("Error font:{name} not found"))]
+    FontNotFound { name: String },
     #[snafu(display("Error parse font: {message}"))]
     ParseFont { message: String },
 }
@@ -48,41 +49,37 @@ pub fn get_font(name: &str) -> Result<Font> {
     if let Some(font) = m.get(name) {
         Ok(font.clone())
     } else {
-        FontNotFoundSnafu {}.fail()
+        FontNotFoundSnafu {
+            name: name.to_string(),
+        }
+        .fail()
     }
 }
 
-pub fn measure_text(font: &Font, font_size: f64, text: &str, is_bold: bool) -> Box {
-    let px = font_size as f32;
-    let mut width = 0.0;
-    let mut height = 0.0;
-    for ch in text.chars() {
-        let metrics = font.metrics(ch, px);
-        width += metrics.advance_width;
-        if metrics.advance_height > height {
-            height = metrics.advance_height.ceil();
+pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
+    let mut layout = Layout::new(CoordinateSystem::PositiveYDown);
+    layout.append(&[font], &TextStyle::new(text, font_size as f32, 0));
+
+    let mut right = 0.0_f32;
+    let mut bottom = 0.0_f32;
+    for g in layout.glyphs().iter() {
+        let x = g.x + g.width as f32;
+        let y = g.y + g.height as f32;
+        if x > right {
+            right = x;
+        }
+        if y > bottom {
+            bottom = y;
         }
     }
-
-    // TODO 后续了解更好的计算方法
-    // 文本计算放大x倍
-    if is_bold {
-        width *= 1.05;
-        height *= 1.05;
-    }
     Box {
-        right: width as f64,
-        bottom: height as f64,
+        right: right as f64,
+        bottom: bottom as f64,
         ..Default::default()
     }
 }
 
-pub fn measure_text_width_family(
-    font_family: &str,
-    font_size: f64,
-    text: &str,
-    is_bold: bool,
-) -> Result<Box> {
+pub fn measure_text_width_family(font_family: &str, font_size: f64, text: &str) -> Result<Box> {
     let font = get_font(font_family)?;
-    Ok(measure_text(&font, font_size, text, is_bold))
+    Ok(measure_text(&font, font_size, text))
 }

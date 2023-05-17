@@ -151,7 +151,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
 
     AxisValues {
         data,
-        min: min,
+        min,
         max: min + (split_unit * params.split_number) as f64,
     }
 }
