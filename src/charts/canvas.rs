@@ -17,14 +17,14 @@ pub enum Error {
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub struct Canvas {
-    pub width: f64,
-    pub height: f64,
+    pub width: f32,
+    pub height: f32,
     pub components: Rc<RefCell<Vec<Component>>>,
     pub margin: Box,
 }
 
 impl Canvas {
-    pub fn new(width: f64, height: f64) -> Self {
+    pub fn new(width: f32, height: f32) -> Self {
         Canvas {
             width,
             height,
@@ -32,10 +32,10 @@ impl Canvas {
             margin: Box::default(),
         }
     }
-    pub fn width(&self) -> f64 {
+    pub fn width(&self) -> f32 {
         self.width - self.margin.left - self.margin.right
     }
-    pub fn height(&self) -> f64 {
+    pub fn height(&self) -> f32 {
         self.height - self.margin.top - self.margin.bottom
     }
     pub fn child(&self, margin: Box) -> Self {

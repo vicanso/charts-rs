@@ -13,11 +13,11 @@ impl Color {
         format!("#{:02X}{:02X}{:02X}", self.r, self.g, self.b)
     }
     pub fn rgba(&self) -> String {
-        let fa = (self.a as f64) / 255.0;
+        let fa = (self.a as f32) / 255.0;
         format!("rgba({},{},{},{:.1})", self.r, self.g, self.b, fa)
     }
-    pub fn opacity(&self) -> f64 {
-        let a = self.a as f64;
+    pub fn opacity(&self) -> f32 {
+        let a = self.a as f32;
         a / 255.0
     }
     pub fn is_zero(&self) -> bool {
@@ -85,5 +85,62 @@ impl From<&str> for Color {
         }
         c.a = 255;
         c
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Color;
+    #[test]
+    fn color_hex() {
+        let mut c: Color = (200, 200, 200).into();
+        assert_eq!("#C8C8C8", c.hex());
+
+        c = (51, 51, 51).into();
+        assert_eq!("#333333", c.hex());
+    }
+    #[test]
+    fn color_rgba() {
+        let mut c: Color = (200, 200, 200).into();
+        assert_eq!("rgba(200,200,200,1.0)", c.rgba());
+        c = (51, 51, 51, 51).into();
+        assert_eq!("rgba(51,51,51,0.2)", c.rgba());
+    }
+    #[test]
+    fn color_opacity() {
+        let mut c: Color = (200, 200, 200).into();
+        assert_eq!(1.0, c.opacity());
+        c = (51, 51, 51, 51).into();
+        assert_eq!(0.2, c.opacity());
+    }
+    #[test]
+    fn color_is_zero() {
+        let mut c: Color = (200, 200, 200).into();
+        assert!(!c.is_zero());
+        c = (0, 0, 0, 0).into();
+        assert!(c.is_zero());
+    }
+    #[test]
+    fn color_is_transparent() {
+        let mut c: Color = (200, 200, 200).into();
+        assert!(!c.is_transparent());
+        assert!(c.is_nontransparent());
+        c = (200, 200, 200, 0).into();
+        assert!(c.is_transparent());
+        c = (200, 200, 200, 100).into();
+        assert!(!c.is_nontransparent());
+    }
+    #[test]
+    fn color_static() {
+        assert_eq!("rgba(255,255,255,1.0)", Color::white().rgba());
+        assert_eq!("rgba(0,0,0,1.0)", Color::black().rgba());
+    }
+
+    #[test]
+    fn color_with_alpha() {
+        let mut c = Color::white();
+        assert_eq!("rgba(255,255,255,1.0)", c.rgba());
+        c = c.with_alpha(51);
+        assert_eq!("rgba(255,255,255,0.2)", c.rgba());
     }
 }

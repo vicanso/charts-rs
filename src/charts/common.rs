@@ -19,11 +19,11 @@ pub enum Align {
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum Symbol {
-    Circle(f64, Option<Color>),
+    Circle(f32, Option<Color>),
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct Series {
     pub name: String,
-    pub data: Vec<f64>,
+    pub data: Vec<f32>,
 }

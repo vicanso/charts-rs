@@ -56,9 +56,9 @@ pub fn get_font(name: &str) -> Result<Font> {
     }
 }
 
-pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
+pub fn measure_text(font: &Font, font_size: f32, text: &str) -> Box {
     let mut layout = Layout::new(CoordinateSystem::PositiveYDown);
-    layout.append(&[font], &TextStyle::new(text, font_size as f32, 0));
+    layout.append(&[font], &TextStyle::new(text, font_size, 0));
 
     let mut right = 0.0_f32;
     let mut bottom = 0.0_f32;
@@ -73,13 +73,32 @@ pub fn measure_text(font: &Font, font_size: f64, text: &str) -> Box {
         }
     }
     Box {
-        right: right as f64,
-        bottom: bottom as f64,
+        right,
+        bottom,
         ..Default::default()
     }
 }
 
-pub fn measure_text_width_family(font_family: &str, font_size: f64, text: &str) -> Result<Box> {
+pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) -> Result<Box> {
     let font = get_font(font_family)?;
     Ok(measure_text(&font, font_size, text))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{add_font, get_font, measure_text_width_family};
+    #[test]
+    fn measure_text() {
+        let data = include_bytes!("../../src/Arial.ttf") as &[u8];
+        let name = "custom";
+        add_font(name, data).unwrap();
+
+        get_font(name).unwrap();
+
+        let str = "Hello World!";
+        let b = measure_text_width_family(name, 14.0, str).unwrap();
+
+        assert_eq!(81.0, b.width().ceil());
+        assert_eq!(14.0, b.height());
+    }
 }

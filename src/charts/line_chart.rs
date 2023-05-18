@@ -10,8 +10,8 @@ use super::Canvas;
 
 #[derive(Clone, Debug, Default)]
 pub struct LineChart {
-    pub width: f64,
-    pub height: f64,
+    pub width: f32,
+    pub height: f32,
     pub margin: Box,
     pub series_list: Vec<Series>,
     pub font_family: String,
@@ -20,7 +20,7 @@ pub struct LineChart {
 
     // title
     pub title_text: String,
-    pub title_font_size: f64,
+    pub title_font_size: f32,
     pub title_font_color: Color,
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
@@ -28,38 +28,38 @@ pub struct LineChart {
 
     // sub title
     pub sub_title_text: String,
-    pub sub_title_font_size: f64,
+    pub sub_title_font_size: f32,
     pub sub_title_font_color: Color,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
 
     // legend
-    pub legend_font_size: f64,
+    pub legend_font_size: f32,
     pub legend_font_color: Color,
     pub legend_align: Align,
     pub legend_margin: Option<Box>,
 
     // x axis
     pub x_axis_data: Vec<String>,
-    pub x_axis_height: f64,
+    pub x_axis_height: f32,
     pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f64,
+    pub x_axis_font_size: f32,
     pub x_axis_font_color: Color,
-    pub x_axis_name_gap: f64,
-    pub x_axis_name_rotate: f64,
+    pub x_axis_name_gap: f32,
+    pub x_axis_name_rotate: f32,
     // y axis
-    pub y_axis_font_size: f64,
+    pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
-    pub y_axis_width: f64,
+    pub y_axis_width: f32,
     pub y_axis_split_number: usize,
-    pub y_axis_name_gap: f64,
+    pub y_axis_name_gap: f32,
 
     // grid
     pub grid_stroke_color: Color,
-    pub grid_stroke_width: f64,
+    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f64,
+    pub series_stroke_width: f32,
     pub series_colors: Vec<Color>,
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
@@ -316,11 +316,11 @@ impl LineChart {
             ..Default::default()
         });
         for (index, series) in self.series_list.iter().enumerate() {
-            let unit_width = series_canvas.width() / series.data.len() as f64;
+            let unit_width = series_canvas.width() / series.data.len() as f32;
             let mut points: Vec<Point> = vec![];
             for (i, p) in series.data.iter().enumerate() {
                 // 居中
-                let x = unit_width * i as f64 + unit_width / 2.0;
+                let x = unit_width * i as f32 + unit_width / 2.0;
                 let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
                 points.push((x, y).into());
             }

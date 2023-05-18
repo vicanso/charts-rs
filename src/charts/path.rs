@@ -3,10 +3,10 @@ use std::fmt;
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct QuadraticBezier {
-    pub x1: f64,
-    pub y1: f64,
-    pub x2: f64,
-    pub y2: f64,
+    pub x1: f32,
+    pub y1: f32,
+    pub x2: f32,
+    pub y2: f32,
 }
 impl fmt::Display for QuadraticBezier {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -30,7 +30,7 @@ fn get_control_points(
     p: &Point,
     left: Option<&Point>,
     right: Option<&Point>,
-    t: f64,
+    t: f32,
 ) -> ControlPoint {
     let x0 = left.unwrap_or(p).x;
     let y0 = left.unwrap_or(p).y;

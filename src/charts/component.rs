@@ -57,7 +57,7 @@ fn convert_opacity(color: &Color) -> String {
     }
 }
 
-fn format_option_float(value: Option<f64>) -> String {
+fn format_option_float(value: Option<f32>) -> String {
     if let Some(f) = value {
         format_float(f)
     } else {
@@ -72,7 +72,7 @@ struct SVGTag<'a> {
     data: Option<String>,
 }
 
-pub fn generate_svg(width: f64, height: f64, data: String) -> String {
+pub fn generate_svg(width: f32, height: f32, data: String) -> String {
     SVGTag::new(
         TAG_SVG,
         data,
@@ -148,11 +148,11 @@ pub enum Component {
 
 pub struct Line {
     pub color: Option<Color>,
-    pub stroke_width: f64,
-    pub left: f64,
-    pub top: f64,
-    pub right: f64,
-    pub bottom: f64,
+    pub stroke_width: f32,
+    pub left: f32,
+    pub top: f32,
+    pub right: f32,
+    pub bottom: f32,
 }
 
 impl Default for Line {
@@ -197,12 +197,12 @@ impl Line {
 pub struct Rect {
     pub color: Option<Color>,
     pub fill: Option<Color>,
-    pub left: f64,
-    pub top: f64,
-    pub width: f64,
-    pub height: f64,
-    pub rx: Option<f64>,
-    pub ry: Option<f64>,
+    pub left: f32,
+    pub top: f32,
+    pub width: f32,
+    pub height: f32,
+    pub rx: Option<f32>,
+    pub ry: Option<f32>,
 }
 impl Rect {
     pub fn svg(&self) -> String {
@@ -236,7 +236,7 @@ impl Rect {
 #[derive(Clone, PartialEq, Debug)]
 pub struct Polyline {
     pub color: Option<Color>,
-    pub stroke_width: f64,
+    pub stroke_width: f32,
     pub points: Vec<Point>,
 }
 
@@ -284,10 +284,10 @@ impl Polyline {
 pub struct Circle {
     pub stroke_color: Option<Color>,
     pub fill: Option<Color>,
-    pub stroke_width: f64,
-    pub cx: f64,
-    pub cy: f64,
-    pub r: f64,
+    pub stroke_width: f32,
+    pub cx: f32,
+    pub cy: f32,
+    pub r: f32,
 }
 
 impl Default for Circle {
@@ -370,12 +370,12 @@ impl Polygon {
 pub struct Text {
     pub text: String,
     pub font_family: Option<String>,
-    pub font_size: Option<f64>,
+    pub font_size: Option<f32>,
     pub font_color: Option<Color>,
-    pub x: Option<f64>,
-    pub y: Option<f64>,
-    pub dx: Option<f64>,
-    pub dy: Option<f64>,
+    pub x: Option<f32>,
+    pub y: Option<f32>,
+    pub dx: Option<f32>,
+    pub dy: Option<f32>,
     pub font_weight: Option<String>,
     pub transform: Option<String>,
 }
@@ -428,7 +428,7 @@ fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
 struct BaseLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
-    pub stroke_width: f64,
+    pub stroke_width: f32,
     pub symbol: Option<Symbol>,
     pub is_smooth: bool,
 }
@@ -510,7 +510,7 @@ impl BaseLine {
 pub struct SmoothLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
-    pub stroke_width: f64,
+    pub stroke_width: f32,
     pub symbol: Option<Symbol>,
 }
 
@@ -542,7 +542,7 @@ impl SmoothLine {
 pub struct SmoothLineFill {
     pub fill: Color,
     pub points: Vec<Point>,
-    pub bottom: f64,
+    pub bottom: f32,
 }
 
 impl Default for SmoothLineFill {
@@ -596,7 +596,7 @@ impl SmoothLineFill {
 pub struct StraightLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
-    pub stroke_width: f64,
+    pub stroke_width: f32,
     pub symbol: Option<Symbol>,
 }
 
@@ -628,7 +628,7 @@ impl StraightLine {
 pub struct StraightLineFill {
     pub fill: Color,
     pub points: Vec<Point>,
-    pub bottom: f64,
+    pub bottom: f32,
 }
 
 impl StraightLineFill {
@@ -672,12 +672,12 @@ impl StraightLineFill {
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct Grid {
-    pub left: f64,
-    pub top: f64,
-    pub right: f64,
-    pub bottom: f64,
+    pub left: f32,
+    pub top: f32,
+    pub right: f32,
+    pub bottom: f32,
     pub color: Option<Color>,
-    pub stroke_width: f64,
+    pub stroke_width: f32,
     pub verticals: usize,
     pub hidden_verticals: Vec<usize>,
     pub horizontals: usize,
@@ -691,22 +691,22 @@ impl Grid {
         }
         let mut points = vec![];
         if self.verticals != 0 {
-            let unit = (self.right - self.left) / (self.verticals) as f64;
+            let unit = (self.right - self.left) / (self.verticals) as f32;
             for index in 0..=self.verticals {
                 if self.hidden_verticals.contains(&index) {
                     continue;
                 }
-                let x = self.left + unit * index as f64;
+                let x = self.left + unit * index as f32;
                 points.push((x, self.top, x, self.bottom));
             }
         }
         if self.horizontals != 0 {
-            let unit = (self.bottom - self.top) / (self.horizontals) as f64;
+            let unit = (self.bottom - self.top) / (self.horizontals) as f32;
             for index in 0..=self.horizontals {
                 if self.hidden_horizontals.contains(&index) {
                     continue;
                 }
-                let y = self.top + unit * index as f64;
+                let y = self.top + unit * index as f32;
                 points.push((self.left, y, self.right, y));
             }
         }
@@ -743,19 +743,19 @@ impl Grid {
 pub struct Axis {
     pub position: Position,
     pub split_number: usize,
-    pub font_size: f64,
+    pub font_size: f32,
     pub font_family: String,
     pub font_color: Option<Color>,
     pub data: Vec<String>,
-    pub name_gap: f64,
+    pub name_gap: f32,
     pub name_align: Align,
-    pub name_rotate: f64,
+    pub name_rotate: f32,
     pub stroke_color: Option<Color>,
-    pub left: f64,
-    pub top: f64,
-    pub width: f64,
-    pub height: f64,
-    pub tick_length: f64,
+    pub left: f32,
+    pub top: f32,
+    pub width: f32,
+    pub height: f32,
+    pub tick_length: f32,
     pub tick_start: usize,
     pub tick_interval: usize,
 }
@@ -842,7 +842,7 @@ impl Axis {
         };
 
         if !is_transparent {
-            let unit = axis_length / self.split_number as f64;
+            let unit = axis_length / self.split_number as f32;
             let tick_interval = self.tick_interval;
             let tick_start = self.tick_start;
             for i in 0..=self.split_number {
@@ -856,21 +856,21 @@ impl Axis {
 
                 let values = match self.position {
                     Position::Left => {
-                        let y = top + unit * i as f64;
+                        let y = top + unit * i as f32;
                         let x = left + width;
                         (x, y, x - tick_length, y)
                     }
                     Position::Top => {
-                        let x = left + unit * i as f64;
+                        let x = left + unit * i as f32;
                         let y = top + height;
                         (x, y - tick_length, x, y)
                     }
                     Position::Right => {
-                        let y = top + unit * i as f64;
+                        let y = top + unit * i as f32;
                         (left, y, left + tick_length, y)
                     }
                     Position::Bottom => {
-                        let x = left + unit * i as f64;
+                        let x = left + unit * i as f32;
                         (x, top, x, top + tick_length)
                     }
                 };
@@ -890,7 +890,7 @@ impl Axis {
         }
         let mut text_data = vec![];
         let font_size = self.font_size;
-        let name_rotate = self.name_rotate / std::f64::consts::FRAC_PI_2 * 180.0;
+        let name_rotate = self.name_rotate / std::f32::consts::FRAC_PI_2 * 180.0;
         if font_size > 0.0 && !self.data.is_empty() {
             let name_gap = self.name_gap;
             let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
@@ -899,10 +899,10 @@ impl Axis {
             if is_name_align_start {
                 data_len -= 1;
             }
-            let unit = axis_length / data_len as f64;
+            let unit = axis_length / data_len as f32;
             for (index, text) in self.data.iter().enumerate() {
                 let b = font::measure_text(&f, font_size, text);
-                let mut unit_offset = unit * index as f64 + unit / 2.0;
+                let mut unit_offset = unit * index as f32 + unit / 2.0;
                 if is_name_align_start {
                     unit_offset -= unit / 2.0;
                 }
@@ -973,17 +973,17 @@ impl Axis {
     }
 }
 
-pub(crate) static LEGEND_WIDTH: f64 = 25.0;
-pub(crate) static LEGEND_HEIGHT: f64 = 20.0;
-pub(crate) static LEGEND_TEXT_MARGIN: f64 = 3.0;
-pub(crate) static LEGEND_MARGIN: f64 = 8.0;
+pub(crate) static LEGEND_WIDTH: f32 = 25.0;
+pub(crate) static LEGEND_HEIGHT: f32 = 20.0;
+pub(crate) static LEGEND_TEXT_MARGIN: f32 = 3.0;
+pub(crate) static LEGEND_MARGIN: f32 = 8.0;
 
 pub(crate) fn measure_legends(
     font_family: &str,
-    font_size: f64,
+    font_size: f32,
     legends: &[&str],
-) -> (f64, Vec<f64>) {
-    let widths: Vec<f64> = legends
+) -> (f32, Vec<f32>) {
+    let widths: Vec<f32> = legends
         .iter()
         .map(|item| {
             let text_box = measure_text_width_family(font_family, font_size, item.to_owned())
@@ -991,8 +991,8 @@ pub(crate) fn measure_legends(
             text_box.width() + LEGEND_WIDTH + LEGEND_TEXT_MARGIN
         })
         .collect();
-    let width: f64 = widths.iter().sum();
-    let margin = LEGEND_MARGIN * (legends.len() - 1) as f64;
+    let width: f32 = widths.iter().sum();
+    let margin = LEGEND_MARGIN * (legends.len() - 1) as f32;
 
     (width + margin, widths)
 }
@@ -1000,13 +1000,13 @@ pub(crate) fn measure_legends(
 #[derive(Clone, PartialEq, Debug)]
 pub struct Legend {
     pub text: String,
-    pub font_size: f64,
+    pub font_size: f32,
     pub font_family: String,
     pub font_color: Option<Color>,
     pub stroke_color: Option<Color>,
     pub fill: Option<Color>,
-    pub left: f64,
-    pub top: f64,
+    pub left: f32,
+    pub top: f32,
 }
 impl Legend {
     pub fn svg(&self) -> String {

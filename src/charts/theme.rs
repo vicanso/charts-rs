@@ -4,18 +4,18 @@ use super::font::DEFAULT_FONT_FAMILY;
 use super::util::Box;
 use once_cell::sync::{Lazy, OnceCell};
 
-pub static DEFAULT_WIDTH: f64 = 600.0;
-pub static DEFAULT_HEIGHT: f64 = 400.0;
+pub static DEFAULT_WIDTH: f32 = 600.0;
+pub static DEFAULT_HEIGHT: f32 = 400.0;
 
-pub static DEFAULT_X_AXIS_HEIGHT: f64 = 30.0;
-pub static DEFAULT_X_AXIS_NAME_GAP: f64 = 5.0;
+pub static DEFAULT_X_AXIS_HEIGHT: f32 = 30.0;
+pub static DEFAULT_X_AXIS_NAME_GAP: f32 = 5.0;
 
-pub static DEFAULT_Y_AXIS_WIDTH: f64 = 40.0;
-pub static DEFAULT_Y_AXIS_NAME_GAP: f64 = 8.0;
+pub static DEFAULT_Y_AXIS_WIDTH: f32 = 40.0;
+pub static DEFAULT_Y_AXIS_NAME_GAP: f32 = 8.0;
 pub static DEFAULT_Y_AXIS_SPLIT_NUMBER: usize = 6;
-pub static DEFAULT_FONT_SIZE: f64 = 14.0;
+pub static DEFAULT_FONT_SIZE: f32 = 14.0;
 
-pub static DEFAULT_SERIES_STROKE_WIDTH: f64 = 2.0;
+pub static DEFAULT_SERIES_STROKE_WIDTH: f32 = 2.0;
 
 static E_CHART: &str = "echart";
 
@@ -41,49 +41,49 @@ pub struct Theme {
     pub is_light: bool,
     pub font_family: String,
     pub margin: Box,
-    pub width: f64,
-    pub height: f64,
+    pub width: f32,
+    pub height: f32,
     pub background_color: Color,
 
     // title
-    pub title_font_size: f64,
+    pub title_font_size: f32,
     pub title_font_color: Color,
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
     pub title_align: Align,
 
     // sub title
-    pub sub_title_font_size: f64,
+    pub sub_title_font_size: f32,
     pub sub_title_font_color: Color,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
 
     // legend
-    pub legend_font_size: f64,
+    pub legend_font_size: f32,
     pub legend_font_color: Color,
     pub legend_align: Align,
     pub legend_margin: Option<Box>,
 
     // x axis
-    pub x_axis_font_size: f64,
+    pub x_axis_font_size: f32,
     pub x_axis_stroke_color: Color,
     pub x_axis_font_color: Color,
-    pub x_axis_name_gap: f64,
-    pub x_axis_height: f64,
+    pub x_axis_name_gap: f32,
+    pub x_axis_height: f32,
 
     // y axis
-    pub y_axis_font_size: f64,
+    pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
-    pub y_axis_width: f64,
+    pub y_axis_width: f32,
     pub y_axis_split_number: usize,
-    pub y_axis_name_gap: f64,
+    pub y_axis_name_gap: f32,
 
     // grid
     pub grid_stroke_color: Color,
-    pub grid_stroke_width: f64,
+    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f64,
+    pub series_stroke_width: f32,
     pub series_colors: Vec<Color>,
 }
 

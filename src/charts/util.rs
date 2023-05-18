@@ -2,39 +2,39 @@ use substring::Substring;
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct Point {
-    pub x: f64,
-    pub y: f64,
+    pub x: f32,
+    pub y: f32,
 }
-impl From<(f64, f64)> for Point {
-    fn from(val: (f64, f64)) -> Self {
+impl From<(f32, f32)> for Point {
+    fn from(val: (f32, f32)) -> Self {
         Point { x: val.0, y: val.1 }
     }
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct Box {
-    pub left: f64,
-    pub top: f64,
-    pub right: f64,
-    pub bottom: f64,
+    pub left: f32,
+    pub top: f32,
+    pub right: f32,
+    pub bottom: f32,
 }
 impl Box {
-    pub fn width(&self) -> f64 {
+    pub fn width(&self) -> f32 {
         self.right - self.left
     }
-    pub fn height(&self) -> f64 {
+    pub fn height(&self) -> f32 {
         self.bottom - self.top
     }
-    pub fn outer_width(&self) -> f64 {
+    pub fn outer_width(&self) -> f32 {
         self.right
     }
-    pub fn outer_height(&self) -> f64 {
+    pub fn outer_height(&self) -> f32 {
         self.bottom
     }
 }
 
-impl From<f64> for Box {
-    fn from(val: f64) -> Self {
+impl From<f32> for Box {
+    fn from(val: f32) -> Self {
         Box {
             left: val,
             top: val,
@@ -43,8 +43,8 @@ impl From<f64> for Box {
         }
     }
 }
-impl From<(f64, f64)> for Box {
-    fn from(val: (f64, f64)) -> Self {
+impl From<(f32, f32)> for Box {
+    fn from(val: (f32, f32)) -> Self {
         Box {
             left: val.0,
             top: val.1,
@@ -53,8 +53,8 @@ impl From<(f64, f64)> for Box {
         }
     }
 }
-impl From<(f64, f64, f64)> for Box {
-    fn from(val: (f64, f64, f64)) -> Self {
+impl From<(f32, f32, f32)> for Box {
+    fn from(val: (f32, f32, f32)) -> Self {
         Box {
             left: val.0,
             top: val.1,
@@ -63,8 +63,8 @@ impl From<(f64, f64, f64)> for Box {
         }
     }
 }
-impl From<(f64, f64, f64, f64)> for Box {
-    fn from(val: (f64, f64, f64, f64)) -> Self {
+impl From<(f32, f32, f32, f32)> for Box {
+    fn from(val: (f32, f32, f32, f32)) -> Self {
         Box {
             left: val.0,
             top: val.1,
@@ -74,7 +74,7 @@ impl From<(f64, f64, f64, f64)> for Box {
     }
 }
 
-pub fn format_float(value: f64) -> String {
+pub fn format_float(value: f32) -> String {
     let str = format!("{:.1}", value);
     if str.ends_with(".0") {
         return str.substring(0, str.len() - 2).to_string();
@@ -84,24 +84,24 @@ pub fn format_float(value: f64) -> String {
 
 #[derive(Clone, Debug, Default)]
 pub(crate) struct AxisValueParams {
-    pub data_list: Vec<f64>,
-    pub min: Option<f64>,
-    pub max: Option<f64>,
+    pub data_list: Vec<f32>,
+    pub min: Option<f32>,
+    pub max: Option<f32>,
     pub split_number: usize,
     pub reverse: Option<bool>,
 }
 #[derive(Clone, Debug, Default)]
 pub(crate) struct AxisValues {
     pub data: Vec<String>,
-    pub min: f64,
-    pub max: f64,
+    pub min: f32,
+    pub max: f32,
 }
 
 impl AxisValues {
-    fn get_offset(&self) -> f64 {
+    fn get_offset(&self) -> f32 {
         self.max - self.min
     }
-    pub(crate) fn get_offset_height(&self, value: f64, max_height: f64) -> f64 {
+    pub(crate) fn get_offset_height(&self, value: f32, max_height: f32) -> f32 {
         let percent = (value - self.min) / self.get_offset();
         max_height - percent * max_height
     }
@@ -109,8 +109,12 @@ impl AxisValues {
 
 pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     let mut min = 0.0;
-    let mut max = f64::MIN;
+    let mut max = f32::MIN;
 
+    let mut split_number = params.split_number;
+    if split_number == 0 {
+        split_number = 6;
+    }
     for item in params.data_list.iter() {
         let value = item.to_owned();
         if value > max {
@@ -130,7 +134,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             max = value;
         }
     }
-    let mut unit = ((max - min) / params.split_number as f64) as i32;
+    let mut unit = ((max - min) / split_number as f32) as i32;
     let mut base = 1;
     while unit >= 10 {
         unit /= 10;
@@ -141,8 +145,8 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     let split_unit = unit as usize;
 
     let mut data = vec![];
-    for i in 0..=params.split_number {
-        let value = min + (i * split_unit) as f64;
+    for i in 0..=split_number {
+        let value = min + (i * split_unit) as f32;
         data.push(format_float(value));
     }
     if params.reverse.unwrap_or_default() {
@@ -152,14 +156,14 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     AxisValues {
         data,
         min,
-        max: min + (split_unit * params.split_number) as f64,
+        max: min + (split_unit * split_number) as f32,
     }
 }
 
 pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
     let mut b = Box {
-        left: f64::MAX,
-        top: f64::MAX,
+        left: f32::MAX,
+        top: f32::MAX,
         ..Default::default()
     };
     for p in points.iter() {
@@ -177,4 +181,59 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
         }
     }
     b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{format_float, get_axis_values, AxisValueParams, Box, Point};
+
+    #[test]
+    fn point() {
+        let p: Point = (1.2, 1.3).into();
+
+        assert_eq!(1.2, p.x);
+        assert_eq!(1.3, p.y);
+    }
+
+    #[test]
+    fn box_width_height() {
+        let b: Box = (10.0).into();
+
+        assert_eq!(10.0, b.left);
+        assert_eq!(10.0, b.top);
+        assert_eq!(10.0, b.right);
+        assert_eq!(10.0, b.bottom);
+        assert_eq!(0.0, b.width());
+        assert_eq!(10.0, b.outer_width());
+        assert_eq!(0.0, b.height());
+        assert_eq!(10.0, b.outer_height());
+
+        let b: Box = (5.0, 10.0, 30.0, 50.0).into();
+        assert_eq!(5.0, b.left);
+        assert_eq!(10.0, b.top);
+        assert_eq!(30.0, b.right);
+        assert_eq!(50.0, b.bottom);
+        assert_eq!(25.0, b.width());
+        assert_eq!(30.0, b.outer_width());
+        assert_eq!(40.0, b.height());
+        assert_eq!(50.0, b.outer_height());
+    }
+
+    #[test]
+    fn format() {
+        assert_eq!("1", format_float(1.0));
+        assert_eq!("1.1", format_float(1.12));
+    }
+
+    #[test]
+    fn axis_values() {
+        let values = get_axis_values(AxisValueParams {
+            data_list: vec![1.0, 10.0, 13.5, 18.9],
+            ..Default::default()
+        });
+
+        assert_eq!(vec!["0", "4", "8", "12", "16", "20", "24"], values.data);
+        assert_eq!(0.0, values.min);
+        assert_eq!(24.0, values.max);
+    }
 }
