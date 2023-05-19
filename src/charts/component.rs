@@ -1047,3 +1047,308 @@ impl Legend {
         .to_string()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{Circle, Line, Polygon, Polyline, Rect, SmoothLine, Text};
+    use crate::{Symbol, DEFAULT_FONT_FAMILY};
+    #[test]
+    fn line() {
+        assert_eq!(
+            r###"<line stroke-width="1" x1="0" y1="1" x2="30" y2="5" stroke="#000000"/>"###,
+            Line {
+                color: Some((0, 0, 0).into()),
+                stroke_width: 1.0,
+                left: 0.0,
+                top: 1.0,
+                right: 30.0,
+                bottom: 5.0,
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<line stroke-width="1" x1="0" y1="1" x2="30" y2="5" stroke="#000000" stroke-opacity="0.5"/>"###,
+            Line {
+                color: Some((0, 0, 0, 128).into()),
+                stroke_width: 1.0,
+                left: 0.0,
+                top: 1.0,
+                right: 30.0,
+                bottom: 5.0,
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<line stroke-width="1" x1="0" y1="1" x2="30" y2="5"/>"###,
+            Line {
+                color: None,
+                stroke_width: 1.0,
+                left: 0.0,
+                top: 1.0,
+                right: 30.0,
+                bottom: 5.0,
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn rect() {
+        assert_eq!(
+            r###"<rect x="0" y="0" width="50" height="20" rx="3" ry="4" stroke="#000000" fill="#FFFFFF"/>"###,
+            Rect {
+                color: Some((0, 0, 0).into()),
+                fill: Some((255, 255, 255).into()),
+                left: 0.0,
+                top: 0.0,
+                width: 50.0,
+                height: 20.0,
+                rx: Some(3.0),
+                ry: Some(4.0),
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<rect x="0" y="0" width="50" height="20" rx="3" ry="4" stroke="#000000" stroke-opacity="0.5" fill="#FFFFFF" fill-opacity="0.2"/>"###,
+            Rect {
+                color: Some((0, 0, 0, 128).into()),
+                fill: Some((255, 255, 255, 50).into()),
+                left: 0.0,
+                top: 0.0,
+                width: 50.0,
+                height: 20.0,
+                rx: Some(3.0),
+                ry: Some(4.0),
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<rect x="0" y="0" width="50" height="20"/>"###,
+            Rect {
+                left: 0.0,
+                top: 0.0,
+                width: 50.0,
+                height: 20.0,
+                ..Default::default()
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn polyline() {
+        assert_eq!(
+            r###"<polyline fill="none" stroke-width="1" points="0,0 10,30 20,60 30,120" stroke="#000000"/>"###,
+            Polyline {
+                color: Some((0, 0, 0).into()),
+                stroke_width: 1.0,
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 60.0).into(),
+                    (30.0, 120.0).into(),
+                ]
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<polyline fill="none" stroke-width="1" points="0,0 10,30 20,60 30,120" stroke="#000000" stroke-opacity="0.5"/>"###,
+            Polyline {
+                color: Some((0, 0, 0, 128).into()),
+                stroke_width: 1.0,
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 60.0).into(),
+                    (30.0, 120.0).into(),
+                ]
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<polyline fill="none" stroke-width="1" points="0,0 10,30 20,60 30,120"/>"###,
+            Polyline {
+                color: None,
+                stroke_width: 1.0,
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 60.0).into(),
+                    (30.0, 120.0).into(),
+                ]
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn circle() {
+        assert_eq!(
+            r###"<circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>"###,
+            Circle {
+                stroke_color: Some((0, 0, 0).into()),
+                fill: Some((255, 255, 255).into()),
+                stroke_width: 1.0,
+                cx: 10.0,
+                cy: 10.0,
+                r: 3.0,
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" stroke-opacity="0.5" fill-opacity="0.1" fill="#FFFFFF"/>"###,
+            Circle {
+                stroke_color: Some((0, 0, 0, 128).into()),
+                fill: Some((255, 255, 255, 20).into()),
+                stroke_width: 1.0,
+                cx: 10.0,
+                cy: 10.0,
+                r: 3.0,
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<circle cx="10" cy="10" r="3" stroke-width="1" fill="none"/>"###,
+            Circle {
+                stroke_color: None,
+                fill: None,
+                stroke_width: 1.0,
+                cx: 10.0,
+                cy: 10.0,
+                r: 3.0,
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn polygon() {
+        assert_eq!(
+            r###"<polygon points="0,0 10,30 20,60 30,20" stroke="#000000" fill="#FFFFFF"/>"###,
+            Polygon {
+                color: Some((0, 0, 0).into()),
+                fill: Some((255, 255, 255).into()),
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 60.0).into(),
+                    (30.0, 20.0).into(),
+                ],
+            }
+            .svg()
+        );
+        assert_eq!(
+            r###"<polygon points="0,0 10,30 20,60 30,20" stroke="#000000" stroke-opacity="0.5" fill="#FFFFFF" fill-opacity="0.1"/>"###,
+            Polygon {
+                color: Some((0, 0, 0, 128).into()),
+                fill: Some((255, 255, 255, 20).into()),
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 60.0).into(),
+                    (30.0, 20.0).into(),
+                ],
+            }
+            .svg()
+        );
+        assert_eq!(
+            r###"<polygon points="0,0 10,30 20,60 30,20"/>"###,
+            Polygon {
+                color: None,
+                fill: None,
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 60.0).into(),
+                    (30.0, 20.0).into(),
+                ],
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn text() {
+        assert_eq!(
+            r###"<text font-size="14" x="0" y="0" dx="5" dy="5" font-weight="bold" transform="translate(-36 45.5)" font-family="Arial" fill="#000000">
+Hello World!
+</text>"###,
+            Text {
+                text: "Hello World!".to_string(),
+                font_family: Some(DEFAULT_FONT_FAMILY.to_string()),
+                font_size: Some(14.0),
+                font_color: Some((0, 0, 0).into()),
+                x: Some(0.0),
+                y: Some(0.0),
+                dy: Some(5.0),
+                dx: Some(5.0),
+                font_weight: Some("bold".to_string()),
+                transform: Some("translate(-36 45.5)".to_string()),
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<text>
+Hello World!
+</text>"###,
+            Text {
+                text: "Hello World!".to_string(),
+                ..Default::default()
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn smooth_line() {
+        assert_eq!(
+            r###"<g>
+<path fill="none" d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1" stroke="#000000"/>
+<circle cx="0" cy="0" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
+<circle cx="10" cy="30" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
+<circle cx="20" cy="80" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
+<circle cx="30" cy="20" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
+<circle cx="40" cy="50" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
+</g>"###,
+            SmoothLine {
+                color: Some((0, 0, 0).into()),
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 80.0).into(),
+                    (30.0, 20.0).into(),
+                    (40.0, 50.0).into(),
+                ],
+                stroke_width: 1.0,
+                symbol: Some(Symbol::Circle(3.0, Some((255, 255, 255).into()))),
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<path fill="none" d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1"/>"###,
+            SmoothLine {
+                color: None,
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 80.0).into(),
+                    (30.0, 20.0).into(),
+                    (40.0, 50.0).into(),
+                ],
+                stroke_width: 1.0,
+                symbol: None,
+            }
+            .svg()
+        );
+    }
+}

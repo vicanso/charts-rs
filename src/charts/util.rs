@@ -185,7 +185,7 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
 
 #[cfg(test)]
 mod tests {
-    use super::{format_float, get_axis_values, AxisValueParams, Box, Point};
+    use super::{format_float, get_axis_values, get_box_of_points, AxisValueParams, Box, Point};
 
     #[test]
     fn point() {
@@ -235,5 +235,25 @@ mod tests {
         assert_eq!(vec!["0", "4", "8", "12", "16", "20", "24"], values.data);
         assert_eq!(0.0, values.min);
         assert_eq!(24.0, values.max);
+        assert_eq!(24.0, values.get_offset());
+        assert_eq!(50.0, values.get_offset_height(12.0, 100.0));
+    }
+
+    #[test]
+    fn get_box() {
+        let points: Vec<Point> = vec![
+            (2.0, 10.0).into(),
+            (50.0, 10.0).into(),
+            (50.0, 30.0).into(),
+            (150.0, 30.0).into(),
+            (150.0, 80.0).into(),
+            (210.0, 60.0).into(),
+            (250.0, 90.0).into(),
+        ];
+        let b = get_box_of_points(&points);
+        assert_eq!(2.0, b.left);
+        assert_eq!(10.0, b.top);
+        assert_eq!(250.0, b.right);
+        assert_eq!(90.0, b.bottom);
     }
 }

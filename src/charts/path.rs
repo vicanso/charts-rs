@@ -150,3 +150,48 @@ impl fmt::Display for SmoothCurve {
         write!(f, "{}", arr.join(" "))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{QuadraticBezier, SmoothCurve};
+    #[test]
+    fn quadratic_bezier() {
+        let str = QuadraticBezier {
+            x1: 10.0,
+            y1: 30.0,
+            x2: 30.0,
+            y2: 10.0,
+        }
+        .to_string();
+        assert_eq!("M10 30 Q10 20, 30 10", str);
+    }
+
+    #[test]
+    fn smooth_curve() {
+        let str = SmoothCurve {
+            points: vec![
+                (10.0, 10.0).into(),
+                (20.0, 50.0).into(),
+                (30.0, 80.0).into(),
+                (40.0, 30.0).into(),
+                (50.0, 10.0).into(),
+            ],
+            close: false,
+        }
+        .to_string();
+        assert_eq!("M10,10 C12.5 20, 17.2 40.1, 20 50 C22.2 57.6, 28.1 81.9, 30 80 C33.1 76.9, 36.5 42.2, 40 30 C41.5 24.7, 47.5 15, 50 10", str);
+
+        let str = SmoothCurve {
+            points: vec![
+                (10.0, 10.0).into(),
+                (20.0, 50.0).into(),
+                (30.0, 80.0).into(),
+                (40.0, 30.0).into(),
+                (50.0, 10.0).into(),
+            ],
+            close: true,
+        }
+        .to_string();
+        assert_eq!("M10,10 C6.2 15.1, 17.2 40.1, 20 50 C22.2 57.6, 28.1 81.9, 30 80 C33.1 76.9, 36.5 42.2, 40 30 C41.5 24.7, 52.7 11.8, 50 10 C45.2 6.8, 13.7 5.1, 10 10", str);
+    }
+}
