@@ -1,3 +1,4 @@
+use std::fmt;
 use substring::Substring;
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
@@ -8,6 +9,12 @@ pub struct Point {
 impl From<(f32, f32)> for Point {
     fn from(val: (f32, f32)) -> Self {
         Point { x: val.0, y: val.1 }
+    }
+}
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let m = format!("({},{})", format_float(self.x), format_float(self.y));
+        write!(f, "{m}")
     }
 }
 

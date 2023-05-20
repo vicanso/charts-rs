@@ -298,7 +298,7 @@ impl Default for Circle {
             stroke_width: 1.0,
             cx: 0.0,
             cy: 0.0,
-            r: 0.0,
+            r: 3.0,
         }
     }
 }
@@ -1051,12 +1051,16 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        Axis, Circle, Grid, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill,
+        Axis, Circle, Grid, Legend, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill,
         StraightLine, StraightLineFill, Text,
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     #[test]
     fn line() {
+        let line = Line::default();
+        assert_eq!(1.0, line.stroke_width);
+        assert_eq!(None, line.color);
+
         assert_eq!(
             r###"<line stroke-width="1" x1="0" y1="1" x2="30" y2="5" stroke="#000000"/>"###,
             Line {
@@ -1144,6 +1148,10 @@ mod tests {
 
     #[test]
     fn polyline() {
+        let polyline = Polyline::default();
+        assert_eq!(1.0, polyline.stroke_width);
+        assert_eq!(None, polyline.color);
+
         assert_eq!(
             r###"<polyline fill="none" stroke-width="1" points="0,0 10,30 20,60 30,120" stroke="#000000"/>"###,
             Polyline {
@@ -1192,6 +1200,12 @@ mod tests {
 
     #[test]
     fn circle() {
+        let c = Circle::default();
+        assert_eq!(None, c.stroke_color);
+        assert_eq!(None, c.fill);
+        assert_eq!(1.0, c.stroke_width);
+        assert_eq!(3.0, c.r);
+
         assert_eq!(
             r###"<circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>"###,
             Circle {
@@ -1313,6 +1327,11 @@ Hello World!
 
     #[test]
     fn smooth_line() {
+        let line = SmoothLine::default();
+        assert_eq!(None, line.color);
+        assert_eq!(1.0, line.stroke_width);
+        assert_eq!(Some(Symbol::Circle(2.0, None)), line.symbol);
+
         assert_eq!(
             r###"<g>
 <path fill="none" d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1" stroke="#000000"/>
@@ -1357,6 +1376,11 @@ Hello World!
 
     #[test]
     fn straight_line() {
+        let line = StraightLine::default();
+        assert_eq!(None, line.color);
+        assert_eq!(1.0, line.stroke_width);
+        assert_eq!(Some(Symbol::Circle(2.0, None)), line.symbol);
+
         assert_eq!(
             r###"<g>
 <path fill="none" d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1" stroke="#000000"/>
@@ -1401,6 +1425,10 @@ Hello World!
 
     #[test]
     fn smooth_line_fill() {
+        let fill = SmoothLineFill::default();
+        assert_eq!(0.0, fill.bottom);
+        assert_eq!("rgba(255,255,255,1.0)", fill.fill.rgba());
+
         assert_eq!(
             r###"<path d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50M 40 50 L 40 100 L 0 100 L 0 0" fill="#000000" fill-opacity="0.5"/>"###,
             SmoothLineFill {
@@ -1419,6 +1447,10 @@ Hello World!
     }
     #[test]
     fn straight_line_fill() {
+        let fill = StraightLineFill::default();
+        assert_eq!("rgba(0,0,0,0.0)", fill.fill.rgba());
+        assert_eq!(0.0, fill.bottom);
+
         assert_eq!(
             r###"<path d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50 L 40 100 L 0 100 L 0 0" fill="#000000" fill-opacity="0.5"/>"###,
             StraightLineFill {
@@ -1459,6 +1491,16 @@ Hello World!
     }
     #[test]
     fn axis() {
+        let a = Axis::default();
+        assert_eq!(Position::Bottom, a.position);
+        assert_eq!(14.0, a.font_size);
+        assert_eq!(DEFAULT_FONT_FAMILY, a.font_family);
+        assert_eq!(None, a.font_color);
+        assert_eq!(None, a.stroke_color);
+        assert_eq!(5.0, a.name_gap);
+        assert_eq!(Align::Center, a.name_align);
+        assert_eq!(5.0, a.tick_length);
+
         assert_eq!(
             r###"<g>
 <g stroke="#000000">
@@ -1516,6 +1558,30 @@ Sun
             }
             .svg()
             .unwrap()
+        );
+    }
+
+    #[test]
+    fn legend() {
+        assert_eq!(
+            r###"<g>
+<line stroke-width="2" x1="10" y1="40" x2="35" y2="40" stroke="#000000"/>
+<circle cx="22.5" cy="40" r="5.5" stroke-width="2" stroke="#000000" fill="#000000"/>
+<text font-size="14" x="38" y="44" font-family="Arial" fill="#000000">
+Line
+</text>
+</g>"###,
+            Legend {
+                text: "Line".to_string(),
+                font_size: 14.0,
+                font_family: DEFAULT_FONT_FAMILY.to_string(),
+                font_color: Some((0, 0, 0).into()),
+                stroke_color: Some((0, 0, 0).into()),
+                fill: Some((0, 0, 0).into()),
+                left: 10.0,
+                top: 30.0,
+            }
+            .svg()
         );
     }
 }

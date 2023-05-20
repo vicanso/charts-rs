@@ -15,7 +15,7 @@ impl fmt::Display for QuadraticBezier {
         let y = self.y1 + (self.y2 - self.y1) / 2.0;
         let q = format!("{} {}", format_float(x), format_float(y));
         let end = format!("{} {}", format_float(self.x2), format_float(self.y2));
-        write!(f, "M{} Q{}, {}", m, q, end)
+        write!(f, "M{m} Q{q}, {end}")
     }
 }
 
