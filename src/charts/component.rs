@@ -1050,8 +1050,11 @@ impl Legend {
 
 #[cfg(test)]
 mod tests {
-    use super::{Circle, Line, Polygon, Polyline, Rect, SmoothLine, Text};
-    use crate::{Symbol, DEFAULT_FONT_FAMILY};
+    use super::{
+        Axis, Circle, Grid, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill,
+        StraightLine, StraightLineFill, Text,
+    };
+    use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     #[test]
     fn line() {
         assert_eq!(
@@ -1349,6 +1352,170 @@ Hello World!
                 symbol: None,
             }
             .svg()
+        );
+    }
+
+    #[test]
+    fn straight_line() {
+        assert_eq!(
+            r###"<g>
+<path fill="none" d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1" stroke="#000000"/>
+<circle cx="0" cy="0" r="3" stroke-width="1" stroke="#000000" fill="none"/>
+<circle cx="10" cy="30" r="3" stroke-width="1" stroke="#000000" fill="none"/>
+<circle cx="20" cy="80" r="3" stroke-width="1" stroke="#000000" fill="none"/>
+<circle cx="30" cy="20" r="3" stroke-width="1" stroke="#000000" fill="none"/>
+<circle cx="40" cy="50" r="3" stroke-width="1" stroke="#000000" fill="none"/>
+</g>"###,
+            StraightLine {
+                color: Some((0, 0, 0).into()),
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 80.0).into(),
+                    (30.0, 20.0).into(),
+                    (40.0, 50.0).into(),
+                ],
+                stroke_width: 1.0,
+                symbol: Some(Symbol::Circle(3.0, None)),
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<path fill="none" d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1"/>"###,
+            StraightLine {
+                color: None,
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 80.0).into(),
+                    (30.0, 20.0).into(),
+                    (40.0, 50.0).into(),
+                ],
+                stroke_width: 1.0,
+                symbol: None,
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn smooth_line_fill() {
+        assert_eq!(
+            r###"<path d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50M 40 50 L 40 100 L 0 100 L 0 0" fill="#000000" fill-opacity="0.5"/>"###,
+            SmoothLineFill {
+                fill: (0, 0, 0, 128).into(),
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 80.0).into(),
+                    (30.0, 20.0).into(),
+                    (40.0, 50.0).into(),
+                ],
+                bottom: 100.0,
+            }
+            .svg()
+        );
+    }
+    #[test]
+    fn straight_line_fill() {
+        assert_eq!(
+            r###"<path d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50 L 40 100 L 0 100 L 0 0" fill="#000000" fill-opacity="0.5"/>"###,
+            StraightLineFill {
+                fill: (0, 0, 0, 128).into(),
+                points: vec![
+                    (0.0, 0.0).into(),
+                    (10.0, 30.0).into(),
+                    (20.0, 80.0).into(),
+                    (30.0, 20.0).into(),
+                    (40.0, 50.0).into(),
+                ],
+                bottom: 100.0,
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn grid() {
+        assert_eq!(
+            r###"<g stroke="#000000">
+<line stroke-width="1" x1="58.3" y1="10" x2="58.3" y2="300"/><line stroke-width="1" x1="106.7" y1="10" x2="106.7" y2="300"/><line stroke-width="1" x1="155" y1="10" x2="155" y2="300"/><line stroke-width="1" x1="203.3" y1="10" x2="203.3" y2="300"/><line stroke-width="1" x1="251.7" y1="10" x2="251.7" y2="300"/><line stroke-width="1" x1="10" y1="68" x2="300" y2="68"/><line stroke-width="1" x1="10" y1="126" x2="300" y2="126"/><line stroke-width="1" x1="10" y1="184" x2="300" y2="184"/><line stroke-width="1" x1="10" y1="242" x2="300" y2="242"/>
+</g>"###,
+            Grid {
+                left: 10.0,
+                top: 10.0,
+                right: 300.0,
+                bottom: 300.0,
+                color: Some((0, 0, 0).into()),
+                stroke_width: 1.0,
+                verticals: 6,
+                hidden_verticals: vec![0, 6],
+                horizontals: 5,
+                hidden_horizontals: vec![0, 5],
+            }
+            .svg()
+        );
+    }
+    #[test]
+    fn axis() {
+        assert_eq!(
+            r###"<g>
+<g stroke="#000000">
+<line stroke-width="1" x1="0" y1="50" x2="300" y2="50"/>
+<line stroke-width="1" x1="0" y1="50" x2="0" y2="55"/>
+<line stroke-width="1" x1="42.9" y1="50" x2="42.9" y2="55"/>
+<line stroke-width="1" x1="85.7" y1="50" x2="85.7" y2="55"/>
+<line stroke-width="1" x1="128.6" y1="50" x2="128.6" y2="55"/>
+<line stroke-width="1" x1="171.4" y1="50" x2="171.4" y2="55"/>
+<line stroke-width="1" x1="214.3" y1="50" x2="214.3" y2="55"/>
+<line stroke-width="1" x1="257.1" y1="50" x2="257.1" y2="55"/>
+<line stroke-width="1" x1="300" y1="50" x2="300" y2="55"/>
+</g>
+<text font-size="14" x="7.9" y="69" font-family="Arial" fill="#000000">
+Mon
+</text>
+<text font-size="14" x="51.8" y="69" font-family="Arial" fill="#000000">
+Tue
+</text>
+<text font-size="14" x="92.6" y="69" font-family="Arial" fill="#000000">
+Wed
+</text>
+<text font-size="14" x="138" y="69" font-family="Arial" fill="#000000">
+Thu
+</text>
+<text font-size="14" x="184.4" y="69" font-family="Arial" fill="#000000">
+Fri
+</text>
+<text font-size="14" x="224.7" y="69" font-family="Arial" fill="#000000">
+Sat
+</text>
+<text font-size="14" x="266.1" y="69" font-family="Arial" fill="#000000">
+Sun
+</text>
+</g>"###,
+            Axis {
+                position: Position::Bottom,
+                split_number: 7,
+                font_color: Some((0, 0, 0).into()),
+                data: vec![
+                    "Mon".to_string(),
+                    "Tue".to_string(),
+                    "Wed".to_string(),
+                    "Thu".to_string(),
+                    "Fri".to_string(),
+                    "Sat".to_string(),
+                    "Sun".to_string(),
+                ],
+                stroke_color: Some((0, 0, 0).into()),
+                left: 0.0,
+                top: 50.0,
+                width: 300.0,
+                height: 30.0,
+                ..Default::default()
+            }
+            .svg()
+            .unwrap()
         );
     }
 }
