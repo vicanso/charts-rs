@@ -997,7 +997,14 @@ pub(crate) fn measure_legends(
     (width + margin, widths)
 }
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Default)]
+pub enum LegendCategory {
+    #[default]
+    Normal,
+    Rect,
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
 pub struct Legend {
     pub text: String,
     pub font_size: f32,
@@ -1007,41 +1014,65 @@ pub struct Legend {
     pub fill: Option<Color>,
     pub left: f32,
     pub top: f32,
+    pub category: LegendCategory,
 }
 impl Legend {
     pub fn svg(&self) -> String {
         let stroke_width = 2.0;
-        let line_svg = Line {
-            stroke_width,
-            color: self.stroke_color,
-            left: self.left,
-            top: self.top + LEGEND_HEIGHT / 2.0,
-            right: self.left + LEGEND_WIDTH,
-            bottom: self.top + LEGEND_HEIGHT / 2.0,
+        let mut data: Vec<String> = vec![];
+        if self.category == LegendCategory::Rect {
+            let height = 10.0_f32;
+            data.push(
+                Rect {
+                    color: self.stroke_color,
+                    fill: self.stroke_color,
+                    left: self.left,
+                    top: self.top + (LEGEND_HEIGHT - height) / 2.0,
+                    width: LEGEND_WIDTH,
+                    height: height,
+                    ..Default::default()
+                }
+                .svg(),
+            );
+        } else {
+            data.push(
+                Line {
+                    stroke_width,
+                    color: self.stroke_color,
+                    left: self.left,
+                    top: self.top + LEGEND_HEIGHT / 2.0,
+                    right: self.left + LEGEND_WIDTH,
+                    bottom: self.top + LEGEND_HEIGHT / 2.0,
+                }
+                .svg(),
+            );
+            data.push(
+                Circle {
+                    stroke_width,
+                    stroke_color: self.stroke_color,
+                    fill: self.fill,
+                    cx: self.left + LEGEND_WIDTH / 2.0,
+                    cy: self.top + LEGEND_HEIGHT / 2.0,
+                    r: 5.5,
+                }
+                .svg(),
+            );
         }
-        .svg();
-        let circle_svg = Circle {
-            stroke_width,
-            stroke_color: self.stroke_color,
-            fill: self.fill,
-            cx: self.left + LEGEND_WIDTH / 2.0,
-            cy: self.top + LEGEND_HEIGHT / 2.0,
-            r: 5.5,
-        }
-        .svg();
-        let text_svg = Text {
-            text: self.text.clone(),
-            font_family: Some(self.font_family.clone()),
-            font_color: self.font_color,
-            font_size: Some(self.font_size),
-            x: Some(self.left + LEGEND_WIDTH + LEGEND_TEXT_MARGIN),
-            y: Some(self.top + self.font_size),
-            ..Default::default()
-        }
-        .svg();
+        data.push(
+            Text {
+                text: self.text.clone(),
+                font_family: Some(self.font_family.clone()),
+                font_color: self.font_color,
+                font_size: Some(self.font_size),
+                x: Some(self.left + LEGEND_WIDTH + LEGEND_TEXT_MARGIN),
+                y: Some(self.top + self.font_size),
+                ..Default::default()
+            }
+            .svg(),
+        );
         SVGTag {
             tag: TAG_GROUP,
-            data: Some(vec![line_svg, circle_svg, text_svg].join("\n")),
+            data: Some(data.join("\n")),
             ..Default::default()
         }
         .to_string()
@@ -1052,7 +1083,7 @@ impl Legend {
 mod tests {
     use super::{
         Axis, Circle, Grid, Legend, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill,
-        StraightLine, StraightLineFill, Text,
+        StraightLine, StraightLineFill, Text, LegendCategory
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     #[test]
@@ -1580,6 +1611,40 @@ Line
                 fill: Some((0, 0, 0).into()),
                 left: 10.0,
                 top: 30.0,
+                ..Default::default()
+            }
+            .svg()
+        );
+
+        println!("{}", Legend {
+            text: "Line".to_string(),
+            font_size: 14.0,
+            font_family: DEFAULT_FONT_FAMILY.to_string(),
+            font_color: Some((0, 0, 0).into()),
+            stroke_color: Some((0, 0, 0).into()),
+            fill: Some((0, 0, 0).into()),
+            left: 10.0,
+            top: 30.0,
+            category: LegendCategory::Rect,
+        }
+        .svg());
+        assert_eq!(
+            r###"<g>
+<rect x="10" y="35" width="25" height="10" stroke="#000000" fill="#000000"/>
+<text font-size="14" x="38" y="44" font-family="Arial" fill="#000000">
+Line
+</text>
+</g>"###,
+            Legend {
+                text: "Line".to_string(),
+                font_size: 14.0,
+                font_family: DEFAULT_FONT_FAMILY.to_string(),
+                font_color: Some((0, 0, 0).into()),
+                stroke_color: Some((0, 0, 0).into()),
+                fill: Some((0, 0, 0).into()),
+                left: 10.0,
+                top: 30.0,
+                category: LegendCategory::Rect,
             }
             .svg()
         );

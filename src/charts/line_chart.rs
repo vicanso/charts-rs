@@ -230,6 +230,7 @@ impl LineChart {
                 fill,
                 left: legend_left,
                 top: legend_top,
+                ..Default::default()
             });
             legend_left += b.width() + LEGEND_MARGIN;
         }
