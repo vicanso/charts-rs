@@ -39,6 +39,18 @@ impl Box {
         self.bottom
     }
 }
+impl fmt::Display for Box {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let m = format!(
+            "({},{},{},{})",
+            format_float(self.left),
+            format_float(self.top),
+            format_float(self.right),
+            format_float(self.bottom)
+        );
+        write!(f, "{m}")
+    }
+}
 
 impl From<f32> for Box {
     fn from(val: f32) -> Self {
@@ -166,6 +178,9 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         max: min + (split_unit * split_number) as f32,
     }
 }
+pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
+    values.iter().map(|item| item.to_owned().into()).collect()
+}
 
 pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
     let mut b = Box {
@@ -192,7 +207,10 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
 
 #[cfg(test)]
 mod tests {
-    use super::{format_float, get_axis_values, get_box_of_points, AxisValueParams, Box, Point};
+    use super::{
+        convert_to_points, format_float, get_axis_values, get_box_of_points, AxisValueParams, Box,
+        Point,
+    };
 
     #[test]
     fn point() {
@@ -248,15 +266,15 @@ mod tests {
 
     #[test]
     fn get_box() {
-        let points: Vec<Point> = vec![
-            (2.0, 10.0).into(),
-            (50.0, 10.0).into(),
-            (50.0, 30.0).into(),
-            (150.0, 30.0).into(),
-            (150.0, 80.0).into(),
-            (210.0, 60.0).into(),
-            (250.0, 90.0).into(),
-        ];
+        let points: Vec<Point> = convert_to_points(&vec![
+            (2.0, 10.0),
+            (50.0, 10.0),
+            (50.0, 30.0),
+            (150.0, 30.0),
+            (150.0, 80.0),
+            (210.0, 60.0),
+            (250.0, 90.0),
+        ]);
         let b = get_box_of_points(&points);
         assert_eq!(2.0, b.left);
         assert_eq!(10.0, b.top);

@@ -1,6 +1,6 @@
 use super::component::{
     generate_svg, Axis, Circle, Component, Grid, Legend, Line, Polygon, Polyline, Rect, SmoothLine,
-    SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_MARGIN, LEGEND_WIDTH,
+    SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
 };
 
 use super::{measure_text_width_family, util::*};
@@ -169,7 +169,8 @@ impl Canvas {
             p.y += self.margin.top
         }
         c.bottom += self.margin.top;
-        let b = get_box_of_points(&c.points);
+        let mut b = get_box_of_points(&c.points);
+        b.bottom = c.bottom;
         self.append(Component::SmoothLineFill(c));
         b
     }
@@ -180,7 +181,8 @@ impl Canvas {
             p.y += self.margin.top
         }
         c.bottom += self.margin.top;
-        let b = get_box_of_points(&c.points);
+        let mut b = get_box_of_points(&c.points);
+        b.bottom = c.bottom;
         self.append(Component::StraightLineFill(c));
         b
     }
@@ -252,5 +254,518 @@ impl Canvas {
             data.push(value);
         }
         Ok(generate_svg(self.width, self.height, data.join("\n")))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Canvas;
+    use crate::{
+        convert_to_points, Align, Axis, Grid, Legend, LegendCategory, Line, Polyline, Rect,
+        SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Symbol, Text,
+        DEFAULT_FONT_FAMILY,
+    };
+    #[test]
+    fn canvas_width_height() {
+        let mut c = Canvas::new(400.0, 300.0);
+
+        assert_eq!("(0,0,0,0)", c.margin.to_string());
+        assert_eq!(400.0, c.width());
+        assert_eq!(300.0, c.height());
+        c = c.child((5.0, 10.0, 15.0, 20.0).into());
+        assert_eq!("(5,10,15,20)", c.margin.to_string());
+        assert_eq!(380.0, c.width());
+        assert_eq!(270.0, c.height());
+    }
+    #[test]
+    fn canvas_line() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.line(Line {
+            color: Some((0, 0, 0).into()),
+            left: 5.0,
+            top: 5.0,
+            right: 50.0,
+            bottom: 20.0,
+            ..Default::default()
+        });
+        assert_eq!("(5,5,50,20)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<line stroke-width="1" x1="5" y1="5" x2="50" y2="20" stroke="#000000"/>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_rect() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.rect(Rect {
+            color: Some((0, 0, 0).into()),
+            fill: Some((0, 255, 0).into()),
+            left: 10.0,
+            top: 10.0,
+            width: 100.0,
+            height: 30.0,
+            rx: Some(3.0),
+            ry: Some(5.0),
+        });
+        assert_eq!("(10,10,110,40)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<rect x="10" y="10" width="100" height="30" rx="3" ry="5" stroke="#000000" fill="#00FF00"/>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_polyline() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.polyline(Polyline {
+            color: Some((0, 0, 0).into()),
+            stroke_width: 1.0,
+            points: convert_to_points(&vec![(1.0, 5.0), (30.0, 60.0), (50.0, 10.0), (70.0, 40.0)]),
+        });
+        assert_eq!("(1,5,70,60)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<polyline fill="none" stroke-width="1" points="1,5 30,60 50,10 70,40" stroke="#000000"/>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_text() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.text(Text {
+            text: "Hello World!".to_string(),
+            font_family: Some(DEFAULT_FONT_FAMILY.to_string()),
+            font_size: Some(14.0),
+            x: Some(20.0),
+            y: Some(50.0),
+            font_color: Some((0, 0, 0).into()),
+            font_weight: Some("bold".to_string()),
+            ..Default::default()
+        });
+        assert_eq!("(20,50,101,64)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<text font-size="14" x="20" y="50" font-weight="bold" font-family="Arial" fill="#000000">
+Hello World!
+</text>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_smooth_line() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.smooth_line(SmoothLine {
+            color: Some((0, 0, 0).into()),
+            points: convert_to_points(&vec![
+                (10.0, 10.0),
+                (30.0, 50.0),
+                (50.0, 80.0),
+                (70.0, 20.0),
+                (90.0, 40.0),
+            ]),
+            stroke_width: 1.0,
+            symbol: Some(Symbol::Circle(3.0, Some((0, 255, 0).into()))),
+        });
+        assert_eq!("(10,10,90,80)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<path fill="none" d="M10,10 C15 20, 24.5 40.3, 30 50 C34.5 57.8, 46.4 82.7, 50 80 C56.4 75.2, 63.1 26.9, 70 20 C73.1 16.9, 85 35, 90 40" stroke-width="1" stroke="#000000"/>
+<circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="30" cy="50" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="50" cy="80" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="70" cy="20" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="90" cy="40" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_straight_line() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.straight_line(StraightLine {
+            color: Some((0, 0, 0).into()),
+            points: convert_to_points(&vec![
+                (10.0, 10.0),
+                (30.0, 50.0),
+                (50.0, 80.0),
+                (70.0, 20.0),
+                (90.0, 40.0),
+            ]),
+            stroke_width: 1.0,
+            symbol: Some(Symbol::Circle(3.0, Some((0, 255, 0).into()))),
+        });
+        assert_eq!("(10,10,90,80)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<path fill="none" d="M 10 10 L 30 50 L 50 80 L 70 20 L 90 40" stroke-width="1" stroke="#000000"/>
+<circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="30" cy="50" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="50" cy="80" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="70" cy="20" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+<circle cx="90" cy="40" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn canvas_smooth_line_fill() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.smooth_line_fill(SmoothLineFill {
+            fill: (0, 0, 0).into(),
+            points: convert_to_points(&vec![
+                (10.0, 10.0),
+                (30.0, 50.0),
+                (50.0, 80.0),
+                (70.0, 20.0),
+                (90.0, 40.0),
+            ]),
+            bottom: 150.0,
+        });
+        assert_eq!("(10,10,90,150)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<path d="M10,10 C15 20, 24.5 40.3, 30 50 C34.5 57.8, 46.4 82.7, 50 80 C56.4 75.2, 63.1 26.9, 70 20 C73.1 16.9, 85 35, 90 40M 90 40 L 90 150 L 10 150 L 10 10" fill="#000000"/>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_straight_line_fill() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.straight_line_fill(StraightLineFill {
+            fill: (0, 0, 0).into(),
+            points: convert_to_points(&vec![
+                (10.0, 10.0),
+                (30.0, 50.0),
+                (50.0, 80.0),
+                (70.0, 20.0),
+                (90.0, 40.0),
+            ]),
+            bottom: 150.0,
+        });
+        assert_eq!("(10,10,90,150)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<path d="M 10 10 L 30 50 L 50 80 L 70 20 L 90 40 L 90 150 L 10 150 L 10 10" fill="#000000"/>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_grid() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.grid(Grid {
+            left: 10.0,
+            top: 10.0,
+            right: 390.0,
+            bottom: 290.0,
+            color: Some((0, 0, 0).into()),
+            stroke_width: 1.0,
+            verticals: 5,
+            hidden_verticals: vec![0],
+            horizontals: 6,
+            hidden_horizontals: vec![6],
+        });
+        assert_eq!("(10,10,390,290)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g stroke="#000000">
+<line stroke-width="1" x1="86" y1="10" x2="86" y2="290"/><line stroke-width="1" x1="162" y1="10" x2="162" y2="290"/><line stroke-width="1" x1="238" y1="10" x2="238" y2="290"/><line stroke-width="1" x1="314" y1="10" x2="314" y2="290"/><line stroke-width="1" x1="390" y1="10" x2="390" y2="290"/><line stroke-width="1" x1="10" y1="10" x2="390" y2="10"/><line stroke-width="1" x1="10" y1="56.7" x2="390" y2="56.7"/><line stroke-width="1" x1="10" y1="103.3" x2="390" y2="103.3"/><line stroke-width="1" x1="10" y1="150" x2="390" y2="150"/><line stroke-width="1" x1="10" y1="196.7" x2="390" y2="196.7"/><line stroke-width="1" x1="10" y1="243.3" x2="390" y2="243.3"/>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+    #[test]
+    fn canvas_axis() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.axis(Axis {
+            data: vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+            left: 5.0,
+            top: 5.0,
+            width: 390.0,
+            stroke_color: Some((0, 0, 0).into()),
+            ..Default::default()
+        });
+        assert_eq!("(5,5,395,5)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<g stroke="#000000">
+<line stroke-width="1" x1="5" y1="5" x2="395" y2="5"/>
+<line stroke-width="1" x1="5" y1="5" x2="5" y2="10"/>
+<line stroke-width="1" x1="60.7" y1="5" x2="60.7" y2="10"/>
+<line stroke-width="1" x1="116.4" y1="5" x2="116.4" y2="10"/>
+<line stroke-width="1" x1="172.1" y1="5" x2="172.1" y2="10"/>
+<line stroke-width="1" x1="227.9" y1="5" x2="227.9" y2="10"/>
+<line stroke-width="1" x1="283.6" y1="5" x2="283.6" y2="10"/>
+<line stroke-width="1" x1="339.3" y1="5" x2="339.3" y2="10"/>
+<line stroke-width="1" x1="395" y1="5" x2="395" y2="10"/>
+</g>
+<text font-size="14" x="19.4" y="24" font-family="Arial">
+Mon
+</text>
+<text font-size="14" x="76.1" y="24" font-family="Arial">
+Tue
+</text>
+<text font-size="14" x="129.8" y="24" font-family="Arial">
+Wed
+</text>
+<text font-size="14" x="188" y="24" font-family="Arial">
+Thu
+</text>
+<text font-size="14" x="247.2" y="24" font-family="Arial">
+Fri
+</text>
+<text font-size="14" x="300.4" y="24" font-family="Arial">
+Sat
+</text>
+<text font-size="14" x="354.6" y="24" font-family="Arial">
+Sun
+</text>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+
+        // split number
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.axis(Axis {
+            data: vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+            ],
+            left: 5.0,
+            top: 5.0,
+            width: 390.0,
+            split_number: 3,
+            stroke_color: Some((0, 0, 0).into()),
+            ..Default::default()
+        });
+        assert_eq!("(5,5,395,5)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<g stroke="#000000">
+<line stroke-width="1" x1="5" y1="5" x2="395" y2="5"/>
+<line stroke-width="1" x1="5" y1="5" x2="5" y2="10"/>
+<line stroke-width="1" x1="135" y1="5" x2="135" y2="10"/>
+<line stroke-width="1" x1="265" y1="5" x2="265" y2="10"/>
+<line stroke-width="1" x1="395" y1="5" x2="395" y2="10"/>
+</g>
+<text font-size="14" x="24" y="24" font-family="Arial">
+Mon
+</text>
+<text font-size="14" x="90" y="24" font-family="Arial">
+Tue
+</text>
+<text font-size="14" x="153" y="24" font-family="Arial">
+Wed
+</text>
+<text font-size="14" x="220.5" y="24" font-family="Arial">
+Thu
+</text>
+<text font-size="14" x="289" y="24" font-family="Arial">
+Fri
+</text>
+<text font-size="14" x="351.5" y="24" font-family="Arial">
+Sat
+</text>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+
+        // set tick interval
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.axis(Axis {
+            data: vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+            left: 5.0,
+            top: 5.0,
+            width: 390.0,
+            tick_interval: 2,
+            stroke_color: Some((0, 0, 0).into()),
+            ..Default::default()
+        });
+        assert_eq!("(5,5,395,5)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<g stroke="#000000">
+<line stroke-width="1" x1="5" y1="5" x2="395" y2="5"/>
+<line stroke-width="1" x1="5" y1="5" x2="5" y2="10"/>
+<line stroke-width="1" x1="116.4" y1="5" x2="116.4" y2="10"/>
+<line stroke-width="1" x1="227.9" y1="5" x2="227.9" y2="10"/>
+<line stroke-width="1" x1="339.3" y1="5" x2="339.3" y2="10"/>
+</g>
+<text font-size="14" x="19.4" y="24" font-family="Arial">
+Mon
+</text>
+<text font-size="14" x="76.1" y="24" font-family="Arial">
+Tue
+</text>
+<text font-size="14" x="129.8" y="24" font-family="Arial">
+Wed
+</text>
+<text font-size="14" x="188" y="24" font-family="Arial">
+Thu
+</text>
+<text font-size="14" x="247.2" y="24" font-family="Arial">
+Fri
+</text>
+<text font-size="14" x="300.4" y="24" font-family="Arial">
+Sat
+</text>
+<text font-size="14" x="354.6" y="24" font-family="Arial">
+Sun
+</text>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+
+        // name align left
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.axis(Axis {
+            data: vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+            left: 20.0,
+            top: 5.0,
+            width: 360.0,
+            stroke_color: Some((0, 0, 0).into()),
+            name_align: Align::Left,
+            ..Default::default()
+        });
+        assert_eq!("(20,5,380,5)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<g stroke="#000000">
+<line stroke-width="1" x1="20" y1="5" x2="380" y2="5"/>
+<line stroke-width="1" x1="20" y1="5" x2="20" y2="10"/>
+<line stroke-width="1" x1="71.4" y1="5" x2="71.4" y2="10"/>
+<line stroke-width="1" x1="122.9" y1="5" x2="122.9" y2="10"/>
+<line stroke-width="1" x1="174.3" y1="5" x2="174.3" y2="10"/>
+<line stroke-width="1" x1="225.7" y1="5" x2="225.7" y2="10"/>
+<line stroke-width="1" x1="277.1" y1="5" x2="277.1" y2="10"/>
+<line stroke-width="1" x1="328.6" y1="5" x2="328.6" y2="10"/>
+<line stroke-width="1" x1="380" y1="5" x2="380" y2="10"/>
+</g>
+<text font-size="14" x="6.5" y="24" font-family="Arial">
+Mon
+</text>
+<text font-size="14" x="67.5" y="24" font-family="Arial">
+Tue
+</text>
+<text font-size="14" x="125.5" y="24" font-family="Arial">
+Wed
+</text>
+<text font-size="14" x="188" y="24" font-family="Arial">
+Thu
+</text>
+<text font-size="14" x="251.5" y="24" font-family="Arial">
+Fri
+</text>
+<text font-size="14" x="309" y="24" font-family="Arial">
+Sat
+</text>
+<text font-size="14" x="367.5" y="24" font-family="Arial">
+Sun
+</text>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn canvas_legend() {
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.legend(Legend {
+            text: "Email".to_string(),
+            font_size: 14.0,
+            font_family: DEFAULT_FONT_FAMILY.to_string(),
+            font_color: Some((0, 0, 0).into()),
+            stroke_color: Some((0, 0, 0).into()),
+            fill: Some((0, 0, 0).into()),
+            left: 10.0,
+            top: 10.0,
+            category: LegendCategory::Normal,
+        });
+        assert_eq!("(10,10,72,24)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<line stroke-width="2" x1="10" y1="20" x2="35" y2="20" stroke="#000000"/>
+<circle cx="22.5" cy="20" r="5.5" stroke-width="2" stroke="#000000" fill="#000000"/>
+<text font-size="14" x="38" y="24" font-family="Arial" fill="#000000">
+Email
+</text>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
+
+        let mut c = Canvas::new(400.0, 300.0);
+        let b = c.legend(Legend {
+            text: "Email".to_string(),
+            font_size: 14.0,
+            font_family: DEFAULT_FONT_FAMILY.to_string(),
+            font_color: Some((0, 0, 0).into()),
+            stroke_color: Some((0, 0, 0).into()),
+            fill: Some((0, 0, 0).into()),
+            left: 10.0,
+            top: 10.0,
+            category: LegendCategory::Rect,
+        });
+        assert_eq!("(10,10,72,24)", b.to_string());
+        assert_eq!(
+            r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
+<rect x="10" y="15" width="25" height="10" stroke="#000000" fill="#000000"/>
+<text font-size="14" x="38" y="24" font-family="Arial" fill="#000000">
+Email
+</text>
+</g>
+</svg>"###,
+            c.svg().unwrap()
+        );
     }
 }

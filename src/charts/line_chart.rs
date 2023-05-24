@@ -1,12 +1,10 @@
-use crate::charts::measure_text_width_family;
-
 use super::color::*;
 use super::common::*;
 use super::component::*;
-use super::theme::get_default_theme;
-use super::theme::get_theme;
+use super::theme::{get_default_theme, get_theme, Theme};
 use super::util::*;
 use super::Canvas;
+use crate::charts::measure_text_width_family;
 
 #[derive(Clone, Debug, Default)]
 pub struct LineChart {

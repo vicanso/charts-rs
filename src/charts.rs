@@ -12,8 +12,8 @@ pub use canvas::Canvas;
 pub use color::*;
 pub use common::*;
 pub use component::{
-    Axis, Circle, Grid, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine,
-    StraightLineFill, Text,
+    Axis, Circle, Grid, Legend, LegendCategory, Line, Polygon, Polyline, Rect, SmoothLine,
+    SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
 pub use line_chart::LineChart;

@@ -840,12 +840,15 @@ impl Axis {
         } else {
             self.height
         };
-
+        let mut split_number = self.split_number;
+        if split_number == 0 {
+            split_number = self.data.len();
+        }
         if !is_transparent {
-            let unit = axis_length / self.split_number as f32;
+            let unit = axis_length / split_number as f32;
             let tick_interval = self.tick_interval;
             let tick_start = self.tick_start;
-            for i in 0..=self.split_number {
+            for i in 0..=split_number {
                 if i < tick_start {
                     continue;
                 }
@@ -1029,7 +1032,7 @@ impl Legend {
                     left: self.left,
                     top: self.top + (LEGEND_HEIGHT - height) / 2.0,
                     width: LEGEND_WIDTH,
-                    height: height,
+                    height,
                     ..Default::default()
                 }
                 .svg(),
@@ -1082,8 +1085,8 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        Axis, Circle, Grid, Legend, Line, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill,
-        StraightLine, StraightLineFill, Text, LegendCategory
+        Axis, Circle, Grid, Legend, LegendCategory, Line, Polygon, Polyline, Rect, SmoothLine,
+        SmoothLineFill, StraightLine, StraightLineFill, Text,
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     #[test]
@@ -1616,18 +1619,6 @@ Line
             .svg()
         );
 
-        println!("{}", Legend {
-            text: "Line".to_string(),
-            font_size: 14.0,
-            font_family: DEFAULT_FONT_FAMILY.to_string(),
-            font_color: Some((0, 0, 0).into()),
-            stroke_color: Some((0, 0, 0).into()),
-            fill: Some((0, 0, 0).into()),
-            left: 10.0,
-            top: 30.0,
-            category: LegendCategory::Rect,
-        }
-        .svg());
         assert_eq!(
             r###"<g>
 <rect x="10" y="35" width="25" height="10" stroke="#000000" fill="#000000"/>
