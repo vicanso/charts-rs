@@ -18,4 +18,9 @@ pub use component::{
 pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
 pub use line_chart::LineChart;
 pub use path::*;
+pub use theme::Theme;
 pub use util::*;
+
+pub trait ChartBasic {
+    fn fill_theme(&mut self, t: Theme) {}
+}
