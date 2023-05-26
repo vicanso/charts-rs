@@ -21,6 +21,11 @@ pub use path::*;
 pub use theme::Theme;
 pub use util::*;
 
-pub trait ChartBasic {
-    fn fill_theme(&mut self, t: Theme) {}
+pub trait Chart {
+    fn fill_theme(&mut self, t: Theme);
+    fn render_title(&self, c: Canvas) -> f32;
+    fn render_legend(&self, c: Canvas) -> f32;
+    fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32);
+    fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32);
+    fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32);
 }
