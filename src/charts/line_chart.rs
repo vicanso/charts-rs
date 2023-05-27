@@ -135,58 +135,16 @@ impl LineChart {
 
         // line point
         let max_height = c.height() - self.x_axis_height;
-
-        let mut series_canvas = c.child(Box {
-            left: self.y_axis_width,
-            ..Default::default()
-        });
-        for (index, series) in self.series_list.iter().enumerate() {
-            let unit_width = series_canvas.width() / series.data.len() as f32;
-            let mut points: Vec<Point> = vec![];
-            for (i, p) in series.data.iter().enumerate() {
-                // 居中
-                let x = unit_width * i as f32 + unit_width / 2.0;
-                let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
-                points.push((x, y).into());
-            }
-
-            let color = *self
-                .series_colors
-                .get(index)
-                .unwrap_or_else(|| &self.series_colors[0]);
-
-            let fill = color.with_alpha(100);
-            let series_fill = self.series_fill;
-            if self.series_smooth {
-                if series_fill {
-                    series_canvas.smooth_line_fill(SmoothLineFill {
-                        fill,
-                        points: points.clone(),
-                        bottom: axis_height,
-                    });
-                }
-                series_canvas.smooth_line(SmoothLine {
-                    points,
-                    color: Some(color),
-                    stroke_width: self.series_stroke_width,
-                    symbol: self.series_symbol.clone(),
-                });
-            } else {
-                if series_fill {
-                    series_canvas.straight_line_fill(StraightLineFill {
-                        fill,
-                        points: points.clone(),
-                        bottom: axis_height,
-                    });
-                }
-                series_canvas.straight_line(StraightLine {
-                    points,
-                    color: Some(color),
-                    stroke_width: self.series_stroke_width,
-                    symbol: self.series_symbol.clone(),
-                });
-            }
-        }
+        self.render_lines(
+            c.child(Box {
+                left: self.y_axis_width,
+                ..Default::default()
+            }),
+            &self.series_list,
+            &y_axis_values,
+            max_height,
+            axis_height,
+        );
 
         c.svg()
     }
@@ -200,22 +158,22 @@ mod tests {
     fn line_chart() {
         let mut line_chart = LineChart::new(
             vec![
-                Series {
-                    name: "Email".to_string(),
-                    data: vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                },
-                Series {
-                    name: "Union Ads".to_string(),
-                    data: vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                },
-                Series {
-                    name: "Direct".to_string(),
-                    data: vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                },
-                Series {
-                    name: "Search Engine".to_string(),
-                    data: vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                },
+                Series::new(
+                    "Email".to_string(),
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                ),
+                Series::new(
+                    "Union Ads".to_string(),
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                ),
+                Series::new(
+                    "Direct".to_string(),
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                ),
+                Series::new(
+                    "Search Engine".to_string(),
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                ),
             ],
             vec![
                 "Mon".to_string(),

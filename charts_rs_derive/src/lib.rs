@@ -83,7 +83,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         x = match self.title_align {
                             Align::Center => (c.width() - title_box.width()) / 2.0,
                             Align::Right => c.width() - title_box.width(),
-                            Align::Left => 0.0,
+                            _ => 0.0,
                         }
                     }
                     let b = c.child(title_margin).text(Text {
@@ -101,15 +101,15 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if !self.sub_title_text.is_empty() {
                     let mut sub_title_margin = self.sub_title_margin.clone().unwrap_or_default();
                     let mut x = 0.0;
-                    if let Ok(title_box) = measure_text_width_family(
+                    if let Ok(sub_title_box) = measure_text_width_family(
                         &self.font_family,
                         self.sub_title_font_size,
                         &self.sub_title_text,
                     ) {
                         x = match self.title_align {
-                            Align::Center => (c.width() - title_box.width()) / 2.0,
-                            Align::Right => c.width() - title_box.width(),
-                            Align::Left => 0.0,
+                            Align::Center => (c.width() - sub_title_box.width()) / 2.0,
+                            Align::Right => c.width() - sub_title_box.width(),
+                            _ => 0.0,
                         }
                     }
                     sub_title_margin.top += self.title_font_size;
@@ -154,7 +154,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 for (index, series) in self.series_list.iter().enumerate() {
                     let color = *self
                         .series_colors
-                        .get(index)
+                        .get(series.index.unwrap_or(index))
                         .unwrap_or_else(|| &self.series_colors[0]);
                     let fill = if self.is_light {
                         Some(self.background_color)
@@ -226,6 +226,56 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     name_rotate: self.x_axis_name_rotate,
                     ..Default::default()
                 });
+            }
+            fn render_lines(&self, c: Canvas, series_list: &[Series], y_axis_values: &AxisValues, max_height: f32, axis_height: f32) {
+                let mut c1 = c;
+                for (index, series) in series_list.iter().enumerate() {
+                    let unit_width = c1.width() / series.data.len() as f32;
+                    let mut points: Vec<Point> = vec![];
+                    for (i, p) in series.data.iter().enumerate() {
+                        // 居中
+                        let x = unit_width * i as f32 + unit_width / 2.0;
+                        let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
+                        points.push((x, y).into());
+                    }
+        
+                    let color = *self
+                        .series_colors
+                        .get(series.index.unwrap_or(index))
+                        .unwrap_or_else(|| &self.series_colors[0]);
+        
+                    let fill = color.with_alpha(100);
+                    let series_fill = self.series_fill;
+                    if self.series_smooth {
+                        if series_fill {
+                            c1.smooth_line_fill(SmoothLineFill {
+                                fill,
+                                points: points.clone(),
+                                bottom: axis_height,
+                            });
+                        }
+                        c1.smooth_line(SmoothLine {
+                            points,
+                            color: Some(color),
+                            stroke_width: self.series_stroke_width,
+                            symbol: self.series_symbol.clone(),
+                        });
+                    } else {
+                        if series_fill {
+                            c1.straight_line_fill(StraightLineFill {
+                                fill,
+                                points: points.clone(),
+                                bottom: axis_height,
+                            });
+                        }
+                        c1.straight_line(StraightLine {
+                            points,
+                            color: Some(color),
+                            stroke_width: self.series_stroke_width,
+                            symbol: self.series_symbol.clone(),
+                        });
+                    }
+                }
             }
         }
     };

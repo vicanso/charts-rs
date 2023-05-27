@@ -110,7 +110,7 @@ pub(crate) struct AxisValueParams {
     pub reverse: Option<bool>,
 }
 #[derive(Clone, Debug, Default)]
-pub(crate) struct AxisValues {
+pub struct AxisValues {
     pub data: Vec<String>,
     pub min: f32,
     pub max: f32,

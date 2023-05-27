@@ -26,4 +26,16 @@ pub enum Symbol {
 pub struct Series {
     pub name: String,
     pub data: Vec<f32>,
+    // 指定index
+    pub index: Option<usize>,
+}
+
+impl Series {
+    pub fn new(name: String, data: Vec<f32>) -> Self {
+        Series {
+            name,
+            data,
+            index: None,
+        }
+    }
 }
