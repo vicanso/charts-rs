@@ -57,6 +57,20 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     Some(self.background_color),
                 ));
             }
+            fn render_background(&self, c: Canvas) {
+                if self.background_color.is_transparent() {
+                    return;
+                }
+                let mut c1 = c;
+                c1.rect(Rect {
+                    fill: Some(self.background_color),
+                    left: 0.0,
+                    top: 0.0,
+                    width: self.width,
+                    height: self.height,
+                    ..Default::default()
+                });
+            }
             fn render_title(&self, c: Canvas) -> f32 {
                 let mut title_height = 0.0;
 

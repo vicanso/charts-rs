@@ -27,7 +27,6 @@ static ATTR_FONT_FAMILY: &str = "font-family";
 static ATTR_FONT_SIZE: &str = "font-size";
 static ATTR_FONT_WEIGHT: &str = "font-weight";
 static ATTR_TRANSFORM: &str = "transform";
-static ATTR_OPACITY: &str = "opacity";
 static ATTR_STROKE_OPACITY: &str = "stroke-opacity";
 static ATTR_FILL_OPACITY: &str = "fill-opacity";
 static ATTR_STROKE_WIDTH: &str = "stroke-width";
@@ -98,6 +97,13 @@ impl<'a> SVGTag<'a> {
 
 impl<'a> fmt::Display for SVGTag<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self.tag == TAG_GROUP {
+            if let Some(ref data) = self.data {
+                if data.is_empty() {
+                    return write!(f, "");
+                }
+            }
+        }
         let mut value = "<".to_string();
         value.push_str(self.tag);
         for (k, v) in self.attrs.iter() {

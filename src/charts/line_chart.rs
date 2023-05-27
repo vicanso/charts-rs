@@ -80,6 +80,8 @@ impl LineChart {
     }
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
+
+        self.render_background(c.child(Box::default()));
         c.margin = self.margin.clone();
 
         let title_height = self.render_title(c.child(Box::default()));
@@ -235,6 +237,7 @@ mod tests {
 
         assert_eq!(
             r###"<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
 <text font-size="18" x="215.5" y="23" font-weight="bold" font-family="Arial" fill="#464646">
 Stacked Area Chart
 </text>
@@ -273,9 +276,7 @@ Search Engine
 <line stroke-width="1" x1="45" y1="77" x2="595" y2="77"/><line stroke-width="1" x1="45" y1="125" x2="595" y2="125"/><line stroke-width="1" x1="45" y1="173" x2="595" y2="173"/><line stroke-width="1" x1="45" y1="221" x2="595" y2="221"/><line stroke-width="1" x1="45" y1="269" x2="595" y2="269"/><line stroke-width="1" x1="45" y1="317" x2="595" y2="317"/>
 </g>
 <g>
-<g stroke="#000000" stroke-opacity="0">
 
-</g>
 <text font-size="14" x="5" y="84" font-family="Arial" fill="#6E7079">
 1800
 </text>

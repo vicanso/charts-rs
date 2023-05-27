@@ -23,6 +23,7 @@ pub use util::*;
 
 pub trait Chart {
     fn fill_theme(&mut self, t: Theme);
+    fn render_background(&self, c: Canvas);
     fn render_title(&self, c: Canvas) -> f32;
     fn render_legend(&self, c: Canvas) -> f32;
     fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32);
