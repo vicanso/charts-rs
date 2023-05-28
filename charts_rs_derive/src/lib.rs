@@ -237,7 +237,50 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
+            fn render_bar(
+                &self,
+                c: Canvas,
+                series_list: &[Series],
+                y_axis_values: &AxisValues,
+                max_height: f32,
+            ) {
+                if series_list.is_empty() {
+                    return;
+                }
+                let mut c1 = c;
+                let unit_width = c1.width() / series_list[0].data.len() as f32;
+                let bar_chart_margin = 5.0_f32;
+                let bar_chart_gap = 3.0_f32;
+        
+                let bar_chart_margin_width = bar_chart_margin * 2.0;
+                let bar_chart_gap_width = bar_chart_gap * (series_list.len() - 1) as f32;
+                let bar_width = (unit_width - bar_chart_margin_width - bar_chart_gap_width) / series_list.len() as f32;
+        
+                for (index, series) in series_list.iter().enumerate() {
+                    let color = *self
+                        .series_colors
+                        .get(series.index.unwrap_or(index))
+                        .unwrap_or_else(|| &self.series_colors[0]);
+                    for (i, p) in series.data.iter().enumerate() {
+                        let mut left = unit_width * i as f32 + bar_chart_margin;
+                        left += (bar_width + bar_chart_gap) * index as f32;
+        
+                        let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
+                        c1.rect(Rect {
+                            fill: Some(color),
+                            left,
+                            top: y,
+                            width: bar_width,
+                            height: max_height - y,
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
             fn render_line(&self, c: Canvas, series_list: &[Series], y_axis_values: &AxisValues, max_height: f32, axis_height: f32) {
+                if series_list.is_empty() {
+                    return;
+                }
                 let mut c1 = c;
                 let x_boundary_gap = self.x_boundary_gap.unwrap_or(true);
                 let mut split_unit_offset = 0.0;
@@ -248,9 +291,6 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 for (index, series) in series_list.iter().enumerate() {
                     let split_unit_count = series.data.len() as f32 - split_unit_offset;
                     let unit_width = c1.width() /split_unit_count;
-                    // println!("{}", c1.width());
-                    // println!("{}", unit_width);
-                    // println!("{}", series.data.len() );
                     let mut points: Vec<Point> = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         // 居中

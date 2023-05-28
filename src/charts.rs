@@ -1,3 +1,4 @@
+mod bar_chart;
 mod canvas;
 mod color;
 mod common;
@@ -8,6 +9,7 @@ mod path;
 mod theme;
 mod util;
 
+pub use bar_chart::BarChart;
 pub use canvas::Canvas;
 pub use color::*;
 pub use common::*;
@@ -29,6 +31,13 @@ pub trait Chart {
     fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32);
     fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32);
     fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32);
+    fn render_bar(
+        &self,
+        c: Canvas,
+        series_list: &[Series],
+        y_axis_values: &AxisValues,
+        max_height: f32,
+    );
     fn render_line(
         &self,
         c: Canvas,

@@ -10,7 +10,7 @@ use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 
 #[derive(Clone, Debug, Default, Chart)]
-pub struct LineChart {
+pub struct BarChart {
     pub width: f32,
     pub height: f32,
     pub margin: Box,
@@ -68,16 +68,16 @@ pub struct LineChart {
     pub series_fill: bool,
 }
 
-impl LineChart {
-    pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> LineChart {
-        let mut l = LineChart {
+impl BarChart {
+    pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
+        let mut b = BarChart {
             series_list,
             x_axis_data,
             ..Default::default()
         };
         let theme = get_theme(get_default_theme());
-        l.fill_theme(theme);
-        l
+        b.fill_theme(theme);
+        b
     }
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
@@ -135,9 +135,9 @@ impl LineChart {
             axis_width,
         );
 
-        // line point
+        // bar point
         let max_height = c.height() - self.x_axis_height;
-        self.render_line(
+        self.render_bar(
             c.child(Box {
                 left: self.y_axis_width,
                 ..Default::default()
@@ -145,7 +145,6 @@ impl LineChart {
             &self.series_list,
             &y_axis_values,
             max_height,
-            axis_height,
         );
 
         c.svg()
@@ -154,12 +153,12 @@ impl LineChart {
 
 #[cfg(test)]
 mod tests {
-    use super::LineChart;
-    use crate::{Align, Box, Series};
+    use super::BarChart;
+    use crate::{Box, Series};
     use pretty_assertions::assert_eq;
     #[test]
-    fn line_chart_basic() {
-        let mut line_chart = LineChart::new(
+    fn bar_chart_basic() {
+        let mut bar_chart = BarChart::new(
             vec![
                 Series::new(
                     "Email".to_string(),
@@ -188,128 +187,15 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
-            top: 40.0,
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 30.0,
             bottom: 10.0,
             ..Default::default()
         });
         assert_eq!(
-            include_str!("../../asset/line_chart/basic.svg"),
-            line_chart.svg().unwrap()
-        );
-    }
-
-    #[test]
-    fn line_chart_align_left() {
-        let mut line_chart = LineChart::new(
-            vec![
-                Series::new(
-                    "Email".to_string(),
-                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
-                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
-                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
-                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
-            ],
-            vec![
-                "Mon".to_string(),
-                "Tue".to_string(),
-                "Wed".to_string(),
-                "Thu".to_string(),
-                "Fri".to_string(),
-                "Sat".to_string(),
-                "Sun".to_string(),
-            ],
-        );
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
-            top: 40.0,
-            bottom: 10.0,
-            ..Default::default()
-        });
-        line_chart.x_boundary_gap = Some(false);
-        line_chart.margin = (5.0, 5.0, 15.0, 5.0).into();
-        assert_eq!(
-            include_str!("../../asset/line_chart/boundary_gap.svg"),
-            line_chart.svg().unwrap()
-        );
-    }
-    #[test]
-    fn line_chart_fill() {
-        let mut line_chart = LineChart::new(
-            vec![Series::new(
-                "Search Engine".to_string(),
-                vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-            )],
-            vec![
-                "Mon".to_string(),
-                "Tue".to_string(),
-                "Wed".to_string(),
-                "Thu".to_string(),
-                "Fri".to_string(),
-                "Sat".to_string(),
-                "Sun".to_string(),
-            ],
-        );
-        line_chart.series_fill = true;
-        line_chart.series_smooth = true;
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
-            top: 40.0,
-            bottom: 10.0,
-            ..Default::default()
-        });
-        assert_eq!(
-            include_str!("../../asset/line_chart/smooth_fill.svg"),
-            line_chart.svg().unwrap()
-        );
-    }
-    #[test]
-    fn line_chart_legend_align_right() {
-        let mut line_chart = LineChart::new(
-            vec![
-                Series::new(
-                    "Email".to_string(),
-                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
-                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-            ],
-            vec![
-                "Mon".to_string(),
-                "Tue".to_string(),
-                "Wed".to_string(),
-                "Thu".to_string(),
-                "Fri".to_string(),
-                "Sat".to_string(),
-                "Sun".to_string(),
-            ],
-        );
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.title_align = Align::Left;
-        line_chart.legend_align = Align::Right;
-
-        line_chart.x_boundary_gap = Some(false);
-        line_chart.margin = (5.0, 5.0, 15.0, 5.0).into();
-        assert_eq!(
-            include_str!("../../asset/line_chart/legend_align_right.svg"),
-            line_chart.svg().unwrap()
+            include_str!("../../asset/bar_chart/basic.svg"),
+            bar_chart.svg().unwrap()
         );
     }
 }

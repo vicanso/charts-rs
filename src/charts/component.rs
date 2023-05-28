@@ -920,7 +920,7 @@ impl Axis {
                 let values = match self.position {
                     Position::Left => {
                         let x = left + width - text_width - name_gap;
-                        let y = top + unit_offset + font_size / 2.0;
+                        let y = top + unit_offset + font_size / 2.0 - 2.0;
                         (x, y)
                     }
                     Position::Top => {
