@@ -49,12 +49,14 @@ pub struct LineChart {
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_boundary_gap: Option<bool>,
+
     // y axis
     pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
     pub y_axis_width: f32,
     pub y_axis_split_number: usize,
     pub y_axis_name_gap: f32,
+    pub y_axis_formatter: Option<String>,
 
     // grid
     pub grid_stroke_color: Color,

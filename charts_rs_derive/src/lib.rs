@@ -208,6 +208,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     font_color: Some(self.y_axis_font_color),
                     font_size: self.y_axis_font_size,
                     data,
+                    formatter: self.y_axis_formatter.clone(),
                     ..Default::default()
                 });
             }

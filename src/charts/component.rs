@@ -753,6 +753,7 @@ pub struct Axis {
     pub font_family: String,
     pub font_color: Option<Color>,
     pub data: Vec<String>,
+    pub formatter: Option<String>,
     pub name_gap: f32,
     pub name_align: Align,
     pub name_rotate: f32,
@@ -773,6 +774,7 @@ impl Default for Axis {
             font_size: 14.0,
             font_family: font::DEFAULT_FONT_FAMILY.to_string(),
             data: vec![],
+            formatter: None,
             font_color: None,
             stroke_color: None,
             name_gap: 5.0,
@@ -909,8 +911,13 @@ impl Axis {
                 data_len -= 1;
             }
             let unit = axis_length / data_len as f32;
-            for (index, text) in self.data.iter().enumerate() {
-                let b = font::measure_text(&f, font_size, text);
+            for (index, item) in self.data.iter().enumerate() {
+                let text = if let Some(ref formatter) = self.formatter {
+                    formatter.replace("{c}", item)
+                } else {
+                    item.to_string()
+                };
+                let b = font::measure_text(&f, font_size, &text);
                 let mut unit_offset = unit * index as f32 + unit / 2.0;
                 if is_name_align_start {
                     unit_offset -= unit / 2.0;

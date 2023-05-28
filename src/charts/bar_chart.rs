@@ -49,12 +49,14 @@ pub struct BarChart {
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_boundary_gap: Option<bool>,
+
     // y axis
     pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
     pub y_axis_width: f32,
     pub y_axis_split_number: usize,
     pub y_axis_name_gap: f32,
+    pub y_axis_formatter: Option<String>,
 
     // grid
     pub grid_stroke_color: Color,
@@ -187,12 +189,14 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
+        bar_chart.y_axis_width = 55.0;
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
             top: 30.0,
             bottom: 10.0,
             ..Default::default()
         });
+        bar_chart.y_axis_formatter = Some("{c} ml".to_string());
         assert_eq!(
             include_str!("../../asset/bar_chart/basic.svg"),
             bar_chart.svg().unwrap()
