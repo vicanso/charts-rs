@@ -88,6 +88,7 @@ impl LineChart {
         let title_height = self.render_title(c.child(Box::default()));
 
         let legend_height = self.render_legend(c.child(Box::default()));
+        // title 与 legend 取较高的值
         let axis_top = if legend_height > title_height {
             legend_height
         } else {
@@ -96,7 +97,7 @@ impl LineChart {
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - self.y_axis_width;
-        // 顶部文本区域
+        // 减去顶部文本区域
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,
@@ -154,7 +155,7 @@ impl LineChart {
 #[cfg(test)]
 mod tests {
     use super::LineChart;
-    use crate::{Box, Series};
+    use crate::{Box, Series, Align};
     use pretty_assertions::assert_eq;
     #[test]
     fn line_chart_basic() {
@@ -275,5 +276,40 @@ mod tests {
             include_str!("../../asset/line_chart/smooth_fill.svg"),
             line_chart.svg().unwrap()
         );
+    }
+    #[test]
+    fn line_chart_legend_align_right() {
+        let mut line_chart = LineChart::new(
+            vec![
+                Series::new(
+                    "Email".to_string(),
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                ),
+                Series::new(
+                    "Union Ads".to_string(),
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                ),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        line_chart.title_text = "Stacked Area Chart".to_string();
+        line_chart.sub_title_text = "Hello World".to_string();
+        line_chart.title_align = Align::Left;
+        line_chart.legend_align = Align::Right;
+       
+        line_chart.x_boundary_gap = Some(false);
+        line_chart.margin = (5.0, 5.0, 15.0, 5.0).into();
+        assert_eq!(
+            include_str!("../../asset/line_chart/legend_align_right.svg"),
+            line_chart.svg().unwrap()
+        ); 
     }
 }

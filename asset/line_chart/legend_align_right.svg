@@ -1,0 +1,103 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="23" font-weight="bold" font-family="Arial" fill="#464646">
+Stacked Area Chart
+</text>
+<text font-size="14" x="5" y="37" font-family="Arial" fill="#464646">
+Hello World
+</text>
+<g>
+<line stroke-width="2" x1="416" y1="15" x2="441" y2="15" stroke="#5470C6"/>
+<circle cx="428.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="444" y="19" font-family="Arial" fill="#464646">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="486" y1="15" x2="511" y2="15" stroke="#91CC75"/>
+<circle cx="498.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="514" y="19" font-family="Arial" fill="#464646">
+Union Ads
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="45" y1="56" x2="585" y2="56"/><line stroke-width="1" x1="45" y1="107.5" x2="585" y2="107.5"/><line stroke-width="1" x1="45" y1="159" x2="585" y2="159"/><line stroke-width="1" x1="45" y1="210.5" x2="585" y2="210.5"/><line stroke-width="1" x1="45" y1="262" x2="585" y2="262"/><line stroke-width="1" x1="45" y1="313.5" x2="585" y2="313.5"/>
+</g>
+<g>
+
+<text font-size="14" x="13" y="63" font-family="Arial" fill="#6E7079">
+360
+</text>
+<text font-size="14" x="13" y="114.5" font-family="Arial" fill="#6E7079">
+300
+</text>
+<text font-size="14" x="13" y="166" font-family="Arial" fill="#6E7079">
+240
+</text>
+<text font-size="14" x="13" y="217.5" font-family="Arial" fill="#6E7079">
+180
+</text>
+<text font-size="14" x="13" y="269" font-family="Arial" fill="#6E7079">
+120
+</text>
+<text font-size="14" x="21" y="320.5" font-family="Arial" fill="#6E7079">
+60
+</text>
+<text font-size="14" x="29" y="372" font-family="Arial" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="45" y1="365" x2="585" y2="365"/>
+<line stroke-width="1" x1="45" y1="365" x2="45" y2="370"/>
+<line stroke-width="1" x1="135" y1="365" x2="135" y2="370"/>
+<line stroke-width="1" x1="225" y1="365" x2="225" y2="370"/>
+<line stroke-width="1" x1="315" y1="365" x2="315" y2="370"/>
+<line stroke-width="1" x1="405" y1="365" x2="405" y2="370"/>
+<line stroke-width="1" x1="495" y1="365" x2="495" y2="370"/>
+<line stroke-width="1" x1="585" y1="365" x2="585" y2="370"/>
+</g>
+<text font-size="14" x="31.5" y="384" font-family="Arial" fill="#6E7079">
+Mon
+</text>
+<text font-size="14" x="122.5" y="384" font-family="Arial" fill="#6E7079">
+Tue
+</text>
+<text font-size="14" x="210.5" y="384" font-family="Arial" fill="#6E7079">
+Wed
+</text>
+<text font-size="14" x="303" y="384" font-family="Arial" fill="#6E7079">
+Thu
+</text>
+<text font-size="14" x="396.5" y="384" font-family="Arial" fill="#6E7079">
+Fri
+</text>
+<text font-size="14" x="484" y="384" font-family="Arial" fill="#6E7079">
+Sat
+</text>
+<text font-size="14" x="572.5" y="384" font-family="Arial" fill="#6E7079">
+Sun
+</text>
+</g>
+<g>
+<path fill="none" d="M 45 262 L 135 251.7 L 225 278.3 L 315 250 L 405 287.8 L 495 167.6 L 585 184.8" stroke-width="2" stroke="#5470C6"/>
+<circle cx="45" cy="262" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="135" cy="251.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="225" cy="278.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="315" cy="250" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="405" cy="287.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="495" cy="167.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="585" cy="184.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+</g>
+<g>
+<path fill="none" d="M 45 176.2 L 135 208.8 L 225 201.1 L 315 164.2 L 405 116.1 L 495 81.8 L 585 98.9" stroke-width="2" stroke="#91CC75"/>
+<circle cx="45" cy="176.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="135" cy="208.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="225" cy="201.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="315" cy="164.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="405" cy="116.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="495" cy="81.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="585" cy="98.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+</g>
+</svg>
