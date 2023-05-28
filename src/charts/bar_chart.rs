@@ -139,14 +139,36 @@ impl BarChart {
 
         // bar point
         let max_height = c.height() - self.x_axis_height;
+        let mut bar_series_list = vec![];
+        let mut line_series_list = vec![];
+        self.series_list.iter().for_each(|item| {
+            if let Some(ref cat) = item.category {
+                if *cat == SeriesCategory::Line {
+                    line_series_list.push(item);
+                    return;
+                }
+            }
+            bar_series_list.push(item);
+        });
+
         self.render_bar(
             c.child(Box {
                 left: self.y_axis_width,
                 ..Default::default()
             }),
-            &self.series_list,
+            &bar_series_list,
             &y_axis_values,
             max_height,
+        );
+        self.render_line(
+            c.child(Box {
+                left: self.y_axis_width,
+                ..Default::default()
+            }),
+            &line_series_list,
+            &y_axis_values,
+            max_height,
+            axis_height,
         );
 
         c.svg()
@@ -156,7 +178,7 @@ impl BarChart {
 #[cfg(test)]
 mod tests {
     use super::BarChart;
-    use crate::{Box, Series};
+    use crate::{Box, Series, SeriesCategory};
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
@@ -199,6 +221,51 @@ mod tests {
         bar_chart.y_axis_formatter = Some("{c} ml".to_string());
         assert_eq!(
             include_str!("../../asset/bar_chart/basic.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+    #[test]
+    fn bar_chart_line_mixin() {
+        let mut bar_chart = BarChart::new(
+            vec![
+                Series::new(
+                    "Email".to_string(),
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                ),
+                Series::new(
+                    "Union Ads".to_string(),
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                ),
+                Series::new(
+                    "Direct".to_string(),
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                ),
+                Series::new(
+                    "Search Engine".to_string(),
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                ),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        bar_chart.series_list[0].category = Some(SeriesCategory::Line);
+        bar_chart.y_axis_width = 55.0;
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 30.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        bar_chart.y_axis_formatter = Some("{c} ml".to_string());
+        assert_eq!(
+            include_str!("../../asset/bar_chart/line_mixin.svg"),
             bar_chart.svg().unwrap()
         );
     }

@@ -139,12 +139,13 @@ impl LineChart {
 
         // line point
         let max_height = c.height() - self.x_axis_height;
+        let line_series_list: Vec<&Series> = self.series_list.iter().collect();
         self.render_line(
             c.child(Box {
                 left: self.y_axis_width,
                 ..Default::default()
             }),
-            &self.series_list,
+            &line_series_list,
             &y_axis_values,
             max_height,
             axis_height,

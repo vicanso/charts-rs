@@ -22,12 +22,19 @@ pub enum Symbol {
     Circle(f32, Option<Color>),
 }
 
+#[derive(Clone, PartialEq, Debug)]
+pub enum SeriesCategory {
+    Line,
+    Bar,
+}
+
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct Series {
     pub name: String,
     pub data: Vec<f32>,
     // 指定index
     pub index: Option<usize>,
+    pub category: Option<SeriesCategory>,
 }
 
 impl Series {
@@ -36,6 +43,7 @@ impl Series {
             name,
             data,
             index: None,
+            ..Default::default()
         }
     }
 }

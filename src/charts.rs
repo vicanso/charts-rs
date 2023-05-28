@@ -34,14 +34,14 @@ pub trait Chart {
     fn render_bar(
         &self,
         c: Canvas,
-        series_list: &[Series],
+        series_list: &[&Series],
         y_axis_values: &AxisValues,
         max_height: f32,
     );
     fn render_line(
         &self,
         c: Canvas,
-        series_list: &[Series],
+        series_list: &[&Series],
         y_axis_values: &AxisValues,
         max_height: f32,
         axis_height: f32,

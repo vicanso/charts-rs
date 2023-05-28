@@ -241,7 +241,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             fn render_bar(
                 &self,
                 c: Canvas,
-                series_list: &[Series],
+                series_list: &[&Series],
                 y_axis_values: &AxisValues,
                 max_height: f32,
             ) {
@@ -278,7 +278,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     }
                 }
             }
-            fn render_line(&self, c: Canvas, series_list: &[Series], y_axis_values: &AxisValues, max_height: f32, axis_height: f32) {
+            fn render_line(&self, c: Canvas, series_list: &[&Series], y_axis_values: &AxisValues, max_height: f32, axis_height: f32) {
                 if series_list.is_empty() {
                     return;
                 }
