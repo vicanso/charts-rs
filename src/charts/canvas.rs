@@ -265,6 +265,7 @@ mod tests {
         SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Symbol, Text,
         DEFAULT_FONT_FAMILY,
     };
+    use pretty_assertions::assert_eq;
     #[test]
     fn canvas_width_height() {
         let mut c = Canvas::new(400.0, 300.0);

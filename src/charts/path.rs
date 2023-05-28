@@ -154,6 +154,7 @@ impl fmt::Display for SmoothCurve {
 #[cfg(test)]
 mod tests {
     use super::{QuadraticBezier, SmoothCurve};
+    use pretty_assertions::assert_eq;
     #[test]
     fn quadratic_bezier() {
         let str = QuadraticBezier {

@@ -87,6 +87,7 @@ pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) 
 #[cfg(test)]
 mod tests {
     use super::{add_font, get_font, measure_text_width_family};
+    use pretty_assertions::assert_eq;
     #[test]
     fn measure_text() {
         let data = include_bytes!("../../src/Arial.ttf") as &[u8];

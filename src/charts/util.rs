@@ -211,6 +211,7 @@ mod tests {
         convert_to_points, format_float, get_axis_values, get_box_of_points, AxisValueParams, Box,
         Point,
     };
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn point() {

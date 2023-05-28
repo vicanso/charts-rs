@@ -213,10 +213,19 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             }
             fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32) {
                 let mut c1 = c; 
+                
+                let mut split_number = data.len();
+                let name_align = if self.x_boundary_gap.unwrap_or(true) {
+                    Align::Center
+                } else {
+                    split_number -= 1;
+                    Align::Left
+                };
+
                 c1.axis(Axis {
                     height: self.x_axis_height,
                     width: axis_width,
-                    split_number:data.len(),
+                    split_number,
                     font_family: self.font_family.clone(),
                     data,
                     font_color: Some(self.x_axis_font_color),
@@ -224,17 +233,31 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     font_size: self.x_axis_font_size,
                     name_gap: self.x_axis_name_gap,
                     name_rotate: self.x_axis_name_rotate,
+                    name_align,
                     ..Default::default()
                 });
             }
-            fn render_lines(&self, c: Canvas, series_list: &[Series], y_axis_values: &AxisValues, max_height: f32, axis_height: f32) {
+            fn render_line(&self, c: Canvas, series_list: &[Series], y_axis_values: &AxisValues, max_height: f32, axis_height: f32) {
                 let mut c1 = c;
+                let x_boundary_gap = self.x_boundary_gap.unwrap_or(true);
+                let mut split_unit_offset = 0.0;
+                if !x_boundary_gap {
+                    split_unit_offset = 1.0;
+                }
+
                 for (index, series) in series_list.iter().enumerate() {
-                    let unit_width = c1.width() / series.data.len() as f32;
+                    let split_unit_count = series.data.len() as f32 - split_unit_offset;
+                    let unit_width = c1.width() /split_unit_count;
+                    // println!("{}", c1.width());
+                    // println!("{}", unit_width);
+                    // println!("{}", series.data.len() );
                     let mut points: Vec<Point> = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         // 居中
-                        let x = unit_width * i as f32 + unit_width / 2.0;
+                        let mut x = unit_width * i as f32 ;
+                        if x_boundary_gap {
+                            x += unit_width / 2.0;
+                        }
                         let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
                         points.push((x, y).into());
                     }

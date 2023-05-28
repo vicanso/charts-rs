@@ -1095,6 +1095,7 @@ mod tests {
         SmoothLineFill, StraightLine, StraightLineFill, Text,
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
+    use pretty_assertions::assert_eq;
     #[test]
     fn line() {
         let line = Line::default();

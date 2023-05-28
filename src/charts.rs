@@ -29,7 +29,7 @@ pub trait Chart {
     fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32);
     fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32);
     fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32);
-    fn render_lines(
+    fn render_line(
         &self,
         c: Canvas,
         series_list: &[Series],

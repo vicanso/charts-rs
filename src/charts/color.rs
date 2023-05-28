@@ -91,6 +91,7 @@ impl From<&str> for Color {
 #[cfg(test)]
 mod tests {
     use super::Color;
+    use pretty_assertions::assert_eq;
     #[test]
     fn color_hex() {
         let mut c: Color = (200, 200, 200).into();
