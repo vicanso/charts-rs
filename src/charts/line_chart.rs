@@ -39,6 +39,7 @@ pub struct LineChart {
     pub legend_font_color: Color,
     pub legend_align: Align,
     pub legend_margin: Option<Box>,
+    pub legend_category: LegendCategory,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -53,6 +54,7 @@ pub struct LineChart {
     // y axis
     pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
+    pub y_axis_stroke_color: Color,
     pub y_axis_width: f32,
     pub y_axis_split_number: usize,
     pub y_axis_name_gap: f32,

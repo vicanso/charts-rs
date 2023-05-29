@@ -42,6 +42,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
 
                 self.y_axis_font_color = t.y_axis_font_color;
                 self.y_axis_font_size = t.y_axis_font_size;
+                self.y_axis_stroke_color = t.y_axis_stroke_color;
                 self.y_axis_width = t.y_axis_width;
                 self.y_axis_split_number = t.y_axis_split_number;
                 self.y_axis_name_gap = t.y_axis_name_gap;
@@ -174,7 +175,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         fill,
                         left: legend_left,
                         top: legend_top,
-                        ..Default::default()
+                        category: self.legend_category.clone(),
                     });
                     legend_left += b.width() + LEGEND_MARGIN;
                 }
@@ -202,7 +203,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     width: self.y_axis_width,
                     split_number: self.y_axis_split_number,
                     font_family: self.font_family.clone(),
-                    stroke_color: Some((0, 0, 0, 0).into()),
+                    stroke_color: Some(self.y_axis_stroke_color),
                     name_align: Align::Left,
                     name_gap: self.y_axis_name_gap,
                     font_color: Some(self.y_axis_font_color),

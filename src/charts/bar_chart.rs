@@ -39,6 +39,7 @@ pub struct BarChart {
     pub legend_font_color: Color,
     pub legend_align: Align,
     pub legend_margin: Option<Box>,
+    pub legend_category: LegendCategory,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -53,6 +54,7 @@ pub struct BarChart {
     // y axis
     pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
+    pub y_axis_stroke_color: Color,
     pub y_axis_width: f32,
     pub y_axis_split_number: usize,
     pub y_axis_name_gap: f32,
@@ -71,7 +73,14 @@ pub struct BarChart {
 }
 
 impl BarChart {
-    pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
+    pub fn new(mut series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
+        let mut series_index: usize = 0;
+        // bar chart 可能同时支持两种图
+        // 因此先计算index
+        series_list.iter_mut().for_each(|item| {
+            item.index = Some(series_index);
+            series_index += 1;
+        });
         let mut b = BarChart {
             series_list,
             x_axis_data,
@@ -178,7 +187,7 @@ impl BarChart {
 #[cfg(test)]
 mod tests {
     use super::BarChart;
-    use crate::{Box, Series, SeriesCategory};
+    use crate::{Box, LegendCategory, Series, SeriesCategory};
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
@@ -263,6 +272,7 @@ mod tests {
             bottom: 10.0,
             ..Default::default()
         });
+        bar_chart.legend_category = LegendCategory::Rect;
         bar_chart.y_axis_formatter = Some("{c} ml".to_string());
         assert_eq!(
             include_str!("../../asset/bar_chart/line_mixin.svg"),
