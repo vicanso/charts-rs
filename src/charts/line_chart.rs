@@ -109,7 +109,15 @@ impl LineChart {
             });
         }
 
-        self.render_grid(c.child(Box::default()), axis_width, axis_height);
+        self.render_grid(
+            c.child(Box {
+                left: self.y_axis_width,
+                right: self.y_axis_width,
+                ..Default::default()
+            }),
+            axis_width,
+            axis_height,
+        );
 
         let mut data_list = vec![];
         for series in self.series_list.iter() {

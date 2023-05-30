@@ -185,8 +185,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32) {
                 let mut c1 = c;
                 c1.grid(Grid {
-                    left: self.y_axis_width,
-                    right: self.y_axis_width + axis_width,
+                    right: axis_width,
                     bottom: axis_height,
                     color: Some(self.grid_stroke_color),
                     stroke_width: self.grid_stroke_width,
