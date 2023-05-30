@@ -43,7 +43,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 self.y_axis_font_color = t.y_axis_font_color;
                 self.y_axis_font_size = t.y_axis_font_size;
                 self.y_axis_stroke_color = t.y_axis_stroke_color;
-                self.y_axis_width = t.y_axis_width;
+                // self.y_axis_width = t.y_axis_width;
                 self.y_axis_split_number = t.y_axis_split_number;
                 self.y_axis_name_gap = t.y_axis_name_gap;
 
@@ -194,12 +194,12 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
-            fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32) {
+            fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32) {
                 let mut c1 = c; 
                 c1.axis(Axis {
                     position: Position::Left,
                     height: axis_height,
-                    width: self.y_axis_width,
+                    width: axis_width,
                     split_number: self.y_axis_split_number,
                     font_family: self.font_family.clone(),
                     stroke_color: Some(self.y_axis_stroke_color),

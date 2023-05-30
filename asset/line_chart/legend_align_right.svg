@@ -21,59 +21,59 @@ Union Ads
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="45" y1="56" x2="585" y2="56"/><line stroke-width="1" x1="45" y1="107.5" x2="585" y2="107.5"/><line stroke-width="1" x1="45" y1="159" x2="585" y2="159"/><line stroke-width="1" x1="45" y1="210.5" x2="585" y2="210.5"/><line stroke-width="1" x1="45" y1="262" x2="585" y2="262"/><line stroke-width="1" x1="45" y1="313.5" x2="585" y2="313.5"/>
+<line stroke-width="1" x1="34" y1="56" x2="585" y2="56"/><line stroke-width="1" x1="34" y1="107.5" x2="585" y2="107.5"/><line stroke-width="1" x1="34" y1="159" x2="585" y2="159"/><line stroke-width="1" x1="34" y1="210.5" x2="585" y2="210.5"/><line stroke-width="1" x1="34" y1="262" x2="585" y2="262"/><line stroke-width="1" x1="34" y1="313.5" x2="585" y2="313.5"/>
 </g>
 <g>
 
-<text font-size="14" x="13" y="61" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="61" font-family="Arial" fill="#6E7079">
 360
 </text>
-<text font-size="14" x="13" y="112.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="112.5" font-family="Arial" fill="#6E7079">
 300
 </text>
-<text font-size="14" x="13" y="164" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="164" font-family="Arial" fill="#6E7079">
 240
 </text>
-<text font-size="14" x="13" y="215.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="215.5" font-family="Arial" fill="#6E7079">
 180
 </text>
-<text font-size="14" x="13" y="267" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="267" font-family="Arial" fill="#6E7079">
 120
 </text>
-<text font-size="14" x="21" y="318.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="10" y="318.5" font-family="Arial" fill="#6E7079">
 60
 </text>
-<text font-size="14" x="29" y="370" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="18" y="370" font-family="Arial" fill="#6E7079">
 0
 </text>
 </g>
 <g>
 <g stroke="#6E7079">
-<line stroke-width="1" x1="45" y1="365" x2="585" y2="365"/>
-<line stroke-width="1" x1="45" y1="365" x2="45" y2="370"/>
-<line stroke-width="1" x1="135" y1="365" x2="135" y2="370"/>
-<line stroke-width="1" x1="225" y1="365" x2="225" y2="370"/>
-<line stroke-width="1" x1="315" y1="365" x2="315" y2="370"/>
-<line stroke-width="1" x1="405" y1="365" x2="405" y2="370"/>
-<line stroke-width="1" x1="495" y1="365" x2="495" y2="370"/>
+<line stroke-width="1" x1="34" y1="365" x2="585" y2="365"/>
+<line stroke-width="1" x1="34" y1="365" x2="34" y2="370"/>
+<line stroke-width="1" x1="125.8" y1="365" x2="125.8" y2="370"/>
+<line stroke-width="1" x1="217.7" y1="365" x2="217.7" y2="370"/>
+<line stroke-width="1" x1="309.5" y1="365" x2="309.5" y2="370"/>
+<line stroke-width="1" x1="401.3" y1="365" x2="401.3" y2="370"/>
+<line stroke-width="1" x1="493.2" y1="365" x2="493.2" y2="370"/>
 <line stroke-width="1" x1="585" y1="365" x2="585" y2="370"/>
 </g>
-<text font-size="14" x="31.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="20.5" y="384" font-family="Arial" fill="#6E7079">
 Mon
 </text>
-<text font-size="14" x="122.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="113.3" y="384" font-family="Arial" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" x="210.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="203.2" y="384" font-family="Arial" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" x="303" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="297.5" y="384" font-family="Arial" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" x="396.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="392.8" y="384" font-family="Arial" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" x="484" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="482.2" y="384" font-family="Arial" fill="#6E7079">
 Sat
 </text>
 <text font-size="14" x="572.5" y="384" font-family="Arial" fill="#6E7079">
@@ -81,23 +81,23 @@ Sun
 </text>
 </g>
 <g>
-<path fill="none" d="M 45 262 L 135 251.7 L 225 278.3 L 315 250 L 405 287.8 L 495 167.6 L 585 184.8" stroke-width="2" stroke="#5470C6"/>
-<circle cx="45" cy="262" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="135" cy="251.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="225" cy="278.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="315" cy="250" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="405" cy="287.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="495" cy="167.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<path fill="none" d="M 34 262 L 125.8 251.7 L 217.7 278.3 L 309.5 250 L 401.3 287.8 L 493.2 167.6 L 585 184.8" stroke-width="2" stroke="#5470C6"/>
+<circle cx="34" cy="262" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="125.8" cy="251.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="217.7" cy="278.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="309.5" cy="250" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="401.3" cy="287.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="493.2" cy="167.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="585" cy="184.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 <g>
-<path fill="none" d="M 45 176.2 L 135 208.8 L 225 201.1 L 315 164.2 L 405 116.1 L 495 81.8 L 585 98.9" stroke-width="2" stroke="#91CC75"/>
-<circle cx="45" cy="176.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="135" cy="208.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="225" cy="201.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="315" cy="164.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="405" cy="116.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="495" cy="81.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<path fill="none" d="M 34 176.2 L 125.8 208.8 L 217.7 201.1 L 309.5 164.2 L 401.3 116.1 L 493.2 81.8 L 585 98.9" stroke-width="2" stroke="#91CC75"/>
+<circle cx="34" cy="176.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="125.8" cy="208.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="217.7" cy="201.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="309.5" cy="164.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="401.3" cy="116.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="493.2" cy="81.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
 <circle cx="585" cy="98.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
 </g>
 </svg>

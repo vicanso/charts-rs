@@ -2,7 +2,7 @@ use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
-use super::theme::{get_default_theme, get_theme, Theme};
+use super::theme::{get_default_theme, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
 use super::util::*;
 use super::Canvas;
 use super::Chart;
@@ -55,7 +55,7 @@ pub struct BarChart {
     pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
     pub y_axis_stroke_color: Color,
-    pub y_axis_width: f32,
+    pub y_axis_width: Option<f32>,
     pub y_axis_split_number: usize,
     pub y_axis_name_gap: f32,
     pub y_axis_formatter: Option<String>,
@@ -106,26 +106,6 @@ impl BarChart {
             title_height
         };
 
-        let axis_height = c.height() - self.x_axis_height - axis_top;
-        let axis_width = c.width() - self.y_axis_width;
-        // 减去顶部文本区域
-        if axis_top > 0.0 {
-            c = c.child(Box {
-                top: axis_top,
-                ..Default::default()
-            });
-        }
-
-        self.render_grid(
-            c.child(Box {
-                left: self.y_axis_width,
-                right: self.y_axis_width,
-                ..Default::default()
-            }),
-            axis_width,
-            axis_height,
-        );
-
         let mut data_list = vec![];
         for series in self.series_list.iter() {
             data_list.append(series.data.clone().as_mut());
@@ -136,18 +116,52 @@ impl BarChart {
             reverse: Some(true),
             ..Default::default()
         });
+        let y_axis_width = if let Some(value) = self.y_axis_width {
+            value            
+        } else {
+            let y_axis_formatter = &self.y_axis_formatter.clone().unwrap_or_default();
+            let str = format_string(&y_axis_values.data[0], y_axis_formatter);
+            if let Ok(b) =   measure_text_width_family(&self.font_family, self.y_axis_font_size, &str) {
+                b.width() + 5.0
+            } else {
+                DEFAULT_Y_AXIS_WIDTH
+            }
+        };
+
+        let axis_height = c.height() - self.x_axis_height - axis_top;
+        let axis_width = c.width() - y_axis_width;
+        // 减去顶部文本区域
+        if axis_top > 0.0 {
+            c = c.child(Box {
+                top: axis_top,
+                ..Default::default()
+            });
+        }
+
+        self.render_grid(
+            c.child(Box {
+                left: y_axis_width,
+                right: y_axis_width,
+                ..Default::default()
+            }),
+            axis_width,
+            axis_height,
+        );
+
+        
         // y axis
         self.render_y_axis(
             c.child(Box::default()),
             y_axis_values.data.clone(),
             axis_height,
+            y_axis_width,
         );
 
         // x axis
         self.render_x_axis(
             c.child(Box {
                 top: c.height() - self.x_axis_height,
-                left: self.y_axis_width,
+                left: y_axis_width,
                 ..Default::default()
             }),
             self.x_axis_data.clone(),
@@ -170,7 +184,7 @@ impl BarChart {
 
         self.render_bar(
             c.child(Box {
-                left: self.y_axis_width,
+                left: y_axis_width,
                 ..Default::default()
             }),
             &bar_series_list,
@@ -179,7 +193,7 @@ impl BarChart {
         );
         self.render_line(
             c.child(Box {
-                left: self.y_axis_width,
+                left: y_axis_width,
                 ..Default::default()
             }),
             &line_series_list,
@@ -228,7 +242,7 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        bar_chart.y_axis_width = 55.0;
+        bar_chart.y_axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
             top: 30.0,
@@ -273,7 +287,7 @@ mod tests {
             ],
         );
         bar_chart.series_list[0].category = Some(SeriesCategory::Line);
-        bar_chart.y_axis_width = 55.0;
+        bar_chart.y_axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
             top: 30.0,

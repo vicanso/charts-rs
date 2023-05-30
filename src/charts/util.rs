@@ -182,6 +182,14 @@ pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
     values.iter().map(|item| item.to_owned().into()).collect()
 }
 
+pub fn format_string(value: &str, formatter: &str) -> String {
+    if formatter.is_empty() {
+        value.to_string()
+    } else {
+        formatter.replace("{c}", &value)
+    }
+}
+
 pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
     let mut b = Box {
         left: f32::MAX,

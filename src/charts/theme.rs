@@ -75,7 +75,7 @@ pub struct Theme {
     pub y_axis_font_size: f32,
     pub y_axis_font_color: Color,
     pub y_axis_stroke_color: Color,
-    pub y_axis_width: f32,
+    // pub y_axis_width: f32,
     pub y_axis_split_number: usize,
     pub y_axis_name_gap: f32,
 
@@ -124,7 +124,7 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         y_axis_font_size: DEFAULT_FONT_SIZE,
         y_axis_font_color: black,
         y_axis_stroke_color: (0, 0, 0, 0).into(),
-        y_axis_width: DEFAULT_Y_AXIS_WIDTH,
+        // y_axis_width: DEFAULT_Y_AXIS_WIDTH,
         y_axis_split_number: DEFAULT_Y_AXIS_SPLIT_NUMBER,
         y_axis_name_gap: DEFAULT_Y_AXIS_NAME_GAP,
 
