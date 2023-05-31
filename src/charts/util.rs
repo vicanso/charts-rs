@@ -186,7 +186,7 @@ pub fn format_string(value: &str, formatter: &str) -> String {
     if formatter.is_empty() {
         value.to_string()
     } else {
-        formatter.replace("{c}", &value)
+        formatter.replace("{c}", value)
     }
 }
 

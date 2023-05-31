@@ -106,27 +106,7 @@ impl BarChart {
             title_height
         };
 
-        let mut data_list = vec![];
-        for series in self.series_list.iter() {
-            data_list.append(series.data.clone().as_mut());
-        }
-        let y_axis_values = get_axis_values(AxisValueParams {
-            data_list,
-            split_number: self.y_axis_split_number,
-            reverse: Some(true),
-            ..Default::default()
-        });
-        let y_axis_width = if let Some(value) = self.y_axis_width {
-            value            
-        } else {
-            let y_axis_formatter = &self.y_axis_formatter.clone().unwrap_or_default();
-            let str = format_string(&y_axis_values.data[0], y_axis_formatter);
-            if let Ok(b) =   measure_text_width_family(&self.font_family, self.y_axis_font_size, &str) {
-                b.width() + 5.0
-            } else {
-                DEFAULT_Y_AXIS_WIDTH
-            }
-        };
+        let (y_axis_values, y_axis_width) = self.get_y_axis_values();
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - y_axis_width;
@@ -148,7 +128,6 @@ impl BarChart {
             axis_height,
         );
 
-        
         // y axis
         self.render_y_axis(
             c.child(Box::default()),
