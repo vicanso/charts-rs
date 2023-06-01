@@ -25,7 +25,7 @@ pub use util::*;
 
 pub trait Chart {
     fn fill_theme(&mut self, t: Theme);
-    fn get_y_axis_values(&self) -> (AxisValues, f32);
+    fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32);
     fn render_background(&self, c: Canvas);
     fn render_title(&self, c: Canvas) -> f32;
     fn render_legend(&self, c: Canvas) -> f32;

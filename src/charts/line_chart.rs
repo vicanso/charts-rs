@@ -99,7 +99,7 @@ impl LineChart {
             title_height
         };
 
-        let (y_axis_values, y_axis_width) = self.get_y_axis_values();
+        let (y_axis_values, y_axis_width) = self.get_y_axis_values(0);
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - y_axis_width;

@@ -34,6 +34,8 @@ pub struct Series {
     pub data: Vec<f32>,
     // 指定index
     pub index: Option<usize>,
+    // 其对应的y轴
+    pub y_axis_index: usize,
     pub category: Option<SeriesCategory>,
 }
 

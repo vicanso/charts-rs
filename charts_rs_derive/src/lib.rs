@@ -58,10 +58,12 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     Some(self.background_color),
                 ));
             }
-            fn get_y_axis_values(&self) -> (AxisValues, f32) {
+            fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32) {
                 let mut data_list = vec![];
                 for series in self.series_list.iter() {
-                    data_list.append(series.data.clone().as_mut());
+                    if series.y_axis_index == y_axis_index {
+                        data_list.append(series.data.clone().as_mut());
+                    }
                 }
                 let y_axis_values = get_axis_values(AxisValueParams {
                     data_list,

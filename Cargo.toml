@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 fontdue = "0.7.3"
-once_cell = "1.17.1"
+once_cell = "1.17.2"
 snafu = "0.7.4"
 substring = "1.4.5"
 charts_rs_derive = { path = "./charts_rs_derive"}
