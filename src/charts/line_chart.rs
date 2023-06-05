@@ -52,13 +52,7 @@ pub struct LineChart {
     pub x_boundary_gap: Option<bool>,
 
     // y axis
-    pub y_axis_font_size: f32,
-    pub y_axis_font_color: Color,
-    pub y_axis_stroke_color: Color,
-    pub y_axis_width: Option<f32>,
-    pub y_axis_split_number: usize,
-    pub y_axis_name_gap: f32,
-    pub y_axis_formatter: Option<String>,
+    pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
     pub grid_stroke_color: Color,
@@ -122,7 +116,7 @@ impl LineChart {
         );
 
         // y axis
-        self.render_y_axis(
+        self.render_left_y_axis(
             c.child(Box::default()),
             y_axis_values.data.clone(),
             axis_height,

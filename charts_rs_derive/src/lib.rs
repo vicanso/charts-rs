@@ -40,12 +40,16 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 self.x_axis_name_gap = t.x_axis_name_gap;
                 self.x_axis_height = t.x_axis_height;
 
-                self.y_axis_font_color = t.y_axis_font_color;
-                self.y_axis_font_size = t.y_axis_font_size;
-                self.y_axis_stroke_color = t.y_axis_stroke_color;
-                // self.y_axis_width = t.y_axis_width;
-                self.y_axis_split_number = t.y_axis_split_number;
-                self.y_axis_name_gap = t.y_axis_name_gap;
+                self.y_axis_configs = vec![
+                    YAxisConfig{
+                        axis_font_size: t.y_axis_font_size,
+                        axis_font_color: t.y_axis_font_color,
+                        axis_stroke_color: t.y_axis_stroke_color,
+                        axis_split_number: t.y_axis_split_number,
+                        axis_name_gap: t.y_axis_name_gap,
+                        ..Default::default()
+                    }
+                ];
 
                 self.grid_stroke_color = t.grid_stroke_color;
                 self.grid_stroke_width = t.grid_stroke_width;
@@ -59,25 +63,30 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 ));
             }
             fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32) {
+                let y_axis_config = self.y_axis_configs.get(y_axis_index).unwrap_or(&self.y_axis_configs[0]).clone();
                 let mut data_list = vec![];
                 for series in self.series_list.iter() {
                     if series.y_axis_index == y_axis_index {
                         data_list.append(series.data.clone().as_mut());
                     }
                 }
+                if data_list.is_empty() {
+                   return (AxisValues::default(), 0.0);
+                }
                 let y_axis_values = get_axis_values(AxisValueParams {
                     data_list,
-                    split_number: self.y_axis_split_number,
+                    split_number: y_axis_config.axis_split_number,
                     reverse: Some(true),
                     ..Default::default()
                 });
-                let y_axis_width = if let Some(value) = self.y_axis_width {
+                let y_axis_width = if let Some(value) = y_axis_config.axis_width {
                     value
                 } else {
-                    let y_axis_formatter = &self.y_axis_formatter.clone().unwrap_or_default();
+                    let y_axis_formatter = &y_axis_config.axis_formatter.clone().unwrap_or_default();
                     let str = format_string(&y_axis_values.data[0], y_axis_formatter);
-                    if let Ok(b) = measure_text_width_family(&self.font_family, self.y_axis_font_size, &str)
+                    if let Ok(b) = measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &str)
                     {
+                        println!("{}", b.width());
                         b.width() + 5.0
                     } else {
                         DEFAULT_Y_AXIS_WIDTH
@@ -211,31 +220,38 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             }
             fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32) {
                 let mut c1 = c;
+                let y_axis_config = self.y_axis_configs.first().unwrap_or(&YAxisConfig {
+                    ..Default::default()
+                }).clone();
+                let axis_split_number = y_axis_config.axis_split_number;
                 c1.grid(Grid {
                     right: axis_width,
                     bottom: axis_height,
                     color: Some(self.grid_stroke_color),
                     stroke_width: self.grid_stroke_width,
-                    horizontals: self.y_axis_split_number,
-                    hidden_horizontals: vec![self.y_axis_split_number],
+                    horizontals: axis_split_number,
+                    hidden_horizontals: vec![axis_split_number],
                     ..Default::default()
                 });
             }
-            fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32) {
+            fn render_left_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32) {
                 let mut c1 = c; 
+                let y_axis_config = self.y_axis_configs.first().unwrap_or(&YAxisConfig {
+                    ..Default::default()
+                }).clone();
                 c1.axis(Axis {
                     position: Position::Left,
                     height: axis_height,
                     width: axis_width,
-                    split_number: self.y_axis_split_number,
+                    split_number: y_axis_config.axis_split_number,
                     font_family: self.font_family.clone(),
-                    stroke_color: Some(self.y_axis_stroke_color),
+                    stroke_color: Some(y_axis_config.axis_stroke_color),
                     name_align: Align::Left,
-                    name_gap: self.y_axis_name_gap,
-                    font_color: Some(self.y_axis_font_color),
-                    font_size: self.y_axis_font_size,
+                    name_gap: y_axis_config.axis_name_gap,
+                    font_color: Some(y_axis_config.axis_font_color),
+                    font_size: y_axis_config.axis_font_size,
                     data,
-                    formatter: self.y_axis_formatter.clone(),
+                    formatter: y_axis_config.axis_formatter.clone(),
                     ..Default::default()
                 });
             }

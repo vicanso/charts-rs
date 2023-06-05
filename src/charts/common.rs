@@ -49,3 +49,14 @@ impl Series {
         }
     }
 }
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct YAxisConfig {
+    pub axis_font_size: f32,
+    pub axis_font_color: Color,
+    pub axis_stroke_color: Color,
+    pub axis_width: Option<f32>,
+    pub axis_split_number: usize,
+    pub axis_name_gap: f32,
+    pub axis_formatter: Option<String>,
+}

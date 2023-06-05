@@ -52,13 +52,7 @@ pub struct BarChart {
     pub x_boundary_gap: Option<bool>,
 
     // y axis
-    pub y_axis_font_size: f32,
-    pub y_axis_font_color: Color,
-    pub y_axis_stroke_color: Color,
-    pub y_axis_width: Option<f32>,
-    pub y_axis_split_number: usize,
-    pub y_axis_name_gap: f32,
-    pub y_axis_formatter: Option<String>,
+    pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
     pub grid_stroke_color: Color,
@@ -106,10 +100,24 @@ impl BarChart {
             title_height
         };
 
-        let (y_axis_values, y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
+        let mut exist_right_y_axis = false;
+        for series in self.series_list.iter() {
+            if series.index.unwrap_or_default() != 0 {
+                exist_right_y_axis = true;
+            }
+        }
+        let mut right_y_axis_values = AxisValues::default();
+        let mut right_y_axis_width = 0.0_f32;
+        if exist_right_y_axis {
+            (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
+        }
+
+        println!("{right_y_axis_values:?}");
+        println!("{right_y_axis_width:?}");
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
-        let axis_width = c.width() - y_axis_width;
+        let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
         // 减去顶部文本区域
         if axis_top > 0.0 {
             c = c.child(Box {
@@ -120,8 +128,7 @@ impl BarChart {
 
         self.render_grid(
             c.child(Box {
-                left: y_axis_width,
-                right: y_axis_width,
+                left: left_y_axis_width,
                 ..Default::default()
             }),
             axis_width,
@@ -129,18 +136,18 @@ impl BarChart {
         );
 
         // y axis
-        self.render_y_axis(
+        self.render_left_y_axis(
             c.child(Box::default()),
-            y_axis_values.data.clone(),
+            left_y_axis_values.data.clone(),
             axis_height,
-            y_axis_width,
+            left_y_axis_width,
         );
 
         // x axis
         self.render_x_axis(
             c.child(Box {
                 top: c.height() - self.x_axis_height,
-                left: y_axis_width,
+                left: left_y_axis_width,
                 ..Default::default()
             }),
             self.x_axis_data.clone(),
@@ -163,20 +170,20 @@ impl BarChart {
 
         self.render_bar(
             c.child(Box {
-                left: y_axis_width,
+                left: left_y_axis_width,
                 ..Default::default()
             }),
             &bar_series_list,
-            &y_axis_values,
+            &left_y_axis_values,
             max_height,
         );
         self.render_line(
             c.child(Box {
-                left: y_axis_width,
+                left: left_y_axis_width,
                 ..Default::default()
             }),
             &line_series_list,
-            &y_axis_values,
+            &left_y_axis_values,
             max_height,
             axis_height,
         );
@@ -221,14 +228,14 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        bar_chart.y_axis_width = Some(55.0);
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
             top: 30.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.y_axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         assert_eq!(
             include_str!("../../asset/bar_chart/basic.svg"),
             bar_chart.svg().unwrap()
@@ -266,7 +273,7 @@ mod tests {
             ],
         );
         bar_chart.series_list[0].category = Some(SeriesCategory::Line);
-        bar_chart.y_axis_width = Some(55.0);
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
             top: 30.0,
@@ -274,7 +281,59 @@ mod tests {
             ..Default::default()
         });
         bar_chart.legend_category = LegendCategory::Rect;
-        bar_chart.y_axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        assert_eq!(
+            include_str!("../../asset/bar_chart/line_mixin.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn bar_chart_two_y_axis() {
+        let mut bar_chart = BarChart::new(
+            vec![
+                Series::new(
+                    "Evaporation".to_string(),
+                    vec![
+                        2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3,
+                    ],
+                ),
+                Series::new(
+                    "Precipitation".to_string(),
+                    vec![
+                        2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3,
+                    ],
+                ),
+                Series::new(
+                    "Temperature".to_string(),
+                    vec![
+                        2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
+                    ],
+                ),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        bar_chart.series_list[2].category = Some(SeriesCategory::Line);
+        bar_chart.series_list[2].y_axis_index = 1;
+
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 30.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        bar_chart.legend_category = LegendCategory::Rect;
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} °C".to_string());
+        println!("{}", bar_chart.svg().unwrap());
         assert_eq!(
             include_str!("../../asset/bar_chart/line_mixin.svg"),
             bar_chart.svg().unwrap()
