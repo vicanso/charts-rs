@@ -25,25 +25,33 @@ pub use util::*;
 
 pub trait Chart {
     fn fill_theme(&mut self, t: Theme);
+    fn get_y_axis_config(&self, index: usize) -> YAxisConfig;
     fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32);
     fn render_background(&self, c: Canvas);
     fn render_title(&self, c: Canvas) -> f32;
     fn render_legend(&self, c: Canvas) -> f32;
     fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32);
-    fn render_left_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32);
+    fn render_y_axis(
+        &self,
+        c: Canvas,
+        data: Vec<String>,
+        axis_height: f32,
+        axis_width: f32,
+        axis_index: usize,
+    );
     fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32);
     fn render_bar(
         &self,
         c: Canvas,
         series_list: &[&Series],
-        y_axis_values: &AxisValues,
+        y_axis_values: &[&AxisValues],
         max_height: f32,
     );
     fn render_line(
         &self,
         c: Canvas,
         series_list: &[&Series],
-        y_axis_values: &AxisValues,
+        y_axis_values: &[&AxisValues],
         max_height: f32,
         axis_height: f32,
     );

@@ -93,10 +93,22 @@ impl LineChart {
             title_height
         };
 
-        let (y_axis_values, y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
+        let mut exist_right_y_axis = false;
+        for series in self.series_list.iter() {
+            if series.index.unwrap_or_default() != 0 {
+                exist_right_y_axis = true;
+            }
+        }
+        let mut right_y_axis_values = AxisValues::default();
+        let mut right_y_axis_width = 0.0_f32;
+        if exist_right_y_axis {
+            (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
+        }
+        let y_axis_values_list = vec![&left_y_axis_values, &right_y_axis_values];
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
-        let axis_width = c.width() - y_axis_width;
+        let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
         // 减去顶部文本区域
         if axis_top > 0.0 {
             c = c.child(Box {
@@ -107,8 +119,7 @@ impl LineChart {
 
         self.render_grid(
             c.child(Box {
-                left: y_axis_width,
-                right: y_axis_width,
+                left: left_y_axis_width,
                 ..Default::default()
             }),
             axis_width,
@@ -116,18 +127,20 @@ impl LineChart {
         );
 
         // y axis
-        self.render_left_y_axis(
+        self.render_y_axis(
             c.child(Box::default()),
-            y_axis_values.data.clone(),
+            left_y_axis_values.data.clone(),
             axis_height,
-            y_axis_width,
+            left_y_axis_width,
+            0,
         );
 
         // x axis
         self.render_x_axis(
             c.child(Box {
                 top: c.height() - self.x_axis_height,
-                left: y_axis_width,
+                left: left_y_axis_width,
+                right: right_y_axis_width,
                 ..Default::default()
             }),
             self.x_axis_data.clone(),
@@ -139,11 +152,12 @@ impl LineChart {
         let line_series_list: Vec<&Series> = self.series_list.iter().collect();
         self.render_line(
             c.child(Box {
-                left: y_axis_width,
+                left: left_y_axis_width,
+                right: right_y_axis_width,
                 ..Default::default()
             }),
             &line_series_list,
-            &y_axis_values,
+            &y_axis_values_list,
             max_height,
             axis_height,
         );

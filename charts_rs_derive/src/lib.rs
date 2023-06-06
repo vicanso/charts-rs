@@ -62,8 +62,18 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     Some(self.background_color),
                 ));
             }
+            fn get_y_axis_config(&self, index: usize) -> YAxisConfig {
+                let size = self.y_axis_configs.len();
+                if size == 0 {
+                    YAxisConfig::default()
+                } else if index < size {
+                    self.y_axis_configs[index].clone()
+                } else {
+                    self.y_axis_configs[0].clone()
+                }
+            }
             fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32) {
-                let y_axis_config = self.y_axis_configs.get(y_axis_index).unwrap_or(&self.y_axis_configs[0]).clone();
+                let y_axis_config = self.get_y_axis_config(y_axis_index);
                 let mut data_list = vec![];
                 for series in self.series_list.iter() {
                     if series.y_axis_index == y_axis_index {
@@ -86,7 +96,6 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     let str = format_string(&y_axis_values.data[0], y_axis_formatter);
                     if let Ok(b) = measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &str)
                     {
-                        println!("{}", b.width());
                         b.width() + 5.0
                     } else {
                         DEFAULT_Y_AXIS_WIDTH
@@ -220,9 +229,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             }
             fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32) {
                 let mut c1 = c;
-                let y_axis_config = self.y_axis_configs.first().unwrap_or(&YAxisConfig {
-                    ..Default::default()
-                }).clone();
+                let y_axis_config = self.get_y_axis_config(0);
                 let axis_split_number = y_axis_config.axis_split_number;
                 c1.grid(Grid {
                     right: axis_width,
@@ -234,13 +241,15 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
-            fn render_left_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32) {
+            fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32, axis_index: usize) {
                 let mut c1 = c; 
-                let y_axis_config = self.y_axis_configs.first().unwrap_or(&YAxisConfig {
-                    ..Default::default()
-                }).clone();
+                let y_axis_config = &self.get_y_axis_config(axis_index);
+                let mut position = Position::Left;
+                if axis_index > 0 {
+                    position = Position::Right;
+                }
                 c1.axis(Axis {
-                    position: Position::Left,
+                    position,
                     height: axis_height,
                     width: axis_width,
                     split_number: y_axis_config.axis_split_number,
@@ -285,7 +294,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 &self,
                 c: Canvas,
                 series_list: &[&Series],
-                y_axis_values: &AxisValues,
+                y_axis_values_list: &[&AxisValues],
                 max_height: f32,
             ) {
                 if series_list.is_empty() {
@@ -301,6 +310,11 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let bar_width = (unit_width - bar_chart_margin_width - bar_chart_gap_width) / series_list.len() as f32;
         
                 for (index, series) in series_list.iter().enumerate() {
+                    let y_axis_values = if index >= y_axis_values_list.len() {
+                        y_axis_values_list[0]
+                    } else {
+                        y_axis_values_list[series.y_axis_index]
+                    };
                     let color = *self
                         .series_colors
                         .get(series.index.unwrap_or(index))
@@ -321,7 +335,14 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     }
                 }
             }
-            fn render_line(&self, c: Canvas, series_list: &[&Series], y_axis_values: &AxisValues, max_height: f32, axis_height: f32) {
+            fn render_line(
+                &self,
+                c: Canvas,
+                series_list: &[&Series],
+                y_axis_values_list: &[&AxisValues],
+                max_height: f32,
+                axis_height: f32,
+            ) {
                 if series_list.is_empty() {
                     return;
                 }
@@ -331,14 +352,19 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if !x_boundary_gap {
                     split_unit_offset = 1.0;
                 }
-
+        
                 for (index, series) in series_list.iter().enumerate() {
+                    let y_axis_values = if index >= y_axis_values_list.len() {
+                        y_axis_values_list[0]
+                    } else {
+                        y_axis_values_list[series.y_axis_index]
+                    };
                     let split_unit_count = series.data.len() as f32 - split_unit_offset;
-                    let unit_width = c1.width() /split_unit_count;
+                    let unit_width = c1.width() / split_unit_count;
                     let mut points: Vec<Point> = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         // 居中
-                        let mut x = unit_width * i as f32 ;
+                        let mut x = unit_width * i as f32;
                         if x_boundary_gap {
                             x += unit_width / 2.0;
                         }

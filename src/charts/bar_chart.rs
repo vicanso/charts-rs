@@ -112,9 +112,7 @@ impl BarChart {
         if exist_right_y_axis {
             (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
         }
-
-        println!("{right_y_axis_values:?}");
-        println!("{right_y_axis_width:?}");
+        let y_axis_values_list = vec![&left_y_axis_values, &right_y_axis_values];
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
@@ -136,18 +134,32 @@ impl BarChart {
         );
 
         // y axis
-        self.render_left_y_axis(
+        self.render_y_axis(
             c.child(Box::default()),
             left_y_axis_values.data.clone(),
             axis_height,
             left_y_axis_width,
+            0,
         );
+        if right_y_axis_width > 0.0 {
+            self.render_y_axis(
+                c.child(Box {
+                    left: c.width() - right_y_axis_width,
+                    ..Default::default()
+                }),
+                right_y_axis_values.data.clone(),
+                axis_height,
+                right_y_axis_width,
+                1,
+            );
+        }
 
         // x axis
         self.render_x_axis(
             c.child(Box {
                 top: c.height() - self.x_axis_height,
                 left: left_y_axis_width,
+                right: right_y_axis_width,
                 ..Default::default()
             }),
             self.x_axis_data.clone(),
@@ -171,19 +183,22 @@ impl BarChart {
         self.render_bar(
             c.child(Box {
                 left: left_y_axis_width,
+                right: right_y_axis_width,
                 ..Default::default()
             }),
             &bar_series_list,
-            &left_y_axis_values,
+            &y_axis_values_list,
             max_height,
         );
+        
         self.render_line(
             c.child(Box {
                 left: left_y_axis_width,
+                right: right_y_axis_width,
                 ..Default::default()
             }),
             &line_series_list,
-            &left_y_axis_values,
+            &y_axis_values_list,
             max_height,
             axis_height,
         );
@@ -332,10 +347,13 @@ mod tests {
             ..Default::default()
         });
         bar_chart.legend_category = LegendCategory::Rect;
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} °C".to_string());
-        println!("{}", bar_chart.svg().unwrap());
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart
+            .y_axis_configs
+            .push(bar_chart.y_axis_configs[0].clone());
+        bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
         assert_eq!(
-            include_str!("../../asset/bar_chart/line_mixin.svg"),
+            include_str!("../../asset/bar_chart/two_y_axis.svg"),
             bar_chart.svg().unwrap()
         );
     }
