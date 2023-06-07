@@ -103,7 +103,7 @@ impl BarChart {
         let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
         let mut exist_right_y_axis = false;
         for series in self.series_list.iter() {
-            if series.index.unwrap_or_default() != 0 {
+            if series.y_axis_index != 0 {
                 exist_right_y_axis = true;
             }
         }
@@ -190,7 +190,7 @@ impl BarChart {
             &y_axis_values_list,
             max_height,
         );
-        
+
         self.render_line(
             c.child(Box {
                 left: left_y_axis_width,
@@ -352,6 +352,7 @@ mod tests {
             .y_axis_configs
             .push(bar_chart.y_axis_configs[0].clone());
         bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
+
         assert_eq!(
             include_str!("../../asset/bar_chart/two_y_axis.svg"),
             bar_chart.svg().unwrap()

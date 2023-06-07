@@ -126,6 +126,11 @@ impl AxisValues {
     }
 }
 
+const K_VALUE:f32 = 1000.00_f32;
+const M_VALUE:f32 = K_VALUE * K_VALUE;
+const G_VALUE:f32 = M_VALUE * K_VALUE;
+const T_VALUE:f32 = G_VALUE * K_VALUE;
+
 pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     let mut min = 0.0;
     let mut max = f32::MIN;
@@ -165,8 +170,24 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
 
     let mut data = vec![];
     for i in 0..=split_number {
-        let value = min + (i * split_unit) as f32;
-        data.push(format_float(value));
+        let mut value = min + (i * split_unit) as f32;
+        let mut unit = "";
+        value = if value >= T_VALUE {
+            unit = "T";
+            value / T_VALUE
+        } else if value >= G_VALUE {
+            unit = "G";
+            value / G_VALUE
+        } else if value >= M_VALUE {
+            unit = "M";
+            value / M_VALUE
+        } else if value >= K_VALUE {
+            unit = "k";
+            value / K_VALUE
+        } else {
+            value
+        };
+        data.push(format_float(value) + unit);
     }
     if params.reverse.unwrap_or_default() {
         data.reverse();

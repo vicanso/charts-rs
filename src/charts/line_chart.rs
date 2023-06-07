@@ -96,7 +96,7 @@ impl LineChart {
         let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
         let mut exist_right_y_axis = false;
         for series in self.series_list.iter() {
-            if series.index.unwrap_or_default() != 0 {
+            if series.y_axis_index != 0 {
                 exist_right_y_axis = true;
             }
         }
@@ -134,6 +134,18 @@ impl LineChart {
             left_y_axis_width,
             0,
         );
+        if right_y_axis_width > 0.0 {
+            self.render_y_axis(
+                c.child(Box {
+                    left: c.width() - right_y_axis_width,
+                    ..Default::default()
+                }),
+                right_y_axis_values.data.clone(),
+                axis_height,
+                right_y_axis_width,
+                1,
+            );
+        }
 
         // x axis
         self.render_x_axis(
@@ -323,6 +335,55 @@ mod tests {
         line_chart.margin = (5.0, 5.0, 15.0, 5.0).into();
         assert_eq!(
             include_str!("../../asset/line_chart/legend_align_right.svg"),
+            line_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn line_chart_two_y_axis() {
+        let mut line_chart = LineChart::new(
+            vec![
+                Series::new(
+                    "Email".to_string(),
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                ),
+                Series::new(
+                    "Union Ads".to_string(),
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                ),
+                Series::new(
+                    "Direct".to_string(),
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                ),
+                Series::new(
+                    "Search Engine".to_string(),
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                ),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        line_chart.title_text = "Stacked Area Chart".to_string();
+        line_chart.sub_title_text = "Hello World".to_string();
+        line_chart.legend_margin = Some(Box {
+            top: 40.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        line_chart.series_list[3].y_axis_index = 1;
+        let mut y_axis_config = line_chart.y_axis_configs[0].clone();
+        y_axis_config.axis_font_color = "#ee6666".into();
+        line_chart.y_axis_configs.push(y_axis_config);
+
+        assert_eq!(
+            include_str!("../../asset/line_chart/two_y_axis.svg"),
             line_chart.svg().unwrap()
         );
     }

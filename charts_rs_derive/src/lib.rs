@@ -354,7 +354,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
         
                 for (index, series) in series_list.iter().enumerate() {
-                    let y_axis_values = if index >= y_axis_values_list.len() {
+                    let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
                     } else {
                         y_axis_values_list[series.y_axis_index]
