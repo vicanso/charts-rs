@@ -84,6 +84,8 @@ pub struct Theme {
 
     // series
     pub series_stroke_width: f32,
+    pub series_label_font_size: f32,
+    pub series_label_font_color: Color,
     pub series_colors: Vec<Color>,
 }
 
@@ -130,6 +132,8 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         grid_stroke_width: 1.0,
 
         series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_label_font_size: 14.0,
+        series_label_font_color: font_color,
         series_colors: vec![
             "#5470c6".into(),
             "#91cc75".into(),

@@ -135,4 +135,25 @@ Sun
 <circle cx="475.4" cy="152.2" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
 <circle cx="555.1" cy="153.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
 </g>
+<text font-size="14" x="76.9" y="233.8" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+820
+</text>
+<text font-size="14" x="156.6" y="215.9" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+932
+</text>
+<text font-size="14" x="236.3" y="220.8" dx="-11" dy="-8" font-family="Arial" fill="#464646">
+901
+</text>
+<text font-size="14" x="316" y="215.6" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+934
+</text>
+<text font-size="14" x="395.7" y="158.6" dx="-16" dy="-8" font-family="Arial" fill="#464646">
+1290
+</text>
+<text font-size="14" x="475.4" y="152.2" dx="-16" dy="-8" font-family="Arial" fill="#464646">
+1330
+</text>
+<text font-size="14" x="555.1" y="153.8" dx="-16" dy="-8" font-family="Arial" fill="#464646">
+1320
+</text>
 </svg>

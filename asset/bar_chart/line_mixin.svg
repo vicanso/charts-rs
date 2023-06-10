@@ -119,4 +119,46 @@ Sun
 <circle cx="480.4" cy="326.9" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="556.8" cy="330.2" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
+<text font-size="14" x="121.4" y="229.2" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+820
+</text>
+<text font-size="14" x="197.8" y="210.7" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+932
+</text>
+<text font-size="14" x="274.2" y="215.8" dx="-11" dy="-8" font-family="Arial" fill="#464646">
+901
+</text>
+<text font-size="14" x="350.6" y="210.4" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+934
+</text>
+<text font-size="14" x="427.1" y="151.4" dx="-16" dy="-8" font-family="Arial" fill="#464646">
+1290
+</text>
+<text font-size="14" x="503.5" y="144.8" dx="-16" dy="-8" font-family="Arial" fill="#464646">
+1330
+</text>
+<text font-size="14" x="579.9" y="146.5" dx="-16" dy="-8" font-family="Arial" fill="#464646">
+1320
+</text>
+<text font-size="14" x="98.2" y="345.1" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+120
+</text>
+<text font-size="14" x="174.6" y="343.1" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+132
+</text>
+<text font-size="14" x="251.1" y="348.3" dx="-11" dy="-8" font-family="Arial" fill="#464646">
+101
+</text>
+<text font-size="14" x="327.5" y="342.8" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+134
+</text>
+<text font-size="14" x="403.9" y="350.1" dx="-8" dy="-8" font-family="Arial" fill="#464646">
+90
+</text>
+<text font-size="14" x="480.4" y="326.9" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+230
+</text>
+<text font-size="14" x="556.8" y="330.2" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+210
+</text>
 </svg>

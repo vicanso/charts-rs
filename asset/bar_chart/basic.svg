@@ -120,4 +120,25 @@ Sun
 <rect x="422.8" y="151.4" width="14.4" height="213.6" fill="#EE6666"/>
 <rect x="499.2" y="144.8" width="14.4" height="220.2" fill="#EE6666"/>
 <rect x="575.6" y="146.5" width="14.4" height="218.5" fill="#EE6666"/>
+<text font-size="14" x="72.2" y="345.1" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+120
+</text>
+<text font-size="14" x="148.6" y="343.1" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+132
+</text>
+<text font-size="14" x="225" y="348.3" dx="-11" dy="-8" font-family="Arial" fill="#464646">
+101
+</text>
+<text font-size="14" x="301.5" y="342.8" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+134
+</text>
+<text font-size="14" x="377.9" y="350.1" dx="-8" dy="-8" font-family="Arial" fill="#464646">
+90
+</text>
+<text font-size="14" x="454.3" y="326.9" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+230
+</text>
+<text font-size="14" x="530.8" y="330.2" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+210
+</text>
 </svg>

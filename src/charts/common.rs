@@ -1,4 +1,5 @@
 use super::Color;
+use crate::Point;
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub enum Position {
@@ -36,7 +37,15 @@ pub struct Series {
     pub index: Option<usize>,
     // 其对应的y轴
     pub y_axis_index: usize,
+    // 是否展示label
+    pub label_show: bool,
     pub category: Option<SeriesCategory>,
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct SeriesLabel {
+    pub point: Point,
+    pub text: String,
 }
 
 impl Series {

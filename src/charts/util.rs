@@ -126,10 +126,10 @@ impl AxisValues {
     }
 }
 
-const K_VALUE:f32 = 1000.00_f32;
-const M_VALUE:f32 = K_VALUE * K_VALUE;
-const G_VALUE:f32 = M_VALUE * K_VALUE;
-const T_VALUE:f32 = G_VALUE * K_VALUE;
+const K_VALUE: f32 = 1000.00_f32;
+const M_VALUE: f32 = K_VALUE * K_VALUE;
+const G_VALUE: f32 = M_VALUE * K_VALUE;
+const T_VALUE: f32 = G_VALUE * K_VALUE;
 
 pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     let mut min = 0.0;

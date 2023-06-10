@@ -55,6 +55,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 self.grid_stroke_width = t.grid_stroke_width;
 
                 self.series_colors = t.series_colors;
+                self.series_label_font_color = t.series_label_font_color;
+                self.series_label_font_size = t.series_label_font_size;
                 self.series_stroke_width = t.series_stroke_width;
 
                 self.series_symbol = Some(Symbol::Circle(
@@ -290,15 +292,44 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
+            fn render_series_label(&self, c:Canvas, series_labels_list: Vec<Vec<SeriesLabel>>) {
+                if series_labels_list.is_empty() {
+                    return;
+                }
+                let mut c1 = c;
+                for series_labels in series_labels_list.iter() {
+                    for series_label in series_labels.iter() {
+                        let mut dx = None;
+                        if let Ok(value) = measure_text_width_family(
+                            &self.font_family,
+                            self.series_label_font_size,
+                            &series_label.text,
+                        ) {
+                            dx = Some(-value.width() / 2.0);
+                        }
+                        c1.text(Text {
+                            text: series_label.text.clone(),
+                            dy: Some(-8.0),
+                            dx,
+                            font_family: Some(self.font_family.clone()),
+                            font_color: Some(self.series_label_font_color),
+                            font_size: Some(self.series_label_font_size),
+                            x: Some(series_label.point.x),
+                            y: Some(series_label.point.y),
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
             fn render_bar(
                 &self,
                 c: Canvas,
                 series_list: &[&Series],
                 y_axis_values_list: &[&AxisValues],
                 max_height: f32,
-            ) {
+            ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
-                    return;
+                    return vec![];
                 }
                 let mut c1 = c;
                 let unit_width = c1.width() / series_list[0].data.len() as f32;
@@ -308,7 +339,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let bar_chart_margin_width = bar_chart_margin * 2.0;
                 let bar_chart_gap_width = bar_chart_gap * (series_list.len() - 1) as f32;
                 let bar_width = (unit_width - bar_chart_margin_width - bar_chart_gap_width) / series_list.len() as f32;
+                let half_bar_width = bar_width / 2.0;
         
+                let mut series_labels_list = vec![];
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
@@ -319,6 +352,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         .series_colors
                         .get(series.index.unwrap_or(index))
                         .unwrap_or_else(|| &self.series_colors[0]);
+                    let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         let mut left = unit_width * i as f32 + bar_chart_margin;
                         left += (bar_width + bar_chart_gap) * index as f32;
@@ -332,8 +366,16 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             height: max_height - y,
                             ..Default::default()
                         });
+                        series_labels.push(SeriesLabel{
+                            point: (left + half_bar_width, y).into(),
+                            text: format_float(p.to_owned()),
+                        })
+                    }
+                    if series.label_show {
+                        series_labels_list.push(series_labels);
                     }
                 }
+                series_labels_list
             }
             fn render_line(
                 &self,
@@ -342,9 +384,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 y_axis_values_list: &[&AxisValues],
                 max_height: f32,
                 axis_height: f32,
-            ) {
+            ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
-                    return;
+                    return vec![];
                 }
                 let mut c1 = c;
                 let x_boundary_gap = self.x_boundary_gap.unwrap_or(true);
@@ -352,7 +394,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if !x_boundary_gap {
                     split_unit_offset = 1.0;
                 }
-        
+                let mut series_labels_list = vec![];
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
@@ -362,6 +404,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     let split_unit_count = series.data.len() as f32 - split_unit_offset;
                     let unit_width = c1.width() / split_unit_count;
                     let mut points: Vec<Point> = vec![];
+                    let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         // 居中
                         let mut x = unit_width * i as f32;
@@ -370,6 +413,13 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         }
                         let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
                         points.push((x, y).into());
+                        series_labels.push(SeriesLabel{
+                            point: (x, y).into(),
+                            text: format_float(p.to_owned()),
+                        })
+                    }
+                    if series.label_show {
+                        series_labels_list.push(series_labels);
                     }
         
                     let color = *self
@@ -409,6 +459,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         });
                     }
                 }
+
+                series_labels_list
             }
         }
     };

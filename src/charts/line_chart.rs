@@ -60,6 +60,8 @@ pub struct LineChart {
 
     // series
     pub series_stroke_width: f32,
+    pub series_label_font_color: Color,
+    pub series_label_font_size: f32,
     pub series_colors: Vec<Color>,
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
@@ -105,7 +107,6 @@ impl LineChart {
         if exist_right_y_axis {
             (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
         }
-        let y_axis_values_list = vec![&left_y_axis_values, &right_y_axis_values];
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
@@ -160,9 +161,10 @@ impl LineChart {
         );
 
         // line point
+        let y_axis_values_list = vec![&left_y_axis_values, &right_y_axis_values];
         let max_height = c.height() - self.x_axis_height;
         let line_series_list: Vec<&Series> = self.series_list.iter().collect();
-        self.render_line(
+        let series_labels_list = self.render_line(
             c.child(Box {
                 left: left_y_axis_width,
                 right: right_y_axis_width,
@@ -173,7 +175,14 @@ impl LineChart {
             max_height,
             axis_height,
         );
-
+        self.render_series_label(
+            c.child(Box {
+                left: left_y_axis_width,
+                right: right_y_axis_width,
+                ..Default::default()
+            }),
+            series_labels_list,
+        );
         c.svg()
     }
 }
@@ -221,6 +230,7 @@ mod tests {
             bottom: 10.0,
             ..Default::default()
         });
+        line_chart.series_list[3].label_show = true;
         assert_eq!(
             include_str!("../../asset/line_chart/basic.svg"),
             line_chart.svg().unwrap()

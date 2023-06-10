@@ -40,13 +40,14 @@ pub trait Chart {
         axis_index: usize,
     );
     fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32);
+    fn render_series_label(&self, c: Canvas, series_labels_list: Vec<Vec<SeriesLabel>>);
     fn render_bar(
         &self,
         c: Canvas,
         series_list: &[&Series],
         y_axis_values: &[&AxisValues],
         max_height: f32,
-    );
+    ) -> Vec<Vec<SeriesLabel>>;
     fn render_line(
         &self,
         c: Canvas,
@@ -54,5 +55,5 @@ pub trait Chart {
         y_axis_values: &[&AxisValues],
         max_height: f32,
         axis_height: f32,
-    );
+    ) -> Vec<Vec<SeriesLabel>>;
 }
