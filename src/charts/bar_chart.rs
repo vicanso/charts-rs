@@ -69,7 +69,7 @@ pub struct BarChart {
 }
 
 impl BarChart {
-    pub fn new(mut series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
+    pub fn new_with_theme(mut series_list: Vec<Series>, x_axis_data: Vec<String>, theme: String) -> BarChart {
         let mut series_index: usize = 0;
         // bar chart 可能同时支持两种图
         // 因此先计算index
@@ -82,9 +82,12 @@ impl BarChart {
             x_axis_data,
             ..Default::default()
         };
-        let theme = get_theme(get_default_theme());
+        let theme = get_theme(theme);
         b.fill_theme(theme);
         b
+    }
+    pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
+        BarChart::new_with_theme(series_list, x_axis_data, get_default_theme()) 
     }
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
