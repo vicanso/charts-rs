@@ -69,7 +69,11 @@ pub struct BarChart {
 }
 
 impl BarChart {
-    pub fn new_with_theme(mut series_list: Vec<Series>, x_axis_data: Vec<String>, theme: String) -> BarChart {
+    pub fn new_with_theme(
+        mut series_list: Vec<Series>,
+        x_axis_data: Vec<String>,
+        theme: String,
+    ) -> BarChart {
         let mut series_index: usize = 0;
         // bar chart 可能同时支持两种图
         // 因此先计算index
@@ -87,7 +91,7 @@ impl BarChart {
         b
     }
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
-        BarChart::new_with_theme(series_list, x_axis_data, get_default_theme()) 
+        BarChart::new_with_theme(series_list, x_axis_data, get_default_theme())
     }
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
@@ -226,7 +230,7 @@ impl BarChart {
 #[cfg(test)]
 mod tests {
     use super::BarChart;
-    use crate::{Box, LegendCategory, Series, SeriesCategory};
+    use crate::{svg_to_png, Box, LegendCategory, Series, SeriesCategory};
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
@@ -320,6 +324,9 @@ mod tests {
             include_str!("../../asset/bar_chart/line_mixin.svg"),
             bar_chart.svg().unwrap()
         );
+
+        let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+        std::fs::write("./asset/line_mixin.png", buf).unwrap();
     }
 
     #[test]

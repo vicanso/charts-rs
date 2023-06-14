@@ -69,7 +69,11 @@ pub struct LineChart {
 }
 
 impl LineChart {
-    pub fn new_with_theme(series_list: Vec<Series>, x_axis_data: Vec<String>, theme: String) -> LineChart {
+    pub fn new_with_theme(
+        series_list: Vec<Series>,
+        x_axis_data: Vec<String>,
+        theme: String,
+    ) -> LineChart {
         let mut l = LineChart {
             series_list,
             x_axis_data,
@@ -77,12 +81,12 @@ impl LineChart {
         };
         let theme = get_theme(theme);
         l.fill_theme(theme);
-        l 
+        l
     }
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> LineChart {
-        LineChart::new_with_theme(series_list, x_axis_data, get_default_theme()) 
+        LineChart::new_with_theme(series_list, x_axis_data, get_default_theme())
     }
-    
+
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
 

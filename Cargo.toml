@@ -11,6 +11,8 @@ once_cell = "1.18.0"
 snafu = "0.7.4"
 substring = "1.4.5"
 charts_rs_derive = { path = "./charts_rs_derive"}
+resvg = { version = "0.34.1", default-features = false, features = [ "text", "system-fonts" ] }
+png = "0.17.9"
 
 [dev-dependencies]
 pretty_assertions = "1.3.0"
