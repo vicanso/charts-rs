@@ -53,55 +53,55 @@ Brazil
 0
 </text>
 <text font-size="14" x="142.8" y="392" font-family="Arial" fill="#6E7079">
-200k
+150k
 </text>
 <text font-size="14" x="228.2" y="392" font-family="Arial" fill="#6E7079">
-400k
+300k
 </text>
 <text font-size="14" x="313.5" y="392" font-family="Arial" fill="#6E7079">
-600k
+450k
 </text>
 <text font-size="14" x="398.8" y="392" font-family="Arial" fill="#6E7079">
-800k
+600k
 </text>
-<text font-size="14" x="490.2" y="392" font-family="Arial" fill="#6E7079">
-1M
+<text font-size="14" x="484.2" y="392" font-family="Arial" fill="#6E7079">
+750k
 </text>
 <text font-size="14" x="569.5" y="392" font-family="Arial" fill="#6E7079">
-1.2M
+900k
 </text>
 </g>
 <g stroke="#E0E6F2">
 <line stroke-width="1" x1="158.3" y1="49" x2="158.3" y2="370"/><line stroke-width="1" x1="243.7" y1="49" x2="243.7" y2="370"/><line stroke-width="1" x1="329" y1="49" x2="329" y2="370"/><line stroke-width="1" x1="414.3" y1="49" x2="414.3" y2="370"/><line stroke-width="1" x1="499.7" y1="49" x2="499.7" y2="370"/><line stroke-width="1" x1="585" y1="49" x2="585" y2="370"/>
 </g>
-<rect x="73" y="321.5" width="7.8" height="20.2" fill="#5470C6"/>
-<rect x="73" y="268" width="10" height="20.2" fill="#5470C6"/>
-<rect x="73" y="214.5" width="12.4" height="20.2" fill="#5470C6"/>
-<rect x="73" y="161" width="44.8" height="20.2" fill="#5470C6"/>
-<rect x="73" y="107.5" width="56.2" height="20.2" fill="#5470C6"/>
-<rect x="73" y="54" width="268.9" height="20.2" fill="#5470C6"/>
-<rect x="73" y="344.8" width="8.2" height="20.2" fill="#91CC75"/>
-<rect x="73" y="291.2" width="10" height="20.2" fill="#91CC75"/>
-<rect x="73" y="237.8" width="13.2" height="20.2" fill="#91CC75"/>
-<rect x="73" y="184.2" width="51.9" height="20.2" fill="#91CC75"/>
-<rect x="73" y="130.8" width="57.2" height="20.2" fill="#91CC75"/>
-<rect x="73" y="77.2" width="290.9" height="20.2" fill="#91CC75"/>
-<text font-size="14" x="80.8" y="331.6" dx="3" dy="6" font-family="Arial" fill="#464646">
+<rect x="73" y="321.5" width="10.4" height="20.2" fill="#5470C6"/>
+<rect x="73" y="268" width="13.4" height="20.2" fill="#5470C6"/>
+<rect x="73" y="214.5" width="16.5" height="20.2" fill="#5470C6"/>
+<rect x="73" y="161" width="59.7" height="20.2" fill="#5470C6"/>
+<rect x="73" y="107.5" width="74.9" height="20.2" fill="#5470C6"/>
+<rect x="73" y="54" width="358.5" height="20.2" fill="#5470C6"/>
+<rect x="73" y="344.8" width="11" height="20.2" fill="#91CC75"/>
+<rect x="73" y="291.2" width="13.3" height="20.2" fill="#91CC75"/>
+<rect x="73" y="237.8" width="17.6" height="20.2" fill="#91CC75"/>
+<rect x="73" y="184.2" width="69.2" height="20.2" fill="#91CC75"/>
+<rect x="73" y="130.8" width="76.3" height="20.2" fill="#91CC75"/>
+<rect x="73" y="77.2" width="387.9" height="20.2" fill="#91CC75"/>
+<text font-size="14" x="83.4" y="331.6" dx="3" dy="5" font-family="Arial" fill="#464646">
 18203
 </text>
-<text font-size="14" x="83" y="278.1" dx="3" dy="6" font-family="Arial" fill="#464646">
+<text font-size="14" x="86.4" y="278.1" dx="3" dy="5" font-family="Arial" fill="#464646">
 23489
 </text>
-<text font-size="14" x="85.4" y="224.6" dx="3" dy="6" font-family="Arial" fill="#464646">
+<text font-size="14" x="89.5" y="224.6" dx="3" dy="5" font-family="Arial" fill="#464646">
 29034
 </text>
-<text font-size="14" x="117.8" y="171.1" dx="3" dy="6" font-family="Arial" fill="#464646">
+<text font-size="14" x="132.7" y="171.1" dx="3" dy="5" font-family="Arial" fill="#464646">
 104970
 </text>
-<text font-size="14" x="129.2" y="117.6" dx="3" dy="6" font-family="Arial" fill="#464646">
+<text font-size="14" x="147.9" y="117.6" dx="3" dy="5" font-family="Arial" fill="#464646">
 131744
 </text>
-<text font-size="14" x="341.9" y="64.1" dx="3" dy="6" font-family="Arial" fill="#464646">
+<text font-size="14" x="431.5" y="64.1" dx="3" dy="5" font-family="Arial" fill="#464646">
 630230
 </text>
 </svg>

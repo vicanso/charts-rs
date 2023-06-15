@@ -245,7 +245,7 @@ impl HorizontalBarChart {
                         self.series_label_font_size,
                         &series_label.text,
                     ) {
-                        dy = Some(value.height() / 2.0 - 1.0);
+                        dy = Some(value.height() / 2.0 - 2.0);
                     }
                     c1.text(Text {
                         text: series_label.text.clone(),
@@ -269,7 +269,7 @@ impl HorizontalBarChart {
 #[cfg(test)]
 mod tests {
     use super::HorizontalBarChart;
-    use crate::{svg_to_png, Align, Box, Series};
+    use crate::{Align, Series};
     #[test]
     fn horizontal_bar_chart_basic() {
         let mut horizontal_bar_chart = HorizontalBarChart::new(

@@ -160,9 +160,15 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     }
     let mut unit = ((max - min) / split_number as f32) as i32;
     let mut base = 1;
-    while unit >= 10 {
-        unit /= 10;
-        base *= 10;
+    let mut multiply = 10;
+    while unit >= multiply {
+        unit /= multiply;
+        base *= multiply;
+        if base > 1000 {
+            multiply = 5;
+        } else if base > 10000 {
+            multiply = 2;
+        }
     }
 
     unit = if unit < 1 { base } else { base * (unit + 1) };
