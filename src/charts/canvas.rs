@@ -1,6 +1,6 @@
 use super::component::{
-    generate_svg, Axis, Circle, Component, Grid, Legend, Line, Polygon, Polyline, Rect, SmoothLine,
-    SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
+    generate_svg, Axis, Circle, Component, Grid, Legend, Line, Pie, Polygon, Polyline, Rect,
+    SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
 };
 
 use super::{measure_text_width_family, util::*};
@@ -142,6 +142,20 @@ impl Canvas {
         self.append(Component::Text(c));
         b
     }
+    pub fn pie(&mut self, pie: Pie) -> Box {
+        let mut c = pie;
+        c.cx += self.margin.left;
+        c.cy += self.margin.top;
+        let b = Box {
+            left: self.margin.left,
+            top: self.margin.top,
+            right: self.margin.left + c.r * 2.0,
+            bottom: self.margin.top + c.r * 2.0,
+        };
+
+        self.append(Component::Pie(c));
+        b
+    }
     pub fn smooth_line(&mut self, line: SmoothLine) -> Box {
         let mut c = line;
         for p in c.points.iter_mut() {
@@ -250,6 +264,7 @@ impl Canvas {
                 Component::Grid(c) => c.svg(),
                 Component::Axis(c) => c.svg().context(ToSVGSnafu)?,
                 Component::Legend(c) => c.svg(),
+                Component::Pie(c) => c.svg(),
             };
             data.push(value);
         }

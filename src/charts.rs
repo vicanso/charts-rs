@@ -16,7 +16,7 @@ pub use canvas::Canvas;
 pub use color::*;
 pub use common::*;
 pub use component::{
-    Axis, Circle, Grid, Legend, LegendCategory, Line, Polygon, Polyline, Rect, SmoothLine,
+    Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 pub use encoder::svg_to_png;

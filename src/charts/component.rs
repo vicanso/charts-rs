@@ -149,6 +149,7 @@ pub enum Component {
     Grid(Grid),
     Axis(Axis),
     Legend(Legend),
+    Pie(Pie),
 }
 #[derive(Clone, PartialEq, Debug)]
 
@@ -432,7 +433,7 @@ fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
-struct Pie {
+pub struct Pie {
     pub fill: Color,
     pub stroke_color: Option<Color>,
     pub cx: f32,
@@ -453,7 +454,10 @@ impl Pie {
         let x1 = format_float(cx + r * end_angle.sin());
         let y1 = format_float(cx - r * end_angle.cos());
 
-        let str = format!("M{x0},{y0} A{r} {r} {} 0 1 {x1},{y1} L{cx} {cy} Z", self.delta);
+        let str = format!(
+            "M{x0},{y0} A{r} {r} {} 0 1 {x1},{y1} L{cx} {cy} Z",
+            self.delta
+        );
 
         let mut attrs = vec![
             (ATTR_D, str),
@@ -1137,8 +1141,8 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        Axis, Circle, Grid, Legend, LegendCategory, Line, Polygon, Polyline, Rect, SmoothLine,
-        SmoothLineFill, StraightLine, StraightLineFill, Text, Pie
+        Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
+        SmoothLineFill, StraightLine, StraightLineFill, Text,
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     use pretty_assertions::assert_eq;
@@ -1414,7 +1418,7 @@ Hello World!
 
     #[test]
     fn pie() {
-        let p = Pie{
+        let p = Pie {
             fill: (0, 0, 0, 128).into(),
             stroke_color: Some((0, 0, 0).into()),
             cx: 150.0,
@@ -1424,7 +1428,10 @@ Hello World!
             delta: 90.0,
             ..Default::default()
         };
-        assert_eq!(r###"<path d="M150,100 A50 50 90 0 1 200,150 L150 150 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###, p.svg());
+        assert_eq!(
+            r###"<path d="M150,100 A50 50 90 0 1 200,150 L150 150 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,
+            p.svg()
+        );
     }
 
     #[test]
