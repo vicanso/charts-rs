@@ -431,6 +431,48 @@ fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
     arr.join("\n")
 }
 
+#[derive(Clone, PartialEq, Debug, Default)]
+struct Pie {
+    pub fill: Color,
+    pub stroke_color: Option<Color>,
+    pub cx: f32,
+    pub cy: f32,
+    pub r: f32,
+    pub start_angle: f32,
+    pub delta: f32,
+}
+impl Pie {
+    pub fn svg(&self) -> String {
+        let start_angle = self.start_angle / 180.0 * std::f32::consts::PI;
+        let end_angle = start_angle + self.delta / 180.0 * std::f32::consts::PI;
+        let r = self.r;
+        let cx = self.cx;
+        let cy = self.cy;
+        let x0 = format_float(cx + r * start_angle.sin());
+        let y0 = format_float(cy - r * start_angle.cos());
+        let x1 = format_float(cx + r * end_angle.sin());
+        let y1 = format_float(cx - r * end_angle.cos());
+
+        let str = format!("M{x0},{y0} A{r} {r} {} 0 1 {x1},{y1} L{cx} {cy} Z", self.delta);
+
+        let mut attrs = vec![
+            (ATTR_D, str),
+            (ATTR_FILL, self.fill.hex()),
+            (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
+        ];
+        if let Some(color) = self.stroke_color {
+            attrs.push((ATTR_STROKE, color.hex()));
+            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
+        SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            ..Default::default()
+        }
+        .to_string()
+    }
+}
+
 struct BaseLine {
     pub color: Option<Color>,
     pub points: Vec<Point>,
@@ -1096,7 +1138,7 @@ impl Legend {
 mod tests {
     use super::{
         Axis, Circle, Grid, Legend, LegendCategory, Line, Polygon, Polyline, Rect, SmoothLine,
-        SmoothLineFill, StraightLine, StraightLineFill, Text,
+        SmoothLineFill, StraightLine, StraightLineFill, Text, Pie
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     use pretty_assertions::assert_eq;
@@ -1368,6 +1410,21 @@ Hello World!
             }
             .svg()
         );
+    }
+
+    #[test]
+    fn pie() {
+        let p = Pie{
+            fill: (0, 0, 0, 128).into(),
+            stroke_color: Some((0, 0, 0).into()),
+            cx: 150.0,
+            cy: 150.0,
+            r: 50.0,
+            start_angle: 0.0,
+            delta: 90.0,
+            ..Default::default()
+        };
+        assert_eq!(r###"<path d="M150,100 A50 50 90 0 1 200,150 L150 150 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###, p.svg());
     }
 
     #[test]
