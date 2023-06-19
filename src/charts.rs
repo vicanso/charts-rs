@@ -8,6 +8,7 @@ mod font;
 mod horizontal_bar_chart;
 mod line_chart;
 mod path;
+mod pie_chart;
 mod theme;
 mod util;
 
@@ -23,6 +24,7 @@ pub use encoder::svg_to_png;
 pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
 pub use line_chart::LineChart;
 pub use path::*;
+pub use pie_chart::PieChart;
 pub use theme::Theme;
 pub use util::*;
 

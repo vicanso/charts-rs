@@ -432,35 +432,130 @@ fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
     arr.join("\n")
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Pie {
     pub fill: Color,
     pub stroke_color: Option<Color>,
     pub cx: f32,
     pub cy: f32,
     pub r: f32,
+    pub ir: f32,
     pub start_angle: f32,
     pub delta: f32,
 }
-impl Pie {
-    pub fn svg(&self) -> String {
-        let start_angle = self.start_angle / 180.0 * std::f32::consts::PI;
-        let end_angle = start_angle + self.delta / 180.0 * std::f32::consts::PI;
-        let r = self.r;
-        let cx = self.cx;
-        let cy = self.cy;
-        let x0 = format_float(cx + r * start_angle.sin());
-        let y0 = format_float(cy - r * start_angle.cos());
-        let x1 = format_float(cx + r * end_angle.sin());
-        let y1 = format_float(cx - r * end_angle.cos());
 
-        let str = format!(
-            "M{x0},{y0} A{r} {r} {} 0 1 {x1},{y1} L{cx} {cy} Z",
-            self.delta
-        );
+impl Default for Pie {
+    fn default() -> Self {
+        Pie {
+            fill: (0, 0, 0).into(),
+            stroke_color: None,
+            cx: 0.0,
+            cy: 0.0,
+            r: 250.0,
+            ir: 60.0,
+            start_angle: 0.0,
+            delta: 0.0,
+        }
+    }
+}
+
+impl Pie {
+    fn get_point(&self, cx: f32, cy: f32, r: f32, angle: f32) -> Point {
+        let value = angle / 180.0 * std::f32::consts::PI;
+        let x = cx + r * value.sin();
+        let y = cy - r * value.cos();
+        Point { x, y }
+    }
+    pub fn svg(&self) -> String {
+        let r = self.r;
+        let r_str = format_float(r);
+
+        let ir = self.ir;
+        let ir_str = format_float(ir);
+
+        let mut path_list = vec![];
+        let border_radius = 8.0_f32;
+        let border_radius_str = format_float(border_radius);
+        let border_angle = 2.0_f32;
+        let start_angle = self.start_angle;
+        let end_angle = start_angle + self.delta;
+
+        // 左下角第一个点
+        let point = self.get_point(self.cx, self.cy, self.ir + border_radius, start_angle);
+        path_list.push(format!(
+            "M{},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 左侧直线
+        let point = self.get_point(self.cx, self.cy, self.r - border_radius, start_angle);
+        path_list.push(format!(
+            "L{},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 左上圆角
+        let point = self.get_point(self.cx, self.cy, self.r, start_angle + border_angle);
+        path_list.push(format!(
+            "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 大圆弧
+        let point = self.get_point(self.cx, self.cy, self.r, end_angle - border_angle);
+        path_list.push(format!(
+            "A{r_str} {r_str} 0 0 1 {},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 右上圆角
+        let point = self.get_point(self.cx, self.cy, self.r - border_radius, end_angle);
+        path_list.push(format!(
+            "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 右侧直线
+        let point = self.get_point(self.cx, self.cy, self.ir + border_radius, end_angle);
+        path_list.push(format!(
+            "L{},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 右下圆角
+        let point = self.get_point(self.cx, self.cy, self.ir, end_angle - border_angle);
+        path_list.push(format!(
+            "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 小圆弧
+        let point = self.get_point(self.cx, self.cy, self.ir, start_angle + border_angle);
+        path_list.push(format!(
+            "A{ir_str} {ir_str} 0 0 0 {},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        // 左下圆角
+        let point = self.get_point(self.cx, self.cy, self.ir + border_radius, start_angle);
+        path_list.push(format!(
+            "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
+            format_float(point.x),
+            format_float(point.y)
+        ));
+
+        path_list.push("Z".to_string());
 
         let mut attrs = vec![
-            (ATTR_D, str),
+            (ATTR_D, path_list.join(" ")),
             (ATTR_FILL, self.fill.hex()),
             (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
         ];
@@ -1421,15 +1516,16 @@ Hello World!
         let p = Pie {
             fill: (0, 0, 0, 128).into(),
             stroke_color: Some((0, 0, 0).into()),
-            cx: 150.0,
-            cy: 150.0,
-            r: 50.0,
-            start_angle: 0.0,
-            delta: 90.0,
+            cx: 250.0,
+            cy: 250.0,
+            r: 250.0,
+            ir: 60.0,
+            start_angle: 45.0,
+            delta: 45.0,
             ..Default::default()
         };
         assert_eq!(
-            r###"<path d="M150,100 A50 50 90 0 1 200,150 L150 150 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,
+            r###"<path d="M298.1,201.9 L421.1,78.9 A8 8 0 0 1 432.8,79.5 A250 250 0 0 1 499.8,241.3 A8 8 0 0 1 492,250 L318,250 A8 8 0 0 1 310,247.9 A60 60 0 0 0 293.9,209.1 A8 8 0 0 1 298.1,201.9 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,
             p.svg()
         );
     }
