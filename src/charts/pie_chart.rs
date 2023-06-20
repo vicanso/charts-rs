@@ -121,6 +121,7 @@ impl PieChart {
             }
         }
         let delta = 360.0 / values.len() as f32;
+        let half_delta = delta / 2.0;
         let mut start_angle = 0.0_f32;
         let mut radius_double = c.height();
 
@@ -130,8 +131,9 @@ impl PieChart {
         radius_double *= 0.8;
         let r = radius_double / 2.0;
 
-        let cx = (c.width()  - radius_double) / 2.0 + r;
+        let cx = (c.width() - radius_double) / 2.0 + r;
         let cy = (c.height() - radius_double) / 2.0 + r;
+        let label_offset = 20.0;
 
         for (index, series) in self.series_list.iter().enumerate() {
             let value = values[index] / max * r;
@@ -150,6 +152,51 @@ impl PieChart {
                 delta,
                 ..Default::default()
             });
+            let angle = start_angle + half_delta;
+            let mut points = vec![];
+            points.push(get_pie_point(cx, cy, value, angle));
+            let mut end = get_pie_point(cx, cy, r + label_offset, angle);
+            points.push(end);
+
+            let is_left = angle > 180.0;
+            if is_left {
+                end.x -= label_offset;
+            } else {
+                end.x += label_offset;
+            }
+            let mut label_margin = Box {
+                left: end.x,
+                top: end.y + 5.0,
+                ..Default::default()
+            };
+            if is_left {
+                if let Ok(b) = measure_text_width_family(
+                    &self.font_family,
+                    self.series_label_font_size,
+                    &series.name,
+                ) {
+                    label_margin.left -= b.width();
+                }
+            } else {
+                label_margin.left += 3.0;
+            }
+
+            points.push(end);
+            c.smooth_line(SmoothLine {
+                color: Some(color),
+                points,
+                symbol: None,
+                ..Default::default()
+            });
+
+            c.child(label_margin).text(Text {
+                text: series.name.clone(),
+                font_family: Some(self.font_family.clone()),
+                font_size: Some(self.series_label_font_size),
+                font_color: Some(self.series_label_font_color),
+                ..Default::default()
+            });
+
             start_angle += delta;
         }
 
@@ -165,7 +212,7 @@ mod tests {
 
     #[test]
     fn pie_basic() {
-        let mut pie_chart = PieChart::new(vec![
+        let pie_chart = PieChart::new(vec![
             Series::new("rose 1".to_string(), vec![40.0]),
             Series::new("rose 2".to_string(), vec![38.0]),
             Series::new("rose 3".to_string(), vec![32.0]),
@@ -175,7 +222,9 @@ mod tests {
             Series::new("rose 7".to_string(), vec![22.0]),
             Series::new("rose 8".to_string(), vec![18.0]),
         ]);
-        println!("{}", pie_chart.svg().unwrap());
-        assert_eq!("", pie_chart.svg().unwrap());
+        assert_eq!(
+            include_str!("../../asset/pie_chart/basic.svg"),
+            pie_chart.svg().unwrap()
+        );
     }
 }

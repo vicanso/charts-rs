@@ -217,6 +217,12 @@ pub fn format_string(value: &str, formatter: &str) -> String {
     }
 }
 
+pub(crate) fn get_pie_point(cx: f32, cy: f32, r: f32, angle: f32) -> Point {
+    let value = angle / 180.0 * std::f32::consts::PI;
+    let x = cx + r * value.sin();
+    let y = cy - r * value.cos();
+    Point { x, y }
+}
 pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
     let mut b = Box {
         left: f32::MAX,

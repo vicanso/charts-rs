@@ -460,12 +460,6 @@ impl Default for Pie {
 }
 
 impl Pie {
-    fn get_point(&self, cx: f32, cy: f32, r: f32, angle: f32) -> Point {
-        let value = angle / 180.0 * std::f32::consts::PI;
-        let x = cx + r * value.sin();
-        let y = cy - r * value.cos();
-        Point { x, y }
-    }
     pub fn svg(&self) -> String {
         let r = self.r;
         let r_str = format_float(r);
@@ -481,7 +475,7 @@ impl Pie {
         let end_angle = start_angle + self.delta;
 
         // 左下角第一个点
-        let point = self.get_point(self.cx, self.cy, self.ir + border_radius, start_angle);
+        let point = get_pie_point(self.cx, self.cy, self.ir + border_radius, start_angle);
         path_list.push(format!(
             "M{},{}",
             format_float(point.x),
@@ -489,7 +483,7 @@ impl Pie {
         ));
 
         // 左侧直线
-        let point = self.get_point(self.cx, self.cy, self.r - border_radius, start_angle);
+        let point = get_pie_point(self.cx, self.cy, self.r - border_radius, start_angle);
         path_list.push(format!(
             "L{},{}",
             format_float(point.x),
@@ -497,7 +491,7 @@ impl Pie {
         ));
 
         // 左上圆角
-        let point = self.get_point(self.cx, self.cy, self.r, start_angle + border_angle);
+        let point = get_pie_point(self.cx, self.cy, self.r, start_angle + border_angle);
         path_list.push(format!(
             "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
             format_float(point.x),
@@ -505,7 +499,7 @@ impl Pie {
         ));
 
         // 大圆弧
-        let point = self.get_point(self.cx, self.cy, self.r, end_angle - border_angle);
+        let point = get_pie_point(self.cx, self.cy, self.r, end_angle - border_angle);
         path_list.push(format!(
             "A{r_str} {r_str} 0 0 1 {},{}",
             format_float(point.x),
@@ -513,7 +507,7 @@ impl Pie {
         ));
 
         // 右上圆角
-        let point = self.get_point(self.cx, self.cy, self.r - border_radius, end_angle);
+        let point = get_pie_point(self.cx, self.cy, self.r - border_radius, end_angle);
         path_list.push(format!(
             "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
             format_float(point.x),
@@ -521,7 +515,7 @@ impl Pie {
         ));
 
         // 右侧直线
-        let point = self.get_point(self.cx, self.cy, self.ir + border_radius, end_angle);
+        let point = get_pie_point(self.cx, self.cy, self.ir + border_radius, end_angle);
         path_list.push(format!(
             "L{},{}",
             format_float(point.x),
@@ -529,7 +523,7 @@ impl Pie {
         ));
 
         // 右下圆角
-        let point = self.get_point(self.cx, self.cy, self.ir, end_angle - border_angle);
+        let point = get_pie_point(self.cx, self.cy, self.ir, end_angle - border_angle);
         path_list.push(format!(
             "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
             format_float(point.x),
@@ -537,7 +531,7 @@ impl Pie {
         ));
 
         // 小圆弧
-        let point = self.get_point(self.cx, self.cy, self.ir, start_angle + border_angle);
+        let point = get_pie_point(self.cx, self.cy, self.ir, start_angle + border_angle);
         path_list.push(format!(
             "A{ir_str} {ir_str} 0 0 0 {},{}",
             format_float(point.x),
@@ -545,7 +539,7 @@ impl Pie {
         ));
 
         // 左下圆角
-        let point = self.get_point(self.cx, self.cy, self.ir + border_radius, start_angle);
+        let point = get_pie_point(self.cx, self.cy, self.ir + border_radius, start_angle);
         path_list.push(format!(
             "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
             format_float(point.x),
