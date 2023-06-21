@@ -40,6 +40,7 @@ pub struct BarChart {
     pub legend_align: Align,
     pub legend_margin: Option<Box>,
     pub legend_category: LegendCategory,
+    pub legend_show: Option<bool>,
 
     // x axis
     pub x_axis_data: Vec<String>,

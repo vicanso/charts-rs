@@ -40,6 +40,7 @@ pub struct PieChart {
     pub legend_align: Align,
     pub legend_margin: Option<Box>,
     pub legend_category: LegendCategory,
+    pub legend_show: Option<bool>,
 
     pub radius: f32,
     pub inner_radius: f32,
@@ -80,6 +81,7 @@ impl PieChart {
         let theme = get_theme(theme);
         p.radius = 150.0;
         p.inner_radius = 40.0;
+        p.legend_show = Some(false);
         p.fill_theme(theme);
         p
     }
@@ -224,7 +226,6 @@ mod tests {
         ]);
         pie_chart.title_text = "Nightingale Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
-        pie_chart.legend_margin = Some((0.0, 40.0, 0.0, 0.0).into());
         assert_eq!(
             include_str!("../../asset/pie_chart/basic.svg"),
             pie_chart.svg().unwrap()
