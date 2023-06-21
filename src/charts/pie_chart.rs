@@ -212,7 +212,7 @@ mod tests {
 
     #[test]
     fn pie_basic() {
-        let pie_chart = PieChart::new(vec![
+        let mut pie_chart = PieChart::new(vec![
             Series::new("rose 1".to_string(), vec![40.0]),
             Series::new("rose 2".to_string(), vec![38.0]),
             Series::new("rose 3".to_string(), vec![32.0]),
@@ -222,6 +222,9 @@ mod tests {
             Series::new("rose 7".to_string(), vec![22.0]),
             Series::new("rose 8".to_string(), vec![18.0]),
         ]);
+        pie_chart.title_text = "Nightingale Chart".to_string();
+        pie_chart.sub_title_text = "Fake Data".to_string();
+        pie_chart.legend_margin = Some((0.0, 40.0, 0.0, 0.0).into());
         assert_eq!(
             include_str!("../../asset/pie_chart/basic.svg"),
             pie_chart.svg().unwrap()
