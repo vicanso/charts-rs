@@ -110,7 +110,7 @@ Sun
 <rect x="493.4" y="144.8" width="20.1" height="220.2" fill="#EE6666"/>
 <rect x="569.9" y="146.5" width="20.1" height="218.5" fill="#EE6666"/>
 <g>
-<path fill="none" d="M 98.2 345.1 L 174.6 343.1 L 251.1 348.3 L 327.5 342.8 L 403.9 350.1 L 480.4 326.9 L 556.8 330.2" stroke-width="2" stroke="#5470C6"/>
+<path d="M 98.2 345.1 L 174.6 343.1 L 251.1 348.3 L 327.5 342.8 L 403.9 350.1 L 480.4 326.9 L 556.8 330.2" stroke-width="2" fill="none" stroke="#5470C6"/>
 <circle cx="98.2" cy="345.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="174.6" cy="343.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="251.1" cy="348.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>

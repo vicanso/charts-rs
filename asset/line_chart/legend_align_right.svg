@@ -81,7 +81,7 @@ Sun
 </text>
 </g>
 <g>
-<path fill="none" d="M 34 262 L 125.8 251.7 L 217.7 278.3 L 309.5 250 L 401.3 287.8 L 493.2 167.6 L 585 184.8" stroke-width="2" stroke="#5470C6"/>
+<path d="M 34 262 L 125.8 251.7 L 217.7 278.3 L 309.5 250 L 401.3 287.8 L 493.2 167.6 L 585 184.8" stroke-width="2" fill="none" stroke="#5470C6"/>
 <circle cx="34" cy="262" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="125.8" cy="251.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="217.7" cy="278.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
@@ -91,7 +91,7 @@ Sun
 <circle cx="585" cy="184.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 <g>
-<path fill="none" d="M 34 176.2 L 125.8 208.8 L 217.7 201.1 L 309.5 164.2 L 401.3 116.1 L 493.2 81.8 L 585 98.9" stroke-width="2" stroke="#91CC75"/>
+<path d="M 34 176.2 L 125.8 208.8 L 217.7 201.1 L 309.5 164.2 L 401.3 116.1 L 493.2 81.8 L 585 98.9" stroke-width="2" fill="none" stroke="#91CC75"/>
 <circle cx="34" cy="176.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
 <circle cx="125.8" cy="208.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
 <circle cx="217.7" cy="201.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>

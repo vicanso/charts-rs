@@ -380,6 +380,7 @@ mod tests {
             .push(bar_chart.y_axis_configs[0].clone());
         bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
 
+
         assert_eq!(
             include_str!("../../asset/bar_chart/two_y_axis.svg"),
             bar_chart.svg().unwrap()

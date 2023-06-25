@@ -131,7 +131,7 @@ Sun
 <rect x="481.5" y="357.5" width="13.5" height="7.5" fill="#91CC75"/>
 <rect x="521.5" y="362.1" width="13.5" height="2.9" fill="#91CC75"/>
 <g>
-<path fill="none" d="M 80 340.2 L 120 337.7 L 160 324 L 200 309.1 L 240 286.8 L 280 238.4 L 320 112.9 L 360 74.5 L 400 79.4 L 440 160.1 L 480 216 L 520 288" stroke-width="2" stroke="#FAC858"/>
+<path d="M 80 340.2 L 120 337.7 L 160 324 L 200 309.1 L 240 286.8 L 280 238.4 L 320 112.9 L 360 74.5 L 400 79.4 L 440 160.1 L 480 216 L 520 288" stroke-width="2" fill="none" stroke="#FAC858"/>
 <circle cx="80" cy="340.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
 <circle cx="120" cy="337.7" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
 <circle cx="160" cy="324" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>

@@ -9,6 +9,7 @@ mod horizontal_bar_chart;
 mod line_chart;
 mod path;
 mod pie_chart;
+mod radar_chart;
 mod theme;
 mod util;
 
@@ -25,6 +26,7 @@ pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMIL
 pub use line_chart::LineChart;
 pub use path::*;
 pub use pie_chart::PieChart;
+pub use radar_chart::RadarChart;
 pub use theme::Theme;
 pub use util::*;
 

@@ -452,6 +452,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 fill,
                                 points: points.clone(),
                                 bottom: axis_height,
+                                ..Default::default()
                             });
                         }
                         c1.straight_line(StraightLine {
@@ -459,6 +460,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             color: Some(color),
                             stroke_width: self.series_stroke_width,
                             symbol: self.series_symbol.clone(),
+                            ..Default::default()
                         });
                     }
                 }

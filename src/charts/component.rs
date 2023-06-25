@@ -568,10 +568,12 @@ impl Pie {
 
 struct BaseLine {
     pub color: Option<Color>,
+    pub fill: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
     pub is_smooth: bool,
+    pub close: bool,
 }
 
 impl BaseLine {
@@ -599,14 +601,23 @@ impl BaseLine {
                     format_float(p.y)
                 ));
             }
+            if self.close {
+                arr.push('Z'.to_string());
+            }
             arr.join(" ")
         };
 
         let mut attrs = vec![
-            (ATTR_FILL, "none".to_string()),
             (ATTR_D, path),
             (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
         ];
+        if let Some(fill) = self.fill {
+            attrs.push((ATTR_FILL, fill.hex()));
+            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&fill)));
+        } else {
+            attrs.push((ATTR_FILL, "none".to_string()));
+        }
+
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
@@ -670,10 +681,12 @@ impl SmoothLine {
     pub fn svg(&self) -> String {
         BaseLine {
             color: self.color,
+            fill: None,
             points: self.points.clone(),
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: true,
+            close: false,
         }
         .svg()
     }
@@ -736,18 +749,22 @@ impl SmoothLineFill {
 #[derive(Clone, PartialEq, Debug)]
 pub struct StraightLine {
     pub color: Option<Color>,
+    pub fill: Option<Color>,
     pub points: Vec<Point>,
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
+    pub close: bool,
 }
 
 impl Default for StraightLine {
     fn default() -> Self {
         StraightLine {
             color: None,
+            fill: None,
             points: vec![],
             stroke_width: 1.0,
             symbol: Some(Symbol::Circle(2.0, None)),
+            close: false,
         }
     }
 }
@@ -756,10 +773,12 @@ impl StraightLine {
     pub fn svg(&self) -> String {
         BaseLine {
             color: self.color,
+            fill: self.fill,
             points: self.points.clone(),
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: false,
+            close: self.close,
         }
         .svg()
     }
@@ -770,6 +789,7 @@ pub struct StraightLineFill {
     pub fill: Color,
     pub points: Vec<Point>,
     pub bottom: f32,
+    pub close: bool,
 }
 
 impl StraightLineFill {
@@ -795,6 +815,9 @@ impl StraightLineFill {
                 format_float(p.x),
                 format_float(p.y)
             ));
+        }
+        if self.close {
+            arr.push('Z'.to_string());
         }
         let attrs = vec![
             (ATTR_D, arr.join(" ")),
@@ -1533,7 +1556,7 @@ Hello World!
 
         assert_eq!(
             r###"<g>
-<path fill="none" d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1" stroke="#000000"/>
+<path d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1" fill="none" stroke="#000000"/>
 <circle cx="0" cy="0" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
 <circle cx="10" cy="30" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
 <circle cx="20" cy="80" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
@@ -1556,7 +1579,7 @@ Hello World!
         );
 
         assert_eq!(
-            r###"<path fill="none" d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1"/>"###,
+            r###"<path d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1" fill="none"/>"###,
             SmoothLine {
                 color: None,
                 points: vec![
@@ -1582,7 +1605,7 @@ Hello World!
 
         assert_eq!(
             r###"<g>
-<path fill="none" d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1" stroke="#000000"/>
+<path d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1" fill="none" stroke="#000000"/>
 <circle cx="0" cy="0" r="3" stroke-width="1" stroke="#000000" fill="none"/>
 <circle cx="10" cy="30" r="3" stroke-width="1" stroke="#000000" fill="none"/>
 <circle cx="20" cy="80" r="3" stroke-width="1" stroke="#000000" fill="none"/>
@@ -1600,12 +1623,13 @@ Hello World!
                 ],
                 stroke_width: 1.0,
                 symbol: Some(Symbol::Circle(3.0, None)),
+                ..Default::default()
             }
             .svg()
         );
 
         assert_eq!(
-            r###"<path fill="none" d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1"/>"###,
+            r###"<path d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1" fill="none"/>"###,
             StraightLine {
                 color: None,
                 points: vec![
@@ -1617,6 +1641,7 @@ Hello World!
                 ],
                 stroke_width: 1.0,
                 symbol: None,
+                ..Default::default()
             }
             .svg()
         );
@@ -1662,6 +1687,7 @@ Hello World!
                     (40.0, 50.0).into(),
                 ],
                 bottom: 100.0,
+                ..Default::default()
             }
             .svg()
         );

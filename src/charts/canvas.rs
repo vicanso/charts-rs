@@ -12,6 +12,8 @@ use std::rc::Rc;
 pub enum Error {
     #[snafu(display("Error to svg: {source}"))]
     ToSVG { source: super::component::Error },
+    #[snafu(display("Params is invalid: {message}"))]
+    Params { message: String },
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -56,7 +58,7 @@ impl Canvas {
         c.left += self.margin.left;
         c.right += self.margin.left;
         c.top += self.margin.top;
-        c.bottom += self.margin.bottom;
+        c.bottom += self.margin.top;
         let b = Box {
             left: c.left,
             top: c.top,
@@ -391,7 +393,7 @@ Hello World!
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
 <g>
-<path fill="none" d="M10,10 C15 20, 24.5 40.3, 30 50 C34.5 57.8, 46.4 82.7, 50 80 C56.4 75.2, 63.1 26.9, 70 20 C73.1 16.9, 85 35, 90 40" stroke-width="1" stroke="#000000"/>
+<path d="M10,10 C15 20, 24.5 40.3, 30 50 C34.5 57.8, 46.4 82.7, 50 80 C56.4 75.2, 63.1 26.9, 70 20 C73.1 16.9, 85 35, 90 40" stroke-width="1" fill="none" stroke="#000000"/>
 <circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
 <circle cx="30" cy="50" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
 <circle cx="50" cy="80" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
@@ -416,12 +418,13 @@ Hello World!
             ]),
             stroke_width: 1.0,
             symbol: Some(Symbol::Circle(3.0, Some((0, 255, 0).into()))),
+            ..Default::default()
         });
         assert_eq!("(10,10,90,80)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
 <g>
-<path fill="none" d="M 10 10 L 30 50 L 50 80 L 70 20 L 90 40" stroke-width="1" stroke="#000000"/>
+<path d="M 10 10 L 30 50 L 50 80 L 70 20 L 90 40" stroke-width="1" fill="none" stroke="#000000"/>
 <circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
 <circle cx="30" cy="50" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
 <circle cx="50" cy="80" r="3" stroke-width="1" stroke="#000000" fill="#00FF00"/>
@@ -468,6 +471,7 @@ Hello World!
                 (90.0, 40.0),
             ]),
             bottom: 150.0,
+            ..Default::default()
         });
         assert_eq!("(10,10,90,150)", b.to_string());
         assert_eq!(
