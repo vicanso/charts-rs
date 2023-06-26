@@ -73,7 +73,7 @@ pub struct PieChart {
 }
 
 impl PieChart {
-    pub fn new_with_theme(series_list: Vec<Series>, theme: String) -> PieChart {
+    pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> PieChart {
         let mut p = PieChart {
             series_list,
             ..Default::default()
@@ -86,7 +86,7 @@ impl PieChart {
         p
     }
     pub fn new(series_list: Vec<Series>) -> PieChart {
-        PieChart::new_with_theme(series_list, get_default_theme())
+        PieChart::new_with_theme(series_list, &get_default_theme())
     }
 
     pub fn svg(&self) -> canvas::Result<String> {

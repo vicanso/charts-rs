@@ -73,7 +73,7 @@ impl BarChart {
     pub fn new_with_theme(
         mut series_list: Vec<Series>,
         x_axis_data: Vec<String>,
-        theme: String,
+        theme: &str,
     ) -> BarChart {
         let mut series_index: usize = 0;
         // bar chart 可能同时支持两种图
@@ -92,7 +92,7 @@ impl BarChart {
         b
     }
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
-        BarChart::new_with_theme(series_list, x_axis_data, get_default_theme())
+        BarChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
@@ -231,7 +231,7 @@ impl BarChart {
 #[cfg(test)]
 mod tests {
     use super::BarChart;
-    use crate::{svg_to_png, Box, LegendCategory, Series, SeriesCategory};
+    use crate::{svg_to_png, Box, LegendCategory, Series, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA};
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
@@ -275,6 +275,146 @@ mod tests {
         bar_chart.series_list[0].label_show = true;
         assert_eq!(
             include_str!("../../asset/bar_chart/basic.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+    #[test]
+    fn bar_charr_basic_dark() {
+        let mut bar_chart = BarChart::new_with_theme(
+            vec![
+                Series::new(
+                    "Email".to_string(),
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                ),
+                Series::new(
+                    "Union Ads".to_string(),
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                ),
+                Series::new(
+                    "Direct".to_string(),
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                ),
+                Series::new(
+                    "Search Engine".to_string(),
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                ),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+            THEME_DARK,
+        );
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 30.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.series_list[0].label_show = true;
+        assert_eq!(
+            include_str!("../../asset/bar_chart/basic_dark.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn bar_charr_basic_ant() {
+        let mut bar_chart = BarChart::new_with_theme(
+            vec![
+                Series::new(
+                    "Email".to_string(),
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                ),
+                Series::new(
+                    "Union Ads".to_string(),
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                ),
+                Series::new(
+                    "Direct".to_string(),
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                ),
+                Series::new(
+                    "Search Engine".to_string(),
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                ),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+            THEME_ANT,
+        );
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 30.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.series_list[0].label_show = true;
+        assert_eq!(
+            include_str!("../../asset/bar_chart/basic_ant.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn bar_charr_basic_grafana() {
+        let mut bar_chart = BarChart::new_with_theme(
+            vec![
+                Series::new(
+                    "Email".to_string(),
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                ),
+                Series::new(
+                    "Union Ads".to_string(),
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                ),
+                Series::new(
+                    "Direct".to_string(),
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                ),
+                Series::new(
+                    "Search Engine".to_string(),
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                ),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+            THEME_GRAFANA,
+        );
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 30.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.series_list[0].label_show = true;
+        assert_eq!(
+            include_str!("../../asset/bar_chart/basic_grafana.svg"),
             bar_chart.svg().unwrap()
         );
     }
@@ -379,7 +519,6 @@ mod tests {
             .y_axis_configs
             .push(bar_chart.y_axis_configs[0].clone());
         bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
-
 
         assert_eq!(
             include_str!("../../asset/bar_chart/two_y_axis.svg"),

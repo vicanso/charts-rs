@@ -28,6 +28,7 @@ pub use path::*;
 pub use pie_chart::PieChart;
 pub use radar_chart::RadarChart;
 pub use theme::Theme;
+pub use theme::{THEME_ANT, THEME_DARK, THEME_GRAFANA};
 pub use util::*;
 
 pub trait Chart {

@@ -90,7 +90,7 @@ impl RadarChart {
     pub fn new_with_theme(
         series_list: Vec<Series>,
         indicators: Vec<RadarIndicator>,
-        theme: String,
+        theme: &str,
     ) -> RadarChart {
         let mut r = RadarChart {
             series_list,
@@ -102,7 +102,7 @@ impl RadarChart {
         r
     }
     pub fn new(series_list: Vec<Series>, indicators: Vec<RadarIndicator>) -> RadarChart {
-        RadarChart::new_with_theme(series_list, indicators, get_default_theme())
+        RadarChart::new_with_theme(series_list, indicators, &get_default_theme())
     }
     pub fn svg(&self) -> canvas::Result<String> {
         if self.indicators.len() < 3 {

@@ -35,6 +35,9 @@ impl Color {
     pub fn black() -> Color {
         (0, 0, 0).into()
     }
+    pub fn transparent() -> Color {
+        (0, 0, 0, 0).into()
+    }
     pub fn with_alpha(&self, a: u8) -> Color {
         let mut c = *self;
         c.a = a;

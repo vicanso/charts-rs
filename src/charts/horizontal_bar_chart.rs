@@ -73,7 +73,7 @@ impl HorizontalBarChart {
     pub fn new_with_theme(
         series_list: Vec<Series>,
         x_axis_data: Vec<String>,
-        theme: String,
+        theme: &str,
     ) -> HorizontalBarChart {
         let mut h = HorizontalBarChart {
             series_list,
@@ -85,7 +85,7 @@ impl HorizontalBarChart {
         h
     }
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> HorizontalBarChart {
-        HorizontalBarChart::new_with_theme(series_list, x_axis_data, get_default_theme())
+        HorizontalBarChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
@@ -302,4 +302,5 @@ mod tests {
             horizontal_bar_chart.svg().unwrap()
         );
     }
+ 
 }

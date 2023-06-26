@@ -1,0 +1,144 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#100C2A"/>
+<text font-size="18" x="259" y="23" font-weight="bold" font-family="Arial" fill="#EEEEEE">
+Bar Chart
+</text>
+<g>
+<line stroke-width="2" x1="112" y1="45" x2="137" y2="45" stroke="#5470C6"/>
+<circle cx="124.5" cy="45" r="5.5" stroke-width="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="140" y="49" font-family="Arial" fill="#EEEEEE">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="182" y1="45" x2="207" y2="45" stroke="#91CC75"/>
+<circle cx="194.5" cy="45" r="5.5" stroke-width="2" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="210" y="49" font-family="Arial" fill="#EEEEEE">
+Union Ads
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="283" y1="45" x2="308" y2="45" stroke="#FAC858"/>
+<circle cx="295.5" cy="45" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FAC858"/>
+<text font-size="14" x="311" y="49" font-family="Arial" fill="#EEEEEE">
+Direct
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="355" y1="45" x2="380" y2="45" stroke="#EE6666"/>
+<circle cx="367.5" cy="45" r="5.5" stroke-width="2" stroke="#EE6666" fill="#EE6666"/>
+<text font-size="14" x="383" y="49" font-family="Arial" fill="#EEEEEE">
+Search Engine
+</text>
+</g>
+<g stroke="#474753">
+<line stroke-width="1" x1="60" y1="67" x2="595" y2="67"/><line stroke-width="1" x1="60" y1="116.7" x2="595" y2="116.7"/><line stroke-width="1" x1="60" y1="166.3" x2="595" y2="166.3"/><line stroke-width="1" x1="60" y1="216" x2="595" y2="216"/><line stroke-width="1" x1="60" y1="265.7" x2="595" y2="265.7"/><line stroke-width="1" x1="60" y1="315.3" x2="595" y2="315.3"/>
+</g>
+<g>
+
+<text font-size="14" x="6" y="72" font-family="Arial" fill="#B9B8CE">
+1.8k ml
+</text>
+<text font-size="14" x="6" y="121.7" font-family="Arial" fill="#B9B8CE">
+1.5k ml
+</text>
+<text font-size="14" x="6" y="171.3" font-family="Arial" fill="#B9B8CE">
+1.2k ml
+</text>
+<text font-size="14" x="9" y="221" font-family="Arial" fill="#B9B8CE">
+900 ml
+</text>
+<text font-size="14" x="9" y="270.7" font-family="Arial" fill="#B9B8CE">
+600 ml
+</text>
+<text font-size="14" x="9" y="320.3" font-family="Arial" fill="#B9B8CE">
+300 ml
+</text>
+<text font-size="14" x="25" y="370" font-family="Arial" fill="#B9B8CE">
+0 ml
+</text>
+</g>
+<g>
+<g stroke="#B9B8CE">
+<line stroke-width="1" x1="60" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="60" y1="365" x2="60" y2="370"/>
+<line stroke-width="1" x1="136.4" y1="365" x2="136.4" y2="370"/>
+<line stroke-width="1" x1="212.9" y1="365" x2="212.9" y2="370"/>
+<line stroke-width="1" x1="289.3" y1="365" x2="289.3" y2="370"/>
+<line stroke-width="1" x1="365.7" y1="365" x2="365.7" y2="370"/>
+<line stroke-width="1" x1="442.1" y1="365" x2="442.1" y2="370"/>
+<line stroke-width="1" x1="518.6" y1="365" x2="518.6" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="84.7" y="384" font-family="Arial" fill="#B9B8CE">
+Mon
+</text>
+<text font-size="14" x="162.1" y="384" font-family="Arial" fill="#B9B8CE">
+Tue
+</text>
+<text font-size="14" x="236.6" y="384" font-family="Arial" fill="#B9B8CE">
+Wed
+</text>
+<text font-size="14" x="315.5" y="384" font-family="Arial" fill="#B9B8CE">
+Thu
+</text>
+<text font-size="14" x="395.4" y="384" font-family="Arial" fill="#B9B8CE">
+Fri
+</text>
+<text font-size="14" x="469.4" y="384" font-family="Arial" fill="#B9B8CE">
+Sat
+</text>
+<text font-size="14" x="544.3" y="384" font-family="Arial" fill="#B9B8CE">
+Sun
+</text>
+</g>
+<rect x="65" y="345.1" width="14.4" height="19.9" fill="#5470C6"/>
+<rect x="141.4" y="343.1" width="14.4" height="21.9" fill="#5470C6"/>
+<rect x="217.9" y="348.3" width="14.4" height="16.7" fill="#5470C6"/>
+<rect x="294.3" y="342.8" width="14.4" height="22.2" fill="#5470C6"/>
+<rect x="370.7" y="350.1" width="14.4" height="14.9" fill="#5470C6"/>
+<rect x="447.1" y="326.9" width="14.4" height="38.1" fill="#5470C6"/>
+<rect x="523.6" y="330.2" width="14.4" height="34.8" fill="#5470C6"/>
+<rect x="82.4" y="328.6" width="14.4" height="36.4" fill="#91CC75"/>
+<rect x="158.8" y="334.9" width="14.4" height="30.1" fill="#91CC75"/>
+<rect x="235.2" y="333.4" width="14.4" height="31.6" fill="#91CC75"/>
+<rect x="311.6" y="326.3" width="14.4" height="38.7" fill="#91CC75"/>
+<rect x="388.1" y="317" width="14.4" height="48" fill="#91CC75"/>
+<rect x="464.5" y="310.4" width="14.4" height="54.6" fill="#91CC75"/>
+<rect x="540.9" y="313.7" width="14.4" height="51.3" fill="#91CC75"/>
+<rect x="99.7" y="312" width="14.4" height="53" fill="#FAC858"/>
+<rect x="176.1" y="310" width="14.4" height="55" fill="#FAC858"/>
+<rect x="252.6" y="315.2" width="14.4" height="49.8" fill="#FAC858"/>
+<rect x="329" y="309.7" width="14.4" height="55.3" fill="#FAC858"/>
+<rect x="405.4" y="300.4" width="14.4" height="64.6" fill="#FAC858"/>
+<rect x="481.9" y="310.4" width="14.4" height="54.6" fill="#FAC858"/>
+<rect x="558.3" y="312" width="14.4" height="53" fill="#FAC858"/>
+<rect x="117.1" y="229.2" width="14.4" height="135.8" fill="#EE6666"/>
+<rect x="193.5" y="210.7" width="14.4" height="154.3" fill="#EE6666"/>
+<rect x="269.9" y="215.8" width="14.4" height="149.2" fill="#EE6666"/>
+<rect x="346.4" y="210.4" width="14.4" height="154.6" fill="#EE6666"/>
+<rect x="422.8" y="151.4" width="14.4" height="213.6" fill="#EE6666"/>
+<rect x="499.2" y="144.8" width="14.4" height="220.2" fill="#EE6666"/>
+<rect x="575.6" y="146.5" width="14.4" height="218.5" fill="#EE6666"/>
+<text font-size="14" x="72.2" y="345.1" dx="-12" dy="-8" font-family="Arial" fill="#EEEEEE">
+120
+</text>
+<text font-size="14" x="148.6" y="343.1" dx="-12" dy="-8" font-family="Arial" fill="#EEEEEE">
+132
+</text>
+<text font-size="14" x="225" y="348.3" dx="-11" dy="-8" font-family="Arial" fill="#EEEEEE">
+101
+</text>
+<text font-size="14" x="301.5" y="342.8" dx="-12" dy="-8" font-family="Arial" fill="#EEEEEE">
+134
+</text>
+<text font-size="14" x="377.9" y="350.1" dx="-8" dy="-8" font-family="Arial" fill="#EEEEEE">
+90
+</text>
+<text font-size="14" x="454.3" y="326.9" dx="-12" dy="-8" font-family="Arial" fill="#EEEEEE">
+230
+</text>
+<text font-size="14" x="530.8" y="330.2" dx="-12" dy="-8" font-family="Arial" fill="#EEEEEE">
+210
+</text>
+</svg>
