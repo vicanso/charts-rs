@@ -283,4 +283,117 @@ mod tests {
             radar_chart.svg().unwrap()
         );
     }
+
+    #[test]
+    fn radar_seven_basic() {
+        let radar_chart = RadarChart::new(
+            vec![
+                Series::new(
+                    "Allocated Budget".to_string(),
+                    vec![4200.0, 3000.0, 20000.0, 35000.0, 50000.0, 18000.0, 9000.0],
+                ),
+                Series::new(
+                    "Actual Spending".to_string(),
+                    vec![5000.0, 14000.0, 28000.0, 26000.0, 42000.0, 21000.0, 7000.0],
+                ),
+            ],
+            vec![
+                ("Sales".to_string(), 6500.0).into(),
+                ("Administration".to_string(), 16000.0).into(),
+                ("Information Technology".to_string(), 30000.0).into(),
+                ("Customer Support".to_string(), 38000.0).into(),
+                ("Development".to_string(), 52000.0).into(),
+                ("Marketing".to_string(), 25000.0).into(),
+                ("Online".to_string(), 10000.0).into(),
+            ],
+        );
+
+        assert_eq!(
+            include_str!("../../asset/radar_chart/seven_points.svg"),
+            radar_chart.svg().unwrap()
+        );
+    }
+
+
+    #[test]
+    fn radar_five_points() {
+        let radar_chart = RadarChart::new(
+            vec![
+                Series::new(
+                    "Allocated Budget".to_string(),
+                    vec![4200.0, 3000.0, 20000.0, 35000.0, 50000.0],
+                ),
+                Series::new(
+                    "Actual Spending".to_string(),
+                    vec![5000.0, 14000.0, 28000.0, 26000.0, 42000.0],
+                ),
+            ],
+            vec![
+                ("Sales".to_string(), 6500.0).into(),
+                ("Administration".to_string(), 16000.0).into(),
+                ("Information Technology".to_string(), 30000.0).into(),
+                ("Customer Support".to_string(), 38000.0).into(),
+                ("Development".to_string(), 52000.0).into(),
+            ],
+        );
+
+        assert_eq!(
+            include_str!("../../asset/radar_chart/five_points.svg"),
+            radar_chart.svg().unwrap()
+        );
+
+    }
+
+    #[test]
+    fn radar_four_points() {
+        let radar_chart = RadarChart::new(
+            vec![
+                Series::new(
+                    "Allocated Budget".to_string(),
+                    vec![4200.0, 3000.0, 20000.0, 35000.0],
+                ),
+                Series::new(
+                    "Actual Spending".to_string(),
+                    vec![5000.0, 14000.0, 28000.0, 26000.0],
+                ),
+            ],
+            vec![
+                ("Sales".to_string(), 6500.0).into(),
+                ("Administration".to_string(), 16000.0).into(),
+                ("Information Technology".to_string(), 30000.0).into(),
+                ("Customer Support".to_string(), 38000.0).into(),
+            ],
+        );
+
+        assert_eq!(
+            include_str!("../../asset/radar_chart/four_points.svg"),
+            radar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn radar_three_points() {
+        let radar_chart = RadarChart::new(
+            vec![
+                Series::new(
+                    "Allocated Budget".to_string(),
+                    vec![4200.0, 3000.0, 20000.0],
+                ),
+                Series::new(
+                    "Actual Spending".to_string(),
+                    vec![5000.0, 14000.0, 28000.0],
+                ),
+            ],
+            vec![
+                ("Sales".to_string(), 6500.0).into(),
+                ("Administration".to_string(), 16000.0).into(),
+                ("Information Technology".to_string(), 30000.0).into(),
+            ],
+        );
+
+        assert_eq!(
+            include_str!("../../asset/radar_chart/three_points.svg"),
+            radar_chart.svg().unwrap()
+        );
+    }
 }
