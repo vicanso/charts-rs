@@ -10,6 +10,7 @@ mod line_chart;
 mod path;
 mod pie_chart;
 mod radar_chart;
+mod table_chart;
 mod theme;
 mod util;
 
@@ -22,7 +23,10 @@ pub use component::{
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 pub use encoder::svg_to_png;
-pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
+pub use font::{
+    add_font, get_font, measure_text_vertical_center, measure_text_width_family,
+    DEFAULT_FONT_FAMILY,
+};
 pub use line_chart::LineChart;
 pub use path::*;
 pub use pie_chart::PieChart;

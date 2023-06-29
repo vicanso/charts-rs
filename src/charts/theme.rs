@@ -111,11 +111,11 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         title_align: Align::Center,
 
         sub_title_font_color: font_color,
-        sub_title_font_size: 14.0,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
 
-        legend_font_size: 14.0,
+        legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
         legend_align: Align::Center,
         legend_margin: None,
@@ -136,7 +136,7 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         grid_stroke_width: 1.0,
 
         series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
-        series_label_font_size: 14.0,
+        series_label_font_size: DEFAULT_FONT_SIZE,
         series_label_font_color: font_color,
         series_colors: vec![
             "#5470c6".into(),
@@ -171,11 +171,11 @@ static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
         title_align: Align::Center,
 
         sub_title_font_color: font_color,
-        sub_title_font_size: 14.0,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
 
-        legend_font_size: 14.0,
+        legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
         legend_align: Align::Center,
         legend_margin: None,
@@ -196,7 +196,7 @@ static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
         grid_stroke_width: 1.0,
 
         series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
-        series_label_font_size: 14.0,
+        series_label_font_size: DEFAULT_FONT_SIZE,
         series_label_font_color: font_color,
         series_colors: vec![
             "#5470c6".into(),
@@ -231,11 +231,11 @@ static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
         title_align: Align::Center,
 
         sub_title_font_color: font_color,
-        sub_title_font_size: 14.0,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
 
-        legend_font_size: 14.0,
+        legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
         legend_align: Align::Center,
         legend_margin: None,
@@ -256,7 +256,7 @@ static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
         grid_stroke_width: 1.0,
 
         series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
-        series_label_font_size: 14.0,
+        series_label_font_size: DEFAULT_FONT_SIZE,
         series_label_font_color: font_color,
 
         series_colors: vec![
@@ -291,11 +291,11 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
         title_align: Align::Center,
 
         sub_title_font_color: font_color,
-        sub_title_font_size: 14.0,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
 
-        legend_font_size: 14.0,
+        legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
         legend_align: Align::Center,
         legend_margin: None,
@@ -316,7 +316,7 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
         grid_stroke_width: 1.0,
 
         series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
-        series_label_font_size: 14.0,
+        series_label_font_size: DEFAULT_FONT_SIZE,
         series_label_font_color: font_color,
 
         series_colors: vec![

@@ -231,7 +231,10 @@ impl BarChart {
 #[cfg(test)]
 mod tests {
     use super::BarChart;
-    use crate::{svg_to_png, Box, LegendCategory, Series, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA};
+    use crate::{
+        svg_to_png, Box, LegendCategory, Series, SeriesCategory, THEME_ANT, THEME_DARK,
+        THEME_GRAFANA,
+    };
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {

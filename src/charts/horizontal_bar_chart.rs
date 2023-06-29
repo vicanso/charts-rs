@@ -302,5 +302,4 @@ mod tests {
             horizontal_bar_chart.svg().unwrap()
         );
     }
- 
 }

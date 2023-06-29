@@ -84,6 +84,17 @@ pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) 
     Ok(measure_text(&font, font_size, text))
 }
 
+pub fn measure_text_vertical_center(
+    font_family: &str,
+    font_size: f32,
+    text: &str,
+    line_height: f32,
+) -> Result<f32> {
+    let b = measure_text_width_family(font_family, font_size, text)?;
+    let height = b.height();
+    Ok((line_height - height) / 2.0 + height)
+}
+
 #[cfg(test)]
 mod tests {
     use super::{add_font, get_font, measure_text_width_family};

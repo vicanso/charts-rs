@@ -314,7 +314,6 @@ mod tests {
         );
     }
 
-
     #[test]
     fn radar_five_points() {
         let radar_chart = RadarChart::new(
@@ -341,7 +340,6 @@ mod tests {
             include_str!("../../asset/radar_chart/five_points.svg"),
             radar_chart.svg().unwrap()
         );
-
     }
 
     #[test]
