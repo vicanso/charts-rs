@@ -205,7 +205,6 @@ impl TableChart {
         };
         let mut top = 0.0;
         let body_background_color_count = self.body_background_colors.len();
-        let row_count = self.data.len();
         for (i, items) in self.data.iter().enumerate() {
             let mut left = 0.0;
             let mut right = 0.0;
@@ -239,6 +238,15 @@ impl TableChart {
                 height: row_height,
                 ..Default::default()
             });
+            c.line(Line {
+                color: Some(self.border_color),
+                stroke_width: 1.0,
+                top,
+                right: c.width(),
+                bottom: top,
+                ..Default::default()
+            });
+            top += 1.0;
             for (j, item) in items.iter().enumerate() {
                 // 已保证肯定有数据
                 let span_width = spans[j];
@@ -275,17 +283,6 @@ impl TableChart {
                 left = right
             }
             top += row_height;
-            if i < row_count - 1 {
-                c.line(Line {
-                    color: Some(self.border_color),
-                    stroke_width: 1.0,
-                    top,
-                    right: c.width(),
-                    bottom: top + 1.0,
-                    ..Default::default()
-                });
-                top += 1.0;
-            }
         }
 
         c.height = c.margin.top + top;

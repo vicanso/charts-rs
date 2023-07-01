@@ -1,49 +1,50 @@
-<svg width="600" height="214" viewBox="0 0 600 214" xmlns="http://www.w3.org/2000/svg">
+<svg width="600" height="215" viewBox="0 0 600 215" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="45" fill="#1F1D1D"/>
 <text font-size="18" x="260.5" y="0" dy="22.5" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 NASDAQ
 </text>
 <rect x="0" y="45" width="600" height="46" fill="#1F1D1D"/>
-<text font-size="14" x="10" y="53" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<line stroke-width="1" x1="0" y1="45" x2="600" y2="45" stroke="#EFEFF4"/>
+<text font-size="14" x="10" y="54" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 Name
 </text>
-<text font-size="14" x="210" y="53" dx="73" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="210" y="54" dx="73" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 Price
 </text>
-<text font-size="14" x="410" y="53" dx="129" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="410" y="54" dx="129" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 Change
 </text>
-<line stroke-width="1" x1="0" y1="91" x2="600" y2="92" stroke="#EFEFF4"/>
-<rect x="0" y="92" width="600" height="40" fill="#181B1F"/>
-<text font-size="14" x="10" y="97" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<rect x="0" y="92" width="600" height="40" fill="#1F1D1D" fill-opacity="0.9"/>
+<line stroke-width="1" x1="0" y1="92" x2="600" y2="92" stroke="#EFEFF4"/>
+<text font-size="14" x="10" y="98" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 Datadog Inc
 </text>
-<text font-size="14" x="210" y="97" dx="72" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="210" y="98" dx="72" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 97.32
 </text>
-<text font-size="14" x="410" y="97" dx="135" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="410" y="98" dx="135" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 -7.49%
 </text>
-<line stroke-width="1" x1="0" y1="132" x2="600" y2="133" stroke="#EFEFF4"/>
-<rect x="0" y="133" width="600" height="40" fill="#181B1F"/>
-<text font-size="14" x="10" y="138" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<rect x="0" y="133" width="600" height="40" fill="#1F1D1D" fill-opacity="0.9"/>
+<line stroke-width="1" x1="0" y1="133" x2="600" y2="133" stroke="#EFEFF4"/>
+<text font-size="14" x="10" y="139" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 Hashicorp Inc
 </text>
-<text font-size="14" x="210" y="138" dx="72" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="210" y="139" dx="72" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 28.66
 </text>
-<text font-size="14" x="410" y="138" dx="135" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="410" y="139" dx="135" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 -9.25%
 </text>
-<line stroke-width="1" x1="0" y1="173" x2="600" y2="174" stroke="#EFEFF4"/>
-<rect x="0" y="174" width="600" height="40" fill="#181B1F"/>
-<text font-size="14" x="10" y="179" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<rect x="0" y="174" width="600" height="40" fill="#1F1D1D" fill-opacity="0.9"/>
+<line stroke-width="1" x1="0" y1="174" x2="600" y2="174" stroke="#EFEFF4"/>
+<text font-size="14" x="10" y="180" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 Gitlab Inc
 </text>
-<text font-size="14" x="210" y="179" dx="72" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="210" y="180" dx="72" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 51.63
 </text>
-<text font-size="14" x="410" y="179" dx="131" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
+<text font-size="14" x="410" y="180" dx="131" dy="15" dominant-baseline="middle" font-family="Arial" fill="#D8D9DA">
 +4.32%
 </text>
 </svg>

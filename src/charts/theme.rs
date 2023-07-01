@@ -230,7 +230,7 @@ static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
         ],
 
         table_header_color: bg_color,
-        table_body_colors: vec![bg_color],
+        table_body_colors: vec![bg_color.with_alpha(230)],
         table_border_color: (100, 100, 100).into(),
     }
 });
@@ -363,7 +363,7 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
         ],
 
         table_header_color: bg_color,
-        table_body_colors: vec![(24, 27, 31).into()],
+        table_body_colors: vec![bg_color.with_alpha(230)],
         table_border_color: (239, 239, 244).into(),
     }
 });
