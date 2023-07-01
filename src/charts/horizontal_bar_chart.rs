@@ -273,6 +273,7 @@ impl HorizontalBarChart {
 mod tests {
     use super::HorizontalBarChart;
     use crate::{Align, Series};
+    use pretty_assertions::assert_eq;
     #[test]
     fn horizontal_bar_chart_basic() {
         let mut horizontal_bar_chart = HorizontalBarChart::new(

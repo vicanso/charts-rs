@@ -27,6 +27,7 @@ static ATTR_FONT_FAMILY: &str = "font-family";
 static ATTR_FONT_SIZE: &str = "font-size";
 static ATTR_FONT_WEIGHT: &str = "font-weight";
 static ATTR_TRANSFORM: &str = "transform";
+static ATTR_DOMINANT_BASELINE: &str = "dominant-baseline";
 static ATTR_STROKE_OPACITY: &str = "stroke-opacity";
 static ATTR_FILL_OPACITY: &str = "fill-opacity";
 static ATTR_STROKE_WIDTH: &str = "stroke-width";
@@ -386,6 +387,7 @@ pub struct Text {
     pub dy: Option<f32>,
     pub font_weight: Option<String>,
     pub transform: Option<String>,
+    pub dominant_baseline: Option<String>,
 }
 
 impl Text {
@@ -404,6 +406,10 @@ impl Text {
                 self.font_weight.clone().unwrap_or_default(),
             ),
             (ATTR_TRANSFORM, self.transform.clone().unwrap_or_default()),
+            (
+                ATTR_DOMINANT_BASELINE,
+                self.dominant_baseline.clone().unwrap_or_default(),
+            ),
         ];
         if let Some(ref font_family) = self.font_family {
             attrs.push((ATTR_FONT_FAMILY, font_family.clone()));

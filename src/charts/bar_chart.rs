@@ -466,6 +466,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_list[3].label_show = true;
+
         assert_eq!(
             include_str!("../../asset/bar_chart/line_mixin.svg"),
             bar_chart.svg().unwrap()

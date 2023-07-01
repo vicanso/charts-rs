@@ -1,5 +1,3 @@
-use crate::measure_text_vertical_center;
-
 use super::component::{
     generate_svg, Axis, Circle, Component, Grid, Legend, Line, Pie, Polygon, Polyline, Rect,
     SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
@@ -145,12 +143,14 @@ impl Canvas {
             let line_height = c.line_height.unwrap_or_default();
             // 设置了行高
             if line_height > font_size {
-                if let Ok(value) =
-                    measure_text_vertical_center(&font_family, font_size, &c.text, line_height)
-                {
-                    let dy = c.dy.unwrap_or_default() + value;
-                    c.dy = Some(dy);
-                }
+                c.dy = Some(c.dy.unwrap_or_default() + line_height / 2.0);
+                c.dominant_baseline = Some("middle".to_string());
+                // if let Ok(value) =
+                //     measure_text_vertical_center(&font_family, font_size, &c.text, line_height)
+                // {
+                //     let dy = c.dy.unwrap_or_default() + value;
+                //     c.dy = Some(dy);
+                // }
                 b.bottom = b.top + line_height;
             }
         }
@@ -380,7 +380,7 @@ mod tests {
         assert_eq!("(0,0,81,30)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-<text font-size="14" x="0" y="0" dy="22" font-weight="bold" font-family="Arial" fill="#000000">
+<text font-size="14" x="0" y="0" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#000000">
 Hello World!
 </text>
 </svg>"###,
