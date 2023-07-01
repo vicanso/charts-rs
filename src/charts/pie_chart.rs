@@ -210,8 +210,8 @@ impl PieChart {
 
 #[cfg(test)]
 mod tests {
-    use crate::Series;
     use super::PieChart;
+    use crate::Series;
     use pretty_assertions::assert_eq;
 
     #[test]

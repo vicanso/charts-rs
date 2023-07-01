@@ -24,10 +24,12 @@ pub use component::{
 };
 pub use encoder::svg_to_png;
 pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
+pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use path::*;
 pub use pie_chart::PieChart;
 pub use radar_chart::RadarChart;
+pub use table_chart::TableChart;
 pub use theme::Theme;
 pub use theme::{THEME_ANT, THEME_DARK, THEME_GRAFANA};
 pub use util::*;

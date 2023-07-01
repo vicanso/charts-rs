@@ -33,6 +33,7 @@ pub struct TableChart {
 
     pub data: Vec<Vec<String>>,
     pub spans: Vec<f32>,
+    pub text_aligns: Vec<Align>,
 
     pub header_row_padding: Box,
     pub header_row_height: f32,
@@ -45,6 +46,7 @@ pub struct TableChart {
     pub body_font_size: f32,
     pub body_font_color: Color,
     pub body_background_colors: Vec<Color>,
+    pub border_color: Color,
 }
 
 impl TableChart {
@@ -85,6 +87,7 @@ impl TableChart {
         self.body_font_size = t.sub_title_font_size;
         self.body_font_color = t.sub_title_font_color;
         self.body_background_colors = t.table_body_colors;
+        self.border_color = t.table_border_color;
     }
     pub fn new(data: Vec<Vec<String>>) -> TableChart {
         TableChart::new_with_theme(data, &get_default_theme())
@@ -115,7 +118,7 @@ impl TableChart {
                 x: Some(x),
                 ..Default::default()
             });
-            title_height = b.outer_height() + title_margin_bottom;
+            title_height = b.height() + title_margin_bottom;
         }
         if !self.sub_title_text.is_empty() {
             let mut sub_title_margin = self.sub_title_margin.clone().unwrap_or_default();
@@ -202,6 +205,7 @@ impl TableChart {
         };
         let mut top = 0.0;
         let body_background_color_count = self.body_background_colors.len();
+        let row_count = self.data.len();
         for (i, items) in self.data.iter().enumerate() {
             let mut left = 0.0;
             let mut right = 0.0;
@@ -211,8 +215,6 @@ impl TableChart {
             let mut font_color = self.body_font_color;
 
             let is_header = i == 0;
-            // self.body_row_padding.clone()
-            // title
             let bg_color = if is_header {
                 cell_height = self.header_row_height;
                 padding = self.header_row_padding.top + self.header_row_padding.bottom;
@@ -240,26 +242,50 @@ impl TableChart {
             for (j, item) in items.iter().enumerate() {
                 // 已保证肯定有数据
                 let span_width = spans[j];
-                let mut y_offset = 0.0;
-                // if let Ok(value) =
-                //     measure_text_vertical_center(&self.font_family, font_size, item, cell_height)
-                // {
-                //     y_offset = value;
-                // }
+                let mut dx = None;
+                if let Ok(measurement) =
+                    measure_text_width_family(&self.font_family, font_size, item)
+                {
+                    let mut align = Align::Left;
+                    if let Some(value) = self.text_aligns.get(j) {
+                        align = value.to_owned();
+                    }
+                    let text_width = measurement.width();
+                    let text_max_width = span_width - row_padding.left - row_padding.right;
+                    dx = match align {
+                        Align::Center => Some((text_max_width - text_width) / 2.0),
+                        Align::Right => Some(text_max_width - text_width),
+                        Align::Left => None,
+                    };
+                }
+
                 right += span_width;
                 c.child(row_padding.clone()).text(Text {
                     text: item.to_string(),
                     font_family: Some(self.font_family.clone()),
                     font_size: Some(font_size),
                     font_color: Some(font_color),
+                    line_height: Some(cell_height),
+                    dx,
                     x: Some(left),
-                    y: Some(top + y_offset),
+                    y: Some(top),
                     ..Default::default()
                 });
 
                 left = right
             }
             top += row_height;
+            if i < row_count - 1 {
+                c.line(Line {
+                    color: Some(self.border_color),
+                    stroke_width: 1.0,
+                    top,
+                    right: c.width(),
+                    bottom: top + 1.0,
+                    ..Default::default()
+                });
+                top += 1.0;
+            }
         }
 
         c.height = c.margin.top + top;
@@ -271,7 +297,8 @@ impl TableChart {
 #[cfg(test)]
 mod tests {
     use super::TableChart;
-    use crate::THEME_DARK;
+    use crate::{Align, THEME_ANT, THEME_DARK, THEME_GRAFANA};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn table_basic() {
@@ -299,12 +326,10 @@ mod tests {
         ]);
         table_chart.title_text = "NASDAQ".to_string();
 
-        println!("{}", table_chart.svg().unwrap());
-
-        // assert_eq!(
-        //     include_str!("../../asset/table_chart/basic.svg"),
-        //     table_chart.svg().unwrap()
-        // );
+        assert_eq!(
+            include_str!("../../asset/table_chart/basic.svg"),
+            table_chart.svg().unwrap()
+        );
     }
 
     #[test]
@@ -335,12 +360,80 @@ mod tests {
             THEME_DARK,
         );
         table_chart.title_text = "NASDAQ".to_string();
-        table_chart.header_row_height = 50.0;
+        table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
+        assert_eq!(
+            include_str!("../../asset/table_chart/basic_dark.svg"),
+            table_chart.svg().unwrap()
+        );
+    }
 
-        println!("{}", table_chart.svg().unwrap());
-        // assert_eq!(
-        //     include_str!("../../asset/table_chart/basic_dark.svg"),
-        //     table_chart.svg().unwrap()
-        // );
+    #[test]
+    fn table_basic_ant() {
+        let mut table_chart = TableChart::new_with_theme(
+            vec![
+                vec![
+                    "Name".to_string(),
+                    "Price".to_string(),
+                    "Change".to_string(),
+                ],
+                vec![
+                    "Datadog Inc".to_string(),
+                    "97.32".to_string(),
+                    "-7.49%".to_string(),
+                ],
+                vec![
+                    "Hashicorp Inc".to_string(),
+                    "28.66".to_string(),
+                    "-9.25%".to_string(),
+                ],
+                vec![
+                    "Gitlab Inc".to_string(),
+                    "51.63".to_string(),
+                    "+4.32%".to_string(),
+                ],
+            ],
+            THEME_ANT,
+        );
+        table_chart.title_text = "NASDAQ".to_string();
+        table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
+        assert_eq!(
+            include_str!("../../asset/table_chart/basic_ant.svg"),
+            table_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn table_basic_grafana() {
+        let mut table_chart = TableChart::new_with_theme(
+            vec![
+                vec![
+                    "Name".to_string(),
+                    "Price".to_string(),
+                    "Change".to_string(),
+                ],
+                vec![
+                    "Datadog Inc".to_string(),
+                    "97.32".to_string(),
+                    "-7.49%".to_string(),
+                ],
+                vec![
+                    "Hashicorp Inc".to_string(),
+                    "28.66".to_string(),
+                    "-9.25%".to_string(),
+                ],
+                vec![
+                    "Gitlab Inc".to_string(),
+                    "51.63".to_string(),
+                    "+4.32%".to_string(),
+                ],
+            ],
+            THEME_GRAFANA,
+        );
+        table_chart.title_text = "NASDAQ".to_string();
+        table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
+        assert_eq!(
+            include_str!("../../asset/table_chart/basic_grafana.svg"),
+            table_chart.svg().unwrap()
+        );
     }
 }

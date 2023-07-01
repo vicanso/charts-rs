@@ -100,6 +100,7 @@ pub struct Theme {
     // table
     pub table_header_color: Color,
     pub table_body_colors: Vec<Color>,
+    pub table_border_color: Color,
 }
 
 static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
@@ -161,8 +162,9 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
             "#ea7ccc".into(),
         ],
 
-        table_header_color: (239, 239, 241).into(),
+        table_header_color: (250, 250, 252).into(),
         table_body_colors: vec![(255, 255, 255).into()],
+        table_border_color: (239, 239, 244).into(),
     }
 });
 
@@ -227,8 +229,9 @@ static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
             "#ea7ccc".into(),
         ],
 
-        table_header_color: (7, 3, 29).into(),
+        table_header_color: bg_color,
         table_body_colors: vec![bg_color],
+        table_border_color: (100, 100, 100).into(),
     }
 });
 
@@ -294,6 +297,7 @@ static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
 
         table_header_color: (250, 250, 250).into(),
         table_body_colors: vec![(255, 255, 255).into()],
+        table_border_color: (239, 239, 244).into(),
     }
 });
 
@@ -301,13 +305,14 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
     let x_axis_color = (185, 184, 206).into();
 
     let font_color: Color = (216, 217, 218).into();
+    let bg_color = (31, 29, 29).into();
     Theme {
         is_light: false,
         font_family: DEFAULT_FONT_FAMILY.to_string(),
         margin: (5.0).into(),
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
-        background_color: (31, 29, 29).into(),
+        background_color: bg_color,
 
         title_font_color: font_color,
         title_font_size: 18.0,
@@ -357,8 +362,9 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
             "#508642".into(),
         ],
 
-        table_header_color: (34, 37, 43).into(),
+        table_header_color: bg_color,
         table_body_colors: vec![(24, 27, 31).into()],
+        table_border_color: (239, 239, 244).into(),
     }
 });
 
