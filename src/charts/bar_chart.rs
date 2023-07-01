@@ -26,6 +26,7 @@ pub struct BarChart {
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
     pub title_align: Align,
+    pub title_height: f32,
 
     // sub title
     pub sub_title_text: String,
@@ -33,6 +34,7 @@ pub struct BarChart {
     pub sub_title_font_color: Color,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
+    pub sub_title_height: f32,
 
     // legend
     pub legend_font_size: f32,
@@ -270,7 +272,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
-            top: 30.0,
+            top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -282,7 +284,7 @@ mod tests {
         );
     }
     #[test]
-    fn bar_charr_basic_dark() {
+    fn bar_chart_basic_dark() {
         let mut bar_chart = BarChart::new_with_theme(
             vec![
                 Series::new(
@@ -316,7 +318,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
-            top: 30.0,
+            top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -329,7 +331,7 @@ mod tests {
     }
 
     #[test]
-    fn bar_charr_basic_ant() {
+    fn bar_chart_basic_ant() {
         let mut bar_chart = BarChart::new_with_theme(
             vec![
                 Series::new(
@@ -363,7 +365,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
-            top: 30.0,
+            top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -376,7 +378,7 @@ mod tests {
     }
 
     #[test]
-    fn bar_charr_basic_grafana() {
+    fn bar_chart_basic_grafana() {
         let mut bar_chart = BarChart::new_with_theme(
             vec![
                 Series::new(
@@ -410,7 +412,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
-            top: 30.0,
+            top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -456,7 +458,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
-            top: 30.0,
+            top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -512,7 +514,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_width = Some(55.0);
         bar_chart.title_text = "Bar Chart".to_string();
         bar_chart.legend_margin = Some(Box {
-            top: 30.0,
+            top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -522,7 +524,6 @@ mod tests {
             .y_axis_configs
             .push(bar_chart.y_axis_configs[0].clone());
         bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
-
         assert_eq!(
             include_str!("../../asset/bar_chart/two_y_axis.svg"),
             bar_chart.svg().unwrap()

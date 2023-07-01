@@ -1,9 +1,9 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="5" y="23" font-weight="bold" font-family="Arial" fill="#464646">
+<text font-size="18" x="5" y="5" dy="24" font-weight="bold" font-family="Arial" fill="#464646">
 Stacked Area Chart
 </text>
-<text font-size="14" x="5" y="37" font-family="Arial" fill="#464646">
+<text font-size="14" x="5" y="35" dy="17" font-family="Arial" fill="#464646">
 Hello World
 </text>
 <g>
@@ -21,26 +21,26 @@ Union Ads
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="34" y1="56" x2="585" y2="56"/><line stroke-width="1" x1="34" y1="107.5" x2="585" y2="107.5"/><line stroke-width="1" x1="34" y1="159" x2="585" y2="159"/><line stroke-width="1" x1="34" y1="210.5" x2="585" y2="210.5"/><line stroke-width="1" x1="34" y1="262" x2="585" y2="262"/><line stroke-width="1" x1="34" y1="313.5" x2="585" y2="313.5"/>
+<line stroke-width="1" x1="34" y1="60" x2="585" y2="60"/><line stroke-width="1" x1="34" y1="110.8" x2="585" y2="110.8"/><line stroke-width="1" x1="34" y1="161.7" x2="585" y2="161.7"/><line stroke-width="1" x1="34" y1="212.5" x2="585" y2="212.5"/><line stroke-width="1" x1="34" y1="263.3" x2="585" y2="263.3"/><line stroke-width="1" x1="34" y1="314.2" x2="585" y2="314.2"/>
 </g>
 <g>
 
-<text font-size="14" x="2" y="61" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="65" font-family="Arial" fill="#6E7079">
 360
 </text>
-<text font-size="14" x="2" y="112.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="115.8" font-family="Arial" fill="#6E7079">
 300
 </text>
-<text font-size="14" x="2" y="164" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="166.7" font-family="Arial" fill="#6E7079">
 240
 </text>
-<text font-size="14" x="2" y="215.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="217.5" font-family="Arial" fill="#6E7079">
 180
 </text>
-<text font-size="14" x="2" y="267" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="268.3" font-family="Arial" fill="#6E7079">
 120
 </text>
-<text font-size="14" x="10" y="318.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="10" y="319.2" font-family="Arial" fill="#6E7079">
 60
 </text>
 <text font-size="14" x="18" y="370" font-family="Arial" fill="#6E7079">
@@ -81,23 +81,23 @@ Sun
 </text>
 </g>
 <g>
-<path d="M 34 262 L 125.8 251.7 L 217.7 278.3 L 309.5 250 L 401.3 287.8 L 493.2 167.6 L 585 184.8" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="34" cy="262" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="125.8" cy="251.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="217.7" cy="278.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="309.5" cy="250" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="401.3" cy="287.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="493.2" cy="167.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="585" cy="184.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<path d="M 34 263.3 L 125.8 253.2 L 217.7 279.4 L 309.5 251.5 L 401.3 288.8 L 493.2 170.1 L 585 187.1" stroke-width="2" fill="none" stroke="#5470C6"/>
+<circle cx="34" cy="263.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="125.8" cy="253.2" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="217.7" cy="279.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="309.5" cy="251.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="401.3" cy="288.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="493.2" cy="170.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="585" cy="187.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 <g>
-<path d="M 34 176.2 L 125.8 208.8 L 217.7 201.1 L 309.5 164.2 L 401.3 116.1 L 493.2 81.8 L 585 98.9" stroke-width="2" fill="none" stroke="#91CC75"/>
-<circle cx="34" cy="176.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="125.8" cy="208.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="217.7" cy="201.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="309.5" cy="164.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="401.3" cy="116.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="493.2" cy="81.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="585" cy="98.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<path d="M 34 178.6 L 125.8 210.8 L 217.7 203.2 L 309.5 166.8 L 401.3 119.3 L 493.2 85.4 L 585 102.4" stroke-width="2" fill="none" stroke="#91CC75"/>
+<circle cx="34" cy="178.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="125.8" cy="210.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="217.7" cy="203.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="309.5" cy="166.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="401.3" cy="119.3" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="493.2" cy="85.4" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="585" cy="102.4" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
 </g>
 </svg>

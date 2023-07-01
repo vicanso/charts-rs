@@ -379,6 +379,7 @@ pub struct Text {
     pub font_family: Option<String>,
     pub font_size: Option<f32>,
     pub font_color: Option<Color>,
+    pub line_height: Option<f32>,
     pub x: Option<f32>,
     pub y: Option<f32>,
     pub dx: Option<f32>,
@@ -1512,6 +1513,7 @@ Hello World!
                 dx: Some(5.0),
                 font_weight: Some("bold".to_string()),
                 transform: Some("translate(-36 45.5)".to_string()),
+                ..Default::default()
             }
             .svg()
         );

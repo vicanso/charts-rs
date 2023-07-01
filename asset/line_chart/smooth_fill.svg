@@ -1,39 +1,39 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="215.5" y="23" font-weight="bold" font-family="Arial" fill="#464646">
+<text font-size="18" x="215.5" y="5" dy="24" font-weight="bold" font-family="Arial" fill="#464646">
 Stacked Area Chart
 </text>
-<text font-size="14" x="261.5" y="37" font-family="Arial" fill="#464646">
+<text font-size="14" x="261.5" y="35" dy="17" font-family="Arial" fill="#464646">
 Hello World
 </text>
 <g>
-<line stroke-width="2" x1="238" y1="55" x2="263" y2="55" stroke="#5470C6"/>
-<circle cx="250.5" cy="55" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="266" y="59" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="238" y1="65" x2="263" y2="65" stroke="#5470C6"/>
+<circle cx="250.5" cy="65" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="266" y="69" font-family="Arial" fill="#464646">
 Search Engine
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="37" y1="77" x2="595" y2="77"/><line stroke-width="1" x1="37" y1="125" x2="595" y2="125"/><line stroke-width="1" x1="37" y1="173" x2="595" y2="173"/><line stroke-width="1" x1="37" y1="221" x2="595" y2="221"/><line stroke-width="1" x1="37" y1="269" x2="595" y2="269"/><line stroke-width="1" x1="37" y1="317" x2="595" y2="317"/>
+<line stroke-width="1" x1="37" y1="87" x2="595" y2="87"/><line stroke-width="1" x1="37" y1="133.3" x2="595" y2="133.3"/><line stroke-width="1" x1="37" y1="179.7" x2="595" y2="179.7"/><line stroke-width="1" x1="37" y1="226" x2="595" y2="226"/><line stroke-width="1" x1="37" y1="272.3" x2="595" y2="272.3"/><line stroke-width="1" x1="37" y1="318.7" x2="595" y2="318.7"/>
 </g>
 <g>
 
-<text font-size="14" x="2" y="82" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="92" font-family="Arial" fill="#6E7079">
 1.8k
 </text>
-<text font-size="14" x="2" y="130" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="138.3" font-family="Arial" fill="#6E7079">
 1.5k
 </text>
-<text font-size="14" x="2" y="178" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="184.7" font-family="Arial" fill="#6E7079">
 1.2k
 </text>
-<text font-size="14" x="5" y="226" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="5" y="231" font-family="Arial" fill="#6E7079">
 900
 </text>
-<text font-size="14" x="5" y="274" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="5" y="277.3" font-family="Arial" fill="#6E7079">
 600
 </text>
-<text font-size="14" x="5" y="322" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="5" y="323.7" font-family="Arial" fill="#6E7079">
 300
 </text>
 <text font-size="14" x="21" y="370" font-family="Arial" fill="#6E7079">
@@ -74,15 +74,15 @@ Sat
 Sun
 </text>
 </g>
-<path d="M76.9,233.8 C96.8 229.3, 136.4 217.5, 156.6 215.9 C176.3 214.3, 216.4 220.9, 236.3 220.8 C256.2 220.8, 298.1 222.5, 316 215.6 C338 207, 373.8 167.3, 395.7 158.6 C413.6 151.5, 455.5 152.8, 475.4 152.2 C495.3 151.6, 535.2 153.4, 555.1 153.8M 555.1 153.8 L 555.1 365 L 76.9 365 L 76.9 233.8" fill="#5470C6" fill-opacity="0.4"/>
+<path d="M76.9,238.4 C96.8 234, 136.4 222.6, 156.6 221.1 C176.3 219.5, 216.4 225.9, 236.3 225.8 C256.2 225.8, 298 227.5, 316 220.7 C337.8 212.5, 373.9 174.1, 395.7 165.8 C413.7 158.9, 455.5 160.2, 475.4 159.6 C495.3 159, 535.2 160.7, 555.1 161.1M 555.1 161.1 L 555.1 365 L 76.9 365 L 76.9 238.4" fill="#5470C6" fill-opacity="0.4"/>
 <g>
-<path d="M76.9,233.8 C96.8 229.3, 136.4 217.5, 156.6 215.9 C176.3 214.3, 216.4 220.9, 236.3 220.8 C256.2 220.8, 298.1 222.5, 316 215.6 C338 207, 373.8 167.3, 395.7 158.6 C413.6 151.5, 455.5 152.8, 475.4 152.2 C495.3 151.6, 535.2 153.4, 555.1 153.8" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="76.9" cy="233.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="156.6" cy="215.9" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="236.3" cy="220.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="316" cy="215.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="395.7" cy="158.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="475.4" cy="152.2" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="555.1" cy="153.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<path d="M76.9,238.4 C96.8 234, 136.4 222.6, 156.6 221.1 C176.3 219.5, 216.4 225.9, 236.3 225.8 C256.2 225.8, 298 227.5, 316 220.7 C337.8 212.5, 373.9 174.1, 395.7 165.8 C413.7 158.9, 455.5 160.2, 475.4 159.6 C495.3 159, 535.2 160.7, 555.1 161.1" stroke-width="2" fill="none" stroke="#5470C6"/>
+<circle cx="76.9" cy="238.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="156.6" cy="221.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="236.3" cy="225.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="316" cy="220.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="395.7" cy="165.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="475.4" cy="159.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="555.1" cy="161.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 </svg>

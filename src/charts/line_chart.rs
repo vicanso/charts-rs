@@ -26,6 +26,7 @@ pub struct LineChart {
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
     pub title_align: Align,
+    pub title_height: f32,
 
     // sub title
     pub sub_title_text: String,
@@ -33,6 +34,7 @@ pub struct LineChart {
     pub sub_title_font_color: Color,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
+    pub sub_title_height: f32,
 
     // legend
     pub legend_font_size: f32,
@@ -235,7 +237,7 @@ mod tests {
         line_chart.title_text = "Stacked Area Chart".to_string();
         line_chart.sub_title_text = "Hello World".to_string();
         line_chart.legend_margin = Some(Box {
-            top: 40.0,
+            top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -280,7 +282,7 @@ mod tests {
         line_chart.title_text = "Stacked Area Chart".to_string();
         line_chart.sub_title_text = "Hello World".to_string();
         line_chart.legend_margin = Some(Box {
-            top: 40.0,
+            top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -313,7 +315,7 @@ mod tests {
         line_chart.title_text = "Stacked Area Chart".to_string();
         line_chart.sub_title_text = "Hello World".to_string();
         line_chart.legend_margin = Some(Box {
-            top: 40.0,
+            top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });
@@ -392,7 +394,7 @@ mod tests {
         line_chart.title_text = "Stacked Area Chart".to_string();
         line_chart.sub_title_text = "Hello World".to_string();
         line_chart.legend_margin = Some(Box {
-            top: 40.0,
+            top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });

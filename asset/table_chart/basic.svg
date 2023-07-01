@@ -1,0 +1,46 @@
+<svg width="600" height="210" viewBox="0 0 600 210" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="30" fill="#FFFFFF"/>
+<text font-size="18" x="260.5" y="0" dy="24.5" font-weight="bold" font-family="Arial" fill="#464646">
+NASDAQ
+</text>
+<rect x="0" y="30" width="600" height="60" fill="#EFEFF1"/>
+<text font-size="14" x="5" y="67" font-family="Arial" fill="#464646">
+Name
+</text>
+<text font-size="14" x="205" y="67" font-family="Arial" fill="#464646">
+Price
+</text>
+<text font-size="14" x="405" y="68" font-family="Arial" fill="#464646">
+Change
+</text>
+<rect x="0" y="90" width="600" height="40" fill="#FFFFFF"/>
+<text font-size="14" x="5" y="118" font-family="Arial" fill="#464646">
+Datadog Inc
+</text>
+<text font-size="14" x="205" y="117" font-family="Arial" fill="#464646">
+97.32
+</text>
+<text font-size="14" x="405" y="117" font-family="Arial" fill="#464646">
+-7.49%
+</text>
+<rect x="0" y="130" width="600" height="40" fill="#FFFFFF"/>
+<text font-size="14" x="5" y="158" font-family="Arial" fill="#464646">
+Hashicorp Inc
+</text>
+<text font-size="14" x="205" y="157" font-family="Arial" fill="#464646">
+28.66
+</text>
+<text font-size="14" x="405" y="157" font-family="Arial" fill="#464646">
+-9.25%
+</text>
+<rect x="0" y="170" width="600" height="40" fill="#FFFFFF"/>
+<text font-size="14" x="5" y="197" font-family="Arial" fill="#464646">
+Gitlab Inc
+</text>
+<text font-size="14" x="205" y="197" font-family="Arial" fill="#464646">
+51.63
+</text>
+<text font-size="14" x="405" y="197" font-family="Arial" fill="#464646">
++4.32%
+</text>
+</svg>

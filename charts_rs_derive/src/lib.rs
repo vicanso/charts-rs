@@ -23,11 +23,13 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 self.title_font_weight = t.title_font_weight;
                 self.title_margin = t.title_margin;
                 self.title_align = t.title_align;
+                self.title_height = t.title_height;
 
                 self.sub_title_font_color = t.sub_title_font_color;
                 self.sub_title_font_size = t.sub_title_font_size;
                 self.sub_title_margin = t.sub_title_margin;
                 self.sub_title_align = t.sub_title_align;
+                self.sub_title_height = t.sub_title_height;
 
                 self.legend_font_color = t.legend_font_color;
                 self.legend_font_size = t.legend_font_size;
@@ -134,17 +136,18 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             _ => 0.0,
                         }
                     }
+                    let title_margin_bottom = title_margin.bottom;
                     let b = c.child(title_margin).text(Text {
                         text: self.title_text.clone(),
                         font_family: Some(self.font_family.clone()),
                         font_size: Some(self.title_font_size),
                         font_weight: self.title_font_weight.clone(),
                         font_color: Some(self.title_font_color),
-                        y: Some(self.title_font_size),
+                        line_height: Some(self.title_height),
                         x: Some(x),
                         ..Default::default()
                     });
-                    title_height = b.outer_height();
+                    title_height = b.outer_height() + title_margin_bottom;
                 }
                 if !self.sub_title_text.is_empty() {
                     let mut sub_title_margin = self.sub_title_margin.clone().unwrap_or_default();
@@ -160,17 +163,18 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             _ => 0.0,
                         }
                     }
-                    sub_title_margin.top += self.title_font_size;
+                    let sub_title_margin_bottom = sub_title_margin.bottom;
+                    sub_title_margin.top += self.title_height;
                     let b = c.child(sub_title_margin).text(Text {
                         text: self.sub_title_text.clone(),
                         font_family: Some(self.font_family.clone()),
                         font_size: Some(self.sub_title_font_size),
                         font_color: Some(self.sub_title_font_color),
-                        y: Some(self.sub_title_font_size),
+                        line_height: Some(self.sub_title_height),
                         x: Some(x),
                         ..Default::default()
                     });
-                    title_height = b.outer_height();
+                    title_height = b.outer_height() + sub_title_margin_bottom;
                 }
                 title_height
             }

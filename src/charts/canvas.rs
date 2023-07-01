@@ -1,3 +1,5 @@
+use crate::measure_text_vertical_center;
+
 use super::component::{
     generate_svg, Axis, Circle, Component, Grid, Legend, Line, Pie, Polygon, Polyline, Rect,
     SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
@@ -140,7 +142,19 @@ impl Canvas {
                 b.right = b.left + result.width();
                 b.bottom = b.top + result.height();
             }
+            let line_height = c.line_height.unwrap_or_default();
+            // 设置了行高
+            if line_height > font_size {
+                if let Ok(value) =
+                    measure_text_vertical_center(&font_family, font_size, &c.text, line_height)
+                {
+                    let dy = c.dy.unwrap_or_default() + value;
+                    c.dy = Some(dy);
+                }
+                b.bottom = b.top + line_height;
+            }
         }
+
         self.append(Component::Text(c));
         b
     }
@@ -358,16 +372,15 @@ mod tests {
             text: "Hello World!".to_string(),
             font_family: Some(DEFAULT_FONT_FAMILY.to_string()),
             font_size: Some(14.0),
-            x: Some(20.0),
-            y: Some(50.0),
             font_color: Some((0, 0, 0).into()),
             font_weight: Some("bold".to_string()),
+            line_height: Some(30.0),
             ..Default::default()
         });
-        assert_eq!("(20,50,101,64)", b.to_string());
+        assert_eq!("(0,0,81,30)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-<text font-size="14" x="20" y="50" font-weight="bold" font-family="Arial" fill="#000000">
+<text font-size="14" x="0" y="0" dy="22" font-weight="bold" font-family="Arial" fill="#000000">
 Hello World!
 </text>
 </svg>"###,

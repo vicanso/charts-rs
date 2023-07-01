@@ -7,6 +7,9 @@ use once_cell::sync::{Lazy, OnceCell};
 pub static DEFAULT_WIDTH: f32 = 600.0;
 pub static DEFAULT_HEIGHT: f32 = 400.0;
 
+pub static DEFAULT_TITLE_HEIGHT: f32 = 30.0;
+pub static DEFAULT_SUB_TITLE_HEIGHT: f32 = 20.0;
+
 pub static DEFAULT_X_AXIS_HEIGHT: f32 = 30.0;
 pub static DEFAULT_X_AXIS_NAME_GAP: f32 = 5.0;
 
@@ -55,12 +58,14 @@ pub struct Theme {
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
     pub title_align: Align,
+    pub title_height: f32,
 
     // sub title
     pub sub_title_font_size: f32,
     pub sub_title_font_color: Color,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
+    pub sub_title_height: f32,
 
     // legend
     pub legend_font_size: f32,
@@ -91,6 +96,10 @@ pub struct Theme {
     pub series_label_font_size: f32,
     pub series_label_font_color: Color,
     pub series_colors: Vec<Color>,
+
+    // table
+    pub table_header_color: Color,
+    pub table_body_colors: Vec<Color>,
 }
 
 static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
@@ -109,11 +118,13 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
         title_font_weight: Some("bold".to_string()),
         title_margin: None,
         title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
 
         sub_title_font_color: font_color,
         sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
 
         legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
@@ -149,11 +160,15 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
             "#9a60b4".into(),
             "#ea7ccc".into(),
         ],
+
+        table_header_color: (239, 239, 241).into(),
+        table_body_colors: vec![(255, 255, 255).into()],
     }
 });
 
 static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
     let x_axis_color = (185, 184, 206).into();
+    let bg_color = (16, 12, 42).into();
 
     let font_color: Color = (238, 238, 238).into();
     Theme {
@@ -162,18 +177,20 @@ static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
         margin: (5.0).into(),
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
-        background_color: (16, 12, 42).into(),
+        background_color: bg_color,
 
         title_font_color: font_color,
         title_font_size: 18.0,
         title_font_weight: Some("bold".to_string()),
         title_margin: None,
         title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
 
         sub_title_font_color: font_color,
         sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
 
         legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
@@ -209,6 +226,9 @@ static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
             "#9a60b4".into(),
             "#ea7ccc".into(),
         ],
+
+        table_header_color: (7, 3, 29).into(),
+        table_body_colors: vec![bg_color],
     }
 });
 
@@ -229,11 +249,13 @@ static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
         title_font_weight: Some("bold".to_string()),
         title_margin: None,
         title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
 
         sub_title_font_color: font_color,
         sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
 
         legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
@@ -269,6 +291,9 @@ static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
             "#945fb9".into(),
             "#ff9845".into(),
         ],
+
+        table_header_color: (250, 250, 250).into(),
+        table_body_colors: vec![(255, 255, 255).into()],
     }
 });
 
@@ -289,11 +314,13 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
         title_font_weight: Some("bold".to_string()),
         title_margin: None,
         title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
 
         sub_title_font_color: font_color,
         sub_title_font_size: DEFAULT_FONT_SIZE,
         sub_title_margin: None,
         sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
 
         legend_font_size: DEFAULT_FONT_SIZE,
         legend_font_color: font_color,
@@ -329,6 +356,9 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
             "#705DA0".into(),
             "#508642".into(),
         ],
+
+        table_header_color: (34, 37, 43).into(),
+        table_body_colors: vec![(24, 27, 31).into()],
     }
 });
 

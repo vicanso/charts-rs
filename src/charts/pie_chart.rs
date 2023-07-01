@@ -26,6 +26,7 @@ pub struct PieChart {
     pub title_font_weight: Option<String>,
     pub title_margin: Option<Box>,
     pub title_align: Align,
+    pub title_height: f32,
 
     // sub title
     pub sub_title_text: String,
@@ -33,6 +34,7 @@ pub struct PieChart {
     pub sub_title_font_color: Color,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
+    pub sub_title_height: f32,
 
     // legend
     pub legend_font_size: f32,

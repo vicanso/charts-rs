@@ -1,57 +1,57 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="259" y="23" font-weight="bold" font-family="Arial" fill="#464646">
+<text font-size="18" x="259" y="5" dy="24" font-weight="bold" font-family="Arial" fill="#464646">
 Bar Chart
 </text>
 <g>
-<line stroke-width="2" x1="112" y1="45" x2="137" y2="45" stroke="#5B8FF9"/>
-<circle cx="124.5" cy="45" r="5.5" stroke-width="2" stroke="#5B8FF9" fill="#FFFFFF"/>
-<text font-size="14" x="140" y="49" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="112" y1="50" x2="137" y2="50" stroke="#5B8FF9"/>
+<circle cx="124.5" cy="50" r="5.5" stroke-width="2" stroke="#5B8FF9" fill="#FFFFFF"/>
+<text font-size="14" x="140" y="54" font-family="Arial" fill="#464646">
 Email
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="182" y1="45" x2="207" y2="45" stroke="#5AD8A6"/>
-<circle cx="194.5" cy="45" r="5.5" stroke-width="2" stroke="#5AD8A6" fill="#FFFFFF"/>
-<text font-size="14" x="210" y="49" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="182" y1="50" x2="207" y2="50" stroke="#5AD8A6"/>
+<circle cx="194.5" cy="50" r="5.5" stroke-width="2" stroke="#5AD8A6" fill="#FFFFFF"/>
+<text font-size="14" x="210" y="54" font-family="Arial" fill="#464646">
 Union Ads
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="283" y1="45" x2="308" y2="45" stroke="#5D7092"/>
-<circle cx="295.5" cy="45" r="5.5" stroke-width="2" stroke="#5D7092" fill="#FFFFFF"/>
-<text font-size="14" x="311" y="49" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="283" y1="50" x2="308" y2="50" stroke="#5D7092"/>
+<circle cx="295.5" cy="50" r="5.5" stroke-width="2" stroke="#5D7092" fill="#FFFFFF"/>
+<text font-size="14" x="311" y="54" font-family="Arial" fill="#464646">
 Direct
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="355" y1="45" x2="380" y2="45" stroke="#F6BD16"/>
-<circle cx="367.5" cy="45" r="5.5" stroke-width="2" stroke="#F6BD16" fill="#FFFFFF"/>
-<text font-size="14" x="383" y="49" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="355" y1="50" x2="380" y2="50" stroke="#F6BD16"/>
+<circle cx="367.5" cy="50" r="5.5" stroke-width="2" stroke="#F6BD16" fill="#FFFFFF"/>
+<text font-size="14" x="383" y="54" font-family="Arial" fill="#464646">
 Search Engine
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="60" y1="67" x2="595" y2="67"/><line stroke-width="1" x1="60" y1="116.7" x2="595" y2="116.7"/><line stroke-width="1" x1="60" y1="166.3" x2="595" y2="166.3"/><line stroke-width="1" x1="60" y1="216" x2="595" y2="216"/><line stroke-width="1" x1="60" y1="265.7" x2="595" y2="265.7"/><line stroke-width="1" x1="60" y1="315.3" x2="595" y2="315.3"/>
+<line stroke-width="1" x1="60" y1="72" x2="595" y2="72"/><line stroke-width="1" x1="60" y1="120.8" x2="595" y2="120.8"/><line stroke-width="1" x1="60" y1="169.7" x2="595" y2="169.7"/><line stroke-width="1" x1="60" y1="218.5" x2="595" y2="218.5"/><line stroke-width="1" x1="60" y1="267.3" x2="595" y2="267.3"/><line stroke-width="1" x1="60" y1="316.2" x2="595" y2="316.2"/>
 </g>
 <g>
 
-<text font-size="14" x="6" y="72" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="6" y="77" font-family="Arial" fill="#6E7079">
 1.8k ml
 </text>
-<text font-size="14" x="6" y="121.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="6" y="125.8" font-family="Arial" fill="#6E7079">
 1.5k ml
 </text>
-<text font-size="14" x="6" y="171.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="6" y="174.7" font-family="Arial" fill="#6E7079">
 1.2k ml
 </text>
-<text font-size="14" x="9" y="221" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="9" y="223.5" font-family="Arial" fill="#6E7079">
 900 ml
 </text>
-<text font-size="14" x="9" y="270.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="9" y="272.3" font-family="Arial" fill="#6E7079">
 600 ml
 </text>
-<text font-size="14" x="9" y="320.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="9" y="321.2" font-family="Arial" fill="#6E7079">
 300 ml
 </text>
 <text font-size="14" x="25" y="370" font-family="Arial" fill="#6E7079">
@@ -92,53 +92,53 @@ Sat
 Sun
 </text>
 </g>
-<rect x="65" y="345.1" width="14.4" height="19.9" fill="#5B8FF9"/>
-<rect x="141.4" y="343.1" width="14.4" height="21.9" fill="#5B8FF9"/>
-<rect x="217.9" y="348.3" width="14.4" height="16.7" fill="#5B8FF9"/>
-<rect x="294.3" y="342.8" width="14.4" height="22.2" fill="#5B8FF9"/>
-<rect x="370.7" y="350.1" width="14.4" height="14.9" fill="#5B8FF9"/>
-<rect x="447.1" y="326.9" width="14.4" height="38.1" fill="#5B8FF9"/>
-<rect x="523.6" y="330.2" width="14.4" height="34.8" fill="#5B8FF9"/>
-<rect x="82.4" y="328.6" width="14.4" height="36.4" fill="#5AD8A6"/>
-<rect x="158.8" y="334.9" width="14.4" height="30.1" fill="#5AD8A6"/>
-<rect x="235.2" y="333.4" width="14.4" height="31.6" fill="#5AD8A6"/>
-<rect x="311.6" y="326.3" width="14.4" height="38.7" fill="#5AD8A6"/>
-<rect x="388.1" y="317" width="14.4" height="48" fill="#5AD8A6"/>
-<rect x="464.5" y="310.4" width="14.4" height="54.6" fill="#5AD8A6"/>
-<rect x="540.9" y="313.7" width="14.4" height="51.3" fill="#5AD8A6"/>
-<rect x="99.7" y="312" width="14.4" height="53" fill="#5D7092"/>
-<rect x="176.1" y="310" width="14.4" height="55" fill="#5D7092"/>
-<rect x="252.6" y="315.2" width="14.4" height="49.8" fill="#5D7092"/>
-<rect x="329" y="309.7" width="14.4" height="55.3" fill="#5D7092"/>
-<rect x="405.4" y="300.4" width="14.4" height="64.6" fill="#5D7092"/>
-<rect x="481.9" y="310.4" width="14.4" height="54.6" fill="#5D7092"/>
-<rect x="558.3" y="312" width="14.4" height="53" fill="#5D7092"/>
-<rect x="117.1" y="229.2" width="14.4" height="135.8" fill="#F6BD16"/>
-<rect x="193.5" y="210.7" width="14.4" height="154.3" fill="#F6BD16"/>
-<rect x="269.9" y="215.8" width="14.4" height="149.2" fill="#F6BD16"/>
-<rect x="346.4" y="210.4" width="14.4" height="154.6" fill="#F6BD16"/>
-<rect x="422.8" y="151.4" width="14.4" height="213.6" fill="#F6BD16"/>
-<rect x="499.2" y="144.8" width="14.4" height="220.2" fill="#F6BD16"/>
-<rect x="575.6" y="146.5" width="14.4" height="218.5" fill="#F6BD16"/>
-<text font-size="14" x="72.2" y="345.1" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+<rect x="65" y="345.5" width="14.4" height="19.5" fill="#5B8FF9"/>
+<rect x="141.4" y="343.5" width="14.4" height="21.5" fill="#5B8FF9"/>
+<rect x="217.9" y="348.6" width="14.4" height="16.4" fill="#5B8FF9"/>
+<rect x="294.3" y="343.2" width="14.4" height="21.8" fill="#5B8FF9"/>
+<rect x="370.7" y="350.4" width="14.4" height="14.6" fill="#5B8FF9"/>
+<rect x="447.1" y="327.6" width="14.4" height="37.4" fill="#5B8FF9"/>
+<rect x="523.6" y="330.8" width="14.4" height="34.2" fill="#5B8FF9"/>
+<rect x="82.4" y="329.2" width="14.4" height="35.8" fill="#5AD8A6"/>
+<rect x="158.8" y="335.4" width="14.4" height="29.6" fill="#5AD8A6"/>
+<rect x="235.2" y="333.9" width="14.4" height="31.1" fill="#5AD8A6"/>
+<rect x="311.6" y="326.9" width="14.4" height="38.1" fill="#5AD8A6"/>
+<rect x="388.1" y="317.8" width="14.4" height="47.2" fill="#5AD8A6"/>
+<rect x="464.5" y="311.3" width="14.4" height="53.7" fill="#5AD8A6"/>
+<rect x="540.9" y="314.5" width="14.4" height="50.5" fill="#5AD8A6"/>
+<rect x="99.7" y="312.9" width="14.4" height="52.1" fill="#5D7092"/>
+<rect x="176.1" y="311" width="14.4" height="54" fill="#5D7092"/>
+<rect x="252.6" y="316" width="14.4" height="49" fill="#5D7092"/>
+<rect x="329" y="310.6" width="14.4" height="54.4" fill="#5D7092"/>
+<rect x="405.4" y="301.5" width="14.4" height="63.5" fill="#5D7092"/>
+<rect x="481.9" y="311.3" width="14.4" height="53.7" fill="#5D7092"/>
+<rect x="558.3" y="312.9" width="14.4" height="52.1" fill="#5D7092"/>
+<rect x="117.1" y="231.5" width="14.4" height="133.5" fill="#F6BD16"/>
+<rect x="193.5" y="213.3" width="14.4" height="151.7" fill="#F6BD16"/>
+<rect x="269.9" y="218.3" width="14.4" height="146.7" fill="#F6BD16"/>
+<rect x="346.4" y="213" width="14.4" height="152" fill="#F6BD16"/>
+<rect x="422.8" y="155" width="14.4" height="210" fill="#F6BD16"/>
+<rect x="499.2" y="148.5" width="14.4" height="216.5" fill="#F6BD16"/>
+<rect x="575.6" y="150.1" width="14.4" height="214.9" fill="#F6BD16"/>
+<text font-size="14" x="72.2" y="345.5" dx="-12" dy="-8" font-family="Arial" fill="#464646">
 120
 </text>
-<text font-size="14" x="148.6" y="343.1" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+<text font-size="14" x="148.6" y="343.5" dx="-12" dy="-8" font-family="Arial" fill="#464646">
 132
 </text>
-<text font-size="14" x="225" y="348.3" dx="-11" dy="-8" font-family="Arial" fill="#464646">
+<text font-size="14" x="225" y="348.6" dx="-11" dy="-8" font-family="Arial" fill="#464646">
 101
 </text>
-<text font-size="14" x="301.5" y="342.8" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+<text font-size="14" x="301.5" y="343.2" dx="-12" dy="-8" font-family="Arial" fill="#464646">
 134
 </text>
-<text font-size="14" x="377.9" y="350.1" dx="-8" dy="-8" font-family="Arial" fill="#464646">
+<text font-size="14" x="377.9" y="350.4" dx="-8" dy="-8" font-family="Arial" fill="#464646">
 90
 </text>
-<text font-size="14" x="454.3" y="326.9" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+<text font-size="14" x="454.3" y="327.6" dx="-12" dy="-8" font-family="Arial" fill="#464646">
 230
 </text>
-<text font-size="14" x="530.8" y="330.2" dx="-12" dy="-8" font-family="Arial" fill="#464646">
+<text font-size="14" x="530.8" y="330.8" dx="-12" dy="-8" font-family="Arial" fill="#464646">
 210
 </text>
 </svg>

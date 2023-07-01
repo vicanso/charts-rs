@@ -1,47 +1,47 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="259" y="23" font-weight="bold" font-family="Arial" fill="#464646">
+<text font-size="18" x="259" y="5" dy="24" font-weight="bold" font-family="Arial" fill="#464646">
 Bar Chart
 </text>
 <g>
-<rect x="129.5" y="40" width="25" height="10" stroke="#5470C6" fill="#5470C6"/>
-<text font-size="14" x="157.5" y="49" font-family="Arial" fill="#464646">
+<rect x="129.5" y="45" width="25" height="10" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="157.5" y="54" font-family="Arial" fill="#464646">
 Evaporation
 </text>
 </g>
 <g>
-<rect x="239.5" y="40" width="25" height="10" stroke="#91CC75" fill="#91CC75"/>
-<text font-size="14" x="267.5" y="49" font-family="Arial" fill="#464646">
+<rect x="239.5" y="45" width="25" height="10" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="267.5" y="54" font-family="Arial" fill="#464646">
 Precipitation
 </text>
 </g>
 <g>
-<rect x="353.5" y="40" width="25" height="10" stroke="#FAC858" fill="#FAC858"/>
-<text font-size="14" x="381.5" y="49" font-family="Arial" fill="#464646">
+<rect x="353.5" y="45" width="25" height="10" stroke="#FAC858" fill="#FAC858"/>
+<text font-size="14" x="381.5" y="54" font-family="Arial" fill="#464646">
 Temperature
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="60" y1="67" x2="540" y2="67"/><line stroke-width="1" x1="60" y1="116.7" x2="540" y2="116.7"/><line stroke-width="1" x1="60" y1="166.3" x2="540" y2="166.3"/><line stroke-width="1" x1="60" y1="216" x2="540" y2="216"/><line stroke-width="1" x1="60" y1="265.7" x2="540" y2="265.7"/><line stroke-width="1" x1="60" y1="315.3" x2="540" y2="315.3"/>
+<line stroke-width="1" x1="60" y1="72" x2="540" y2="72"/><line stroke-width="1" x1="60" y1="120.8" x2="540" y2="120.8"/><line stroke-width="1" x1="60" y1="169.7" x2="540" y2="169.7"/><line stroke-width="1" x1="60" y1="218.5" x2="540" y2="218.5"/><line stroke-width="1" x1="60" y1="267.3" x2="540" y2="267.3"/><line stroke-width="1" x1="60" y1="316.2" x2="540" y2="316.2"/>
 </g>
 <g>
 
-<text font-size="14" x="9" y="72" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="9" y="77" font-family="Arial" fill="#6E7079">
 240 ml
 </text>
-<text font-size="14" x="9" y="121.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="9" y="125.8" font-family="Arial" fill="#6E7079">
 200 ml
 </text>
-<text font-size="14" x="9" y="171.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="9" y="174.7" font-family="Arial" fill="#6E7079">
 160 ml
 </text>
-<text font-size="14" x="9" y="221" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="9" y="223.5" font-family="Arial" fill="#6E7079">
 120 ml
 </text>
-<text font-size="14" x="17" y="270.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="17" y="272.3" font-family="Arial" fill="#6E7079">
 80 ml
 </text>
-<text font-size="14" x="17" y="320.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="17" y="321.2" font-family="Arial" fill="#6E7079">
 40 ml
 </text>
 <text font-size="14" x="25" y="370" font-family="Arial" fill="#6E7079">
@@ -50,22 +50,22 @@ Temperature
 </g>
 <g>
 
-<text font-size="14" x="548" y="74" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="79" font-family="Arial" fill="#6E7079">
 24 °C
 </text>
-<text font-size="14" x="548" y="123.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="127.8" font-family="Arial" fill="#6E7079">
 20 °C
 </text>
-<text font-size="14" x="548" y="173.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="176.7" font-family="Arial" fill="#6E7079">
 16 °C
 </text>
-<text font-size="14" x="548" y="223" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="225.5" font-family="Arial" fill="#6E7079">
 12 °C
 </text>
-<text font-size="14" x="548" y="272.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="274.3" font-family="Arial" fill="#6E7079">
 8 °C
 </text>
-<text font-size="14" x="548" y="322.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="323.2" font-family="Arial" fill="#6E7079">
 4 °C
 </text>
 <text font-size="14" x="548" y="372" font-family="Arial" fill="#6E7079">
@@ -106,43 +106,43 @@ Sat
 Sun
 </text>
 </g>
-<rect x="65" y="362.5" width="13.5" height="2.5" fill="#5470C6"/>
-<rect x="105" y="358.9" width="13.5" height="6.1" fill="#5470C6"/>
-<rect x="145" y="356.3" width="13.5" height="8.7" fill="#5470C6"/>
-<rect x="185" y="336.2" width="13.5" height="28.8" fill="#5470C6"/>
-<rect x="225" y="333.2" width="13.5" height="31.8" fill="#5470C6"/>
-<rect x="265" y="269.8" width="13.5" height="95.2" fill="#5470C6"/>
-<rect x="305" y="196.6" width="13.5" height="168.4" fill="#5470C6"/>
-<rect x="345" y="163.6" width="13.5" height="201.4" fill="#5470C6"/>
-<rect x="385" y="324.5" width="13.5" height="40.5" fill="#5470C6"/>
-<rect x="425" y="340.2" width="13.5" height="24.8" fill="#5470C6"/>
-<rect x="465" y="357.1" width="13.5" height="7.9" fill="#5470C6"/>
-<rect x="505" y="360.9" width="13.5" height="4.1" fill="#5470C6"/>
+<rect x="65" y="362.6" width="13.5" height="2.4" fill="#5470C6"/>
+<rect x="105" y="359" width="13.5" height="6" fill="#5470C6"/>
+<rect x="145" y="356.5" width="13.5" height="8.5" fill="#5470C6"/>
+<rect x="185" y="336.7" width="13.5" height="28.3" fill="#5470C6"/>
+<rect x="225" y="333.7" width="13.5" height="31.3" fill="#5470C6"/>
+<rect x="265" y="271.4" width="13.5" height="93.6" fill="#5470C6"/>
+<rect x="305" y="199.5" width="13.5" height="165.5" fill="#5470C6"/>
+<rect x="345" y="167" width="13.5" height="198" fill="#5470C6"/>
+<rect x="385" y="325.2" width="13.5" height="39.8" fill="#5470C6"/>
+<rect x="425" y="340.6" width="13.5" height="24.4" fill="#5470C6"/>
+<rect x="465" y="357.2" width="13.5" height="7.8" fill="#5470C6"/>
+<rect x="505" y="361" width="13.5" height="4" fill="#5470C6"/>
 <rect x="81.5" y="361.8" width="13.5" height="3.2" fill="#91CC75"/>
-<rect x="121.5" y="357.7" width="13.5" height="7.3" fill="#91CC75"/>
-<rect x="161.5" y="353.8" width="13.5" height="11.2" fill="#91CC75"/>
-<rect x="201.5" y="332.2" width="13.5" height="32.8" fill="#91CC75"/>
-<rect x="241.5" y="329.4" width="13.5" height="35.6" fill="#91CC75"/>
-<rect x="281.5" y="277.2" width="13.5" height="87.8" fill="#91CC75"/>
-<rect x="321.5" y="147" width="13.5" height="218" fill="#91CC75"/>
-<rect x="361.5" y="138.8" width="13.5" height="226.2" fill="#91CC75"/>
-<rect x="401.5" y="304.5" width="13.5" height="60.5" fill="#91CC75"/>
-<rect x="441.5" y="341.7" width="13.5" height="23.3" fill="#91CC75"/>
-<rect x="481.5" y="357.5" width="13.5" height="7.5" fill="#91CC75"/>
-<rect x="521.5" y="362.1" width="13.5" height="2.9" fill="#91CC75"/>
+<rect x="121.5" y="357.8" width="13.5" height="7.2" fill="#91CC75"/>
+<rect x="161.5" y="354" width="13.5" height="11" fill="#91CC75"/>
+<rect x="201.5" y="332.8" width="13.5" height="32.2" fill="#91CC75"/>
+<rect x="241.5" y="330" width="13.5" height="35" fill="#91CC75"/>
+<rect x="281.5" y="278.7" width="13.5" height="86.3" fill="#91CC75"/>
+<rect x="321.5" y="150.6" width="13.5" height="214.4" fill="#91CC75"/>
+<rect x="361.5" y="142.6" width="13.5" height="222.4" fill="#91CC75"/>
+<rect x="401.5" y="305.5" width="13.5" height="59.5" fill="#91CC75"/>
+<rect x="441.5" y="342" width="13.5" height="23" fill="#91CC75"/>
+<rect x="481.5" y="357.7" width="13.5" height="7.3" fill="#91CC75"/>
+<rect x="521.5" y="362.2" width="13.5" height="2.8" fill="#91CC75"/>
 <g>
-<path d="M 80 340.2 L 120 337.7 L 160 324 L 200 309.1 L 240 286.8 L 280 238.4 L 320 112.9 L 360 74.5 L 400 79.4 L 440 160.1 L 480 216 L 520 288" stroke-width="2" fill="none" stroke="#FAC858"/>
-<circle cx="80" cy="340.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="120" cy="337.7" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="160" cy="324" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="200" cy="309.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="240" cy="286.8" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="280" cy="238.4" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="320" cy="112.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="360" cy="74.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="400" cy="79.4" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="440" cy="160.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="480" cy="216" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="520" cy="288" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<path d="M 80 340.6 L 120 338.1 L 160 324.7 L 200 310.1 L 240 288.1 L 280 240.5 L 320 117.2 L 360 79.3 L 400 84.2 L 440 163.6 L 480 218.5 L 520 289.3" stroke-width="2" fill="none" stroke="#FAC858"/>
+<circle cx="80" cy="340.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="120" cy="338.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="160" cy="324.7" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="200" cy="310.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="240" cy="288.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="280" cy="240.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="320" cy="117.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="360" cy="79.3" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="400" cy="84.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="440" cy="163.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="480" cy="218.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="520" cy="289.3" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
 </g>
 </svg>
