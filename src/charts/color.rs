@@ -1,6 +1,7 @@
+use serde::{Deserialize, Serialize};
 use substring::Substring;
 
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug, Default)]
 pub struct Color {
     pub r: u8,
     pub g: u8,

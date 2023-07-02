@@ -14,6 +14,14 @@ pub enum Error {
     ToSVG { source: super::component::Error },
     #[snafu(display("Params is invalid: {message}"))]
     Params { message: String },
+    #[snafu(display("Json is invalid: {source}"))]
+    Json { source: serde_json::Error },
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(value: serde_json::Error) -> Self {
+        Error::Json { source: value }
+    }
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

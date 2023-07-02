@@ -1,5 +1,9 @@
 use super::Color;
-use crate::Point;
+use crate::{
+    get_bool_from_value, get_f32_slice_from_value, get_string_from_value, get_usize_from_value,
+    Point,
+};
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub enum Position {
@@ -10,7 +14,7 @@ pub enum Position {
     Bottom,
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub enum Align {
     Left,
     #[default]
@@ -18,18 +22,31 @@ pub enum Align {
     Right,
 }
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum Symbol {
     Circle(f32, Option<Color>),
 }
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum SeriesCategory {
     Line,
     Bar,
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Option<SeriesCategory> {
+    if let Some(value) = value.get(key) {
+        if let Some(value) = value.as_str() {
+            return match value.to_lowercase().as_str() {
+                "line" => Some(SeriesCategory::Line),
+                "bar" => Some(SeriesCategory::Bar),
+                _ => None,
+            };
+        }
+    }
+    None
+}
+
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct Series {
     pub name: String,
     pub data: Vec<f32>,
@@ -40,6 +57,40 @@ pub struct Series {
     // 是否展示label
     pub label_show: bool,
     pub category: Option<SeriesCategory>,
+}
+
+fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
+    let name = get_string_from_value(value, "name").unwrap_or_default();
+    if name.is_empty() {
+        return None;
+    }
+    let data = get_f32_slice_from_value(value, "data").unwrap_or_default();
+    if data.is_empty() {
+        return None;
+    }
+    Some(Series {
+        name,
+        data,
+        index: get_usize_from_value(value, "index"),
+        y_axis_index: get_usize_from_value(value, "y_axis_index").unwrap_or_default(),
+        label_show: get_bool_from_value(value, "label_show").unwrap_or_default(),
+        category: get_series_category_from_value(value, "category"),
+    })
+}
+
+pub(crate) fn get_series_list_from_value(value: &serde_json::Value) -> Option<Vec<Series>> {
+    if let Some(data) = value.get("series_list") {
+        if let Some(arr) = data.as_array() {
+            let mut series_list = vec![];
+            for item in arr.iter() {
+                if let Some(series) = get_series_from_value(item) {
+                    series_list.push(series);
+                }
+            }
+            return Some(series_list);
+        }
+    }
+    None
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
@@ -59,7 +110,7 @@ impl Series {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct YAxisConfig {
     pub axis_font_size: f32,
     pub axis_font_color: Color,

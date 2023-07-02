@@ -8,8 +8,9 @@ use super::Canvas;
 use super::Chart;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, Chart)]
 pub struct BarChart {
     pub width: f32,
     pub height: f32,
@@ -72,6 +73,22 @@ pub struct BarChart {
 }
 
 impl BarChart {
+    pub fn from_json(data: &str) -> canvas::Result<()> {
+        let data: serde_json::Value = serde_json::from_str(data)?;
+        if let Some(width) = get_width_from_value(&data) {
+            println!("{width}");
+        }
+        if let Some(height) = get_height_from_value(&data) {
+            println!("{height}");
+        }
+        if let Some(margin) = get_margin_from_value(&data) {
+            println!("{:?}", margin);
+        }
+        if let Some(series_list) = get_series_list_from_value(&data) {
+            println!("{:?}", series_list);
+        }
+        Ok(())
+    }
     pub fn new_with_theme(
         mut series_list: Vec<Series>,
         x_axis_data: Vec<String>,

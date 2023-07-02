@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use substring::Substring;
 
@@ -18,7 +19,7 @@ impl fmt::Display for Point {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct Box {
     pub left: f32,
     pub top: f32,
@@ -91,6 +92,17 @@ impl From<(f32, f32, f32, f32)> for Box {
             bottom: val.3,
         }
     }
+}
+pub(crate) fn get_margin_from_value(value: &serde_json::Value) -> Option<Box> {
+    if let Some(data) = value.get("margin") {
+        return Some(Box {
+            left: get_f32_from_value(data, "left").unwrap_or_default(),
+            top: get_f32_from_value(data, "top").unwrap_or_default(),
+            right: get_f32_from_value(data, "right").unwrap_or_default(),
+            bottom: get_f32_from_value(data, "bottom").unwrap_or_default(),
+        });
+    }
+    None
 }
 
 pub fn format_float(value: f32) -> String {
@@ -244,6 +256,68 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
         }
     }
     b
+}
+
+pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Option<bool> {
+    if let Some(value) = value.get(key) {
+        if let Some(b) = value.as_bool() {
+            return Some(b);
+        }
+    }
+    None
+}
+
+pub(crate) fn get_usize_from_value(value: &serde_json::Value, key: &str) -> Option<usize> {
+    if let Some(value) = value.get(key) {
+        if let Some(u) = value.as_u64() {
+            return Some(u as usize);
+        }
+    }
+    None
+}
+
+pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option<f32> {
+    if let Some(width) = value.get(key) {
+        if let Some(v) = width.as_f64() {
+            return Some(v as f32);
+        }
+    }
+    None
+}
+pub(crate) fn get_f32_slice_from_value(value: &serde_json::Value, key: &str) -> Option<Vec<f32>> {
+    if let Some(arr) = value.get(key) {
+        if let Some(values) = arr.as_array() {
+            return Some(
+                values
+                    .iter()
+                    .map(|item| {
+                        if let Some(v) = item.as_f64() {
+                            v as f32
+                        } else {
+                            0.0
+                        }
+                    })
+                    .collect(),
+            );
+        }
+    }
+    None
+}
+
+pub(crate) fn get_string_from_value(value: &serde_json::Value, key: &str) -> Option<String> {
+    if let Some(s) = value.get(key) {
+        if let Some(v) = s.as_str() {
+            return Some(v.to_string());
+        }
+    }
+    None
+}
+
+pub(crate) fn get_width_from_value(value: &serde_json::Value) -> Option<f32> {
+    get_f32_from_value(value, "width")
+}
+pub(crate) fn get_height_from_value(value: &serde_json::Value) -> Option<f32> {
+    get_f32_from_value(value, "height")
 }
 
 #[cfg(test)]

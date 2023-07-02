@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use snafu::{ResultExt, Snafu};
 use std::fmt;
 use std::vec;
@@ -1175,7 +1176,7 @@ pub(crate) fn measure_legends(
     (width + margin, widths)
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub enum LegendCategory {
     #[default]
     Normal,
