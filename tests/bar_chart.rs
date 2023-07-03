@@ -6,18 +6,18 @@ use serde_json::json;
 fn bar_chart() {
     let data = BarChart::from_json(
         r###"{
-        "width": 800,
-        "height": 600,
-        "margin": {
-            "left": 10.1
-        },
-        "series_list": [
-            {
-                "name": "Email",
-                "data": [120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0]
-            }
-        ]
-    }"###,
+            "width": 800,
+            "height": 600,
+            "margin": {
+                "left": 10.1
+            },
+            "series_list": [
+                {
+                    "name": "Email",
+                    "data": [120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0]
+                }
+            ]
+        }"###,
     )
     .unwrap();
 

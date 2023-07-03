@@ -7,6 +7,7 @@ mod encoder;
 mod font;
 mod horizontal_bar_chart;
 mod line_chart;
+mod params;
 mod path;
 mod pie_chart;
 mod radar_chart;

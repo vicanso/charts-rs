@@ -2,6 +2,7 @@ use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
+use super::params::*;
 use super::theme::{get_default_theme, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
 use super::util::*;
 use super::Canvas;
@@ -75,18 +76,83 @@ pub struct BarChart {
 impl BarChart {
     pub fn from_json(data: &str) -> canvas::Result<()> {
         let data: serde_json::Value = serde_json::from_str(data)?;
-        if let Some(width) = get_width_from_value(&data) {
-            println!("{width}");
+        let mut b = BarChart {
+            ..Default::default()
+        };
+        b.fill_option(data)?;
+        Ok(())
+    }
+    fn fill_option(&mut self, data: serde_json::Value) -> canvas::Result<()> {
+        let series_list = get_series_list_from_value(&data).unwrap_or_default();
+        if series_list.is_empty() {
+            return Err(canvas::Error::Params {
+                message: "series list can not be empty".to_string(),
+            });
         }
-        if let Some(height) = get_height_from_value(&data) {
-            println!("{height}");
+        let x_axis_data = get_string_slice_from_value(&data, "x_axis_data").unwrap_or_default();
+        if x_axis_data.is_empty() {
+            return Err(canvas::Error::Params {
+                message: "x axis list can not be empty".to_string(),
+            });
         }
-        if let Some(margin) = get_margin_from_value(&data) {
-            println!("{:?}", margin);
+        let theme = get_string_from_value(&data, "theme").unwrap_or_default();
+        self.fill_theme(get_theme(&theme));
+        self.series_list = series_list;
+        self.x_axis_data = x_axis_data;
+
+        if let Some(width) = get_f32_from_value(&data, "width") {
+            self.width = width;
         }
-        if let Some(series_list) = get_series_list_from_value(&data) {
-            println!("{:?}", series_list);
+        if let Some(height) = get_f32_from_value(&data, "height") {
+            self.height = height;
         }
+        if let Some(margin) = get_margin_from_value(&data, "margin") {
+            self.margin = margin;
+        }
+        if let Some(font_family) = get_string_from_value(&data, "font_family") {
+            self.font_family = font_family;
+        }
+        if let Some(title_text) = get_string_from_value(&data, "title_text") {
+            self.title_text = title_text;
+        }
+        if let Some(title_font_size) = get_f32_from_value(&data, "title_font_size") {
+            self.title_font_size = title_font_size;
+        }
+        if let Some(title_font_color) = get_color_from_value(&data, "title_font_color") {
+            self.title_font_color = title_font_color;
+        }
+        if let Some(title_font_weight) = get_string_from_value(&data, "title_font_weight") {
+            self.title_font_weight = Some(title_font_weight);
+        }
+        if let Some(title_margin) = get_margin_from_value(&data, "title_margin") {
+            self.title_margin = Some(title_margin);
+        }
+        if let Some(title_align) = get_align_from_value(&data, "title_align") {
+            self.title_align = title_align;
+        }
+        if let Some(title_height) = get_f32_from_value(&data, "title_height") {
+            self.title_height = title_height;
+        }
+
+        if let Some(sub_title_text) = get_string_from_value(&data, "sub_title_text") {
+            self.sub_title_text = sub_title_text;
+        }
+        if let Some(sub_title_font_size) = get_f32_from_value(&data, "sub_title_font_size") {
+            self.sub_title_font_size = sub_title_font_size;
+        }
+        if let Some(sub_title_font_color) = get_color_from_value(&data, "sub_title_font_color") {
+            self.sub_title_font_color = sub_title_font_color;
+        }
+        if let Some(sub_title_margin) = get_margin_from_value(&data, "sub_title_margin") {
+            self.sub_title_margin = Some(sub_title_margin);
+        }
+        if let Some(sub_title_align) = get_align_from_value(&data, "sub_title_align") {
+            self.sub_title_align = sub_title_align;
+        }
+        if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
+            self.sub_title_height = sub_title_height;
+        }
+
         Ok(())
     }
     pub fn new_with_theme(
