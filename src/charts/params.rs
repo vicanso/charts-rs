@@ -1,4 +1,4 @@
-use super::{Align, Box, Color, Series, SeriesCategory};
+use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, YAxisConfig};
 
 pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Option<bool> {
     if let Some(value) = value.get(key) {
@@ -59,6 +59,21 @@ pub(crate) fn get_align_from_value(value: &serde_json::Value, key: &str) -> Opti
     }
     None
 }
+pub(crate) fn get_legend_category_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<LegendCategory> {
+    if let Some(value) = value.get(key) {
+        if let Some(value) = value.as_str() {
+            let value = match value.to_lowercase().as_str() {
+                "rect" => LegendCategory::Rect,
+                _ => LegendCategory::Normal,
+            };
+            return Some(value);
+        }
+    }
+    None
+}
 
 pub(crate) fn get_margin_from_value(value: &serde_json::Value, key: &str) -> Option<Box> {
     if let Some(data) = value.get(key) {
@@ -92,6 +107,72 @@ pub(crate) fn get_string_slice_from_value(
     }
     None
 }
+pub(crate) fn get_y_axis_configs_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<Vec<YAxisConfig>> {
+    if let Some(arr) = value.get(key) {
+        if let Some(values) = arr.as_array() {
+            return Some(
+                values
+                    .iter()
+                    .map(|item| {
+                        let mut y_config = YAxisConfig {
+                            ..Default::default()
+                        };
+                        if let Some(axis_font_size) = get_f32_from_value(item, "axis_font_size") {
+                            y_config.axis_font_size = axis_font_size;
+                        }
+                        if let Some(axis_font_color) = get_color_from_value(item, "axis_font_color")
+                        {
+                            y_config.axis_font_color = axis_font_color;
+                        }
+                        if let Some(axis_stroke_color) =
+                            get_color_from_value(item, "axis_stroke_color")
+                        {
+                            y_config.axis_stroke_color = axis_stroke_color;
+                        }
+                        if let Some(axis_width) = get_f32_from_value(item, "axis_width") {
+                            y_config.axis_width = Some(axis_width);
+                        }
+                        if let Some(axis_split_number) =
+                            get_usize_from_value(item, "axis_split_number")
+                        {
+                            y_config.axis_split_number = axis_split_number;
+                        }
+                        if let Some(axis_name_gap) = get_f32_from_value(item, "axis_name_gap") {
+                            y_config.axis_name_gap = axis_name_gap;
+                        }
+                        if let Some(axis_formatter) = get_string_from_value(item, "axis_formatter")
+                        {
+                            y_config.axis_formatter = Some(axis_formatter);
+                        }
+                        y_config
+                    })
+                    .collect(),
+            );
+        }
+    }
+    None
+}
+
+pub(crate) fn get_color_slice_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<Vec<Color>> {
+    if let Some(arr) = value.get(key) {
+        if let Some(values) = arr.as_array() {
+            return Some(
+                values
+                    .iter()
+                    .map(|item| item.as_str().unwrap_or_default().into())
+                    .collect(),
+            );
+        }
+    }
+    None
+}
+
 pub(crate) fn get_string_from_value(value: &serde_json::Value, key: &str) -> Option<String> {
     if let Some(s) = value.get(key) {
         if let Some(v) = s.as_str() {
