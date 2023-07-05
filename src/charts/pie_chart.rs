@@ -2,6 +2,7 @@ use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
+use super::params::*;
 use super::theme::{get_default_theme, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
 use super::util::*;
 use super::Canvas;

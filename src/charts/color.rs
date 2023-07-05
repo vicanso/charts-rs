@@ -79,9 +79,9 @@ impl From<&str> for Color {
         }
         let hex = value.substring(1, value.len());
         if hex.len() == 3 {
-            c.r = parse_hex(hex.substring(0, 1));
-            c.g = parse_hex(hex.substring(1, 2));
-            c.b = parse_hex(hex.substring(2, 3));
+            c.r = parse_hex(&hex.substring(0, 1).repeat(2));
+            c.g = parse_hex(&hex.substring(1, 2).repeat(2));
+            c.b = parse_hex(&hex.substring(2, 3).repeat(2));
         } else {
             c.r = parse_hex(hex.substring(0, 2));
             c.g = parse_hex(hex.substring(2, 4));

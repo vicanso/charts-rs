@@ -66,6 +66,152 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     Some(self.background_color),
                 ));
             }
+            fn fill_option(&mut self, data: serde_json::Value) -> canvas::Result<()> {
+                let series_list = get_series_list_from_value(&data).unwrap_or_default();
+                if series_list.is_empty() {
+                    return Err(canvas::Error::Params {
+                        message: "series list can not be empty".to_string(),
+                    });
+                }
+                let x_axis_data = get_string_slice_from_value(&data, "x_axis_data").unwrap_or_default();
+                if x_axis_data.is_empty() {
+                    return Err(canvas::Error::Params {
+                        message: "x axis list can not be empty".to_string(),
+                    });
+                }
+                let theme = get_string_from_value(&data, "theme").unwrap_or_default();
+                self.fill_theme(get_theme(&theme));
+                self.series_list = series_list;
+                self.x_axis_data = x_axis_data;
+        
+                if let Some(width) = get_f32_from_value(&data, "width") {
+                    self.width = width;
+                }
+                if let Some(height) = get_f32_from_value(&data, "height") {
+                    self.height = height;
+                }
+                if let Some(margin) = get_margin_from_value(&data, "margin") {
+                    self.margin = margin;
+                }
+                if let Some(font_family) = get_string_from_value(&data, "font_family") {
+                    self.font_family = font_family;
+                }
+                if let Some(title_text) = get_string_from_value(&data, "title_text") {
+                    self.title_text = title_text;
+                }
+                if let Some(title_font_size) = get_f32_from_value(&data, "title_font_size") {
+                    self.title_font_size = title_font_size;
+                }
+                if let Some(title_font_color) = get_color_from_value(&data, "title_font_color") {
+                    self.title_font_color = title_font_color;
+                }
+                if let Some(title_font_weight) = get_string_from_value(&data, "title_font_weight") {
+                    self.title_font_weight = Some(title_font_weight);
+                }
+                if let Some(title_margin) = get_margin_from_value(&data, "title_margin") {
+                    self.title_margin = Some(title_margin);
+                }
+                if let Some(title_align) = get_align_from_value(&data, "title_align") {
+                    self.title_align = title_align;
+                }
+                if let Some(title_height) = get_f32_from_value(&data, "title_height") {
+                    self.title_height = title_height;
+                }
+        
+                if let Some(sub_title_text) = get_string_from_value(&data, "sub_title_text") {
+                    self.sub_title_text = sub_title_text;
+                }
+                if let Some(sub_title_font_size) = get_f32_from_value(&data, "sub_title_font_size") {
+                    self.sub_title_font_size = sub_title_font_size;
+                }
+                if let Some(sub_title_font_color) = get_color_from_value(&data, "sub_title_font_color") {
+                    self.sub_title_font_color = sub_title_font_color;
+                }
+                if let Some(sub_title_margin) = get_margin_from_value(&data, "sub_title_margin") {
+                    self.sub_title_margin = Some(sub_title_margin);
+                }
+                if let Some(sub_title_align) = get_align_from_value(&data, "sub_title_align") {
+                    self.sub_title_align = sub_title_align;
+                }
+                if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
+                    self.sub_title_height = sub_title_height;
+                }
+        
+                if let Some(legend_font_size) = get_f32_from_value(&data, "legend_font_size") {
+                    self.legend_font_size = legend_font_size;
+                }
+                if let Some(legend_font_color) = get_color_from_value(&data, "legend_font_color") {
+                    self.legend_font_color = legend_font_color;
+                }
+                if let Some(legend_align) = get_align_from_value(&data, "legend_align") {
+                    self.legend_align = legend_align;
+                }
+                if let Some(legend_margin) = get_margin_from_value(&data, "legend_margin") {
+                    self.legend_margin = Some(legend_margin);
+                }
+                if let Some(legend_category) = get_legend_category_from_value(&data, "legend_category") {
+                    self.legend_category = legend_category;
+                }
+                if let Some(legend_show) = get_bool_from_value(&data, "legend_show") {
+                    self.legend_show = Some(legend_show);
+                }
+        
+                if let Some(x_axis_height) = get_f32_from_value(&data, "x_axis_height") {
+                    self.x_axis_height = x_axis_height;
+                }
+                if let Some(x_axis_stroke_color) = get_color_from_value(&data, "x_axis_stroke_color") {
+                    self.x_axis_stroke_color = x_axis_stroke_color;
+                }
+                if let Some(x_axis_font_size) = get_f32_from_value(&data, "x_axis_font_size") {
+                    self.x_axis_font_size = x_axis_font_size;
+                }
+                if let Some(x_axis_font_color) = get_color_from_value(&data, "x_axis_font_color") {
+                    self.x_axis_font_color = x_axis_font_color;
+                }
+                if let Some(x_axis_name_gap) = get_f32_from_value(&data, "x_axis_name_gap") {
+                    self.x_axis_name_gap = x_axis_name_gap;
+                }
+                if let Some(x_axis_name_rotate) = get_f32_from_value(&data, "x_axis_name_rotate") {
+                    self.x_axis_name_rotate = x_axis_name_rotate;
+                }
+                if let Some(x_boundary_gap) = get_bool_from_value(&data, "x_boundary_gap") {
+                    self.x_boundary_gap = Some(x_boundary_gap);
+                }
+        
+                if let Some(y_axis_configs) = get_y_axis_configs_from_value(&data, "y_axis_configs") {
+                    self.y_axis_configs = y_axis_configs;
+                }
+        
+                if let Some(grid_stroke_color) = get_color_from_value(&data, "grid_stroke_color") {
+                    self.grid_stroke_color = grid_stroke_color;
+                }
+                if let Some(grid_stroke_width) = get_f32_from_value(&data, "grid_stroke_width") {
+                    self.grid_stroke_width = grid_stroke_width;
+                }
+        
+                if let Some(series_stroke_width) = get_f32_from_value(&data, "series_stroke_width") {
+                    self.series_stroke_width = series_stroke_width;
+                }
+                if let Some(series_label_font_color) =
+                    get_color_from_value(&data, "series_label_font_color")
+                {
+                    self.series_label_font_color = series_label_font_color;
+                }
+                if let Some(series_label_font_size) = get_f32_from_value(&data, "series_label_font_size") {
+                    self.series_label_font_size = series_label_font_size;
+                }
+                if let Some(series_colors) = get_color_slice_from_value(&data, "series_colors") {
+                    self.series_colors = series_colors;
+                }
+                if let Some(series_smooth) = get_bool_from_value(&data, "series_smooth") {
+                    self.series_smooth = series_smooth;
+                }
+                if let Some(series_fill) = get_bool_from_value(&data, "series_fill") {
+                    self.series_fill = series_fill;
+                }
+        
+                Ok(())
+            }
             fn get_y_axis_config(&self, index: usize) -> YAxisConfig {
                 let size = self.y_axis_configs.len();
                 if size == 0 {

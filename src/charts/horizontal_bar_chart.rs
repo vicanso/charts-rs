@@ -2,6 +2,7 @@ use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
+use super::params::*;
 use super::theme::{get_default_theme, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
 use super::util::*;
 use super::Canvas;
@@ -72,6 +73,14 @@ pub struct HorizontalBarChart {
 }
 
 impl HorizontalBarChart {
+    pub fn from_json(data: &str) -> canvas::Result<HorizontalBarChart> {
+        let data: serde_json::Value = serde_json::from_str(data)?;
+        let mut h = HorizontalBarChart {
+            ..Default::default()
+        };
+        h.fill_option(data)?;
+        Ok(h)
+    }
     pub fn new_with_theme(
         series_list: Vec<Series>,
         x_axis_data: Vec<String>,
