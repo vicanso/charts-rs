@@ -66,23 +66,17 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     Some(self.background_color),
                 ));
             }
-            fn fill_option(&mut self, data: serde_json::Value) -> canvas::Result<()> {
+            fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value> {
+                let data: serde_json::Value = serde_json::from_str(data)?;
                 let series_list = get_series_list_from_value(&data).unwrap_or_default();
                 if series_list.is_empty() {
                     return Err(canvas::Error::Params {
                         message: "series list can not be empty".to_string(),
                     });
                 }
-                let x_axis_data = get_string_slice_from_value(&data, "x_axis_data").unwrap_or_default();
-                if x_axis_data.is_empty() {
-                    return Err(canvas::Error::Params {
-                        message: "x axis list can not be empty".to_string(),
-                    });
-                }
                 let theme = get_string_from_value(&data, "theme").unwrap_or_default();
                 self.fill_theme(get_theme(&theme));
                 self.series_list = series_list;
-                self.x_axis_data = x_axis_data;
         
                 if let Some(width) = get_f32_from_value(&data, "width") {
                     self.width = width;
@@ -156,6 +150,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     self.legend_show = Some(legend_show);
                 }
         
+                if let Some(x_axis_data) = get_string_slice_from_value(&data, "x_axis_data") {
+                    self.x_axis_data = x_axis_data;
+                }
                 if let Some(x_axis_height) = get_f32_from_value(&data, "x_axis_height") {
                     self.x_axis_height = x_axis_height;
                 }
@@ -210,7 +207,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     self.series_fill = series_fill;
                 }
         
-                Ok(())
+                Ok(data)
             }
             fn get_y_axis_config(&self, index: usize) -> YAxisConfig {
                 let size = self.y_axis_configs.len();

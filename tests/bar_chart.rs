@@ -88,7 +88,6 @@ fn bar_chart_mixin() {
                 {
                     "name": "Search Engine",
                     "data": [820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                    "index": 3,
                     "category": "line"
                 }
             ],

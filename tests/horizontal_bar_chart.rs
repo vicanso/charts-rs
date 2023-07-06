@@ -3,7 +3,8 @@ use pretty_assertions::assert_eq;
 
 #[test]
 fn horizontal_bar_chart() {
-    let horizontal_bar_chart =  HorizontalBarChart::from_json(r###"{
+    let horizontal_bar_chart = HorizontalBarChart::from_json(
+        r###"{
         "title_text": "World Population",
         "title_align": "left",
         "margin": {
@@ -30,7 +31,9 @@ fn horizontal_bar_chart() {
             "China",
             "World"
         ]
-    }"###).unwrap();
+    }"###,
+    )
+    .unwrap();
 
     assert_eq!(
         include_str!("../asset/horizontal_bar_chart/basic_json.svg"),

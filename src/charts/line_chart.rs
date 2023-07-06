@@ -73,6 +73,13 @@ pub struct LineChart {
 }
 
 impl LineChart {
+    pub fn from_json(data: &str) -> canvas::Result<LineChart> {
+        let mut l = LineChart {
+            ..Default::default()
+        };
+        l.fill_option(data)?;
+        Ok(l)
+    }
     pub fn new_with_theme(
         series_list: Vec<Series>,
         x_axis_data: Vec<String>,

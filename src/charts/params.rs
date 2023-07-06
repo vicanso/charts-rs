@@ -46,16 +46,35 @@ pub(crate) fn get_f32_slice_from_value(value: &serde_json::Value, key: &str) -> 
     None
 }
 
+fn convert_to_align(value: &serde_json::Value) -> Option<Align> {
+    if let Some(value) = value.as_str() {
+        let value = match value.to_lowercase().as_str() {
+            "left" => Align::Left,
+            "right" => Align::Right,
+            _ => Align::Center,
+        };
+        return Some(value);
+    } 
+    None
+}
+
+pub(crate) fn get_align_slice_from_value(value: &serde_json::Value, key: &str) -> Option<Vec<Align>> {
+    if let Some(arr) = value.get(key) {
+        let mut align_list = vec![];
+        if let Some(values) = arr.as_array() {
+            for item in values.iter() {
+                if let Some(align) = convert_to_align(item)  {
+                   align_list.push(align); 
+                }
+            }
+        }
+        return Some(align_list);
+    }
+    None
+}
 pub(crate) fn get_align_from_value(value: &serde_json::Value, key: &str) -> Option<Align> {
     if let Some(value) = value.get(key) {
-        if let Some(value) = value.as_str() {
-            let value = match value.to_lowercase().as_str() {
-                "left" => Align::Left,
-                "right" => Align::Right,
-                _ => Align::Center,
-            };
-            return Some(value);
-        }
+        return convert_to_align(value);
     }
     None
 }
@@ -225,8 +244,11 @@ pub(crate) fn get_series_list_from_value(value: &serde_json::Value) -> Option<Ve
     if let Some(data) = value.get("series_list") {
         if let Some(arr) = data.as_array() {
             let mut series_list = vec![];
-            for item in arr.iter() {
-                if let Some(series) = get_series_from_value(item) {
+            for (index, item) in arr.iter().enumerate() {
+                if let Some(mut series) = get_series_from_value(item) {
+                    if series.index.is_none() {
+                        series.index = Some(index)
+                    }
                     series_list.push(series);
                 }
             }

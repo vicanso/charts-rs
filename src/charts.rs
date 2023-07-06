@@ -37,7 +37,7 @@ pub use util::*;
 
 pub trait Chart {
     fn fill_theme(&mut self, t: Theme);
-    fn fill_option(&mut self, data: serde_json::Value) -> canvas::Result<()>;
+    fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value>;
     fn get_y_axis_config(&self, index: usize) -> YAxisConfig;
     fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32);
     fn render_background(&self, c: Canvas);

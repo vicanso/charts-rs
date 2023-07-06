@@ -24,6 +24,23 @@ impl From<(String, f32)> for RadarIndicator {
     }
 }
 
+fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<RadarIndicator>> {
+    if let Some(data) = value.get("indicators") {
+        if let Some(arr) = data.as_array() {
+            let mut indicators = vec![];
+            for item in arr.iter() {
+                let name = get_string_from_value(item, "name").unwrap_or_default();
+                let max = get_f32_from_value(item, "max").unwrap_or_default();
+                if !name.is_empty() {
+                    indicators.push(RadarIndicator { name, max });
+                }
+            }
+            return Some(indicators);
+        }
+    }
+    None
+}
+
 #[derive(Clone, Debug, Default, Chart)]
 pub struct RadarChart {
     pub width: f32,
@@ -90,6 +107,16 @@ pub struct RadarChart {
 }
 
 impl RadarChart {
+    pub fn from_json(data: &str) -> canvas::Result<RadarChart> {
+        let mut r = RadarChart {
+            ..Default::default()
+        };
+        let data = r.fill_option(data)?;
+        if let Some(indicators) = get_radar_indicator_list_from_value(&data) {
+            r.indicators = indicators;
+        }
+        Ok(r)
+    }
     pub fn new_with_theme(
         series_list: Vec<Series>,
         indicators: Vec<RadarIndicator>,
@@ -231,7 +258,11 @@ impl RadarChart {
             let mut points = vec![];
             for (i, item) in indicators.iter().enumerate() {
                 if let Some(value) = series.data.get(i) {
-                    let mut ir = *value / item.max * r;
+                    let mut ir = if item.max <= 0.0 {
+                        0.0
+                    } else {
+                        *value / item.max * r
+                    };
                     if ir > r {
                         ir = r;
                     }

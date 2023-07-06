@@ -74,7 +74,6 @@ pub struct HorizontalBarChart {
 
 impl HorizontalBarChart {
     pub fn from_json(data: &str) -> canvas::Result<HorizontalBarChart> {
-        let data: serde_json::Value = serde_json::from_str(data)?;
         let mut h = HorizontalBarChart {
             ..Default::default()
         };

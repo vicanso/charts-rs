@@ -75,7 +75,6 @@ pub struct BarChart {
 
 impl BarChart {
     pub fn from_json(data: &str) -> canvas::Result<BarChart> {
-        let data: serde_json::Value = serde_json::from_str(data)?;
         let mut b = BarChart {
             ..Default::default()
         };
@@ -88,13 +87,14 @@ impl BarChart {
         x_axis_data: Vec<String>,
         theme: &str,
     ) -> BarChart {
-        let mut series_index: usize = 0;
         // bar chart 可能同时支持两种图
         // 因此先计算index
-        series_list.iter_mut().for_each(|item| {
-            item.index = Some(series_index);
-            series_index += 1;
-        });
+        series_list
+            .iter_mut()
+            .enumerate()
+            .for_each(|(index, item)| {
+                item.index = Some(index);
+            });
         let mut b = BarChart {
             series_list,
             x_axis_data,

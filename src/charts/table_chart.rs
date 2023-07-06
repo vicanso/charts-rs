@@ -1,6 +1,7 @@
 use super::canvas;
 use super::color::*;
 use super::common::*;
+use super::params::*;
 use super::component::*;
 use super::theme::{get_default_theme, get_theme, Theme};
 use super::util::*;
@@ -38,6 +39,7 @@ pub struct TableChart {
     pub header_row_padding: Box,
     pub header_row_height: f32,
     pub header_font_size: f32,
+    pub header_font_weight: Option<String>,
     pub header_font_color: Color,
     pub header_background_color: Color,
 
@@ -50,6 +52,127 @@ pub struct TableChart {
 }
 
 impl TableChart {
+    fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value> {
+        let data: serde_json::Value = serde_json::from_str(data)?;
+        let theme = get_string_from_value(&data, "theme").unwrap_or_default();
+        self.fill_theme(get_theme(&theme));
+
+        if let Some(width) = get_f32_from_value(&data, "width") {
+            self.width = width;
+        }
+        if let Some(height) = get_f32_from_value(&data, "height") {
+            self.height = height;
+        }
+        if let Some(font_family) = get_string_from_value(&data, "font_family") {
+            self.font_family = font_family;
+        }
+        if let Some(title_text) = get_string_from_value(&data, "title_text") {
+            self.title_text = title_text;
+        }
+        if let Some(title_font_size) = get_f32_from_value(&data, "title_font_size") {
+            self.title_font_size = title_font_size;
+        }
+        if let Some(title_font_color) = get_color_from_value(&data, "title_font_color") {
+            self.title_font_color = title_font_color;
+        }
+        if let Some(title_font_weight) = get_string_from_value(&data, "title_font_weight") {
+            self.title_font_weight = Some(title_font_weight);
+        }
+        if let Some(title_margin) = get_margin_from_value(&data, "title_margin") {
+            self.title_margin = Some(title_margin);
+        }
+        if let Some(title_align) = get_align_from_value(&data, "title_align") {
+            self.title_align = title_align;
+        }
+        if let Some(title_height) = get_f32_from_value(&data, "title_height") {
+            self.title_height = title_height;
+        }
+
+        if let Some(sub_title_text) = get_string_from_value(&data, "sub_title_text") {
+            self.sub_title_text = sub_title_text;
+        }
+        if let Some(sub_title_font_size) = get_f32_from_value(&data, "sub_title_font_size") {
+            self.sub_title_font_size = sub_title_font_size;
+        }
+        if let Some(sub_title_font_color) = get_color_from_value(&data, "sub_title_font_color") {
+            self.sub_title_font_color = sub_title_font_color;
+        }
+        if let Some(sub_title_margin) = get_margin_from_value(&data, "sub_title_margin") {
+            self.sub_title_margin = Some(sub_title_margin);
+        }
+        if let Some(sub_title_align) = get_align_from_value(&data, "sub_title_align") {
+            self.sub_title_align = sub_title_align;
+        }
+        if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
+            self.sub_title_height = sub_title_height;
+        }
+
+        if let Some(data) = data.get("data")  {
+            if let Some(arr) = data.as_array() {
+                let mut data_list = vec![];
+                for items in arr.iter() {
+                    let mut list = vec![];
+                    if let Some(sub_arr) = items.as_array() {
+                        for item in sub_arr.iter() {
+                            if let Some(str) = item.as_str()  {
+                                list.push(str.to_string()); 
+                            }
+                        } 
+                    }
+                    data_list.push(list);
+                }
+                self.data = data_list;
+            } 
+        }
+        if let Some(spans) = get_f32_slice_from_value(&data, "spans")  {
+            self.spans = spans; 
+        }
+        if let Some(text_aligns) = get_align_slice_from_value(&data, "text_aligns")  {
+            self.text_aligns = text_aligns; 
+        }
+        if let Some(header_row_padding) = get_margin_from_value(&data, "header_row_padding") {
+            self.header_row_padding = header_row_padding;
+        }
+        if let Some(header_row_height) = get_f32_from_value(&data, "header_row_height") {
+           self.header_row_height = header_row_height; 
+        }
+        if let Some(header_font_size) = get_f32_from_value(&data, "header_font_size")  {
+           self.header_font_size = header_font_size; 
+        }
+        if let Some(header_font_weight) = get_string_from_value(&data, "header_font_weight")  {
+            self.header_font_weight = Some(header_font_weight); 
+        }
+        if let Some(header_font_color) = get_color_from_value(&data, "header_font_color")  {
+            self.header_font_color = header_font_color;
+        }
+        if let Some(header_background_color) = get_color_from_value(&data, "header_background_color") {
+            self.header_background_color = header_background_color;
+        }
+        if let Some(body_row_padding) = get_margin_from_value(&data, "body_row_padding") {
+            self.body_row_padding = body_row_padding; 
+        }
+        if let Some(body_row_height) = get_f32_from_value(&data, "body_row_height") {
+            self.body_row_height = body_row_height; 
+        }
+        if let Some(body_font_size) = get_f32_from_value(&data, "body_font_size") {
+            self.body_font_size = body_font_size;
+        }
+        if let Some(body_font_color) = get_color_from_value(&data, "body_font_color") {
+           self.body_font_color = body_font_color; 
+        }
+        if let Some(body_background_colors) = get_color_slice_from_value(&data, "body_background_colors")  {
+            self.body_background_colors = body_background_colors; 
+        }
+        if let Some(border_color) = get_color_from_value(&data, "border_color") {
+            self.border_color = border_color;
+        }
+        Ok(data)
+    }
+    pub fn from_json(data: &str) -> canvas::Result<TableChart> {
+        let mut t = TableChart::new_with_theme(vec![], "");
+        t.fill_option(data)?;
+        Ok(t)
+    }
     pub fn new_with_theme(data: Vec<Vec<String>>, theme: &str) -> TableChart {
         let mut table = TableChart {
             data,
@@ -214,11 +337,13 @@ impl TableChart {
             let mut font_color = self.body_font_color;
 
             let is_header = i == 0;
+            let mut font_weight = None;
             let bg_color = if is_header {
                 cell_height = self.header_row_height;
                 padding = self.header_row_padding.top + self.header_row_padding.bottom;
                 font_size = self.header_font_size;
                 font_color = self.header_font_color;
+                font_weight = self.header_font_weight.clone();
                 self.header_background_color
             } else {
                 self.body_background_colors[(i - 1) % body_background_color_count]
@@ -270,6 +395,7 @@ impl TableChart {
                 right += span_width;
                 c.child(row_padding.clone()).text(Text {
                     text: item.to_string(),
+                    font_weight: font_weight.clone(),
                     font_family: Some(self.font_family.clone()),
                     font_size: Some(font_size),
                     font_color: Some(font_color),

@@ -76,6 +76,13 @@ pub struct PieChart {
 }
 
 impl PieChart {
+    pub fn from_json(data: &str) -> canvas::Result<PieChart> {
+        let mut p = PieChart {
+            ..Default::default()
+        };
+        p.fill_option(data)?;
+        Ok(p)
+    }
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> PieChart {
         let mut p = PieChart {
             series_list,
