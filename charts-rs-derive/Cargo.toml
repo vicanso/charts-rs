@@ -1,0 +1,19 @@
+[package]
+name = "charts-rs-derive"
+version = "0.1.0"
+edition = "2021"
+categories = ["images"]
+keywords = ["charts", "svg"]
+description = "A derive library for charts-rs"
+license = "Apache"
+homepage = "https://github.com/vicanso/charts-rs"
+repository = "https://github.com/vicanso/charts-rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0.29"
+syn = "2.0.23"

@@ -37,7 +37,7 @@ pub use util::*;
 
 /// Charts support multi chart render function
 /// ```rust
-/// use charts_rs::{BarChart, Series};
+/// use charts_rs::{BarChart, Series, svg_to_png};
 /// let mut bar_chart = BarChart::new(
 ///     vec![
 ///         Series::new(
