@@ -35,6 +35,33 @@ pub use theme::Theme;
 pub use theme::{THEME_ANT, THEME_DARK, THEME_GRAFANA};
 pub use util::*;
 
+/// Charts support multi chart render function
+/// ```rust
+/// use charts_rs::{BarChart, Series};
+/// let mut bar_chart = BarChart::new(
+///     vec![
+///         Series::new(
+///             "Email".to_string(),
+///             vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+///         ),
+///         Series::new(
+///             "Union Ads".to_string(),
+///             vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+///         )
+///     ], 
+///     vec![
+///         "Mon".to_string(),
+///         "Tue".to_string(),
+///         "Wed".to_string(),
+///         "Thu".to_string(),
+///         "Fri".to_string(),
+///         "Sat".to_string(),
+///         "Sun".to_string(),
+///     ]
+/// );
+/// bar_chart.svg().unwrap();
+/// svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+
 pub trait Chart {
     fn fill_theme(&mut self, t: Theme);
     fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value>;
