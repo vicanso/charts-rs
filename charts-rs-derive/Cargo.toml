@@ -5,7 +5,7 @@ edition = "2021"
 categories = ["images"]
 keywords = ["charts", "svg"]
 description = "A derive library for charts-rs"
-license = "Apache"
+license = "Apache-2.0"
 homepage = "https://github.com/vicanso/charts-rs"
 repository = "https://github.com/vicanso/charts-rs"
 
