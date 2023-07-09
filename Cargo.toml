@@ -2,7 +2,7 @@
 name = "charts-rs"
 version = "0.1.0"
 edition = "2021"
-categories = ["images"]
+categories = ["multimedia::images"]
 keywords = ["charts", "svg"]
 description = "A charts library for rust"
 license = "Apache-2.0"

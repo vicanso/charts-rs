@@ -2,7 +2,6 @@
 name = "charts-rs-derive"
 version = "0.1.0"
 edition = "2021"
-categories = ["images"]
 keywords = ["charts", "svg"]
 description = "A derive library for charts-rs"
 license = "Apache-2.0"
