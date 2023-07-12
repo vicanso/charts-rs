@@ -1,8 +1,8 @@
 use super::canvas;
 use super::color::*;
 use super::common::*;
-use super::params::*;
 use super::component::*;
+use super::params::*;
 use super::theme::{get_default_theme, get_theme, Theme};
 use super::util::*;
 use super::Canvas;
@@ -107,61 +107,65 @@ impl TableChart {
             self.sub_title_height = sub_title_height;
         }
 
-        if let Some(data) = data.get("data")  {
+        if let Some(data) = data.get("data") {
             if let Some(arr) = data.as_array() {
                 let mut data_list = vec![];
                 for items in arr.iter() {
                     let mut list = vec![];
                     if let Some(sub_arr) = items.as_array() {
                         for item in sub_arr.iter() {
-                            if let Some(str) = item.as_str()  {
-                                list.push(str.to_string()); 
+                            if let Some(str) = item.as_str() {
+                                list.push(str.to_string());
                             }
-                        } 
+                        }
                     }
                     data_list.push(list);
                 }
                 self.data = data_list;
-            } 
+            }
         }
-        if let Some(spans) = get_f32_slice_from_value(&data, "spans")  {
-            self.spans = spans; 
+        if let Some(spans) = get_f32_slice_from_value(&data, "spans") {
+            self.spans = spans;
         }
-        if let Some(text_aligns) = get_align_slice_from_value(&data, "text_aligns")  {
-            self.text_aligns = text_aligns; 
+        if let Some(text_aligns) = get_align_slice_from_value(&data, "text_aligns") {
+            self.text_aligns = text_aligns;
         }
         if let Some(header_row_padding) = get_margin_from_value(&data, "header_row_padding") {
             self.header_row_padding = header_row_padding;
         }
         if let Some(header_row_height) = get_f32_from_value(&data, "header_row_height") {
-           self.header_row_height = header_row_height; 
+            self.header_row_height = header_row_height;
         }
-        if let Some(header_font_size) = get_f32_from_value(&data, "header_font_size")  {
-           self.header_font_size = header_font_size; 
+        if let Some(header_font_size) = get_f32_from_value(&data, "header_font_size") {
+            self.header_font_size = header_font_size;
         }
-        if let Some(header_font_weight) = get_string_from_value(&data, "header_font_weight")  {
-            self.header_font_weight = Some(header_font_weight); 
+        if let Some(header_font_weight) = get_string_from_value(&data, "header_font_weight") {
+            self.header_font_weight = Some(header_font_weight);
         }
-        if let Some(header_font_color) = get_color_from_value(&data, "header_font_color")  {
+        if let Some(header_font_color) = get_color_from_value(&data, "header_font_color") {
             self.header_font_color = header_font_color;
         }
-        if let Some(header_background_color) = get_color_from_value(&data, "header_background_color") {
+        if let Some(header_background_color) =
+            get_color_from_value(&data, "header_background_color")
+        {
             self.header_background_color = header_background_color;
         }
         if let Some(body_row_padding) = get_margin_from_value(&data, "body_row_padding") {
-            self.body_row_padding = body_row_padding; 
+            self.body_row_padding = body_row_padding;
         }
         if let Some(body_row_height) = get_f32_from_value(&data, "body_row_height") {
-            self.body_row_height = body_row_height; 
+            self.body_row_height = body_row_height;
         }
         if let Some(body_font_size) = get_f32_from_value(&data, "body_font_size") {
             self.body_font_size = body_font_size;
         }
         if let Some(body_font_color) = get_color_from_value(&data, "body_font_color") {
-           self.body_font_color = body_font_color; 
+            self.body_font_color = body_font_color;
         }
-        if let Some(body_background_colors) = get_color_slice_from_value(&data, "body_background_colors")  {
-            self.body_background_colors = body_background_colors; 
+        if let Some(body_background_colors) =
+            get_color_slice_from_value(&data, "body_background_colors")
+        {
+            self.body_background_colors = body_background_colors;
         }
         if let Some(border_color) = get_color_from_value(&data, "border_color") {
             self.border_color = border_color;

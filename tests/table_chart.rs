@@ -3,7 +3,8 @@ use pretty_assertions::assert_eq;
 
 #[test]
 fn table_chart() {
-    let table_chart = TableChart::from_json(r###"{
+    let table_chart = TableChart::from_json(
+        r###"{
         "theme": "grafana",
         "title_text": "NASDAQ",
         "data": [
@@ -30,7 +31,9 @@ fn table_chart() {
         ],
         "header_font_weight": "bold",
         "text_aligns": ["left", "center", "right"]
-    }"###).unwrap();
+    }"###,
+    )
+    .unwrap();
     assert_eq!(
         include_str!("../asset/table_chart/basic_json.svg"),
         table_chart.svg().unwrap()

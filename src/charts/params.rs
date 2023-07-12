@@ -54,17 +54,20 @@ fn convert_to_align(value: &serde_json::Value) -> Option<Align> {
             _ => Align::Center,
         };
         return Some(value);
-    } 
+    }
     None
 }
 
-pub(crate) fn get_align_slice_from_value(value: &serde_json::Value, key: &str) -> Option<Vec<Align>> {
+pub(crate) fn get_align_slice_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<Vec<Align>> {
     if let Some(arr) = value.get(key) {
         let mut align_list = vec![];
         if let Some(values) = arr.as_array() {
             for item in values.iter() {
-                if let Some(align) = convert_to_align(item)  {
-                   align_list.push(align); 
+                if let Some(align) = convert_to_align(item) {
+                    align_list.push(align);
                 }
             }
         }
