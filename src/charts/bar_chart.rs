@@ -11,49 +11,6 @@ use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
 
-/// New a bar chart, it supports svg and png format.
-///
-/// # Example
-/// ```rust
-/// use charts_rs::{BarChart, Series, Box};
-/// let mut bar_chart = BarChart::new(
-///     vec![
-///         Series::new(
-///             "Email".to_string(),
-///             vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-///         ),
-///         Series::new(
-///             "Union Ads".to_string(),
-///             vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-///         ),
-///         Series::new(
-///             "Direct".to_string(),
-///             vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-///         ),
-///         Series::new(
-///             "Search Engine".to_string(),
-///             vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-///         )
-///     ],
-///     vec![
-///         "Mon".to_string(),
-///         "Tue".to_string(),
-///         "Wed".to_string(),
-///         "Thu".to_string(),
-///         "Fri".to_string(),
-///         "Sat".to_string(),
-///         "Sun".to_string(),
-///     ],
-/// );
-/// bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-/// bar_chart.title_text = "Bar Chart".to_string();
-/// bar_chart.legend_margin = Some(Box {
-///     top: 35.0,
-///     bottom: 10.0,
-///     ..Default::default()
-/// });
-/// println!("{}", bar_chart.svg().unwrap());
-/// ```
 #[derive(Serialize, Deserialize, Clone, Debug, Default, Chart)]
 pub struct BarChart {
     pub width: f32,
@@ -117,47 +74,6 @@ pub struct BarChart {
 }
 
 impl BarChart {
-    /// New a bar chart from json.
-    /// ```rust
-    /// use charts_rs::{BarChart};
-    /// let bar_chart = BarChart::from_json(
-    ///     r###"{
-    ///         "width": 630,
-    ///         "height": 410,
-    ///         "margin": {
-    ///             "left": 10,
-    ///             "top": 5,
-    ///             "right": 10
-    ///         },
-    ///         "title_text": "Bar Chart",
-    ///         "title_font_color": "#345",
-    ///         "title_align": "right",
-    ///         "sub_title_text": "demo",
-    ///         "legend_align": "left",
-    ///         "series_list": [
-    ///             {
-    ///                 "name": "Email",
-    ///                 "label_show": true,
-    ///                 "data": [120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0]
-    ///             },
-    ///             {
-    ///                 "name": "Union Ads",
-    ///                 "data": [220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0]
-    ///             }
-    ///         ],
-    ///         "x_axis_data": [
-    ///             "Mon",
-    ///             "Tue",
-    ///             "Wed",
-    ///             "Thu",
-    ///             "Fri",
-    ///             "Sat",
-    ///             "Sun"
-    ///         ]
-    ///     }"###,
-    /// ).unwrap();
-    /// println!("{}", bar_chart.svg().unwrap());
-    /// ```
     pub fn from_json(data: &str) -> canvas::Result<BarChart> {
         let mut b = BarChart {
             ..Default::default()
@@ -165,33 +81,6 @@ impl BarChart {
         b.fill_option(data)?;
         Ok(b)
     }
-    /// New a bar chart with theme.
-    /// ```rust
-    /// use charts_rs::{BarChart, THEME_DARK, Series};
-    /// let bar_chart = BarChart::new_with_theme(
-    ///     vec![
-    ///         Series::new(
-    ///             "Email".to_string(),
-    ///              vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0]
-    ///         ),
-    ///         Series::new(
-    ///             "Union Ads".to_string(),
-    ///             vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0]
-    ///         ),
-    ///     ],
-    ///     vec![
-    ///         "Mon".to_string(),
-    ///         "Tue".to_string(),
-    ///         "Wed".to_string(),
-    ///         "Thu".to_string(),
-    ///         "Fri".to_string(),
-    ///         "Sat".to_string(),
-    ///         "Sun".to_string()
-    ///     ],
-    ///     THEME_DARK,
-    /// );
-    /// println!("{}", bar_chart.svg().unwrap());
-    /// ```
     pub fn new_with_theme(
         mut series_list: Vec<Series>,
         x_axis_data: Vec<String>,
@@ -357,30 +246,33 @@ impl BarChart {
 mod tests {
     use super::BarChart;
     use crate::{
-        svg_to_png, Box, LegendCategory, Series, SeriesCategory, THEME_ANT, THEME_DARK,
-        THEME_GRAFANA,
+        svg_to_png, Box, LegendCategory, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA,
     };
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
         let mut bar_chart = BarChart::new(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -410,22 +302,26 @@ mod tests {
     fn bar_chart_basic_dark() {
         let mut bar_chart = BarChart::new_with_theme(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -457,22 +353,26 @@ mod tests {
     fn bar_chart_basic_ant() {
         let mut bar_chart = BarChart::new_with_theme(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -504,22 +404,26 @@ mod tests {
     fn bar_chart_basic_grafana() {
         let mut bar_chart = BarChart::new_with_theme(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -550,22 +454,26 @@ mod tests {
     fn bar_chart_line_mixin() {
         let mut bar_chart = BarChart::new(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -603,24 +511,27 @@ mod tests {
     fn bar_chart_two_y_axis() {
         let mut bar_chart = BarChart::new(
             vec![
-                Series::new(
-                    "Evaporation".to_string(),
+                (
+                    "Evaporation",
                     vec![
                         2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3,
                     ],
-                ),
-                Series::new(
-                    "Precipitation".to_string(),
+                )
+                    .into(),
+                (
+                    "Precipitation",
                     vec![
                         2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3,
                     ],
-                ),
-                Series::new(
-                    "Temperature".to_string(),
+                )
+                    .into(),
+                (
+                    "Temperature",
                     vec![
                         2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
                     ],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),

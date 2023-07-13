@@ -32,7 +32,7 @@ pub use pie_chart::PieChart;
 pub use radar_chart::RadarChart;
 pub use table_chart::TableChart;
 pub use theme::Theme;
-pub use theme::{THEME_ANT, THEME_DARK, THEME_GRAFANA};
+pub use theme::{get_or_init_default_theme, THEME_ANT, THEME_DARK, THEME_GRAFANA};
 pub use util::*;
 
 pub trait Chart {

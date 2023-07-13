@@ -280,20 +280,22 @@ impl HorizontalBarChart {
 #[cfg(test)]
 mod tests {
     use super::HorizontalBarChart;
-    use crate::{Align, Series};
+    use crate::Align;
     use pretty_assertions::assert_eq;
     #[test]
     fn horizontal_bar_chart_basic() {
         let mut horizontal_bar_chart = HorizontalBarChart::new(
             vec![
-                Series::new(
-                    "2011".to_string(),
+                (
+                    "2011",
                     vec![18203.0, 23489.0, 29034.0, 104970.0, 131744.0, 630230.0],
-                ),
-                Series::new(
-                    "2012".to_string(),
+                )
+                    .into(),
+                (
+                    "2012",
                     vec![19325.0, 23438.0, 31000.0, 121594.0, 134141.0, 681807.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Brazil".to_string(),

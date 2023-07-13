@@ -15,10 +15,10 @@ pub struct RadarIndicator {
     pub name: String,
     pub max: f32,
 }
-impl From<(String, f32)> for RadarIndicator {
-    fn from(val: (String, f32)) -> Self {
+impl From<(&str, f32)> for RadarIndicator {
+    fn from(val: (&str, f32)) -> Self {
         RadarIndicator {
-            name: val.0,
+            name: val.0.to_string(),
             max: val.1,
         }
     }
@@ -293,22 +293,24 @@ mod tests {
     fn radar_basic() {
         let radar_chart = RadarChart::new(
             vec![
-                Series::new(
-                    "Allocated Budget".to_string(),
+                (
+                    "Allocated Budget",
                     vec![4200.0, 3000.0, 20000.0, 35000.0, 50000.0, 18000.0],
-                ),
-                Series::new(
-                    "Actual Spending".to_string(),
+                )
+                    .into(),
+                (
+                    "Actual Spending",
                     vec![5000.0, 14000.0, 28000.0, 26000.0, 42000.0, 21000.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
-                ("Sales".to_string(), 6500.0).into(),
-                ("Administration".to_string(), 16000.0).into(),
-                ("Information Technology".to_string(), 30000.0).into(),
-                ("Customer Support".to_string(), 38000.0).into(),
-                ("Development".to_string(), 52000.0).into(),
-                ("Marketing".to_string(), 25000.0).into(),
+                ("Sales", 6500.0).into(),
+                ("Administration", 16000.0).into(),
+                ("Information Technology", 30000.0).into(),
+                ("Customer Support", 38000.0).into(),
+                ("Development", 52000.0).into(),
+                ("Marketing", 25000.0).into(),
             ],
         );
 
@@ -332,13 +334,13 @@ mod tests {
                 ),
             ],
             vec![
-                ("Sales".to_string(), 6500.0).into(),
-                ("Administration".to_string(), 16000.0).into(),
-                ("Information Technology".to_string(), 30000.0).into(),
-                ("Customer Support".to_string(), 38000.0).into(),
-                ("Development".to_string(), 52000.0).into(),
-                ("Marketing".to_string(), 25000.0).into(),
-                ("Online".to_string(), 10000.0).into(),
+                ("Sales", 6500.0).into(),
+                ("Administration", 16000.0).into(),
+                ("Information Technology", 30000.0).into(),
+                ("Customer Support", 38000.0).into(),
+                ("Development", 52000.0).into(),
+                ("Marketing", 25000.0).into(),
+                ("Online", 10000.0).into(),
             ],
         );
 
@@ -362,11 +364,11 @@ mod tests {
                 ),
             ],
             vec![
-                ("Sales".to_string(), 6500.0).into(),
-                ("Administration".to_string(), 16000.0).into(),
-                ("Information Technology".to_string(), 30000.0).into(),
-                ("Customer Support".to_string(), 38000.0).into(),
-                ("Development".to_string(), 52000.0).into(),
+                ("Sales", 6500.0).into(),
+                ("Administration", 16000.0).into(),
+                ("Information Technology", 30000.0).into(),
+                ("Customer Support", 38000.0).into(),
+                ("Development", 52000.0).into(),
             ],
         );
 
@@ -390,10 +392,10 @@ mod tests {
                 ),
             ],
             vec![
-                ("Sales".to_string(), 6500.0).into(),
-                ("Administration".to_string(), 16000.0).into(),
-                ("Information Technology".to_string(), 30000.0).into(),
-                ("Customer Support".to_string(), 38000.0).into(),
+                ("Sales", 6500.0).into(),
+                ("Administration", 16000.0).into(),
+                ("Information Technology", 30000.0).into(),
+                ("Customer Support", 38000.0).into(),
             ],
         );
 
@@ -417,9 +419,9 @@ mod tests {
                 ),
             ],
             vec![
-                ("Sales".to_string(), 6500.0).into(),
-                ("Administration".to_string(), 16000.0).into(),
-                ("Information Technology".to_string(), 30000.0).into(),
+                ("Sales", 6500.0).into(),
+                ("Administration", 16000.0).into(),
+                ("Information Technology", 30000.0).into(),
             ],
         );
 

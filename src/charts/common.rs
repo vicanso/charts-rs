@@ -59,6 +59,11 @@ impl Series {
         }
     }
 }
+impl From<(&str, Vec<f32>)> for Series {
+    fn from(value: (&str, Vec<f32>)) -> Self {
+        Series::new(value.0.to_string(), value.1)
+    }
+}
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct YAxisConfig {

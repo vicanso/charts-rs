@@ -209,28 +209,32 @@ impl LineChart {
 #[cfg(test)]
 mod tests {
     use super::LineChart;
-    use crate::{Align, Box, Series};
+    use crate::{Align, Box};
     use pretty_assertions::assert_eq;
     #[test]
     fn line_chart_basic() {
         let mut line_chart = LineChart::new(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -260,22 +264,26 @@ mod tests {
     fn line_chart_align_left() {
         let mut line_chart = LineChart::new(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -304,10 +312,11 @@ mod tests {
     #[test]
     fn line_chart_fill() {
         let mut line_chart = LineChart::new(
-            vec![Series::new(
-                "Search Engine".to_string(),
+            vec![(
+                "Search Engine",
                 vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-            )],
+            )
+                .into()],
             vec![
                 "Mon".to_string(),
                 "Tue".to_string(),
@@ -336,14 +345,16 @@ mod tests {
     fn line_chart_legend_align_right() {
         let mut line_chart = LineChart::new(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),
@@ -372,22 +383,26 @@ mod tests {
     fn line_chart_two_y_axis() {
         let mut line_chart = LineChart::new(
             vec![
-                Series::new(
-                    "Email".to_string(),
+                (
+                    "Email",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
-                ),
-                Series::new(
-                    "Union Ads".to_string(),
+                )
+                    .into(),
+                (
+                    "Union Ads",
                     vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
-                ),
-                Series::new(
-                    "Direct".to_string(),
+                )
+                    .into(),
+                (
+                    "Direct",
                     vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
-                ),
-                Series::new(
-                    "Search Engine".to_string(),
+                )
+                    .into(),
+                (
+                    "Search Engine",
                     vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
-                ),
+                )
+                    .into(),
             ],
             vec![
                 "Mon".to_string(),

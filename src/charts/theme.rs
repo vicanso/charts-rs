@@ -26,20 +26,19 @@ pub static THEME_GRAFANA: &str = "grafana";
 
 static E_CHART: &str = "echart";
 
-pub fn get_or_init_default_theme(theme: Option<String>) -> String {
+pub fn get_or_init_default_theme(theme: &str) -> String {
     static DEFAULT_THEME: OnceCell<String> = OnceCell::new();
     let value = DEFAULT_THEME.get_or_init(|| {
-        let v = theme.unwrap_or_default();
-        if v.is_empty() {
+        if theme.is_empty() {
             return E_CHART.to_string();
         }
-        v
+        theme.to_string()
     });
     value.to_owned()
 }
 
 pub fn get_default_theme() -> String {
-    get_or_init_default_theme(None)
+    get_or_init_default_theme(E_CHART)
 }
 
 #[derive(Clone, Debug, Default)]
