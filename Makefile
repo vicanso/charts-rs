@@ -1,7 +1,7 @@
 fmt:
 	cargo fmt
 test:
-	cargo test
+	cargo test --features "image"
 lint:
 	cargo clippy
 udeps:

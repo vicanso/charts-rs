@@ -245,9 +245,7 @@ impl BarChart {
 #[cfg(test)]
 mod tests {
     use super::BarChart;
-    use crate::{
-        svg_to_png, Box, LegendCategory, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA,
-    };
+    use crate::{Box, LegendCategory, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA};
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
@@ -503,8 +501,12 @@ mod tests {
             bar_chart.svg().unwrap()
         );
 
-        let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
-        std::fs::write("./asset/line_mixin.png", buf).unwrap();
+        #[cfg(feature = "image")]
+        {
+            use crate::svg_to_png;
+            let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+            std::fs::write("./asset/line_mixin.png", buf).unwrap();
+        }
     }
 
     #[test]

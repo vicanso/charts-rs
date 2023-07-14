@@ -3,6 +3,7 @@ mod canvas;
 mod color;
 mod common;
 mod component;
+#[cfg(feature = "image")]
 mod encoder;
 mod font;
 mod horizontal_bar_chart;
@@ -23,6 +24,7 @@ pub use component::{
     Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
+#[cfg(feature = "image")]
 pub use encoder::svg_to_png;
 pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
 pub use horizontal_bar_chart::HorizontalBarChart;
