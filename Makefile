@@ -3,6 +3,6 @@ fmt:
 test:
 	cargo test --features "image"
 lint:
-	cargo clippy
+	cargo clippy --features "image"
 udeps:
 	cargo +nightly udeps

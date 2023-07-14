@@ -3,7 +3,7 @@ use snafu::{ResultExt, Snafu};
 
 #[derive(Debug, Snafu)]
 pub enum Error {
-    #[snafu(display("Image size is invalid, width:{width}, height:{height}"))]
+    #[snafu(display("Image size is invalid, width: {width}, height: {height}"))]
     Size { width: u32, height: u32 },
     #[snafu(display("Error to parse: {source}"))]
     Parse { source: resvg::usvg::Error },

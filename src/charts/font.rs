@@ -11,7 +11,7 @@ pub enum Error {
     UnableGetLock {
         source: std::sync::PoisonError<MutexGuard<'static, HashMap<String, Font>>>,
     },
-    #[snafu(display("Error font:{name} not found"))]
+    #[snafu(display("Error font: {name} not found"))]
     FontNotFound { name: String },
     #[snafu(display("Error parse font: {message}"))]
     ParseFont { message: String },
