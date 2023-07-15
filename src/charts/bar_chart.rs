@@ -503,8 +503,12 @@ mod tests {
 
         #[cfg(feature = "image")]
         {
-            use crate::svg_to_png;
-            let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+            use crate::{svg_to_png, EncodeParams};
+            let buf = svg_to_png(EncodeParams {
+                svg: bar_chart.svg().unwrap(),
+                ..Default::default()
+            })
+            .unwrap();
             std::fs::write("./asset/line_mixin.png", buf).unwrap();
         }
     }

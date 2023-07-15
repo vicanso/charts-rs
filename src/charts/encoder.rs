@@ -16,8 +16,10 @@ pub enum Error {
     Png { source: png::EncodingError },
 }
 
+#[derive(Clone, Debug, Default)]
 pub struct EncodeParams {
     pub font_file: String,
+    pub font_dir: String,
     pub svg: String,
 }
 
@@ -26,9 +28,14 @@ pub fn svg_to_png(params: EncodeParams) -> Result<Vec<u8>, Error> {
     let mut fontdb = resvg::usvg::fontdb::Database::new();
     if !params.font_file.is_empty() {
         fontdb.load_font_file(&params.font_file).context(IoSnafu {
-            file: params.font_file,
+            file: params.font_file.clone(),
         })?;
-    } else {
+    }
+    if !params.font_dir.is_empty() {
+        fontdb.load_fonts_dir(&params.font_dir);
+    }
+
+    if params.font_file.is_empty() && params.font_dir.is_empty() {
         fontdb.load_system_fonts();
     }
     let mut tree = resvg::usvg::Tree::from_str(&params.svg, &resvg::usvg::Options::default())
