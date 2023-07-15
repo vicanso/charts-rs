@@ -18,6 +18,7 @@ mod util;
 
 pub use bar_chart::BarChart;
 pub use canvas::Canvas;
+pub use canvas::Error as CanvasError;
 pub use color::*;
 pub use common::*;
 pub use component::{
@@ -26,6 +27,8 @@ pub use component::{
 };
 #[cfg(feature = "image")]
 pub use encoder::svg_to_png;
+#[cfg(feature = "image")]
+pub use encoder::Error as EncoderError;
 pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
