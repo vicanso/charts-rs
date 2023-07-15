@@ -3,6 +3,11 @@ use snafu::{ResultExt, Snafu};
 
 #[derive(Debug, Snafu)]
 pub enum Error {
+    #[snafu(display("Io {file}: {source}"))]
+    Io {
+        file: String,
+        source: std::io::Error,
+    },
     #[snafu(display("Image size is invalid, width: {width}, height: {height}"))]
     Size { width: u32, height: u32 },
     #[snafu(display("Error to parse: {source}"))]
@@ -11,10 +16,22 @@ pub enum Error {
     Png { source: png::EncodingError },
 }
 
-pub fn svg_to_png(data: &str) -> Result<Vec<u8>, Error> {
+pub struct EncodeParams {
+    pub font_file: String,
+    pub svg: String,
+}
+
+/// Converts svg to png
+pub fn svg_to_png(params: EncodeParams) -> Result<Vec<u8>, Error> {
     let mut fontdb = resvg::usvg::fontdb::Database::new();
-    fontdb.load_system_fonts();
-    let mut tree = resvg::usvg::Tree::from_str(data, &resvg::usvg::Options::default())
+    if !params.font_file.is_empty() {
+        fontdb.load_font_file(&params.font_file).context(IoSnafu {
+            file: params.font_file,
+        })?;
+    } else {
+        fontdb.load_system_fonts();
+    }
+    let mut tree = resvg::usvg::Tree::from_str(&params.svg, &resvg::usvg::Options::default())
         .context(ParseSnafu {})?;
     tree.convert_text(&fontdb);
     let rtree = resvg::Tree::from_usvg(&tree);
