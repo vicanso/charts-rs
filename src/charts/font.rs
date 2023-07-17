@@ -1,9 +1,9 @@
 use super::util::*;
 use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
 use fontdue::Font;
-use once_cell::sync::Lazy;
-use snafu::{ResultExt, Snafu};
-use std::{collections::HashMap, sync::Mutex, sync::MutexGuard};
+use once_cell::sync::OnceCell;
+use snafu::Snafu;
+use std::{collections::HashMap, sync::MutexGuard};
 
 #[derive(Debug, Snafu)]
 pub enum Error {
@@ -17,37 +17,41 @@ pub enum Error {
     ParseFont { message: String },
 }
 
+impl From<&str> for Error {
+    fn from(value: &str) -> Self {
+        Error::ParseFont {
+            message: value.to_string(),
+        }
+    }
+}
+
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub static DEFAULT_FONT_FAMILY: &str = "Arial";
 
-static GLOBAL_FONTS: Lazy<Mutex<HashMap<String, Font>>> = Lazy::new(|| {
-    let mut m = HashMap::new();
-    // 初始化字体
-    // 失败时直接出错
-    let font = include_bytes!("../Arial.ttf") as &[u8];
-    let font = fontdue::Font::from_bytes(font, fontdue::FontSettings::default()).unwrap();
-    m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
-
-    Mutex::new(m)
-});
-
-pub fn add_font(name: &str, data: &[u8]) -> Result<()> {
-    let font =
-        fontdue::Font::from_bytes(data, fontdue::FontSettings::default()).map_err(|str| {
-            Error::ParseFont {
-                message: str.to_string(),
+pub fn get_or_init_fonts(
+    fonts: Option<Vec<(String, &[u8])>>,
+) -> Result<&'static HashMap<String, Font>> {
+    static GLOBAL_FONTS: OnceCell<HashMap<String, Font>> = OnceCell::new();
+    GLOBAL_FONTS.get_or_try_init(|| {
+        let mut m = HashMap::new();
+        // 初始化字体
+        // 失败时直接出错
+        let font = include_bytes!("../Arial.ttf") as &[u8];
+        let font = fontdue::Font::from_bytes(font, fontdue::FontSettings::default())?;
+        m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
+        if let Some(value) = fonts {
+            for (name, data) in value.iter() {
+                let font = fontdue::Font::from_bytes(*data, fontdue::FontSettings::default())?;
+                m.insert(name.to_owned(), font);
             }
-        })?;
-    let mut m = GLOBAL_FONTS.lock().context(UnableGetLockSnafu)?;
-    m.insert(name.to_string(), font);
-    Ok(())
+        }
+        Ok(m)
+    })
 }
-
-pub fn get_font(name: &str) -> Result<Font> {
-    let m = GLOBAL_FONTS.lock().context(UnableGetLockSnafu)?;
-    if let Some(font) = m.get(name) {
-        Ok(font.clone())
+pub fn get_font(name: &str) -> Result<&Font> {
+    if let Some(font) = get_or_init_fonts(None)?.get(name) {
+        Ok(font)
     } else {
         FontNotFoundSnafu {
             name: name.to_string(),
@@ -81,30 +85,16 @@ pub fn measure_text(font: &Font, font_size: f32, text: &str) -> Box {
 
 pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) -> Result<Box> {
     let font = get_font(font_family)?;
-    Ok(measure_text(&font, font_size, text))
+    Ok(measure_text(font, font_size, text))
 }
-
-// pub fn measure_text_vertical_center(
-//     font_family: &str,
-//     font_size: f32,
-//     text: &str,
-//     line_height: f32,
-// ) -> Result<f32> {
-//     let b = measure_text_width_family(font_family, font_size, text)?;
-//     let height = b.height();
-//     Ok((line_height - height) / 2.0 + height)
-// }
 
 #[cfg(test)]
 mod tests {
-    use super::{add_font, get_font, measure_text_width_family};
+    use super::{get_font, measure_text_width_family};
     use pretty_assertions::assert_eq;
     #[test]
     fn measure_text() {
-        let data = include_bytes!("../../src/Arial.ttf") as &[u8];
-        let name = "custom";
-        add_font(name, data).unwrap();
-
+        let name = "Arial";
         get_font(name).unwrap();
 
         let str = "Hello World!";

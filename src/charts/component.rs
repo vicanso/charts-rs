@@ -1080,7 +1080,7 @@ impl Axis {
             let formatter = &self.formatter.clone().unwrap_or_default();
             for (index, item) in self.data.iter().enumerate() {
                 let text = format_string(item, formatter);
-                let b = font::measure_text(&f, font_size, &text);
+                let b = font::measure_text(f, font_size, &text);
                 let mut unit_offset = unit * index as f32 + unit / 2.0;
                 if is_name_align_start {
                     unit_offset -= unit / 2.0;

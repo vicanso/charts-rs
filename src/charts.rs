@@ -31,7 +31,7 @@ pub use encoder::svg_to_png;
 pub use encoder::EncodeParams;
 #[cfg(feature = "image")]
 pub use encoder::Error as EncoderError;
-pub use font::{add_font, get_font, measure_text_width_family, DEFAULT_FONT_FAMILY};
+pub use font::{get_font, get_or_init_fonts, measure_text_width_family, DEFAULT_FONT_FAMILY};
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use path::*;
