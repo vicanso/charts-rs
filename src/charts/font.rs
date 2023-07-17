@@ -29,7 +29,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub static DEFAULT_FONT_FAMILY: &str = "Arial";
 
-pub fn get_or_init_fonts(
+pub fn get_or_try_init(
     fonts: Option<Vec<(String, &[u8])>>,
 ) -> Result<&'static HashMap<String, Font>> {
     static GLOBAL_FONTS: OnceCell<HashMap<String, Font>> = OnceCell::new();
@@ -50,7 +50,7 @@ pub fn get_or_init_fonts(
     })
 }
 pub fn get_font(name: &str) -> Result<&Font> {
-    if let Some(font) = get_or_init_fonts(None)?.get(name) {
+    if let Some(font) = get_or_try_init(None)?.get(name) {
         Ok(font)
     } else {
         FontNotFoundSnafu {
