@@ -28,6 +28,7 @@ impl From<&str> for Error {
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub static DEFAULT_FONT_FAMILY: &str = "Arial";
+pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Arial.ttf");
 
 pub fn get_or_try_init(
     fonts: Option<Vec<(String, &[u8])>>,
@@ -37,20 +38,24 @@ pub fn get_or_try_init(
         let mut m = HashMap::new();
         // 初始化字体
         // 失败时直接出错
-        let font = include_bytes!("../Arial.ttf") as &[u8];
-        let font = fontdue::Font::from_bytes(font, fontdue::FontSettings::default())?;
+        let font = fontdue::Font::from_bytes(DEFAULT_FONT_DATA, fontdue::FontSettings::default())?;
         m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
+        let mut font_datas = vec![DEFAULT_FONT_DATA];
         if let Some(value) = fonts {
             for (name, data) in value.iter() {
                 let font = fontdue::Font::from_bytes(*data, fontdue::FontSettings::default())?;
                 m.insert(name.to_owned(), font);
+                font_datas.push(*data);
             }
         }
+        #[cfg(feature = "image")]
+        crate::get_or_init_fontdb(Some(font_datas));
         Ok(m)
     })
 }
 pub fn get_font(name: &str) -> Result<&Font> {
-    if let Some(font) = get_or_try_init(None)?.get(name) {
+    let fonts = get_or_try_init(None)?;
+    if let Some(font) = fonts.get(name).or_else(|| fonts.get(DEFAULT_FONT_FAMILY)) {
         Ok(font)
     } else {
         FontNotFoundSnafu {

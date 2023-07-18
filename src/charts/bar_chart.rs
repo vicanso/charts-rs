@@ -503,7 +503,8 @@ mod tests {
 
         #[cfg(feature = "image")]
         {
-            use crate::{svg_to_png, EncodeParams};
+            use crate::{get_font_families, svg_to_png, EncodeParams};
+            assert_eq!("Arial", get_font_families().join(","));
             let buf = svg_to_png(EncodeParams {
                 svg: bar_chart.svg().unwrap(),
                 ..Default::default()

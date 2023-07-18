@@ -7,4 +7,4 @@ lint:
 udeps:
 	cargo +nightly udeps
 bench:
-	cargo bench
+	cargo bench --features "image"

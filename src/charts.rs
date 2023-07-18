@@ -26,12 +26,19 @@ pub use component::{
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 #[cfg(feature = "image")]
+pub use encoder::get_font_families;
+#[cfg(feature = "image")]
+pub use encoder::get_or_init_fontdb;
+#[cfg(feature = "image")]
 pub use encoder::svg_to_png;
 #[cfg(feature = "image")]
 pub use encoder::EncodeParams;
 #[cfg(feature = "image")]
 pub use encoder::Error as EncoderError;
-pub use font::{get_font, get_or_try_init, measure_text_width_family, DEFAULT_FONT_FAMILY};
+
+pub use font::{
+    get_font, get_or_try_init, measure_text_width_family, DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY,
+};
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use path::*;
