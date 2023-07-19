@@ -1,6 +1,6 @@
 use charts_rs::{
-    measure_text_width_family, svg_to_png, BarChart, Box, EncodeParams, LegendCategory,
-    SeriesCategory, DEFAULT_FONT_FAMILY,
+    measure_text_width_family, svg_to_png, BarChart, Box, LegendCategory, SeriesCategory,
+    DEFAULT_FONT_FAMILY,
 };
 use criterion::{criterion_group, criterion_main, Criterion};
 
@@ -106,11 +106,7 @@ fn bar_chart_line_mixin_png() {
     bar_chart.series_list[0].label_show = true;
     bar_chart.series_list[3].label_show = true;
 
-    svg_to_png(EncodeParams {
-        svg: bar_chart.svg().unwrap(),
-        ..Default::default()
-    })
-    .unwrap();
+    svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 }
 
 fn bar_chart_benchmark(c: &mut Criterion) {

@@ -503,13 +503,8 @@ mod tests {
 
         #[cfg(feature = "image")]
         {
-            use crate::{get_font_families, svg_to_png, EncodeParams};
-            assert_eq!("Arial", get_font_families().join(","));
-            let buf = svg_to_png(EncodeParams {
-                svg: bar_chart.svg().unwrap(),
-                ..Default::default()
-            })
-            .unwrap();
+            use crate::svg_to_png;
+            let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
             std::fs::write("./asset/line_mixin.png", buf).unwrap();
         }
     }

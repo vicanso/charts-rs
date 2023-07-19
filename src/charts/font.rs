@@ -30,9 +30,17 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub static DEFAULT_FONT_FAMILY: &str = "Arial";
 pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Arial.ttf");
 
-pub fn get_or_try_init(
-    fonts: Option<Vec<(String, &[u8])>>,
-) -> Result<&'static HashMap<String, Font>> {
+fn get_family_from_font(font: &fontdue::Font) -> String {
+    if let Ok(re) = regex::Regex::new(r###"name:( ?)Some\("(?P<family>[\S ]+)"\)"###) {
+        let desc = format!("{:?}", font);
+        if let Some(caps) = re.captures(&desc) {
+            return caps["family"].to_string();
+        }
+    }
+    "".to_string()
+}
+
+pub fn get_or_try_init_fonts(fonts: Option<Vec<&[u8]>>) -> Result<&'static HashMap<String, Font>> {
     static GLOBAL_FONTS: OnceCell<HashMap<String, Font>> = OnceCell::new();
     GLOBAL_FONTS.get_or_try_init(|| {
         let mut m = HashMap::new();
@@ -42,10 +50,13 @@ pub fn get_or_try_init(
         m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
         let mut font_datas = vec![DEFAULT_FONT_DATA];
         if let Some(value) = fonts {
-            for (name, data) in value.iter() {
+            for data in value.iter() {
                 let font = fontdue::Font::from_bytes(*data, fontdue::FontSettings::default())?;
-                m.insert(name.to_owned(), font);
-                font_datas.push(*data);
+                let family = get_family_from_font(&font);
+                if !family.is_empty() {
+                    m.insert(family, font);
+                    font_datas.push(*data);
+                }
             }
         }
         #[cfg(feature = "image")]
@@ -54,7 +65,7 @@ pub fn get_or_try_init(
     })
 }
 pub fn get_font(name: &str) -> Result<&Font> {
-    let fonts = get_or_try_init(None)?;
+    let fonts = get_or_try_init_fonts(None)?;
     if let Some(font) = fonts.get(name).or_else(|| fonts.get(DEFAULT_FONT_FAMILY)) {
         Ok(font)
     } else {
@@ -63,6 +74,14 @@ pub fn get_font(name: &str) -> Result<&Font> {
         }
         .fail()
     }
+}
+pub fn get_font_families() -> Result<Vec<String>> {
+    let fonts = get_or_try_init_fonts(None)?;
+    let mut families = vec![];
+    for (name, _) in fonts.iter() {
+        families.push(name.to_string());
+    }
+    Ok(families)
 }
 
 pub fn measure_text(font: &Font, font_size: f32, text: &str) -> Box {
@@ -95,7 +114,7 @@ pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) 
 
 #[cfg(test)]
 mod tests {
-    use super::{get_font, measure_text_width_family};
+    use super::{get_font, get_font_families, measure_text_width_family};
     use pretty_assertions::assert_eq;
     #[test]
     fn measure_text() {
@@ -107,5 +126,7 @@ mod tests {
 
         assert_eq!(81.0, b.width().ceil());
         assert_eq!(14.0, b.height());
+
+        assert_eq!("Arial", get_font_families().unwrap().join(","));
     }
 }
