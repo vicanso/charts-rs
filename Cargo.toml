@@ -11,9 +11,11 @@ repository = "https://github.com/vicanso/charts-rs"
 exclude = [
     "asset/*",
     "test/*",
+    "benches/*",
     "charts-rs-derive/*",
     "Cargo.lock"
 ]
+readme = "./README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

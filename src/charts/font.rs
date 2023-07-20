@@ -31,10 +31,15 @@ pub static DEFAULT_FONT_FAMILY: &str = "Arial";
 pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Arial.ttf");
 
 fn get_family_from_font(font: &fontdue::Font) -> String {
-    if let Ok(re) = regex::Regex::new(r###"name:( ?)Some\("(?P<family>[\S ]+)"\)"###) {
+    if let Ok(re) = regex::Regex::new(r#"name:( ?)Some\("(?P<family>[\S ]+)"\)"#) {
         let desc = format!("{:?}", font);
         if let Some(caps) = re.captures(&desc) {
-            return caps["family"].to_string();
+            let mut family = caps["family"].to_string();
+            // 如果以Light、Bold结尾，则直接截取
+            if let Ok(weight) = regex::Regex::new(r#"Bold|Light$"#) {
+                family = weight.replace_all(&family, "").to_string();
+            }
+            return family.trim().to_string();
         }
     }
     "".to_string()
