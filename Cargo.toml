@@ -11,7 +11,6 @@ repository = "https://github.com/vicanso/charts-rs"
 exclude = [
     "asset/*",
     "test/*",
-    "benches/*",
     "charts-rs-derive/*",
     "Cargo.lock"
 ]
