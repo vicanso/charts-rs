@@ -16,12 +16,34 @@
 
 `Apache ECharts` is popular among Front-end developers, so `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
 
+
+## Mix line bar
 <p align="center">
     <img src="./asset/image/mix-line-bar.png" alt="charts-rs">
+</p>
+
+## Horizontal bar
+<p align="center">
     <img src="./asset/image/horizontal-bar.png" alt="charts-rs">
+</p>
+
+## Line
+<p align="center">
     <img src="./asset/image/line.png" alt="charts-rs">
+</p>
+
+## Pie
+<p align="center">
     <img src="./asset/image/pie.png" alt="charts-rs">
+</p>
+
+## Radar
+<p align="center">
     <img src="./asset/image/radar.png" alt="charts-rs">
+</p>
+
+## Table
+<p align="center">
     <img src="./asset/image/table.png" alt="charts-rs">
 </p>
 

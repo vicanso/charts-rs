@@ -144,7 +144,7 @@ fn generate_image() {
     pie_chart.title_text = "Nightingale Chart".to_string();
     pie_chart.sub_title_text = "Fake Data".to_string();
     let buf = svg_to_png(&pie_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/pie-chart.png", buf).unwrap();
+    std::fs::write("./asset/image/pie.png", buf).unwrap();
 
     // radar chart
     let radar_chart = RadarChart::new_with_theme(
