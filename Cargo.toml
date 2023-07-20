@@ -1,9 +1,9 @@
 [package]
 name = "charts-rs"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2021"
 categories = ["multimedia::images"]
-keywords = ["charts", "svg"]
+keywords = ["charts", "svg", "plot", "visualization", "graph"]
 description = "A charts library for rust"
 license = "Apache-2.0"
 homepage = "https://github.com/vicanso/charts-rs"

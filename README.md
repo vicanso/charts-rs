@@ -28,7 +28,7 @@
 ## Example
 
 ```rust,no_run
-use charts_rs::{BarChart};
+use charts_rs::{BarChart, svg_to_png};
 let bar_chart = BarChart::from_json(
     r###"{
         "width": 630,
@@ -66,6 +66,7 @@ let bar_chart = BarChart::from_json(
     }"###,
 ).unwrap();
 println!("{}", bar_chart.svg().unwrap());
+svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 ```
 
 ## License
