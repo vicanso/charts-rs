@@ -44,6 +44,7 @@ fn radar_chart() {
     }"###,
     )
     .unwrap();
+
     assert_eq!(
         include_str!("../asset/radar_chart/basic_json.svg"),
         radar_chart.svg().unwrap()

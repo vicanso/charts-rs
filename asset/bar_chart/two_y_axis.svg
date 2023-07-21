@@ -1,23 +1,23 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="259" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="18" x="260.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Bar Chart
 </text>
 <g>
-<rect x="129.5" y="45" width="25" height="10" stroke="#5470C6" fill="#5470C6"/>
-<text font-size="14" x="157.5" y="54" font-family="Arial" fill="#464646">
+<rect x="128.5" y="45" width="25" height="10" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="156.5" y="54" font-family="Roboto" fill="#464646">
 Evaporation
 </text>
 </g>
 <g>
-<rect x="239.5" y="45" width="25" height="10" stroke="#91CC75" fill="#91CC75"/>
-<text font-size="14" x="267.5" y="54" font-family="Arial" fill="#464646">
+<rect x="237.5" y="45" width="25" height="10" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="265.5" y="54" font-family="Roboto" fill="#464646">
 Precipitation
 </text>
 </g>
 <g>
 <rect x="353.5" y="45" width="25" height="10" stroke="#FAC858" fill="#FAC858"/>
-<text font-size="14" x="381.5" y="54" font-family="Arial" fill="#464646">
+<text font-size="14" x="381.5" y="54" font-family="Roboto" fill="#464646">
 Temperature
 </text>
 </g>
@@ -26,49 +26,49 @@ Temperature
 </g>
 <g>
 
-<text font-size="14" x="9" y="77" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="8" y="77" font-family="Roboto" fill="#6E7079">
 240 ml
 </text>
-<text font-size="14" x="9" y="125.8" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="8" y="125.8" font-family="Roboto" fill="#6E7079">
 200 ml
 </text>
-<text font-size="14" x="9" y="174.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="8" y="174.7" font-family="Roboto" fill="#6E7079">
 160 ml
 </text>
-<text font-size="14" x="9" y="223.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="8" y="223.5" font-family="Roboto" fill="#6E7079">
 120 ml
 </text>
-<text font-size="14" x="17" y="272.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="16" y="272.3" font-family="Roboto" fill="#6E7079">
 80 ml
 </text>
-<text font-size="14" x="17" y="321.2" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="16" y="321.2" font-family="Roboto" fill="#6E7079">
 40 ml
 </text>
-<text font-size="14" x="25" y="370" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="24" y="370" font-family="Roboto" fill="#6E7079">
 0 ml
 </text>
 </g>
 <g>
 
-<text font-size="14" x="548" y="79" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="79" font-family="Roboto" fill="#6E7079">
 24 °C
 </text>
-<text font-size="14" x="548" y="127.8" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="127.8" font-family="Roboto" fill="#6E7079">
 20 °C
 </text>
-<text font-size="14" x="548" y="176.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="176.7" font-family="Roboto" fill="#6E7079">
 16 °C
 </text>
-<text font-size="14" x="548" y="225.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="225.5" font-family="Roboto" fill="#6E7079">
 12 °C
 </text>
-<text font-size="14" x="548" y="274.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="274.3" font-family="Roboto" fill="#6E7079">
 8 °C
 </text>
-<text font-size="14" x="548" y="323.2" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="323.2" font-family="Roboto" fill="#6E7079">
 4 °C
 </text>
-<text font-size="14" x="548" y="372" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="548" y="372" font-family="Roboto" fill="#6E7079">
 0 °C
 </text>
 </g>
@@ -84,25 +84,25 @@ Temperature
 <line stroke-width="1" x1="471.4" y1="365" x2="471.4" y2="370"/>
 <line stroke-width="1" x1="540" y1="365" x2="540" y2="370"/>
 </g>
-<text font-size="14" x="80.8" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="80.3" y="384" font-family="Roboto" fill="#6E7079">
 Mon
 </text>
-<text font-size="14" x="150.4" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="150.9" y="384" font-family="Roboto" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" x="216.9" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="217.4" y="384" font-family="Roboto" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" x="288" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="288" y="384" font-family="Roboto" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" x="360.1" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="360.6" y="384" font-family="Roboto" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" x="426.1" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="426.1" y="384" font-family="Roboto" fill="#6E7079">
 Sat
 </text>
-<text font-size="14" x="493.2" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="493.7" y="384" font-family="Roboto" fill="#6E7079">
 Sun
 </text>
 </g>

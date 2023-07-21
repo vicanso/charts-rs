@@ -27,8 +27,8 @@ impl From<&str> for Error {
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-pub static DEFAULT_FONT_FAMILY: &str = "Arial";
-pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Arial.ttf");
+pub static DEFAULT_FONT_FAMILY: &str = "Roboto";
+pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Roboto.ttf");
 
 fn get_family_from_font(font: &fontdue::Font) -> String {
     if let Ok(re) = regex::Regex::new(r#"name:( ?)Some\("(?P<family>[\S ]+)"\)"#) {
@@ -123,15 +123,15 @@ mod tests {
     use pretty_assertions::assert_eq;
     #[test]
     fn measure_text() {
-        let name = "Arial";
+        let name = "Roboto";
         get_font(name).unwrap();
 
         let str = "Hello World!";
         let b = measure_text_width_family(name, 14.0, str).unwrap();
 
-        assert_eq!(81.0, b.width().ceil());
+        assert_eq!(79.0, b.width().ceil());
         assert_eq!(14.0, b.height());
 
-        assert_eq!("Arial", get_font_families().unwrap().join(","));
+        assert_eq!("Roboto", get_font_families().unwrap().join(","));
     }
 }

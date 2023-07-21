@@ -1,88 +1,88 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="215.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="18" x="219" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Stacked Area Chart
 </text>
-<text font-size="14" x="261.5" y="35" dy="10" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="14" x="262.5" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Hello World
 </text>
 <g>
-<line stroke-width="2" x1="238" y1="65" x2="263" y2="65" stroke="#5470C6"/>
-<circle cx="250.5" cy="65" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="266" y="69" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="239.5" y1="65" x2="264.5" y2="65" stroke="#5470C6"/>
+<circle cx="252" cy="65" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="267.5" y="69" font-family="Roboto" fill="#464646">
 Search Engine
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="37" y1="87" x2="595" y2="87"/><line stroke-width="1" x1="37" y1="133.3" x2="595" y2="133.3"/><line stroke-width="1" x1="37" y1="179.7" x2="595" y2="179.7"/><line stroke-width="1" x1="37" y1="226" x2="595" y2="226"/><line stroke-width="1" x1="37" y1="272.3" x2="595" y2="272.3"/><line stroke-width="1" x1="37" y1="318.7" x2="595" y2="318.7"/>
+<line stroke-width="1" x1="38" y1="87" x2="595" y2="87"/><line stroke-width="1" x1="38" y1="133.3" x2="595" y2="133.3"/><line stroke-width="1" x1="38" y1="179.7" x2="595" y2="179.7"/><line stroke-width="1" x1="38" y1="226" x2="595" y2="226"/><line stroke-width="1" x1="38" y1="272.3" x2="595" y2="272.3"/><line stroke-width="1" x1="38" y1="318.7" x2="595" y2="318.7"/>
 </g>
 <g>
 
-<text font-size="14" x="2" y="92" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="92" font-family="Roboto" fill="#6E7079">
 1.8k
 </text>
-<text font-size="14" x="2" y="138.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="138.3" font-family="Roboto" fill="#6E7079">
 1.5k
 </text>
-<text font-size="14" x="2" y="184.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="184.7" font-family="Roboto" fill="#6E7079">
 1.2k
 </text>
-<text font-size="14" x="5" y="231" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="6" y="231" font-family="Roboto" fill="#6E7079">
 900
 </text>
-<text font-size="14" x="5" y="277.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="6" y="277.3" font-family="Roboto" fill="#6E7079">
 600
 </text>
-<text font-size="14" x="5" y="323.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="6" y="323.7" font-family="Roboto" fill="#6E7079">
 300
 </text>
-<text font-size="14" x="21" y="370" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="22" y="370" font-family="Roboto" fill="#6E7079">
 0
 </text>
 </g>
 <g>
 <g stroke="#6E7079">
-<line stroke-width="1" x1="37" y1="365" x2="595" y2="365"/>
-<line stroke-width="1" x1="37" y1="365" x2="37" y2="370"/>
-<line stroke-width="1" x1="116.7" y1="365" x2="116.7" y2="370"/>
-<line stroke-width="1" x1="196.4" y1="365" x2="196.4" y2="370"/>
-<line stroke-width="1" x1="276.1" y1="365" x2="276.1" y2="370"/>
-<line stroke-width="1" x1="355.9" y1="365" x2="355.9" y2="370"/>
-<line stroke-width="1" x1="435.6" y1="365" x2="435.6" y2="370"/>
-<line stroke-width="1" x1="515.3" y1="365" x2="515.3" y2="370"/>
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
+<line stroke-width="1" x1="117.6" y1="365" x2="117.6" y2="370"/>
+<line stroke-width="1" x1="197.1" y1="365" x2="197.1" y2="370"/>
+<line stroke-width="1" x1="276.7" y1="365" x2="276.7" y2="370"/>
+<line stroke-width="1" x1="356.3" y1="365" x2="356.3" y2="370"/>
+<line stroke-width="1" x1="435.9" y1="365" x2="435.9" y2="370"/>
+<line stroke-width="1" x1="515.4" y1="365" x2="515.4" y2="370"/>
 <line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
 </g>
-<text font-size="14" x="63.4" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="63.8" y="384" font-family="Roboto" fill="#6E7079">
 Mon
 </text>
-<text font-size="14" x="144.1" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="145.4" y="384" font-family="Roboto" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" x="221.8" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="222.9" y="384" font-family="Roboto" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" x="304" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="304.5" y="384" font-family="Roboto" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" x="387.2" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="388.1" y="384" font-family="Roboto" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" x="464.4" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="464.6" y="384" font-family="Roboto" fill="#6E7079">
 Sat
 </text>
-<text font-size="14" x="542.6" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="543.2" y="384" font-family="Roboto" fill="#6E7079">
 Sun
 </text>
 </g>
-<path d="M76.9,238.4 C96.8 234, 136.4 222.6, 156.6 221.1 C176.3 219.5, 216.4 225.9, 236.3 225.8 C256.2 225.8, 298 227.5, 316 220.7 C337.8 212.5, 373.9 174.1, 395.7 165.8 C413.7 158.9, 455.5 160.2, 475.4 159.6 C495.3 159, 535.2 160.7, 555.1 161.1M 555.1 161.1 L 555.1 365 L 76.9 365 L 76.9 238.4" fill="#5470C6" fill-opacity="0.4"/>
+<path d="M77.8,238.4 C97.7 234, 137.3 222.6, 157.4 221.1 C177 219.5, 217 225.9, 236.9 225.8 C256.8 225.8, 298.5 227.5, 316.5 220.7 C338.3 212.5, 374.3 174.1, 396.1 165.8 C414.1 158.9, 455.7 160.2, 475.6 159.6 C495.5 159, 535.3 160.7, 555.2 161.1M 555.2 161.1 L 555.2 365 L 77.8 365 L 77.8 238.4" fill="#5470C6" fill-opacity="0.4"/>
 <g>
-<path d="M76.9,238.4 C96.8 234, 136.4 222.6, 156.6 221.1 C176.3 219.5, 216.4 225.9, 236.3 225.8 C256.2 225.8, 298 227.5, 316 220.7 C337.8 212.5, 373.9 174.1, 395.7 165.8 C413.7 158.9, 455.5 160.2, 475.4 159.6 C495.3 159, 535.2 160.7, 555.1 161.1" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="76.9" cy="238.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="156.6" cy="221.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="236.3" cy="225.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="316" cy="220.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="395.7" cy="165.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="475.4" cy="159.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="555.1" cy="161.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<path d="M77.8,238.4 C97.7 234, 137.3 222.6, 157.4 221.1 C177 219.5, 217 225.9, 236.9 225.8 C256.8 225.8, 298.5 227.5, 316.5 220.7 C338.3 212.5, 374.3 174.1, 396.1 165.8 C414.1 158.9, 455.7 160.2, 475.6 159.6 C495.5 159, 535.3 160.7, 555.2 161.1" stroke-width="2" fill="none" stroke="#5470C6"/>
+<circle cx="77.8" cy="238.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="157.4" cy="221.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="236.9" cy="225.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="316.5" cy="220.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="396.1" cy="165.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="475.6" cy="159.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="555.2" cy="161.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 </svg>

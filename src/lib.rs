@@ -85,7 +85,7 @@
 //! The fonts will be initialized once, it can be changed before used.
 //! ```rust
 //! use charts_rs::{get_or_try_init_fonts, BarChart};
-//! let data = include_bytes!("./Arial.ttf") as &[u8];
+//! let data = include_bytes!("./Roboto.ttf") as &[u8];
 //! get_or_try_init_fonts(Some(vec![data])).unwrap();
 //! let bar_chart = BarChart::from_json(
 //!     r###"{

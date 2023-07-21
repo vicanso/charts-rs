@@ -45,6 +45,7 @@ fn pie_chart() {
     }"###,
     )
     .unwrap();
+
     assert_eq!(
         include_str!("../asset/pie_chart/basic_json.svg"),
         pie_chart.svg().unwrap()

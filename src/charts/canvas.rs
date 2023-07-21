@@ -385,10 +385,10 @@ mod tests {
             line_height: Some(30.0),
             ..Default::default()
         });
-        assert_eq!("(0,0,81,30)", b.to_string());
+        assert_eq!("(0,0,79,30)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-<text font-size="14" x="0" y="0" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#000000">
+<text font-size="14" x="0" y="0" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#000000">
 Hello World!
 </text>
 </svg>"###,
@@ -561,25 +561,25 @@ Hello World!
 <line stroke-width="1" x1="339.3" y1="5" x2="339.3" y2="10"/>
 <line stroke-width="1" x1="395" y1="5" x2="395" y2="10"/>
 </g>
-<text font-size="14" x="19.4" y="24" font-family="Arial">
+<text font-size="14" x="18.9" y="24" font-family="Roboto">
 Mon
 </text>
-<text font-size="14" x="76.1" y="24" font-family="Arial">
+<text font-size="14" x="76.6" y="24" font-family="Roboto">
 Tue
 </text>
-<text font-size="14" x="129.8" y="24" font-family="Arial">
+<text font-size="14" x="130.3" y="24" font-family="Roboto">
 Wed
 </text>
-<text font-size="14" x="188" y="24" font-family="Arial">
+<text font-size="14" x="188" y="24" font-family="Roboto">
 Thu
 </text>
-<text font-size="14" x="247.2" y="24" font-family="Arial">
+<text font-size="14" x="247.7" y="24" font-family="Roboto">
 Fri
 </text>
-<text font-size="14" x="300.4" y="24" font-family="Arial">
+<text font-size="14" x="300.4" y="24" font-family="Roboto">
 Sat
 </text>
-<text font-size="14" x="354.6" y="24" font-family="Arial">
+<text font-size="14" x="355.1" y="24" font-family="Roboto">
 Sun
 </text>
 </g>
@@ -616,22 +616,22 @@ Sun
 <line stroke-width="1" x1="265" y1="5" x2="265" y2="10"/>
 <line stroke-width="1" x1="395" y1="5" x2="395" y2="10"/>
 </g>
-<text font-size="14" x="24" y="24" font-family="Arial">
+<text font-size="14" x="23.5" y="24" font-family="Roboto">
 Mon
 </text>
-<text font-size="14" x="90" y="24" font-family="Arial">
+<text font-size="14" x="90.5" y="24" font-family="Roboto">
 Tue
 </text>
-<text font-size="14" x="153" y="24" font-family="Arial">
+<text font-size="14" x="153.5" y="24" font-family="Roboto">
 Wed
 </text>
-<text font-size="14" x="220.5" y="24" font-family="Arial">
+<text font-size="14" x="220.5" y="24" font-family="Roboto">
 Thu
 </text>
-<text font-size="14" x="289" y="24" font-family="Arial">
+<text font-size="14" x="289.5" y="24" font-family="Roboto">
 Fri
 </text>
-<text font-size="14" x="351.5" y="24" font-family="Arial">
+<text font-size="14" x="351.5" y="24" font-family="Roboto">
 Sat
 </text>
 </g>
@@ -669,25 +669,25 @@ Sat
 <line stroke-width="1" x1="227.9" y1="5" x2="227.9" y2="10"/>
 <line stroke-width="1" x1="339.3" y1="5" x2="339.3" y2="10"/>
 </g>
-<text font-size="14" x="19.4" y="24" font-family="Arial">
+<text font-size="14" x="18.9" y="24" font-family="Roboto">
 Mon
 </text>
-<text font-size="14" x="76.1" y="24" font-family="Arial">
+<text font-size="14" x="76.6" y="24" font-family="Roboto">
 Tue
 </text>
-<text font-size="14" x="129.8" y="24" font-family="Arial">
+<text font-size="14" x="130.3" y="24" font-family="Roboto">
 Wed
 </text>
-<text font-size="14" x="188" y="24" font-family="Arial">
+<text font-size="14" x="188" y="24" font-family="Roboto">
 Thu
 </text>
-<text font-size="14" x="247.2" y="24" font-family="Arial">
+<text font-size="14" x="247.7" y="24" font-family="Roboto">
 Fri
 </text>
-<text font-size="14" x="300.4" y="24" font-family="Arial">
+<text font-size="14" x="300.4" y="24" font-family="Roboto">
 Sat
 </text>
-<text font-size="14" x="354.6" y="24" font-family="Arial">
+<text font-size="14" x="355.1" y="24" font-family="Roboto">
 Sun
 </text>
 </g>
@@ -729,25 +729,25 @@ Sun
 <line stroke-width="1" x1="328.6" y1="5" x2="328.6" y2="10"/>
 <line stroke-width="1" x1="380" y1="5" x2="380" y2="10"/>
 </g>
-<text font-size="14" x="6.5" y="24" font-family="Arial">
+<text font-size="14" x="6" y="24" font-family="Roboto">
 Mon
 </text>
-<text font-size="14" x="67.5" y="24" font-family="Arial">
+<text font-size="14" x="68" y="24" font-family="Roboto">
 Tue
 </text>
-<text font-size="14" x="125.5" y="24" font-family="Arial">
+<text font-size="14" x="126" y="24" font-family="Roboto">
 Wed
 </text>
-<text font-size="14" x="188" y="24" font-family="Arial">
+<text font-size="14" x="188" y="24" font-family="Roboto">
 Thu
 </text>
-<text font-size="14" x="251.5" y="24" font-family="Arial">
+<text font-size="14" x="252" y="24" font-family="Roboto">
 Fri
 </text>
-<text font-size="14" x="309" y="24" font-family="Arial">
+<text font-size="14" x="309" y="24" font-family="Roboto">
 Sat
 </text>
-<text font-size="14" x="367.5" y="24" font-family="Arial">
+<text font-size="14" x="368" y="24" font-family="Roboto">
 Sun
 </text>
 </g>
@@ -770,13 +770,13 @@ Sun
             top: 10.0,
             category: LegendCategory::Normal,
         });
-        assert_eq!("(10,10,72,24)", b.to_string());
+        assert_eq!("(10,10,71,24)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
 <g>
 <line stroke-width="2" x1="10" y1="20" x2="35" y2="20" stroke="#000000"/>
 <circle cx="22.5" cy="20" r="5.5" stroke-width="2" stroke="#000000" fill="#000000"/>
-<text font-size="14" x="38" y="24" font-family="Arial" fill="#000000">
+<text font-size="14" x="38" y="24" font-family="Roboto" fill="#000000">
 Email
 </text>
 </g>
@@ -796,12 +796,12 @@ Email
             top: 10.0,
             category: LegendCategory::Rect,
         });
-        assert_eq!("(10,10,72,24)", b.to_string());
+        assert_eq!("(10,10,71,24)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
 <g>
 <rect x="10" y="15" width="25" height="10" stroke="#000000" fill="#000000"/>
-<text font-size="14" x="38" y="24" font-family="Arial" fill="#000000">
+<text font-size="14" x="38" y="24" font-family="Roboto" fill="#000000">
 Email
 </text>
 </g>

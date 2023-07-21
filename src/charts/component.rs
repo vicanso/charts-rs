@@ -1506,7 +1506,7 @@ mod tests {
     #[test]
     fn text() {
         assert_eq!(
-            r###"<text font-size="14" x="0" y="0" dx="5" dy="5" font-weight="bold" transform="translate(-36 45.5)" font-family="Arial" fill="#000000">
+            r###"<text font-size="14" x="0" y="0" dx="5" dy="5" font-weight="bold" transform="translate(-36 45.5)" font-family="Roboto" fill="#000000">
 Hello World!
 </text>"###,
             Text {
@@ -1748,25 +1748,25 @@ Hello World!
 <line stroke-width="1" x1="257.1" y1="50" x2="257.1" y2="55"/>
 <line stroke-width="1" x1="300" y1="50" x2="300" y2="55"/>
 </g>
-<text font-size="14" x="7.9" y="69" font-family="Arial" fill="#000000">
+<text font-size="14" x="7.4" y="69" font-family="Roboto" fill="#000000">
 Mon
 </text>
-<text font-size="14" x="51.8" y="69" font-family="Arial" fill="#000000">
+<text font-size="14" x="52.3" y="69" font-family="Roboto" fill="#000000">
 Tue
 </text>
-<text font-size="14" x="92.6" y="69" font-family="Arial" fill="#000000">
+<text font-size="14" x="93.1" y="69" font-family="Roboto" fill="#000000">
 Wed
 </text>
-<text font-size="14" x="138" y="69" font-family="Arial" fill="#000000">
+<text font-size="14" x="138" y="69" font-family="Roboto" fill="#000000">
 Thu
 </text>
-<text font-size="14" x="184.4" y="69" font-family="Arial" fill="#000000">
+<text font-size="14" x="184.9" y="69" font-family="Roboto" fill="#000000">
 Fri
 </text>
-<text font-size="14" x="224.7" y="69" font-family="Arial" fill="#000000">
+<text font-size="14" x="224.7" y="69" font-family="Roboto" fill="#000000">
 Sat
 </text>
-<text font-size="14" x="266.1" y="69" font-family="Arial" fill="#000000">
+<text font-size="14" x="266.6" y="69" font-family="Roboto" fill="#000000">
 Sun
 </text>
 </g>"###,
@@ -1801,7 +1801,7 @@ Sun
             r###"<g>
 <line stroke-width="2" x1="10" y1="40" x2="35" y2="40" stroke="#000000"/>
 <circle cx="22.5" cy="40" r="5.5" stroke-width="2" stroke="#000000" fill="#000000"/>
-<text font-size="14" x="38" y="44" font-family="Arial" fill="#000000">
+<text font-size="14" x="38" y="44" font-family="Roboto" fill="#000000">
 Line
 </text>
 </g>"###,
@@ -1822,7 +1822,7 @@ Line
         assert_eq!(
             r###"<g>
 <rect x="10" y="35" width="25" height="10" stroke="#000000" fill="#000000"/>
-<text font-size="14" x="38" y="44" font-family="Arial" fill="#000000">
+<text font-size="14" x="38" y="44" font-family="Roboto" fill="#000000">
 Line
 </text>
 </g>"###,

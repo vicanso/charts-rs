@@ -1,162 +1,162 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="215.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="18" x="219" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Stacked Area Chart
 </text>
-<text font-size="14" x="261.5" y="35" dy="10" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="14" x="262.5" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Hello World
 </text>
 <g>
-<line stroke-width="2" x1="112" y1="65" x2="137" y2="65" stroke="#5470C6"/>
-<circle cx="124.5" cy="65" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="140" y="69" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="114" y1="65" x2="139" y2="65" stroke="#5470C6"/>
+<circle cx="126.5" cy="65" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="142" y="69" font-family="Roboto" fill="#464646">
 Email
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="182" y1="65" x2="207" y2="65" stroke="#91CC75"/>
-<circle cx="194.5" cy="65" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<text font-size="14" x="210" y="69" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="183" y1="65" x2="208" y2="65" stroke="#91CC75"/>
+<circle cx="195.5" cy="65" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="211" y="69" font-family="Roboto" fill="#464646">
 Union Ads
 </text>
 </g>
 <g>
 <line stroke-width="2" x1="283" y1="65" x2="308" y2="65" stroke="#FAC858"/>
 <circle cx="295.5" cy="65" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<text font-size="14" x="311" y="69" font-family="Arial" fill="#464646">
+<text font-size="14" x="311" y="69" font-family="Roboto" fill="#464646">
 Direct
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="355" y1="65" x2="380" y2="65" stroke="#EE6666"/>
-<circle cx="367.5" cy="65" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<text font-size="14" x="383" y="69" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="356" y1="65" x2="381" y2="65" stroke="#EE6666"/>
+<circle cx="368.5" cy="65" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="384" y="69" font-family="Roboto" fill="#464646">
 Search Engine
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="34" y1="87" x2="563" y2="87"/><line stroke-width="1" x1="34" y1="133.3" x2="563" y2="133.3"/><line stroke-width="1" x1="34" y1="179.7" x2="563" y2="179.7"/><line stroke-width="1" x1="34" y1="226" x2="563" y2="226"/><line stroke-width="1" x1="34" y1="272.3" x2="563" y2="272.3"/><line stroke-width="1" x1="34" y1="318.7" x2="563" y2="318.7"/>
+<line stroke-width="1" x1="34" y1="87" x2="562" y2="87"/><line stroke-width="1" x1="34" y1="133.3" x2="562" y2="133.3"/><line stroke-width="1" x1="34" y1="179.7" x2="562" y2="179.7"/><line stroke-width="1" x1="34" y1="226" x2="562" y2="226"/><line stroke-width="1" x1="34" y1="272.3" x2="562" y2="272.3"/><line stroke-width="1" x1="34" y1="318.7" x2="562" y2="318.7"/>
 </g>
 <g>
 
-<text font-size="14" x="2" y="92" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="92" font-family="Roboto" fill="#6E7079">
 420
 </text>
-<text font-size="14" x="2" y="138.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="138.3" font-family="Roboto" fill="#6E7079">
 350
 </text>
-<text font-size="14" x="2" y="184.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="184.7" font-family="Roboto" fill="#6E7079">
 280
 </text>
-<text font-size="14" x="2" y="231" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="231" font-family="Roboto" fill="#6E7079">
 210
 </text>
-<text font-size="14" x="2" y="277.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="277.3" font-family="Roboto" fill="#6E7079">
 140
 </text>
-<text font-size="14" x="10" y="323.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="10" y="323.7" font-family="Roboto" fill="#6E7079">
 70
 </text>
-<text font-size="14" x="18" y="370" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="18" y="370" font-family="Roboto" fill="#6E7079">
 0
 </text>
 </g>
 <g>
 
-<text font-size="14" x="571" y="94" font-family="Arial" fill="#EE6666">
+<text font-size="14" x="570" y="94" font-family="Roboto" fill="#EE6666">
 1.8k
 </text>
-<text font-size="14" x="571" y="140.3" font-family="Arial" fill="#EE6666">
+<text font-size="14" x="570" y="140.3" font-family="Roboto" fill="#EE6666">
 1.5k
 </text>
-<text font-size="14" x="571" y="186.7" font-family="Arial" fill="#EE6666">
+<text font-size="14" x="570" y="186.7" font-family="Roboto" fill="#EE6666">
 1.2k
 </text>
-<text font-size="14" x="571" y="233" font-family="Arial" fill="#EE6666">
+<text font-size="14" x="570" y="233" font-family="Roboto" fill="#EE6666">
 900
 </text>
-<text font-size="14" x="571" y="279.3" font-family="Arial" fill="#EE6666">
+<text font-size="14" x="570" y="279.3" font-family="Roboto" fill="#EE6666">
 600
 </text>
-<text font-size="14" x="571" y="325.7" font-family="Arial" fill="#EE6666">
+<text font-size="14" x="570" y="325.7" font-family="Roboto" fill="#EE6666">
 300
 </text>
-<text font-size="14" x="571" y="372" font-family="Arial" fill="#EE6666">
+<text font-size="14" x="570" y="372" font-family="Roboto" fill="#EE6666">
 0
 </text>
 </g>
 <g>
 <g stroke="#6E7079">
-<line stroke-width="1" x1="34" y1="365" x2="563" y2="365"/>
+<line stroke-width="1" x1="34" y1="365" x2="562" y2="365"/>
 <line stroke-width="1" x1="34" y1="365" x2="34" y2="370"/>
-<line stroke-width="1" x1="109.6" y1="365" x2="109.6" y2="370"/>
-<line stroke-width="1" x1="185.1" y1="365" x2="185.1" y2="370"/>
-<line stroke-width="1" x1="260.7" y1="365" x2="260.7" y2="370"/>
-<line stroke-width="1" x1="336.3" y1="365" x2="336.3" y2="370"/>
-<line stroke-width="1" x1="411.9" y1="365" x2="411.9" y2="370"/>
-<line stroke-width="1" x1="487.4" y1="365" x2="487.4" y2="370"/>
-<line stroke-width="1" x1="563" y1="365" x2="563" y2="370"/>
+<line stroke-width="1" x1="109.4" y1="365" x2="109.4" y2="370"/>
+<line stroke-width="1" x1="184.9" y1="365" x2="184.9" y2="370"/>
+<line stroke-width="1" x1="260.3" y1="365" x2="260.3" y2="370"/>
+<line stroke-width="1" x1="335.7" y1="365" x2="335.7" y2="370"/>
+<line stroke-width="1" x1="411.1" y1="365" x2="411.1" y2="370"/>
+<line stroke-width="1" x1="486.6" y1="365" x2="486.6" y2="370"/>
+<line stroke-width="1" x1="562" y1="365" x2="562" y2="370"/>
 </g>
-<text font-size="14" x="58.3" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="57.7" y="384" font-family="Roboto" fill="#6E7079">
 Mon
 </text>
-<text font-size="14" x="134.9" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="135.1" y="384" font-family="Roboto" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" x="208.4" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="208.6" y="384" font-family="Roboto" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" x="286.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="286" y="384" font-family="Roboto" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" x="365.6" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="365.4" y="384" font-family="Roboto" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" x="438.6" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="437.9" y="384" font-family="Roboto" fill="#6E7079">
 Sat
 </text>
-<text font-size="14" x="512.7" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="512.3" y="384" font-family="Roboto" fill="#6E7079">
 Sun
 </text>
 </g>
 <g>
-<path d="M 71.8 285.6 L 147.4 277.6 L 222.9 298.1 L 298.5 276.3 L 374.1 305.4 L 449.6 212.8 L 525.2 226" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="71.8" cy="285.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="147.4" cy="277.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="222.9" cy="298.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="298.5" cy="276.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="374.1" cy="305.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="449.6" cy="212.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="525.2" cy="226" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<path d="M 71.7 285.6 L 147.1 277.6 L 222.6 298.1 L 298 276.3 L 373.4 305.4 L 448.9 212.8 L 524.3 226" stroke-width="2" fill="none" stroke="#5470C6"/>
+<circle cx="71.7" cy="285.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="147.1" cy="277.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="222.6" cy="298.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="298" cy="276.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="373.4" cy="305.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="448.9" cy="212.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="524.3" cy="226" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 <g>
-<path d="M 71.8 219.4 L 147.4 244.5 L 222.9 238.6 L 298.5 210.1 L 374.1 173 L 449.6 146.6 L 525.2 159.8" stroke-width="2" fill="none" stroke="#91CC75"/>
-<circle cx="71.8" cy="219.4" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="147.4" cy="244.5" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="222.9" cy="238.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="298.5" cy="210.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="374.1" cy="173" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="449.6" cy="146.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="525.2" cy="159.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<path d="M 71.7 219.4 L 147.1 244.5 L 222.6 238.6 L 298 210.1 L 373.4 173 L 448.9 146.6 L 524.3 159.8" stroke-width="2" fill="none" stroke="#91CC75"/>
+<circle cx="71.7" cy="219.4" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="147.1" cy="244.5" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="222.6" cy="238.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="298" cy="210.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="373.4" cy="173" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="448.9" cy="146.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="524.3" cy="159.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
 </g>
 <g>
-<path d="M 71.8 153.2 L 147.4 145.2 L 222.9 165.8 L 298.5 143.9 L 374.1 106.9 L 449.6 146.6 L 525.2 153.2" stroke-width="2" fill="none" stroke="#FAC858"/>
-<circle cx="71.8" cy="153.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="147.4" cy="145.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="222.9" cy="165.8" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="298.5" cy="143.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="374.1" cy="106.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="449.6" cy="146.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="525.2" cy="153.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<path d="M 71.7 153.2 L 147.1 145.2 L 222.6 165.8 L 298 143.9 L 373.4 106.9 L 448.9 146.6 L 524.3 153.2" stroke-width="2" fill="none" stroke="#FAC858"/>
+<circle cx="71.7" cy="153.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="147.1" cy="145.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="222.6" cy="165.8" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="298" cy="143.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="373.4" cy="106.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="448.9" cy="146.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="524.3" cy="153.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
 </g>
 <g>
-<path d="M 71.8 238.4 L 147.4 221.1 L 222.9 225.8 L 298.5 220.7 L 374.1 165.8 L 449.6 159.6 L 525.2 161.1" stroke-width="2" fill="none" stroke="#EE6666"/>
-<circle cx="71.8" cy="238.4" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="147.4" cy="221.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="222.9" cy="225.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="298.5" cy="220.7" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="374.1" cy="165.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="449.6" cy="159.6" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="525.2" cy="161.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<path d="M 71.7 238.4 L 147.1 221.1 L 222.6 225.8 L 298 220.7 L 373.4 165.8 L 448.9 159.6 L 524.3 161.1" stroke-width="2" fill="none" stroke="#EE6666"/>
+<circle cx="71.7" cy="238.4" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="147.1" cy="221.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="222.6" cy="225.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="298" cy="220.7" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="373.4" cy="165.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="448.9" cy="159.6" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="524.3" cy="161.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
 </g>
 </svg>

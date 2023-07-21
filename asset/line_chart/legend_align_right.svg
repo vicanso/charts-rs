@@ -1,22 +1,22 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Stacked Area Chart
 </text>
-<text font-size="14" x="5" y="35" dy="10" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="14" x="5" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Hello World
 </text>
 <g>
-<line stroke-width="2" x1="416" y1="15" x2="441" y2="15" stroke="#5470C6"/>
-<circle cx="428.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="444" y="19" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="418" y1="15" x2="443" y2="15" stroke="#5470C6"/>
+<circle cx="430.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="446" y="19" font-family="Roboto" fill="#464646">
 Email
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="486" y1="15" x2="511" y2="15" stroke="#91CC75"/>
-<circle cx="498.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<text font-size="14" x="514" y="19" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="487" y1="15" x2="512" y2="15" stroke="#91CC75"/>
+<circle cx="499.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="515" y="19" font-family="Roboto" fill="#464646">
 Union Ads
 </text>
 </g>
@@ -25,25 +25,25 @@ Union Ads
 </g>
 <g>
 
-<text font-size="14" x="2" y="65" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="65" font-family="Roboto" fill="#6E7079">
 360
 </text>
-<text font-size="14" x="2" y="115.8" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="115.8" font-family="Roboto" fill="#6E7079">
 300
 </text>
-<text font-size="14" x="2" y="166.7" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="166.7" font-family="Roboto" fill="#6E7079">
 240
 </text>
-<text font-size="14" x="2" y="217.5" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="217.5" font-family="Roboto" fill="#6E7079">
 180
 </text>
-<text font-size="14" x="2" y="268.3" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="2" y="268.3" font-family="Roboto" fill="#6E7079">
 120
 </text>
-<text font-size="14" x="10" y="319.2" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="10" y="319.2" font-family="Roboto" fill="#6E7079">
 60
 </text>
-<text font-size="14" x="18" y="370" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="18" y="370" font-family="Roboto" fill="#6E7079">
 0
 </text>
 </g>
@@ -58,25 +58,25 @@ Union Ads
 <line stroke-width="1" x1="493.2" y1="365" x2="493.2" y2="370"/>
 <line stroke-width="1" x1="585" y1="365" x2="585" y2="370"/>
 </g>
-<text font-size="14" x="20.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="20" y="384" font-family="Roboto" fill="#6E7079">
 Mon
 </text>
-<text font-size="14" x="113.3" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="113.8" y="384" font-family="Roboto" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" x="203.2" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="203.7" y="384" font-family="Roboto" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" x="297.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="297.5" y="384" font-family="Roboto" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" x="392.8" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="393.3" y="384" font-family="Roboto" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" x="482.2" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="482.2" y="384" font-family="Roboto" fill="#6E7079">
 Sat
 </text>
-<text font-size="14" x="572.5" y="384" font-family="Arial" fill="#6E7079">
+<text font-size="14" x="573" y="384" font-family="Roboto" fill="#6E7079">
 Sun
 </text>
 </g>

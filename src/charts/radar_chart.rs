@@ -288,6 +288,7 @@ impl RadarChart {
 mod tests {
     use super::RadarChart;
     use crate::Series;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn radar_basic() {
@@ -313,7 +314,6 @@ mod tests {
                 ("Marketing", 25000.0).into(),
             ],
         );
-
         assert_eq!(
             include_str!("../../asset/radar_chart/basic.svg"),
             radar_chart.svg().unwrap()

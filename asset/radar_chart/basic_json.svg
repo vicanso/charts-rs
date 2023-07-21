@@ -1,16 +1,16 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
 <g>
-<line stroke-width="2" x1="159.5" y1="15" x2="184.5" y2="15" stroke="#5470C6"/>
-<circle cx="172" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="187.5" y="19" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="158" y1="15" x2="183" y2="15" stroke="#5470C6"/>
+<circle cx="170.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="186" y="19" font-family="Roboto" fill="#464646">
 Allocated Budget
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="303.5" y1="15" x2="328.5" y2="15" stroke="#91CC75"/>
-<circle cx="316" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<text font-size="14" x="331.5" y="19" font-family="Arial" fill="#464646">
+<line stroke-width="2" x1="304" y1="15" x2="329" y2="15" stroke="#91CC75"/>
+<circle cx="316.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="332" y="19" font-family="Roboto" fill="#464646">
 Actual Spending
 </text>
 </g>
@@ -19,27 +19,27 @@ Actual Spending
 <path d="M 300 124.6 L 374.8 167.8 L 374.8 254.2 L 300 297.4 L 225.2 254.2 L 225.2 167.8 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <path d="M 300 95.8 L 399.8 153.4 L 399.8 268.6 L 300 326.2 L 200.2 268.6 L 200.2 153.4 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <path d="M 300 67 L 424.7 139 L 424.7 283 L 300 355 L 175.3 283 L 175.3 139 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
-<text font-size="14" x="281.5" y="62" font-family="Arial" fill="#464646">
+<text font-size="14" x="282" y="62" font-family="Roboto" fill="#464646">
 Sales
 </text>
 <line stroke-width="1" x1="300" y1="67" x2="300" y2="211" stroke="#E0E6F2"/>
-<text font-size="14" x="427.7" y="139" font-family="Arial" fill="#464646">
+<text font-size="14" x="427.7" y="139" font-family="Roboto" fill="#464646">
 Administration
 </text>
 <line stroke-width="1" x1="424.7" y1="139" x2="300" y2="211" stroke="#E0E6F2"/>
-<text font-size="14" x="427.7" y="290.9" font-family="Arial" fill="#464646">
+<text font-size="14" x="427.7" y="290.9" font-family="Roboto" fill="#464646">
 Information Technology
 </text>
 <line stroke-width="1" x1="424.7" y1="283" x2="300" y2="211" stroke="#E0E6F2"/>
-<text font-size="14" x="241" y="371" font-family="Arial" fill="#464646">
+<text font-size="14" x="240" y="371" font-family="Roboto" fill="#464646">
 Customer Support
 </text>
 <line stroke-width="1" x1="300" y1="355" x2="300" y2="211" stroke="#E0E6F2"/>
-<text font-size="14" x="86.3" y="290.9" font-family="Arial" fill="#464646">
+<text font-size="14" x="85.3" y="290.9" font-family="Roboto" fill="#464646">
 Development
 </text>
 <line stroke-width="1" x1="175.3" y1="283" x2="300" y2="211" stroke="#E0E6F2"/>
-<text font-size="14" x="109.3" y="139" font-family="Arial" fill="#464646">
+<text font-size="14" x="106.3" y="139" font-family="Roboto" fill="#464646">
 Marketing
 </text>
 <line stroke-width="1" x1="175.3" y1="139" x2="300" y2="211" stroke="#E0E6F2"/>

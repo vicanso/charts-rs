@@ -1,49 +1,49 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="225.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="18" x="227" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Nightingale Chart
 </text>
-<text font-size="14" x="266.5" y="35" dy="10" dominant-baseline="middle" font-family="Arial" fill="#464646">
+<text font-size="14" x="267" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Fake Data
 </text>
 <path d="M300,219.5 L300,101.5 A8 8 0 0 1 304.7,93.6 A134 134 0 0 1 391.4,129.5 A8 8 0 0 1 389.1,138.4 L305.7,221.8 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 300,219.5 Z" fill="#5470C6"/>
 <path d="M351.3,103.7 C353.2 99.1, 355.5 87.5, 358.9 85.2 C362.4 82.9, 373.9 85.2, 378.9 85.2" stroke-width="1" fill="none" stroke="#5470C6"/>
-<text font-size="14" x="381.9" y="90.2" font-family="Arial" fill="#464646">
+<text font-size="14" x="381.9" y="90.2" font-family="Roboto" fill="#464646">
 rose 1
 </text>
 <path d="M305.7,221.8 L384.4,143.1 A8 8 0 0 1 393.1,140.7 A127.3 127.3 0 0 1 427.2,223.1 A8 8 0 0 1 419.3,227.5 L308,227.5 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 305.7,221.8 Z" fill="#91CC75"/>
 <path d="M417.6,178.8 C423.8 176.2, 435.9 170, 442.3 168.6 C447.1 167.5, 457.3 168.6, 462.3 168.6" stroke-width="1" fill="none" stroke="#91CC75"/>
-<text font-size="14" x="465.3" y="173.6" font-family="Arial" fill="#464646">
+<text font-size="14" x="465.3" y="173.6" font-family="Roboto" fill="#464646">
 rose 2
 </text>
 <path d="M308,227.5 L399.2,227.5 A8 8 0 0 1 407.1,231.2 A107.2 107.2 0 0 1 378.4,300.6 A8 8 0 0 1 370.1,297.6 L305.7,233.2 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 308,227.5 Z" fill="#FAC858"/>
 <path d="M399,268.5 C409.8 273, 431.2 283.3, 442.3 286.4 C447 287.8, 457.3 286.4, 462.3 286.4" stroke-width="1" fill="none" stroke="#FAC858"/>
-<text font-size="14" x="465.3" y="291.4" font-family="Arial" fill="#464646">
+<text font-size="14" x="465.3" y="291.4" font-family="Roboto" fill="#464646">
 rose 3
 </text>
 <path d="M305.7,233.2 L365.4,292.9 A8 8 0 0 1 368.5,301 A100.5 100.5 0 0 1 303.5,327.9 A8 8 0 0 1 300,320 L300,235.5 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 305.7,233.2 Z" fill="#EE6666"/>
 <path d="M338.5,320.3 C343.6 332.7, 351.6 360.8, 358.9 369.8 C361.7 373.1, 373.9 369.8, 378.9 369.8" stroke-width="1" fill="none" stroke="#EE6666"/>
-<text font-size="14" x="381.9" y="374.8" font-family="Arial" fill="#464646">
+<text font-size="14" x="381.9" y="374.8" font-family="Roboto" fill="#464646">
 rose 4
 </text>
 <path d="M300,235.5 L300,313.3 A8 8 0 0 1 296.7,321.2 A93.8 93.8 0 0 1 236,296.1 A8 8 0 0 1 239.3,288.2 L294.3,233.2 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 300,235.5 Z" fill="#73C0DE"/>
 <path d="M264.1,314.2 C258.3 328.1, 249.1 359.3, 241.1 369.8 C238.4 373.2, 226.1 369.8, 221.1 369.8" stroke-width="1" fill="none" stroke="#73C0DE"/>
-<text font-size="14" x="181.1" y="374.8" font-family="Arial" fill="#464646">
+<text font-size="14" x="180.1" y="374.8" font-family="Roboto" fill="#464646">
 rose 5
 </text>
 <path d="M294.3,233.2 L244.1,283.4 A8 8 0 0 1 236.3,286.9 A87.1 87.1 0 0 1 213,230.5 A8 8 0 0 1 220.9,227.5 L292,227.5 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 294.3,233.2 Z" fill="#3BA272"/>
 <path d="M219.5,260.8 C204.1 267.2, 173.5 281.5, 157.7 286.4 C153 287.9, 142.7 286.4, 137.7 286.4" stroke-width="1" fill="none" stroke="#3BA272"/>
-<text font-size="14" x="97.7" y="291.4" font-family="Arial" fill="#464646">
+<text font-size="14" x="96.7" y="291.4" font-family="Roboto" fill="#464646">
 rose 6
 </text>
 <path d="M292,227.5 L234.3,227.5 A8 8 0 0 1 226.3,224.9 A73.7 73.7 0 0 1 246.1,177.2 A8 8 0 0 1 253.5,181 L294.3,221.8 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 292,227.5 Z" fill="#FC8452"/>
 <path d="M231.9,199.3 C213.4 191.6, 176.6 174.7, 157.7 168.6 C153 167, 142.7 168.6, 137.7 168.6" stroke-width="1" fill="none" stroke="#FC8452"/>
-<text font-size="14" x="97.7" y="173.6" font-family="Arial" fill="#464646">
+<text font-size="14" x="96.7" y="173.6" font-family="Roboto" fill="#464646">
 rose 7
 </text>
 <path d="M294.3,221.8 L263,190.5 A8 8 0 0 1 258.9,183.4 A60.3 60.3 0 0 1 297.9,167.2 A8 8 0 0 1 300,175.2 L300,219.5 A8 8 0 0 1 300,227.5 A0 0 0 0 0 300,227.5 A8 8 0 0 1 294.3,221.8 Z" fill="#9A60B4"/>
 <path d="M276.9,171.8 C268 150.1, 252.6 103.1, 241.1 85.2 C238.6 81.4, 226.1 85.2, 221.1 85.2" stroke-width="1" fill="none" stroke="#9A60B4"/>
-<text font-size="14" x="181.1" y="90.2" font-family="Arial" fill="#464646">
+<text font-size="14" x="180.1" y="90.2" font-family="Roboto" fill="#464646">
 rose 8
 </text>
 </svg>
