@@ -32,6 +32,7 @@ pub use encoder::svg_to_png;
 #[cfg(feature = "image")]
 pub use encoder::Error as EncoderError;
 
+pub use font::Error as FontError;
 pub use font::{
     get_font, get_font_families, get_or_try_init_fonts, measure_text_width_family,
     DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY,

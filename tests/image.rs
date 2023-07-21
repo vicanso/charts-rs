@@ -1,12 +1,10 @@
-use charts_rs::{
-    Align, BarChart, Box, HorizontalBarChart, LineChart, PieChart, RadarChart, SeriesCategory,
-    TableChart, THEME_GRAFANA,
-};
-
 #[test]
 #[cfg(feature = "image")]
 fn generate_image() {
-    use charts_rs::svg_to_png;
+    use charts_rs::{
+        svg_to_png, Align, BarChart, Box, HorizontalBarChart, LineChart, PieChart, RadarChart,
+        SeriesCategory, TableChart, THEME_GRAFANA,
+    };
     // bar chart
     let mut bar_chart = BarChart::new_with_theme(
         vec![
