@@ -4,9 +4,9 @@
 
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][apache2-badge]][apache2-url]
-[![Build status][ci-badge]][ci-url]
+[![Build status](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml)
 
-[ci-badge]: https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg
+
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
 [crates-url]: https://crates.io/crates/charts-rs
 [apache2-badge]: https://img.shields.io/badge/license-Apache2-blue.svg
