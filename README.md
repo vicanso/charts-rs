@@ -12,7 +12,7 @@
 
 ## Overview
 
-`charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana` and `ant`. The default format is `png` and the default theme is `light`.
+`charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana` and `ant`. The default theme is `light`. These charts are supported: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar` and `Table`.
 
 `Apache ECharts` is popular among Front-end developers, so `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
 
