@@ -4,7 +4,7 @@
 
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][apache2-badge]][apache2-url]
-[![Build status][ci-badge][ci-url]
+[![Build status][ci-badge]][ci-url]
 
 [ci-badge]: https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
