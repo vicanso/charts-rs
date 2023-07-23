@@ -75,8 +75,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     });
                 }
                 let theme = get_string_from_value(&data, "theme").unwrap_or_default();
-                let t = get_theme(&theme);
-                self.fill_theme(get_theme(&theme));
+                let theme = get_theme(&theme);
+                self.fill_theme(theme.clone());
                 self.series_list = series_list;
         
                 if let Some(width) = get_f32_from_value(&data, "width") {
@@ -176,7 +176,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     self.x_boundary_gap = Some(x_boundary_gap);
                 }
         
-                if let Some(y_axis_configs) = get_y_axis_configs_from_value(&t, &data, "y_axis_configs") {
+                if let Some(y_axis_configs) = get_y_axis_configs_from_value(&theme, &data, "y_axis_configs") {
                     self.y_axis_configs = y_axis_configs;
                 }
         
