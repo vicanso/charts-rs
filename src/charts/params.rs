@@ -1,4 +1,4 @@
-use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, YAxisConfig};
+use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 
 pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Option<bool> {
     if let Some(value) = value.get(key) {
@@ -130,6 +130,7 @@ pub(crate) fn get_string_slice_from_value(
     None
 }
 pub(crate) fn get_y_axis_configs_from_value(
+    t: &Theme,
     value: &serde_json::Value,
     key: &str,
 ) -> Option<Vec<YAxisConfig>> {
@@ -140,6 +141,11 @@ pub(crate) fn get_y_axis_configs_from_value(
                     .iter()
                     .map(|item| {
                         let mut y_config = YAxisConfig {
+                            axis_font_size: t.y_axis_font_size,
+                            axis_font_color: t.y_axis_font_color,
+                            axis_stroke_color: t.y_axis_stroke_color,
+                            axis_split_number: t.y_axis_split_number,
+                            axis_name_gap: t.y_axis_name_gap,
                             ..Default::default()
                         };
                         if let Some(axis_font_size) = get_f32_from_value(item, "axis_font_size") {
