@@ -75,6 +75,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     });
                 }
                 let theme = get_string_from_value(&data, "theme").unwrap_or_default();
+                let t = get_theme(&theme);
                 self.fill_theme(get_theme(&theme));
                 self.series_list = series_list;
         
@@ -175,7 +176,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     self.x_boundary_gap = Some(x_boundary_gap);
                 }
         
-                if let Some(y_axis_configs) = get_y_axis_configs_from_value(&data, "y_axis_configs") {
+                if let Some(y_axis_configs) = get_y_axis_configs_from_value(&t, &data, "y_axis_configs") {
                     self.y_axis_configs = y_axis_configs;
                 }
         
