@@ -197,6 +197,10 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(series_label_font_size) = get_f32_from_value(&data, "series_label_font_size") {
                     self.series_label_font_size = series_label_font_size;
                 }
+                if let Some(series_label_formatter) = get_string_from_value(&data, "series_label_formatter") {
+                    self.series_label_formatter = series_label_formatter;
+                }
+
                 if let Some(series_colors) = get_color_slice_from_value(&data, "series_colors") {
                     self.series_colors = series_colors;
                 }
