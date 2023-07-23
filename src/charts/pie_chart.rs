@@ -69,6 +69,7 @@ pub struct PieChart {
     pub series_stroke_width: f32,
     pub series_label_font_color: Color,
     pub series_label_font_size: f32,
+    pub series_label_formatter: String,
     pub series_colors: Vec<Color>,
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
@@ -127,7 +128,9 @@ impl PieChart {
             .map(|item| item.data.iter().sum())
             .collect();
         let mut max = 0.0;
+        let mut sum = 0.0;
         for item in values.iter() {
+            sum += *item;
             if *item > max {
                 max = *item;
             }
@@ -146,9 +149,14 @@ impl PieChart {
         let cx = (c.width() - radius_double) / 2.0 + r;
         let cy = (c.height() - radius_double) / 2.0 + r;
         let label_offset = 20.0;
+        let mut series_label_formatter = self.series_label_formatter.clone();
+        if series_label_formatter.is_empty() {
+            series_label_formatter = "{a}: {d}".to_string();
+        }
 
         for (index, series) in self.series_list.iter().enumerate() {
-            let value = values[index] / max * r;
+            let value = values[index];
+            let cr = value / max * r;
             let color = *self
                 .series_colors
                 .get(series.index.unwrap_or(index))
@@ -158,15 +166,16 @@ impl PieChart {
                 fill: color,
                 cx,
                 cy,
-                r: value,
+                r: cr,
                 ir: self.inner_radius,
                 start_angle,
                 delta,
                 ..Default::default()
             });
+
             let angle = start_angle + half_delta;
             let mut points = vec![];
-            points.push(get_pie_point(cx, cy, value, angle));
+            points.push(get_pie_point(cx, cy, cr, angle));
             let mut end = get_pie_point(cx, cy, r + label_offset, angle);
             points.push(end);
 
@@ -181,11 +190,20 @@ impl PieChart {
                 top: end.y + 5.0,
                 ..Default::default()
             };
+            let label_option = LabelOption {
+                series_name: series.name.clone(),
+                value,
+                percentage: value / sum,
+                formatter: series_label_formatter.clone(),
+                ..Default::default()
+            };
+            let label_text = label_option.format();
+
             if is_left {
                 if let Ok(b) = measure_text_width_family(
                     &self.font_family,
                     self.series_label_font_size,
-                    &series.name,
+                    &label_text,
                 ) {
                     label_margin.left -= b.width();
                 }
@@ -202,7 +220,7 @@ impl PieChart {
             });
 
             c.child(label_margin).text(Text {
-                text: series.name.clone(),
+                text: label_text,
                 font_family: Some(self.font_family.clone()),
                 font_size: Some(self.series_label_font_size),
                 font_color: Some(self.series_label_font_color),

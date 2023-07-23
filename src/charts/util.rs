@@ -210,6 +210,30 @@ pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
     values.iter().map(|item| item.to_owned().into()).collect()
 }
 
+#[derive(Clone, Debug, Default)]
+pub(crate) struct LabelOption {
+    pub series_name: String,
+    pub category_name: String,
+    pub value: f32,
+    pub percentage: f32,
+    pub formatter: String,
+}
+impl LabelOption {
+    pub fn format(&self) -> String {
+        // {a}：系列名。{b}：数据名。{c}：数据值。{d}：百分比
+        let value = format_float(self.value);
+        let percentage = format_float(self.percentage * 100.0) + "%";
+        if self.formatter.is_empty() {
+            return value;
+        }
+        self.formatter
+            .replace("{a}", &self.series_name)
+            .replace("{b}", &self.category_name)
+            .replace("{c}", &value)
+            .replace("{d}", &percentage)
+    }
+}
+
 pub fn format_string(value: &str, formatter: &str) -> String {
     if formatter.is_empty() {
         value.to_string()

@@ -97,6 +97,7 @@ pub struct RadarChart {
     pub series_stroke_width: f32,
     pub series_label_font_color: Color,
     pub series_label_font_size: f32,
+    pub series_label_formatter: String,
     pub series_colors: Vec<Color>,
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
