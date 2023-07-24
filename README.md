@@ -22,6 +22,10 @@
 
 You can try to use the web demo page, it's simple and useful. [Charts Demo](https://charts.npmtrend.com/)
 
+<p align="center">
+    <img src="./asset/image/charts-demo.png" alt="charts-rs">
+</p>
+
 ## Mix line bar
 <p align="center">
     <img src="./asset/image/mix-line-bar.png" alt="charts-rs">
