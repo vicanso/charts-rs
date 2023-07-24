@@ -18,6 +18,9 @@
 
 `Apache ECharts` is popular among Front-end developers, so `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
 
+## Demo
+
+You can try to use the web demo page, it's simple and useful. [Charts Demo](https://charts.npmtrend.com/)
 
 ## Mix line bar
 <p align="center">
