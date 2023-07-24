@@ -1,6 +1,6 @@
 use charts_rs::{
-    measure_text_width_family, svg_to_png, BarChart, Box, LegendCategory, SeriesCategory,
-    DEFAULT_FONT_FAMILY,
+    format_float, measure_text_width_family, svg_to_png, BarChart, Box, LegendCategory,
+    SeriesCategory, DEFAULT_FONT_FAMILY,
 };
 use criterion::{criterion_group, criterion_main, Criterion};
 
@@ -119,10 +119,15 @@ fn bar_chart_png_benchmark(c: &mut Criterion) {
     });
 }
 
+fn format_float_benchmark(c: &mut Criterion) {
+    c.bench_function("format float", |b| b.iter(|| format_float(12381731.124)));
+}
+
 criterion_group!(
     benches,
+    format_float_benchmark,
     measure_text_benchmark,
     bar_chart_benchmark,
-    bar_chart_png_benchmark
+    bar_chart_png_benchmark,
 );
 criterion_main!(benches);

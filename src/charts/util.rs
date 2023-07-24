@@ -315,6 +315,9 @@ mod tests {
     fn format() {
         assert_eq!("1", format_float(1.0));
         assert_eq!("1.1", format_float(1.12));
+        assert_eq!("100.1", format_float(100.14));
+        assert_eq!("100", format_float(100.04));
+        assert_eq!("1000.1", format_float(1000.14));
     }
 
     #[test]
