@@ -20,7 +20,7 @@
 
 ## Demo
 
-You can try to use the web demo page, it's simple and useful. [Charts Demo](https://charts.npmtrend.com/)
+You can try to use the web demo page, it's simple and useful. [Charts Demo](https://charts.npmtrend.com/), [Source](https://github.com/vicanso/charts-rs-web).
 
 <p align="center">
     <img src="./asset/image/charts-demo.png" alt="charts-rs">

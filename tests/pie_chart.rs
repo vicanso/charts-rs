@@ -8,6 +8,8 @@ fn pie_chart() {
         "title_text": "Nightingale Chart",
         "sub_title_text": "Fake Data",
         "legend_show": false,
+        "radius": 130,
+        "inner_radius": 30,
         "series_list": [
             {
                 "name": "rose 1",

@@ -77,11 +77,23 @@ pub struct PieChart {
 }
 
 impl PieChart {
+    fn fill_default(&mut self) {
+        self.radius = 150.0;
+        self.inner_radius = 40.0;
+        self.legend_show = Some(false);
+    }
     pub fn from_json(data: &str) -> canvas::Result<PieChart> {
         let mut p = PieChart {
             ..Default::default()
         };
-        p.fill_option(data)?;
+        p.fill_default();
+        let value = p.fill_option(data)?;
+        if let Some(radius) = get_f32_from_value(&value, "radius")  {
+           p.radius = radius; 
+        }
+        if let Some(inner_radius) = get_f32_from_value(&value, "inner_radius")  {
+           p.inner_radius = inner_radius; 
+        }
         Ok(p)
     }
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> PieChart {
@@ -89,11 +101,8 @@ impl PieChart {
             series_list,
             ..Default::default()
         };
-        let theme = get_theme(theme);
-        p.radius = 150.0;
-        p.inner_radius = 40.0;
-        p.legend_show = Some(false);
-        p.fill_theme(theme);
+        p.fill_default();
+        p.fill_theme(get_theme(theme));
         p
     }
     pub fn new(series_list: Vec<Series>) -> PieChart {

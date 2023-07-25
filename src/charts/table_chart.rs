@@ -35,6 +35,7 @@ pub struct TableChart {
     pub data: Vec<Vec<String>>,
     pub spans: Vec<f32>,
     pub text_aligns: Vec<Align>,
+    pub border_color: Color,
 
     pub header_row_padding: Box,
     pub header_row_height: f32,
@@ -48,7 +49,6 @@ pub struct TableChart {
     pub body_font_size: f32,
     pub body_font_color: Color,
     pub body_background_colors: Vec<Color>,
-    pub border_color: Color,
 }
 
 impl TableChart {
@@ -302,6 +302,9 @@ impl TableChart {
             let mut title_height = self.title_height;
             if let Some(value) = self.title_margin.clone() {
                 title_height += value.top + value.bottom;
+            }
+            if !self.sub_title_text.is_empty() {
+                title_height += self.sub_title_height;
             }
             c.rect(Rect {
                 fill: Some(self.background_color),
@@ -557,6 +560,7 @@ mod tests {
             THEME_GRAFANA,
         );
         table_chart.title_text = "NASDAQ".to_string();
+        table_chart.sub_title_text = "stock".to_string();
         table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
         assert_eq!(
             include_str!("../../asset/table_chart/basic_grafana.svg"),
