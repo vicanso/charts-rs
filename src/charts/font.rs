@@ -35,8 +35,9 @@ fn get_family_from_font(font: &fontdue::Font) -> String {
         let desc = format!("{:?}", font);
         if let Some(caps) = re.captures(&desc) {
             let mut family = caps["family"].to_string();
-            // 如果以Light、Bold结尾，则直接截取
-            if let Ok(weight) = regex::Regex::new(r#"Bold|Light$"#) {
+            // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
+            // 如果以Light、Bold等font-weight描述
+            if let Ok(weight) = regex::Regex::new(r#"Thin|Light|Regular|Medium|Bold|Black$"#) {
                 family = weight.replace_all(&family, "").to_string();
             }
             return family.trim().to_string();

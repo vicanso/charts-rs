@@ -918,6 +918,7 @@ pub struct Axis {
     pub font_size: f32,
     pub font_family: String,
     pub font_color: Option<Color>,
+    pub font_weight: Option<String>,
     pub data: Vec<String>,
     pub formatter: Option<String>,
     pub name_gap: f32,
@@ -942,6 +943,7 @@ impl Default for Axis {
             data: vec![],
             formatter: None,
             font_color: None,
+            font_weight: None,
             stroke_color: None,
             name_gap: 5.0,
             name_rotate: 0.0,
@@ -1123,6 +1125,7 @@ impl Axis {
                         font_family: Some(self.font_family.clone()),
                         font_size: Some(self.font_size),
                         font_color: self.font_color,
+                        font_weight: self.font_weight.clone(),
                         x: Some(values.0),
                         y: Some(values.1),
                         transform,
@@ -1189,6 +1192,7 @@ pub struct Legend {
     pub font_size: f32,
     pub font_family: String,
     pub font_color: Option<Color>,
+    pub font_weight: Option<String>,
     pub stroke_color: Option<Color>,
     pub fill: Option<Color>,
     pub left: f32,
@@ -1243,6 +1247,7 @@ impl Legend {
                 font_family: Some(self.font_family.clone()),
                 font_color: self.font_color,
                 font_size: Some(self.font_size),
+                font_weight: self.font_weight.clone(),
                 x: Some(self.left + LEGEND_WIDTH + LEGEND_TEXT_MARGIN),
                 y: Some(self.top + self.font_size),
                 ..Default::default()
@@ -1836,6 +1841,7 @@ Line
                 left: 10.0,
                 top: 30.0,
                 category: LegendCategory::Rect,
+                ..Default::default()
             }
             .svg()
         );

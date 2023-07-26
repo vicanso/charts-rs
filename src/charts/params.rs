@@ -155,6 +155,11 @@ pub(crate) fn get_y_axis_configs_from_value(
                         {
                             y_config.axis_font_color = axis_font_color;
                         }
+                        if let Some(axis_font_weight) =
+                            get_string_from_value(item, "axis_font_weight")
+                        {
+                            y_config.axis_font_weight = Some(axis_font_weight);
+                        }
                         if let Some(axis_stroke_color) =
                             get_color_from_value(item, "axis_stroke_color")
                         {

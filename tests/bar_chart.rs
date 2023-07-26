@@ -16,7 +16,15 @@ fn bar_chart() {
             "title_font_color": "#345",
             "title_align": "right",
             "sub_title_text": "demo",
+            "sub_title_font_weight": "bold",
             "legend_align": "left",
+            "legend_font_weight": "bold",
+            "y_axis_configs": [
+                {
+                    "axis_font_weight": "bold"
+                }
+            ],
+            "series_label_font_weight": "bold",
             "series_list": [
                 {
                     "name": "Email",
@@ -44,7 +52,8 @@ fn bar_chart() {
                 "Fri",
                 "Sat",
                 "Sun"
-            ]
+            ],
+            "x_axis_font_weight": "bold"
         }"###,
     )
     .unwrap();

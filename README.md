@@ -16,11 +16,15 @@
 
 `charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana` and `ant`. The default theme is `light`. These charts are supported: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar` and `Table`.
 
-`Apache ECharts` is popular among Front-end developers, so `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
+`Apache ECharts` is popular among Front-end developers, and `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
 
 ## Demo
 
-You can try to use the web demo page, it's simple and useful. [Charts Demo](https://charts.npmtrend.com/), [Source](https://github.com/vicanso/charts-rs-web).
+You can try to use the web demo page, it's simple and useful. 
+
+Charts Web Demo Page: [https://charts.npmtrend.com/](https://charts.npmtrend.com/)
+
+Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com/vicanso/charts-rs-web)
 
 <p align="center">
     <img src="./asset/image/charts-demo.png" alt="charts-rs">

@@ -28,6 +28,7 @@ pub struct TableChart {
     pub sub_title_text: String,
     pub sub_title_font_size: f32,
     pub sub_title_font_color: Color,
+    pub sub_title_font_weight: Option<String>,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
     pub sub_title_height: f32,
@@ -96,6 +97,9 @@ impl TableChart {
         }
         if let Some(sub_title_font_color) = get_color_from_value(&data, "sub_title_font_color") {
             self.sub_title_font_color = sub_title_font_color;
+        }
+        if let Some(sub_title_font_weight) = get_string_from_value(&data, "sub_title_font_weight") {
+            self.sub_title_font_weight = Some(sub_title_font_weight);
         }
         if let Some(sub_title_margin) = get_margin_from_value(&data, "sub_title_margin") {
             self.sub_title_margin = Some(sub_title_margin);
@@ -268,6 +272,7 @@ impl TableChart {
                 font_family: Some(self.font_family.clone()),
                 font_size: Some(self.sub_title_font_size),
                 font_color: Some(self.sub_title_font_color),
+                font_weight: self.sub_title_font_weight.clone(),
                 line_height: Some(self.sub_title_height),
                 x: Some(x),
                 ..Default::default()

@@ -33,6 +33,7 @@ pub struct PieChart {
     pub sub_title_text: String,
     pub sub_title_font_size: f32,
     pub sub_title_font_color: Color,
+    pub sub_title_font_weight: Option<String>,
     pub sub_title_margin: Option<Box>,
     pub sub_title_align: Align,
     pub sub_title_height: f32,
@@ -40,6 +41,7 @@ pub struct PieChart {
     // legend
     pub legend_font_size: f32,
     pub legend_font_color: Color,
+    pub legend_font_weight: Option<String>,
     pub legend_align: Align,
     pub legend_margin: Option<Box>,
     pub legend_category: LegendCategory,
@@ -54,6 +56,7 @@ pub struct PieChart {
     pub x_axis_stroke_color: Color,
     pub x_axis_font_size: f32,
     pub x_axis_font_color: Color,
+    pub x_axis_font_weight: Option<String>,
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_boundary_gap: Option<bool>,
@@ -69,6 +72,7 @@ pub struct PieChart {
     pub series_stroke_width: f32,
     pub series_label_font_color: Color,
     pub series_label_font_size: f32,
+    pub series_label_font_weight: Option<String>,
     pub series_label_formatter: String,
     pub series_colors: Vec<Color>,
     pub series_symbol: Option<Symbol>,
@@ -88,11 +92,11 @@ impl PieChart {
         };
         p.fill_default();
         let value = p.fill_option(data)?;
-        if let Some(radius) = get_f32_from_value(&value, "radius")  {
-           p.radius = radius; 
+        if let Some(radius) = get_f32_from_value(&value, "radius") {
+            p.radius = radius;
         }
-        if let Some(inner_radius) = get_f32_from_value(&value, "inner_radius")  {
-           p.inner_radius = inner_radius; 
+        if let Some(inner_radius) = get_f32_from_value(&value, "inner_radius") {
+            p.inner_radius = inner_radius;
         }
         Ok(p)
     }

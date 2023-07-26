@@ -3,34 +3,34 @@
 <text font-size="18" x="541" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#334455">
 Bar Chart
 </text>
-<text font-size="14" x="583" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="583" y="35" dy="10" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 demo
 </text>
 <g>
 <line stroke-width="2" x1="10" y1="15" x2="35" y2="15" stroke="#5470C6"/>
 <circle cx="22.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="38" y="19" font-family="Roboto" fill="#464646">
+<text font-size="14" x="38" y="19" font-weight="bold" font-family="Roboto" fill="#464646">
 Email
 </text>
 </g>
 <g>
 <line stroke-width="2" x1="79" y1="15" x2="104" y2="15" stroke="#91CC75"/>
 <circle cx="91.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<text font-size="14" x="107" y="19" font-family="Roboto" fill="#464646">
+<text font-size="14" x="107" y="19" font-weight="bold" font-family="Roboto" fill="#464646">
 Union Ads
 </text>
 </g>
 <g>
 <line stroke-width="2" x1="179" y1="15" x2="204" y2="15" stroke="#FAC858"/>
 <circle cx="191.5" cy="15" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<text font-size="14" x="207" y="19" font-family="Roboto" fill="#464646">
+<text font-size="14" x="207" y="19" font-weight="bold" font-family="Roboto" fill="#464646">
 Direct
 </text>
 </g>
 <g>
 <line stroke-width="2" x1="252" y1="15" x2="277" y2="15" stroke="#EE6666"/>
 <circle cx="264.5" cy="15" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<text font-size="14" x="280" y="19" font-family="Roboto" fill="#464646">
+<text font-size="14" x="280" y="19" font-weight="bold" font-family="Roboto" fill="#464646">
 Search Engine
 </text>
 </g>
@@ -39,25 +39,25 @@ Search Engine
 </g>
 <g>
 
-<text font-size="14" x="7" y="65" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="7" y="65" font-weight="bold" font-family="Roboto" fill="#6E7079">
 1.8k
 </text>
-<text font-size="14" x="7" y="118.3" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="7" y="118.3" font-weight="bold" font-family="Roboto" fill="#6E7079">
 1.5k
 </text>
-<text font-size="14" x="7" y="171.7" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="7" y="171.7" font-weight="bold" font-family="Roboto" fill="#6E7079">
 1.2k
 </text>
-<text font-size="14" x="11" y="225" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="11" y="225" font-weight="bold" font-family="Roboto" fill="#6E7079">
 900
 </text>
-<text font-size="14" x="11" y="278.3" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="11" y="278.3" font-weight="bold" font-family="Roboto" fill="#6E7079">
 600
 </text>
-<text font-size="14" x="11" y="331.7" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="11" y="331.7" font-weight="bold" font-family="Roboto" fill="#6E7079">
 300
 </text>
-<text font-size="14" x="27" y="385" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="27" y="385" font-weight="bold" font-family="Roboto" fill="#6E7079">
 0
 </text>
 </g>
@@ -73,25 +73,25 @@ Search Engine
 <line stroke-width="1" x1="537.6" y1="380" x2="537.6" y2="385"/>
 <line stroke-width="1" x1="620" y1="380" x2="620" y2="385"/>
 </g>
-<text font-size="14" x="70.2" y="399" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="70.2" y="399" font-weight="bold" font-family="Roboto" fill="#6E7079">
 Mon
 </text>
-<text font-size="14" x="154.6" y="399" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="154.6" y="399" font-weight="bold" font-family="Roboto" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" x="235.1" y="399" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="235.1" y="399" font-weight="bold" font-family="Roboto" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" x="319.5" y="399" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="319.5" y="399" font-weight="bold" font-family="Roboto" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" x="405.9" y="399" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="405.9" y="399" font-weight="bold" font-family="Roboto" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" x="485.4" y="399" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="485.4" y="399" font-weight="bold" font-family="Roboto" fill="#6E7079">
 Sat
 </text>
-<text font-size="14" x="566.8" y="399" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="566.8" y="399" font-weight="bold" font-family="Roboto" fill="#6E7079">
 Sun
 </text>
 </g>
@@ -123,25 +123,25 @@ Sun
 <rect x="434.3" y="150.7" width="15.9" height="229.3" fill="#EE6666"/>
 <rect x="516.7" y="143.6" width="15.9" height="236.4" fill="#EE6666"/>
 <rect x="599.1" y="145.3" width="15.9" height="234.7" fill="#EE6666"/>
-<text font-size="14" x="55.9" y="358.7" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="55.9" y="358.7" dx="-12" dy="-8" font-weight="bold" font-family="Roboto" fill="#464646">
 120
 </text>
-<text font-size="14" x="138.4" y="356.5" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="138.4" y="356.5" dx="-12" dy="-8" font-weight="bold" font-family="Roboto" fill="#464646">
 132
 </text>
-<text font-size="14" x="220.8" y="362" dx="-10.5" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="220.8" y="362" dx="-10.5" dy="-8" font-weight="bold" font-family="Roboto" fill="#464646">
 101
 </text>
-<text font-size="14" x="303.2" y="356.2" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="303.2" y="356.2" dx="-12" dy="-8" font-weight="bold" font-family="Roboto" fill="#464646">
 134
 </text>
-<text font-size="14" x="385.6" y="364" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="385.6" y="364" dx="-8" dy="-8" font-weight="bold" font-family="Roboto" fill="#464646">
 90
 </text>
-<text font-size="14" x="468.1" y="339.1" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="468.1" y="339.1" dx="-12" dy="-8" font-weight="bold" font-family="Roboto" fill="#464646">
 230
 </text>
-<text font-size="14" x="550.5" y="342.7" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="550.5" y="342.7" dx="-12" dy="-8" font-weight="bold" font-family="Roboto" fill="#464646">
 210
 </text>
 </svg>

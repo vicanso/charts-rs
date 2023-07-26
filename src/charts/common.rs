@@ -69,6 +69,7 @@ impl From<(&str, Vec<f32>)> for Series {
 pub struct YAxisConfig {
     pub axis_font_size: f32,
     pub axis_font_color: Color,
+    pub axis_font_weight: Option<String>,
     pub axis_stroke_color: Color,
     pub axis_width: Option<f32>,
     pub axis_split_number: usize,

@@ -769,6 +769,7 @@ Sun
             left: 10.0,
             top: 10.0,
             category: LegendCategory::Normal,
+            ..Default::default()
         });
         assert_eq!("(10,10,71,24)", b.to_string());
         assert_eq!(
@@ -795,6 +796,7 @@ Email
             left: 10.0,
             top: 10.0,
             category: LegendCategory::Rect,
+            ..Default::default()
         });
         assert_eq!("(10,10,71,24)", b.to_string());
         assert_eq!(

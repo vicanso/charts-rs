@@ -122,6 +122,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(sub_title_font_color) = get_color_from_value(&data, "sub_title_font_color") {
                     self.sub_title_font_color = sub_title_font_color;
                 }
+                if let Some(sub_title_font_weight) = get_string_from_value(&data, "sub_title_font_weight") {
+                    self.sub_title_font_weight = Some(sub_title_font_weight);
+                }
                 if let Some(sub_title_margin) = get_margin_from_value(&data, "sub_title_margin") {
                     self.sub_title_margin = Some(sub_title_margin);
                 }
@@ -137,6 +140,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 if let Some(legend_font_color) = get_color_from_value(&data, "legend_font_color") {
                     self.legend_font_color = legend_font_color;
+                }
+                if let Some(legend_font_weight) = get_string_from_value(&data, "legend_font_weight") {
+                    self.legend_font_weight = Some(legend_font_weight);
                 }
                 if let Some(legend_align) = get_align_from_value(&data, "legend_align") {
                     self.legend_align = legend_align;
@@ -165,6 +171,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 if let Some(x_axis_font_color) = get_color_from_value(&data, "x_axis_font_color") {
                     self.x_axis_font_color = x_axis_font_color;
+                }
+                if let Some(x_axis_font_weight) = get_string_from_value(&data, "x_axis_font_weight") {
+                    self.x_axis_font_weight = Some(x_axis_font_weight);
                 }
                 if let Some(x_axis_name_gap) = get_f32_from_value(&data, "x_axis_name_gap") {
                     self.x_axis_name_gap = x_axis_name_gap;
@@ -197,6 +206,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 if let Some(series_label_font_size) = get_f32_from_value(&data, "series_label_font_size") {
                     self.series_label_font_size = series_label_font_size;
+                }
+                if let Some(series_label_font_weight) = get_string_from_value(&data, "series_label_font_weight") {
+                    self.series_label_font_weight = Some(series_label_font_weight);
                 }
                 if let Some(series_label_formatter) = get_string_from_value(&data, "series_label_formatter") {
                     self.series_label_formatter = series_label_formatter;
@@ -319,6 +331,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         font_size: Some(self.sub_title_font_size),
                         font_color: Some(self.sub_title_font_color),
                         line_height: Some(self.sub_title_height),
+                        font_weight: self.sub_title_font_weight.clone(),
                         x: Some(x),
                         ..Default::default()
                     });
@@ -373,6 +386,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         font_size: self.legend_font_size,
                         font_family: self.font_family.clone(),
                         font_color: Some(self.legend_font_color),
+                        font_weight: self.legend_font_weight.clone(),
                         stroke_color: Some(color),
                         fill,
                         left: legend_left,
@@ -416,6 +430,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     name_gap: y_axis_config.axis_name_gap,
                     font_color: Some(y_axis_config.axis_font_color),
                     font_size: y_axis_config.axis_font_size,
+                    font_weight: y_axis_config.axis_font_weight.clone(),
                     data,
                     formatter: y_axis_config.axis_formatter.clone(),
                     ..Default::default()
@@ -439,6 +454,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     font_family: self.font_family.clone(),
                     data,
                     font_color: Some(self.x_axis_font_color),
+                    font_weight: self.x_axis_font_weight.clone(),
                     stroke_color: Some(self.x_axis_stroke_color),
                     font_size: self.x_axis_font_size,
                     name_gap: self.x_axis_name_gap,
@@ -469,6 +485,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             font_family: Some(self.font_family.clone()),
                             font_color: Some(self.series_label_font_color),
                             font_size: Some(self.series_label_font_size),
+                            font_weight: self.series_label_font_weight.clone(),
                             x: Some(series_label.point.x),
                             y: Some(series_label.point.y),
                             ..Default::default()
