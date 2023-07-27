@@ -9,6 +9,14 @@ use super::Canvas;
 use crate::charts::measure_text_width_family;
 
 #[derive(Clone, Debug, Default)]
+pub struct TableCellStyle {
+    pub font_color: Option<Color>,
+    pub font_weight: Option<String>,
+    pub background_color: Option<Color>,
+    pub indexes: Vec<usize>,
+}
+
+#[derive(Clone, Debug, Default)]
 pub struct TableChart {
     pub width: f32,
     pub height: f32,
@@ -50,6 +58,8 @@ pub struct TableChart {
     pub body_font_size: f32,
     pub body_font_color: Color,
     pub body_background_colors: Vec<Color>,
+
+    pub cell_styles: Vec<TableCellStyle>,
 }
 
 impl TableChart {
@@ -404,13 +414,43 @@ impl TableChart {
                     };
                 }
 
+                let mut cell_font_color = font_color;
+                let mut cell_font_weight = font_weight.clone();
+
+                // 每个table cell的背景色
+                for cell_style in self.cell_styles.iter() {
+                    if cell_style.indexes.len() != 2 {
+                        continue;
+                    }
+                    if cell_style.indexes[0] != i || cell_style.indexes[1] != j {
+                        continue;
+                    }
+                    // 有配置则设置
+                    if let Some(value) = cell_style.font_color {
+                        cell_font_color = value;
+                    }
+                    if let Some(ref value) = cell_style.font_weight {
+                        cell_font_weight = Some(value.clone());
+                    }
+                    if let Some(value) = cell_style.background_color {
+                        c.rect(Rect {
+                            fill: Some(value),
+                            left,
+                            top,
+                            width: span_width,
+                            height: row_height,
+                            ..Default::default()
+                        });
+                    }
+                }
+
                 right += span_width;
                 c.child(row_padding.clone()).text(Text {
                     text: item.to_string(),
-                    font_weight: font_weight.clone(),
+                    font_weight: cell_font_weight,
                     font_family: Some(self.font_family.clone()),
                     font_size: Some(font_size),
-                    font_color: Some(font_color),
+                    font_color: Some(cell_font_color),
                     line_height: Some(cell_height),
                     dx,
                     x: Some(left),
@@ -431,7 +471,7 @@ impl TableChart {
 
 #[cfg(test)]
 mod tests {
-    use super::TableChart;
+    use super::{TableCellStyle, TableChart};
     use crate::{Align, THEME_ANT, THEME_DARK, THEME_GRAFANA};
     use pretty_assertions::assert_eq;
 
@@ -460,6 +500,12 @@ mod tests {
             ],
         ]);
         table_chart.title_text = "NASDAQ".to_string();
+        table_chart.cell_styles = vec![TableCellStyle {
+            indexes: vec![1, 2],
+            font_weight: Some("bold".to_string()),
+            background_color: Some("#3bb357".into()),
+            font_color: Some(("#fff").into()),
+        }];
 
         assert_eq!(
             include_str!("../../asset/table_chart/basic.svg"),

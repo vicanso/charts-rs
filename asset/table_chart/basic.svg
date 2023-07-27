@@ -22,7 +22,8 @@ Datadog Inc
 <text font-size="14" x="210" y="98" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 97.32
 </text>
-<text font-size="14" x="410" y="98" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<rect x="400" y="93" width="200" height="40" fill="#3BB357"/>
+<text font-size="14" x="410" y="98" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#FFFFFF">
 -7.49%
 </text>
 <rect x="0" y="133" width="600" height="40" fill="#FFFFFF"/>
