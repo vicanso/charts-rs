@@ -120,6 +120,30 @@ impl TableChart {
         if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
             self.sub_title_height = sub_title_height;
         }
+        if let Some(data) = data.get("cell_styles") {
+            if let Some(arr) = data.as_array() {
+                let mut cell_styles = vec![];
+                for item in arr.iter() {
+                    let mut style = TableCellStyle {
+                        ..Default::default()
+                    };
+                    if let Some(font_color) = get_color_from_value(item, "font_color") {
+                        style.font_color = Some(font_color);
+                    }
+                    if let Some(background_color) = get_color_from_value(item, "background_color") {
+                        style.background_color = Some(background_color);
+                    }
+                    if let Some(font_weight) = get_string_from_value(item, "font_weight") {
+                        style.font_weight = Some(font_weight);
+                    }
+                    if let Some(indexes) = get_usize_slice_from_value(item, "indexes") {
+                        style.indexes = indexes;
+                    }
+                    cell_styles.push(style);
+                }
+                self.cell_styles = cell_styles;
+            }
+        }
 
         if let Some(data) = data.get("data") {
             if let Some(arr) = data.as_array() {
@@ -348,6 +372,20 @@ impl TableChart {
         } else {
             self.spans.iter().map(|value| value * width).collect()
         };
+
+        let find_cell_style = |row: usize, column: usize| -> Option<&TableCellStyle> {
+            for cell_style in self.cell_styles.iter() {
+                if cell_style.indexes.len() != 2 {
+                    continue;
+                }
+                if cell_style.indexes[0] != row || cell_style.indexes[1] != column {
+                    continue;
+                }
+                return Some(cell_style);
+            }
+            None
+        };
+
         let mut top = 0.0;
         let body_background_color_count = self.body_background_colors.len();
         for (i, items) in self.data.iter().enumerate() {
@@ -385,15 +423,16 @@ impl TableChart {
                 height: row_height,
                 ..Default::default()
             });
-            c.line(Line {
-                color: Some(self.border_color),
-                stroke_width: 1.0,
-                top,
-                right: c.width(),
-                bottom: top,
-                ..Default::default()
-            });
-            top += 1.0;
+            if !self.border_color.is_transparent() {
+                c.line(Line {
+                    color: Some(self.border_color),
+                    stroke_width: 1.0,
+                    top,
+                    right: c.width(),
+                    bottom: top,
+                    ..Default::default()
+                });
+            }
             for (j, item) in items.iter().enumerate() {
                 // 已保证肯定有数据
                 let span_width = spans[j];
@@ -418,13 +457,7 @@ impl TableChart {
                 let mut cell_font_weight = font_weight.clone();
 
                 // 每个table cell的背景色
-                for cell_style in self.cell_styles.iter() {
-                    if cell_style.indexes.len() != 2 {
-                        continue;
-                    }
-                    if cell_style.indexes[0] != i || cell_style.indexes[1] != j {
-                        continue;
-                    }
+                if let Some(cell_style) = find_cell_style(i, j) {
                     // 有配置则设置
                     if let Some(value) = cell_style.font_color {
                         cell_font_color = value;
@@ -436,9 +469,9 @@ impl TableChart {
                         c.rect(Rect {
                             fill: Some(value),
                             left,
-                            top,
+                            top: top + 1.0,
                             width: span_width,
-                            height: row_height,
+                            height: row_height - 1.0,
                             ..Default::default()
                         });
                     }
@@ -506,7 +539,6 @@ mod tests {
             background_color: Some("#3bb357".into()),
             font_color: Some(("#fff").into()),
         }];
-
         assert_eq!(
             include_str!("../../asset/table_chart/basic.svg"),
             table_chart.svg().unwrap()
@@ -612,7 +644,30 @@ mod tests {
         );
         table_chart.title_text = "NASDAQ".to_string();
         table_chart.sub_title_text = "stock".to_string();
-        table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
+        table_chart.spans = vec![0.5, 0.3, 0.2];
+        let green = "#2d7c2b".into();
+        let red = "#a93b01".into();
+        table_chart.cell_styles = vec![
+            TableCellStyle {
+                indexes: vec![1, 2],
+                font_weight: Some("bold".to_string()),
+                background_color: Some(green),
+                ..Default::default()
+            },
+            TableCellStyle {
+                indexes: vec![2, 2],
+                font_weight: Some("bold".to_string()),
+                background_color: Some(green),
+                ..Default::default()
+            },
+            TableCellStyle {
+                indexes: vec![3, 2],
+                font_weight: Some("bold".to_string()),
+                background_color: Some(red),
+                ..Default::default()
+            },
+        ];
+        table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Center];
         assert_eq!(
             include_str!("../../asset/table_chart/basic_grafana.svg"),
             table_chart.svg().unwrap()

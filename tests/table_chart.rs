@@ -30,7 +30,15 @@ fn table_chart() {
             ]
         ],
         "header_font_weight": "bold",
-        "text_aligns": ["left", "center", "right"]
+        "text_aligns": ["left", "center", "right"],
+        "cell_styles": [
+            {
+                "font_color": "#fff", 
+                "font_weight": "bold", 
+                "background_color": "#2d7c2b",
+                "indexes": [1, 2] 
+            }
+        ]
     }"###,
     )
     .unwrap();

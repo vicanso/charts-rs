@@ -17,6 +17,28 @@ pub(crate) fn get_usize_from_value(value: &serde_json::Value, key: &str) -> Opti
     }
     None
 }
+pub(crate) fn get_usize_slice_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<Vec<usize>> {
+    if let Some(arr) = value.get(key) {
+        if let Some(values) = arr.as_array() {
+            return Some(
+                values
+                    .iter()
+                    .map(|item| {
+                        if let Some(v) = item.as_u64() {
+                            v as usize
+                        } else {
+                            0
+                        }
+                    })
+                    .collect(),
+            );
+        }
+    }
+    None
+}
 
 pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option<f32> {
     if let Some(width) = value.get(key) {

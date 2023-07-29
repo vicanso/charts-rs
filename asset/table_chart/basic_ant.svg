@@ -1,50 +1,50 @@
-<svg width="600" height="215" viewBox="0 0 600 215" xmlns="http://www.w3.org/2000/svg">
+<svg width="600" height="211" viewBox="0 0 600 211" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="45" fill="#FFFFFF"/>
 <text font-size="18" x="264" y="0" dy="22.5" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 NASDAQ
 </text>
 <rect x="0" y="45" width="600" height="46" fill="#FAFAFA"/>
 <line stroke-width="1" x1="0" y1="45" x2="600" y2="45" stroke="#EFEFF4"/>
-<text font-size="14" x="10" y="54" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="10" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Name
 </text>
-<text font-size="14" x="210" y="54" dx="73.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="210" y="53" dx="73.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Price
 </text>
-<text font-size="14" x="410" y="54" dx="131" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="410" y="53" dx="131" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Change
 </text>
-<rect x="0" y="92" width="600" height="40" fill="#FFFFFF"/>
-<line stroke-width="1" x1="0" y1="92" x2="600" y2="92" stroke="#EFEFF4"/>
-<text font-size="14" x="10" y="98" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<rect x="0" y="91" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="91" x2="600" y2="91" stroke="#EFEFF4"/>
+<text font-size="14" x="10" y="96" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Datadog Inc
 </text>
-<text font-size="14" x="210" y="98" dx="72" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="210" y="96" dx="72" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 97.32
 </text>
-<text font-size="14" x="410" y="98" dx="138" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="410" y="96" dx="138" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 -7.49%
 </text>
-<rect x="0" y="133" width="600" height="40" fill="#FFFFFF"/>
-<line stroke-width="1" x1="0" y1="133" x2="600" y2="133" stroke="#EFEFF4"/>
-<text font-size="14" x="10" y="139" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<rect x="0" y="131" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="131" x2="600" y2="131" stroke="#EFEFF4"/>
+<text font-size="14" x="10" y="136" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Hashicorp Inc
 </text>
-<text font-size="14" x="210" y="139" dx="72" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="210" y="136" dx="72" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 28.66
 </text>
-<text font-size="14" x="410" y="139" dx="138" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="410" y="136" dx="138" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 -9.25%
 </text>
-<rect x="0" y="174" width="600" height="40" fill="#FFFFFF"/>
-<line stroke-width="1" x1="0" y1="174" x2="600" y2="174" stroke="#EFEFF4"/>
-<text font-size="14" x="10" y="180" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<rect x="0" y="171" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="171" x2="600" y2="171" stroke="#EFEFF4"/>
+<text font-size="14" x="10" y="176" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Gitlab Inc
 </text>
-<text font-size="14" x="210" y="180" dx="72.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="210" y="176" dx="72.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 51.63
 </text>
-<text font-size="14" x="410" y="180" dx="134" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="410" y="176" dx="134" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 +4.32%
 </text>
 </svg>
