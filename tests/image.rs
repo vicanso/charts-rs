@@ -3,7 +3,7 @@
 fn generate_image() {
     use charts_rs::{
         svg_to_png, Align, BarChart, Box, HorizontalBarChart, LineChart, PieChart, RadarChart,
-        SeriesCategory, TableChart, THEME_GRAFANA,
+        SeriesCategory, TableCellStyle, TableChart, THEME_GRAFANA,
     };
     // bar chart
     let mut bar_chart = BarChart::new_with_theme(
@@ -197,6 +197,28 @@ fn generate_image() {
         ],
         THEME_GRAFANA,
     );
+    let green = "#2d7c2b".into();
+    let red = "#a93b01".into();
+    table_chart.cell_styles = vec![
+        TableCellStyle {
+            indexes: vec![1, 2],
+            font_weight: Some("bold".to_string()),
+            background_color: Some(green),
+            ..Default::default()
+        },
+        TableCellStyle {
+            indexes: vec![2, 2],
+            font_weight: Some("bold".to_string()),
+            background_color: Some(green),
+            ..Default::default()
+        },
+        TableCellStyle {
+            indexes: vec![3, 2],
+            font_weight: Some("bold".to_string()),
+            background_color: Some(red),
+            ..Default::default()
+        },
+    ];
     table_chart.title_text = "NASDAQ".to_string();
     let buf = svg_to_png(&table_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/table.png", buf).unwrap();
