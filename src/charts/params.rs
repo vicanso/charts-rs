@@ -202,6 +202,9 @@ pub(crate) fn get_y_axis_configs_from_value(
                         {
                             y_config.axis_formatter = Some(axis_formatter);
                         }
+                        if let Some(axis_margin) = get_margin_from_value(item, "axis_margin") {
+                            y_config.axis_margin = Some(axis_margin);
+                        }
                         y_config
                     })
                     .collect(),

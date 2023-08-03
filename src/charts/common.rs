@@ -1,4 +1,4 @@
-use super::Color;
+use super::{Box, Color};
 use crate::Point;
 use serde::{Deserialize, Serialize};
 
@@ -65,7 +65,7 @@ impl From<(&str, Vec<f32>)> for Series {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct YAxisConfig {
     pub axis_font_size: f32,
     pub axis_font_color: Color,
@@ -74,5 +74,6 @@ pub struct YAxisConfig {
     pub axis_width: Option<f32>,
     pub axis_split_number: usize,
     pub axis_name_gap: f32,
+    pub axis_margin: Option<Box>,
     pub axis_formatter: Option<String>,
 }

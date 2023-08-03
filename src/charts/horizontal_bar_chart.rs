@@ -56,6 +56,7 @@ pub struct HorizontalBarChart {
     pub x_axis_font_weight: Option<String>,
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
+    pub x_axis_margin: Option<Box>,
     pub x_boundary_gap: Option<bool>,
 
     // y axis

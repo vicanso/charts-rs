@@ -419,7 +419,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if axis_index > 0 {
                     position = Position::Right;
                 }
-                c1.axis(Axis {
+                let margin = y_axis_config.axis_margin.clone().unwrap_or_default();
+                c1.child(margin).axis(Axis {
                     position,
                     height: axis_height,
                     width: axis_width,
@@ -446,8 +447,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     split_number -= 1;
                     Align::Left
                 };
-
-                c1.axis(Axis {
+                let margin = self.x_axis_margin.clone().unwrap_or_default();
+                c1.child(margin).axis(Axis {
                     height: self.x_axis_height,
                     width: axis_width,
                     split_number,

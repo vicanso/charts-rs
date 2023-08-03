@@ -49,11 +49,11 @@ impl Canvas {
         self.height - self.margin.top - self.margin.bottom
     }
     pub fn child(&self, margin: Box) -> Self {
-        let mut m = self.margin.clone();
-        m.left += margin.left;
-        m.top += margin.top;
-        m.right += margin.right;
-        m.bottom += margin.bottom;
+        let mut m = margin;
+        m.left += self.margin.left;
+        m.top += self.margin.top;
+        m.right += self.margin.right;
+        m.bottom += self.margin.bottom;
         Canvas {
             width: self.width,
             height: self.height,
