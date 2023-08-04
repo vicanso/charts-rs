@@ -205,6 +205,12 @@ pub(crate) fn get_y_axis_configs_from_value(
                         if let Some(axis_margin) = get_margin_from_value(item, "axis_margin") {
                             y_config.axis_margin = Some(axis_margin);
                         }
+                        if let Some(axis_min) = get_f32_from_value(item, "axis_min") {
+                            y_config.axis_min = Some(axis_min);
+                        }
+                        if let Some(axis_max) = get_f32_from_value(item, "axis_max") {
+                            y_config.axis_max = Some(axis_max);
+                        }
                         y_config
                     })
                     .collect(),

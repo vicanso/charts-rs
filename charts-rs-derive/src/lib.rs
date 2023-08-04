@@ -251,6 +251,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     data_list,
                     split_number: y_axis_config.axis_split_number,
                     reverse: Some(true),
+                    min: y_axis_config.axis_min,
+                    max: y_axis_config.axis_max,
                     ..Default::default()
                 });
                 let y_axis_width = if let Some(value) = y_axis_config.axis_width {

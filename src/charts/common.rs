@@ -78,4 +78,6 @@ pub struct YAxisConfig {
     pub axis_name_gap: f32,
     pub axis_margin: Option<Box>,
     pub axis_formatter: Option<String>,
+    pub axis_min: Option<f32>,
+    pub axis_max: Option<f32>,
 }

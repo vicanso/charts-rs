@@ -154,25 +154,30 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             min = value;
         }
     }
+    // 是否自定义的最大值
+    let mut is_custom_max = false;
     if let Some(value) = params.max {
         if value > max {
             max = value;
+            is_custom_max = true
         }
     }
     let mut unit = ((max - min) / split_number as f32) as i32;
-    let mut base = 1;
-    let mut multiply = 10;
-    while unit >= multiply {
-        unit /= multiply;
-        base *= multiply;
-        if base > 1000 {
-            multiply = 5;
-        } else if base > 10000 {
-            multiply = 2;
+    if !is_custom_max {
+        let mut base = 1;
+        let mut multiply = 10;
+        while unit >= multiply {
+            unit /= multiply;
+            base *= multiply;
+            if base > 1000 {
+                multiply = 5;
+            } else if base > 10000 {
+                multiply = 2;
+            }
         }
-    }
 
-    unit = if unit < 1 { base } else { base * (unit + 1) };
+        unit = if unit < 1 { base } else { base * (unit + 1) };
+    }
     let split_unit = unit as usize;
 
     let mut data = vec![];
