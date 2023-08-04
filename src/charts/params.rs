@@ -276,6 +276,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         y_axis_index: get_usize_from_value(value, "y_axis_index").unwrap_or_default(),
         label_show: get_bool_from_value(value, "label_show").unwrap_or_default(),
         category: get_series_category_from_value(value, "category"),
+        start_index: get_usize_from_value(value, "start_index").unwrap_or_default(),
     })
 }
 

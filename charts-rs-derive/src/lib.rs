@@ -505,7 +505,14 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     return vec![];
                 }
                 let mut c1 = c;
-                let unit_width = c1.width() / series_list[0].data.len() as f32;
+                let mut series_data_count = 0;
+                for series in series_list.iter() {
+                    if series.data.len() > series_data_count {
+                        series_data_count = series.data.len();
+                    }
+                } 
+                
+                let unit_width = c1.width() / series_data_count as f32;
                 let bar_chart_margin = 5.0_f32;
                 let bar_chart_gap = 3.0_f32;
         
@@ -527,7 +534,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         .unwrap_or_else(|| &self.series_colors[0]);
                     let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
-                        let mut left = unit_width * i as f32 + bar_chart_margin;
+                        let mut left = unit_width * (i + series.start_index) as f32 + bar_chart_margin;
                         left += (bar_width + bar_chart_gap) * index as f32;
         
                         let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
@@ -568,19 +575,26 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     split_unit_offset = 1.0;
                 }
                 let mut series_labels_list = vec![];
+                let mut series_data_count = 0;
+                for series in series_list.iter() {
+                    if series.data.len() > series_data_count {
+                        series_data_count = series.data.len();
+                    }
+                } 
+
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
                     } else {
                         y_axis_values_list[series.y_axis_index]
                     };
-                    let split_unit_count = series.data.len() as f32 - split_unit_offset;
+                    let split_unit_count = series_data_count as f32 - split_unit_offset;
                     let unit_width = c1.width() / split_unit_count;
                     let mut points: Vec<Point> = vec![];
                     let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         // 居中
-                        let mut x = unit_width * i as f32;
+                        let mut x = unit_width * (i + series.start_index) as f32;
                         if x_boundary_gap {
                             x += unit_width / 2.0;
                         }

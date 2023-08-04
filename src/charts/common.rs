@@ -34,6 +34,8 @@ pub enum SeriesCategory {
 pub struct Series {
     pub name: String,
     pub data: Vec<f32>,
+    // 数据开始位置，用于数据不足且非从0开始场景
+    pub start_index: usize,
     // 指定index
     pub index: Option<usize>,
     // 其对应的y轴
