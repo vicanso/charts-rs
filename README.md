@@ -1,5 +1,7 @@
 # charts-rs
 
+[中文](./README-zh.md)
+
 `charts-rs` is a charting library for rust. It's simple and fast.
 
 [![Crates.io][crates-badge]][crates-url]
