@@ -14,7 +14,7 @@
 
 ## 概要
 
-`chart-rs`提供简单的方式生成图表，它支持`svg`与`png`两种输出格式，以及支持`light`， `dark`， `grafana`与`ant`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar` 以及 `Table`。
+`chart-rs`提供简单的方式生成图表，它支持`svg`与`png`两种输出格式，以及支持`light`， `dark`， `grafana`与`ant`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar`，`Scatter` 以及 `Table`。
 
 `Apache ECharts`图表库在前端开发者中大受欢迎，`charts-rs`的相关样式展现主要参考其实现。
 
