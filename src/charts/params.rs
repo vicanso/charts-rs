@@ -151,6 +151,51 @@ pub(crate) fn get_string_slice_from_value(
     }
     None
 }
+pub(crate) fn get_y_axis_config_from_value(t: &Theme, item: &serde_json::Value) -> YAxisConfig {
+    let mut y_config = YAxisConfig {
+        axis_font_size: t.y_axis_font_size,
+        axis_font_color: t.y_axis_font_color,
+        axis_stroke_color: t.y_axis_stroke_color,
+        axis_split_number: t.y_axis_split_number,
+        axis_name_gap: t.y_axis_name_gap,
+        ..Default::default()
+    };
+    if let Some(axis_font_size) = get_f32_from_value(item, "axis_font_size") {
+        y_config.axis_font_size = axis_font_size;
+    }
+    if let Some(axis_font_color) = get_color_from_value(item, "axis_font_color") {
+        y_config.axis_font_color = axis_font_color;
+    }
+    if let Some(axis_font_weight) = get_string_from_value(item, "axis_font_weight") {
+        y_config.axis_font_weight = Some(axis_font_weight);
+    }
+    if let Some(axis_stroke_color) = get_color_from_value(item, "axis_stroke_color") {
+        y_config.axis_stroke_color = axis_stroke_color;
+    }
+    if let Some(axis_width) = get_f32_from_value(item, "axis_width") {
+        y_config.axis_width = Some(axis_width);
+    }
+    if let Some(axis_split_number) = get_usize_from_value(item, "axis_split_number") {
+        y_config.axis_split_number = axis_split_number;
+    }
+    if let Some(axis_name_gap) = get_f32_from_value(item, "axis_name_gap") {
+        y_config.axis_name_gap = axis_name_gap;
+    }
+    if let Some(axis_formatter) = get_string_from_value(item, "axis_formatter") {
+        y_config.axis_formatter = Some(axis_formatter);
+    }
+    if let Some(axis_margin) = get_margin_from_value(item, "axis_margin") {
+        y_config.axis_margin = Some(axis_margin);
+    }
+    if let Some(axis_min) = get_f32_from_value(item, "axis_min") {
+        y_config.axis_min = Some(axis_min);
+    }
+    if let Some(axis_max) = get_f32_from_value(item, "axis_max") {
+        y_config.axis_max = Some(axis_max);
+    }
+    y_config
+}
+
 pub(crate) fn get_y_axis_configs_from_value(
     t: &Theme,
     value: &serde_json::Value,
@@ -161,58 +206,7 @@ pub(crate) fn get_y_axis_configs_from_value(
             return Some(
                 values
                     .iter()
-                    .map(|item| {
-                        let mut y_config = YAxisConfig {
-                            axis_font_size: t.y_axis_font_size,
-                            axis_font_color: t.y_axis_font_color,
-                            axis_stroke_color: t.y_axis_stroke_color,
-                            axis_split_number: t.y_axis_split_number,
-                            axis_name_gap: t.y_axis_name_gap,
-                            ..Default::default()
-                        };
-                        if let Some(axis_font_size) = get_f32_from_value(item, "axis_font_size") {
-                            y_config.axis_font_size = axis_font_size;
-                        }
-                        if let Some(axis_font_color) = get_color_from_value(item, "axis_font_color")
-                        {
-                            y_config.axis_font_color = axis_font_color;
-                        }
-                        if let Some(axis_font_weight) =
-                            get_string_from_value(item, "axis_font_weight")
-                        {
-                            y_config.axis_font_weight = Some(axis_font_weight);
-                        }
-                        if let Some(axis_stroke_color) =
-                            get_color_from_value(item, "axis_stroke_color")
-                        {
-                            y_config.axis_stroke_color = axis_stroke_color;
-                        }
-                        if let Some(axis_width) = get_f32_from_value(item, "axis_width") {
-                            y_config.axis_width = Some(axis_width);
-                        }
-                        if let Some(axis_split_number) =
-                            get_usize_from_value(item, "axis_split_number")
-                        {
-                            y_config.axis_split_number = axis_split_number;
-                        }
-                        if let Some(axis_name_gap) = get_f32_from_value(item, "axis_name_gap") {
-                            y_config.axis_name_gap = axis_name_gap;
-                        }
-                        if let Some(axis_formatter) = get_string_from_value(item, "axis_formatter")
-                        {
-                            y_config.axis_formatter = Some(axis_formatter);
-                        }
-                        if let Some(axis_margin) = get_margin_from_value(item, "axis_margin") {
-                            y_config.axis_margin = Some(axis_margin);
-                        }
-                        if let Some(axis_min) = get_f32_from_value(item, "axis_min") {
-                            y_config.axis_min = Some(axis_min);
-                        }
-                        if let Some(axis_max) = get_f32_from_value(item, "axis_max") {
-                            y_config.axis_max = Some(axis_max);
-                        }
-                        y_config
-                    })
+                    .map(|item| get_y_axis_config_from_value(t, item))
                     .collect(),
             );
         }

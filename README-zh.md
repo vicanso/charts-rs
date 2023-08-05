@@ -56,6 +56,11 @@
     <img src="./asset/image/radar.png" alt="charts-rs">
 </p>
 
+## Scatter
+<p align="center">
+    <img src="./asset/image/scatter.png" alt="charts-rs">
+</p>
+
 ## Table
 <p align="center">
     <img src="./asset/image/table.png" alt="charts-rs">

@@ -1,0 +1,145 @@
+<svg width="630" height="410" viewBox="0 0 630 410" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="630" height="410" fill="#FFFFFF"/>
+<text font-size="18" x="10" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Male and female height and weight distribution
+</text>
+<text font-size="14" x="10" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Data from: Heinz 2003
+</text>
+<g>
+<line stroke-width="2" x1="466" y1="15" x2="491" y2="15" stroke="#5470C6"/>
+<circle cx="478.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="494" y="19" font-family="Roboto" fill="#464646">
+Female
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="547" y1="15" x2="572" y2="15" stroke="#91CC75"/>
+<circle cx="559.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="575" y="19" font-family="Roboto" fill="#464646">
+Male
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="58" y1="60" x2="610" y2="60"/><line stroke-width="1" x1="58" y1="113.3" x2="610" y2="113.3"/><line stroke-width="1" x1="58" y1="166.7" x2="610" y2="166.7"/><line stroke-width="1" x1="58" y1="220" x2="610" y2="220"/><line stroke-width="1" x1="58" y1="273.3" x2="610" y2="273.3"/><line stroke-width="1" x1="58" y1="326.7" x2="610" y2="326.7"/>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="150" y1="60" x2="150" y2="380"/><line stroke-width="1" x1="242" y1="60" x2="242" y2="380"/><line stroke-width="1" x1="334" y1="60" x2="334" y2="380"/><line stroke-width="1" x1="426" y1="60" x2="426" y2="380"/><line stroke-width="1" x1="518" y1="60" x2="518" y2="380"/><line stroke-width="1" x1="610" y1="60" x2="610" y2="380"/>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="58" y1="60" x2="58" y2="380"/>
+<line stroke-width="1" x1="58" y1="60" x2="53" y2="60"/>
+<line stroke-width="1" x1="58" y1="113.3" x2="53" y2="113.3"/>
+<line stroke-width="1" x1="58" y1="166.7" x2="53" y2="166.7"/>
+<line stroke-width="1" x1="58" y1="220" x2="53" y2="220"/>
+<line stroke-width="1" x1="58" y1="273.3" x2="53" y2="273.3"/>
+<line stroke-width="1" x1="58" y1="326.7" x2="53" y2="326.7"/>
+<line stroke-width="1" x1="58" y1="380" x2="53" y2="380"/>
+</g>
+<text font-size="14" x="7" y="65" font-family="Roboto" fill="#6E7079">
+130 kg
+</text>
+<text font-size="14" x="7" y="118.3" font-family="Roboto" fill="#6E7079">
+115 kg
+</text>
+<text font-size="14" x="7" y="171.7" font-family="Roboto" fill="#6E7079">
+100 kg
+</text>
+<text font-size="14" x="15" y="225" font-family="Roboto" fill="#6E7079">
+85 kg
+</text>
+<text font-size="14" x="15" y="278.3" font-family="Roboto" fill="#6E7079">
+70 kg
+</text>
+<text font-size="14" x="15" y="331.7" font-family="Roboto" fill="#6E7079">
+55 kg
+</text>
+<text font-size="14" x="15" y="385" font-family="Roboto" fill="#6E7079">
+40 kg
+</text>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="58" y1="380" x2="610" y2="380"/>
+<line stroke-width="1" x1="58" y1="380" x2="58" y2="385"/>
+<line stroke-width="1" x1="150" y1="380" x2="150" y2="385"/>
+<line stroke-width="1" x1="242" y1="380" x2="242" y2="385"/>
+<line stroke-width="1" x1="334" y1="380" x2="334" y2="385"/>
+<line stroke-width="1" x1="426" y1="380" x2="426" y2="385"/>
+<line stroke-width="1" x1="518" y1="380" x2="518" y2="385"/>
+<line stroke-width="1" x1="610" y1="380" x2="610" y2="385"/>
+</g>
+<text font-size="14" x="34" y="399" font-family="Roboto" fill="#6E7079">
+140 cm
+</text>
+<text font-size="14" x="126" y="399" font-family="Roboto" fill="#6E7079">
+155 cm
+</text>
+<text font-size="14" x="218" y="399" font-family="Roboto" fill="#6E7079">
+170 cm
+</text>
+<text font-size="14" x="310" y="399" font-family="Roboto" fill="#6E7079">
+185 cm
+</text>
+<text font-size="14" x="402" y="399" font-family="Roboto" fill="#6E7079">
+200 cm
+</text>
+<text font-size="14" x="494" y="399" font-family="Roboto" fill="#6E7079">
+215 cm
+</text>
+<text font-size="14" x="586" y="399" font-family="Roboto" fill="#6E7079">
+230 cm
+</text>
+</g>
+<circle cx="188" cy="338.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="226.7" cy="312.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="177.6" cy="347.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="162.3" cy="298.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="154.9" cy="331.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="242" cy="312.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="175.1" cy="353" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="217.5" cy="274" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="280" cy="284.7" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="181.9" cy="254.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="257.3" cy="326" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="247.5" cy="329.5" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="259.8" cy="300" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="140.2" cy="372.9" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="180.7" cy="344.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="102.2" cy="345.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="231" cy="347.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="272.7" cy="262" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="162.3" cy="352.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="227.3" cy="277.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="177.6" cy="342.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="272.7" cy="228.9" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="222.4" cy="318.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="281.9" cy="210" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="243.2" cy="263.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="266.5" cy="289" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="274.5" cy="266.9" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="386.1" cy="235.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="343.2" cy="264.1" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="347.5" cy="242" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="312.5" cy="256.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="327.9" cy="215" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="330.9" cy="243.5" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="272.7" cy="301.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="327.9" cy="232.1" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="303.3" cy="249.9" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="289.8" cy="225" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="376.9" cy="202.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="278.8" cy="257" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="266.5" cy="269.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="327.9" cy="239.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="381.2" cy="188.7" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="251.2" cy="273.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="260.4" cy="264.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="278.8" cy="216.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="278.8" cy="242" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="306.4" cy="245.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="258.6" cy="286.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="278.8" cy="215" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="263.5" cy="231.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+</svg>

@@ -3,7 +3,7 @@
 fn generate_image() {
     use charts_rs::{
         svg_to_png, Align, BarChart, Box, HorizontalBarChart, LineChart, PieChart, RadarChart,
-        SeriesCategory, TableCellStyle, TableChart, THEME_GRAFANA,
+        ScatterChart, SeriesCategory, TableCellStyle, TableChart, THEME_GRAFANA,
     };
     // bar chart
     let mut bar_chart = BarChart::new_with_theme(
@@ -170,6 +170,53 @@ fn generate_image() {
     );
     let buf = svg_to_png(&radar_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/radar.png", buf).unwrap();
+
+    // scatter chart
+    let mut scatter_chart = ScatterChart::new_with_theme(
+        vec![
+            (
+                "Female",
+                vec![
+                    161.2, 51.6, 167.5, 59.0, 159.5, 49.2, 157.0, 63.0, 155.8, 53.6, 170.0, 59.0,
+                    159.1, 47.6, 166.0, 69.8, 176.2, 66.8, 160.2, 75.2, 172.5, 55.2, 170.9, 54.2,
+                    172.9, 62.5, 153.4, 42.0, 160.0, 50.0, 147.2, 49.8, 168.2, 49.2, 175.0, 73.2,
+                    157.0, 47.8, 167.6, 68.8, 159.5, 50.6, 175.0, 82.5, 166.8, 57.2, 176.5, 87.8,
+                    170.2, 72.8,
+                ],
+            )
+                .into(),
+            (
+                "Male",
+                vec![
+                    174.0, 65.6, 175.3, 71.8, 193.5, 80.7, 186.5, 72.6, 187.2, 78.8, 181.5, 74.8,
+                    184.0, 86.4, 184.5, 78.4, 175.0, 62.0, 184.0, 81.6, 180.0, 76.6, 177.8, 83.6,
+                    192.0, 90.0, 176.0, 74.6, 174.0, 71.0, 184.0, 79.6, 192.7, 93.8, 171.5, 70.0,
+                    173.0, 72.4, 176.0, 85.9, 176.0, 78.8, 180.5, 77.8, 172.7, 66.2, 176.0, 86.4,
+                    173.5, 81.8,
+                ],
+            )
+                .into(),
+        ],
+        THEME_GRAFANA,
+    );
+
+    scatter_chart.title_text = "Male and female height and weight distribution".to_string();
+    scatter_chart.margin.right = 20.0;
+    scatter_chart.title_align = Align::Left;
+    scatter_chart.sub_title_text = "Data from: Heinz 2003".to_string();
+    scatter_chart.sub_title_align = Align::Left;
+    scatter_chart.legend_align = Align::Right;
+    scatter_chart.y_axis_configs[0].axis_min = Some(40.0);
+    scatter_chart.y_axis_configs[0].axis_max = Some(130.0);
+    scatter_chart.y_axis_configs[0].axis_formatter = Some("{c} kg".to_string());
+
+    scatter_chart.x_axis_config.axis_min = Some(140.0);
+    scatter_chart.x_axis_config.axis_max = Some(230.0);
+    scatter_chart.x_axis_config.axis_formatter = Some("{c} cm".to_string());
+
+    scatter_chart.series_symbol_sizes = vec![6.0, 6.0];
+    let buf = svg_to_png(&scatter_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/scatter.png", buf).unwrap();
 
     // table chart
     let mut table_chart = TableChart::new_with_theme(

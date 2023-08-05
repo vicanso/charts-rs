@@ -133,7 +133,7 @@ const G_VALUE: f32 = M_VALUE * K_VALUE;
 const T_VALUE: f32 = G_VALUE * K_VALUE;
 
 pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
-    let mut min = 0.0;
+    let mut min = f32::MAX;
     let mut max = f32::MIN;
 
     let mut split_number = params.split_number;
@@ -149,10 +149,18 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             min = value;
         }
     }
+    // 是否自定义的最小值
+    let mut is_custom_min = false;
+
     if let Some(value) = params.min {
         if value < min {
             min = value;
+            is_custom_min = true;
         }
+    }
+    // 如果非指定的值，而值超过0，则使用0
+    if !is_custom_min && min > 0.0 {
+        min = 0.0;
     }
     // 是否自定义的最大值
     let mut is_custom_max = false;
