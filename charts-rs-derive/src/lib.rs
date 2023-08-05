@@ -181,6 +181,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(x_axis_name_rotate) = get_f32_from_value(&data, "x_axis_name_rotate") {
                     self.x_axis_name_rotate = x_axis_name_rotate;
                 }
+                if let Some(x_axis_margin) = get_margin_from_value(&data, "x_axis_margin") {
+                    self.x_axis_margin = Some(x_axis_margin);
+                }
                 if let Some(x_boundary_gap) = get_bool_from_value(&data, "x_boundary_gap") {
                     self.x_boundary_gap = Some(x_boundary_gap);
                 }

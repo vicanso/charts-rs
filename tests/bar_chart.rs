@@ -53,6 +53,12 @@ fn bar_chart() {
                 "Sat",
                 "Sun"
             ],
+            "x_axis_margin": {
+                "left": 1,
+                "top": 0,
+                "right": 0,
+                "bottom": 0
+            },
             "x_axis_font_weight": "bold"
         }"###,
     )
