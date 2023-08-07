@@ -125,7 +125,7 @@ impl ScatterChart {
     pub fn new(series_list: Vec<Series>) -> ScatterChart {
         ScatterChart::new_with_theme(series_list, &get_default_theme())
     }
-    /// Converts bar chart to svg.
+    /// Converts scatter chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new(self.width, self.height);
 
@@ -161,6 +161,7 @@ impl ScatterChart {
             reverse: Some(true),
             min: y_axis_config.axis_min,
             max: y_axis_config.axis_max,
+            thousands_format: false,
         });
         let y_axis_width = if let Some(value) = y_axis_config.axis_width {
             value

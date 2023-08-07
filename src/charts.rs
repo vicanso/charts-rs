@@ -1,4 +1,5 @@
 mod bar_chart;
+mod candlestick_chart;
 mod canvas;
 mod color;
 mod common;
@@ -33,6 +34,7 @@ pub use encoder::svg_to_png;
 #[cfg(feature = "image")]
 pub use encoder::Error as EncoderError;
 
+pub use candlestick_chart::CandlestickChart;
 pub use font::Error as FontError;
 pub use font::{
     get_font, get_font_families, get_or_try_init_fonts, measure_text_width_family,

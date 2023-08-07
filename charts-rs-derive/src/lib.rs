@@ -250,12 +250,17 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if data_list.is_empty() {
                    return (AxisValues::default(), 0.0);
                 }
+                let mut thousands_format = false;
+                if let Some(ref value) = y_axis_config.axis_formatter {
+                    thousands_format = value.contains("{t}");
+                }
                 let y_axis_values = get_axis_values(AxisValueParams {
                     data_list,
                     split_number: y_axis_config.axis_split_number,
                     reverse: Some(true),
                     min: y_axis_config.axis_min,
                     max: y_axis_config.axis_max,
+                    thousands_format,
                 });
                 let y_axis_width = if let Some(value) = y_axis_config.axis_width {
                     value
@@ -372,6 +377,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let legend_unit_height = self.legend_font_size + LEGEND_MARGIN;
                 let mut legend_top = 0.0;
                 for (index, series) in self.series_list.iter().enumerate() {
+                    if series.name.is_empty() {
+                        continue;
+                    }
                     let color = *self
                         .series_colors
                         .get(series.index.unwrap_or(index))

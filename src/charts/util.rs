@@ -94,7 +94,29 @@ impl From<(f32, f32, f32, f32)> for Box {
     }
 }
 
-pub fn format_float(value: f32) -> String {
+pub(crate) fn thousands_format_float(value: f32) -> String {
+    if value < 1000.0 {
+        return format_float(value);
+    }
+    let str = format!("{:.0}", value);
+    let unit = 3;
+    let mut index = str.len() % unit;
+    let mut arr = vec![];
+    if index != 0 {
+        arr.push(str.substring(0, index))
+    }
+
+    loop {
+        if index >= str.len() {
+            break;
+        }
+        arr.push(str.substring(index, index + unit));
+        index += unit;
+    }
+    arr.join(",")
+}
+
+pub(crate) fn format_float(value: f32) -> String {
     let str = format!("{:.1}", value);
     if str.ends_with(".0") {
         return str.substring(0, str.len() - 2).to_string();
@@ -109,6 +131,7 @@ pub(crate) struct AxisValueParams {
     pub max: Option<f32>,
     pub split_number: usize,
     pub reverse: Option<bool>,
+    pub thousands_format: bool,
 }
 #[derive(Clone, Debug, Default)]
 pub struct AxisValues {
@@ -191,6 +214,10 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     let mut data = vec![];
     for i in 0..=split_number {
         let mut value = min + (i * split_unit) as f32;
+        if params.thousands_format {
+            data.push(thousands_format_float(value));
+            continue;
+        }
         let mut unit = "";
         value = if value >= T_VALUE {
             unit = "T";
@@ -251,7 +278,7 @@ pub fn format_string(value: &str, formatter: &str) -> String {
     if formatter.is_empty() {
         value.to_string()
     } else {
-        formatter.replace("{c}", value)
+        formatter.replace("{c}", value).replace("{t}", value)
     }
 }
 
@@ -286,6 +313,8 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
 
 #[cfg(test)]
 mod tests {
+    use crate::thousands_format_float;
+
     use super::{
         convert_to_points, format_float, get_axis_values, get_box_of_points, AxisValueParams, Box,
         Point,
@@ -331,6 +360,16 @@ mod tests {
         assert_eq!("100.1", format_float(100.14));
         assert_eq!("100", format_float(100.04));
         assert_eq!("1000.1", format_float(1000.14));
+    }
+    #[test]
+    fn thousands_format() {
+        assert_eq!("1", thousands_format_float(1.0));
+        assert_eq!("1.1", thousands_format_float(1.12));
+        assert_eq!("100.1", thousands_format_float(100.14));
+        assert_eq!("100", thousands_format_float(100.04));
+        assert_eq!("1,000", thousands_format_float(1000.14));
+        assert_eq!("100,000", thousands_format_float(100000.14));
+        assert_eq!("1,000,000", thousands_format_float(1000000.14));
     }
 
     #[test]
