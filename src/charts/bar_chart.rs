@@ -219,6 +219,7 @@ impl BarChart {
             &bar_series_list,
             &y_axis_values_list,
             max_height,
+            self.x_axis_data.len(),
         );
 
         let mut line_series_labels_list = self.render_line(
@@ -231,6 +232,7 @@ impl BarChart {
             &y_axis_values_list,
             max_height,
             axis_height,
+            self.x_axis_data.len(),
         );
 
         bar_series_labels_list.append(&mut line_series_labels_list);
@@ -572,27 +574,13 @@ mod tests {
     fn bar_chart_two_y_axis() {
         let mut bar_chart = BarChart::new(
             vec![
-                (
-                    "Evaporation",
-                    vec![
-                        2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3,
-                    ],
-                )
-                    .into(),
+                ("Evaporation", vec![2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6]).into(),
                 (
                     "Precipitation",
-                    vec![
-                        2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3,
-                    ],
+                    vec![2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6],
                 )
                     .into(),
-                (
-                    "Temperature",
-                    vec![
-                        2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
-                    ],
-                )
-                    .into(),
+                ("Temperature", vec![2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3]).into(),
             ],
             vec![
                 "Mon".to_string(),

@@ -512,17 +512,12 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 series_list: &[&Series],
                 y_axis_values_list: &[&AxisValues],
                 max_height: f32,
+                series_data_count: usize,
             ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
                     return vec![];
                 }
                 let mut c1 = c;
-                let mut series_data_count = 0;
-                for series in series_list.iter() {
-                    if series.data.len() > series_data_count {
-                        series_data_count = series.data.len();
-                    }
-                } 
                 
                 let unit_width = c1.width() / series_data_count as f32;
                 let bar_chart_margin = 5.0_f32;
@@ -576,6 +571,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 y_axis_values_list: &[&AxisValues],
                 max_height: f32,
                 axis_height: f32,
+                series_data_count: usize,
             ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
                     return vec![];
@@ -587,12 +583,6 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     split_unit_offset = 1.0;
                 }
                 let mut series_labels_list = vec![];
-                let mut series_data_count = 0;
-                for series in series_list.iter() {
-                    if series.data.len() > series_data_count {
-                        series_data_count = series.data.len();
-                    }
-                } 
 
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {

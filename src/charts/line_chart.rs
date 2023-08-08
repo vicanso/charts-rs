@@ -199,6 +199,7 @@ impl LineChart {
             &y_axis_values_list,
             max_height,
             axis_height,
+            self.x_axis_data.len(),
         );
         self.render_series_label(
             c.child(Box {

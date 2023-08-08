@@ -76,6 +76,7 @@ pub trait Chart {
         series_list: &[&Series],
         y_axis_values: &[&AxisValues],
         max_height: f32,
+        series_data_count: usize,
     ) -> Vec<Vec<SeriesLabel>>;
     fn render_line(
         &self,
@@ -84,5 +85,6 @@ pub trait Chart {
         y_axis_values: &[&AxisValues],
         max_height: f32,
         axis_height: f32,
+        series_data_count: usize,
     ) -> Vec<Vec<SeriesLabel>>;
 }

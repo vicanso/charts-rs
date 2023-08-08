@@ -1016,13 +1016,34 @@ impl Axis {
         } else {
             self.height
         };
+        let font_size = self.font_size;
+        let formatter = &self.formatter.clone().unwrap_or_default();
+
+        let mut text_list = vec![];
+        let mut text_unit_count: usize = 1;
+        if font_size > 0.0 && !self.data.is_empty() {
+            text_list = self
+                .data
+                .iter()
+                .map(|item| format_string(item, formatter))
+                .collect();
+            if self.position == Position::Top || self.position == Position::Bottom {
+                let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
+                let total_measure = font::measure_text(f, font_size, &text_list.join(" "));
+                // 位置不够
+                if total_measure.width() > axis_length {
+                    text_unit_count += (total_measure.width() / axis_length).ceil() as usize;
+                }
+            }
+        }
+
         let mut split_number = self.split_number;
         if split_number == 0 {
             split_number = self.data.len();
         }
         if !is_transparent {
             let unit = axis_length / split_number as f32;
-            let tick_interval = self.tick_interval;
+            let tick_interval = self.tick_interval.max(text_unit_count);
             let tick_start = self.tick_start;
             for i in 0..=split_number {
                 if i < tick_start {
@@ -1068,9 +1089,8 @@ impl Axis {
             }
         }
         let mut text_data = vec![];
-        let font_size = self.font_size;
         let name_rotate = self.name_rotate / std::f32::consts::FRAC_PI_2 * 180.0;
-        if font_size > 0.0 && !self.data.is_empty() {
+        if !text_list.is_empty() {
             let name_gap = self.name_gap;
             let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
             let mut data_len = self.data.len();
@@ -1079,10 +1099,12 @@ impl Axis {
                 data_len -= 1;
             }
             let unit = axis_length / data_len as f32;
-            let formatter = &self.formatter.clone().unwrap_or_default();
-            for (index, item) in self.data.iter().enumerate() {
-                let text = format_string(item, formatter);
-                let b = font::measure_text(f, font_size, &text);
+
+            for (index, text) in text_list.iter().enumerate() {
+                if index % text_unit_count != 0 {
+                    continue;
+                }
+                let b = font::measure_text(f, font_size, text);
                 let mut unit_offset = unit * index as f32 + unit / 2.0;
                 if is_name_align_start {
                     unit_offset -= unit / 2.0;
