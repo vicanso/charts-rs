@@ -1,10 +1,17 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
 <g>
-<line stroke-width="2" x1="252.5" y1="15" x2="277.5" y2="15" stroke="#5470C6"/>
-<circle cx="265" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="280.5" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="244.5" y1="15" x2="269.5" y2="15" stroke="#5470C6"/>
+<circle cx="257" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="272.5" y="19" font-family="Roboto" fill="#464646">
 MA5
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="308.5" y1="15" x2="333.5" y2="15" stroke="#91CC75"/>
+<circle cx="321" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="336.5" y="19" font-family="Roboto" fill="#464646">
+日K
 </text>
 </g>
 <g stroke="#E0E6F2">

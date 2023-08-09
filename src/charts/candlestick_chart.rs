@@ -85,6 +85,40 @@ pub struct CandlestickChart {
 }
 
 impl CandlestickChart {
+    fn fill_default(&mut self) {
+        if self.candlestick_up_color.is_zero() {
+            self.candlestick_up_color = (236, 0, 0).into();
+        }
+        if self.candlestick_up_border_color.is_zero() {
+            self.candlestick_up_border_color = (138, 0, 0).into();
+        }
+        if self.candlestick_down_color.is_zero() {
+            self.candlestick_down_color = (0, 218, 60).into();
+        }
+        if self.candlestick_down_border_color.is_zero() {
+            self.candlestick_down_border_color = (0, 143, 40).into();
+        }
+    }
+    pub fn from_json(data: &str) -> canvas::Result<CandlestickChart> {
+        let mut c = CandlestickChart {
+            ..Default::default()
+        };
+        let value = c.fill_option(data)?;
+        if let Some(value) = get_color_from_value(&value, "candlestick_up_color") {
+            c.candlestick_up_color = value;
+        }
+        if let Some(value) = get_color_from_value(&value, "candlestick_up_border_color") {
+            c.candlestick_up_border_color = value;
+        }
+        if let Some(value) = get_color_from_value(&value, "candlestick_down_color") {
+            c.candlestick_down_color = value;
+        }
+        if let Some(value) = get_color_from_value(&value, "candlestick_down_border_color") {
+            c.candlestick_down_border_color = value;
+        }
+        c.fill_default();
+        Ok(c)
+    }
     /// New a candlestick chart with custom theme
     pub fn new_with_theme(
         mut series_list: Vec<Series>,
@@ -106,10 +140,7 @@ impl CandlestickChart {
         };
         let theme = get_theme(theme);
         c.fill_theme(theme);
-        c.candlestick_up_color = (236, 0, 0).into();
-        c.candlestick_up_border_color = (138, 0, 0).into();
-        c.candlestick_down_color = (0, 218, 60).into();
-        c.candlestick_down_border_color = (0, 143, 40).into();
+        c.fill_default();
         c
     }
     /// New a candlestick chart with default theme.
@@ -311,7 +342,7 @@ mod tests {
                 )
                     .into(),
                 (
-                    "",
+                    "日K",
                     vec![
                         2320.26, 2320.26, 2287.3, 2362.94, 2300.0, 2291.3, 2288.26, 2308.38,
                         2295.35, 2346.5, 2295.35, 2346.92, 2347.22, 2358.98, 2337.35, 2363.8,

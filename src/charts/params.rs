@@ -262,9 +262,6 @@ fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Optio
 
 fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
     let name = get_string_from_value(value, "name").unwrap_or_default();
-    if name.is_empty() {
-        return None;
-    }
     let data = get_f32_slice_from_value(value, "data").unwrap_or_default();
     if data.is_empty() {
         return None;

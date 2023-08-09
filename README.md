@@ -62,6 +62,12 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
     <img src="./asset/image/scatter.png" alt="charts-rs">
 </p>
 
+
+## Candlestick
+<p align="center">
+    <img src="./asset/image/candlestick.png" alt="charts-rs">
+</p>
+
 ## Table
 <p align="center">
     <img src="./asset/image/table.png" alt="charts-rs">
