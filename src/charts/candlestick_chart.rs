@@ -16,6 +16,7 @@ pub struct CandlestickChart {
     pub width: f32,
     pub height: f32,
     pub margin: Box,
+    // 其中candlestick的数据：开市值(open)，收市值(close)，最低值(lowest)，最高值(highest)
     pub series_list: Vec<Series>,
     pub font_family: String,
     pub background_color: Color,
@@ -125,7 +126,7 @@ impl CandlestickChart {
         x_axis_data: Vec<String>,
         theme: &str,
     ) -> CandlestickChart {
-        // candlestick data: open, close, lowest, highest
+        // candlestick的数据：开市值(open)，收市值(close)，最低值(lowest)，最高值(highest)
         // 因此先计算index
         series_list
             .iter_mut()
