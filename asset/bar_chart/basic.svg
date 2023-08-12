@@ -4,29 +4,25 @@
 Bar Chart
 </text>
 <g>
-<line stroke-width="2" x1="114" y1="50" x2="139" y2="50" stroke="#5470C6"/>
-<circle cx="126.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<rect x="114" y="45" width="25" height="10" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
 <text font-size="14" x="142" y="54" font-family="Roboto" fill="#464646">
 Email
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="183" y1="50" x2="208" y2="50" stroke="#91CC75"/>
-<circle cx="195.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<rect x="183" y="45" width="25" height="10" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
 <text font-size="14" x="211" y="54" font-family="Roboto" fill="#464646">
 Union Ads
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="283" y1="50" x2="308" y2="50" stroke="#FAC858"/>
-<circle cx="295.5" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<rect x="283" y="45" width="25" height="10" rx="2" ry="2" stroke="#FAC858" fill="#FAC858"/>
 <text font-size="14" x="311" y="54" font-family="Roboto" fill="#464646">
 Direct
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="356" y1="50" x2="381" y2="50" stroke="#EE6666"/>
-<circle cx="368.5" cy="50" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<rect x="356" y="45" width="25" height="10" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
 <text font-size="14" x="384" y="54" font-family="Roboto" fill="#464646">
 Search Engine
 </text>

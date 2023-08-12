@@ -1205,6 +1205,7 @@ pub(crate) fn measure_legends(
 pub enum LegendCategory {
     #[default]
     Normal,
+    RoundRect,
     Rect,
 }
 
@@ -1225,43 +1226,62 @@ impl Legend {
     pub fn svg(&self) -> String {
         let stroke_width = 2.0;
         let mut data: Vec<String> = vec![];
-        if self.category == LegendCategory::Rect {
-            let height = 10.0_f32;
-            data.push(
-                Rect {
-                    color: self.stroke_color,
-                    fill: self.stroke_color,
-                    left: self.left,
-                    top: self.top + (LEGEND_HEIGHT - height) / 2.0,
-                    width: LEGEND_WIDTH,
-                    height,
-                    ..Default::default()
-                }
-                .svg(),
-            );
-        } else {
-            data.push(
-                Line {
-                    stroke_width,
-                    color: self.stroke_color,
-                    left: self.left,
-                    top: self.top + LEGEND_HEIGHT / 2.0,
-                    right: self.left + LEGEND_WIDTH,
-                    bottom: self.top + LEGEND_HEIGHT / 2.0,
-                }
-                .svg(),
-            );
-            data.push(
-                Circle {
-                    stroke_width,
-                    stroke_color: self.stroke_color,
-                    fill: self.fill,
-                    cx: self.left + LEGEND_WIDTH / 2.0,
-                    cy: self.top + LEGEND_HEIGHT / 2.0,
-                    r: 5.5,
-                }
-                .svg(),
-            );
+        match self.category {
+            LegendCategory::Rect => {
+                let height = 10.0_f32;
+                data.push(
+                    Rect {
+                        color: self.stroke_color,
+                        fill: self.stroke_color,
+                        left: self.left,
+                        top: self.top + (LEGEND_HEIGHT - height) / 2.0,
+                        width: LEGEND_WIDTH,
+                        height,
+                        ..Default::default()
+                    }
+                    .svg(),
+                );
+            }
+            LegendCategory::RoundRect => {
+                let height = 10.0_f32;
+                data.push(
+                    Rect {
+                        color: self.stroke_color,
+                        fill: self.stroke_color,
+                        left: self.left,
+                        top: self.top + (LEGEND_HEIGHT - height) / 2.0,
+                        width: LEGEND_WIDTH,
+                        height,
+                        rx: Some(2.0),
+                        ry: Some(2.0),
+                    }
+                    .svg(),
+                );
+            }
+            _ => {
+                data.push(
+                    Line {
+                        stroke_width,
+                        color: self.stroke_color,
+                        left: self.left,
+                        top: self.top + LEGEND_HEIGHT / 2.0,
+                        right: self.left + LEGEND_WIDTH,
+                        bottom: self.top + LEGEND_HEIGHT / 2.0,
+                    }
+                    .svg(),
+                );
+                data.push(
+                    Circle {
+                        stroke_width,
+                        stroke_color: self.stroke_color,
+                        fill: self.fill,
+                        cx: self.left + LEGEND_WIDTH / 2.0,
+                        cy: self.top + LEGEND_HEIGHT / 2.0,
+                        r: 5.5,
+                    }
+                    .svg(),
+                );
+            }
         }
         data.push(
             Text {

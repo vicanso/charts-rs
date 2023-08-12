@@ -297,6 +297,7 @@ mod tests {
             bottom: 10.0,
             ..Default::default()
         });
+        bar_chart.legend_category = LegendCategory::RoundRect;
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         assert_eq!(
