@@ -350,6 +350,7 @@ mod tests {
         });
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
+        bar_chart.legend_category = LegendCategory::Circle;
         assert_eq!(
             include_str!("../../asset/bar_chart/basic_dark.svg"),
             bar_chart.svg().unwrap()

@@ -1206,6 +1206,7 @@ pub enum LegendCategory {
     #[default]
     Normal,
     RoundRect,
+    Circle,
     Rect,
 }
 
@@ -1254,6 +1255,19 @@ impl Legend {
                         height,
                         rx: Some(2.0),
                         ry: Some(2.0),
+                    }
+                    .svg(),
+                );
+            }
+            LegendCategory::Circle => {
+                data.push(
+                    Circle {
+                        stroke_width,
+                        stroke_color: self.stroke_color,
+                        fill: self.fill,
+                        cx: self.left + LEGEND_WIDTH * 0.6,
+                        cy: self.top + LEGEND_HEIGHT / 2.0,
+                        r: 5.5,
                     }
                     .svg(),
                 );
