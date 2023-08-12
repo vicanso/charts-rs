@@ -112,6 +112,7 @@ pub(crate) fn get_legend_category_from_value(
             let value = match value.to_lowercase().as_str() {
                 "rect" => LegendCategory::Rect,
                 "round_rect" => LegendCategory::RoundRect,
+                "circle" => LegendCategory::Circle,
                 _ => LegendCategory::Normal,
             };
             return Some(value);
