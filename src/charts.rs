@@ -9,6 +9,7 @@ mod encoder;
 mod font;
 mod horizontal_bar_chart;
 mod line_chart;
+mod multi_chart;
 mod params;
 mod path;
 mod pie_chart;
@@ -21,6 +22,7 @@ mod util;
 pub use bar_chart::BarChart;
 pub use canvas::Canvas;
 pub use canvas::Error as CanvasError;
+pub use canvas::Result as CanvasResult;
 pub use color::*;
 pub use common::*;
 pub use component::{
@@ -42,6 +44,7 @@ pub use font::{
 };
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
+pub use multi_chart::{ChildChart, MultiChart};
 pub use path::*;
 pub use pie_chart::PieChart;
 pub use radar_chart::{RadarChart, RadarIndicator};

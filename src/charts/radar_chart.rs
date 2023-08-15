@@ -45,6 +45,8 @@ fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<
 pub struct RadarChart {
     pub width: f32,
     pub height: f32,
+    pub x: f32,
+    pub y: f32,
     pub margin: Box,
     pub series_list: Vec<Series>,
     pub font_family: String,
@@ -146,7 +148,7 @@ impl RadarChart {
                 message: "The count of indicator should be >= 3".to_string(),
             });
         }
-        let mut c = Canvas::new(self.width, self.height);
+        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
         c.margin = self.margin.clone();

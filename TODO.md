@@ -9,4 +9,4 @@
 - [x] 支持scatter
 - [ ] 支持多图合并处理
 - [ ] 支持空值处理(中间值为空值)
-- [ ] 支持candlestick
+- [x] 支持candlestick

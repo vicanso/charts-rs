@@ -20,6 +20,8 @@ pub struct TableCellStyle {
 pub struct TableChart {
     pub width: f32,
     pub height: f32,
+    pub x: f32,
+    pub y: f32,
     pub font_family: String,
     pub background_color: Color,
 
@@ -73,6 +75,12 @@ impl TableChart {
         }
         if let Some(height) = get_f32_from_value(&data, "height") {
             self.height = height;
+        }
+        if let Some(x) = get_f32_from_value(&data, "x") {
+            self.x = x;
+        }
+        if let Some(y) = get_f32_from_value(&data, "y") {
+            self.y = y;
         }
         if let Some(font_family) = get_string_from_value(&data, "font_family") {
             self.font_family = font_family;
@@ -315,7 +323,7 @@ impl TableChart {
         }
         title_height
     }
-    pub fn svg(&self) -> canvas::Result<String> {
+    pub fn svg(&mut self) -> canvas::Result<String> {
         if self.data.is_empty() {
             return Err(canvas::Error::Params {
                 message: "data is empty".to_string(),
@@ -335,7 +343,7 @@ impl TableChart {
             }
         }
 
-        let mut c = Canvas::new(self.width, self.height);
+        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         if !self.title_text.is_empty() {
             let mut title_height = self.title_height;
@@ -497,6 +505,7 @@ impl TableChart {
         }
 
         c.height = c.margin.top + top;
+        self.height = c.height;
 
         c.svg()
     }

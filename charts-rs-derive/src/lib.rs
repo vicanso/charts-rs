@@ -85,6 +85,12 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(height) = get_f32_from_value(&data, "height") {
                     self.height = height;
                 }
+                if let Some(x) = get_f32_from_value(&data, "x") {
+                    self.x = x;
+                }
+                if let Some(y) = get_f32_from_value(&data, "y") {
+                    self.y = y;
+                }
                 if let Some(margin) = get_margin_from_value(&data, "margin") {
                     self.margin = margin;
                 }

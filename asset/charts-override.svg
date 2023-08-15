@@ -1,0 +1,164 @@
+<svg width="600" height="410" viewBox="0 0 600 410" xmlns="http://www.w3.org/2000/svg">
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<g>
+<line stroke-width="2" x1="114" y1="15" x2="139" y2="15" stroke="#5470C6"/>
+<circle cx="126.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="142" y="19" font-family="Roboto" fill="#464646">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="183" y1="15" x2="208" y2="15" stroke="#91CC75"/>
+<circle cx="195.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="211" y="19" font-family="Roboto" fill="#464646">
+Union Ads
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="283" y1="15" x2="308" y2="15" stroke="#FAC858"/>
+<circle cx="295.5" cy="15" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="311" y="19" font-family="Roboto" fill="#464646">
+Direct
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="356" y1="15" x2="381" y2="15" stroke="#EE6666"/>
+<circle cx="368.5" cy="15" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="384" y="19" font-family="Roboto" fill="#464646">
+Search Engine
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="38" y1="27" x2="595" y2="27"/><line stroke-width="1" x1="38" y1="83.3" x2="595" y2="83.3"/><line stroke-width="1" x1="38" y1="139.7" x2="595" y2="139.7"/><line stroke-width="1" x1="38" y1="196" x2="595" y2="196"/><line stroke-width="1" x1="38" y1="252.3" x2="595" y2="252.3"/><line stroke-width="1" x1="38" y1="308.7" x2="595" y2="308.7"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="32" font-family="Roboto" fill="#6E7079">
+1.8k
+</text>
+<text font-size="14" x="2" y="88.3" font-family="Roboto" fill="#6E7079">
+1.5k
+</text>
+<text font-size="14" x="2" y="144.7" font-family="Roboto" fill="#6E7079">
+1.2k
+</text>
+<text font-size="14" x="6" y="201" font-family="Roboto" fill="#6E7079">
+900
+</text>
+<text font-size="14" x="6" y="257.3" font-family="Roboto" fill="#6E7079">
+600
+</text>
+<text font-size="14" x="6" y="313.7" font-family="Roboto" fill="#6E7079">
+300
+</text>
+<text font-size="14" x="22" y="370" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
+<line stroke-width="1" x1="117.6" y1="365" x2="117.6" y2="370"/>
+<line stroke-width="1" x1="197.1" y1="365" x2="197.1" y2="370"/>
+<line stroke-width="1" x1="276.7" y1="365" x2="276.7" y2="370"/>
+<line stroke-width="1" x1="356.3" y1="365" x2="356.3" y2="370"/>
+<line stroke-width="1" x1="435.9" y1="365" x2="435.9" y2="370"/>
+<line stroke-width="1" x1="515.4" y1="365" x2="515.4" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="63.8" y="384" font-family="Roboto" fill="#6E7079">
+Mon
+</text>
+<text font-size="14" x="145.4" y="384" font-family="Roboto" fill="#6E7079">
+Tue
+</text>
+<text font-size="14" x="222.9" y="384" font-family="Roboto" fill="#6E7079">
+Wed
+</text>
+<text font-size="14" x="304.5" y="384" font-family="Roboto" fill="#6E7079">
+Thu
+</text>
+<text font-size="14" x="388.1" y="384" font-family="Roboto" fill="#6E7079">
+Fri
+</text>
+<text font-size="14" x="464.6" y="384" font-family="Roboto" fill="#6E7079">
+Sat
+</text>
+<text font-size="14" x="543.2" y="384" font-family="Roboto" fill="#6E7079">
+Sun
+</text>
+</g>
+<rect x="43" y="342.5" width="15.1" height="22.5" fill="#5470C6"/>
+<rect x="122.6" y="340.2" width="15.1" height="24.8" fill="#5470C6"/>
+<rect x="202.1" y="346" width="15.1" height="19" fill="#5470C6"/>
+<rect x="281.7" y="339.8" width="15.1" height="25.2" fill="#5470C6"/>
+<rect x="361.3" y="348.1" width="15.1" height="16.9" fill="#5470C6"/>
+<rect x="440.9" y="321.8" width="15.1" height="43.2" fill="#5470C6"/>
+<rect x="520.4" y="325.6" width="15.1" height="39.4" fill="#5470C6"/>
+<rect x="61.1" y="323.7" width="15.1" height="41.3" fill="#91CC75"/>
+<rect x="140.7" y="330.8" width="15.1" height="34.2" fill="#91CC75"/>
+<rect x="220.3" y="329.1" width="15.1" height="35.9" fill="#91CC75"/>
+<rect x="299.9" y="321.1" width="15.1" height="43.9" fill="#91CC75"/>
+<rect x="379.4" y="310.5" width="15.1" height="54.5" fill="#91CC75"/>
+<rect x="459" y="303" width="15.1" height="62" fill="#91CC75"/>
+<rect x="538.6" y="306.8" width="15.1" height="58.2" fill="#91CC75"/>
+<rect x="79.3" y="304.9" width="15.1" height="60.1" fill="#FAC858"/>
+<rect x="158.9" y="302.7" width="15.1" height="62.3" fill="#FAC858"/>
+<rect x="238.4" y="308.5" width="15.1" height="56.5" fill="#FAC858"/>
+<rect x="318" y="302.3" width="15.1" height="62.7" fill="#FAC858"/>
+<rect x="397.6" y="291.8" width="15.1" height="73.2" fill="#FAC858"/>
+<rect x="477.1" y="303" width="15.1" height="62" fill="#FAC858"/>
+<rect x="556.7" y="304.9" width="15.1" height="60.1" fill="#FAC858"/>
+<rect x="97.4" y="211" width="15.1" height="154" fill="#EE6666"/>
+<rect x="177" y="190" width="15.1" height="175" fill="#EE6666"/>
+<rect x="256.6" y="195.8" width="15.1" height="169.2" fill="#EE6666"/>
+<rect x="336.1" y="189.6" width="15.1" height="175.4" fill="#EE6666"/>
+<rect x="415.7" y="122.8" width="15.1" height="242.2" fill="#EE6666"/>
+<rect x="495.3" y="115.3" width="15.1" height="249.7" fill="#EE6666"/>
+<rect x="574.9" y="117.1" width="15.1" height="247.9" fill="#EE6666"/>
+</svg>
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" x="200">
+<path d="M200,52 L200,32 A8 8 0 0 1 202.7,24 A76 76 0 0 1 251.8,44.4 A8 8 0 0 1 248.1,51.9 L233.9,66.1 A8 8 0 0 1 227.3,70.7 A40 40 0 0 0 201.4,60 A8 8 0 0 1 200,52 Z" fill="#5470C6"/>
+<path d="M229.1,29.8 C231 25.2, 233.3 13.6, 236.7 11.3 C240.2 9, 251.7 11.3, 256.7 11.3" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="259.7" y="16.3" font-family="Roboto" fill="#464646">
+rose 1: 17.1%
+</text>
+<path d="M233.9,66.1 L245.4,54.6 A8 8 0 0 1 252.8,50.8 A72.2 72.2 0 0 1 272.2,97.5 A8 8 0 0 1 264.2,100 L248,100 A8 8 0 0 1 240,98.6 A40 40 0 0 0 229.3,72.7 A8 8 0 0 1 233.9,66.1 Z" fill="#91CC75"/>
+<path d="M266.7,72.4 C272.2 70.1, 283 64.5, 288.7 63.3 C293.5 62.2, 303.7 63.3, 308.7 63.3" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="311.7" y="68.3" font-family="Roboto" fill="#464646">
+rose 2: 16.2%
+</text>
+<path d="M248,100 L252.8,100 A8 8 0 0 1 260.8,102.1 A60.8 60.8 0 0 1 244.5,141.5 A8 8 0 0 1 237.3,137.3 L233.9,133.9 A8 8 0 0 1 229.3,127.3 A40 40 0 0 0 240,101.4 A8 8 0 0 1 248,100 Z" fill="#FAC858"/>
+<path d="M256.2,123.3 C264.3 126.6, 280.3 134.6, 288.7 136.7 C293.4 138, 303.7 136.7, 308.7 136.7" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="311.7" y="141.7" font-family="Roboto" fill="#464646">
+rose 3: 13.7%
+</text>
+<path d="M233.9,133.9 L234.6,134.6 A8 8 0 0 1 238.9,141.7 A57 57 0 0 1 202,157 A8 8 0 0 1 200,149 L200,148 A8 8 0 0 1 201.4,140 A40 40 0 0 0 227.3,129.3 A8 8 0 0 1 233.9,133.9 Z" fill="#EE6666"/>
+<path d="M221.8,152.7 C225.5 161.7, 231 182.7, 236.7 188.7 C239.7 191.7, 251.7 188.7, 256.7 188.7" stroke-width="1" fill="none" stroke="#EE6666"/>
+<text font-size="14" x="259.7" y="193.7" font-family="Roboto" fill="#464646">
+rose 4: 12.8%
+</text>
+<path d="M200,148 L200,145.2 A8 8 0 0 1 198.1,153.2 A53.2 53.2 0 0 1 163.7,138.9 A8 8 0 0 1 168,132 L166.1,133.9 A8 8 0 0 1 172.7,129.3 A40 40 0 0 0 198.6,140 A8 8 0 0 1 200,148 Z" fill="#73C0DE"/>
+<path d="M179.6,149.2 C175.5 159, 169.5 182, 163.3 188.7 C160.4 191.8, 148.3 188.7, 143.3 188.7" stroke-width="1" fill="none" stroke="#73C0DE"/>
+<text font-size="14" x="68.3" y="193.7" font-family="Roboto" fill="#464646">
+rose 5: 12%
+</text>
+<path d="M166.1,133.9 L170.7,129.3 A8 8 0 0 1 163.9,133.7 A49.4 49.4 0 0 1 150.6,101.7 A8 8 0 0 1 158.6,100 L152,100 A8 8 0 0 1 160,101.4 A40 40 0 0 0 170.7,127.3 A8 8 0 0 1 166.1,133.9 Z" fill="#3BA272"/>
+<path d="M154.4,118.9 C143.6 123.4, 122.3 133.6, 111.3 136.7 C106.6 138.1, 96.3 136.7, 91.3 136.7" stroke-width="1" fill="none" stroke="#3BA272"/>
+<text font-size="14" x="4.3" y="141.7" font-family="Roboto" fill="#464646">
+rose 6: 11.1%
+</text>
+<path d="M152,100 L166.2,100 A8 8 0 0 1 158.2,98.5 A41.8 41.8 0 0 1 169.4,71.5 A8 8 0 0 1 176.1,76.1 L166.1,66.1 A8 8 0 0 1 170.7,72.7 A40 40 0 0 0 160,98.6 A8 8 0 0 1 152,100 Z" fill="#FC8452"/>
+<path d="M161.4,84 C148.9 78.8, 124.1 67.1, 111.3 63.3 C106.6 61.9, 96.3 63.3, 91.3 63.3" stroke-width="1" fill="none" stroke="#FC8452"/>
+<text font-size="14" x="12.3" y="68.3" font-family="Roboto" fill="#464646">
+rose 7: 9.4%
+</text>
+<path d="M166.1,66.1 L181.5,81.5 A8 8 0 0 1 176.7,75 A34.2 34.2 0 0 1 198.8,65.8 A8 8 0 0 1 200,73.8 L200,52 A8 8 0 0 1 198.6,60 A40 40 0 0 0 172.7,70.7 A8 8 0 0 1 166.1,66.1 Z" fill="#9A60B4"/>
+<path d="M186.9,68.4 C181 54.1, 171.5 22.1, 163.3 11.3 C160.6 7.8, 148.3 11.3, 143.3 11.3" stroke-width="1" fill="none" stroke="#9A60B4"/>
+<text font-size="14" x="64.3" y="16.3" font-family="Roboto" fill="#464646">
+rose 8: 7.7%
+</text>
+</svg>
+</svg>

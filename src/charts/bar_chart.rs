@@ -15,6 +15,8 @@ use serde::{Deserialize, Serialize};
 pub struct BarChart {
     pub width: f32,
     pub height: f32,
+    pub x: f32,
+    pub y: f32,
     pub margin: Box,
     pub series_list: Vec<Series>,
     pub font_family: String,
@@ -115,7 +117,7 @@ impl BarChart {
     }
     /// Converts bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new(self.width, self.height);
+        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
         c.margin = self.margin.clone();

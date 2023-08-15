@@ -14,6 +14,8 @@ use charts_rs_derive::Chart;
 pub struct HorizontalBarChart {
     pub width: f32,
     pub height: f32,
+    pub x: f32,
+    pub y: f32,
     pub margin: Box,
     pub series_list: Vec<Series>,
     pub font_family: String,
@@ -104,7 +106,7 @@ impl HorizontalBarChart {
         HorizontalBarChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new(self.width, self.height);
+        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
         c.margin = self.margin.clone();

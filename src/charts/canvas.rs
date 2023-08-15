@@ -29,15 +29,22 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub struct Canvas {
     pub width: f32,
     pub height: f32,
+    pub x: f32,
+    pub y: f32,
     pub components: Rc<RefCell<Vec<Component>>>,
     pub margin: Box,
 }
 
 impl Canvas {
     pub fn new(width: f32, height: f32) -> Self {
+        Canvas::new_width_xy(width, height, 0.0, 0.0)
+    }
+    pub fn new_width_xy(width: f32, height: f32, x: f32, y: f32) -> Self {
         Canvas {
             width,
             height,
+            x,
+            y,
             components: Rc::new(RefCell::new(vec![])),
             margin: Box::default(),
         }
@@ -59,6 +66,8 @@ impl Canvas {
             height: self.height,
             components: Rc::clone(&self.components),
             margin: m,
+            x: self.x,
+            y: self.y,
         }
     }
     pub fn line(&mut self, line: Line) -> Box {
@@ -292,7 +301,13 @@ impl Canvas {
             };
             data.push(value);
         }
-        Ok(generate_svg(self.width, self.height, data.join("\n")))
+        Ok(generate_svg(
+            self.width,
+            self.height,
+            self.x,
+            self.y,
+            data.join("\n"),
+        ))
     }
 }
 

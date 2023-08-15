@@ -41,8 +41,8 @@ pub(crate) fn get_usize_slice_from_value(
 }
 
 pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option<f32> {
-    if let Some(width) = value.get(key) {
-        if let Some(v) = width.as_f64() {
+    if let Some(value) = value.get(key) {
+        if let Some(v) = value.as_f64() {
             return Some(v as f32);
         }
     }

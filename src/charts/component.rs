@@ -73,18 +73,20 @@ struct SVGTag<'a> {
     data: Option<String>,
 }
 
-pub fn generate_svg(width: f32, height: f32, data: String) -> String {
-    SVGTag::new(
-        TAG_SVG,
-        data,
-        vec![
-            (ATTR_WIDTH, format!("{}", width)),
-            (ATTR_HEIGHT, format!("{}", height)),
-            (ATTR_VIEW_BOX, format!("0 0 {} {}", width, height)),
-            (ATTR_XMLNS, "http://www.w3.org/2000/svg".to_string()),
-        ],
-    )
-    .to_string()
+pub fn generate_svg(width: f32, height: f32, x: f32, y: f32, data: String) -> String {
+    let mut attrs = vec![
+        (ATTR_WIDTH, format!("{}", width)),
+        (ATTR_HEIGHT, format!("{}", height)),
+        (ATTR_VIEW_BOX, format!("0 0 {} {}", width, height)),
+        (ATTR_XMLNS, "http://www.w3.org/2000/svg".to_string()),
+    ];
+    if x != 0.0 {
+        attrs.push((ATTR_X, format!("{}", x)))
+    }
+    if y != 0.0 {
+        attrs.push((ATTR_Y, format!("{}", y)))
+    }
+    SVGTag::new(TAG_SVG, data, attrs).to_string()
 }
 
 impl<'a> SVGTag<'a> {

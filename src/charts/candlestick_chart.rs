@@ -15,6 +15,8 @@ use serde::{Deserialize, Serialize};
 pub struct CandlestickChart {
     pub width: f32,
     pub height: f32,
+    pub x: f32,
+    pub y: f32,
     pub margin: Box,
     // 其中candlestick的数据：开市值(open)，收市值(close)，最低值(lowest)，最高值(highest)
     pub series_list: Vec<Series>,
@@ -150,7 +152,7 @@ impl CandlestickChart {
     }
     /// Converts candlestick chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new(self.width, self.height);
+        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
         c.margin = self.margin.clone();
