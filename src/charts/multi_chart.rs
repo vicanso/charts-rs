@@ -41,17 +41,18 @@ impl MultiChart {
         let mut arr = vec![];
         let mut y = 0.0;
         let mut x = 0.0;
-        let mut should_add_gap = false;
         for item in self.charts.iter_mut() {
-            if should_add_gap {
-                y += self.gap;
-            }
             let result = match item {
                 ChildChart::Bar(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
 
                     ChildChartResult {
@@ -62,9 +63,14 @@ impl MultiChart {
                 }
                 ChildChart::Candlestick(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
 
                     ChildChartResult {
@@ -75,9 +81,14 @@ impl MultiChart {
                 }
                 ChildChart::HorizontalBar(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
 
                     ChildChartResult {
@@ -88,9 +99,14 @@ impl MultiChart {
                 }
                 ChildChart::Line(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
 
                     ChildChartResult {
@@ -101,9 +117,14 @@ impl MultiChart {
                 }
                 ChildChart::Pie(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
 
                     ChildChartResult {
@@ -114,9 +135,14 @@ impl MultiChart {
                 }
                 ChildChart::Radar(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
 
                     ChildChartResult {
@@ -127,9 +153,14 @@ impl MultiChart {
                 }
                 ChildChart::Scatter(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
 
                     ChildChartResult {
@@ -140,9 +171,14 @@ impl MultiChart {
                 }
                 ChildChart::Table(c, postion) => {
                     c.y = y;
+                    // 指定定位的不增加gap
                     if let Some((x, y)) = postion {
                         c.y = y.to_owned();
                         c.x = x.to_owned();
+                    } else if y > 0.0{
+                        // 非首个图，而且未设置定位
+                        y += self.gap;
+                        c.y = y;
                     }
                     // svg中会重新计算c.height
                     let svg = c.svg()?;
@@ -155,9 +191,6 @@ impl MultiChart {
             };
             if result.bottom > y {
                 y = result.bottom;
-                should_add_gap = true;
-            } else {
-                should_add_gap = false;
             }
             if result.right > x {
                 x = result.right;
@@ -422,6 +455,7 @@ mod tests {
             ],
         );
         charts.add(ChildChart::Bar(bar_chart, None));
+
 
         let mut pie_chart = PieChart::new(vec![
             ("rose 1", vec![40.0]).into(),

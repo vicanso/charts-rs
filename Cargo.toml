@@ -27,7 +27,7 @@ charts-rs-derive = { path = "./charts-rs-derive", version = "0.1.7"}
 resvg = { version = "0.35.0", default-features = false, features = [ "text", "system-fonts" ], optional = true }
 png = { version = "0.17.9", optional = true }
 serde = { version = "1.0.183", features = ["derive"] }
-serde_json = "1.0.104"
+serde_json = "1.0.105"
 regex = "1.9.3"
 
 [features]
