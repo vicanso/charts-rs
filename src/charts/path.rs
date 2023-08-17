@@ -19,7 +19,7 @@ impl fmt::Display for QuadraticBezier {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug, Default)]
 struct ControlPoint {
     left: Option<Point>,
     right: Option<Point>,
