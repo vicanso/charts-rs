@@ -14,5 +14,5 @@ repository = "https://github.com/vicanso/charts-rs"
 proc-macro = true
 
 [dependencies]
-quote = "1.0.32"
-syn = "2.0.28"
+quote = "1.0.33"
+syn = "2.0.29"
