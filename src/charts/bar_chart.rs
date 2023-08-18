@@ -82,6 +82,7 @@ pub struct BarChart {
 }
 
 impl BarChart {
+    /// Creates a bar chart from json.
     pub fn from_json(data: &str) -> canvas::Result<BarChart> {
         let mut b = BarChart {
             ..Default::default()
@@ -89,6 +90,7 @@ impl BarChart {
         b.fill_option(data)?;
         Ok(b)
     }
+    /// Creates a bar chart with custom theme.
     pub fn new_with_theme(
         mut series_list: Vec<Series>,
         x_axis_data: Vec<String>,
@@ -111,7 +113,7 @@ impl BarChart {
         b.fill_theme(theme);
         b
     }
-    /// New a bar chart with default theme.
+    /// Creates a bar chart with default theme.
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> BarChart {
         BarChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }

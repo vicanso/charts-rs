@@ -27,7 +27,7 @@ struct ChildChartResult {
 }
 
 impl MultiChart {
-    /// New a multi chart from json.
+    /// Creates a multi chart from json.
     pub fn from_json(data: &str) -> canvas::Result<MultiChart> {
         let value: serde_json::Value = serde_json::from_str(data)?;
         let mut theme = "".to_string();
@@ -106,18 +106,18 @@ impl MultiChart {
         }
         Ok(multi_chart)
     }
-    /// New a multi chart.
+    /// Creates a multi chart.
     pub fn new() -> MultiChart {
         MultiChart {
             charts: vec![],
             gap: 10.0,
         }
     }
-    /// Add a child chart.
+    /// Adds a child chart to multi chart.
     pub fn add(&mut self, c: ChildChart) {
         self.charts.push(c);
     }
-    /// Convert the chart to svg.
+    /// Converts the chart to svg.
     pub fn svg(&mut self) -> CanvasResult<String> {
         let mut arr = vec![];
         let mut y = 0.0;

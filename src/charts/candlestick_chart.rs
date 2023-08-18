@@ -102,6 +102,7 @@ impl CandlestickChart {
             self.candlestick_down_border_color = (0, 143, 40).into();
         }
     }
+    /// Creates a candlestick chart from json.
     pub fn from_json(data: &str) -> canvas::Result<CandlestickChart> {
         let mut c = CandlestickChart {
             ..Default::default()
@@ -122,7 +123,7 @@ impl CandlestickChart {
         c.fill_default();
         Ok(c)
     }
-    /// New a candlestick chart with custom theme
+    /// Creates a candlestick chart with custom theme.
     pub fn new_with_theme(
         mut series_list: Vec<Series>,
         x_axis_data: Vec<String>,
@@ -146,7 +147,7 @@ impl CandlestickChart {
         c.fill_default();
         c
     }
-    /// New a candlestick chart with default theme.
+    /// Creates a candlestick chart with default theme.
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> CandlestickChart {
         CandlestickChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }

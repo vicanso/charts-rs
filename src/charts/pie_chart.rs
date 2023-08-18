@@ -89,6 +89,7 @@ impl PieChart {
         self.inner_radius = 40.0;
         self.legend_show = Some(false);
     }
+    /// Creates a pie chart from json.
     pub fn from_json(data: &str) -> canvas::Result<PieChart> {
         let mut p = PieChart {
             ..Default::default()
@@ -103,6 +104,7 @@ impl PieChart {
         }
         Ok(p)
     }
+    /// Creates a pie chart with custom theme.
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> PieChart {
         let mut p = PieChart {
             series_list,
@@ -112,10 +114,11 @@ impl PieChart {
         p.fill_theme(get_theme(theme));
         p
     }
+    /// Creates a pie chart with default theme.
     pub fn new(series_list: Vec<Series>) -> PieChart {
         PieChart::new_with_theme(series_list, &get_default_theme())
     }
-
+    /// Converts pie chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
@@ -172,7 +175,7 @@ impl PieChart {
 
         for (index, series) in self.series_list.iter().enumerate() {
             let value = values[index];
-            let cr = value / max * r;
+            let cr = value / max * (r - self.inner_radius) + self.inner_radius;
             let color = *self
                 .series_colors
                 .get(series.index.unwrap_or(index))
@@ -271,6 +274,28 @@ mod tests {
         pie_chart.sub_title_text = "Fake Data".to_string();
         assert_eq!(
             include_str!("../../asset/pie_chart/basic.svg"),
+            pie_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn small_pie_basic() {
+        let mut pie_chart = PieChart::new(vec![
+            ("rose 1", vec![40.0]).into(),
+            ("rose 2", vec![38.0]).into(),
+            ("rose 3", vec![32.0]).into(),
+            ("rose 4", vec![30.0]).into(),
+            ("rose 5", vec![28.0]).into(),
+            ("rose 6", vec![26.0]).into(),
+            ("rose 7", vec![22.0]).into(),
+            ("rose 8", vec![18.0]).into(),
+        ]);
+        pie_chart.width = 400.0;
+        pie_chart.height = 300.0;
+        pie_chart.title_text = "Nightingale Chart".to_string();
+        pie_chart.sub_title_text = "Fake Data".to_string();
+        assert_eq!(
+            include_str!("../../asset/pie_chart/small_basic.svg"),
             pie_chart.svg().unwrap()
         );
     }

@@ -218,11 +218,13 @@ impl TableChart {
         }
         Ok(data)
     }
+    /// Creates a table chart from json.
     pub fn from_json(data: &str) -> canvas::Result<TableChart> {
         let mut t = TableChart::new_with_theme(vec![], "");
         t.fill_option(data)?;
         Ok(t)
     }
+    /// Creates a table chart with custom theme.
     pub fn new_with_theme(data: Vec<Vec<String>>, theme: &str) -> TableChart {
         let mut table = TableChart {
             data,
@@ -262,6 +264,7 @@ impl TableChart {
         self.body_background_colors = t.table_body_colors;
         self.border_color = t.table_border_color;
     }
+    /// Creates a table chart with default theme.
     pub fn new(data: Vec<Vec<String>>) -> TableChart {
         TableChart::new_with_theme(data, &get_default_theme())
     }
@@ -323,6 +326,7 @@ impl TableChart {
         }
         title_height
     }
+    /// Converts bar chart to svg.
     pub fn svg(&mut self) -> canvas::Result<String> {
         if self.data.is_empty() {
             return Err(canvas::Error::Params {

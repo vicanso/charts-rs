@@ -81,6 +81,7 @@ pub struct LineChart {
 }
 
 impl LineChart {
+    /// Creates a line chart from json.
     pub fn from_json(data: &str) -> canvas::Result<LineChart> {
         let mut l = LineChart {
             ..Default::default()
@@ -88,6 +89,7 @@ impl LineChart {
         l.fill_option(data)?;
         Ok(l)
     }
+    /// Creates a line chart with custom theme.
     pub fn new_with_theme(
         series_list: Vec<Series>,
         x_axis_data: Vec<String>,
@@ -102,10 +104,11 @@ impl LineChart {
         l.fill_theme(theme);
         l
     }
+    /// Creates a line chart with default theme.
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> LineChart {
         LineChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }
-
+    /// Converts line chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 

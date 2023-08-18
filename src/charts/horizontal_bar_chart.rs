@@ -81,6 +81,7 @@ pub struct HorizontalBarChart {
 }
 
 impl HorizontalBarChart {
+    /// Creates a horizontal bar from json.
     pub fn from_json(data: &str) -> canvas::Result<HorizontalBarChart> {
         let mut h = HorizontalBarChart {
             ..Default::default()
@@ -88,6 +89,7 @@ impl HorizontalBarChart {
         h.fill_option(data)?;
         Ok(h)
     }
+    /// Creates a horizontal bar with custom theme.
     pub fn new_with_theme(
         series_list: Vec<Series>,
         x_axis_data: Vec<String>,
@@ -102,9 +104,11 @@ impl HorizontalBarChart {
         h.fill_theme(theme);
         h
     }
+    /// Creates a horizontal bar with default theme.
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> HorizontalBarChart {
         HorizontalBarChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }
+    /// Converts horizontal bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 

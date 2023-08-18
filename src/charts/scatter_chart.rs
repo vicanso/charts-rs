@@ -86,6 +86,7 @@ pub struct ScatterChart {
 }
 
 impl ScatterChart {
+    /// Creates a scatter chart from json.
     pub fn from_json(data: &str) -> canvas::Result<ScatterChart> {
         let mut s = ScatterChart {
             ..Default::default()
@@ -102,7 +103,7 @@ impl ScatterChart {
         }
         Ok(s)
     }
-    /// New a scatter chart with  theme.
+    /// Creates a scatter chart with  theme.
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> ScatterChart {
         let mut s = ScatterChart {
             series_list,
@@ -114,7 +115,7 @@ impl ScatterChart {
 
         s
     }
-    pub fn fill_default(&mut self) {
+    fn fill_default(&mut self) {
         if self.y_axis_configs[0].axis_stroke_color.is_zero() {
             self.y_axis_configs[0].axis_stroke_color = self.x_axis_stroke_color;
         }
@@ -123,7 +124,7 @@ impl ScatterChart {
         }
         self.x_boundary_gap = Some(false);
     }
-    /// New a scatter chart with default theme.
+    /// Creates a scatter chart with default theme.
     pub fn new(series_list: Vec<Series>) -> ScatterChart {
         ScatterChart::new_with_theme(series_list, &get_default_theme())
     }
