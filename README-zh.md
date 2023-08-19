@@ -71,6 +71,11 @@
     <img src="./asset/image/table.png" alt="charts-rs">
 </p>
 
+## Multi Chart
+<p align="center">
+    <img src="./asset/image/multi-chart.png" alt="charts-rs">
+</p>
+
 ## Rust示例
 
 ### 使用Option的形式创建图表

@@ -400,8 +400,8 @@ fn generate_image() {
         "child_charts": [
             {
             "quality": 80,
-            "width": 600,
-            "height": 400,
+            "width": 400,
+            "height": 300,
             "margin": {
                 "left": 5,
                 "top": 5,
@@ -411,13 +411,13 @@ fn generate_image() {
             "font_family": "Roboto",
             "title_font_size": 18,
             "title_font_weight": "bold",
+            "title_align": "right",
             "title_margin": {
                 "left": 0,
                 "top": 0,
                 "right": 0,
                 "bottom": 0
             },
-            "title_align": "center",
             "title_height": 30,
             "sub_title_text": "Sub Title",
             "sub_title_font_size": 14,
@@ -492,8 +492,9 @@ fn generate_image() {
             },
             {
             "quality": 80,
-            "width": 600,
-            "height": 400,
+            "x": 410,
+            "width": 400,
+            "height": 300,
             "margin": {
                 "left": 15,
                 "top": 15,
@@ -503,13 +504,13 @@ fn generate_image() {
             "font_family": "Roboto",
             "title_font_size": 18,
             "title_font_weight": "bold",
+            "title_align": "left",
             "title_margin": {
                 "left": 0,
                 "top": 0,
                 "right": 0,
                 "bottom": 0
             },
-            "title_align": "center",
             "title_height": 30,
             "sub_title_text": "Sub Title",
             "sub_title_font_size": 14,
@@ -584,8 +585,10 @@ fn generate_image() {
             },
             {
             "quality": 80,
-            "width": 600,
-            "height": 400,
+            "width": 400,
+            "x": 210,
+            "y": 310,
+            "height": 300,
             "margin": {
                 "left": 5,
                 "top": 5,
@@ -690,5 +693,5 @@ fn generate_image() {
     )
     .unwrap();
     let buf = svg_to_png(&multi_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/multi_chart.png", buf).unwrap();
+    std::fs::write("./asset/image/multi-chart.png", buf).unwrap();
 }
