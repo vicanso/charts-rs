@@ -124,6 +124,7 @@ impl MultiChart {
         MultiChart {
             charts: vec![],
             gap: 10.0,
+            margin: (10.0).into(),
             ..Default::default()
         }
     }
