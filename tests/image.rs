@@ -492,7 +492,8 @@ fn generate_image() {
             },
             {
             "quality": 80,
-            "x": 410,
+            "x": 420,
+            "y": 10,
             "width": 400,
             "height": 300,
             "margin": {
@@ -587,7 +588,7 @@ fn generate_image() {
             "quality": 80,
             "width": 400,
             "x": 210,
-            "y": 310,
+            "y": 320,
             "height": 300,
             "margin": {
                 "left": 5,
