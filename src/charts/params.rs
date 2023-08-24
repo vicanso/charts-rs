@@ -1,3 +1,5 @@
+use crate::NIL_VALUE;
+
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 
 pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Option<bool> {
@@ -42,6 +44,9 @@ pub(crate) fn get_usize_slice_from_value(
 
 pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option<f32> {
     if let Some(value) = value.get(key) {
+        if value.is_null() {
+            return Some(NIL_VALUE);
+        }
         if let Some(v) = value.as_f64() {
             return Some(v as f32);
         }
@@ -55,6 +60,9 @@ pub(crate) fn get_f32_slice_from_value(value: &serde_json::Value, key: &str) -> 
                 values
                     .iter()
                     .map(|item| {
+                        if item.is_null() {
+                            return NIL_VALUE;
+                        }
                         if let Some(v) = item.as_f64() {
                             v as f32
                         } else {

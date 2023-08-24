@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use substring::Substring;
 
+pub static NIL_VALUE: f32 = f32::MIN;
+
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct Point {
     pub x: f32,
@@ -165,6 +167,9 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     }
     for item in params.data_list.iter() {
         let value = item.to_owned();
+        if value == NIL_VALUE {
+            continue;
+        }
         if value > max {
             max = value;
         }

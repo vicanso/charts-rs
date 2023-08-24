@@ -257,7 +257,9 @@ impl BarChart {
 #[cfg(test)]
 mod tests {
     use super::BarChart;
-    use crate::{Box, LegendCategory, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA};
+    use crate::{
+        Box, LegendCategory, SeriesCategory, NIL_VALUE, THEME_ANT, THEME_DARK, THEME_GRAFANA,
+    };
     use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
@@ -663,6 +665,56 @@ mod tests {
         bar_chart.series_list[0].start_index = 1;
         assert_eq!(
             include_str!("../../asset/bar_chart/value_count_unequal.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn bar_chart_nil_value() {
+        let mut bar_chart = BarChart::new(
+            vec![
+                (
+                    "Email",
+                    vec![120.0, NIL_VALUE, 132.0, 101.0, 134.0, 90.0, 230.0],
+                )
+                    .into(),
+                (
+                    "Union Ads",
+                    vec![220.0, 182.0, 191.0, NIL_VALUE, 290.0, 330.0, 310.0],
+                )
+                    .into(),
+                (
+                    "Direct",
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, NIL_VALUE, 320.0],
+                )
+                    .into(),
+                (
+                    "Search Engine",
+                    vec![NIL_VALUE, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                )
+                    .into(),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 35.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.series_list[0].label_show = true;
+        assert_eq!(
+            include_str!("../../asset/bar_chart/nil_value.svg"),
             bar_chart.svg().unwrap()
         );
     }

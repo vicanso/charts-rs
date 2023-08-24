@@ -547,10 +547,15 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         .unwrap_or_else(|| &self.series_colors[0]);
                     let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
+                        let value = p.to_owned();
+                        // nil value忽略
+                        if value == NIL_VALUE {
+                            continue;
+                        }
                         let mut left = unit_width * (i + series.start_index) as f32 + bar_chart_margin;
                         left += (bar_width + bar_chart_gap) * index as f32;
         
-                        let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
+                        let y = y_axis_values.get_offset_height(value, max_height);
                         c1.rect(Rect {
                             fill: Some(color),
                             left,
