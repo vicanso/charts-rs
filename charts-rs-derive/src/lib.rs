@@ -594,7 +594,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     split_unit_offset = 1.0;
                 }
                 let mut series_labels_list = vec![];
-
+        
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
@@ -604,22 +604,34 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     let split_unit_count = series_data_count as f32 - split_unit_offset;
                     let unit_width = c1.width() / split_unit_count;
                     let mut points: Vec<Point> = vec![];
+                    let mut points_list: Vec<Vec<Point>> = vec![];
                     let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
+                        let value = p.to_owned();
+                        if value == NIL_VALUE {
+                            if !points.is_empty() {
+                                points_list.push(points);
+                                points = vec![];
+                            }
+                            continue;
+                        }
                         // 居中
                         let mut x = unit_width * (i + series.start_index) as f32;
                         if x_boundary_gap {
                             x += unit_width / 2.0;
                         }
-                        let y = y_axis_values.get_offset_height(p.to_owned(), max_height);
+                        let y = y_axis_values.get_offset_height(value, max_height);
                         points.push((x, y).into());
                         series_labels.push(SeriesLabel{
                             point: (x, y).into(),
-                            text: format_float(p.to_owned()),
+                            text: format_float(value),
                         })
                     }
                     if series.label_show {
                         series_labels_list.push(series_labels);
+                    }
+                    if !points.is_empty() {
+                        points_list.push(points);
                     }
         
                     let color = *self
@@ -629,39 +641,40 @@ pub fn my_default(input: TokenStream) -> TokenStream {
         
                     let fill = color.with_alpha(100);
                     let series_fill = self.series_fill;
-                    if self.series_smooth {
-                        if series_fill {
-                            c1.smooth_line_fill(SmoothLineFill {
-                                fill,
+                    for points in points_list.iter() {
+                        if self.series_smooth {
+                            if series_fill {
+                                c1.smooth_line_fill(SmoothLineFill {
+                                    fill,
+                                    points: points.clone(),
+                                    bottom: axis_height,
+                                });
+                            }
+                            c1.smooth_line(SmoothLine {
                                 points: points.clone(),
-                                bottom: axis_height,
+                                color: Some(color),
+                                stroke_width: self.series_stroke_width,
+                                symbol: self.series_symbol.clone(),
                             });
-                        }
-                        c1.smooth_line(SmoothLine {
-                            points,
-                            color: Some(color),
-                            stroke_width: self.series_stroke_width,
-                            symbol: self.series_symbol.clone(),
-                        });
-                    } else {
-                        if series_fill {
-                            c1.straight_line_fill(StraightLineFill {
-                                fill,
+                        } else {
+                            if series_fill {
+                                c1.straight_line_fill(StraightLineFill {
+                                    fill,
+                                    points: points.clone(),
+                                    bottom: axis_height,
+                                    ..Default::default()
+                                });
+                            }
+                            c1.straight_line(StraightLine {
                                 points: points.clone(),
-                                bottom: axis_height,
+                                color: Some(color),
+                                stroke_width: self.series_stroke_width,
+                                symbol: self.series_symbol.clone(),
                                 ..Default::default()
                             });
                         }
-                        c1.straight_line(StraightLine {
-                            points,
-                            color: Some(color),
-                            stroke_width: self.series_stroke_width,
-                            symbol: self.series_symbol.clone(),
-                            ..Default::default()
-                        });
                     }
                 }
-
                 series_labels_list
             }
         }

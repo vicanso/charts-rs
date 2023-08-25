@@ -238,11 +238,15 @@ impl HorizontalBarChart {
                 let mut series_labels = vec![];
                 let series_data_count = series.data.len();
                 for (i, p) in series.data.iter().enumerate() {
+                    let value = p.to_owned();
+                    if value == NIL_VALUE {
+                        continue;
+                    }
                     let mut top =
                         unit_height * (series_data_count - i - 1) as f32 + bar_chart_margin;
                     top += (bar_height + bar_chart_gap) * index as f32;
 
-                    let x = max_width - x_axis_values.get_offset_height(p.to_owned(), max_width);
+                    let x = max_width - x_axis_values.get_offset_height(value, max_width);
                     c1.rect(Rect {
                         fill: Some(color),
                         top,
@@ -252,7 +256,7 @@ impl HorizontalBarChart {
                     });
                     series_labels.push(SeriesLabel {
                         point: (x, top + half_bar_height).into(),
-                        text: format_float(p.to_owned()),
+                        text: format_float(value),
                     })
                 }
                 if series.label_show {
@@ -292,7 +296,7 @@ impl HorizontalBarChart {
 #[cfg(test)]
 mod tests {
     use super::HorizontalBarChart;
-    use crate::Align;
+    use crate::{Align, NIL_VALUE};
     use pretty_assertions::assert_eq;
     #[test]
     fn horizontal_bar_chart_basic() {
@@ -324,6 +328,40 @@ mod tests {
         horizontal_bar_chart.title_align = Align::Left;
         assert_eq!(
             include_str!("../../asset/horizontal_bar_chart/basic.svg"),
+            horizontal_bar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn horizontal_bar_chart_nil_value() {
+        let mut horizontal_bar_chart = HorizontalBarChart::new(
+            vec![
+                (
+                    "2011",
+                    vec![18203.0, 23489.0, NIL_VALUE, 104970.0, 131744.0, 630230.0],
+                )
+                    .into(),
+                (
+                    "2012",
+                    vec![19325.0, 23438.0, 31000.0, 121594.0, NIL_VALUE, 681807.0],
+                )
+                    .into(),
+            ],
+            vec![
+                "Brazil".to_string(),
+                "Indonesia".to_string(),
+                "USA".to_string(),
+                "India".to_string(),
+                "China".to_string(),
+                "World".to_string(),
+            ],
+        );
+        horizontal_bar_chart.title_text = "World Population".to_string();
+        horizontal_bar_chart.margin.right = 15.0;
+        horizontal_bar_chart.series_list[0].label_show = true;
+        horizontal_bar_chart.title_align = Align::Left;
+        assert_eq!(
+            include_str!("../../asset/horizontal_bar_chart/nil_value.svg"),
             horizontal_bar_chart.svg().unwrap()
         );
     }
