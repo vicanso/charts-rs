@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs"
-version = "0.1.26"
+version = "0.1.27"
 edition = "2021"
 categories = ["multimedia::images"]
 keywords = ["charts", "svg", "plot", "visualization", "graph"]
@@ -23,7 +23,7 @@ fontdue = "0.7.3"
 once_cell = "1.18.0"
 snafu = "0.7.5"
 substring = "1.4.5"
-charts-rs-derive = { path = "./charts-rs-derive", version = "0.1.10"}
+charts-rs-derive = { path = "./charts-rs-derive", version = "0.1.11"}
 resvg = { version = "0.35.0", default-features = false, features = [ "text", "system-fonts" ], optional = true }
 png = { version = "0.17.10", optional = true }
 serde = { version = "1.0.186", features = ["derive"] }
