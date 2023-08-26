@@ -141,6 +141,7 @@ pub enum Error {
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub enum Component {
+    Arrow(Arrow),
     Line(Line),
     Rect(Rect),
     Polyline(Polyline),
@@ -346,6 +347,46 @@ impl Circle {
             data: None,
         }
         .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct Arrow {
+    pub x: f32,
+    pub y: f32,
+    pub stroke_color: Color,
+}
+impl Arrow {
+    pub fn svg(&self) -> String {
+        let x_offset = 5.0_f32;
+        let y_offset = 5.0_f32;
+        let points = vec![
+            Point {
+                x: self.x,
+                y: self.y,
+            },
+            Point {
+                x: self.x - x_offset,
+                y: self.y - y_offset,
+            },
+            Point {
+                x: self.x + 10.0,
+                y: self.y,
+            },
+            Point {
+                x: self.x - x_offset,
+                y: self.y + y_offset,
+            },
+        ];
+        StraightLine {
+            color: Some(self.stroke_color),
+            fill: Some(self.stroke_color),
+            points,
+            close: true,
+            symbol: None,
+            ..Default::default()
+        }
+        .svg()
     }
 }
 
@@ -1333,8 +1374,8 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
-        SmoothLineFill, StraightLine, StraightLineFill, Text,
+        Arrow, Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect,
+        SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     use pretty_assertions::assert_eq;
@@ -1541,6 +1582,20 @@ mod tests {
                 cx: 10.0,
                 cy: 10.0,
                 r: 3.0,
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn arrow() {
+        assert_eq!(
+            r###"<path d="M 30 30 L 25 25 L 40 30 L 25 35 Z" stroke-width="1" fill="#7EB26D" stroke="#7EB26D"/>"###,
+            Arrow {
+                x: 30.0,
+                y: 30.0,
+                stroke_color: (126, 178, 109).into(),
+                ..Default::default()
             }
             .svg()
         );
