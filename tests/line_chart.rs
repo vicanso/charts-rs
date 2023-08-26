@@ -49,7 +49,6 @@ fn line_chart() {
     );
 }
 
-
 #[test]
 fn line_chart_nil_value() {
     let line_chart = LineChart::from_json(

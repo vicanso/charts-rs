@@ -33,6 +33,7 @@ static ATTR_STROKE_OPACITY: &str = "stroke-opacity";
 static ATTR_FILL_OPACITY: &str = "fill-opacity";
 static ATTR_STROKE_WIDTH: &str = "stroke-width";
 static ATTR_STROKE: &str = "stroke";
+static ATTR_STROKE_DASH_ARRAY: &str = "stroke-dasharray";
 static ATTR_X: &str = "x";
 static ATTR_Y: &str = "y";
 static ATTR_FILL: &str = "fill";
@@ -164,6 +165,8 @@ pub struct Line {
     pub top: f32,
     pub right: f32,
     pub bottom: f32,
+    // dash array
+    pub stroke_dash_array: Option<String>,
 }
 
 impl Default for Line {
@@ -175,6 +178,7 @@ impl Default for Line {
             top: 0.0,
             right: 0.0,
             bottom: 0.0,
+            stroke_dash_array: None,
         }
     }
 }
@@ -194,6 +198,9 @@ impl Line {
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
+        if let Some(ref stroke_dash_array) = self.stroke_dash_array {
+            attrs.push((ATTR_STROKE_DASH_ARRAY, stroke_dash_array.to_string()));
         }
         SVGTag {
             tag: TAG_LINE,
@@ -893,6 +900,7 @@ impl Grid {
                 top: top.to_owned(),
                 right: right.to_owned(),
                 bottom: bottom.to_owned(),
+                ..Default::default()
             }
             .svg();
             data.push(svg);
@@ -1283,6 +1291,7 @@ impl Legend {
                         top: self.top + LEGEND_HEIGHT / 2.0,
                         right: self.left + LEGEND_WIDTH,
                         bottom: self.top + LEGEND_HEIGHT / 2.0,
+                        ..Default::default()
                     }
                     .svg(),
                 );
@@ -1344,6 +1353,7 @@ mod tests {
                 top: 1.0,
                 right: 30.0,
                 bottom: 5.0,
+                ..Default::default()
             }
             .svg()
         );
@@ -1357,6 +1367,7 @@ mod tests {
                 top: 1.0,
                 right: 30.0,
                 bottom: 5.0,
+                ..Default::default()
             }
             .svg()
         );
@@ -1370,6 +1381,21 @@ mod tests {
                 top: 1.0,
                 right: 30.0,
                 bottom: 5.0,
+                ..Default::default()
+            }
+            .svg()
+        );
+
+        assert_eq!(
+            r###"<line stroke-width="1" x1="30" y1="10" x2="300" y2="10" stroke="#000000" stroke-opacity="0.5" stroke-dasharray="4,2"/>"###,
+            Line {
+                color: Some((0, 0, 0, 128).into()),
+                stroke_width: 1.0,
+                left: 30.0,
+                top: 10.0,
+                right: 300.0,
+                bottom: 10.0,
+                stroke_dash_array: Some("4,2".to_string()),
             }
             .svg()
         );

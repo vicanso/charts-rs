@@ -259,6 +259,7 @@ impl RadarChart {
                 top: p.y,
                 right: cx,
                 bottom: cy,
+                ..Default::default()
             });
         }
 

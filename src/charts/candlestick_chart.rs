@@ -247,6 +247,7 @@ impl CandlestickChart {
                     top: lowest.min(highest),
                     right: line_left,
                     bottom: lowest.max(highest),
+                    ..Default::default()
                 });
 
                 c.child(Box {
