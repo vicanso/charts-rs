@@ -186,12 +186,12 @@ impl LineChart {
                 let line_height = 20.0;
                 c1.text(Text {
                     text: format_float(value),
+                    font_family: Some(self.font_family.clone()),
                     font_size: Some(self.series_label_font_size),
                     line_height: Some(line_height),
                     font_color: Some(self.series_label_font_color),
                     x: Some(c1.width() + 2.0),
-                    // arrow底部高风高度 5.0
-                    y: Some(y + 5.0),
+                    y: Some(y - line_height / 2.0 + 1.0),
                     ..Default::default()
                 });
             }

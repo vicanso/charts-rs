@@ -159,7 +159,7 @@ Sun
 <circle cx="41" cy="198.9" r="3.5" stroke-width="1" stroke="#EE6666" fill="#EE6666"/>
 <line stroke-width="1" x1="46" y1="198.9" x2="540" y2="198.9" stroke="#EE6666" stroke-dasharray="4,2"/>
 <path d="M 540 198.9 L 535 193.9 L 550 198.9 L 535 203.9 Z" stroke-width="1" fill="#EE6666" stroke="#EE6666"/>
-<text font-size="14" x="552" y="203.9" fill="#464646">
+<text font-size="14" x="552" y="189.9" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 1075.3
 </text>
 </svg>
