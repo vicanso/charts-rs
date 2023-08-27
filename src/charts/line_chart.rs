@@ -108,6 +108,95 @@ impl LineChart {
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> LineChart {
         LineChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
     }
+    fn render_mark_line(
+        &self,
+        c: Canvas,
+        series_list: &[Series],
+        y_axis_values_list: &[&AxisValues],
+        max_height: f32,
+    ) {
+        let mut c1 = c;
+        for (index, series) in series_list.iter().enumerate() {
+            if series.mark_lines.is_empty() {
+                continue;
+            }
+            let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
+                y_axis_values_list[0]
+            } else {
+                y_axis_values_list[series.y_axis_index]
+            };
+            let color = *self
+                .series_colors
+                .get(series.index.unwrap_or(index))
+                .unwrap_or_else(|| &self.series_colors[0]);
+            let values: Vec<_> = series
+                .data
+                .iter()
+                .filter(|x| *x.to_owned() != NIL_VALUE)
+                .map(|x| x.to_owned())
+                .collect();
+            let mut sum = 0.0;
+            let mut min = f32::MAX;
+            let mut max = f32::MIN;
+            for value in values.iter() {
+                let v = *value;
+                if v == NIL_VALUE {
+                    continue;
+                }
+                sum += v;
+                if v > max {
+                    max = v;
+                }
+                if v < min {
+                    min = v;
+                }
+            }
+            let average = sum / values.len() as f32;
+            for mark_line in series.mark_lines.iter() {
+                let value = match mark_line.category {
+                    MarkLineCategory::Average => average,
+                    MarkLineCategory::Max => max,
+                    MarkLineCategory::Min => min,
+                };
+                let y = y_axis_values.get_offset_height(value, max_height);
+                let arrow_width = 10.0;
+                c1.circle(Circle {
+                    stroke_color: Some(color),
+                    fill: Some(color),
+                    cx: 3.0,
+                    cy: y,
+                    r: 3.5,
+                    ..Default::default()
+                });
+                c1.line(Line {
+                    color: Some(color),
+                    left: 8.0,
+                    top: y,
+                    right: c1.width() - arrow_width,
+                    bottom: y,
+                    stroke_dash_array: Some("4,2".to_string()),
+                    ..Default::default()
+                });
+                c1.arrow(Arrow {
+                    x: c1.width() - arrow_width,
+                    y,
+                    stroke_color: color,
+                    ..Arrow::default()
+                });
+                let line_height = 20.0;
+                c1.text(Text {
+                    text: format_float(value),
+                    font_size: Some(self.series_label_font_size),
+                    line_height: Some(line_height),
+                    font_color: Some(self.series_label_font_color),
+                    x: Some(c1.width() + 2.0),
+                    // arrow底部高风高度 5.0
+                    y: Some(y + 5.0),
+                    ..Default::default()
+                });
+            }
+        }
+    }
     /// Converts line chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
@@ -214,6 +303,17 @@ impl LineChart {
             }),
             series_labels_list,
         );
+
+        self.render_mark_line(
+            c.child(Box {
+                left: left_y_axis_width,
+                right: right_y_axis_width,
+                ..Default::default()
+            }),
+            &self.series_list,
+            &y_axis_values_list,
+            max_height,
+        );
         c.svg()
     }
 }
@@ -221,7 +321,7 @@ impl LineChart {
 #[cfg(test)]
 mod tests {
     use super::LineChart;
-    use crate::{Align, Box, NIL_VALUE};
+    use crate::{Align, Box, MarkLine, NIL_VALUE};
     use pretty_assertions::assert_eq;
     #[test]
     fn line_chart_basic() {
@@ -258,6 +358,7 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
+        line_chart.margin.right = 50.0;
         line_chart.title_text = "Stacked Area Chart".to_string();
         line_chart.sub_title_text = "Hello World".to_string();
         line_chart.legend_margin = Some(Box {
@@ -266,6 +367,9 @@ mod tests {
             ..Default::default()
         });
         line_chart.series_list[3].label_show = true;
+        line_chart.series_list[3].mark_lines = vec![MarkLine {
+            category: crate::MarkLineCategory::Average,
+        }];
         assert_eq!(
             include_str!("../../asset/line_chart/basic.svg"),
             line_chart.svg().unwrap()

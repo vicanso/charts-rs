@@ -1,5 +1,5 @@
 use super::component::{
-    generate_svg, Axis, Circle, Component, Grid, Legend, Line, Pie, Polygon, Polyline, Rect,
+    generate_svg, Arrow, Axis, Circle, Component, Grid, Legend, Line, Pie, Polygon, Polyline, Rect,
     SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
 };
 
@@ -69,6 +69,16 @@ impl Canvas {
             x: self.x,
             y: self.y,
         }
+    }
+    pub fn arrow(&mut self, arrow: Arrow) -> Box {
+        let mut c = arrow;
+        c.x += self.margin.left;
+        c.y += self.margin.top;
+        self.append(Component::Arrow(c));
+        let mut b = self.margin.clone();
+        b.right = b.left + 10.0;
+        b.bottom = b.top;
+        b
     }
     pub fn line(&mut self, line: Line) -> Box {
         let mut c = line;

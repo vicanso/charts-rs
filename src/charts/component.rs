@@ -350,16 +350,25 @@ impl Circle {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Arrow {
     pub x: f32,
     pub y: f32,
+    pub width: f32,
     pub stroke_color: Color,
 }
 impl Arrow {
+    pub fn default() -> Self {
+        Arrow {
+            x: 0.0,
+            y: 0.0,
+            width: 10.0,
+            stroke_color: Color::default(),
+        }
+    }
     pub fn svg(&self) -> String {
-        let x_offset = 5.0_f32;
-        let y_offset = 5.0_f32;
+        let x_offset = self.width / 2.0;
+        let y_offset = self.width / 2.0;
         let points = vec![
             Point {
                 x: self.x,
@@ -370,7 +379,7 @@ impl Arrow {
                 y: self.y - y_offset,
             },
             Point {
-                x: self.x + 10.0,
+                x: self.x + self.width,
                 y: self.y,
             },
             Point {
@@ -1595,7 +1604,7 @@ mod tests {
                 x: 30.0,
                 y: 30.0,
                 stroke_color: (126, 178, 109).into(),
-                ..Default::default()
+                ..Arrow::default()
             }
             .svg()
         );

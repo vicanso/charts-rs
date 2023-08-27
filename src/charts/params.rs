@@ -1,4 +1,4 @@
-use crate::NIL_VALUE;
+use crate::{MarkLine, MarkLineCategory, NIL_VALUE};
 
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 
@@ -270,6 +270,25 @@ fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Optio
     None
 }
 
+fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {
+    let mut mark_lines = vec![];
+    if let Some(data) = value.get(key) {
+        if let Some(arr) = data.as_array() {
+            for item in arr.iter() {
+                if let Some(value) = item.get("category") {
+                    let category = match value.to_string().as_str() {
+                        "max" => MarkLineCategory::Max,
+                        "min" => MarkLineCategory::Min,
+                        _ => MarkLineCategory::Average,
+                    };
+                    mark_lines.push(MarkLine { category })
+                }
+            }
+        }
+    }
+    mark_lines
+}
+
 fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
     let name = get_string_from_value(value, "name").unwrap_or_default();
     let data = get_f32_slice_from_value(value, "data").unwrap_or_default();
@@ -284,6 +303,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         label_show: get_bool_from_value(value, "label_show").unwrap_or_default(),
         category: get_series_category_from_value(value, "category"),
         start_index: get_usize_from_value(value, "start_index").unwrap_or_default(),
+        mark_lines: get_mark_lines(value, "mark_lines"),
     })
 }
 

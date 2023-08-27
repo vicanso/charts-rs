@@ -3,8 +3,8 @@
 fn generate_image() {
     use charts_rs::{
         svg_to_png, Align, BarChart, Box, CandlestickChart, HorizontalBarChart, LineChart,
-        MultiChart, PieChart, RadarChart, ScatterChart, SeriesCategory, TableCellStyle, TableChart,
-        THEME_GRAFANA,
+        MarkLine, MarkLineCategory, MultiChart, PieChart, RadarChart, ScatterChart, SeriesCategory,
+        TableCellStyle, TableChart, THEME_GRAFANA,
     };
     // bar chart
     let mut bar_chart = BarChart::new_with_theme(
@@ -115,6 +115,7 @@ fn generate_image() {
         ],
         THEME_GRAFANA,
     );
+    line_chart.margin.right = 50.0;
     line_chart.title_text = "Smoothed Line Chart".to_string();
     line_chart.legend_margin = Some(Box {
         top: line_chart.title_height,
@@ -123,6 +124,9 @@ fn generate_image() {
     });
     line_chart.series_smooth = true;
     line_chart.series_list[3].label_show = true;
+    line_chart.series_list[3].mark_lines = vec![MarkLine {
+        category: MarkLineCategory::Average,
+    }];
     let buf = svg_to_png(&line_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/line.png", buf).unwrap();
 

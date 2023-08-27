@@ -31,6 +31,19 @@ pub enum SeriesCategory {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub enum MarkLineCategory {
+    #[default]
+    Average,
+    Min,
+    Max,
+}
+
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub struct MarkLine {
+    pub category: MarkLineCategory,
+}
+
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct Series {
     pub name: String,
     pub data: Vec<f32>,
@@ -42,6 +55,8 @@ pub struct Series {
     pub y_axis_index: usize,
     // 是否展示label
     pub label_show: bool,
+    // mark lines
+    pub mark_lines: Vec<MarkLine>,
     pub category: Option<SeriesCategory>,
 }
 

@@ -11,6 +11,12 @@ fn line_chart() {
             "top": 50,
             "bottom": 10
         },
+        "margin": {
+            "top": 10,
+            "right": 50,
+            "bottom": 10,
+            "left": 10
+        },
         "series_list": [
             {
                 "name": "Email",
@@ -27,6 +33,11 @@ fn line_chart() {
             {
                 "name": "Search Engine",
                 "label_show": true,
+                "mark_lines": [
+                    {
+                        "category": "average"
+                    }
+                ],
                 "data": [820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0]
             }
         ],
