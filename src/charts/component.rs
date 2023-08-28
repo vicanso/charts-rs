@@ -142,6 +142,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub enum Component {
     Arrow(Arrow),
+    Bubble(Bubble),
     Line(Line),
     Rect(Rect),
     Polyline(Polyline),
@@ -429,6 +430,51 @@ impl Polygon {
             tag: TAG_POLYGON,
             attrs,
             data: None,
+        }
+        .to_string()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct Bubble {
+    pub r: f32,
+    pub x: f32,
+    pub y: f32,
+    pub fill: Color,
+}
+
+impl Bubble {
+    pub fn svg(&self) -> String {
+        let x = format_float(self.x);
+        let y = format_float(self.y);
+        let r = format_float(self.r);
+
+        let first = get_pie_point(self.x, self.y, self.r, -140.0);
+        let last = get_pie_point(self.x, self.y, self.r, 140.0);
+
+        let mut path_list = vec![
+            format!("M {},{}", format_float(first.x), format_float(first.y)),
+            format!("A {r},{r} 0,0,1 {},{y}", format_float(self.x - self.r)),
+            format!("A {r},{r} 0,0,1 {},{y}", format_float(self.x + self.r)),
+            format!(
+                "A {r},{r} 0,0,1 {},{}",
+                format_float(last.x),
+                format_float(last.y)
+            ),
+            format!("L {x},{}", format_float(self.y + self.r * 1.5)),
+        ];
+
+        path_list.push("Z".to_string());
+
+        let attrs = vec![
+            (ATTR_D, path_list.join(" ")),
+            (ATTR_FILL, self.fill.hex()),
+            (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
+        ];
+        SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            ..Default::default()
         }
         .to_string()
     }
@@ -1383,8 +1429,8 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        Arrow, Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect,
-        SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+        Arrow, Axis, Bubble, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline,
+        Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     use pretty_assertions::assert_eq;
@@ -1493,6 +1539,21 @@ mod tests {
                 ..Default::default()
             }
             .svg()
+        );
+    }
+
+    #[test]
+    fn bubble() {
+        let c = Bubble {
+            r: 15.0,
+            x: 50.0,
+            y: 50.0,
+            fill: "#7EB26D".into(),
+        };
+
+        assert_eq!(
+            r###"<path d="M 40.4,61.5 A 15,15 0,0,1 35,50 A 15,15 0,0,1 65,50 A 15,15 0,0,1 59.6,61.5 L 50,72.5 Z" fill="#7EB26D"/>"###,
+            c.svg()
         );
     }
 

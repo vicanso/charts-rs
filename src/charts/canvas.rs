@@ -297,6 +297,7 @@ impl Canvas {
                 Component::Line(c) => c.svg(),
                 Component::Rect(c) => c.svg(),
                 Component::Arrow(c) => c.svg(),
+                Component::Bubble(c) => c.svg(),
                 Component::Polyline(c) => c.svg(),
                 Component::Circle(c) => c.svg(),
                 Component::Polygon(c) => c.svg(),
