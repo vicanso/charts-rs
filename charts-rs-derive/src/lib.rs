@@ -606,6 +606,11 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     let mut points: Vec<Point> = vec![];
                     let mut points_list: Vec<Vec<Point>> = vec![];
                     let mut series_labels = vec![];
+
+                    let mut max_value = f32::MIN;
+                    let mut min_value = f32::MAX;
+                    let mut max_index = 0;
+                    let mut min_index = 0;
                     for (i, p) in series.data.iter().enumerate() {
                         let value = p.to_owned();
                         if value == NIL_VALUE {
@@ -614,6 +619,14 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 points = vec![];
                             }
                             continue;
+                        }
+                        if value > max_value {
+                            max_value = value;
+                            max_index = i; 
+                        }
+                        if value < min_value {
+                            min_value = value;
+                            min_index = i;
                         }
                         // 居中
                         let mut x = unit_width * (i + series.start_index) as f32;
@@ -628,7 +641,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         })
                     }
                     if series.label_show {
-                        series_labels_list.push(series_labels);
+                        series_labels_list.push(series_labels.clone());
                     }
                     if !points.is_empty() {
                         points_list.push(points);
@@ -674,6 +687,47 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             });
                         }
                     }
+                    for mark_point in series.mark_points.iter() {
+                        let index = match mark_point.category {
+                            MarkPointCategory::Max => max_index,
+                            MarkPointCategory::Min => min_index,
+                        }; 
+                        if let Some(ref label) = series_labels.get(index) {
+                            let r = 15.0;
+                            let y = label.point.y - r * 2.0;
+                            c1.bubble(Bubble{
+                                x: label.point.x,
+                                y,
+                                r,
+                                fill: color,
+                            });
+                            let mut dx = None;
+                            if let Ok(value) = measure_text_width_family(
+                                &self.font_family,
+                                self.series_label_font_size,
+                                &label.text,
+                            ) {
+                                dx = Some(-value.width() / 2.0);
+                            }
+                            let font_color = if color.is_light() {
+                                "#464646".into()
+                            } else {
+                                "#D8D9DA".into()
+                            };
+                            c1.text(Text {
+                                text: label.text.clone(),
+                                line_height: Some(r) ,
+                                dx,
+                                font_color: Some(font_color),
+                                font_family: Some(self.font_family.clone()),
+                                font_size: Some(self.series_label_font_size),
+                                x: Some(label.point.x),
+                                y: Some(y - r * 0.5),
+                                ..Default::default()
+                            });
+                        }
+                    }
+
                 }
                 series_labels_list
             }

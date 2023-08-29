@@ -1,6 +1,6 @@
 use super::component::{
-    generate_svg, Arrow, Axis, Circle, Component, Grid, Legend, Line, Pie, Polygon, Polyline, Rect,
-    SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
+    generate_svg, Arrow, Axis, Bubble, Circle, Component, Grid, Legend, Line, Pie, Polygon,
+    Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
 };
 
 use super::{measure_text_width_family, util::*};
@@ -284,6 +284,19 @@ impl Canvas {
             bottom: c.top + measurement.height(),
         };
         self.append(Component::Legend(c));
+        b
+    }
+    pub fn bubble(&mut self, bubble: Bubble) -> Box {
+        let mut c = bubble;
+        c.x += self.margin.left;
+        c.y += self.margin.top;
+        let b = Box {
+            left: c.x - c.r,
+            top: c.y - c.r,
+            right: c.x + c.r,
+            bottom: c.y + c.r,
+        };
+        self.append(Component::Bubble(c));
         b
     }
     pub fn append(&mut self, component: Component) {

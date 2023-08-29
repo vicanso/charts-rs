@@ -304,6 +304,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         category: get_series_category_from_value(value, "category"),
         start_index: get_usize_from_value(value, "start_index").unwrap_or_default(),
         mark_lines: get_mark_lines(value, "mark_lines"),
+        ..Default::default()
     })
 }
 

@@ -115,7 +115,7 @@ impl LineChart {
         y_axis_values_list: &[&AxisValues],
         max_height: f32,
     ) {
-        let mut c1 = c;
+        let mut c = c;
         for (index, series) in series_list.iter().enumerate() {
             if series.mark_lines.is_empty() {
                 continue;
@@ -160,7 +160,7 @@ impl LineChart {
                 };
                 let y = y_axis_values.get_offset_height(value, max_height);
                 let arrow_width = 10.0;
-                c1.circle(Circle {
+                c.circle(Circle {
                     stroke_color: Some(color),
                     fill: Some(color),
                     cx: 3.0,
@@ -168,29 +168,29 @@ impl LineChart {
                     r: 3.5,
                     ..Default::default()
                 });
-                c1.line(Line {
+                c.line(Line {
                     color: Some(color),
                     left: 8.0,
                     top: y,
-                    right: c1.width() - arrow_width,
+                    right: c.width() - arrow_width,
                     bottom: y,
                     stroke_dash_array: Some("4,2".to_string()),
                     ..Default::default()
                 });
-                c1.arrow(Arrow {
-                    x: c1.width() - arrow_width,
+                c.arrow(Arrow {
+                    x: c.width() - arrow_width,
                     y,
                     stroke_color: color,
                     ..Arrow::default()
                 });
                 let line_height = 20.0;
-                c1.text(Text {
+                c.text(Text {
                     text: format_float(value),
                     font_family: Some(self.font_family.clone()),
                     font_size: Some(self.series_label_font_size),
                     line_height: Some(line_height),
                     font_color: Some(self.series_label_font_color),
-                    x: Some(c1.width() + 2.0),
+                    x: Some(c.width() + 2.0),
                     y: Some(y - line_height / 2.0 + 1.0),
                     ..Default::default()
                 });
@@ -321,7 +321,7 @@ impl LineChart {
 #[cfg(test)]
 mod tests {
     use super::LineChart;
-    use crate::{Align, Box, MarkLine, NIL_VALUE};
+    use crate::{Align, Box, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, NIL_VALUE};
     use pretty_assertions::assert_eq;
     #[test]
     fn line_chart_basic() {
@@ -366,10 +366,18 @@ mod tests {
             bottom: 10.0,
             ..Default::default()
         });
-        line_chart.series_list[3].label_show = true;
         line_chart.series_list[3].mark_lines = vec![MarkLine {
-            category: crate::MarkLineCategory::Average,
+            category: MarkLineCategory::Average,
         }];
+        line_chart.series_list[3].label_show = true;
+        line_chart.series_list[2].mark_points = vec![
+            MarkPoint {
+                category: MarkPointCategory::Max,
+            },
+            MarkPoint {
+                category: MarkPointCategory::Min,
+            },
+        ];
         assert_eq!(
             include_str!("../../asset/line_chart/basic.svg"),
             line_chart.svg().unwrap()

@@ -44,6 +44,15 @@ impl Color {
         c.a = a;
         c
     }
+    pub fn is_light(&self) -> bool {
+        let mut r = self.r as f64;
+        let mut g = self.g as f64;
+        let mut b = self.b as f64;
+        r = r * r * 0.299;
+        g = g * g * 0.587;
+        b = b * b * 0.114;
+        (r + g + b).sqrt() > 127.5
+    }
 }
 
 impl From<(u8, u8, u8)> for Color {

@@ -39,8 +39,20 @@ pub enum MarkLineCategory {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub enum MarkPointCategory {
+    #[default]
+    Min,
+    Max,
+}
+
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct MarkLine {
     pub category: MarkLineCategory,
+}
+
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub struct MarkPoint {
+    pub category: MarkPointCategory,
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
@@ -57,6 +69,8 @@ pub struct Series {
     pub label_show: bool,
     // mark lines
     pub mark_lines: Vec<MarkLine>,
+    // mark points
+    pub mark_points: Vec<MarkPoint>,
     pub category: Option<SeriesCategory>,
 }
 
