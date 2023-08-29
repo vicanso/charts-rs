@@ -28,6 +28,14 @@ fn line_chart() {
             },
             {
                 "name": "Direct",
+                "mark_points": [
+                    {
+                        "category": "max"
+                    },
+                    {
+                        "category": "min"
+                    }
+                ],
                 "data": [320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0]
             },
             {

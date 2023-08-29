@@ -1,4 +1,4 @@
-use crate::{MarkLine, MarkLineCategory, NIL_VALUE};
+use crate::{MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, NIL_VALUE};
 
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 
@@ -276,7 +276,7 @@ fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {
         if let Some(arr) = data.as_array() {
             for item in arr.iter() {
                 if let Some(value) = item.get("category") {
-                    let category = match value.to_string().as_str() {
+                    let category = match value.as_str().unwrap_or_default() {
                         "max" => MarkLineCategory::Max,
                         "min" => MarkLineCategory::Min,
                         _ => MarkLineCategory::Average,
@@ -287,6 +287,24 @@ fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {
         }
     }
     mark_lines
+}
+
+fn get_mark_points(value: &serde_json::Value, key: &str) -> Vec<MarkPoint> {
+    let mut mark_points = vec![];
+    if let Some(data) = value.get(key) {
+        if let Some(arr) = data.as_array() {
+            for item in arr.iter() {
+                if let Some(value) = item.get("category") {
+                    let category = match value.as_str().unwrap_or_default() {
+                        "max" => MarkPointCategory::Max,
+                        _ => MarkPointCategory::Min,
+                    };
+                    mark_points.push(MarkPoint { category })
+                }
+            }
+        }
+    }
+    mark_points
 }
 
 fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
@@ -304,7 +322,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         category: get_series_category_from_value(value, "category"),
         start_index: get_usize_from_value(value, "start_index").unwrap_or_default(),
         mark_lines: get_mark_lines(value, "mark_lines"),
-        ..Default::default()
+        mark_points: get_mark_points(value, "mark_points"),
     })
 }
 
