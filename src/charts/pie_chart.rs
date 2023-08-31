@@ -163,7 +163,10 @@ impl PieChart {
             radius_double = c.width();
         }
         radius_double *= 0.8;
-        let r = radius_double / 2.0;
+        let mut r = radius_double / 2.0;
+        if r > self.radius {
+            r = self.radius;
+        }
 
         let cx = (c.width() - radius_double) / 2.0 + r;
         let cy = (c.height() - radius_double) / 2.0 + r;
