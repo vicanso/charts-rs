@@ -4,6 +4,9 @@ use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YA
 
 pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Option<bool> {
     if let Some(value) = value.get(key) {
+        if value.is_null() {
+            return None;
+        }
         if let Some(b) = value.as_bool() {
             return Some(b);
         }
@@ -13,6 +16,9 @@ pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Optio
 
 pub(crate) fn get_usize_from_value(value: &serde_json::Value, key: &str) -> Option<usize> {
     if let Some(value) = value.get(key) {
+        if value.is_null() {
+            return None;
+        }
         if let Some(u) = value.as_u64() {
             return Some(u as usize);
         }
@@ -45,7 +51,7 @@ pub(crate) fn get_usize_slice_from_value(
 pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option<f32> {
     if let Some(value) = value.get(key) {
         if value.is_null() {
-            return Some(NIL_VALUE);
+            return None;
         }
         if let Some(v) = value.as_f64() {
             return Some(v as f32);
@@ -53,7 +59,11 @@ pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option
     }
     None
 }
-pub(crate) fn get_f32_slice_from_value(value: &serde_json::Value, key: &str) -> Option<Vec<f32>> {
+
+pub(crate) fn get_f32_slice_from_value_support_nil(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<Vec<f32>> {
     if let Some(arr) = value.get(key) {
         if let Some(values) = arr.as_array() {
             return Some(
@@ -75,8 +85,30 @@ pub(crate) fn get_f32_slice_from_value(value: &serde_json::Value, key: &str) -> 
     }
     None
 }
+pub(crate) fn get_f32_slice_from_value(value: &serde_json::Value, key: &str) -> Option<Vec<f32>> {
+    if let Some(arr) = value.get(key) {
+        if let Some(values) = arr.as_array() {
+            return Some(
+                values
+                    .iter()
+                    .map(|item| {
+                        if let Some(v) = item.as_f64() {
+                            v as f32
+                        } else {
+                            0.0
+                        }
+                    })
+                    .collect(),
+            );
+        }
+    }
+    None
+}
 
 fn convert_to_align(value: &serde_json::Value) -> Option<Align> {
+    if value.is_null() {
+        return None;
+    }
     if let Some(value) = value.as_str() {
         let value = match value.to_lowercase().as_str() {
             "left" => Align::Left,
@@ -116,6 +148,9 @@ pub(crate) fn get_legend_category_from_value(
     key: &str,
 ) -> Option<LegendCategory> {
     if let Some(value) = value.get(key) {
+        if value.is_null() {
+            return None;
+        }
         if let Some(value) = value.as_str() {
             let value = match value.to_lowercase().as_str() {
                 "rect" => LegendCategory::Rect,
@@ -131,6 +166,9 @@ pub(crate) fn get_legend_category_from_value(
 
 pub(crate) fn get_margin_from_value(value: &serde_json::Value, key: &str) -> Option<Box> {
     if let Some(data) = value.get(key) {
+        if data.is_null() {
+            return None;
+        }
         return Some(get_box_from_value(data));
     }
     None
@@ -243,6 +281,9 @@ pub(crate) fn get_color_slice_from_value(
 
 pub(crate) fn get_string_from_value(value: &serde_json::Value, key: &str) -> Option<String> {
     if let Some(s) = value.get(key) {
+        if s.is_null() {
+            return None;
+        }
         if let Some(v) = s.as_str() {
             return Some(v.to_string());
         }
@@ -259,6 +300,9 @@ pub(crate) fn get_color_from_value(value: &serde_json::Value, key: &str) -> Opti
 
 fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Option<SeriesCategory> {
     if let Some(value) = value.get(key) {
+        if value.is_null() {
+            return None;
+        }
         if let Some(value) = value.as_str() {
             return match value.to_lowercase().as_str() {
                 "line" => Some(SeriesCategory::Line),
@@ -309,7 +353,7 @@ fn get_mark_points(value: &serde_json::Value, key: &str) -> Vec<MarkPoint> {
 
 fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
     let name = get_string_from_value(value, "name").unwrap_or_default();
-    let data = get_f32_slice_from_value(value, "data").unwrap_or_default();
+    let data = get_f32_slice_from_value_support_nil(value, "data").unwrap_or_default();
     if data.is_empty() {
         return None;
     }
