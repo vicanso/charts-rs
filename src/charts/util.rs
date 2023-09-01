@@ -276,6 +276,7 @@ impl LabelOption {
             .replace("{b}", &self.category_name)
             .replace("{c}", &value)
             .replace("{d}", &percentage)
+            .replace("{t}", &thousands_format_float(self.value))
     }
 }
 

@@ -581,7 +581,10 @@ impl Pie {
         let ir_str = format_float(ir);
 
         let mut path_list = vec![];
-        let border_radius = 8.0_f32;
+        let mut border_radius = 8.0_f32;
+        if self.r - self.ir < border_radius {
+            border_radius = 2.0;
+        }
         let border_radius_str = format_float(border_radius);
         let border_angle = 2.0_f32;
         let start_angle = self.start_angle;
@@ -763,7 +766,7 @@ impl BaseLine {
         } else {
             SVGTag {
                 tag: TAG_GROUP,
-                data: Some(vec![line_svg, symbol_svg].join("\n")),
+                data: Some([line_svg, symbol_svg].join("\n")),
                 ..Default::default()
             }
             .to_string()
@@ -835,7 +838,7 @@ impl SmoothLineFill {
 
         let last = self.points[self.points.len() - 1];
         let first = self.points[0];
-        let fill_path = vec![
+        let fill_path = [
             format!("M {} {}", format_float(last.x), format_float(last.y)),
             format!("L {} {}", format_float(last.x), format_float(self.bottom)),
             format!("L {} {}", format_float(first.x), format_float(self.bottom)),
@@ -1266,7 +1269,7 @@ impl Axis {
         Ok(SVGTag {
             tag: TAG_GROUP,
             data: Some(
-                vec![
+                [
                     SVGTag {
                         tag: TAG_GROUP,
                         attrs,

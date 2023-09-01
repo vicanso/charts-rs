@@ -284,7 +284,7 @@ mod tests {
     #[test]
     fn small_pie_basic() {
         let mut pie_chart = PieChart::new(vec![
-            ("rose 1", vec![40.0]).into(),
+            ("rose 1", vec![400.0]).into(),
             ("rose 2", vec![38.0]).into(),
             ("rose 3", vec![32.0]).into(),
             ("rose 4", vec![30.0]).into(),
