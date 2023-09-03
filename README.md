@@ -20,6 +20,17 @@
 
 `Apache ECharts` is popular among Front-end developers, and `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
 
+## Feature
+
+- Multiple themes for all charts
+- Load font family from ttf or otf
+- Smooth, fill, mark point and mark line for line chart
+- Multiple legends for all charts, for example: `round rect`, `circle` and `rect`
+- Supports two y axises, which are useful
+- New from json is simple and easy 
+- Svg and png format support more available scenarios
+- Web json editor to try using more options by one step
+
 ## Demo
 
 You can try to use the web demo page, it's simple and useful. 

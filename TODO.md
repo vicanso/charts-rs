@@ -13,3 +13,4 @@
 - [x] 平均值线、最大最小值标记
 - [ ] 柱状图指定单个背景色
 - [x] json是否兼容null的处理
+- [ ] label inside bar chart
