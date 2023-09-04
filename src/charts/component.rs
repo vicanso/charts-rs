@@ -756,6 +756,7 @@ impl BaseLine {
                         ..Default::default()
                     },
                 ),
+                Symbol::None => "".to_string(),
             }
         } else {
             "".to_string()

@@ -21,6 +21,7 @@ pub enum Align {
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum Symbol {
+    None,
     Circle(f32, Option<Color>),
 }
 

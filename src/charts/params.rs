@@ -1,4 +1,4 @@
-use crate::{MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, NIL_VALUE};
+use crate::{MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Symbol, NIL_VALUE};
 
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 
@@ -311,6 +311,21 @@ fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Optio
             };
         }
     }
+    None
+}
+
+pub(crate) fn get_series_symbol_from_value(value: &serde_json::Value, key: &str) -> Option<Symbol> {
+    if let Some(value) = value.get(key) {
+        // 属性存在但为null
+        if value.is_null() {
+            return Some(Symbol::None);
+        }
+        // 暂时只有circle
+        let color = get_color_from_value(value, "color");
+        let radius = get_f32_from_value(value, "radius").unwrap_or(3.0);
+        return Some(Symbol::Circle(radius, color));
+    }
+    // 不存在则返回None
     None
 }
 
