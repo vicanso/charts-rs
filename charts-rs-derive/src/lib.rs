@@ -226,6 +226,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(series_colors) = get_color_slice_from_value(&data, "series_colors") {
                     self.series_colors = series_colors;
                 }
+                if let Some(series_symbol) = get_series_symbol_from_value(&data, "series_symbol") {
+                    self.series_symbol = Some(series_symbol);
+                }
                 if let Some(series_smooth) = get_bool_from_value(&data, "series_smooth") {
                     self.series_smooth = series_smooth;
                 }
