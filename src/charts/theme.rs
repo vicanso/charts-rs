@@ -161,9 +161,9 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
             "#ea7ccc".into(),
         ],
 
-        table_header_color: (250, 250, 252).into(),
+        table_header_color: (242, 243, 245).into(),
         table_body_colors: vec![(255, 255, 255).into()],
-        table_border_color: (239, 239, 244).into(),
+        table_border_color: (229, 230, 235).into(),
     }
 });
 

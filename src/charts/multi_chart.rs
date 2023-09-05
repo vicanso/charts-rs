@@ -45,6 +45,9 @@ impl MultiChart {
         if let Some(margin) = get_margin_from_value(&value, "margin") {
             multi_chart.margin = margin;
         }
+        if let Some(gap) = get_f32_from_value(&value, "gap") {
+            multi_chart.gap = gap;
+        }
         if let Some(background_color) = get_color_from_value(&value, "background_color") {
             multi_chart.background_color = Some(background_color);
         }
