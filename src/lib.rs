@@ -344,3 +344,8 @@
 
 mod charts;
 pub use charts::*;
+
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub fn version() -> String {
+    VERSION.to_string()
+}
