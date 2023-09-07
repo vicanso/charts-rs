@@ -261,7 +261,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 let mut thousands_format = false;
                 if let Some(ref value) = y_axis_config.axis_formatter {
-                    thousands_format = value.contains("{t}");
+                    thousands_format = value.contains(THOUSANDS_FORMAT_LABEL);
                 }
                 let y_axis_values = get_axis_values(AxisValueParams {
                     data_list,
@@ -569,7 +569,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         });
                         series_labels.push(SeriesLabel{
                             point: (left + half_bar_width, y).into(),
-                            text: format_float(p.to_owned()),
+                            text: format_series_value(p.to_owned(), &self.series_label_formatter),
                         })
                     }
                     if series.label_show {
@@ -640,7 +640,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         points.push((x, y).into());
                         series_labels.push(SeriesLabel{
                             point: (x, y).into(),
-                            text: format_float(value),
+                            text: format_series_value(value, &self.series_label_formatter),
                         })
                     }
                     if series.label_show {
