@@ -14,3 +14,4 @@
 - [ ] 柱状图指定单个背景色
 - [x] json是否兼容null的处理
 - [ ] label inside bar chart
+- [x] series label format的自定义

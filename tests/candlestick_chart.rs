@@ -14,7 +14,7 @@ fn candlestick_chart() {
             {
                 "axis_min": 2100,
                 "axis_max": 2460,
-                "axis_formatter": "{t}"
+                "axis_formatter": "{t}" 
             }
         ],
         "series_list": [

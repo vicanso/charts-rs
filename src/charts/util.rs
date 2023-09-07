@@ -4,6 +4,12 @@ use substring::Substring;
 
 pub static NIL_VALUE: f32 = f32::MIN;
 
+pub(crate) static THOUSANDS_FORMAT_LABEL: &str = "{t}";
+pub(crate) static SERIES_NAME_FORMAT_LABEL: &str = "{a}";
+pub(crate) static CATEGORY_NAME_FORMAT_LABEL: &str = "{b}";
+pub(crate) static VALUE_FORMAT_LABEL: &str = "{c}";
+pub(crate) static PERCENTAGE_FORMAT_LABEL: &str = "{d}";
+
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct Point {
     pub x: f32,
@@ -94,6 +100,13 @@ impl From<(f32, f32, f32, f32)> for Box {
             bottom: val.3,
         }
     }
+}
+
+pub(crate) fn format_series_value(value: f32, formatter: &str) -> String {
+    if formatter == THOUSANDS_FORMAT_LABEL {
+        return thousands_format_float(value);
+    }
+    format_float(value)
 }
 
 pub(crate) fn thousands_format_float(value: f32) -> String {
@@ -272,11 +285,11 @@ impl LabelOption {
             return value;
         }
         self.formatter
-            .replace("{a}", &self.series_name)
-            .replace("{b}", &self.category_name)
-            .replace("{c}", &value)
-            .replace("{d}", &percentage)
-            .replace("{t}", &thousands_format_float(self.value))
+            .replace(SERIES_NAME_FORMAT_LABEL, &self.series_name)
+            .replace(CATEGORY_NAME_FORMAT_LABEL, &self.category_name)
+            .replace(VALUE_FORMAT_LABEL, &value)
+            .replace(PERCENTAGE_FORMAT_LABEL, &percentage)
+            .replace(THOUSANDS_FORMAT_LABEL, &thousands_format_float(self.value))
     }
 }
 
@@ -284,7 +297,9 @@ pub fn format_string(value: &str, formatter: &str) -> String {
     if formatter.is_empty() {
         value.to_string()
     } else {
-        formatter.replace("{c}", value).replace("{t}", value)
+        formatter
+            .replace(VALUE_FORMAT_LABEL, value)
+            .replace(THOUSANDS_FORMAT_LABEL, value)
     }
 }
 

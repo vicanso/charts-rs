@@ -256,7 +256,7 @@ impl HorizontalBarChart {
                     });
                     series_labels.push(SeriesLabel {
                         point: (x, top + half_bar_height).into(),
-                        text: format_float(value),
+                        text: format_series_value(value, &self.series_label_formatter),
                     })
                 }
                 if series.label_show {
@@ -323,6 +323,7 @@ mod tests {
             ],
         );
         horizontal_bar_chart.title_text = "World Population".to_string();
+        horizontal_bar_chart.series_label_formatter = "{t}".to_string();
         horizontal_bar_chart.margin.right = 15.0;
         horizontal_bar_chart.series_list[0].label_show = true;
         horizontal_bar_chart.title_align = Align::Left;
