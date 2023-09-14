@@ -389,10 +389,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     if series.name.is_empty() {
                         continue;
                     }
-                    let color = *self
-                        .series_colors
-                        .get(series.index.unwrap_or(index))
-                        .unwrap_or_else(|| &self.series_colors[0]);
+                    let color = get_color(&self.series_colors, series.index.unwrap_or(index));
                     let fill = if self.is_light {
                         Some(self.background_color)
                     } else {
@@ -544,10 +541,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     } else {
                         y_axis_values_list[series.y_axis_index]
                     };
-                    let color = *self
-                        .series_colors
-                        .get(series.index.unwrap_or(index))
-                        .unwrap_or_else(|| &self.series_colors[0]);
+                    let color = get_color(&self.series_colors, series.index.unwrap_or(index));
                     let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         let value = p.to_owned();
@@ -650,10 +644,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         points_list.push(points);
                     }
         
-                    let color = *self
-                        .series_colors
-                        .get(series.index.unwrap_or(index))
-                        .unwrap_or_else(|| &self.series_colors[0]);
+                    let color = get_color(&self.series_colors, series.index.unwrap_or(index));
         
                     let fill = color.with_alpha(100);
                     let series_fill = self.series_fill;
