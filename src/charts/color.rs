@@ -101,6 +101,11 @@ impl From<&str> for Color {
     }
 }
 
+pub(crate) fn get_color(colors: &[Color], index: usize) -> Color {
+    let i = index % colors.len();
+    *colors.get(i).unwrap_or_else(|| &colors[0])
+}
+
 #[cfg(test)]
 mod tests {
     use super::Color;

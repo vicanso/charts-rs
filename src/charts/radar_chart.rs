@@ -264,10 +264,7 @@ impl RadarChart {
         }
 
         for (index, series) in self.series_list.iter().enumerate() {
-            let color = *self
-                .series_colors
-                .get(series.index.unwrap_or(index))
-                .unwrap_or_else(|| &self.series_colors[0]);
+            let color = get_color(&self.series_colors, series.index.unwrap_or(index));
             let mut points = vec![];
             for (i, item) in indicators.iter().enumerate() {
                 if let Some(value) = series.data.get(i) {

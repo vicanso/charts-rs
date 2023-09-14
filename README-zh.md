@@ -1,6 +1,6 @@
 # charts-rs
 
-`charts-rs` 是纯rust实现的图表库，使用简单而且性能高效，生成svg低于10ms，而png也低于50ms。
+`charts-rs` 是纯rust实现的图表库，使用简单而且性能高效，生成svg低于10ms，而png也低于50ms，便于在各种无法直接渲染svg的场景下使用。
 
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][apache2-badge]][apache2-url]
@@ -14,9 +14,7 @@
 
 ## 概要
 
-`chart-rs`提供简单的方式生成图表，它支持`svg`与`png`两种输出格式，以及支持`light`， `dark`， `grafana`与`ant`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar`，`Scatter`，`Candlestick`，`Table` 以及 `MultiChart`。
-
-`Apache ECharts`图表库在前端开发者中大受欢迎，`charts-rs`的相关样式展现主要参考其实现。
+`charts-rs`提供简单的方式生成图表，它支持`svg`与`png`两种输出格式，以及支持`light`， `dark`， `grafana`与`ant`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar`，`Scatter`，`Candlestick`，`Table` 以及 `MultiChart`，其相关样式参考`Apache ECharts`。
 
 
 ## 特性
@@ -25,7 +23,9 @@
 - 可通过ttf或otf中加载更多的字体库
 - 支持平滑，填充，最低最高点以及线标示
 - 图表使用多种文本标示，例如：圆角矩形、圆形以及矩形等
-- 最多支持两条Y轴线
+- 曲线图支持平滑曲线、拆线、区域填充等效果
+- 支持两组Y轴线的展示
+- 图表中的所有元素均支持颜色、字体、字体颜色等基本属性配置
 - 支持以`json`的形式初始化图表，更简单易用
 - svg与png的格式便于更多的应用场景
 - 网页版的json编辑器可用于一步式尝试各选项的效果

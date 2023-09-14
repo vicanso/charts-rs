@@ -259,10 +259,7 @@ impl ScatterChart {
         });
         let default_symbol_size = 10.0_f32;
         for (index, series) in self.series_list.iter().enumerate() {
-            let mut color = *self
-                .series_colors
-                .get(series.index.unwrap_or(index))
-                .unwrap_or_else(|| &self.series_colors[0]);
+            let mut color = get_color(&self.series_colors, series.index.unwrap_or(index));
             let symbol_size = self
                 .series_symbol_sizes
                 .get(series.index.unwrap_or(index))

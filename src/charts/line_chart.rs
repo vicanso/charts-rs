@@ -125,10 +125,7 @@ impl LineChart {
             } else {
                 y_axis_values_list[series.y_axis_index]
             };
-            let color = *self
-                .series_colors
-                .get(series.index.unwrap_or(index))
-                .unwrap_or_else(|| &self.series_colors[0]);
+            let color = get_color(&self.series_colors, series.index.unwrap_or(index));
             let values: Vec<_> = series
                 .data
                 .iter()

@@ -179,10 +179,7 @@ impl PieChart {
         for (index, series) in self.series_list.iter().enumerate() {
             let value = values[index];
             let cr = value / max * (r - self.inner_radius) + self.inner_radius;
-            let color = *self
-                .series_colors
-                .get(series.index.unwrap_or(index))
-                .unwrap_or_else(|| &self.series_colors[0]);
+            let color = get_color(&self.series_colors, series.index.unwrap_or(index));
 
             c.pie(Pie {
                 fill: color,

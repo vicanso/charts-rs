@@ -230,10 +230,7 @@ impl HorizontalBarChart {
 
             let mut series_labels_list = vec![];
             for (index, series) in self.series_list.iter().enumerate() {
-                let color = *self
-                    .series_colors
-                    .get(series.index.unwrap_or(index))
-                    .unwrap_or_else(|| &self.series_colors[0]);
+                let color = get_color(&self.series_colors, series.index.unwrap_or(index));
 
                 let mut series_labels = vec![];
                 let series_data_count = series.data.len();

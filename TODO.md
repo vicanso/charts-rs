@@ -15,3 +15,4 @@
 - [x] json是否兼容null的处理
 - [ ] label inside bar chart
 - [x] series label format的自定义
+- [ ] fontdue与fontdb是否可统一，现两个字库重复加载内存占用较大
