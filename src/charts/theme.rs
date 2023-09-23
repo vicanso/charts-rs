@@ -501,14 +501,14 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-pub fn get_theme(theme: &str) -> Theme {
+pub fn get_theme(theme: &str) -> &'static Theme {
     match theme {
-        "dark" => DARK_THEME.clone(),
-        "ant" => ANT_THEME.clone(),
-        "grafana" => GRAFANA_THEME.clone(),
-        "vintage" => VINTAGE_THEME.clone(),
-        "shine" => SHINE_THEME.clone(),
+        "dark" => &DARK_THEME,
+        "ant" => &ANT_THEME,
+        "grafana" => &GRAFANA_THEME,
+        "vintage" => &VINTAGE_THEME,
+        "shine" => &SHINE_THEME,
         // echart
-        _ => LIGHT_THEME.clone(),
+        _ => &LIGHT_THEME,
     }
 }

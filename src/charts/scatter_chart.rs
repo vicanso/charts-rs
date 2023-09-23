@@ -99,7 +99,7 @@ impl ScatterChart {
         }
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
-            s.x_axis_config = get_y_axis_config_from_value(&get_theme(&theme), x_axis_config);
+            s.x_axis_config = get_y_axis_config_from_value(get_theme(&theme), x_axis_config);
         }
         Ok(s)
     }

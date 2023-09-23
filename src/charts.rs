@@ -55,7 +55,7 @@ pub use theme::{get_or_init_default_theme, THEME_ANT, THEME_DARK, THEME_GRAFANA}
 pub use util::*;
 
 pub trait Chart {
-    fn fill_theme(&mut self, t: Theme);
+    fn fill_theme(&mut self, t: &Theme);
     fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value>;
     fn get_y_axis_config(&self, index: usize) -> YAxisConfig;
     fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32);

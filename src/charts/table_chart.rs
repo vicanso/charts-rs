@@ -237,22 +237,22 @@ impl TableChart {
         table.fill_theme(get_theme(theme));
         table
     }
-    fn fill_theme(&mut self, t: Theme) {
-        self.font_family = t.font_family;
+    fn fill_theme(&mut self, t: &Theme) {
+        self.font_family = t.font_family.clone();
         self.width = t.width;
         self.background_color = t.background_color;
 
         self.title_font_color = t.title_font_color;
         self.title_font_size = t.title_font_size;
-        self.title_font_weight = t.title_font_weight;
-        self.title_margin = t.title_margin;
-        self.title_align = t.title_align;
+        self.title_font_weight = t.title_font_weight.clone();
+        self.title_margin = t.title_margin.clone();
+        self.title_align = t.title_align.clone();
         self.title_height = t.title_height * 1.5;
 
         self.sub_title_font_color = t.sub_title_font_color;
         self.sub_title_font_size = t.sub_title_font_size;
-        self.sub_title_margin = t.sub_title_margin;
-        self.sub_title_align = t.sub_title_align;
+        self.sub_title_margin = t.sub_title_margin.clone();
+        self.sub_title_align = t.sub_title_align.clone();
         self.sub_title_height = t.sub_title_height;
 
         self.header_font_size = t.sub_title_font_size;
@@ -261,7 +261,7 @@ impl TableChart {
 
         self.body_font_size = t.sub_title_font_size;
         self.body_font_color = t.sub_title_font_color;
-        self.body_background_colors = t.table_body_colors;
+        self.body_background_colors = t.table_body_colors.clone();
         self.border_color = t.table_border_color;
     }
     /// Creates a table chart with default theme.

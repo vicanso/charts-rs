@@ -10,9 +10,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
 
     let gen = quote! {
         impl Chart for #id {
-            fn fill_theme(&mut self, t: Theme) {
-                self.font_family = t.font_family;
-                self.margin = t.margin;
+            fn fill_theme(&mut self, t: &Theme) {
+                self.font_family = t.font_family.clone();
+                self.margin = t.margin.clone();
                 self.width = t.width;
                 self.height = t.height;
                 self.background_color = t.background_color;
@@ -20,21 +20,21 @@ pub fn my_default(input: TokenStream) -> TokenStream {
 
                 self.title_font_color = t.title_font_color;
                 self.title_font_size = t.title_font_size;
-                self.title_font_weight = t.title_font_weight;
-                self.title_margin = t.title_margin;
-                self.title_align = t.title_align;
+                self.title_font_weight = t.title_font_weight.clone();
+                self.title_margin = t.title_margin.clone();
+                self.title_align = t.title_align.clone();
                 self.title_height = t.title_height;
 
                 self.sub_title_font_color = t.sub_title_font_color;
                 self.sub_title_font_size = t.sub_title_font_size;
-                self.sub_title_margin = t.sub_title_margin;
-                self.sub_title_align = t.sub_title_align;
+                self.sub_title_margin = t.sub_title_margin.clone();
+                self.sub_title_align = t.sub_title_align.clone();
                 self.sub_title_height = t.sub_title_height;
 
                 self.legend_font_color = t.legend_font_color;
                 self.legend_font_size = t.legend_font_size;
-                self.legend_align = t.legend_align;
-                self.legend_margin = t.legend_margin;
+                self.legend_align = t.legend_align.clone();
+                self.legend_margin = t.legend_margin.clone();
 
                 self.x_axis_font_size = t.x_axis_font_size;
                 self.x_axis_font_color = t.x_axis_font_color;
@@ -56,7 +56,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 self.grid_stroke_color = t.grid_stroke_color;
                 self.grid_stroke_width = t.grid_stroke_width;
 
-                self.series_colors = t.series_colors;
+                self.series_colors = t.series_colors.clone();
                 self.series_label_font_color = t.series_label_font_color;
                 self.series_label_font_size = t.series_label_font_size;
                 self.series_stroke_width = t.series_stroke_width;
@@ -76,7 +76,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 let theme = get_string_from_value(&data, "theme").unwrap_or_default();
                 let theme = get_theme(&theme);
-                self.fill_theme(theme.clone());
+                self.fill_theme(theme);
                 self.series_list = series_list;
         
                 if let Some(width) = get_f32_from_value(&data, "width") {
