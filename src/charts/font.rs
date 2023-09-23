@@ -3,14 +3,10 @@ use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
 use fontdue::Font;
 use once_cell::sync::OnceCell;
 use snafu::Snafu;
-use std::{collections::HashMap, sync::MutexGuard};
+use std::collections::HashMap;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
-    #[snafu(display("Error unable get lock: {source}"))]
-    UnableGetLock {
-        source: std::sync::PoisonError<MutexGuard<'static, HashMap<String, Font>>>,
-    },
     #[snafu(display("Error font: {name} not found"))]
     FontNotFound { name: String },
     #[snafu(display("Error parse font: {message}"))]

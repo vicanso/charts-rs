@@ -701,7 +701,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 self.series_label_font_size,
                                 &label.text,
                             ) {
-                                dx = Some(-value.width() / 2.0);
+                                dx = Some(-value.width() / 2.0 + 1.0);
                             }
                             let font_color = if color.is_light() {
                                 "#464646".into()
@@ -716,7 +716,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 font_family: Some(self.font_family.clone()),
                                 font_size: Some(self.series_label_font_size),
                                 x: Some(label.point.x),
-                                y: Some(y - r * 0.5),
+                                y: Some(y - r * 0.5 + 2.0),
                                 ..Default::default()
                             });
                         }
