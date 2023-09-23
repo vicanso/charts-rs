@@ -300,6 +300,140 @@ static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
+static VINTAGE_THEME: Lazy<Theme> = Lazy::new(|| {
+    let x_axis_color = (0, 0, 0).into();
+
+    let font_color: Color = (51, 51, 51).into();
+    Theme {
+        is_light: true,
+        font_family: DEFAULT_FONT_FAMILY.to_string(),
+        margin: (5.0).into(),
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+        background_color: (254, 248, 239).into(),
+
+        title_font_color: font_color,
+        title_font_size: 18.0,
+        title_font_weight: Some("bold".to_string()),
+        title_margin: None,
+        title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
+
+        sub_title_font_color: font_color,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
+        sub_title_margin: None,
+        sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
+
+        legend_font_size: DEFAULT_FONT_SIZE,
+        legend_font_color: font_color,
+        legend_align: Align::Center,
+        legend_margin: None,
+
+        x_axis_font_size: DEFAULT_FONT_SIZE,
+        x_axis_stroke_color: x_axis_color,
+        x_axis_font_color: x_axis_color,
+        x_axis_name_gap: DEFAULT_X_AXIS_NAME_GAP,
+        x_axis_height: DEFAULT_X_AXIS_HEIGHT,
+
+        y_axis_font_size: DEFAULT_FONT_SIZE,
+        y_axis_font_color: x_axis_color,
+        y_axis_stroke_color: Color::transparent(),
+        y_axis_split_number: DEFAULT_Y_AXIS_SPLIT_NUMBER,
+        y_axis_name_gap: DEFAULT_Y_AXIS_NAME_GAP,
+
+        grid_stroke_color: (224, 230, 242).into(),
+        grid_stroke_width: 1.0,
+
+        series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_label_font_size: DEFAULT_FONT_SIZE,
+        series_label_font_color: font_color,
+
+        series_colors: vec![
+            "#d87c7c".into(),
+            "#919e8b".into(),
+            "#d7ab82".into(),
+            "#6e7074".into(),
+            "#61a0a8".into(),
+            "#efa18d".into(),
+            "#787464".into(),
+            "#cc7e63".into(),
+            "#724e58".into(),
+            "#4b565b".into(),
+        ],
+
+        table_header_color: (250, 250, 250).into(),
+        table_body_colors: vec![(255, 255, 255).into()],
+        table_border_color: (239, 239, 244).into(),
+    }
+});
+
+static SHINE_THEME: Lazy<Theme> = Lazy::new(|| {
+    let x_axis_color = (0, 0, 0).into();
+
+    let font_color: Color = (51, 51, 51).into();
+    Theme {
+        is_light: true,
+        font_family: DEFAULT_FONT_FAMILY.to_string(),
+        margin: (5.0).into(),
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+        background_color: (254, 248, 239).into(),
+
+        title_font_color: font_color,
+        title_font_size: 18.0,
+        title_font_weight: Some("bold".to_string()),
+        title_margin: None,
+        title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
+
+        sub_title_font_color: font_color,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
+        sub_title_margin: None,
+        sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
+
+        legend_font_size: DEFAULT_FONT_SIZE,
+        legend_font_color: font_color,
+        legend_align: Align::Center,
+        legend_margin: None,
+
+        x_axis_font_size: DEFAULT_FONT_SIZE,
+        x_axis_stroke_color: x_axis_color,
+        x_axis_font_color: x_axis_color,
+        x_axis_name_gap: DEFAULT_X_AXIS_NAME_GAP,
+        x_axis_height: DEFAULT_X_AXIS_HEIGHT,
+
+        y_axis_font_size: DEFAULT_FONT_SIZE,
+        y_axis_font_color: x_axis_color,
+        y_axis_stroke_color: Color::transparent(),
+        y_axis_split_number: DEFAULT_Y_AXIS_SPLIT_NUMBER,
+        y_axis_name_gap: DEFAULT_Y_AXIS_NAME_GAP,
+
+        grid_stroke_color: (224, 230, 242).into(),
+        grid_stroke_width: 1.0,
+
+        series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_label_font_size: DEFAULT_FONT_SIZE,
+        series_label_font_color: font_color,
+
+        series_colors: vec![
+            "#c12e34".into(),
+            "#e6b600".into(),
+            "#0098d9".into(),
+            "#2b821d".into(),
+            "#005eaa".into(),
+            "#339ca8".into(),
+            "#cda819".into(),
+            "#32a487".into(),
+        ],
+
+        table_header_color: (250, 250, 250).into(),
+        table_body_colors: vec![(255, 255, 255).into()],
+        table_border_color: (239, 239, 244).into(),
+    }
+});
+
 static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
     let x_axis_color = (185, 184, 206).into();
 
@@ -372,6 +506,8 @@ pub fn get_theme(theme: &str) -> Theme {
         "dark" => DARK_THEME.clone(),
         "ant" => ANT_THEME.clone(),
         "grafana" => GRAFANA_THEME.clone(),
+        "vintage" => VINTAGE_THEME.clone(),
+        "shine" => SHINE_THEME.clone(),
         // echart
         _ => LIGHT_THEME.clone(),
     }
