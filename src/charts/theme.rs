@@ -378,7 +378,7 @@ static SHINE_THEME: Lazy<Theme> = Lazy::new(|| {
         margin: (5.0).into(),
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
-        background_color: (254, 248, 239).into(),
+        background_color: (255, 255, 255).into(),
 
         title_font_color: font_color,
         title_font_size: 18.0,
@@ -431,6 +431,201 @@ static SHINE_THEME: Lazy<Theme> = Lazy::new(|| {
         table_header_color: (250, 250, 250).into(),
         table_body_colors: vec![(255, 255, 255).into()],
         table_border_color: (239, 239, 244).into(),
+    }
+});
+
+static WALDEN_THEME: Lazy<Theme> = Lazy::new(|| {
+    let x_axis_color = (110, 112, 121).into();
+
+    let font_color: Color = (70, 70, 70).into();
+    Theme {
+        is_light: true,
+        font_family: DEFAULT_FONT_FAMILY.to_string(),
+        margin: (5.0).into(),
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+        background_color: Color::white(),
+
+        title_font_color: font_color,
+        title_font_size: 18.0,
+        title_font_weight: Some("bold".to_string()),
+        title_margin: None,
+        title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
+
+        sub_title_font_color: font_color,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
+        sub_title_margin: None,
+        sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
+
+        legend_font_size: DEFAULT_FONT_SIZE,
+        legend_font_color: font_color,
+        legend_align: Align::Center,
+        legend_margin: None,
+
+        x_axis_font_size: DEFAULT_FONT_SIZE,
+        x_axis_stroke_color: x_axis_color,
+        x_axis_font_color: x_axis_color,
+        x_axis_name_gap: DEFAULT_X_AXIS_NAME_GAP,
+        x_axis_height: DEFAULT_X_AXIS_HEIGHT,
+
+        y_axis_font_size: DEFAULT_FONT_SIZE,
+        y_axis_font_color: x_axis_color,
+        y_axis_stroke_color: Color::transparent(),
+        y_axis_split_number: DEFAULT_Y_AXIS_SPLIT_NUMBER,
+        y_axis_name_gap: DEFAULT_Y_AXIS_NAME_GAP,
+
+        grid_stroke_color: (224, 230, 242).into(),
+        grid_stroke_width: 1.0,
+
+        series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_label_font_size: DEFAULT_FONT_SIZE,
+        series_label_font_color: font_color,
+
+        series_colors: vec![
+            "#3fb1e3".into(),
+            "#6be6c1".into(),
+            "#626c91".into(),
+            "#a0a7e6".into(),
+            "#c4ebad".into(),
+            "#96dee8".into(),
+        ],
+
+        table_header_color: (250, 250, 250).into(),
+        table_body_colors: vec![(255, 255, 255).into()],
+        table_border_color: (239, 239, 244).into(),
+    }
+});
+
+static WESTEROS_THEME: Lazy<Theme> = Lazy::new(|| {
+    let x_axis_color = (110, 112, 121).into();
+
+    let font_color: Color = (70, 70, 70).into();
+    Theme {
+        is_light: true,
+        font_family: DEFAULT_FONT_FAMILY.to_string(),
+        margin: (5.0).into(),
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+        background_color: Color::white(),
+
+        title_font_color: font_color,
+        title_font_size: 18.0,
+        title_font_weight: Some("bold".to_string()),
+        title_margin: None,
+        title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
+
+        sub_title_font_color: font_color,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
+        sub_title_margin: None,
+        sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
+
+        legend_font_size: DEFAULT_FONT_SIZE,
+        legend_font_color: font_color,
+        legend_align: Align::Center,
+        legend_margin: None,
+
+        x_axis_font_size: DEFAULT_FONT_SIZE,
+        x_axis_stroke_color: x_axis_color,
+        x_axis_font_color: x_axis_color,
+        x_axis_name_gap: DEFAULT_X_AXIS_NAME_GAP,
+        x_axis_height: DEFAULT_X_AXIS_HEIGHT,
+
+        y_axis_font_size: DEFAULT_FONT_SIZE,
+        y_axis_font_color: x_axis_color,
+        y_axis_stroke_color: Color::transparent(),
+        y_axis_split_number: DEFAULT_Y_AXIS_SPLIT_NUMBER,
+        y_axis_name_gap: DEFAULT_Y_AXIS_NAME_GAP,
+
+        grid_stroke_color: (224, 230, 242).into(),
+        grid_stroke_width: 1.0,
+
+        series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_label_font_size: DEFAULT_FONT_SIZE,
+        series_label_font_color: font_color,
+
+        series_colors: vec![
+            "#516b91".into(),
+            "#59c4e6".into(),
+            "#edafda".into(),
+            "#93b7e3".into(),
+            "#a5e7f0".into(),
+            "#cbb0e3".into(),
+        ],
+
+        table_header_color: (250, 250, 250).into(),
+        table_body_colors: vec![(255, 255, 255).into()],
+        table_border_color: (239, 239, 244).into(),
+    }
+});
+
+static CHALK_THEME: Lazy<Theme> = Lazy::new(|| {
+    let x_axis_color = (110, 112, 121).into();
+
+    let font_color: Color = (255, 255, 255).into();
+    let bg_color: Color = (41, 52, 65).into();
+    Theme {
+        is_light: true,
+        font_family: DEFAULT_FONT_FAMILY.to_string(),
+        margin: (5.0).into(),
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+        background_color: bg_color,
+
+        title_font_color: font_color,
+        title_font_size: 18.0,
+        title_font_weight: Some("bold".to_string()),
+        title_margin: None,
+        title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
+
+        sub_title_font_color: font_color,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
+        sub_title_margin: None,
+        sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
+
+        legend_font_size: DEFAULT_FONT_SIZE,
+        legend_font_color: font_color,
+        legend_align: Align::Center,
+        legend_margin: None,
+
+        x_axis_font_size: DEFAULT_FONT_SIZE,
+        x_axis_stroke_color: x_axis_color,
+        x_axis_font_color: x_axis_color,
+        x_axis_name_gap: DEFAULT_X_AXIS_NAME_GAP,
+        x_axis_height: DEFAULT_X_AXIS_HEIGHT,
+
+        y_axis_font_size: DEFAULT_FONT_SIZE,
+        y_axis_font_color: x_axis_color,
+        y_axis_stroke_color: Color::transparent(),
+        y_axis_split_number: DEFAULT_Y_AXIS_SPLIT_NUMBER,
+        y_axis_name_gap: DEFAULT_Y_AXIS_NAME_GAP,
+
+        grid_stroke_color: (41, 52, 65, 0).into(),
+        grid_stroke_width: 1.0,
+
+        series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_label_font_size: DEFAULT_FONT_SIZE,
+        series_label_font_color: font_color,
+
+        series_colors: vec![
+            "#fc97af".into(),
+            "#87f7cf".into(),
+            "#f7f494".into(),
+            "#72ccff".into(),
+            "#f7c5a0".into(),
+            "#d4a4eb".into(),
+            "#d2f5a6".into(),
+            "#76f2f2".into(),
+        ],
+
+        table_header_color: bg_color,
+        table_body_colors: vec![bg_color.with_alpha(230)],
+        table_border_color: (100, 100, 100).into(),
     }
 });
 
@@ -508,6 +703,9 @@ pub fn get_theme(theme: &str) -> &'static Theme {
         "grafana" => &GRAFANA_THEME,
         "vintage" => &VINTAGE_THEME,
         "shine" => &SHINE_THEME,
+        "walden" => &WALDEN_THEME,
+        "westeros" => &WESTEROS_THEME,
+        "chalk" => &CHALK_THEME,
         // echart
         _ => &LIGHT_THEME,
     }
