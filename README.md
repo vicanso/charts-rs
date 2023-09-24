@@ -20,6 +20,10 @@
 
 `Apache ECharts` is popular among Front-end developers, and `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
 
+## Themes
+
+[themes](./theme.md)
+
 ## Feature
 
 - Multiple themes for all charts
