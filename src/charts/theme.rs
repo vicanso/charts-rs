@@ -563,7 +563,7 @@ static WESTEROS_THEME: Lazy<Theme> = Lazy::new(|| {
 });
 
 static CHALK_THEME: Lazy<Theme> = Lazy::new(|| {
-    let x_axis_color = (110, 112, 121).into();
+    let x_axis_color = (170, 170, 170).into();
 
     let font_color: Color = (255, 255, 255).into();
     let bg_color: Color = (41, 52, 65).into();
