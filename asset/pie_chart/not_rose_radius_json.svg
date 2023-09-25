@@ -1,0 +1,49 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="227" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Nightingale Chart
+</text>
+<text font-size="14" x="267" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Fake Data
+</text>
+<path d="M296,223.5 L296,93.5 A0 0 0 0 1 300.5,93.6 A130 130 0 0 1 408.1,157.6 A0 0 0 0 1 410.3,161.5 L296,223.5 Z" fill="#5470C6"/>
+<path d="M362.5,111.8 C365.1 107.5, 369 96.8, 372.7 94.6 C376.5 92.5, 387.7 94.6, 392.7 94.6" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="395.7" y="99.6" font-family="Roboto" fill="#464646">
+rose 1: 17.1%
+</text>
+<path d="M296,223.5 L410.3,161.5 A0 0 0 0 1 412.4,165.6 A130 130 0 0 1 410.8,284.5 A0 0 0 0 1 408.6,288.5 L296,223.5 Z" fill="#91CC75"/>
+<path d="M426,225.2 C431 225.3, 441 225.5, 446 225.5 C451 225.5, 461 225.5, 466 225.5" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="469" y="230.5" font-family="Roboto" fill="#464646">
+rose 2: 16.2%
+</text>
+<path d="M296,223.5 L408.6,288.5 A0 0 0 0 1 406.2,292.4 A130 130 0 0 1 324.7,350.3 A0 0 0 0 1 320.3,351.2 L296,223.5 Z" fill="#FAC858"/>
+<path d="M371.3,329.5 C374.2 333.6, 378.9 343.8, 382.9 345.8 C386.8 347.8, 397.9 345.8, 402.9 345.8" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="405.9" y="350.8" font-family="Roboto" fill="#464646">
+rose 3: 13.7%
+</text>
+<path d="M296,223.5 L320.3,351.2 A0 0 0 0 1 315.8,352 A130 130 0 0 1 224.5,332 A0 0 0 0 1 220.7,329.5 L296,223.5 Z" fill="#EE6666"/>
+<path d="M268.3,350.5 C267.2 355.4, 267.1 367.6, 264 370.1 C261 372.5, 249 370.1, 244 370.1" stroke-width="1" fill="none" stroke="#EE6666"/>
+<text font-size="14" x="157" y="375.1" font-family="Roboto" fill="#464646">
+rose 4: 12.8%
+</text>
+<path d="M296,223.5 L220.7,329.5 A0 0 0 0 1 217.1,326.8 A130 130 0 0 1 169.6,253.9 A0 0 0 0 1 168.6,249.5 L296,223.5 Z" fill="#73C0DE"/>
+<path d="M187.1,294.4 C182.9 297.2, 174.9 304, 170.3 305.4 C165.7 306.7, 155.3 305.4, 150.3 305.4" stroke-width="1" fill="none" stroke="#73C0DE"/>
+<text font-size="14" x="75.3" y="310.4" font-family="Roboto" fill="#464646">
+rose 5: 12%
+</text>
+<path d="M296,223.5 L168.6,249.5 A0 0 0 0 1 167.8,245 A130 130 0 0 1 179.6,165.6 A0 0 0 0 1 181.7,161.5 L296,223.5 Z" fill="#3BA272"/>
+<path d="M167.4,204.4 C162.5 203.6, 152.6 201.8, 147.6 201.4 C142.7 201.1, 132.6 201.4, 127.6 201.4" stroke-width="1" fill="none" stroke="#3BA272"/>
+<text font-size="14" x="40.6" y="206.4" font-family="Roboto" fill="#464646">
+rose 6: 11.1%
+</text>
+<path d="M296,223.5 L181.7,161.5 A0 0 0 0 1 183.9,157.6 A130 130 0 0 1 231.6,110.6 A0 0 0 0 1 235.6,108.4 L296,223.5 Z" fill="#FC8452"/>
+<path d="M204.7,131 C201.2 127.4, 194.9 118.5, 190.6 116.7 C186.4 114.9, 175.6 116.7, 170.6 116.7" stroke-width="1" fill="none" stroke="#FC8452"/>
+<text font-size="14" x="91.6" y="121.7" font-family="Roboto" fill="#464646">
+rose 7: 9.4%
+</text>
+<path d="M296,223.5 L235.6,108.4 A0 0 0 0 1 239.6,106.4 A130 130 0 0 1 291.5,93.6 A0 0 0 0 1 296,93.5 L296,223.5 Z" fill="#9A60B4"/>
+<path d="M264.9,97.3 C263.7 92.4, 263.2 80.3, 260.1 77.9 C257 75.4, 245.1 77.9, 240.1 77.9" stroke-width="1" fill="none" stroke="#9A60B4"/>
+<text font-size="14" x="161.1" y="82.9" font-family="Roboto" fill="#464646">
+rose 8: 7.7%
+</text>
+</svg>

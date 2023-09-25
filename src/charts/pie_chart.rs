@@ -51,6 +51,8 @@ pub struct PieChart {
 
     pub radius: f32,
     pub inner_radius: f32,
+    pub rose_type: Option<bool>,
+    pub border_radius: Option<f32>,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -88,6 +90,7 @@ impl PieChart {
         self.radius = 150.0;
         self.inner_radius = 40.0;
         self.legend_show = Some(false);
+        self.rose_type = Some(true);
     }
     /// Creates a pie chart from json.
     pub fn from_json(data: &str) -> canvas::Result<PieChart> {
@@ -101,6 +104,12 @@ impl PieChart {
         }
         if let Some(inner_radius) = get_f32_from_value(&value, "inner_radius") {
             p.inner_radius = inner_radius;
+        }
+        if let Some(rose_type) = get_bool_from_value(&value, "rose_type") {
+            p.rose_type = Some(rose_type);
+        }
+        if let Some(border_radius) = get_f32_from_value(&value, "border_radius") {
+            p.border_radius = Some(border_radius);
         }
         Ok(p)
     }
@@ -154,8 +163,8 @@ impl PieChart {
                 max = *item;
             }
         }
-        let delta = 360.0 / values.len() as f32;
-        let half_delta = delta / 2.0;
+        let mut delta = 360.0 / values.len() as f32;
+        let mut half_delta = delta / 2.0;
         let mut start_angle = 0.0_f32;
         let mut radius_double = c.height();
 
@@ -175,13 +184,19 @@ impl PieChart {
         if series_label_formatter.is_empty() {
             series_label_formatter = "{a}: {d}".to_string();
         }
+        let rose_type = self.rose_type.unwrap_or_default();
 
         for (index, series) in self.series_list.iter().enumerate() {
             let value = values[index];
-            let cr = value / max * (r - self.inner_radius) + self.inner_radius;
+            let mut cr = value / max * (r - self.inner_radius) + self.inner_radius;
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-
-            c.pie(Pie {
+            // 普通饼图
+            if !rose_type {
+                cr = r;
+                delta = value / sum * 360.0;
+                half_delta = delta / 2.0;
+            }
+            let mut pie = Pie {
                 fill: color,
                 cx,
                 cy,
@@ -190,7 +205,12 @@ impl PieChart {
                 start_angle,
                 delta,
                 ..Default::default()
-            });
+            };
+            if let Some(border_radius) = self.border_radius {
+                pie.border_radius = border_radius;
+            }
+
+            c.pie(pie);
 
             let angle = start_angle + half_delta;
             let mut points = vec![];
@@ -296,6 +316,50 @@ mod tests {
         pie_chart.sub_title_text = "Fake Data".to_string();
         assert_eq!(
             include_str!("../../asset/pie_chart/small_basic.svg"),
+            pie_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn not_rose_pie() {
+        let mut pie_chart = PieChart::new(vec![
+            ("rose 1", vec![400.0]).into(),
+            ("rose 2", vec![38.0]).into(),
+            ("rose 3", vec![32.0]).into(),
+            ("rose 4", vec![30.0]).into(),
+            ("rose 5", vec![28.0]).into(),
+            ("rose 6", vec![26.0]).into(),
+            ("rose 7", vec![22.0]).into(),
+            ("rose 8", vec![18.0]).into(),
+        ]);
+        pie_chart.rose_type = Some(false);
+        pie_chart.title_text = "Pie Chart".to_string();
+        pie_chart.sub_title_text = "Fake Data".to_string();
+        assert_eq!(
+            include_str!("../../asset/pie_chart/not_rose.svg"),
+            pie_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn not_rose_radius_pie() {
+        let mut pie_chart = PieChart::new(vec![
+            ("rose 1", vec![400.0]).into(),
+            ("rose 2", vec![38.0]).into(),
+            ("rose 3", vec![32.0]).into(),
+            ("rose 4", vec![30.0]).into(),
+            ("rose 5", vec![28.0]).into(),
+            ("rose 6", vec![26.0]).into(),
+            ("rose 7", vec![22.0]).into(),
+            ("rose 8", vec![18.0]).into(),
+        ]);
+        pie_chart.rose_type = Some(false);
+        pie_chart.inner_radius = 0.0;
+        pie_chart.border_radius = Some(0.0);
+        pie_chart.title_text = "Pie Chart".to_string();
+        pie_chart.sub_title_text = "Fake Data".to_string();
+        assert_eq!(
+            include_str!("../../asset/pie_chart/not_rose_radius.svg"),
             pie_chart.svg().unwrap()
         );
     }

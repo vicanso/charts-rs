@@ -17,3 +17,4 @@
 - [x] series label format的自定义
 - [ ] fontdue与fontdb是否可统一，现两个字库重复加载内存占用较大
 - [ ] table中文本计算宽度，自动换行
+- [x] 饼图支持普通形式

@@ -555,6 +555,7 @@ pub struct Pie {
     pub ir: f32,
     pub start_angle: f32,
     pub delta: f32,
+    pub border_radius: f32,
 }
 
 impl Default for Pie {
@@ -568,6 +569,7 @@ impl Default for Pie {
             ir: 60.0,
             start_angle: 0.0,
             delta: 0.0,
+            border_radius: 8.0,
         }
     }
 }
@@ -581,8 +583,8 @@ impl Pie {
         let ir_str = format_float(ir);
 
         let mut path_list = vec![];
-        let mut border_radius = 8.0_f32;
-        if self.r - self.ir < border_radius {
+        let mut border_radius = self.border_radius;
+        if border_radius != 0.0 && self.r - self.ir < border_radius {
             border_radius = 2.0;
         }
         let border_radius_str = format_float(border_radius);
@@ -591,12 +593,20 @@ impl Pie {
         let end_angle = start_angle + self.delta;
 
         // 左下角第一个点
-        let point = get_pie_point(self.cx, self.cy, self.ir + border_radius, start_angle);
-        path_list.push(format!(
-            "M{},{}",
-            format_float(point.x),
-            format_float(point.y)
-        ));
+        if self.ir == 0.0 {
+            path_list.push(format!(
+                "M{},{}",
+                format_float(self.cx),
+                format_float(self.cy),
+            ));
+        } else {
+            let point = get_pie_point(self.cx, self.cy, self.ir + border_radius, start_angle);
+            path_list.push(format!(
+                "M{},{}",
+                format_float(point.x),
+                format_float(point.y)
+            ));
+        }
 
         // 左侧直线
         let point = get_pie_point(self.cx, self.cy, self.r - border_radius, start_angle);
@@ -615,6 +625,21 @@ impl Pie {
         ));
 
         // 大圆弧
+        // 如果过大，要先划一半
+        if self.delta > 180.0 {
+            let point = get_pie_point(
+                self.cx,
+                self.cy,
+                self.r,
+                self.start_angle + 180.0 - border_angle,
+            );
+            path_list.push(format!(
+                "A{r_str} {r_str} 0 0 1 {},{}",
+                format_float(point.x),
+                format_float(point.y)
+            ));
+        }
+
         let point = get_pie_point(self.cx, self.cy, self.r, end_angle - border_angle);
         path_list.push(format!(
             "A{r_str} {r_str} 0 0 1 {},{}",
@@ -638,29 +663,41 @@ impl Pie {
             format_float(point.y)
         ));
 
-        // 右下圆角
-        let point = get_pie_point(self.cx, self.cy, self.ir, end_angle - border_angle);
-        path_list.push(format!(
-            "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
-            format_float(point.x),
-            format_float(point.y)
-        ));
+        if self.ir > 0.0 {
+            // 右下圆角
+            let point = get_pie_point(self.cx, self.cy, self.ir, end_angle - border_angle);
+            path_list.push(format!(
+                "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
+                format_float(point.x),
+                format_float(point.y)
+            ));
 
-        // 小圆弧
-        let point = get_pie_point(self.cx, self.cy, self.ir, start_angle + border_angle);
-        path_list.push(format!(
-            "A{ir_str} {ir_str} 0 0 0 {},{}",
-            format_float(point.x),
-            format_float(point.y)
-        ));
+            // 小圆弧
+            // 如果过大，要先划一半
+            if self.delta > 180.0 {
+                let point = get_pie_point(self.cx, self.cy, self.ir, end_angle - 180.0);
+                path_list.push(format!(
+                    "A{ir_str} {ir_str} 0 0 0 {},{}",
+                    format_float(point.x),
+                    format_float(point.y)
+                ));
+            }
 
-        // 左下圆角
-        let point = get_pie_point(self.cx, self.cy, self.ir + border_radius, start_angle);
-        path_list.push(format!(
-            "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
-            format_float(point.x),
-            format_float(point.y)
-        ));
+            let point = get_pie_point(self.cx, self.cy, self.ir, start_angle + border_angle);
+            path_list.push(format!(
+                "A{ir_str} {ir_str} 0 0 0 {},{}",
+                format_float(point.x),
+                format_float(point.y)
+            ));
+
+            // 左下圆角
+            let point = get_pie_point(self.cx, self.cy, self.ir + border_radius, start_angle);
+            path_list.push(format!(
+                "A{border_radius_str} {border_radius_str} 0 0 1 {},{}",
+                format_float(point.x),
+                format_float(point.y)
+            ));
+        }
 
         path_list.push("Z".to_string());
 
@@ -1770,6 +1807,55 @@ Hello World!
         };
         assert_eq!(
             r###"<path d="M298.1,201.9 L421.1,78.9 A8 8 0 0 1 432.8,79.5 A250 250 0 0 1 499.8,241.3 A8 8 0 0 1 492,250 L318,250 A8 8 0 0 1 310,247.9 A60 60 0 0 0 293.9,209.1 A8 8 0 0 1 298.1,201.9 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,
+            p.svg()
+        );
+
+        let p = Pie {
+            fill: (0, 0, 0, 128).into(),
+            stroke_color: Some((0, 0, 0).into()),
+            cx: 250.0,
+            cy: 250.0,
+            r: 250.0,
+            ir: 0.0,
+            start_angle: 45.0,
+            delta: 45.0,
+            border_radius: 0.0,
+            ..Default::default()
+        };
+        assert_eq!(
+            r###"<path d="M250,250 L426.8,73.2 A0 0 0 0 1 432.8,79.5 A250 250 0 0 1 499.8,241.3 A0 0 0 0 1 500,250 L250,250 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,
+            p.svg()
+        );
+
+        let p = Pie {
+            fill: (0, 0, 0, 128).into(),
+            stroke_color: Some((0, 0, 0).into()),
+            cx: 250.0,
+            cy: 250.0,
+            r: 250.0,
+            ir: 0.0,
+            start_angle: 45.0,
+            delta: 45.0,
+            ..Default::default()
+        };
+        assert_eq!(
+            r###"<path d="M250,250 L421.1,78.9 A8 8 0 0 1 432.8,79.5 A250 250 0 0 1 499.8,241.3 A8 8 0 0 1 492,250 L258,250 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,
+            p.svg()
+        );
+
+        let p = Pie {
+            fill: (0, 0, 0, 128).into(),
+            stroke_color: Some((0, 0, 0).into()),
+            cx: 150.0,
+            cy: 150.0,
+            r: 50.0,
+            ir: 25.0,
+            start_angle: 45.0,
+            delta: 230.0,
+            ..Default::default()
+        };
+        assert_eq!(
+            r###"<path d="M173.3,126.7 L179.7,120.3 A8 8 0 0 1 186.6,115.9 A50 50 0 0 1 115.9,186.6 A50 50 0 0 1 100.1,147.4 A8 8 0 0 1 108.2,146.3 L117.1,147.1 A8 8 0 0 1 125,148.7 A25 25 0 0 0 174.9,152.2 A25 25 0 0 0 168.3,133 A8 8 0 0 1 173.3,126.7 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,
             p.svg()
         );
     }

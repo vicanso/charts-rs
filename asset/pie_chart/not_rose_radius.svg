@@ -1,0 +1,49 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="261.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Pie Chart
+</text>
+<text font-size="14" x="267" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Fake Data
+</text>
+<path d="M300,227.5 L300,93.5 A0 0 0 0 1 304.7,93.6 A134 134 0 0 1 304.7,361.4 A134 134 0 0 1 183.5,293.6 A0 0 0 0 1 181.2,289.5 L300,227.5 Z" fill="#5470C6"/>
+<path d="M414.6,296.9 C418.9 299.5, 427.1 306, 431.7 307.3 C436.3 308.6, 446.7 307.3, 451.7 307.3" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="454.7" y="312.3" font-family="Roboto" fill="#464646">
+rose 1: 67.3%
+</text>
+<path d="M300,227.5 L181.2,289.5 A0 0 0 0 1 179.1,285.3 A134 134 0 0 1 166.9,242.8 A0 0 0 0 1 166.4,238.1 L300,227.5 Z" fill="#91CC75"/>
+<path d="M171.2,264.6 C166.4 266, 156.9 269.4, 152 270.1 C147.1 270.8, 137 270.1, 132 270.1" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="53" y="275.1" font-family="Roboto" fill="#464646">
+rose 2: 6.4%
+</text>
+<path d="M300,227.5 L166.4,238.1 A0 0 0 0 1 166.1,233.5 A134 134 0 0 1 169.4,197.7 A0 0 0 0 1 170.5,193.2 L300,227.5 Z" fill="#FAC858"/>
+<path d="M166.5,215.5 C161.6 215, 151.6 213.9, 146.6 213.7 C141.6 213.4, 131.6 213.7, 126.6 213.7" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="47.6" y="218.7" font-family="Roboto" fill="#464646">
+rose 3: 5.4%
+</text>
+<path d="M300,227.5 L170.5,193.2 A0 0 0 0 1 171.8,188.7 A134 134 0 0 1 185.2,158.4 A0 0 0 0 1 187.7,154.5 L300,227.5 Z" fill="#EE6666"/>
+<path d="M177.5,173.1 C173 171.1, 164 166, 159.2 165 C154.5 164, 144.2 165, 139.2 165" stroke-width="1" fill="none" stroke="#EE6666"/>
+<text font-size="14" x="60.2" y="170" font-family="Roboto" fill="#464646">
+rose 4: 5.1%
+</text>
+<path d="M300,227.5 L187.7,154.5 A0 0 0 0 1 190.3,150.6 A134 134 0 0 1 210.3,127.9 A0 0 0 0 1 213.9,124.8 L300,227.5 Z" fill="#73C0DE"/>
+<path d="M199.7,138.7 C195.9 135.4, 189.1 127.1, 184.7 125.4 C180.3 123.8, 169.7 125.4, 164.7 125.4" stroke-width="1" fill="none" stroke="#73C0DE"/>
+<text font-size="14" x="85.7" y="130.4" font-family="Roboto" fill="#464646">
+rose 5: 4.7%
+</text>
+<path d="M300,227.5 L213.9,124.8 A0 0 0 0 1 217.5,121.9 A134 134 0 0 1 240.7,107.3 A0 0 0 0 1 245,105.3 L300,227.5 Z" fill="#3BA272"/>
+<path d="M228.8,114 C226.1 109.8, 221.9 99.2, 218.1 97.1 C214.3 95, 203.1 97.1, 198.1 97.1" stroke-width="1" fill="none" stroke="#3BA272"/>
+<text font-size="14" x="119.1" y="102.1" font-family="Roboto" fill="#464646">
+rose 6: 4.4%
+</text>
+<path d="M300,227.5 L245,105.3 A0 0 0 0 1 249.3,103.5 A134 134 0 0 1 270.1,96.9 A0 0 0 0 1 274.6,95.9 L300,227.5 Z" fill="#FC8452"/>
+<path d="M259.5,99.8 C258 95, 256.8 83.1, 253.5 80.7 C250.2 78.3, 238.5 80.7, 233.5 80.7" stroke-width="1" fill="none" stroke="#FC8452"/>
+<text font-size="14" x="154.5" y="85.7" font-family="Roboto" fill="#464646">
+rose 7: 3.7%
+</text>
+<path d="M300,227.5 L274.6,95.9 A0 0 0 0 1 279.2,95.1 A134 134 0 0 1 295.3,93.6 A0 0 0 0 1 300,93.5 L300,227.5 Z" fill="#9A60B4"/>
+<path d="M287.3,94.1 C286.8 89.1, 288.1 76.7, 285.4 74.2 C282.6 71.7, 270.4 74.2, 265.4 74.2" stroke-width="1" fill="none" stroke="#9A60B4"/>
+<text font-size="14" x="198.4" y="79.2" font-family="Roboto" fill="#464646">
+rose 8: 3%
+</text>
+</svg>
