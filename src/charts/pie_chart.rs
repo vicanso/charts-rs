@@ -196,6 +196,9 @@ impl PieChart {
                 delta = value / sum * 360.0;
                 half_delta = delta / 2.0;
             }
+            if cr - self.inner_radius < 1.0{
+                cr = self.inner_radius + 1.0;
+            }
             let mut pie = Pie {
                 fill: color,
                 cx,
@@ -363,4 +366,26 @@ mod tests {
             pie_chart.svg().unwrap()
         );
     }
+
+
+    #[test]
+    fn pie_rose_small_piece() {
+        let mut pie_chart = PieChart::new(vec![
+            ("rose 1", vec![40000.0]).into(),
+            ("rose 2", vec![38.0]).into(),
+            ("rose 3", vec![32.0]).into(),
+            ("rose 4", vec![30.0]).into(),
+            ("rose 5", vec![28.0]).into(),
+            ("rose 6", vec![26.0]).into(),
+            ("rose 7", vec![22.0]).into(),
+            ("rose 8", vec![18.0]).into(),
+        ]);
+        pie_chart.title_text = "Nightingale Chart".to_string();
+        pie_chart.sub_title_text = "Fake Data".to_string();
+        assert_eq!(
+            include_str!("../../asset/pie_chart/rose_small_piece.svg"),
+            pie_chart.svg().unwrap()
+        );
+    }
+
 }
