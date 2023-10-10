@@ -9,6 +9,7 @@ pub enum Position {
     Top,
     Right,
     Bottom,
+    Inside,
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]

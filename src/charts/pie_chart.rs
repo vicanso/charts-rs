@@ -196,7 +196,7 @@ impl PieChart {
                 delta = value / sum * 360.0;
                 half_delta = delta / 2.0;
             }
-            if cr - self.inner_radius < 1.0{
+            if cr - self.inner_radius < 1.0 {
                 cr = self.inner_radius + 1.0;
             }
             let mut pie = Pie {
@@ -367,7 +367,6 @@ mod tests {
         );
     }
 
-
     #[test]
     fn pie_rose_small_piece() {
         let mut pie_chart = PieChart::new(vec![
@@ -387,5 +386,4 @@ mod tests {
             pie_chart.svg().unwrap()
         );
     }
-
 }

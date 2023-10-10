@@ -1128,10 +1128,6 @@ impl Axis {
         let mut line_data = vec![];
         if !is_transparent {
             let values = match self.position {
-                Position::Left => {
-                    let x = left + width;
-                    (x, top, x, top + height)
-                }
                 Position::Top => {
                     let y = top + height;
                     (left, y, left + width, y)
@@ -1141,6 +1137,10 @@ impl Axis {
                     (left, top, left, y)
                 }
                 Position::Bottom => (left, top, left + width, top),
+                _ => {
+                    let x = left + width;
+                    (x, top, x, top + height)
+                }
             };
 
             line_data.push(
@@ -1202,11 +1202,6 @@ impl Axis {
                 }
 
                 let values = match self.position {
-                    Position::Left => {
-                        let y = top + unit * i as f32;
-                        let x = left + width;
-                        (x, y, x - tick_length, y)
-                    }
                     Position::Top => {
                         let x = left + unit * i as f32;
                         let y = top + height;
@@ -1219,6 +1214,11 @@ impl Axis {
                     Position::Bottom => {
                         let x = left + unit * i as f32;
                         (x, top, x, top + tick_length)
+                    }
+                    _ => {
+                        let y = top + unit * i as f32;
+                        let x = left + width;
+                        (x, y, x - tick_length, y)
                     }
                 };
 
@@ -1259,11 +1259,6 @@ impl Axis {
                 let text_width = b.width();
 
                 let values = match self.position {
-                    Position::Left => {
-                        let x = left + width - text_width - name_gap;
-                        let y = top + unit_offset + font_size / 2.0 - 2.0;
-                        (x, y)
-                    }
                     Position::Top => {
                         let y = top + height - name_gap;
                         let x = left + unit_offset - text_width / 2.0;
@@ -1277,6 +1272,11 @@ impl Axis {
                     Position::Bottom => {
                         let y = top + font_size + name_gap;
                         let x = left + unit_offset - text_width / 2.0;
+                        (x, y)
+                    }
+                    _ => {
+                        let x = left + width - text_width - name_gap;
+                        let y = top + unit_offset + font_size / 2.0 - 2.0;
                         (x, y)
                     }
                 };

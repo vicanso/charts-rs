@@ -74,6 +74,7 @@ pub struct HorizontalBarChart {
     pub series_label_font_size: f32,
     pub series_label_font_weight: Option<String>,
     pub series_label_formatter: String,
+    pub series_label_position: Option<Position>,
     pub series_colors: Vec<Color>,
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
@@ -86,7 +87,13 @@ impl HorizontalBarChart {
         let mut h = HorizontalBarChart {
             ..Default::default()
         };
-        h.fill_option(data)?;
+        let value = h.fill_option(data)?;
+        if let Some(series_label_position) = get_string_from_value(&value, "series_label_position")
+        {
+            if series_label_position == "inside" {
+                h.series_label_position = Some(Position::Inside);
+            }
+        }
         Ok(h)
     }
     /// Creates a horizontal bar with custom theme.
@@ -261,24 +268,40 @@ impl HorizontalBarChart {
                 }
             }
 
+            let label_inside = if let Some(position) = &self.series_label_position {
+                position.to_owned() == Position::Inside
+            } else {
+                false
+            };
             for series_labels in series_labels_list.iter() {
                 for series_label in series_labels.iter() {
                     let mut dy = None;
+                    let mut dx = Some(3.0);
+                    let mut x = Some(series_label.point.x);
                     if let Ok(value) = measure_text_width_family(
                         &self.font_family,
                         self.series_label_font_size,
                         &series_label.text,
                     ) {
                         dy = Some(value.height() / 2.0 - 2.0);
+                        if label_inside {
+                            dx = None;
+                            let offset = series_label.point.x - value.width();
+                            if offset <= 0.0 {
+                                x = Some(1.0);
+                            } else {
+                                x = Some(offset / 2.0);
+                            }
+                        }
                     }
                     c1.text(Text {
                         text: series_label.text.clone(),
-                        dx: Some(3.0),
+                        dx,
                         dy,
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(self.series_label_font_color),
                         font_size: Some(self.series_label_font_size),
-                        x: Some(series_label.point.x),
+                        x,
                         y: Some(series_label.point.y),
                         ..Default::default()
                     });
@@ -293,7 +316,7 @@ impl HorizontalBarChart {
 #[cfg(test)]
 mod tests {
     use super::HorizontalBarChart;
-    use crate::{Align, NIL_VALUE};
+    use crate::{Align, Position, NIL_VALUE};
     use pretty_assertions::assert_eq;
     #[test]
     fn horizontal_bar_chart_basic() {
@@ -326,6 +349,42 @@ mod tests {
         horizontal_bar_chart.title_align = Align::Left;
         assert_eq!(
             include_str!("../../asset/horizontal_bar_chart/basic.svg"),
+            horizontal_bar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn horizontal_bar_chart_inside() {
+        let mut horizontal_bar_chart = HorizontalBarChart::new(
+            vec![
+                (
+                    "2011",
+                    vec![18203.0, 23489.0, 29034.0, 104970.0, 131744.0, 630230.0],
+                )
+                    .into(),
+                (
+                    "2012",
+                    vec![19325.0, 23438.0, 31000.0, 121594.0, 134141.0, 681807.0],
+                )
+                    .into(),
+            ],
+            vec![
+                "Brazil".to_string(),
+                "Indonesia".to_string(),
+                "USA".to_string(),
+                "India".to_string(),
+                "China".to_string(),
+                "World".to_string(),
+            ],
+        );
+        horizontal_bar_chart.title_text = "World Population".to_string();
+        horizontal_bar_chart.series_label_formatter = "{t}".to_string();
+        horizontal_bar_chart.margin.right = 15.0;
+        horizontal_bar_chart.series_list[0].label_show = true;
+        horizontal_bar_chart.title_align = Align::Left;
+        horizontal_bar_chart.series_label_position = Some(Position::Inside);
+        assert_eq!(
+            include_str!("../../asset/horizontal_bar_chart/basic_label_inside.svg"),
             horizontal_bar_chart.svg().unwrap()
         );
     }
