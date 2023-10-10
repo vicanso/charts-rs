@@ -401,300 +401,493 @@ fn generate_image() {
 
     let mut multi_chart = MultiChart::from_json(
         r###"{
-        "child_charts": [
-            {
-            "quality": 80,
-            "width": 400,
-            "height": 300,
+            "type": "multi_chart",
             "margin": {
-                "left": 5,
-                "top": 5,
-                "right": 5,
-                "bottom": 5
+              "left": 10,
+              "top": 10,
+              "right": 10,
+              "bottom": 10
             },
-            "font_family": "Roboto",
-            "title_font_size": 18,
-            "title_font_weight": "bold",
-            "title_align": "right",
-            "title_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "title_height": 30,
-            "sub_title_text": "Sub Title",
-            "sub_title_font_size": 14,
-            "sub_title_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "sub_title_align": "center",
-            "sub_title_height": 20,
-            "legend_font_size": 14,
-            "legend_align": "left",
-            "legend_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "legend_category": "normal",
-            "legend_show": true,
-            "x_axis_height": 30,
-            "x_axis_font_size": 14,
-            "x_axis_name_gap": 5,
-            "x_axis_name_rotate": 0,
-            "x_boundary_gap": true,
-            "x_axis_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "type": "bar",
-            "title_text": "Bar Chart",
-            "x_axis_data": [
-                "Mon",
-                "Tue",
-                "Wed",
-                "Thu",
-                "Fri",
-                "Sat",
-                "Sun"
+            "background_color": "#fff",
+            "child_charts": [
+              {
+                "quality": 80,
+                "width": 400,
+                "height": 300,
+                "margin": {
+                  "left": 5,
+                  "top": 5,
+                  "right": 5,
+                  "bottom": 5
+                },
+                "font_family": "Roboto",
+                "title_font_size": 18,
+                "title_font_weight": "bold",
+                "title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "title_align": "right",
+                "title_height": 30,
+                "sub_title_text": "Sub Title",
+                "sub_title_font_size": 14,
+                "sub_title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "sub_title_align": "center",
+                "sub_title_height": 20,
+                "legend_font_size": 14,
+                "legend_align": "left",
+                "legend_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "legend_category": "normal",
+                "legend_show": true,
+                "x_axis_height": 30,
+                "x_axis_font_size": 14,
+                "x_axis_name_gap": 5,
+                "x_axis_name_rotate": 0,
+                "x_boundary_gap": true,
+                "x_axis_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "type": "bar",
+                "title_text": "Bar Chart",
+                "x_axis_data": [
+                  "Mon",
+                  "Tue",
+                  "Wed",
+                  "Thu",
+                  "Fri",
+                  "Sat",
+                  "Sun"
+                ],
+                "series_list": [
+                  {
+                    "name": "Email",
+                    "label_show": true,
+                    "data": [
+                      120,
+                      132,
+                      101,
+                      134,
+                      90,
+                      230,
+                      210
+                    ]
+                  },
+                  {
+                    "name": "Union Ads",
+                    "label_show": true,
+                    "data": [
+                      220,
+                      182,
+                      191,
+                      234,
+                      290,
+                      330,
+                      310
+                    ]
+                  }
+                ]
+              },
+              {
+                "quality": 80,
+                "width": 400,
+                "height": 300,
+                "margin": {
+                  "left": 15,
+                  "top": 15,
+                  "right": 15,
+                  "bottom": 15
+                },
+                "font_family": "Roboto",
+                "title_font_size": 18,
+                "title_font_weight": "bold",
+                "title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "title_align": "left",
+                "title_height": 30,
+                "sub_title_text": "Sub Title",
+                "sub_title_font_size": 14,
+                "sub_title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "sub_title_align": "center",
+                "sub_title_height": 20,
+                "legend_font_size": 14,
+                "legend_align": "right",
+                "legend_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "legend_category": "round_rect",
+                "legend_show": true,
+                "x_axis_height": 30,
+                "x_axis_font_size": 14,
+                "x_axis_name_gap": 5,
+                "x_axis_name_rotate": 0,
+                "x_boundary_gap": false,
+                "x_axis_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "x": 420,
+                "y": 10,
+                "type": "line",
+                "title_text": "Line Chart",
+                "x_axis_data": [
+                  "Mon",
+                  "Tue",
+                  "Wed",
+                  "Thu",
+                  "Fri",
+                  "Sat",
+                  "Sun"
+                ],
+                "series_list": [
+                  {
+                    "name": "Email",
+                    "label_show": true,
+                    "data": [
+                      120,
+                      132,
+                      101,
+                      134,
+                      90,
+                      230,
+                      210
+                    ]
+                  },
+                  {
+                    "name": "Union Ads",
+                    "label_show": true,
+                    "data": [
+                      220,
+                      182,
+                      191,
+                      234,
+                      290,
+                      330,
+                      310
+                    ]
+                  }
+                ]
+              },
+              {
+                "quality": 80,
+                "width": 400,
+                "height": 300,
+                "margin": {
+                  "left": 5,
+                  "top": 5,
+                  "right": 20,
+                  "bottom": 5
+                },
+                "font_family": "Roboto",
+                "title_font_size": 18,
+                "title_font_weight": "bold",
+                "title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "title_align": "left",
+                "title_height": 30,
+                "sub_title_text": "Data from: Heinz 2003",
+                "sub_title_font_size": 14,
+                "sub_title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "sub_title_align": "left",
+                "sub_title_height": 20,
+                "legend_font_size": 14,
+                "legend_align": "right",
+                "legend_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "legend_category": "normal",
+                "legend_show": true,
+                "x_axis_height": 30,
+                "x_axis_font_size": 14,
+                "x_axis_name_gap": 5,
+                "x_axis_name_rotate": 0,
+                "x_boundary_gap": true,
+                "x_axis_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "x": 10,
+                "y": 320,
+                "type": "scatter",
+                "title_text": "Height and weight",
+                "y_axis_configs": [
+                  {
+                    "axis_min": 40,
+                    "axis_max": 100,
+                    "axis_formatter": "{c} kg"
+                  }
+                ],
+                "x_axis_config": {
+                  "axis_min": 140,
+                  "axis_max": 200,
+                  "axis_formatter": "{c} cm"
+                },
+                "series_list": [
+                  {
+                    "name": "Female",
+                    "data": [
+                      161.2,
+                      51.6,
+                      167.5,
+                      59,
+                      159.5,
+                      49.2,
+                      157,
+                      63,
+                      155.8,
+                      53.6,
+                      170,
+                      59,
+                      159.1,
+                      47.6,
+                      166,
+                      69.8,
+                      176.2,
+                      66.8,
+                      160.2,
+                      75.2,
+                      172.5,
+                      55.2,
+                      170.9,
+                      54.2,
+                      172.9,
+                      62.5,
+                      153.4,
+                      42,
+                      160,
+                      50,
+                      147.2,
+                      49.8,
+                      168.2,
+                      49.2,
+                      175,
+                      73.2,
+                      157,
+                      47.8,
+                      167.6,
+                      68.8,
+                      159.5,
+                      50.6,
+                      175,
+                      82.5,
+                      166.8,
+                      57.2,
+                      176.5,
+                      87.8,
+                      170.2,
+                      72.8
+                    ]
+                  },
+                  {
+                    "name": "Male",
+                    "data": [
+                      174,
+                      65.6,
+                      175.3,
+                      71.8,
+                      193.5,
+                      80.7,
+                      186.5,
+                      72.6,
+                      187.2,
+                      78.8,
+                      181.5,
+                      74.8,
+                      184,
+                      86.4,
+                      184.5,
+                      78.4,
+                      175,
+                      62,
+                      184,
+                      81.6,
+                      180,
+                      76.6,
+                      177.8,
+                      83.6,
+                      192,
+                      90,
+                      176,
+                      74.6,
+                      174,
+                      71,
+                      184,
+                      79.6,
+                      192.7,
+                      93.8,
+                      171.5,
+                      70,
+                      173,
+                      72.4,
+                      176,
+                      85.9,
+                      176,
+                      78.8,
+                      180.5,
+                      77.8,
+                      172.7,
+                      66.2,
+                      176,
+                      86.4,
+                      173.5,
+                      81.8
+                    ]
+                  }
+                ],
+                "series_symbol_sizes": [
+                  6,
+                  6
+                ]
+              },
+              {
+                "quality": 80,
+                "width": 400,
+                "height": 300,
+                "margin": {
+                  "left": 5,
+                  "top": 5,
+                  "right": 5,
+                  "bottom": 5
+                },
+                "font_family": "Roboto",
+                "title_font_size": 18,
+                "title_font_weight": "bold",
+                "title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "title_align": "center",
+                "title_height": 30,
+                "sub_title_text": "Sub Title",
+                "sub_title_font_size": 14,
+                "sub_title_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "sub_title_align": "center",
+                "sub_title_height": 20,
+                "legend_font_size": 14,
+                "legend_align": "center",
+                "legend_margin": {
+                  "top": 50
+                },
+                "legend_category": "normal",
+                "legend_show": true,
+                "x_axis_height": 30,
+                "x_axis_font_size": 14,
+                "x_axis_name_gap": 5,
+                "x_axis_name_rotate": 0,
+                "x_boundary_gap": true,
+                "x_axis_margin": {
+                  "left": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0
+                },
+                "x": 420,
+                "y": 320,
+                "type": "pie",
+                "title_text": "Nightingale Chart",
+                "series_list": [
+                  {
+                    "name": "rose 1",
+                    "data": [
+                      40
+                    ]
+                  },
+                  {
+                    "name": "rose 2",
+                    "data": [
+                      38
+                    ]
+                  },
+                  {
+                    "name": "rose 3",
+                    "data": [
+                      32
+                    ]
+                  },
+                  {
+                    "name": "rose 4",
+                    "data": [
+                      30
+                    ]
+                  },
+                  {
+                    "name": "rose 5",
+                    "data": [
+                      28
+                    ]
+                  },
+                  {
+                    "name": "rose 6",
+                    "data": [
+                      26
+                    ]
+                  },
+                  {
+                    "name": "rose 7",
+                    "data": [
+                      22
+                    ]
+                  },
+                  {
+                    "name": "rose 8",
+                    "data": [
+                      18
+                    ]
+                  }
+                ]
+              }
             ],
-            "series_list": [
-                {
-                "name": "Email",
-                "label_show": true,
-                "data": [
-                    120,
-                    132,
-                    101,
-                    134,
-                    90,
-                    230,
-                    210
-                ]
-                },
-                {
-                "name": "Union Ads",
-                "label_show": true,
-                "data": [
-                    220,
-                    182,
-                    191,
-                    234,
-                    290,
-                    330,
-                    310
-                ]
-                }
-            ]
-            },
-            {
-            "quality": 80,
-            "x": 420,
-            "y": 10,
-            "width": 400,
-            "height": 300,
-            "margin": {
-                "left": 15,
-                "top": 15,
-                "right": 15,
-                "bottom": 15
-            },
-            "font_family": "Roboto",
-            "title_font_size": 18,
-            "title_font_weight": "bold",
-            "title_align": "left",
-            "title_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "title_height": 30,
-            "sub_title_text": "Sub Title",
-            "sub_title_font_size": 14,
-            "sub_title_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "sub_title_align": "center",
-            "sub_title_height": 20,
-            "legend_font_size": 14,
-            "legend_align": "right",
-            "legend_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "legend_category": "round_rect",
-            "legend_show": true,
-            "x_axis_height": 30,
-            "x_axis_font_size": 14,
-            "x_axis_name_gap": 5,
-            "x_axis_name_rotate": 0,
-            "x_boundary_gap": false,
-            "x_axis_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "type": "line",
-            "title_text": "Line Chart",
-            "x_axis_data": [
-                "Mon",
-                "Tue",
-                "Wed",
-                "Thu",
-                "Fri",
-                "Sat",
-                "Sun"
-            ],
-            "series_list": [
-                {
-                "name": "Email",
-                "label_show": true,
-                "data": [
-                    120,
-                    132,
-                    101,
-                    134,
-                    90,
-                    230,
-                    210
-                ]
-                },
-                {
-                "name": "Union Ads",
-                "label_show": true,
-                "data": [
-                    220,
-                    182,
-                    191,
-                    234,
-                    290,
-                    330,
-                    310
-                ]
-                }
-            ]
-            },
-            {
-            "quality": 80,
-            "width": 400,
-            "x": 210,
-            "y": 320,
-            "height": 300,
-            "margin": {
-                "left": 5,
-                "top": 5,
-                "right": 5,
-                "bottom": 5
-            },
-            "font_family": "Roboto",
-            "title_font_size": 18,
-            "title_font_weight": "bold",
-            "title_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "title_align": "center",
-            "title_height": 30,
-            "sub_title_text": "Sub Title",
-            "sub_title_font_size": 14,
-            "sub_title_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "sub_title_align": "center",
-            "sub_title_height": 20,
-            "legend_font_size": 14,
-            "legend_align": "center",
-            "legend_margin": {
-                "top": 50
-            },
-            "legend_category": "normal",
-            "legend_show": true,
-            "x_axis_height": 30,
-            "x_axis_font_size": 14,
-            "x_axis_name_gap": 5,
-            "x_axis_name_rotate": 0,
-            "x_boundary_gap": true,
-            "x_axis_margin": {
-                "left": 0,
-                "top": 0,
-                "right": 0,
-                "bottom": 0
-            },
-            "type": "pie",
-            "title_text": "Nightingale Chart",
-            "series_list": [
-                {
-                "name": "rose 1",
-                "data": [
-                    40
-                ]
-                },
-                {
-                "name": "rose 2",
-                "data": [
-                    38
-                ]
-                },
-                {
-                "name": "rose 3",
-                "data": [
-                    32
-                ]
-                },
-                {
-                "name": "rose 4",
-                "data": [
-                    30
-                ]
-                },
-                {
-                "name": "rose 5",
-                "data": [
-                    28
-                ]
-                },
-                {
-                "name": "rose 6",
-                "data": [
-                    26
-                ]
-                },
-                {
-                "name": "rose 7",
-                "data": [
-                    22
-                ]
-                },
-                {
-                "name": "rose 8",
-                "data": [
-                    18
-                ]
-                }
-            ]
-            }
-        ],
-        "theme": "grafana"
-        }"###,
+            "theme": "grafana"
+          }"###,
     )
     .unwrap();
     let buf = svg_to_png(&multi_chart.svg().unwrap()).unwrap();
