@@ -86,40 +86,40 @@ Brazil
 <rect x="78" y="182.8" width="67.8" height="19.8" fill="#91CC75"/>
 <rect x="78" y="130.2" width="74.8" height="19.8" fill="#91CC75"/>
 <rect x="78" y="77.8" width="380.3" height="19.8" fill="#91CC75"/>
-<text font-size="14" x="79" y="327.4" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="327.4" dx="-39" dy="5" font-family="Roboto" fill="#464646">
 18203
 </text>
-<text font-size="14" x="79" y="274.9" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="274.9" dx="-39" dy="5" font-family="Roboto" fill="#464646">
 23489
 </text>
-<text font-size="14" x="79" y="222.4" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="222.4" dx="-40" dy="5" font-family="Roboto" fill="#464646">
 29034
 </text>
-<text font-size="14" x="83.3" y="169.9" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="169.9" dx="-48" dy="5" font-family="Roboto" fill="#464646">
 104970
 </text>
-<text font-size="14" x="90.7" y="117.4" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="117.4" dx="-48" dy="5" font-family="Roboto" fill="#464646">
 131744
 </text>
-<text font-size="14" x="229.8" y="64.9" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="64.9" dx="-48" dy="5" font-family="Roboto" fill="#464646">
 630230
 </text>
-<text font-size="14" x="79" y="350.1" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="350.1" dx="-40" dy="5" font-family="Roboto" fill="#464646">
 19325
 </text>
-<text font-size="14" x="79" y="297.6" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="297.6" dx="-40" dy="5" font-family="Roboto" fill="#464646">
 23438
 </text>
-<text font-size="14" x="79" y="245.1" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="245.1" dx="-40" dy="5" font-family="Roboto" fill="#464646">
 31000
 </text>
-<text font-size="14" x="87.9" y="192.6" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="192.6" dx="-48" dy="5" font-family="Roboto" fill="#464646">
 121594
 </text>
-<text font-size="14" x="92.9" y="140.1" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="140.1" dx="-45" dy="5" font-family="Roboto" fill="#464646">
 134141
 </text>
-<text font-size="14" x="244.1" y="87.6" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="78" y="87.6" dx="-48" dy="5" font-family="Roboto" fill="#464646">
 681807
 </text>
 </svg>

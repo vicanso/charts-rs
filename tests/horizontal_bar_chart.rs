@@ -53,7 +53,7 @@ fn horizontal_bar_chart_label_inside() {
             "right": 20,
             "bottom": 10
         },
-        "series_label_position": "inside",
+        "series_label_position": "left",
         "series_list": [
             {
                 "name": "2011",
@@ -79,7 +79,7 @@ fn horizontal_bar_chart_label_inside() {
     .unwrap();
 
     assert_eq!(
-        include_str!("../asset/horizontal_bar_chart/basic_json_label_inside.svg"),
+        include_str!("../asset/horizontal_bar_chart/basic_json_label_left.svg"),
         horizontal_bar_chart.svg().unwrap()
     );
 }

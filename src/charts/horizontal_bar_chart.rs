@@ -88,11 +88,9 @@ impl HorizontalBarChart {
             ..Default::default()
         };
         let value = h.fill_option(data)?;
-        if let Some(series_label_position) = get_string_from_value(&value, "series_label_position")
+        if let Some(series_label_position) = get_position_from_value(&value, "series_label_position")
         {
-            if series_label_position == "inside" {
-                h.series_label_position = Some(Position::Inside);
-            }
+            h.series_label_position = Some(series_label_position);
         }
         Ok(h)
     }
@@ -268,11 +266,12 @@ impl HorizontalBarChart {
                 }
             }
 
-            let label_inside = if let Some(position) = &self.series_label_position {
-                position.to_owned() == Position::Inside
-            } else {
-                false
-            };
+            let series_label_position = self.series_label_position.clone().unwrap_or(Position::Right);
+            // let label_inside = if let Some(position) = &self.series_label_position {
+            //     position.to_owned() == Position::Inside
+            // } else {
+            //     false
+            // };
             for series_labels in series_labels_list.iter() {
                 for series_label in series_labels.iter() {
                     let mut dy = None;
@@ -284,7 +283,7 @@ impl HorizontalBarChart {
                         &series_label.text,
                     ) {
                         dy = Some(value.height() / 2.0 - 2.0);
-                        if label_inside {
+                        if series_label_position == Position::Inside {
                             dx = None;
                             let offset = series_label.point.x - value.width();
                             if offset <= 0.0 {
@@ -292,6 +291,9 @@ impl HorizontalBarChart {
                             } else {
                                 x = Some(offset / 2.0);
                             }
+                        } else if series_label_position == Position::Left {
+                            x = Some(0.0);
+                            dx = Some(-value.width());
                         }
                     }
                     c1.text(Text {
