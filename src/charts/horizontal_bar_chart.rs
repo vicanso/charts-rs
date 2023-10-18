@@ -88,7 +88,8 @@ impl HorizontalBarChart {
             ..Default::default()
         };
         let value = h.fill_option(data)?;
-        if let Some(series_label_position) = get_position_from_value(&value, "series_label_position")
+        if let Some(series_label_position) =
+            get_position_from_value(&value, "series_label_position")
         {
             h.series_label_position = Some(series_label_position);
         }
@@ -266,12 +267,10 @@ impl HorizontalBarChart {
                 }
             }
 
-            let series_label_position = self.series_label_position.clone().unwrap_or(Position::Right);
-            // let label_inside = if let Some(position) = &self.series_label_position {
-            //     position.to_owned() == Position::Inside
-            // } else {
-            //     false
-            // };
+            let series_label_position = self
+                .series_label_position
+                .clone()
+                .unwrap_or(Position::Right);
             for series_labels in series_labels_list.iter() {
                 for series_label in series_labels.iter() {
                     let mut dy = None;

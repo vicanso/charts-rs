@@ -1,4 +1,6 @@
-use crate::{MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Symbol, NIL_VALUE, Position};
+use crate::{
+    MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Position, Symbol, NIL_VALUE,
+};
 
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 
@@ -291,15 +293,15 @@ pub(crate) fn get_string_from_value(value: &serde_json::Value, key: &str) -> Opt
     None
 }
 pub(crate) fn get_position_from_value(value: &serde_json::Value, key: &str) -> Option<Position> {
-    if let Some(value) =  get_string_from_value(value, key) {
+    if let Some(value) = get_string_from_value(value, key) {
         let p = match value.as_str() {
-           "inside" => Position::Inside, 
-           "top" => Position::Top, 
-           "right" => Position::Right, 
-           "bottom" => Position::Bottom, 
-           _ => Position::Left,
+            "inside" => Position::Inside,
+            "top" => Position::Top,
+            "right" => Position::Right,
+            "bottom" => Position::Bottom,
+            _ => Position::Left,
         };
-        return Some(p)
+        return Some(p);
     }
     None
 }

@@ -36,7 +36,6 @@ pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> &fontdb::Database
 /// Converts svg to png
 pub fn svg_to_png(svg: &str) -> Result<Vec<u8>, Error> {
     let fontdb = get_or_init_fontdb(None);
-
     let mut tree = Tree::from_str(svg, &resvg::usvg::Options::default()).context(ParseSnafu {})?;
     tree.convert_text(fontdb);
     let rtree = resvg::Tree::from_usvg(&tree);

@@ -13,7 +13,7 @@
 - [x] 平均值线、最大最小值标记
 - [ ] 柱状图指定单个背景色
 - [x] json是否兼容null的处理
-- [ ] label inside bar chart
+- [x] label inside bar chart
 - [x] series label format的自定义
 - [ ] fontdue与fontdb是否可统一，现两个字库重复加载内存占用较大
 - [ ] table中文本计算宽度，自动换行

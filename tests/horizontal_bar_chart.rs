@@ -84,7 +84,6 @@ fn horizontal_bar_chart_label_inside() {
     );
 }
 
-
 #[test]
 fn horizontal_bar_chart_nil_value() {
     let horizontal_bar_chart = HorizontalBarChart::from_json(
