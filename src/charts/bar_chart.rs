@@ -306,6 +306,7 @@ mod tests {
         bar_chart.legend_category = LegendCategory::RoundRect;
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
+        bar_chart.series_list[0].colors = Some(vec![None, Some("#a90000".into())]);
         assert_eq!(
             include_str!("../../asset/bar_chart/basic.svg"),
             bar_chart.svg().unwrap()

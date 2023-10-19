@@ -535,6 +535,17 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let half_bar_width = bar_width / 2.0;
         
                 let mut series_labels_list = vec![];
+                let get_bar_color = |colors: &Option<Vec<Option<Color>>>, index: usize| -> Option<Color> {
+                    if let Some(colors) = &colors  {
+                        if colors.len() <= index {
+                            return None;
+                        }
+                        if let Some(color) = colors[index] {
+                            return Some(color);
+                        } 
+                    }
+                    None
+                };
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
@@ -553,8 +564,14 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         left += (bar_width + bar_chart_gap) * index as f32;
         
                         let y = y_axis_values.get_offset_height(value, max_height);
+
+                        let mut fill = get_bar_color(&series.colors, i);
+                        if fill.is_none() {
+                            fill = Some(color);
+                        }
+
                         c1.rect(Rect {
-                            fill: Some(color),
+                            fill,
                             left,
                             top: y,
                             width: bar_width,

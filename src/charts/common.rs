@@ -73,6 +73,8 @@ pub struct Series {
     pub mark_lines: Vec<MarkLine>,
     // mark points
     pub mark_points: Vec<MarkPoint>,
+    // colors of series bar
+    pub colors: Option<Vec<Option<Color>>>,
     pub category: Option<SeriesCategory>,
 }
 

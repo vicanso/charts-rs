@@ -381,6 +381,26 @@ fn get_mark_points(value: &serde_json::Value, key: &str) -> Vec<MarkPoint> {
     mark_points
 }
 
+fn get_series_colors_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<Vec<Option<Color>>> {
+    if let Some(data) = value.get(key) {
+        if let Some(arr) = data.as_array() {
+            let mut colors = vec![];
+            for item in arr.iter() {
+                if item.is_null() {
+                    colors.push(None);
+                } else if let Some(str) = item.as_str() {
+                    colors.push(Some(str.into()))
+                }
+            }
+            return Some(colors);
+        }
+    }
+    None
+}
+
 fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
     let name = get_string_from_value(value, "name").unwrap_or_default();
     let data = get_f32_slice_from_value_support_nil(value, "data").unwrap_or_default();
@@ -397,6 +417,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         start_index: get_usize_from_value(value, "start_index").unwrap_or_default(),
         mark_lines: get_mark_lines(value, "mark_lines"),
         mark_points: get_mark_points(value, "mark_points"),
+        colors: get_series_colors_from_value(value, "colors"),
     })
 }
 
