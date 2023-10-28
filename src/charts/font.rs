@@ -114,9 +114,39 @@ pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) 
     Ok(measure_text(font, font_size, text))
 }
 
+pub fn text_wrap_fit(
+    font_family: &str,
+    font_size: f32,
+    text: &str,
+    width: f32,
+) -> Result<Vec<String>> {
+    let font = get_font(font_family)?;
+    let b = measure_text(font, font_size, text);
+    if b.width() <= width {
+        return Ok(vec![text.to_string()]);
+    }
+
+    let mut current = "".to_string();
+    let mut result = vec![];
+    for item in text.chars() {
+        let new_str = current.clone() + &item.to_string();
+        let b = measure_text(font, font_size, &new_str);
+        if b.width() > width {
+            result.push(current);
+            current = item.to_string();
+            continue;
+        }
+        current = new_str;
+    }
+    if !current.is_empty() {
+        result.push(current);
+    }
+    Ok(result)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{get_font, get_font_families, measure_text_width_family};
+    use super::{get_font, get_font_families, measure_text_width_family, text_wrap_fit};
     use pretty_assertions::assert_eq;
     #[test]
     fn measure_text() {
@@ -130,5 +160,22 @@ mod tests {
         assert_eq!(14.0, b.height());
 
         assert_eq!("Roboto", get_font_families().unwrap().join(","));
+    }
+    #[test]
+    fn wrap_fit() {
+        let name = "Roboto";
+        let result = text_wrap_fit(name, 14.0, "An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications", 100.0).unwrap();
+        assert_eq!(
+            vec![
+                "An event-drive",
+                "n, non-blocking ",
+                "I/O platform fo",
+                "r writing async",
+                "hronous I/O ba",
+                "cked applicati",
+                "ons",
+            ],
+            result
+        );
     }
 }

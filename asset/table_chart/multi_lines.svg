@@ -1,0 +1,57 @@
+<svg width="600" height="271" viewBox="0 0 600 271" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="45" fill="#FFFFFF"/>
+<text font-size="18" x="264" y="0" dy="22.5" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+NASDAQ
+</text>
+<rect x="0" y="45" width="600" height="76" fill="#F2F3F5"/>
+<line stroke-width="1" x1="0" y1="45" x2="600" y2="45" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Name
+</text>
+<text font-size="14" x="210" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Price
+</text>
+<text font-size="14" x="410" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+ChangeChangeChangeChange
+</text>
+<text font-size="14" x="410" y="83" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+ChangeChange
+</text>
+<rect x="0" y="121" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="121" x2="600" y2="121" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="126" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Datadog Inc
+</text>
+<text font-size="14" x="210" y="126" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+97.32
+</text>
+<rect x="400" y="122" width="200" height="39" fill="#3BB357"/>
+<text font-size="14" x="410" y="126" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#FFFFFF">
+-7.49%
+</text>
+<rect x="0" y="161" width="600" height="70" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="161" x2="600" y2="161" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="166" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Hashicorp Inc
+</text>
+<text font-size="14" x="210" y="166" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+28.66
+</text>
+<text font-size="14" x="410" y="166" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Hashicorp Inc Hashicorp Inc -
+</text>
+<text font-size="14" x="410" y="196" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+9.25%
+</text>
+<rect x="0" y="231" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="231" x2="600" y2="231" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="236" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Gitlab Inc
+</text>
+<text font-size="14" x="210" y="236" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+51.63
+</text>
+<text font-size="14" x="410" y="236" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
++4.32%
+</text>
+</svg>

@@ -2,6 +2,7 @@ use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
+use super::font::text_wrap_fit;
 use super::params::*;
 use super::theme::{get_default_theme, get_theme, Theme};
 use super::util::*;
@@ -398,12 +399,33 @@ impl TableChart {
             None
         };
 
+        let mut table_content_list = vec![];
+        for (i, items) in self.data.iter().enumerate() {
+            let mut font_size = self.body_font_size;
+            let is_header = i == 0;
+            if is_header {
+                font_size = self.header_font_size;
+            }
+
+            let mut row_content_list = vec![];
+            for (j, item) in items.iter().enumerate() {
+                // 已保证肯定有数据
+                let span_width = spans[j];
+                if let Ok(result) = text_wrap_fit(&self.font_family, font_size, item, span_width) {
+                    row_content_list.push(result);
+                } else {
+                    row_content_list.push(vec![item.clone()]);
+                }
+            }
+            table_content_list.push(row_content_list);
+        }
         let mut top = 0.0;
         let body_background_color_count = self.body_background_colors.len();
-        for (i, items) in self.data.iter().enumerate() {
+
+        for (i, items) in table_content_list.iter().enumerate() {
             let mut left = 0.0;
             let mut right = 0.0;
-            let mut cell_height = self.body_row_height;
+            let mut line_height = self.body_row_height;
             let mut padding = self.body_row_padding.top + self.body_row_padding.bottom;
             let mut font_size = self.body_font_size;
             let mut font_color = self.body_font_color;
@@ -411,7 +433,7 @@ impl TableChart {
             let is_header = i == 0;
             let mut font_weight = None;
             let bg_color = if is_header {
-                cell_height = self.header_row_height;
+                line_height = self.header_row_height;
                 padding = self.header_row_padding.top + self.header_row_padding.bottom;
                 font_size = self.header_font_size;
                 font_color = self.header_font_color;
@@ -426,7 +448,13 @@ impl TableChart {
             } else {
                 self.body_row_padding.clone()
             };
-            let row_height = cell_height + padding;
+            let mut count = 0;
+            for content_list in items.iter() {
+                if count < content_list.len() {
+                    count = content_list.len();
+                }
+            }
+            let row_height = line_height * count as f32 + padding;
 
             c.rect(Rect {
                 fill: Some(bg_color),
@@ -445,25 +473,9 @@ impl TableChart {
                     ..Default::default()
                 });
             }
-            for (j, item) in items.iter().enumerate() {
+            for (j, content_list) in items.iter().enumerate() {
                 // 已保证肯定有数据
                 let span_width = spans[j];
-                let mut dx = None;
-                if let Ok(measurement) =
-                    measure_text_width_family(&self.font_family, font_size, item)
-                {
-                    let mut align = Align::Left;
-                    if let Some(value) = self.text_aligns.get(j) {
-                        align = value.to_owned();
-                    }
-                    let text_width = measurement.width();
-                    let text_max_width = span_width - row_padding.left - row_padding.right;
-                    dx = match align {
-                        Align::Center => Some((text_max_width - text_width) / 2.0),
-                        Align::Right => Some(text_max_width - text_width),
-                        Align::Left => None,
-                    };
-                }
 
                 let mut cell_font_color = font_color;
                 let mut cell_font_weight = font_weight.clone();
@@ -489,20 +501,38 @@ impl TableChart {
                     }
                 }
 
-                right += span_width;
-                c.child(row_padding.clone()).text(Text {
-                    text: item.to_string(),
-                    font_weight: cell_font_weight,
-                    font_family: Some(self.font_family.clone()),
-                    font_size: Some(font_size),
-                    font_color: Some(cell_font_color),
-                    line_height: Some(cell_height),
-                    dx,
-                    x: Some(left),
-                    y: Some(top),
-                    ..Default::default()
-                });
+                for (index, item) in content_list.iter().enumerate() {
+                    let mut dx = None;
+                    if let Ok(measurement) =
+                        measure_text_width_family(&self.font_family, font_size, item)
+                    {
+                        let mut align = Align::Left;
+                        if let Some(value) = self.text_aligns.get(j) {
+                            align = value.to_owned();
+                        }
+                        let text_width = measurement.width();
+                        let text_max_width = span_width - row_padding.left - row_padding.right;
+                        dx = match align {
+                            Align::Center => Some((text_max_width - text_width) / 2.0),
+                            Align::Right => Some(text_max_width - text_width),
+                            Align::Left => None,
+                        };
+                    }
+                    c.child(row_padding.clone()).text(Text {
+                        text: item.to_string(),
+                        font_weight: cell_font_weight.clone(),
+                        font_family: Some(self.font_family.clone()),
+                        font_size: Some(font_size),
+                        font_color: Some(cell_font_color),
+                        line_height: Some(line_height),
+                        dx,
+                        x: Some(left),
+                        y: Some(top + line_height * index as f32),
+                        ..Default::default()
+                    });
+                }
 
+                right += span_width;
                 left = right
             }
             top += row_height;
@@ -554,6 +584,43 @@ mod tests {
         }];
         assert_eq!(
             include_str!("../../asset/table_chart/basic.svg"),
+            table_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn table_multi_lines() {
+        let mut table_chart = TableChart::new(vec![
+            vec![
+                "Name".to_string(),
+                "Price".to_string(),
+                "ChangeChangeChangeChangeChangeChange".to_string(),
+            ],
+            vec![
+                "Datadog Inc".to_string(),
+                "97.32".to_string(),
+                "-7.49%".to_string(),
+            ],
+            vec![
+                "Hashicorp Inc".to_string(),
+                "28.66".to_string(),
+                "Hashicorp Inc Hashicorp Inc -9.25%".to_string(),
+            ],
+            vec![
+                "Gitlab Inc".to_string(),
+                "51.63".to_string(),
+                "+4.32%".to_string(),
+            ],
+        ]);
+        table_chart.title_text = "NASDAQ".to_string();
+        table_chart.cell_styles = vec![TableCellStyle {
+            indexes: vec![1, 2],
+            font_weight: Some("bold".to_string()),
+            background_color: Some("#3bb357".into()),
+            font_color: Some(("#fff").into()),
+        }];
+        assert_eq!(
+            include_str!("../../asset/table_chart/multi_lines.svg"),
             table_chart.svg().unwrap()
         );
     }
