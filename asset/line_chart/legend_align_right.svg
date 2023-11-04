@@ -3,7 +3,7 @@
 <text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Stacked Area Chart
 </text>
-<text font-size="14" x="5" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="257.5" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Hello World
 </text>
 <g>

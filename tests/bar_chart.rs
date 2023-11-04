@@ -16,6 +16,7 @@ fn bar_chart() {
             "title_font_color": "#345",
             "title_align": "right",
             "sub_title_text": "demo",
+            "sub_title_align": "right",
             "sub_title_font_weight": "bold",
             "legend_align": "left",
             "legend_font_weight": "bold",
@@ -86,6 +87,7 @@ fn bar_chart_nil_value() {
             "title_font_color": "#345",
             "title_align": "right",
             "sub_title_text": "demo",
+            "sub_title_align": "right",
             "sub_title_font_weight": "bold",
             "legend_align": "left",
             "legend_font_weight": "bold",
@@ -154,6 +156,7 @@ fn bar_chart_mixin() {
             "title_font_color": "#345",
             "title_align": "right",
             "sub_title_text": "demo",
+            "sub_title_align": "right",
             "legend_align": "left",
             "series_list": [
                 {
