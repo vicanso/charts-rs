@@ -335,7 +335,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         self.sub_title_font_size,
                         &self.sub_title_text,
                     ) {
-                        x = match self.title_align {
+                        x = match self.sub_title_align {
                             Align::Center => (c.width() - sub_title_box.width()) / 2.0,
                             Align::Right => c.width() - sub_title_box.width(),
                             _ => 0.0,
