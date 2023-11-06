@@ -1283,7 +1283,7 @@ impl Axis {
                 let mut transform = None;
                 if name_rotate != 0.0 {
                     let x = (values.0 + b.width() / 2.0) as i32;
-                    let y = (values.1 - b.height()) as i32;
+                    let y = (values.1 - b.height() / 2.0) as i32;
                     let a = name_rotate as i32;
                     transform = Some(format!("rotate({a},{x},{y})"));
                 }

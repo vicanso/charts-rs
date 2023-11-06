@@ -49,6 +49,7 @@ fn line_chart() {
                 "data": [820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0]
             }
         ],
+        "x_axis_name_rotate": 0.393,
         "x_axis_data": [
             "Mon",
             "Tue",

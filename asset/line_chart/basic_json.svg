@@ -73,25 +73,25 @@ Search Engine
 <line stroke-width="1" x1="477.6" y1="360" x2="477.6" y2="365"/>
 <line stroke-width="1" x1="550" y1="360" x2="550" y2="365"/>
 </g>
-<text font-size="14" x="65.2" y="379" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="65.2" y="379" transform="rotate(45,79,372)" font-family="Roboto" fill="#6E7079">
 Mon
 </text>
-<text font-size="14" x="139.6" y="379" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="139.6" y="379" transform="rotate(45,151,372)" font-family="Roboto" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" x="210.1" y="379" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="210.1" y="379" transform="rotate(45,224,372)" font-family="Roboto" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" x="284.5" y="379" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="284.5" y="379" transform="rotate(45,296,372)" font-family="Roboto" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" x="360.9" y="379" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="360.9" y="379" transform="rotate(45,368,372)" font-family="Roboto" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" x="430.4" y="379" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="430.4" y="379" transform="rotate(45,441,372)" font-family="Roboto" fill="#6E7079">
 Sat
 </text>
-<text font-size="14" x="501.8" y="379" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="501.8" y="379" transform="rotate(45,513,372)" font-family="Roboto" fill="#6E7079">
 Sun
 </text>
 </g>

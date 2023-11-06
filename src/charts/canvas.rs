@@ -172,12 +172,6 @@ impl Canvas {
             if line_height > font_size {
                 c.dy = Some(c.dy.unwrap_or_default() + line_height / 2.0);
                 c.dominant_baseline = Some("middle".to_string());
-                // if let Ok(value) =
-                //     measure_text_vertical_center(&font_family, font_size, &c.text, line_height)
-                // {
-                //     let dy = c.dy.unwrap_or_default() + value;
-                //     c.dy = Some(dy);
-                // }
                 b.bottom = b.top + line_height;
             }
         }
