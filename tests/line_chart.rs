@@ -49,9 +49,10 @@ fn line_chart() {
                 "data": [820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0]
             }
         ],
-        "x_axis_name_rotate": 0.393,
+        "x_axis_name_gap": 0,
+        "x_axis_name_rotate": 0.785,
         "x_axis_data": [
-            "Mon",
+            "Monday",
             "Tue",
             "Wed",
             "Thu",
@@ -62,7 +63,6 @@ fn line_chart() {
     }"###,
     )
     .unwrap();
-
     assert_eq!(
         include_str!("../asset/line_chart/basic_json.svg"),
         line_chart.svg().unwrap()

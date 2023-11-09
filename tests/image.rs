@@ -37,6 +37,7 @@ fn generate_image() {
     bar_chart.series_list[2].category = Some(SeriesCategory::Line);
     bar_chart.series_list[2].y_axis_index = 1;
     bar_chart.series_list[2].label_show = true;
+    bar_chart.x_axis_name_rotate = 0.785;
 
     bar_chart
         .y_axis_configs

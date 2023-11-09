@@ -29,6 +29,8 @@ static ATTR_FONT_SIZE: &str = "font-size";
 static ATTR_FONT_WEIGHT: &str = "font-weight";
 static ATTR_TRANSFORM: &str = "transform";
 static ATTR_DOMINANT_BASELINE: &str = "dominant-baseline";
+static ATTR_TEXT_ANCHOR: &str = "text-anchor";
+static ATTR_ALIGNMENT_BASELINE: &str = "alignment-baseline";
 static ATTR_STROKE_OPACITY: &str = "stroke-opacity";
 static ATTR_FILL_OPACITY: &str = "fill-opacity";
 static ATTR_STROKE_WIDTH: &str = "stroke-width";
@@ -494,6 +496,8 @@ pub struct Text {
     pub font_weight: Option<String>,
     pub transform: Option<String>,
     pub dominant_baseline: Option<String>,
+    pub text_anchor: Option<String>,
+    pub alignment_baseline: Option<String>,
 }
 
 impl Text {
@@ -515,6 +519,14 @@ impl Text {
             (
                 ATTR_DOMINANT_BASELINE,
                 self.dominant_baseline.clone().unwrap_or_default(),
+            ),
+            (
+                ATTR_TEXT_ANCHOR,
+                self.text_anchor.clone().unwrap_or_default(),
+            ),
+            (
+                ATTR_ALIGNMENT_BASELINE,
+                self.alignment_baseline.clone().unwrap_or_default(),
             ),
         ];
         if let Some(ref font_family) = self.font_family {
@@ -1236,7 +1248,7 @@ impl Axis {
             }
         }
         let mut text_data = vec![];
-        let name_rotate = self.name_rotate / std::f32::consts::FRAC_PI_2 * 180.0;
+        let name_rotate = self.name_rotate / std::f32::consts::PI * 180.0;
         if !text_list.is_empty() {
             let name_gap = self.name_gap;
             let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
@@ -1281,11 +1293,21 @@ impl Axis {
                     }
                 };
                 let mut transform = None;
+                let mut x = Some(values.0);
+                let mut y = Some(values.1);
+                let mut text_anchor = None;
                 if name_rotate != 0.0 {
-                    let x = (values.0 + b.width() / 2.0) as i32;
-                    let y = (values.1 - b.height() / 2.0) as i32;
+                    let w = self.name_rotate.sin().abs() * b.width();
+                    let translate_x = (values.0 + b.width() / 2.0) as i32;
+                    let translate_y = (values.1 + w / 2.0) as i32;
+                    text_anchor = Some("middle".to_string());
+
                     let a = name_rotate as i32;
-                    transform = Some(format!("rotate({a},{x},{y})"));
+                    transform = Some(format!(
+                        "translate({translate_x},{translate_y}) rotate({a})"
+                    ));
+                    x = None;
+                    y = None;
                 }
 
                 text_data.push(
@@ -1295,9 +1317,10 @@ impl Axis {
                         font_size: Some(self.font_size),
                         font_color: self.font_color,
                         font_weight: self.font_weight.clone(),
-                        x: Some(values.0),
-                        y: Some(values.1),
+                        x,
+                        y,
                         transform,
+                        text_anchor,
                         ..Default::default()
                     }
                     .svg(),
