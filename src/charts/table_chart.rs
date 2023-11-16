@@ -402,15 +402,18 @@ impl TableChart {
         let mut table_content_list = vec![];
         for (i, items) in self.data.iter().enumerate() {
             let mut font_size = self.body_font_size;
+            let mut padding = self.body_row_padding.left + self.body_row_padding.right;
             let is_header = i == 0;
             if is_header {
                 font_size = self.header_font_size;
+                padding = self.header_row_padding.left + self.header_row_padding.right;
             }
 
             let mut row_content_list = vec![];
             for (j, item) in items.iter().enumerate() {
                 // 已保证肯定有数据
-                let span_width = spans[j];
+                // 需要减去padding
+                let span_width = spans[j] - padding;
                 if let Ok(result) = text_wrap_fit(&self.font_family, font_size, item, span_width) {
                     row_content_list.push(result);
                 } else {
@@ -613,11 +616,20 @@ mod tests {
             ],
         ]);
         table_chart.title_text = "NASDAQ".to_string();
+        table_chart.text_aligns = vec![
+            Align::Left,
+            Align::Center,
+        ];
         table_chart.cell_styles = vec![TableCellStyle {
             indexes: vec![1, 2],
             font_weight: Some("bold".to_string()),
             background_color: Some("#3bb357".into()),
             font_color: Some(("#fff").into()),
+        }, TableCellStyle {
+            indexes: vec![2, 1],
+            background_color: Some("#3bb357".into()),
+            font_color: Some(("#fff").into()),
+            ..Default::default()
         }];
         assert_eq!(
             include_str!("../../asset/table_chart/multi_lines.svg"),

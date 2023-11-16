@@ -8,21 +8,21 @@ NASDAQ
 <text font-size="14" x="10" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Name
 </text>
-<text font-size="14" x="210" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="210" y="53" dx="73.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Price
 </text>
 <text font-size="14" x="410" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
-ChangeChangeChangeChange
+ChangeChangeChangeCha
 </text>
 <text font-size="14" x="410" y="83" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
-ChangeChange
+ngeChangeChange
 </text>
 <rect x="0" y="121" width="600" height="40" fill="#FFFFFF"/>
 <line stroke-width="1" x1="0" y1="121" x2="600" y2="121" stroke="#E5E6EB"/>
 <text font-size="14" x="10" y="126" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Datadog Inc
 </text>
-<text font-size="14" x="210" y="126" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="210" y="126" dx="72" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 97.32
 </text>
 <rect x="400" y="122" width="200" height="39" fill="#3BB357"/>
@@ -34,21 +34,22 @@ Datadog Inc
 <text font-size="14" x="10" y="166" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Hashicorp Inc
 </text>
-<text font-size="14" x="210" y="166" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<rect x="200" y="162" width="200" height="69" fill="#3BB357"/>
+<text font-size="14" x="210" y="166" dx="72" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#FFFFFF">
 28.66
 </text>
 <text font-size="14" x="410" y="166" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
-Hashicorp Inc Hashicorp Inc -
+Hashicorp Inc Hashicorp In
 </text>
 <text font-size="14" x="410" y="196" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
-9.25%
+c -9.25%
 </text>
 <rect x="0" y="231" width="600" height="40" fill="#FFFFFF"/>
 <line stroke-width="1" x1="0" y1="231" x2="600" y2="231" stroke="#E5E6EB"/>
 <text font-size="14" x="10" y="236" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Gitlab Inc
 </text>
-<text font-size="14" x="210" y="236" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="210" y="236" dx="72.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 51.63
 </text>
 <text font-size="14" x="410" y="236" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
