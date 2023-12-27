@@ -43,4 +43,13 @@ Information Technology
 <circle cx="409.1" cy="274" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
 <circle cx="183.6" cy="278.2" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
 </g>
+<text font-size="14" x="300" y="118" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+4200
+</text>
+<text font-size="14" x="323.4" y="224.5" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+3000
+</text>
+<text font-size="14" x="216.9" y="259" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+20000
+</text>
 </svg>

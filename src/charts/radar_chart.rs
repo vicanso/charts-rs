@@ -263,6 +263,7 @@ impl RadarChart {
             });
         }
 
+        let mut label_positions = vec![];
         for (index, series) in self.series_list.iter().enumerate() {
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
             let mut points = vec![];
@@ -273,10 +274,16 @@ impl RadarChart {
                     } else {
                         *value / item.max * r
                     };
+
                     if ir > r {
                         ir = r;
                     }
                     let p = get_pie_point(cx, cy, ir, angle * i as f32);
+                    if series.label_show {
+                        let label =
+                            format_series_value(value.to_owned(), &self.series_label_formatter);
+                        label_positions.push((p.clone(), label));
+                    }
                     points.push(p);
                 }
             }
@@ -286,6 +293,28 @@ impl RadarChart {
                 points: points.clone(),
                 stroke_width: self.series_stroke_width,
                 close: true,
+                ..Default::default()
+            });
+        }
+        for item in label_positions.iter() {
+            let mut dx = None;
+            let text = item.1.clone();
+            let point = item.0;
+            if let Ok(value) =
+                measure_text_width_family(&self.font_family, self.series_label_font_size, &text)
+            {
+                dx = Some(-value.width() / 2.0);
+            }
+            c.text(Text {
+                text: text.clone(),
+                dy: Some(-8.0),
+                dx,
+                font_family: Some(self.font_family.clone()),
+                font_color: Some(self.series_label_font_color),
+                font_size: Some(self.series_label_font_size),
+                font_weight: self.series_label_font_weight.clone(),
+                x: Some(point.x),
+                y: Some(point.y),
                 ..Default::default()
             });
         }
@@ -417,7 +446,7 @@ mod tests {
 
     #[test]
     fn radar_three_points() {
-        let radar_chart = RadarChart::new(
+        let mut radar_chart = RadarChart::new(
             vec![
                 Series::new(
                     "Allocated Budget".to_string(),
@@ -434,6 +463,7 @@ mod tests {
                 ("Information Technology", 30000.0).into(),
             ],
         );
+        radar_chart.series_list[0].label_show = true;
 
         assert_eq!(
             include_str!("../../asset/radar_chart/three_points.svg"),

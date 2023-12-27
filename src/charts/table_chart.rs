@@ -616,21 +616,21 @@ mod tests {
             ],
         ]);
         table_chart.title_text = "NASDAQ".to_string();
-        table_chart.text_aligns = vec![
-            Align::Left,
-            Align::Center,
+        table_chart.text_aligns = vec![Align::Left, Align::Center];
+        table_chart.cell_styles = vec![
+            TableCellStyle {
+                indexes: vec![1, 2],
+                font_weight: Some("bold".to_string()),
+                background_color: Some("#3bb357".into()),
+                font_color: Some(("#fff").into()),
+            },
+            TableCellStyle {
+                indexes: vec![2, 1],
+                background_color: Some("#3bb357".into()),
+                font_color: Some(("#fff").into()),
+                ..Default::default()
+            },
         ];
-        table_chart.cell_styles = vec![TableCellStyle {
-            indexes: vec![1, 2],
-            font_weight: Some("bold".to_string()),
-            background_color: Some("#3bb357".into()),
-            font_color: Some(("#fff").into()),
-        }, TableCellStyle {
-            indexes: vec![2, 1],
-            background_color: Some("#3bb357".into()),
-            font_color: Some(("#fff").into()),
-            ..Default::default()
-        }];
         assert_eq!(
             include_str!("../../asset/table_chart/multi_lines.svg"),
             table_chart.svg().unwrap()
