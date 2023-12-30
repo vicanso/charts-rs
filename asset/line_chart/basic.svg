@@ -96,7 +96,7 @@ Sun
 </text>
 </g>
 <g>
-<path d="M 74.6 346.5 L 147.7 344.6 L 220.9 349.4 L 294 344.3 L 367.1 351.1 L 440.3 329.5 L 513.4 332.6" stroke-width="2" fill="none" stroke="#5470C6"/>
+<path d="M 74.6 346.5 L 147.7 344.6 L 220.9 349.4 L 294 344.3 L 367.1 351.1 L 440.3 329.5 L 513.4 332.6" stroke-width="2" fill="none" stroke="#5470C6" stroke-dasharray="4,2"/>
 <circle cx="74.6" cy="346.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="147.7" cy="344.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 <circle cx="220.9" cy="349.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>

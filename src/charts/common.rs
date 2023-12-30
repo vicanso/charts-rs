@@ -76,6 +76,7 @@ pub struct Series {
     // colors of series bar
     pub colors: Option<Vec<Option<Color>>>,
     pub category: Option<SeriesCategory>,
+    pub stroke_dash_array: Option<String>,
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]

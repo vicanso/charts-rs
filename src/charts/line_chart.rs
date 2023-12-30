@@ -355,6 +355,7 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
+        line_chart.series_list[0].stroke_dash_array = Some("4,2".to_string());
         line_chart.margin.right = 50.0;
         line_chart.title_text = "Stacked Area Chart".to_string();
         line_chart.sub_title_text = "Hello World".to_string();

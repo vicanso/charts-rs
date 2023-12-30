@@ -282,7 +282,7 @@ impl RadarChart {
                     if series.label_show {
                         let label =
                             format_series_value(value.to_owned(), &self.series_label_formatter);
-                        label_positions.push((p.clone(), label));
+                        label_positions.push((p, label));
                     }
                     points.push(p);
                 }

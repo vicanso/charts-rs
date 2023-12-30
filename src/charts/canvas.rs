@@ -443,6 +443,7 @@ Hello World!
             ]),
             stroke_width: 1.0,
             symbol: Some(Symbol::Circle(3.0, Some((0, 255, 0).into()))),
+            ..Default::default()
         });
         assert_eq!("(10,10,90,80)", b.to_string());
         assert_eq!(

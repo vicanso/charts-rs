@@ -739,6 +739,7 @@ struct BaseLine {
     pub symbol: Option<Symbol>,
     pub is_smooth: bool,
     pub close: bool,
+    pub stroke_dash_array: Option<String>,
 }
 
 impl BaseLine {
@@ -787,6 +788,9 @@ impl BaseLine {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
+        if let Some(stroke_dash_array) = &self.stroke_dash_array {
+            attrs.push((ATTR_STROKE_DASH_ARRAY, stroke_dash_array.to_string()));
+        }
         let line_svg = SVGTag {
             tag: TAG_PATH,
             attrs,
@@ -830,6 +834,7 @@ pub struct SmoothLine {
     pub points: Vec<Point>,
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
+    pub stroke_dash_array: Option<String>,
 }
 
 impl Default for SmoothLine {
@@ -839,6 +844,7 @@ impl Default for SmoothLine {
             points: vec![],
             stroke_width: 1.0,
             symbol: Some(Symbol::Circle(2.0, None)),
+            stroke_dash_array: None,
         }
     }
 }
@@ -853,6 +859,7 @@ impl SmoothLine {
             symbol: self.symbol.clone(),
             is_smooth: true,
             close: false,
+            stroke_dash_array: self.stroke_dash_array.clone(),
         }
         .svg()
     }
@@ -920,6 +927,7 @@ pub struct StraightLine {
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
     pub close: bool,
+    pub stroke_dash_array: Option<String>,
 }
 
 impl Default for StraightLine {
@@ -931,6 +939,7 @@ impl Default for StraightLine {
             stroke_width: 1.0,
             symbol: Some(Symbol::Circle(2.0, None)),
             close: false,
+            stroke_dash_array: None,
         }
     }
 }
@@ -945,6 +954,7 @@ impl StraightLine {
             symbol: self.symbol.clone(),
             is_smooth: false,
             close: self.close,
+            stroke_dash_array: self.stroke_dash_array.clone(),
         }
         .svg()
     }
@@ -1910,6 +1920,7 @@ Hello World!
                 ],
                 stroke_width: 1.0,
                 symbol: Some(Symbol::Circle(3.0, Some((255, 255, 255).into()))),
+                ..Default::default()
             }
             .svg()
         );
@@ -1927,6 +1938,7 @@ Hello World!
                 ],
                 stroke_width: 1.0,
                 symbol: None,
+                ..Default::default()
             }
             .svg()
         );
