@@ -679,6 +679,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 color: Some(color),
                                 stroke_width: self.series_stroke_width,
                                 symbol: self.series_symbol.clone(),
+                                stroke_dash_array: series.stroke_dash_array.clone(),
                             });
                         } else {
                             if series_fill {
@@ -694,6 +695,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 color: Some(color),
                                 stroke_width: self.series_stroke_width,
                                 symbol: self.series_symbol.clone(),
+                                stroke_dash_array: series.stroke_dash_array.clone(),
                                 ..Default::default()
                             });
                         }
