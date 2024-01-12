@@ -32,7 +32,7 @@
 - Multiple legends for all charts, for example: `round rect`, `circle` and `rect`
 - Supports two y axises, which are useful
 - New from json is simple and easy 
-- Svg and png format support more available scenarios
+- Svg, png, jpeg, webp and avif format support more available scenarios
 - Web json editor to try using more options by one step
 
 ## Demo

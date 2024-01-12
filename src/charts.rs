@@ -4,7 +4,7 @@ mod canvas;
 mod color;
 mod common;
 mod component;
-#[cfg(feature = "image")]
+#[cfg(feature = "image-encoder")]
 mod encoder;
 mod font;
 mod horizontal_bar_chart;
@@ -29,11 +29,11 @@ pub use component::{
     Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
-#[cfg(feature = "image")]
+#[cfg(feature = "image-encoder")]
 pub(crate) use encoder::get_or_init_fontdb;
-#[cfg(feature = "image")]
-pub use encoder::svg_to_png;
-#[cfg(feature = "image")]
+#[cfg(feature = "image-encoder")]
+pub use encoder::*;
+#[cfg(feature = "image-encoder")]
 pub use encoder::Error as EncoderError;
 
 pub use candlestick_chart::CandlestickChart;

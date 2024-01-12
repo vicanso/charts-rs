@@ -1,6 +1,7 @@
 use once_cell::sync::OnceCell;
 use resvg::usvg::{fontdb, Tree, TreeParsing, TreeTextToPath};
 use snafu::{ResultExt, Snafu};
+use std::io::Cursor;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
@@ -14,7 +15,7 @@ pub enum Error {
     #[snafu(display("Error to parse: {source}"))]
     Parse { source: resvg::usvg::Error },
     #[snafu(display("Encode fail: {source}"))]
-    Png { source: png::EncodingError },
+    Image { source: image::ImageError },
 }
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -33,8 +34,7 @@ pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> &fontdb::Database
     })
 }
 
-/// Converts svg to png
-pub fn svg_to_png(svg: &str) -> Result<Vec<u8>, Error> {
+fn save_image(svg: &str, format: image::ImageOutputFormat) -> Result<Vec<u8>> {
     let fontdb = get_or_init_fontdb(None);
     let mut tree = Tree::from_str(svg, &resvg::usvg::Options::default()).context(ParseSnafu {})?;
     tree.convert_text(fontdb);
@@ -46,5 +46,32 @@ pub fn svg_to_png(svg: &str) -> Result<Vec<u8>, Error> {
             height: pixmap_size.height(),
         })?;
     rtree.render(resvg::tiny_skia::Transform::default(), &mut pixmap.as_mut());
-    pixmap.encode_png().context(PngSnafu {})
+
+    let rgba_image =
+        image::RgbaImage::from_raw(pixmap.width(), pixmap.height(), pixmap.data().to_vec())
+            .unwrap();
+    let mut buf = Cursor::new(vec![]);
+
+    rgba_image.write_to(&mut buf, format).context(ImageSnafu)?;
+    Ok(buf.into_inner())
+}
+
+/// Converts svg to png
+pub fn svg_to_png(svg: &str) -> Result<Vec<u8>> {
+    save_image(svg, image::ImageOutputFormat::Png)
+}
+
+/// Converts svg to jpeg
+pub fn svg_to_jpeg(svg: &str) -> Result<Vec<u8>> {
+    save_image(svg, image::ImageOutputFormat::Jpeg(80))
+}
+
+/// Converts svg to webp
+pub fn svg_to_webp(svg: &str) -> Result<Vec<u8>> {
+    save_image(svg, image::ImageOutputFormat::WebP)
+}
+
+/// Converts svg to avif
+pub fn svg_to_avif(svg: &str) -> Result<Vec<u8>> {
+    save_image(svg, image::ImageOutputFormat::Avif)
 }

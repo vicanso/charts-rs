@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["Tree Xie <tree.xie@outlook.com>"]
 edition = "2021"
 categories = ["multimedia::images"]
@@ -21,8 +21,8 @@ readme = "./README.md"
 [dependencies]
 charts-rs-derive = { path = "./charts-rs-derive", version = "0.1.22" }
 fontdue = "0.8.0"
+image = { version = "0.24.7", features = ["webp-encoder", "avif-encoder"], optional = true }
 once_cell = "1.19.0"
-png = { version = "0.17.10", optional = true }
 regex = "1.10.2"
 resvg = { version = "0.37.0", default-features = false, features = [ "text", "system-fonts" ], optional = true }
 serde = { version = "1.0.193", features = ["derive"] }
@@ -31,7 +31,7 @@ snafu = "0.8.0"
 substring = "1.4.5"
 
 [features]
-image = ["resvg", "png"]
+image-encoder = ["resvg", "image"]
 
 [dev-dependencies]
 criterion = "0.5.1"

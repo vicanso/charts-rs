@@ -61,7 +61,7 @@ pub fn get_or_try_init_fonts(fonts: Option<Vec<&[u8]>>) -> Result<&'static HashM
                 }
             }
         }
-        #[cfg(feature = "image")]
+        #[cfg(feature = "image-encoder")]
         crate::get_or_init_fontdb(Some(font_datas));
         Ok(m)
     })

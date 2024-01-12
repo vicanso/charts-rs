@@ -1,8 +1,8 @@
 #[test]
-#[cfg(feature = "image")]
+#[cfg(feature = "image-encoder")]
 fn generate_image() {
     use charts_rs::{
-        svg_to_png, Align, BarChart, Box, CandlestickChart, HorizontalBarChart, LineChart,
+        svg_to_png, svg_to_webp, svg_to_avif, Align, BarChart, Box, CandlestickChart, HorizontalBarChart, LineChart,
         MarkLine, MarkLineCategory, MultiChart, PieChart, RadarChart, ScatterChart, SeriesCategory,
         TableCellStyle, TableChart, THEME_GRAFANA,
     };
@@ -397,8 +397,8 @@ fn generate_image() {
         },
     ];
     table_chart.title_text = "NASDAQ".to_string();
-    let buf = svg_to_png(&table_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/table.png", buf).unwrap();
+    let buf = svg_to_avif(&table_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/table.avif", buf).unwrap();
 
     let mut multi_chart = MultiChart::from_json(
         r###"{
@@ -891,6 +891,6 @@ fn generate_image() {
           }"###,
     )
     .unwrap();
-    let buf = svg_to_png(&multi_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/multi-chart.png", buf).unwrap();
+    let buf = svg_to_webp(&multi_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/multi-chart.webp", buf).unwrap();
 }

@@ -14,7 +14,7 @@
 
 ## 概要
 
-`charts-rs`提供简单的方式生成图表，它支持`svg`与`png`两种输出格式，以及支持`light`， `dark`， `grafana`，`ant`，`vintage`, `walden`, `westeros`, `chalk`与`shine`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar`，`Scatter`，`Candlestick`，`Table` 以及 `MultiChart`，其相关样式参考`Apache ECharts`。
+`charts-rs`提供简单的方式生成图表，它支持`svg`、`png`、`jepg`、`webp`以及`avif`等多种输出格式，以及支持`light`， `dark`， `grafana`，`ant`，`vintage`, `walden`, `westeros`, `chalk`与`shine`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar`，`Scatter`，`Candlestick`，`Table` 以及 `MultiChart`，其相关样式参考`Apache ECharts`。
 
 ## 更多主题色
 
@@ -32,7 +32,7 @@
 - 支持两组Y轴线的展示
 - 图表中的所有元素均支持颜色、字体、字体颜色等基本属性配置
 - 支持以`json`的形式初始化图表，更简单易用
-- svg与png的格式便于更多的应用场景
+- svg、png、jpeg、webp以及avif的格式便于更多的应用场景
 - 网页版的json编辑器可用于一步式尝试各选项的效果，填充简化与完整版的配置选择
 
 ## 示例

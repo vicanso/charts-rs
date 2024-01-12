@@ -571,11 +571,11 @@ mod tests {
             bar_chart.svg().unwrap()
         );
 
-        #[cfg(feature = "image")]
+        #[cfg(feature = "image-encoder")]
         {
-            use crate::svg_to_png;
-            let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
-            std::fs::write("./asset/line_mixin.png", buf).unwrap();
+            use crate::svg_to_jpeg;
+            let buf = svg_to_jpeg(&bar_chart.svg().unwrap()).unwrap();
+            std::fs::write("./asset/image/line_mixin.jpeg", buf).unwrap();
         }
     }
 
