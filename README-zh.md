@@ -1,6 +1,6 @@
 # charts-rs
 
-`charts-rs` 是纯rust实现的图表库，使用简单而且性能高效，生成svg低于10ms，而png也低于50ms，便于在各种无法直接渲染svg的场景下使用。
+`charts-rs` 是纯rust实现的图表库，使用简单而且性能高效，生成svg低于10ms，而png也低于50ms，便于在各种无法直接渲染svg的场景下使用，现已支持更多的图片格式，如：jpeg，webp，以及avif。
 
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][apache2-badge]][apache2-url]
