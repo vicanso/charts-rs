@@ -84,12 +84,12 @@
 
 ## Table
 <p align="center">
-    <img src="./asset/image/table.png" alt="charts-rs">
+    <img src="./asset/image/table.avif" alt="charts-rs">
 </p>
 
 ## Multi Chart
 <p align="center">
-    <img src="./asset/image/multi-chart.png" alt="charts-rs">
+    <img src="./asset/image/multi-chart.webp" alt="charts-rs">
 </p>
 
 ## Rust示例
