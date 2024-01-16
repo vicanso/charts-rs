@@ -375,16 +375,34 @@ impl TableChart {
             ..Default::default()
         });
         let width = c.width();
-        let spans = if self.spans.len() != column_count {
-            let mut spans = vec![];
-            let span = 1.0 / column_count as f32;
-            for _ in 0..column_count {
-                spans.push(span * width);
+        let mut spans = vec![];
+        let mut rest_width = width;
+        let mut rest_count = 0.0_f32;
+        for index in 0..column_count {
+            if let Some(value) = self.spans.get(index) {
+                let mut v = value.to_owned();
+                if v < 1.0 {
+                    v = v * width;
+                }
+                // 如果值少于1.0的则认为平分剩余宽度
+                if v > 1.0 {
+                    rest_width -= v;
+                    spans.push(v);
+                    continue;
+                }
             }
-            spans
-        } else {
-            self.spans.iter().map(|value| value * width).collect()
-        };
+            rest_count += 1.0;
+            spans.push(0.0);
+        }
+        // 重新赋值为0表格的宽度，平分剩余的宽度
+        if rest_count > 0.0 {
+            let unit_width = rest_width / rest_count;
+            for item in spans.iter_mut() {
+                if item.to_owned() == 0.0 {
+                    *item = unit_width;
+                }
+            }
+        }
 
         let find_cell_style = |row: usize, column: usize| -> Option<&TableCellStyle> {
             for cell_style in self.cell_styles.iter() {
@@ -759,6 +777,7 @@ mod tests {
                 ..Default::default()
             },
         ];
+        table_chart.spans = vec![150.0, 0.4];
         table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Center];
         assert_eq!(
             include_str!("../../asset/table_chart/basic_grafana.svg"),

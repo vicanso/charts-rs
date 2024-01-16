@@ -11,10 +11,10 @@ stock
 <text font-size="14" x="10" y="73" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 Name
 </text>
-<text font-size="14" x="310" y="73" dx="63.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<text font-size="14" x="160" y="73" dx="93.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 Price
 </text>
-<text font-size="14" x="490" y="73" dx="25.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<text font-size="14" x="400" y="73" dx="70.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 Change
 </text>
 <rect x="0" y="111" width="600" height="40" fill="#1F1D1D" fill-opacity="0.9"/>
@@ -22,11 +22,11 @@ Change
 <text font-size="14" x="10" y="116" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 Datadog Inc
 </text>
-<text font-size="14" x="310" y="116" dx="62" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<text font-size="14" x="160" y="116" dx="92" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 97.32
 </text>
-<rect x="480" y="112" width="120" height="39" fill="#2D7C2B"/>
-<text font-size="14" x="490" y="116" dx="29" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<rect x="390" y="112" width="210" height="39" fill="#2D7C2B"/>
+<text font-size="14" x="400" y="116" dx="74" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 -7.49%
 </text>
 <rect x="0" y="151" width="600" height="40" fill="#1F1D1D" fill-opacity="0.9"/>
@@ -34,11 +34,11 @@ Datadog Inc
 <text font-size="14" x="10" y="156" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 Hashicorp Inc
 </text>
-<text font-size="14" x="310" y="156" dx="62" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<text font-size="14" x="160" y="156" dx="92" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 28.66
 </text>
-<rect x="480" y="152" width="120" height="39" fill="#2D7C2B"/>
-<text font-size="14" x="490" y="156" dx="29" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<rect x="390" y="152" width="210" height="39" fill="#2D7C2B"/>
+<text font-size="14" x="400" y="156" dx="74" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 -9.25%
 </text>
 <rect x="0" y="191" width="600" height="40" fill="#1F1D1D" fill-opacity="0.9"/>
@@ -46,11 +46,11 @@ Hashicorp Inc
 <text font-size="14" x="10" y="196" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 Gitlab Inc
 </text>
-<text font-size="14" x="310" y="196" dx="62.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<text font-size="14" x="160" y="196" dx="92.5" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 51.63
 </text>
-<rect x="480" y="192" width="120" height="39" fill="#A93B01"/>
-<text font-size="14" x="490" y="196" dx="27" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+<rect x="390" y="192" width="210" height="39" fill="#A93B01"/>
+<text font-size="14" x="400" y="196" dx="72" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 +4.32%
 </text>
 </svg>

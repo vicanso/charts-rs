@@ -32,9 +32,9 @@ pub use component::{
 #[cfg(feature = "image-encoder")]
 pub(crate) use encoder::get_or_init_fontdb;
 #[cfg(feature = "image-encoder")]
-pub use encoder::*;
-#[cfg(feature = "image-encoder")]
 pub use encoder::Error as EncoderError;
+#[cfg(feature = "image-encoder")]
+pub use encoder::*;
 
 pub use candlestick_chart::CandlestickChart;
 pub use font::Error as FontError;

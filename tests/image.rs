@@ -2,9 +2,9 @@
 #[cfg(feature = "image-encoder")]
 fn generate_image() {
     use charts_rs::{
-        svg_to_png, svg_to_webp, svg_to_avif, Align, BarChart, Box, CandlestickChart, HorizontalBarChart, LineChart,
-        MarkLine, MarkLineCategory, MultiChart, PieChart, RadarChart, ScatterChart, SeriesCategory,
-        TableCellStyle, TableChart, THEME_GRAFANA,
+        svg_to_avif, svg_to_png, svg_to_webp, Align, BarChart, Box, CandlestickChart,
+        HorizontalBarChart, LineChart, MarkLine, MarkLineCategory, MultiChart, PieChart,
+        RadarChart, ScatterChart, SeriesCategory, TableCellStyle, TableChart, THEME_GRAFANA,
     };
     // bar chart
     let mut bar_chart = BarChart::new_with_theme(
