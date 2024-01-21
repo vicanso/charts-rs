@@ -114,6 +114,22 @@ pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) 
     Ok(measure_text(font, font_size, text))
 }
 
+pub fn measure_max_text_width_family(
+    font_family: &str,
+    font_size: f32,
+    texts: Vec<&str>,
+) -> Result<Box> {
+    let font = get_font(font_family)?;
+    let mut result = Box::default();
+    for item in texts.iter() {
+        let b = measure_text(font, font_size, item);
+        if b.width() > result.width() {
+            result = b;
+        }
+    }
+    Ok(result)
+}
+
 pub fn text_wrap_fit(
     font_family: &str,
     font_size: f32,

@@ -382,7 +382,7 @@ impl TableChart {
             if let Some(value) = self.spans.get(index) {
                 let mut v = value.to_owned();
                 if v < 1.0 {
-                    v = v * width;
+                    v *= width;
                 }
                 // 如果值少于1.0的则认为平分剩余宽度
                 if v > 1.0 {
@@ -398,7 +398,7 @@ impl TableChart {
         if rest_count > 0.0 {
             let unit_width = rest_width / rest_count;
             for item in spans.iter_mut() {
-                if item.to_owned() == 0.0 {
+                if *item == 0.0 {
                     *item = unit_width;
                 }
             }

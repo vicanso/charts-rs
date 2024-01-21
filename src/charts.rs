@@ -7,6 +7,7 @@ mod component;
 #[cfg(feature = "image-encoder")]
 mod encoder;
 mod font;
+mod heap_map_chart;
 mod horizontal_bar_chart;
 mod line_chart;
 mod multi_chart;

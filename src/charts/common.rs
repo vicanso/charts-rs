@@ -2,7 +2,7 @@ use super::{Box, Color};
 use crate::Point;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, PartialEq, Debug, Default, Serialize, Deserialize)]
 pub enum Position {
     #[default]
     Left,
@@ -110,6 +110,7 @@ pub struct YAxisConfig {
     pub axis_width: Option<f32>,
     pub axis_split_number: usize,
     pub axis_name_gap: f32,
+    pub axis_name_align: Option<Align>,
     pub axis_margin: Option<Box>,
     pub axis_formatter: Option<String>,
     pub axis_min: Option<f32>,

@@ -16,6 +16,8 @@ pub enum Error {
     Params { message: String },
     #[snafu(display("Json is invalid: {source}"))]
     Json { source: serde_json::Error },
+    #[snafu(display("Font is invalid: {source}"))]
+    Font { source: super::FontError },
 }
 
 impl From<serde_json::Error> for Error {
@@ -24,8 +26,15 @@ impl From<serde_json::Error> for Error {
     }
 }
 
+impl From<super::FontError> for Error {
+    fn from(value: super::FontError) -> Self {
+        Error::Font { source: value }
+    }
+}
+
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
+#[derive(Clone)]
 pub struct Canvas {
     pub width: f32,
     pub height: f32,

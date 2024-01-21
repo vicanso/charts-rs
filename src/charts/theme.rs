@@ -24,13 +24,13 @@ pub static THEME_DARK: &str = "dark";
 pub static THEME_ANT: &str = "ant";
 pub static THEME_GRAFANA: &str = "grafana";
 
-static E_CHART: &str = "echart";
+static LIGHT_THEME_NAME: &str = "light";
 
 pub fn get_or_init_default_theme(theme: &str) -> String {
     static DEFAULT_THEME: OnceCell<String> = OnceCell::new();
     let value = DEFAULT_THEME.get_or_init(|| {
         if theme.is_empty() {
-            return E_CHART.to_string();
+            return LIGHT_THEME_NAME.to_string();
         }
         theme.to_string()
     });
@@ -38,7 +38,7 @@ pub fn get_or_init_default_theme(theme: &str) -> String {
 }
 
 pub fn get_default_theme() -> String {
-    get_or_init_default_theme(E_CHART)
+    get_or_init_default_theme(LIGHT_THEME_NAME)
 }
 
 #[derive(Clone, Debug, Default)]

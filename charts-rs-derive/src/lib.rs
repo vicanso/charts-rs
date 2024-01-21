@@ -275,8 +275,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     value
                 } else {
                     let y_axis_formatter = &y_axis_config.axis_formatter.clone().unwrap_or_default();
-                    let str = format_string(&y_axis_values.data[0], y_axis_formatter);
-                    if let Ok(b) = measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &str)
+                    let value = format_string(&y_axis_values.data[0], y_axis_formatter);
+                    if let Ok(b) = measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &value)
                     {
                         b.width() + 5.0
                     } else {
@@ -437,6 +437,10 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if axis_index > 0 {
                     position = Position::Right;
                 }
+                let mut name_align = Align::Left;
+                if let Some(value) = &y_axis_config.axis_name_align {
+                    name_align = value.clone();
+                }
                 let margin = y_axis_config.axis_margin.clone().unwrap_or_default();
                 c1.child(margin).axis(Axis {
                     position,
@@ -445,7 +449,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     split_number: y_axis_config.axis_split_number,
                     font_family: self.font_family.clone(),
                     stroke_color: Some(y_axis_config.axis_stroke_color),
-                    name_align: Align::Left,
+                    name_align,
                     name_gap: y_axis_config.axis_name_gap,
                     font_color: Some(y_axis_config.axis_font_color),
                     font_size: y_axis_config.axis_font_size,
