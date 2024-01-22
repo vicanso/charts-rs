@@ -46,11 +46,7 @@ impl HeapMapSeries {
         }
         let percent = (value - self.min) / (self.max - self.min);
         let get_value = |max, min| {
-            let offset = if max > min {
-                max - min
-            } else {
-                min - max
-            };
+            let offset = if max > min { max - min } else { min - max };
             let offset = (offset as f32 * percent) as u8;
             if max > min {
                 min + offset
@@ -154,10 +150,8 @@ impl HeapMapChart {
             self.series.min_color = (240, 217, 156).into();
         }
         if self.series.background_colors.is_empty() {
-            self.series.background_colors = vec![
-                (210, 219, 238).into(),
-                (245, 247, 250).into(),
-            ];
+            self.series.background_colors =
+                vec![(210, 219, 238, 50).into(), (250, 250, 250, 50).into()];
         }
     }
     /// Creates a heap map chart from json.
@@ -261,10 +255,10 @@ impl HeapMapChart {
             }
         }
 
-        let x_unit = axis_width / self.x_axis_data.len() as f32;
-        let y_unit = axis_height / self.y_axis_data.len() as f32;
-        let mut c1 = c.child(Box{
-            left: y_axis_width,
+        let x_unit = (axis_width - 1.0) / self.x_axis_data.len() as f32;
+        let y_unit = (axis_height - 1.0) / self.y_axis_data.len() as f32;
+        let mut c1 = c.child(Box {
+            left: y_axis_width + 1.0,
             ..Default::default()
         });
         let background_colors = self.series.background_colors.clone();
@@ -273,7 +267,9 @@ impl HeapMapChart {
                 let index = i * self.y_axis_data.len() + j;
                 let x = x_unit * j as f32;
                 let y = y_unit * i as f32;
+                let mut text = "".to_string();
                 let color = if let Some(value) = data[index] {
+                    text = format_series_value(value, &self.series_label_formatter);
                     self.series.get_color(value)
                 } else if background_colors.is_empty() {
                     Color::white()
@@ -283,7 +279,7 @@ impl HeapMapChart {
                         color_index += 1;
                     }
                     color_index %= background_colors.len();
-                   
+
                     background_colors[color_index]
                 };
                 c1.rect(Rect {
@@ -295,6 +291,20 @@ impl HeapMapChart {
                     height: y_unit,
                     ..Default::default()
                 });
+                if !text.is_empty() {
+                    c1.text(Text {
+                        text,
+                        // dy: Some(-8.0),
+                        // dx,
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(self.series_label_font_size),
+                        font_weight: self.series_label_font_weight.clone(),
+                        x: Some(x + x_unit / 2.0),
+                        y: Some(y + y_unit / 2.0),
+                        ..Default::default()
+                    });
+                }
             }
         }
 
