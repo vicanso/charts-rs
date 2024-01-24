@@ -1,0 +1,367 @@
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="800" height="400" fill="#FFFFFF"/>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="86" y1="5" x2="86" y2="365"/>
+<line stroke-width="1" x1="86" y1="5" x2="81" y2="5"/>
+<line stroke-width="1" x1="86" y1="56.4" x2="81" y2="56.4"/>
+<line stroke-width="1" x1="86" y1="107.9" x2="81" y2="107.9"/>
+<line stroke-width="1" x1="86" y1="159.3" x2="81" y2="159.3"/>
+<line stroke-width="1" x1="86" y1="210.7" x2="81" y2="210.7"/>
+<line stroke-width="1" x1="86" y1="262.1" x2="81" y2="262.1"/>
+<line stroke-width="1" x1="86" y1="313.6" x2="81" y2="313.6"/>
+<line stroke-width="1" x1="86" y1="365" x2="81" y2="365"/>
+</g>
+<text font-size="14" x="30" y="35.7" font-family="Roboto" fill="#6E7079">
+Sunday
+</text>
+<text font-size="14" x="26" y="87.1" font-family="Roboto" fill="#6E7079">
+Monday
+</text>
+<text font-size="14" x="22" y="138.6" font-family="Roboto" fill="#6E7079">
+Tuesday
+</text>
+<text font-size="14" x="2" y="190" font-family="Roboto" fill="#6E7079">
+Wednesday
+</text>
+<text font-size="14" x="17" y="241.4" font-family="Roboto" fill="#6E7079">
+Thursday
+</text>
+<text font-size="14" x="38" y="292.9" font-family="Roboto" fill="#6E7079">
+Friday
+</text>
+<text font-size="14" x="20" y="344.3" font-family="Roboto" fill="#6E7079">
+Saturday
+</text>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="86" y1="365" x2="795" y2="365"/>
+<line stroke-width="1" x1="86" y1="365" x2="86" y2="370"/>
+<line stroke-width="1" x1="115.5" y1="365" x2="115.5" y2="370"/>
+<line stroke-width="1" x1="145.1" y1="365" x2="145.1" y2="370"/>
+<line stroke-width="1" x1="174.6" y1="365" x2="174.6" y2="370"/>
+<line stroke-width="1" x1="204.2" y1="365" x2="204.2" y2="370"/>
+<line stroke-width="1" x1="233.7" y1="365" x2="233.7" y2="370"/>
+<line stroke-width="1" x1="263.2" y1="365" x2="263.2" y2="370"/>
+<line stroke-width="1" x1="292.8" y1="365" x2="292.8" y2="370"/>
+<line stroke-width="1" x1="322.3" y1="365" x2="322.3" y2="370"/>
+<line stroke-width="1" x1="351.9" y1="365" x2="351.9" y2="370"/>
+<line stroke-width="1" x1="381.4" y1="365" x2="381.4" y2="370"/>
+<line stroke-width="1" x1="411" y1="365" x2="411" y2="370"/>
+<line stroke-width="1" x1="440.5" y1="365" x2="440.5" y2="370"/>
+<line stroke-width="1" x1="470" y1="365" x2="470" y2="370"/>
+<line stroke-width="1" x1="499.6" y1="365" x2="499.6" y2="370"/>
+<line stroke-width="1" x1="529.1" y1="365" x2="529.1" y2="370"/>
+<line stroke-width="1" x1="558.7" y1="365" x2="558.7" y2="370"/>
+<line stroke-width="1" x1="588.2" y1="365" x2="588.2" y2="370"/>
+<line stroke-width="1" x1="617.8" y1="365" x2="617.8" y2="370"/>
+<line stroke-width="1" x1="647.3" y1="365" x2="647.3" y2="370"/>
+<line stroke-width="1" x1="676.8" y1="365" x2="676.8" y2="370"/>
+<line stroke-width="1" x1="706.4" y1="365" x2="706.4" y2="370"/>
+<line stroke-width="1" x1="735.9" y1="365" x2="735.9" y2="370"/>
+<line stroke-width="1" x1="765.5" y1="365" x2="765.5" y2="370"/>
+<line stroke-width="1" x1="795" y1="365" x2="795" y2="370"/>
+</g>
+<text font-size="14" x="89.3" y="384" font-family="Roboto" fill="#6E7079">
+12a
+</text>
+<text font-size="14" x="122.8" y="384" font-family="Roboto" fill="#6E7079">
+1a
+</text>
+<text font-size="14" x="152.4" y="384" font-family="Roboto" fill="#6E7079">
+2a
+</text>
+<text font-size="14" x="181.9" y="384" font-family="Roboto" fill="#6E7079">
+3a
+</text>
+<text font-size="14" x="211.4" y="384" font-family="Roboto" fill="#6E7079">
+4a
+</text>
+<text font-size="14" x="241" y="384" font-family="Roboto" fill="#6E7079">
+5a
+</text>
+<text font-size="14" x="270.5" y="384" font-family="Roboto" fill="#6E7079">
+6a
+</text>
+<text font-size="14" x="300.1" y="384" font-family="Roboto" fill="#6E7079">
+7a
+</text>
+<text font-size="14" x="329.6" y="384" font-family="Roboto" fill="#6E7079">
+8a
+</text>
+<text font-size="14" x="359.1" y="384" font-family="Roboto" fill="#6E7079">
+9a
+</text>
+<text font-size="14" x="384.7" y="384" font-family="Roboto" fill="#6E7079">
+10a
+</text>
+<text font-size="14" x="414.2" y="384" font-family="Roboto" fill="#6E7079">
+11a
+</text>
+<text font-size="14" x="443.3" y="384" font-family="Roboto" fill="#6E7079">
+12p
+</text>
+<text font-size="14" x="476.8" y="384" font-family="Roboto" fill="#6E7079">
+1p
+</text>
+<text font-size="14" x="506.4" y="384" font-family="Roboto" fill="#6E7079">
+2p
+</text>
+<text font-size="14" x="535.9" y="384" font-family="Roboto" fill="#6E7079">
+3p
+</text>
+<text font-size="14" x="565.4" y="384" font-family="Roboto" fill="#6E7079">
+4p
+</text>
+<text font-size="14" x="595" y="384" font-family="Roboto" fill="#6E7079">
+5p
+</text>
+<text font-size="14" x="624.5" y="384" font-family="Roboto" fill="#6E7079">
+6p
+</text>
+<text font-size="14" x="654.1" y="384" font-family="Roboto" fill="#6E7079">
+7p
+</text>
+<text font-size="14" x="683.6" y="384" font-family="Roboto" fill="#6E7079">
+8p
+</text>
+<text font-size="14" x="713.1" y="384" font-family="Roboto" fill="#6E7079">
+9p
+</text>
+<text font-size="14" x="738.7" y="384" font-family="Roboto" fill="#6E7079">
+10p
+</text>
+<text font-size="14" x="768.2" y="384" font-family="Roboto" fill="#6E7079">
+11p
+</text>
+</g>
+<rect x="87" y="312.7" width="29.5" height="51.3" stroke="#C45354" fill="#C45354"/>
+<text font-size="14" x="98.2" y="338.4" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+9
+</text>
+<rect x="116.5" y="312.7" width="29.5" height="51.3" stroke="#E2AD84" fill="#E2AD84"/>
+<text font-size="14" x="127.8" y="338.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+3
+</text>
+<rect x="146" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="175.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="205" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="234.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="264" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="293.5" y="312.7" width="29.5" height="51.3" stroke="#E2AD84" fill="#E2AD84"/>
+<text font-size="14" x="304.8" y="338.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+3
+</text>
+<rect x="323" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="352.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="382" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="411.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="441" y="312.7" width="29.5" height="51.3" stroke="#E2AD84" fill="#E2AD84"/>
+<text font-size="14" x="452.2" y="338.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+3
+</text>
+<rect x="470.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="500" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="529.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="559" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="588.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="618" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="647.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="677" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="706.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="736" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="765.5" y="312.7" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="87" y="261.4" width="29.5" height="51.3" stroke="#E2AD84" fill="#E2AD84"/>
+<text font-size="14" x="98.2" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#464646">
+3
+</text>
+<rect x="116.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="146" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="175.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="205" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="234.5" y="261.4" width="29.5" height="51.3" stroke="#E2AD84" fill="#E2AD84"/>
+<text font-size="14" x="245.8" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#464646">
+3
+</text>
+<rect x="264" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="293.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="323" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="352.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="382" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="411.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="441" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="470.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="500" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="529.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="559" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="588.5" y="261.4" width="29.5" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="595.2" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+12
+</text>
+<rect x="618" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="647.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="677" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="706.5" y="261.4" width="29.5" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="713.2" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+10
+</text>
+<rect x="736" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="765.5" y="261.4" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="87" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="116.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="146" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="175.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="205" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="234.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="264" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="293.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="323" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="352.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="382" y="210.1" width="29.5" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="388.8" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+12
+</text>
+<rect x="411.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="441" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="470.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="500" y="210.1" width="29.5" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="506.8" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+10
+</text>
+<rect x="529.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="559" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="588.5" y="210.1" width="29.5" height="51.3" stroke="#C9625C" fill="#C9625C"/>
+<text font-size="14" x="599.2" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+8
+</text>
+<rect x="618" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="647.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="677" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="706.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="736" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="765.5" y="210.1" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="87" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="116.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="146" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="175.5" y="158.9" width="29.5" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="182.2" y="184.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+12
+</text>
+<rect x="205" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="234.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="264" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="293.5" y="158.9" width="29.5" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="300.2" y="184.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+10
+</text>
+<rect x="323" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="352.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="382" y="158.9" width="29.5" height="51.3" stroke="#C9625C" fill="#C9625C"/>
+<text font-size="14" x="392.8" y="184.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+8
+</text>
+<rect x="411.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="441" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="470.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="500" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="529.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="559" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="588.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="618" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="647.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="677" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="706.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="736" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="765.5" y="158.9" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="87" y="107.6" width="29.5" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="93.8" y="133.2" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+10
+</text>
+<rect x="116.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="146" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="175.5" y="107.6" width="29.5" height="51.3" stroke="#C9625C" fill="#C9625C"/>
+<text font-size="14" x="186.2" y="133.2" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+8
+</text>
+<rect x="205" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="234.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="264" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="293.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="323" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="352.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="382" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="411.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="441" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="470.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="500" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="529.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="559" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="588.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="618" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="647.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="677" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="706.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="736" y="107.6" width="29.5" height="51.3" stroke="#DD9E7C" fill="#DD9E7C"/>
+<text font-size="14" x="746.8" y="133.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
+4
+</text>
+<rect x="765.5" y="107.6" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="87" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="116.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="146" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="175.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="205" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="234.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="264" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="293.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="323" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="352.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="382" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="411.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="441" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="470.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="500" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="529.5" y="56.3" width="29.5" height="51.3" stroke="#DD9E7C" fill="#DD9E7C"/>
+<text font-size="14" x="540.2" y="81.9" dominant-baseline="central" font-family="Roboto" fill="#464646">
+4
+</text>
+<rect x="559" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="588.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="618" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="647.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="677" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="706.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="736" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="765.5" y="56.3" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="87" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="116.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="146" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="175.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="205" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="234.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="264" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="293.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="323" y="5" width="29.5" height="51.3" stroke="#DD9E7C" fill="#DD9E7C"/>
+<text font-size="14" x="333.8" y="30.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
+4
+</text>
+<rect x="352.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="382" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="411.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="441" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="470.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="500" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="529.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="559" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="588.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="618" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="647.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+<rect x="677" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="706.5" y="5" width="29.5" height="51.3" stroke="#E7BC8C" fill="#E7BC8C"/>
+<text font-size="14" x="717.2" y="30.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
+2
+</text>
+<rect x="736" y="5" width="29.5" height="51.3" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="765.5" y="5" width="29.5" height="51.3" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
+</svg>

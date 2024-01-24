@@ -358,7 +358,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 title_height
             }
             fn render_legend(&self, c: Canvas) -> f32 {
-                if !self.legend_show.unwrap_or(true) {
+                if !self.legend_show.unwrap_or(true) || self.series_list.is_empty() {
                     return 0.0
                 }
                 let mut legend_left = 0.0;

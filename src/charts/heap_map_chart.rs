@@ -33,7 +33,8 @@ pub struct HeapMapSeries {
     pub max: f32,
     pub min_color: Color,
     pub max_color: Color,
-    pub background_colors: Vec<Color>,
+    pub min_font_color: Color,
+    pub max_font_color: Color,
 }
 
 impl HeapMapSeries {
@@ -149,9 +150,11 @@ impl HeapMapChart {
         if self.series.min_color.is_zero() {
             self.series.min_color = (240, 217, 156).into();
         }
-        if self.series.background_colors.is_empty() {
-            self.series.background_colors =
-                vec![(210, 219, 238, 50).into(), (250, 250, 250, 50).into()];
+        if self.series.min_font_color.is_zero() {
+            self.series.min_font_color = (70, 70, 70).into();
+        }
+        if self.series.max_font_color.is_zero() {
+            self.series.max_font_color = (238, 238, 238).into();
         }
     }
     /// Creates a heap map chart from json.
@@ -159,31 +162,77 @@ impl HeapMapChart {
         let mut h = HeapMapChart {
             ..Default::default()
         };
-        h.fill_option(data)?;
+        let value = h.fill_option(data)?;
+        if let Some(value) = value.get("series") {
+            if let Some(min) = get_f32_from_value(value, "min") {
+                h.series.min = min;
+            }
+            if let Some(max) = get_f32_from_value(value, "max") {
+                h.series.max = max;
+            }
+            if let Some(min_color) = get_color_from_value(value, "min_color") {
+                h.series.min_color = min_color;
+            }
+            if let Some(max_color) = get_color_from_value(value, "max_color") {
+                h.series.max_color = max_color;
+            }
+            if let Some(min_font_color) = get_color_from_value(value, "min_font_color") {
+                h.series.min_font_color = min_font_color;
+            }
+            if let Some(max_font_color) = get_color_from_value(value, "max_font_color") {
+                h.series.max_font_color = max_font_color;
+            }
+            if let Some(data) = value.get("data") {
+                let mut values = vec![];
+                if let Some(arr) = data.as_array() {
+                    for item in arr.iter() {
+                        if let Some(arr) = item.as_array() {
+                            if arr.len() != 2 {
+                                continue;
+                            }
+                            values.push(HeapMapData {
+                                index: arr[0].as_i64().unwrap_or_default() as usize,
+                                value: arr[1].as_f64().unwrap_or_default() as f32,
+                            });
+                        }
+                    }
+                }
+                h.series.data = values;
+            }
+        }
         h.fill_default();
         Ok(h)
     }
     /// Creates a heap map chart with default theme.
     pub fn new(
-        series_list: Vec<Series>,
+        series_data: Vec<(usize, f32)>,
         x_axis_data: Vec<String>,
         y_axis_data: Vec<String>,
     ) -> HeapMapChart {
-        HeapMapChart::new_with_theme(series_list, x_axis_data, y_axis_data, &get_default_theme())
+        HeapMapChart::new_with_theme(series_data, x_axis_data, y_axis_data, &get_default_theme())
     }
     /// Creates a heap map chart with custom theme.
     pub fn new_with_theme(
-        series_list: Vec<Series>,
+        series_data: Vec<(usize, f32)>,
         x_axis_data: Vec<String>,
         y_axis_data: Vec<String>,
         theme: &str,
     ) -> HeapMapChart {
         let mut h = HeapMapChart {
-            series_list,
             x_axis_data,
             y_axis_data,
             ..Default::default()
         };
+        let mut max = 0.0_f32;
+        let mut data = vec![];
+        for item in series_data.iter() {
+            if item.1 > max {
+                max = item.1;
+            }
+            data.push((*item).into());
+        }
+        h.series.data = data;
+        h.series.max = max;
         let theme = get_theme(theme);
         h.fill_theme(theme);
         h.fill_default();
@@ -261,26 +310,43 @@ impl HeapMapChart {
             left: y_axis_width + 1.0,
             ..Default::default()
         });
-        let background_colors = self.series.background_colors.clone();
-        for i in 0..self.y_axis_data.len() {
+        let y_axis_count = self.y_axis_data.len();
+        for i in 0..y_axis_count {
             for j in 0..self.x_axis_data.len() {
                 let index = i * self.y_axis_data.len() + j;
                 let x = x_unit * j as f32;
-                let y = y_unit * i as f32;
+                // y轴从下开始计算
+                let y = y_unit * (y_axis_count - i - 1) as f32;
                 let mut text = "".to_string();
+                let mut font_color = self.series.min_font_color;
                 let color = if let Some(value) = data[index] {
+                    let percent = (value - self.series.min) / (self.series.max - self.series.min);
+                    if percent >= 0.8 {
+                        font_color = self.series.max_font_color;
+                    }
+
                     text = format_series_value(value, &self.series_label_formatter);
                     self.series.get_color(value)
-                } else if background_colors.is_empty() {
-                    Color::white()
                 } else {
                     let mut color_index = j;
                     if i % 2 != 0 {
                         color_index += 1;
                     }
-                    color_index %= background_colors.len();
-
-                    background_colors[color_index]
+                    let mut color = self.background_color;
+                    let offset = 20;
+                    if color.is_light() {
+                        color.r -= offset;
+                        color.g -= offset;
+                        color.b -= offset;
+                    } else {
+                        color.r += offset;
+                        color.g += offset;
+                        color.b += offset;
+                    }
+                    if color_index % 2 != 0 {
+                        color = color.with_alpha(100);
+                    }
+                    color
                 };
                 c1.rect(Rect {
                     color: Some(color),
@@ -292,16 +358,24 @@ impl HeapMapChart {
                     ..Default::default()
                 });
                 if !text.is_empty() {
+                    let mut x1 = x + x_unit / 2.0;
+                    let y1 = y + y_unit / 2.0;
+                    if let Ok(b) = measure_text_width_family(
+                        &self.font_family,
+                        self.series_label_font_size,
+                        &text,
+                    ) {
+                        x1 -= b.width() / 2.0;
+                    }
                     c1.text(Text {
                         text,
-                        // dy: Some(-8.0),
-                        // dx,
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
+                        font_color: Some(font_color),
                         font_size: Some(self.series_label_font_size),
                         font_weight: self.series_label_font_weight.clone(),
-                        x: Some(x + x_unit / 2.0),
-                        y: Some(y + y_unit / 2.0),
+                        dominant_baseline: Some("central".to_string()),
+                        x: Some(x1),
+                        y: Some(y1),
                         ..Default::default()
                     });
                 }
@@ -314,6 +388,8 @@ impl HeapMapChart {
 
 #[cfg(test)]
 mod tests {
+    use crate::THEME_DARK;
+
     use super::HeapMapChart;
     use pretty_assertions::assert_eq;
 
@@ -339,20 +415,75 @@ mod tests {
         .map(|item| item.to_string())
         .collect();
         let mut heap_map_chart = HeapMapChart::new(
-            vec![("Punch Card", vec![0.0, 0.0, 5.0]).into()],
+            vec![
+                (0, 9.0),
+                (1, 3.0),
+                (7, 3.0),
+                (12, 3.0),
+                (24, 12.0),
+                (28, 10.0),
+                (31, 8.0),
+                (50, 4.0),
+                (63, 2.0),
+            ],
             x_axis_data,
             y_axis_data,
         );
         heap_map_chart.width = 800.0;
-        heap_map_chart.series.data = vec![
-            (0, 9.0).into(),
-            (1, 3.0).into(),
-            (7, 3.0).into(),
-            (12, 3.0).into(),
-        ];
         heap_map_chart.series.max = 10.0;
 
-        println!("{}", heap_map_chart.svg().unwrap());
-        assert_eq!("", heap_map_chart.svg().unwrap());
+        assert_eq!(
+            include_str!("../../asset/heap_map_chart/basic.svg"),
+            heap_map_chart.svg().unwrap()
+        );
     }
+
+    #[test]
+    fn heap_map_chart_dark() {
+        let x_axis_data = vec![
+            "12a", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12p", "1p",
+            "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p",
+        ]
+        .iter()
+        .map(|item| item.to_string())
+        .collect();
+        let y_axis_data = vec![
+            "Saturday",
+            "Friday",
+            "Thursday",
+            "Wednesday",
+            "Tuesday",
+            "Monday",
+            "Sunday",
+        ]
+        .iter()
+        .map(|item| item.to_string())
+        .collect();
+        let mut heap_map_chart = HeapMapChart::new_with_theme(
+            vec![
+                (0, 9.0),
+                (1, 3.0),
+                (7, 3.0),
+                (12, 3.0),
+                (24, 12.0),
+                (28, 10.0),
+                (31, 8.0),
+                (50, 4.0),
+                (63, 2.0),
+            ],
+            x_axis_data,
+            y_axis_data,
+            THEME_DARK,
+        );
+        heap_map_chart.width = 800.0;
+        heap_map_chart.series.max = 10.0;
+
+        assert_eq!(
+            include_str!("../../asset/heap_map_chart/basic_dark.svg"),
+            heap_map_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn heap_map_chart_json() {}
 }
