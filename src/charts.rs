@@ -43,6 +43,7 @@ pub use font::{
     get_font, get_font_families, get_or_try_init_fonts, measure_text_width_family,
     DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY,
 };
+pub use heap_map_chart::{HeapMapChart, HeapMapData, HeapMapSeries};
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use multi_chart::{ChildChart, MultiChart};

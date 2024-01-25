@@ -156,6 +156,15 @@ impl HeapMapChart {
         if self.series.max_font_color.is_zero() {
             self.series.max_font_color = (238, 238, 238).into();
         }
+        if self.series.max == 0.0 {
+            let mut max = 0.0;
+            for item in self.series.data.iter() {
+                if item.value > max {
+                    max = item.value
+                }
+            }
+            self.series.max = max;
+        }
     }
     /// Creates a heap map chart from json.
     pub fn from_json(data: &str) -> canvas::Result<HeapMapChart> {
@@ -163,6 +172,9 @@ impl HeapMapChart {
             ..Default::default()
         };
         let value = h.fill_option(data)?;
+        if let Some(y_axis_data) = get_string_slice_from_value(&value, "y_axis_data") {
+            h.y_axis_data = y_axis_data;
+        }
         if let Some(value) = value.get("series") {
             if let Some(min) = get_f32_from_value(value, "min") {
                 h.series.min = min;
@@ -232,7 +244,6 @@ impl HeapMapChart {
             data.push((*item).into());
         }
         h.series.data = data;
-        h.series.max = max;
         let theme = get_theme(theme);
         h.fill_theme(theme);
         h.fill_default();
@@ -483,7 +494,4 @@ mod tests {
             heap_map_chart.svg().unwrap()
         );
     }
-
-    #[test]
-    fn heap_map_chart_json() {}
 }

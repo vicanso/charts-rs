@@ -69,11 +69,12 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value> {
                 let data: serde_json::Value = serde_json::from_str(data)?;
                 let series_list = get_series_list_from_value(&data).unwrap_or_default();
-                if series_list.is_empty() {
-                    return Err(canvas::Error::Params {
-                        message: "series list can not be empty".to_string(),
-                    });
-                }
+                // TODO 后续调整为由每个 chart 各自处理
+                // if series_list.is_empty() {
+                //     return Err(canvas::Error::Params {
+                //         message: "series list can not be empty".to_string(),
+                //     });
+                // }
                 let theme = get_string_from_value(&data, "theme").unwrap_or_default();
                 let theme = get_theme(&theme);
                 self.fill_theme(theme);
