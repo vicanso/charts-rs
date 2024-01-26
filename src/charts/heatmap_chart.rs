@@ -12,14 +12,14 @@ use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 
 #[derive(Clone, Debug, Default)]
-pub struct HeapMapData {
+pub struct HeatmapData {
     pub index: usize,
     pub value: f32,
 }
 
-impl From<(usize, f32)> for HeapMapData {
+impl From<(usize, f32)> for HeatmapData {
     fn from(value: (usize, f32)) -> Self {
-        HeapMapData {
+        HeatmapData {
             index: value.0,
             value: value.1,
         }
@@ -27,8 +27,8 @@ impl From<(usize, f32)> for HeapMapData {
 }
 
 #[derive(Clone, Debug, Default)]
-pub struct HeapMapSeries {
-    pub data: Vec<HeapMapData>,
+pub struct HeatmapSeries {
+    pub data: Vec<HeatmapData>,
     pub min: f32,
     pub max: f32,
     pub min_color: Color,
@@ -37,7 +37,7 @@ pub struct HeapMapSeries {
     pub max_font_color: Color,
 }
 
-impl HeapMapSeries {
+impl HeatmapSeries {
     fn get_color(&self, value: f32) -> Color {
         if value < self.min {
             return self.min_color;
@@ -65,15 +65,15 @@ impl HeapMapSeries {
 }
 
 #[derive(Clone, Debug, Default, Chart)]
-pub struct HeapMapChart {
+pub struct HeatmapChart {
     pub width: f32,
     pub height: f32,
     pub x: f32,
     pub y: f32,
     pub margin: Box,
-    // heap map使用新的数据结构
+    // heatmap使用新的数据结构
     series_list: Vec<Series>,
-    pub series: HeapMapSeries,
+    pub series: HeatmapSeries,
     pub font_family: String,
     pub background_color: Color,
     pub is_light: bool,
@@ -137,7 +137,7 @@ pub struct HeapMapChart {
     pub series_fill: bool,
 }
 
-impl HeapMapChart {
+impl HeatmapChart {
     fn fill_default(&mut self) {
         if self.y_axis_configs[0].axis_stroke_color.is_zero() {
             self.y_axis_configs[0].axis_stroke_color = self.x_axis_stroke_color;
@@ -166,9 +166,9 @@ impl HeapMapChart {
             self.series.max = max;
         }
     }
-    /// Creates a heap map chart from json.
-    pub fn from_json(data: &str) -> canvas::Result<HeapMapChart> {
-        let mut h = HeapMapChart {
+    /// Creates a heatmap chart from json.
+    pub fn from_json(data: &str) -> canvas::Result<HeatmapChart> {
+        let mut h = HeatmapChart {
             ..Default::default()
         };
         let value = h.fill_option(data)?;
@@ -202,7 +202,7 @@ impl HeapMapChart {
                             if arr.len() != 2 {
                                 continue;
                             }
-                            values.push(HeapMapData {
+                            values.push(HeatmapData {
                                 index: arr[0].as_i64().unwrap_or_default() as usize,
                                 value: arr[1].as_f64().unwrap_or_default() as f32,
                             });
@@ -215,22 +215,22 @@ impl HeapMapChart {
         h.fill_default();
         Ok(h)
     }
-    /// Creates a heap map chart with default theme.
+    /// Creates a heatmap chart with default theme.
     pub fn new(
         series_data: Vec<(usize, f32)>,
         x_axis_data: Vec<String>,
         y_axis_data: Vec<String>,
-    ) -> HeapMapChart {
-        HeapMapChart::new_with_theme(series_data, x_axis_data, y_axis_data, &get_default_theme())
+    ) -> HeatmapChart {
+        HeatmapChart::new_with_theme(series_data, x_axis_data, y_axis_data, &get_default_theme())
     }
-    /// Creates a heap map chart with custom theme.
+    /// Creates a heatmap chart with custom theme.
     pub fn new_with_theme(
         series_data: Vec<(usize, f32)>,
         x_axis_data: Vec<String>,
         y_axis_data: Vec<String>,
         theme: &str,
-    ) -> HeapMapChart {
-        let mut h = HeapMapChart {
+    ) -> HeatmapChart {
+        let mut h = HeatmapChart {
             x_axis_data,
             y_axis_data,
             ..Default::default()
@@ -249,7 +249,7 @@ impl HeapMapChart {
         h.fill_default();
         h
     }
-    /// Converts heap map chart to svg.
+    /// Converts heatmap chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
@@ -401,11 +401,11 @@ impl HeapMapChart {
 mod tests {
     use crate::THEME_DARK;
 
-    use super::HeapMapChart;
+    use super::HeatmapChart;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn heap_map_chart_basic() {
+    fn heatmap_chart_basic() {
         let x_axis_data = vec![
             "12a", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12p", "1p",
             "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p",
@@ -425,7 +425,7 @@ mod tests {
         .iter()
         .map(|item| item.to_string())
         .collect();
-        let mut heap_map_chart = HeapMapChart::new(
+        let mut heatmap_chart = HeatmapChart::new(
             vec![
                 (0, 9.0),
                 (1, 3.0),
@@ -440,17 +440,17 @@ mod tests {
             x_axis_data,
             y_axis_data,
         );
-        heap_map_chart.width = 800.0;
-        heap_map_chart.series.max = 10.0;
+        heatmap_chart.width = 800.0;
+        heatmap_chart.series.max = 10.0;
 
         assert_eq!(
-            include_str!("../../asset/heap_map_chart/basic.svg"),
-            heap_map_chart.svg().unwrap()
+            include_str!("../../asset/heatmap_chart/basic.svg"),
+            heatmap_chart.svg().unwrap()
         );
     }
 
     #[test]
-    fn heap_map_chart_dark() {
+    fn heatmap_chart_dark() {
         let x_axis_data = vec![
             "12a", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12p", "1p",
             "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p",
@@ -470,7 +470,7 @@ mod tests {
         .iter()
         .map(|item| item.to_string())
         .collect();
-        let mut heap_map_chart = HeapMapChart::new_with_theme(
+        let mut heatmap_chart = HeatmapChart::new_with_theme(
             vec![
                 (0, 9.0),
                 (1, 3.0),
@@ -486,12 +486,12 @@ mod tests {
             y_axis_data,
             THEME_DARK,
         );
-        heap_map_chart.width = 800.0;
-        heap_map_chart.series.max = 10.0;
+        heatmap_chart.width = 800.0;
+        heatmap_chart.series.max = 10.0;
 
         assert_eq!(
-            include_str!("../../asset/heap_map_chart/basic_dark.svg"),
-            heap_map_chart.svg().unwrap()
+            include_str!("../../asset/heatmap_chart/basic_dark.svg"),
+            heatmap_chart.svg().unwrap()
         );
     }
 }

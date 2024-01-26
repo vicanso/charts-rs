@@ -1,9 +1,9 @@
-use charts_rs::HeapMapChart;
+use charts_rs::HeatmapChart;
 use pretty_assertions::assert_eq;
 
 #[test]
-fn heap_map_chart() {
-    let heap_map_chart = HeapMapChart::from_json(
+fn heatmap_chart() {
+    let heatmap_chart = HeatmapChart::from_json(
         r###"{
             "theme": "grafana",
             "y_axis_data": [
@@ -36,7 +36,7 @@ fn heap_map_chart() {
     )
     .unwrap();
     assert_eq!(
-        include_str!("../asset/heap_map_chart/basic_grafana_json.svg"),
-        heap_map_chart.svg().unwrap()
+        include_str!("../asset/heatmap_chart/basic_grafana_json.svg"),
+        heatmap_chart.svg().unwrap()
     );
 }
