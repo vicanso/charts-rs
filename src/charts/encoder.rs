@@ -1,7 +1,8 @@
 use once_cell::sync::OnceCell;
-use resvg::usvg::{fontdb, Tree, TreeParsing, TreeTextToPath};
+use resvg::{tiny_skia, usvg};
 use snafu::{ResultExt, Snafu};
 use std::io::Cursor;
+use usvg::{fontdb, TreeParsing, TreePostProc};
 
 #[derive(Debug, Snafu)]
 pub enum Error {
@@ -12,8 +13,10 @@ pub enum Error {
     },
     #[snafu(display("Image size is invalid, width: {width}, height: {height}"))]
     Size { width: u32, height: u32 },
+    #[snafu(display("Image from raw is fail, size:{size}"))]
+    Raw { size: usize },
     #[snafu(display("Error to parse: {source}"))]
-    Parse { source: resvg::usvg::Error },
+    Parse { source: usvg::Error },
     #[snafu(display("Encode fail: {source}"))]
     Image { source: image::ImageError },
 }
@@ -36,20 +39,20 @@ pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> &fontdb::Database
 
 fn save_image(svg: &str, format: image::ImageOutputFormat) -> Result<Vec<u8>> {
     let fontdb = get_or_init_fontdb(None);
-    let mut tree = Tree::from_str(svg, &resvg::usvg::Options::default()).context(ParseSnafu {})?;
-    tree.convert_text(fontdb);
-    let rtree = resvg::Tree::from_usvg(&tree);
-    let pixmap_size = rtree.size.to_int_size();
-    let mut pixmap = resvg::tiny_skia::Pixmap::new(pixmap_size.width(), pixmap_size.height())
-        .ok_or(Error::Size {
+    let mut tree = usvg::Tree::from_str(svg, &usvg::Options::default()).context(ParseSnafu {})?;
+    tree.postprocess(usvg::PostProcessingSteps::default(), fontdb);
+    let pixmap_size = tree.size.to_int_size();
+    let mut pixmap =
+        tiny_skia::Pixmap::new(pixmap_size.width(), pixmap_size.height()).ok_or(Error::Size {
             width: pixmap_size.width(),
             height: pixmap_size.height(),
         })?;
-    rtree.render(resvg::tiny_skia::Transform::default(), &mut pixmap.as_mut());
+    resvg::render(&tree, tiny_skia::Transform::default(), &mut pixmap.as_mut());
 
-    let rgba_image =
-        image::RgbaImage::from_raw(pixmap.width(), pixmap.height(), pixmap.data().to_vec())
-            .unwrap();
+    let data = pixmap.data().to_vec();
+    let size = data.len();
+    let rgba_image = image::RgbaImage::from_raw(pixmap.width(), pixmap.height(), data)
+        .ok_or(Error::Raw { size })?;
     let mut buf = Cursor::new(vec![]);
 
     rgba_image.write_to(&mut buf, format).context(ImageSnafu)?;

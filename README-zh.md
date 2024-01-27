@@ -87,6 +87,12 @@
     <img src="./asset/image/table.avif" alt="charts-rs">
 </p>
 
+## Heatmap
+<p align="center">
+    <img src="./asset/image/heatmap.png" alt="charts-rs">
+</p>
+
+
 ## Multi Chart
 <p align="center">
     <img src="./asset/image/multi-chart.webp" alt="charts-rs">
