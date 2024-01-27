@@ -16,9 +16,9 @@
 
 ## Overview
 
-`charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk` and `shine`. The default theme is `light`. These charts are supported: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`,  `Table` and `MultiChart`.
+`charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk` and `shine`. The default theme is `light`. These charts are supported: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`,  `Table`， `Heatmap` and `MultiChart`.
 
-`Apache ECharts` is popular among Front-end developers, and `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`. 
+`Apache ECharts` is popular among Front-end developers, and `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`.
 
 ## Themes
 
@@ -31,13 +31,13 @@
 - Smooth, fill, mark point and mark line for line chart
 - Multiple legends for all charts, for example: `round rect`, `circle` and `rect`
 - Supports two y axises, which are useful
-- New from json is simple and easy 
+- New from json is simple and easy
 - Svg, png, jpeg, webp and avif format support more available scenarios
 - Web json editor to try using more options by one step
 
 ## Demo
 
-You can try to use the web demo page, it's simple and useful. 
+You can try to use the web demo page, it's simple and useful.
 
 Charts Web Demo Page: [https://charts.npmtrend.com/](https://charts.npmtrend.com/)
 
