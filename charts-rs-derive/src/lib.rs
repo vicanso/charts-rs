@@ -9,7 +9,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
     let id = ast.ident;
 
     let gen = quote! {
-        impl Chart for #id {
+        impl #id {
             fn fill_theme(&mut self, t: &Theme) {
                 self.font_family = t.font_family.clone();
                 self.margin = t.margin.clone();
@@ -79,7 +79,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let theme = get_theme(&theme);
                 self.fill_theme(theme);
                 self.series_list = series_list;
-        
+
                 if let Some(width) = get_f32_from_value(&data, "width") {
                     self.width = width;
                 }
@@ -119,7 +119,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(title_height) = get_f32_from_value(&data, "title_height") {
                     self.title_height = title_height;
                 }
-        
+
                 if let Some(sub_title_text) = get_string_from_value(&data, "sub_title_text") {
                     self.sub_title_text = sub_title_text;
                 }
@@ -141,7 +141,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
                     self.sub_title_height = sub_title_height;
                 }
-        
+
                 if let Some(legend_font_size) = get_f32_from_value(&data, "legend_font_size") {
                     self.legend_font_size = legend_font_size;
                 }
@@ -163,7 +163,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(legend_show) = get_bool_from_value(&data, "legend_show") {
                     self.legend_show = Some(legend_show);
                 }
-        
+
                 if let Some(x_axis_data) = get_string_slice_from_value(&data, "x_axis_data") {
                     self.x_axis_data = x_axis_data;
                 }
@@ -194,18 +194,18 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(x_boundary_gap) = get_bool_from_value(&data, "x_boundary_gap") {
                     self.x_boundary_gap = Some(x_boundary_gap);
                 }
-        
+
                 if let Some(y_axis_configs) = get_y_axis_configs_from_value(&theme, &data, "y_axis_configs") {
                     self.y_axis_configs = y_axis_configs;
                 }
-        
+
                 if let Some(grid_stroke_color) = get_color_from_value(&data, "grid_stroke_color") {
                     self.grid_stroke_color = grid_stroke_color;
                 }
                 if let Some(grid_stroke_width) = get_f32_from_value(&data, "grid_stroke_width") {
                     self.grid_stroke_width = grid_stroke_width;
                 }
-        
+
                 if let Some(series_stroke_width) = get_f32_from_value(&data, "series_stroke_width") {
                     self.series_stroke_width = series_stroke_width;
                 }
@@ -236,7 +236,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if let Some(series_fill) = get_bool_from_value(&data, "series_fill") {
                     self.series_fill = series_fill;
                 }
-        
+
                 Ok(data)
             }
             fn get_y_axis_config(&self, index: usize) -> YAxisConfig {
@@ -414,7 +414,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     });
                     legend_left += b.width() + LEGEND_MARGIN;
                 }
-        
+
                 legend_unit_height + legend_top + legend_margin_value
             }
             fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32) {
@@ -432,7 +432,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 });
             }
             fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32, axis_index: usize) {
-                let mut c1 = c; 
+                let mut c1 = c;
                 let y_axis_config = &self.get_y_axis_config(axis_index);
                 let mut position = Position::Left;
                 if axis_index > 0 {
@@ -461,8 +461,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 });
             }
             fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32) {
-                let mut c1 = c; 
-                
+                let mut c1 = c;
+
                 let mut split_number = data.len();
                 let name_align = if self.x_boundary_gap.unwrap_or(true) {
                     Align::Center
@@ -529,16 +529,16 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     return vec![];
                 }
                 let mut c1 = c;
-                
+
                 let unit_width = c1.width() / series_data_count as f32;
                 let bar_chart_margin = 5.0_f32;
                 let bar_chart_gap = 3.0_f32;
-        
+
                 let bar_chart_margin_width = bar_chart_margin * 2.0;
                 let bar_chart_gap_width = bar_chart_gap * (series_list.len() - 1) as f32;
                 let bar_width = (unit_width - bar_chart_margin_width - bar_chart_gap_width) / series_list.len() as f32;
                 let half_bar_width = bar_width / 2.0;
-        
+
                 let mut series_labels_list = vec![];
                 let get_bar_color = |colors: &Option<Vec<Option<Color>>>, index: usize| -> Option<Color> {
                     if let Some(colors) = &colors  {
@@ -547,7 +547,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         }
                         if let Some(color) = colors[index] {
                             return Some(color);
-                        } 
+                        }
                     }
                     None
                 };
@@ -567,7 +567,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         }
                         let mut left = unit_width * (i + series.start_index) as f32 + bar_chart_margin;
                         left += (bar_width + bar_chart_gap) * index as f32;
-        
+
                         let y = y_axis_values.get_offset_height(value, max_height);
 
                         let mut fill = get_bar_color(&series.colors, i);
@@ -613,7 +613,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     split_unit_offset = 1.0;
                 }
                 let mut series_labels_list = vec![];
-        
+
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
@@ -641,7 +641,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         }
                         if value > max_value {
                             max_value = value;
-                            max_index = i; 
+                            max_index = i;
                         }
                         if value < min_value {
                             min_value = value;
@@ -665,9 +665,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     if !points.is_empty() {
                         points_list.push(points);
                     }
-        
+
                     let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-        
+
                     let fill = color.with_alpha(100);
                     let series_fill = self.series_fill;
                     for points in points_list.iter() {
@@ -709,7 +709,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         let index = match mark_point.category {
                             MarkPointCategory::Max => max_index,
                             MarkPointCategory::Min => min_index,
-                        }; 
+                        };
                         if let Some(ref label) = series_labels.get(index) {
                             let r = 15.0;
                             let y = label.point.y - r * 2.0;
