@@ -64,6 +64,19 @@ impl Canvas {
     pub fn height(&self) -> f32 {
         self.height - self.margin.top - self.margin.bottom
     }
+    pub fn child_left_top(&self, margin: Box) -> Self {
+        let mut m = margin;
+        m.left += self.margin.left;
+        m.top += self.margin.top;
+        Canvas {
+            width: self.width,
+            height: self.height,
+            components: Rc::clone(&self.components),
+            margin: m,
+            x: self.x,
+            y: self.y,
+        }
+    }
     pub fn child(&self, margin: Box) -> Self {
         let mut m = margin;
         m.left += self.margin.left;
