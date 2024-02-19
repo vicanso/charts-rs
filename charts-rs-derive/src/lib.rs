@@ -10,6 +10,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
 
     let gen = quote! {
         impl #id {
+            /// Fills the default options of current theme.
             fn fill_theme(&mut self, t: &Theme) {
                 self.font_family = t.font_family.clone();
                 self.margin = t.margin.clone();
@@ -66,15 +67,10 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     Some(self.background_color),
                 ));
             }
+            /// Fills the options from json config.
             fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value> {
                 let data: serde_json::Value = serde_json::from_str(data)?;
                 let series_list = get_series_list_from_value(&data).unwrap_or_default();
-                // TODO 后续调整为由每个 chart 各自处理
-                // if series_list.is_empty() {
-                //     return Err(canvas::Error::Params {
-                //         message: "series list can not be empty".to_string(),
-                //     });
-                // }
                 let theme = get_string_from_value(&data, "theme").unwrap_or_default();
                 let theme = get_theme(&theme);
                 self.fill_theme(theme);
@@ -239,6 +235,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
 
                 Ok(data)
             }
+            /// Gets y axis config by index.
             fn get_y_axis_config(&self, index: usize) -> YAxisConfig {
                 let size = self.y_axis_configs.len();
                 if size == 0 {
@@ -249,6 +246,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     self.y_axis_configs[0].clone()
                 }
             }
+            /// Gets y axis values by index.
             fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32) {
                 let y_axis_config = self.get_y_axis_config(y_axis_index);
                 let mut data_list = vec![];
@@ -286,6 +284,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 };
                 (y_axis_values, y_axis_width)
             }
+            /// Renders background for canvas.
             fn render_background(&self, c: Canvas) {
                 if self.background_color.is_transparent() {
                     return;
@@ -300,6 +299,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
+            /// Render title widget for canvas.
             fn render_title(&self, c: Canvas) -> f32 {
                 let mut title_height = 0.0;
 
@@ -358,6 +358,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 title_height
             }
+            /// Renders legend widget for canvas.
             fn render_legend(&self, c: Canvas) -> f32 {
                 if !self.legend_show.unwrap_or(true) || self.series_list.is_empty() {
                     return 0.0
@@ -417,6 +418,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
 
                 legend_unit_height + legend_top + legend_margin_value
             }
+            /// Renders grid for canvas, the axis width is the right padding of grid canvas,
+            /// and the axis height is the bottom padding of grid canvas.
             fn render_grid(&self, c: Canvas, axis_width: f32, axis_height: f32) {
                 let mut c1 = c;
                 let y_axis_config = self.get_y_axis_config(0);
@@ -431,6 +434,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
+            /// Renders y axis for canvas, if the axis index greater than zero means the right y axis.
             fn render_y_axis(&self, c: Canvas, data: Vec<String>, axis_height: f32, axis_width: f32, axis_index: usize) {
                 let mut c1 = c;
                 let y_axis_config = &self.get_y_axis_config(axis_index);
@@ -460,6 +464,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
+            /// Renders x axis widget for canvas, the x_boundary_gap parameter set to false,
+            /// the align will be left.
             fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32) {
                 let mut c1 = c;
 
@@ -487,6 +493,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     ..Default::default()
                 });
             }
+            /// Renders series label widget for canvas.
             fn render_series_label(&self, c:Canvas, series_labels_list: Vec<Vec<SeriesLabel>>) {
                 if series_labels_list.is_empty() {
                     return;
@@ -517,6 +524,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     }
                 }
             }
+            /// Renders the bar widget for canvas.
             fn render_bar(
                 &self,
                 c: Canvas,
@@ -594,6 +602,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 series_labels_list
             }
+            /// Renders the line widget for canvas.
             fn render_line(
                 &self,
                 c: Canvas,
