@@ -159,7 +159,7 @@ impl RadarChart {
         let title_height = self.render_title(c.child(Box::default()));
 
         let legend_height = self.render_legend(c.child(Box::default()));
-        // title 与 legend 取较高的值
+        // get the max height of title and legend
         let axis_top = if legend_height > title_height {
             legend_height
         } else {

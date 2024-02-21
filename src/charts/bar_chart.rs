@@ -95,8 +95,8 @@ impl BarChart {
         x_axis_data: Vec<String>,
         theme: &str,
     ) -> BarChart {
-        // bar chart 可能同时支持两种图
-        // 因此先计算index
+        // bar chart supports line and bar,
+        // so sets the index first
         series_list
             .iter_mut()
             .enumerate()
@@ -126,7 +126,7 @@ impl BarChart {
         let title_height = self.render_title(c.child(Box::default()));
 
         let legend_height = self.render_legend(c.child(Box::default()));
-        // title 与 legend 取较高的值
+        // get the max height of title and legend
         let axis_top = if legend_height > title_height {
             legend_height
         } else {
@@ -135,6 +135,7 @@ impl BarChart {
 
         let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
         let mut exist_right_y_axis = false;
+        // check the right y axis
         for series in self.series_list.iter() {
             if series.y_axis_index != 0 {
                 exist_right_y_axis = true;
@@ -148,7 +149,7 @@ impl BarChart {
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
-        // 减去顶部文本区域
+        // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,
@@ -173,6 +174,7 @@ impl BarChart {
             left_y_axis_width,
             0,
         );
+        // render right y axis
         if right_y_axis_width > 0.0 {
             self.render_y_axis(
                 c.child(Box {
@@ -202,6 +204,7 @@ impl BarChart {
         let max_height = c.height() - self.x_axis_height;
         let mut bar_series_list = vec![];
         let mut line_series_list = vec![];
+        // filter line and bar series points
         self.series_list.iter().for_each(|item| {
             if let Some(ref cat) = item.category {
                 if *cat == SeriesCategory::Line {

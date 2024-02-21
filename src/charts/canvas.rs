@@ -45,9 +45,11 @@ pub struct Canvas {
 }
 
 impl Canvas {
+    /// Creates a specified size canvas.
     pub fn new(width: f32, height: f32) -> Self {
         Canvas::new_width_xy(width, height, 0.0, 0.0)
     }
+    /// Creates  a specified size canvas and set the x and y value.
     pub fn new_width_xy(width: f32, height: f32, x: f32, y: f32) -> Self {
         Canvas {
             width,
@@ -58,12 +60,15 @@ impl Canvas {
             margin: Box::default(),
         }
     }
+    /// Gets the width of canvas.
     pub fn width(&self) -> f32 {
         self.width - self.margin.left - self.margin.right
     }
+    /// Gets the height of canvas.
     pub fn height(&self) -> f32 {
         self.height - self.margin.top - self.margin.bottom
     }
+    /// Creates a child canvas and sets the left top value.
     pub fn child_left_top(&self, margin: Box) -> Self {
         let mut m = margin;
         m.left += self.margin.left;
@@ -77,6 +82,7 @@ impl Canvas {
             y: self.y,
         }
     }
+    /// Creates a child canvas.
     pub fn child(&self, margin: Box) -> Self {
         let mut m = margin;
         m.left += self.margin.left;
@@ -92,6 +98,7 @@ impl Canvas {
             y: self.y,
         }
     }
+    /// Appends the arrow widget to the canvas.
     pub fn arrow(&mut self, arrow: Arrow) -> Box {
         let mut c = arrow;
         c.x += self.margin.left;

@@ -123,7 +123,7 @@ impl HorizontalBarChart {
         let title_height = self.render_title(c.child(Box::default()));
 
         let legend_height = self.render_legend(c.child(Box::default()));
-        // title 与 legend 取较高的值
+        // get the max height of title and legend
         let axis_top = if legend_height > title_height {
             legend_height
         } else {
@@ -132,7 +132,7 @@ impl HorizontalBarChart {
 
         let x_axis_height = 25.0_f32;
         let axis_height = c.height() - axis_top - x_axis_height;
-        // 减去顶部文本区域
+        // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,

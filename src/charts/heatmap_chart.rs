@@ -265,7 +265,7 @@ impl HeatmapChart {
         let title_height = self.render_title(c.child(Box::default()));
 
         let legend_height = self.render_legend(c.child(Box::default()));
-        // title 与 legend 取较高的值
+        // get the max height of title and legend
         let axis_top = if legend_height > title_height {
             legend_height
         } else {
@@ -278,7 +278,7 @@ impl HeatmapChart {
             self.y_axis_configs[0].axis_font_size,
             self.y_axis_data.iter().map(|item| item.as_str()).collect(),
         )?;
-        // 减去顶部文本区域
+        // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,

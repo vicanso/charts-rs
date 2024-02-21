@@ -137,7 +137,7 @@ impl ScatterChart {
         let title_height = self.render_title(c.child(Box::default()));
 
         let legend_height = self.render_legend(c.child(Box::default()));
-        // title 与 legend 取较高的值
+        // get the max height of title and legend
         let axis_top = if legend_height > title_height {
             legend_height
         } else {
@@ -181,7 +181,7 @@ impl ScatterChart {
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - y_axis_width;
-        // 减去顶部文本区域
+        // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,

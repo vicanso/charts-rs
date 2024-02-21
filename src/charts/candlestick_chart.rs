@@ -17,7 +17,7 @@ pub struct CandlestickChart {
     pub x: f32,
     pub y: f32,
     pub margin: Box,
-    // 其中candlestick的数据：开市值(open)，收市值(close)，最低值(lowest)，最高值(highest)
+    // [open price1, close price1, lowest price1, highest price1, open price2, close price2, ...]
     pub series_list: Vec<Series>,
     pub font_family: String,
     pub background_color: Color,
@@ -128,8 +128,7 @@ impl CandlestickChart {
         x_axis_data: Vec<String>,
         theme: &str,
     ) -> CandlestickChart {
-        // candlestick的数据：开市值(open)，收市值(close)，最低值(lowest)，最高值(highest)
-        // 因此先计算index
+        // set the index of series
         series_list
             .iter_mut()
             .enumerate()
@@ -160,7 +159,7 @@ impl CandlestickChart {
         let title_height = self.render_title(c.child(Box::default()));
 
         let legend_height = self.render_legend(c.child(Box::default()));
-        // title 与 legend 取较高的值
+        // get the max height of title and legend
         let axis_top = if legend_height > title_height {
             legend_height
         } else {
@@ -171,7 +170,7 @@ impl CandlestickChart {
 
         let axis_height = c.height() - self.x_axis_height - axis_top;
         let axis_width = c.width() - left_y_axis_width;
-        // 减去顶部文本区域
+        // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,
@@ -213,6 +212,8 @@ impl CandlestickChart {
             if series.category.is_some() {
                 continue;
             }
+            // split the series point to chunk
+            // [open, close, lowest, highest]
             let chunks = series.data.chunks(4);
 
             for (index, chunk) in chunks.enumerate() {
@@ -226,7 +227,7 @@ impl CandlestickChart {
                 let highest = left_y_axis_values.get_offset_height(chunk[3], axis_height);
                 let mut fill = self.candlestick_up_color;
                 let mut border_color = self.candlestick_up_border_color;
-                // 跌
+                // fall
                 if chunk[0] > chunk[1] {
                     fill = self.candlestick_down_color;
                     border_color = self.candlestick_down_border_color;
@@ -331,7 +332,7 @@ mod tests {
     fn candlestick_chart_sh() {
         let mut candlestick_chart = CandlestickChart::new(
             vec![
-                // 从第6个点开始
+                // start at sixth point
                 (
                     "MA5",
                     vec![
