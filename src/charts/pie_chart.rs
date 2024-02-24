@@ -189,7 +189,7 @@ impl PieChart {
             let value = values[index];
             let mut cr = value / max * (r - self.inner_radius) + self.inner_radius;
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-            // 普通饼图
+            // normal pie
             if !rose_type {
                 cr = r;
                 delta = value / sum * 360.0;

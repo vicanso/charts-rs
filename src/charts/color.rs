@@ -10,40 +10,50 @@ pub struct Color {
 }
 
 impl Color {
+    /// Converts color to hex format.
     pub fn hex(&self) -> String {
         format!("#{:02X}{:02X}{:02X}", self.r, self.g, self.b)
     }
+    /// Converts color to rgba format.
     pub fn rgba(&self) -> String {
         let fa = (self.a as f32) / 255.0;
         format!("rgba({},{},{},{:.1})", self.r, self.g, self.b, fa)
     }
+    /// Gets opacity value of color.
     pub fn opacity(&self) -> f32 {
         let a = self.a as f32;
         a / 255.0
     }
+    /// Returns true if color is zero.
     pub fn is_zero(&self) -> bool {
         self.r == 0 && self.g == 0 && self.b == 0 && self.a == 0
     }
+    /// Returns true if color is transparent.
     pub fn is_transparent(&self) -> bool {
         self.a == 0
     }
+    /// Returns true if color is not transparent.
     pub fn is_nontransparent(&self) -> bool {
         self.a == 255
     }
+    /// Returns white color.
     pub fn white() -> Color {
         (255, 255, 255).into()
     }
+    /// Returns black color.
     pub fn black() -> Color {
         (0, 0, 0).into()
     }
     pub fn transparent() -> Color {
         (0, 0, 0, 0).into()
     }
+    /// Sets color with new alpha.
     pub fn with_alpha(&self, a: u8) -> Color {
         let mut c = *self;
         c.a = a;
         c
     }
+    /// Returns ture if the color is light.
     pub fn is_light(&self) -> bool {
         let mut r = self.r as f64;
         let mut g = self.g as f64;

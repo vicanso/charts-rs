@@ -4,11 +4,9 @@ use crate::{
 
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 
+/// Gets bool value from serde json.
 pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Option<bool> {
     if let Some(value) = value.get(key) {
-        if value.is_null() {
-            return None;
-        }
         if let Some(b) = value.as_bool() {
             return Some(b);
         }
@@ -16,17 +14,17 @@ pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Optio
     None
 }
 
+/// Gets usize value from serde json.
 pub(crate) fn get_usize_from_value(value: &serde_json::Value, key: &str) -> Option<usize> {
     if let Some(value) = value.get(key) {
-        if value.is_null() {
-            return None;
-        }
         if let Some(u) = value.as_u64() {
             return Some(u as usize);
         }
     }
     None
 }
+
+/// Gets usize slice value from serde json.
 pub(crate) fn get_usize_slice_from_value(
     value: &serde_json::Value,
     key: &str,
@@ -50,6 +48,7 @@ pub(crate) fn get_usize_slice_from_value(
     None
 }
 
+/// Gets float32 value from serde json.
 pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option<f32> {
     if let Some(value) = value.get(key) {
         if value.is_null() {
@@ -62,6 +61,7 @@ pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option
     None
 }
 
+/// Gets float32 slice value from serde json, the value can be null.
 pub(crate) fn get_f32_slice_from_value_support_nil(
     value: &serde_json::Value,
     key: &str,
@@ -87,6 +87,8 @@ pub(crate) fn get_f32_slice_from_value_support_nil(
     }
     None
 }
+
+/// Gets float32 slice value from serde json, the value will set as 0.0 if not float32.
 pub(crate) fn get_f32_slice_from_value(value: &serde_json::Value, key: &str) -> Option<Vec<f32>> {
     if let Some(arr) = value.get(key) {
         if let Some(values) = arr.as_array() {
@@ -122,6 +124,7 @@ fn convert_to_align(value: &serde_json::Value) -> Option<Align> {
     None
 }
 
+/// Gets align slice value from serde json.
 pub(crate) fn get_align_slice_from_value(
     value: &serde_json::Value,
     key: &str,
@@ -139,12 +142,16 @@ pub(crate) fn get_align_slice_from_value(
     }
     None
 }
+
+/// Gets align value from serde json.
 pub(crate) fn get_align_from_value(value: &serde_json::Value, key: &str) -> Option<Align> {
     if let Some(value) = value.get(key) {
         return convert_to_align(value);
     }
     None
 }
+
+/// Gets legend category value from serde json.
 pub(crate) fn get_legend_category_from_value(
     value: &serde_json::Value,
     key: &str,
@@ -166,6 +173,7 @@ pub(crate) fn get_legend_category_from_value(
     None
 }
 
+/// Gets margin box value from serde json.
 pub(crate) fn get_margin_from_value(value: &serde_json::Value, key: &str) -> Option<Box> {
     if let Some(data) = value.get(key) {
         if data.is_null() {
@@ -185,6 +193,7 @@ fn get_box_from_value(value: &serde_json::Value) -> Box {
     }
 }
 
+/// Gets string slice value from serde json.
 pub(crate) fn get_string_slice_from_value(
     value: &serde_json::Value,
     key: &str,
@@ -201,6 +210,8 @@ pub(crate) fn get_string_slice_from_value(
     }
     None
 }
+
+/// Gets y axis config value from serde json.
 pub(crate) fn get_y_axis_config_from_value(t: &Theme, item: &serde_json::Value) -> YAxisConfig {
     let mut y_config = YAxisConfig {
         axis_font_size: t.y_axis_font_size,
@@ -246,6 +257,7 @@ pub(crate) fn get_y_axis_config_from_value(t: &Theme, item: &serde_json::Value) 
     y_config
 }
 
+/// Gets y axis config value from serde json.
 pub(crate) fn get_y_axis_configs_from_value(
     t: &Theme,
     value: &serde_json::Value,
@@ -264,6 +276,7 @@ pub(crate) fn get_y_axis_configs_from_value(
     None
 }
 
+/// Gets color value from serde json.
 pub(crate) fn get_color_slice_from_value(
     value: &serde_json::Value,
     key: &str,
@@ -281,6 +294,7 @@ pub(crate) fn get_color_slice_from_value(
     None
 }
 
+/// Gets string value from serde json.
 pub(crate) fn get_string_from_value(value: &serde_json::Value, key: &str) -> Option<String> {
     if let Some(s) = value.get(key) {
         if s.is_null() {
@@ -292,6 +306,8 @@ pub(crate) fn get_string_from_value(value: &serde_json::Value, key: &str) -> Opt
     }
     None
 }
+
+/// Gets position value from serde json.
 pub(crate) fn get_position_from_value(value: &serde_json::Value, key: &str) -> Option<Position> {
     if let Some(value) = get_string_from_value(value, key) {
         let p = match value.as_str() {
@@ -306,6 +322,7 @@ pub(crate) fn get_position_from_value(value: &serde_json::Value, key: &str) -> O
     None
 }
 
+/// Gets color value from serde json.
 pub(crate) fn get_color_from_value(value: &serde_json::Value, key: &str) -> Option<Color> {
     if let Some(s) = get_string_from_value(value, key) {
         return Some(s.as_str().into());
@@ -329,18 +346,17 @@ fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Optio
     None
 }
 
+/// Gets series symbol value from serde json.
 pub(crate) fn get_series_symbol_from_value(value: &serde_json::Value, key: &str) -> Option<Symbol> {
     if let Some(value) = value.get(key) {
-        // 属性存在但为null
         if value.is_null() {
             return Some(Symbol::None);
         }
-        // 暂时只有circle
+        // only supports circle
         let color = get_color_from_value(value, "color");
         let radius = get_f32_from_value(value, "radius").unwrap_or(3.0);
         return Some(Symbol::Circle(radius, color));
     }
-    // 不存在则返回None
     None
 }
 
@@ -422,6 +438,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
     })
 }
 
+/// Gets series list value from serde json.
 pub(crate) fn get_series_list_from_value(value: &serde_json::Value) -> Option<Vec<Series>> {
     if let Some(data) = value.get("series_list") {
         if let Some(arr) = data.as_array() {

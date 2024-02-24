@@ -32,7 +32,7 @@ fn get_family_from_font(font: &fontdue::Font) -> String {
         if let Some(caps) = re.captures(&desc) {
             let mut family = caps["family"].to_string();
             // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
-            // 如果以Light、Bold等font-weight描述
+            // replace some font weight
             if let Ok(weight) = regex::Regex::new(r#"Thin|Light|Regular|Medium|Bold|Black$"#) {
                 family = weight.replace_all(&family, "").to_string();
             }
@@ -46,8 +46,7 @@ pub fn get_or_try_init_fonts(fonts: Option<Vec<&[u8]>>) -> Result<&'static HashM
     static GLOBAL_FONTS: OnceCell<HashMap<String, Font>> = OnceCell::new();
     GLOBAL_FONTS.get_or_try_init(|| {
         let mut m = HashMap::new();
-        // 初始化字体
-        // 失败时直接出错
+        // init fonts, will returns an error if load font fails.
         let font = fontdue::Font::from_bytes(DEFAULT_FONT_DATA, fontdue::FontSettings::default())?;
         m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
         let mut font_datas = vec![DEFAULT_FONT_DATA];
@@ -66,6 +65,7 @@ pub fn get_or_try_init_fonts(fonts: Option<Vec<&[u8]>>) -> Result<&'static HashM
         Ok(m)
     })
 }
+/// Gets font by font family.
 pub fn get_font(name: &str) -> Result<&Font> {
     let fonts = get_or_try_init_fonts(None)?;
     if let Some(font) = fonts.get(name).or_else(|| fonts.get(DEFAULT_FONT_FAMILY)) {
@@ -77,6 +77,7 @@ pub fn get_font(name: &str) -> Result<&Font> {
         .fail()
     }
 }
+/// Gets all supported font family
 pub fn get_font_families() -> Result<Vec<String>> {
     let fonts = get_or_try_init_fonts(None)?;
     let mut families = vec![];
@@ -86,6 +87,7 @@ pub fn get_font_families() -> Result<Vec<String>> {
     Ok(families)
 }
 
+/// Measures the display area of text of a specified font size.
 pub fn measure_text(font: &Font, font_size: f32, text: &str) -> Box {
     let mut layout = Layout::new(CoordinateSystem::PositiveYDown);
     layout.append(&[font], &TextStyle::new(text, font_size, 0));
@@ -109,11 +111,13 @@ pub fn measure_text(font: &Font, font_size: f32, text: &str) -> Box {
     }
 }
 
+/// Measures the display area of text of a specified font size and font family.
 pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) -> Result<Box> {
     let font = get_font(font_family)?;
     Ok(measure_text(font, font_size, text))
 }
 
+/// Gets the max width of multi text.
 pub fn measure_max_text_width_family(
     font_family: &str,
     font_size: f32,
@@ -130,6 +134,7 @@ pub fn measure_max_text_width_family(
     Ok(result)
 }
 
+/// Cuts the text wrap fix size to muli text list.
 pub fn text_wrap_fit(
     font_family: &str,
     font_size: f32,

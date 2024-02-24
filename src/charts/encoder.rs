@@ -59,22 +59,22 @@ fn save_image(svg: &str, format: image::ImageOutputFormat) -> Result<Vec<u8>> {
     Ok(buf.into_inner())
 }
 
-/// Converts svg to png
+/// Converts svg to png.
 pub fn svg_to_png(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageOutputFormat::Png)
 }
 
-/// Converts svg to jpeg
+/// Converts svg to jpeg, the quality is 80.
 pub fn svg_to_jpeg(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageOutputFormat::Jpeg(80))
 }
 
-/// Converts svg to webp
+/// Converts svg to webp.
 pub fn svg_to_webp(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageOutputFormat::WebP)
 }
 
-/// Converts svg to avif
+/// Converts svg to avif.
 pub fn svg_to_avif(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageOutputFormat::Avif)
 }

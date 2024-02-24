@@ -394,7 +394,7 @@ impl TableChart {
             rest_count += 1.0;
             spans.push(0.0);
         }
-        // 重新赋值为0表格的宽度，平分剩余的宽度
+        // reassign the width of the table to 0 and divide the remaining width equally
         if rest_count > 0.0 {
             let unit_width = rest_width / rest_count;
             for item in spans.iter_mut() {
@@ -429,8 +429,8 @@ impl TableChart {
 
             let mut row_content_list = vec![];
             for (j, item) in items.iter().enumerate() {
-                // 已保证肯定有数据
-                // 需要减去padding
+                // spans[j] can not be nil
+                // minus the padding value
                 let span_width = spans[j] - padding;
                 if let Ok(result) = text_wrap_fit(&self.font_family, font_size, item, span_width) {
                     row_content_list.push(result);
@@ -495,15 +495,14 @@ impl TableChart {
                 });
             }
             for (j, content_list) in items.iter().enumerate() {
-                // 已保证肯定有数据
+                // spans[j] can not be nil
                 let span_width = spans[j];
 
                 let mut cell_font_color = font_color;
                 let mut cell_font_weight = font_weight.clone();
 
-                // 每个table cell的背景色
+                // get the table cell's background color
                 if let Some(cell_style) = find_cell_style(i, j) {
-                    // 有配置则设置
                     if let Some(value) = cell_style.font_color {
                         cell_font_color = value;
                     }

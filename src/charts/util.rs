@@ -190,7 +190,6 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             min = value;
         }
     }
-    // 是否自定义的最小值
     let mut is_custom_min = false;
 
     if let Some(value) = params.min {
@@ -199,11 +198,10 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             is_custom_min = true;
         }
     }
-    // 如果非指定的值，而值超过0，则使用0
+    // it should use 0, if min gt 0 and not custom value
     if !is_custom_min && min > 0.0 {
         min = 0.0;
     }
-    // 是否自定义的最大值
     let mut is_custom_max = false;
     if let Some(value) = params.max {
         if value > max {
@@ -278,7 +276,7 @@ pub(crate) struct LabelOption {
 }
 impl LabelOption {
     pub fn format(&self) -> String {
-        // {a}：系列名。{b}：数据名。{c}：数据值。{d}：百分比
+        // {a} for series name, {b} for category name, {c} for data value, {d} for percentage
         let value = format_float(self.value);
         let percentage = format_float(self.percentage * 100.0) + "%";
         if self.formatter.is_empty() {

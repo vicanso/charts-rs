@@ -53,6 +53,7 @@ static ATTR_DY: &str = "dy";
 static ATTR_R: &str = "r";
 static ATTR_D: &str = "d";
 
+/// Converts opacity to string value.
 fn convert_opacity(color: &Color) -> String {
     if color.is_nontransparent() {
         "".to_string()

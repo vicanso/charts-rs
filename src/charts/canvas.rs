@@ -98,7 +98,7 @@ impl Canvas {
             y: self.y,
         }
     }
-    /// Appends the arrow widget to the canvas.
+    /// Appends arrow widget to canvas.
     pub fn arrow(&mut self, arrow: Arrow) -> Box {
         let mut c = arrow;
         c.x += self.margin.left;
@@ -109,6 +109,7 @@ impl Canvas {
         b.bottom = b.top;
         b
     }
+    /// Appends line widget to canvas.
     pub fn line(&mut self, line: Line) -> Box {
         let mut c = line;
         c.left += self.margin.left;
@@ -124,6 +125,7 @@ impl Canvas {
         self.append(Component::Line(c));
         b
     }
+    /// Appends rect widget to canvas.
     pub fn rect(&mut self, rect: Rect) -> Box {
         let mut c = rect;
         c.left += self.margin.left;
@@ -137,6 +139,7 @@ impl Canvas {
         self.append(Component::Rect(c));
         b
     }
+    /// Appends polyline widget to canvas.
     pub fn polyline(&mut self, polyline: Polyline) -> Box {
         let mut c = polyline;
         for p in c.points.iter_mut() {
@@ -148,6 +151,7 @@ impl Canvas {
         self.append(Component::Polyline(c));
         b
     }
+    /// Appends circle widget to canvas.
     pub fn circle(&mut self, circle: Circle) -> Box {
         let mut c = circle;
         c.cx += self.margin.left;
@@ -161,6 +165,7 @@ impl Canvas {
         self.append(Component::Circle(c));
         b
     }
+    /// Appends polygon widget to canvas.
     pub fn polygon(&mut self, polygon: Polygon) -> Box {
         let mut c = polygon;
         for p in c.points.iter_mut() {
@@ -171,6 +176,7 @@ impl Canvas {
         self.append(Component::Polygon(c));
         b
     }
+    /// Appends text widget to canvas.
     pub fn text(&mut self, text: Text) -> Box {
         let font_family = text.font_family.clone().unwrap_or_default();
         let font_size = text.font_size.unwrap_or_default();
@@ -208,6 +214,7 @@ impl Canvas {
         self.append(Component::Text(c));
         b
     }
+    /// Appends pie widget to canvas.
     pub fn pie(&mut self, pie: Pie) -> Box {
         let mut c = pie;
         c.cx += self.margin.left;
@@ -222,6 +229,7 @@ impl Canvas {
         self.append(Component::Pie(c));
         b
     }
+    /// Appends smooth line points widget to canvas.
     pub fn smooth_line(&mut self, line: SmoothLine) -> Box {
         let mut c = line;
         for p in c.points.iter_mut() {
@@ -232,6 +240,7 @@ impl Canvas {
         self.append(Component::SmoothLine(c));
         b
     }
+    /// Appends straight line points widget to canvas.
     pub fn straight_line(&mut self, line: StraightLine) -> Box {
         let mut c = line;
         for p in c.points.iter_mut() {
@@ -242,6 +251,7 @@ impl Canvas {
         self.append(Component::StraightLine(c));
         b
     }
+    /// Appends smooth line points with fill color widget to canvas.
     pub fn smooth_line_fill(&mut self, fill: SmoothLineFill) -> Box {
         let mut c = fill;
         for p in c.points.iter_mut() {
@@ -254,6 +264,7 @@ impl Canvas {
         self.append(Component::SmoothLineFill(c));
         b
     }
+    /// Appends straight line points with fill color widget to canvas.
     pub fn straight_line_fill(&mut self, fill: StraightLineFill) -> Box {
         let mut c = fill;
         for p in c.points.iter_mut() {
@@ -266,6 +277,7 @@ impl Canvas {
         self.append(Component::StraightLineFill(c));
         b
     }
+    // Appends grid widget to canvas.
     pub fn grid(&mut self, grip: Grid) -> Box {
         let mut c = grip;
         c.left += self.margin.left;
@@ -281,6 +293,7 @@ impl Canvas {
         self.append(Component::Grid(c));
         b
     }
+    // Appends axis widget to canvas.
     pub fn axis(&mut self, axis: Axis) -> Box {
         let mut c = axis;
         c.left += self.margin.left;
@@ -294,6 +307,7 @@ impl Canvas {
         self.append(Component::Axis(c));
         b
     }
+    /// Appends lenged widget to canvas.
     pub fn legend(&mut self, legend: Legend) -> Box {
         let mut c = legend;
         c.left += self.margin.left;
@@ -309,6 +323,7 @@ impl Canvas {
         self.append(Component::Legend(c));
         b
     }
+    /// Appends bubble widget to canvas.
     pub fn bubble(&mut self, bubble: Bubble) -> Box {
         let mut c = bubble;
         c.x += self.margin.left;
@@ -326,6 +341,7 @@ impl Canvas {
         let mut components = self.components.borrow_mut();
         components.push(component);
     }
+    /// Generates the svg of canvas.
     pub fn svg(&self) -> Result<String> {
         let mut data = vec![];
         for c in self.components.borrow().iter() {

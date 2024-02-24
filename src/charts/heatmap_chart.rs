@@ -70,7 +70,7 @@ pub struct HeatmapChart {
     pub x: f32,
     pub y: f32,
     pub margin: Box,
-    // heatmap使用新的数据结构
+    // no use, but for derive chart
     series_list: Vec<Series>,
     pub series: HeatmapSeries,
     pub font_family: String,
@@ -325,7 +325,7 @@ impl HeatmapChart {
             for j in 0..self.x_axis_data.len() {
                 let index = i * self.y_axis_data.len() + j;
                 let x = x_unit * j as f32;
-                // y轴从下开始计算
+                // position of y axis starts from bottom
                 let y = y_unit * (y_axis_count - i - 1) as f32;
                 let mut text = "".to_string();
                 let mut font_color = self.series.min_font_color;

@@ -59,15 +59,17 @@ pub struct MarkPoint {
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct Series {
+    // name of series
     pub name: String,
+    // data list of series
     pub data: Vec<f32>,
-    // 数据开始位置，用于数据不足且非从0开始场景
+    // start index of series
     pub start_index: usize,
-    // 指定index
+    // index of series
     pub index: Option<usize>,
-    // 其对应的y轴
+    // y axis index of series
     pub y_axis_index: usize,
-    // 是否展示label
+    // whether to display the label
     pub label_show: bool,
     // mark lines
     pub mark_lines: Vec<MarkLine>,
@@ -75,7 +77,9 @@ pub struct Series {
     pub mark_points: Vec<MarkPoint>,
     // colors of series bar
     pub colors: Option<Vec<Option<Color>>>,
+    // category of series
     pub category: Option<SeriesCategory>,
+    // stroke dash array for series
     pub stroke_dash_array: Option<String>,
 }
 
