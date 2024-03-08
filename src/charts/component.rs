@@ -243,8 +243,12 @@ impl Rect {
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
         if let Some(color) = self.fill {
-            attrs.push((ATTR_FILL, color.hex()));
-            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+            if color.is_transparent() {
+                attrs.push((ATTR_FILL, "none".to_string()));
+            } else {
+                attrs.push((ATTR_FILL, color.hex()));
+                attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+            }
         }
 
         SVGTag {

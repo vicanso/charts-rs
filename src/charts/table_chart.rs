@@ -48,6 +48,7 @@ pub struct TableChart {
     pub spans: Vec<f32>,
     pub text_aligns: Vec<Align>,
     pub border_color: Color,
+    pub outlined: bool,
 
     pub header_row_padding: Box,
     pub header_row_height: f32,
@@ -216,6 +217,9 @@ impl TableChart {
         }
         if let Some(border_color) = get_color_from_value(&data, "border_color") {
             self.border_color = border_color;
+        }
+        if let Some(outlined) = get_bool_from_value(&data, "outlined") {
+            self.outlined = outlined;
         }
         Ok(data)
     }
@@ -557,7 +561,17 @@ impl TableChart {
             }
             top += row_height;
         }
-
+        if self.outlined {
+            c.rect(Rect {
+                color: Some(self.border_color),
+                fill: Some(Color::transparent()),
+                left: 1.0,
+                top: 0.0,
+                width: c.width() - 1.0,
+                height: top - 1.0,
+                ..Default::default()
+            });
+        }
         c.height = c.margin.top + top;
         self.height = c.height;
 
@@ -602,6 +616,7 @@ mod tests {
             background_color: Some("#3bb357".into()),
             font_color: Some(("#fff").into()),
         }];
+        table_chart.outlined = true;
         assert_eq!(
             include_str!("../../asset/table_chart/basic.svg"),
             table_chart.svg().unwrap()

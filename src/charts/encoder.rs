@@ -2,7 +2,7 @@ use once_cell::sync::OnceCell;
 use resvg::{tiny_skia, usvg};
 use snafu::{ResultExt, Snafu};
 use std::io::Cursor;
-use usvg::{fontdb, TreeParsing, TreePostProc};
+use usvg::fontdb;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
@@ -39,9 +39,9 @@ pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> &fontdb::Database
 
 fn save_image(svg: &str, format: image::ImageOutputFormat) -> Result<Vec<u8>> {
     let fontdb = get_or_init_fontdb(None);
-    let mut tree = usvg::Tree::from_str(svg, &usvg::Options::default()).context(ParseSnafu {})?;
-    tree.postprocess(usvg::PostProcessingSteps::default(), fontdb);
-    let pixmap_size = tree.size.to_int_size();
+    let tree =
+        usvg::Tree::from_str(svg, &usvg::Options::default(), fontdb).context(ParseSnafu {})?;
+    let pixmap_size = tree.size().to_int_size();
     let mut pixmap =
         tiny_skia::Pixmap::new(pixmap_size.width(), pixmap_size.height()).ok_or(Error::Size {
             width: pixmap_size.width(),
