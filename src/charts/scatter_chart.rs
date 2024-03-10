@@ -60,9 +60,11 @@ pub struct ScatterChart {
     pub x_axis_name_rotate: f32,
     pub x_axis_margin: Option<Box>,
     pub x_axis_config: YAxisConfig,
+    pub x_axis_hidden: bool,
     pub x_boundary_gap: Option<bool>,
 
     // y axis
+    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
@@ -95,6 +97,12 @@ impl ScatterChart {
 
         if let Some(series_symbol_sizes) = get_f32_slice_from_value(&value, "series_symbol_sizes") {
             s.series_symbol_sizes = series_symbol_sizes;
+        }
+        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
+            s.x_axis_hidden = x_axis_hidden;
+        }
+        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
+            s.y_axis_hidden = y_axis_hidden;
         }
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
@@ -132,6 +140,10 @@ impl ScatterChart {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
+        let mut x_axis_height = self.x_axis_height;
+        if self.x_axis_hidden {
+            x_axis_height = 0.0;
+        }
         c.margin = self.margin.clone();
 
         let title_height = self.render_title(c.child(Box::default()));
@@ -165,7 +177,9 @@ impl ScatterChart {
             max: y_axis_config.axis_max,
             thousands_format: false,
         });
-        let y_axis_width = if let Some(value) = y_axis_config.axis_width {
+        let y_axis_width = if self.y_axis_hidden {
+            0.0
+        } else if let Some(value) = y_axis_config.axis_width {
             value
         } else {
             let y_axis_formatter = &y_axis_config.axis_formatter.clone().unwrap_or_default();
@@ -179,7 +193,7 @@ impl ScatterChart {
             }
         };
 
-        let axis_height = c.height() - self.x_axis_height - axis_top;
+        let axis_height = c.height() - x_axis_height - axis_top;
         let axis_width = c.width() - y_axis_width;
         // minus the height of top text area
         if axis_top > 0.0 {
@@ -214,13 +228,15 @@ impl ScatterChart {
         });
 
         // y axis
-        self.render_y_axis(
-            c.child(Box::default()),
-            y_axis_values.data.clone(),
-            axis_height,
-            y_axis_width,
-            0,
-        );
+        if !self.y_axis_hidden {
+            self.render_y_axis(
+                c.child(Box::default()),
+                y_axis_values.data.clone(),
+                axis_height,
+                y_axis_width,
+                0,
+            );
+        }
 
         // x axis
         let x_axis_values = get_axis_values(AxisValueParams {
@@ -237,19 +253,21 @@ impl ScatterChart {
             .unwrap_or_default();
         let content_width = c.width() - y_axis_width;
         let content_height = axis_height;
-        self.render_x_axis(
-            c.child(Box {
-                top: c.height() - self.x_axis_height,
-                left: y_axis_width,
-                ..Default::default()
-            }),
-            x_axis_values
-                .data
-                .iter()
-                .map(|item| format_string(item, x_axis_formatter))
-                .collect(),
-            axis_width,
-        );
+        if !self.x_axis_hidden {
+            self.render_x_axis(
+                c.child(Box {
+                    top: c.height() - x_axis_height,
+                    left: y_axis_width,
+                    ..Default::default()
+                }),
+                x_axis_values
+                    .data
+                    .iter()
+                    .map(|item| format_string(item, x_axis_formatter))
+                    .collect(),
+                axis_width,
+            );
+        }
 
         // render dot
         let mut content_canvas = c.child(Box {
@@ -334,6 +352,57 @@ mod tests {
 
         assert_eq!(
             include_str!("../../asset/scatter_chart/basic.svg"),
+            scatter_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn scatter_chart_no_axis() {
+        let mut scatter_chart = ScatterChart::new(vec![
+            (
+                "Female",
+                vec![
+                    161.2, 51.6, 167.5, 59.0, 159.5, 49.2, 157.0, 63.0, 155.8, 53.6, 170.0, 59.0,
+                    159.1, 47.6, 166.0, 69.8, 176.2, 66.8, 160.2, 75.2, 172.5, 55.2, 170.9, 54.2,
+                    172.9, 62.5, 153.4, 42.0, 160.0, 50.0, 147.2, 49.8, 168.2, 49.2, 175.0, 73.2,
+                    157.0, 47.8, 167.6, 68.8, 159.5, 50.6, 175.0, 82.5, 166.8, 57.2, 176.5, 87.8,
+                    170.2, 72.8,
+                ],
+            )
+                .into(),
+            (
+                "Male",
+                vec![
+                    174.0, 65.6, 175.3, 71.8, 193.5, 80.7, 186.5, 72.6, 187.2, 78.8, 181.5, 74.8,
+                    184.0, 86.4, 184.5, 78.4, 175.0, 62.0, 184.0, 81.6, 180.0, 76.6, 177.8, 83.6,
+                    192.0, 90.0, 176.0, 74.6, 174.0, 71.0, 184.0, 79.6, 192.7, 93.8, 171.5, 70.0,
+                    173.0, 72.4, 176.0, 85.9, 176.0, 78.8, 180.5, 77.8, 172.7, 66.2, 176.0, 86.4,
+                    173.5, 81.8,
+                ],
+            )
+                .into(),
+        ]);
+
+        scatter_chart.title_text = "Male and female height and weight distribution".to_string();
+        scatter_chart.margin.right = 20.0;
+        scatter_chart.title_align = Align::Left;
+        scatter_chart.sub_title_text = "Data from: Heinz 2003".to_string();
+        scatter_chart.sub_title_align = Align::Left;
+        scatter_chart.legend_align = Align::Right;
+        scatter_chart.y_axis_configs[0].axis_min = Some(40.0);
+        scatter_chart.y_axis_configs[0].axis_max = Some(130.0);
+        scatter_chart.y_axis_configs[0].axis_formatter = Some("{c} kg".to_string());
+
+        scatter_chart.x_axis_config.axis_min = Some(140.0);
+        scatter_chart.x_axis_config.axis_max = Some(230.0);
+        scatter_chart.x_axis_config.axis_formatter = Some("{c} cm".to_string());
+
+        scatter_chart.series_symbol_sizes = vec![6.0, 6.0];
+        scatter_chart.x_axis_hidden = true;
+        scatter_chart.y_axis_hidden = true;
+
+        assert_eq!(
+            include_str!("../../asset/scatter_chart/no_axis.svg"),
             scatter_chart.svg().unwrap()
         );
     }

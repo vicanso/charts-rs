@@ -58,9 +58,11 @@ pub struct LineChart {
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_axis_margin: Option<Box>,
+    pub x_axis_hidden: bool,
     pub x_boundary_gap: Option<bool>,
 
     // y axis
+    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
@@ -85,7 +87,13 @@ impl LineChart {
         let mut l = LineChart {
             ..Default::default()
         };
-        l.fill_option(data)?;
+        let value = l.fill_option(data)?;
+        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
+            l.x_axis_hidden = x_axis_hidden;
+        }
+        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
+            l.y_axis_hidden = y_axis_hidden;
+        }
         Ok(l)
     }
     /// Creates a line chart with custom theme.
@@ -198,6 +206,10 @@ impl LineChart {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
+        let mut x_axis_height = self.x_axis_height;
+        if self.x_axis_hidden {
+            x_axis_height = 0.0;
+        }
         c.margin = self.margin.clone();
 
         let title_height = self.render_title(c.child(Box::default()));
@@ -210,7 +222,10 @@ impl LineChart {
             title_height
         };
 
-        let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
+        if self.y_axis_hidden {
+            left_y_axis_width = 0.0;
+        }
         let mut exist_right_y_axis = false;
         for series in self.series_list.iter() {
             if series.y_axis_index != 0 {
@@ -223,7 +238,7 @@ impl LineChart {
             (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
         }
 
-        let axis_height = c.height() - self.x_axis_height - axis_top;
+        let axis_height = c.height() - x_axis_height - axis_top;
         let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
         // minus the height of top text area
         if axis_top > 0.0 {
@@ -243,13 +258,15 @@ impl LineChart {
         );
 
         // y axis
-        self.render_y_axis(
-            c.child(Box::default()),
-            left_y_axis_values.data.clone(),
-            axis_height,
-            left_y_axis_width,
-            0,
-        );
+        if left_y_axis_width > 0.0 {
+            self.render_y_axis(
+                c.child(Box::default()),
+                left_y_axis_values.data.clone(),
+                axis_height,
+                left_y_axis_width,
+                0,
+            );
+        }
         if right_y_axis_width > 0.0 {
             self.render_y_axis(
                 c.child(Box {
@@ -264,20 +281,22 @@ impl LineChart {
         }
 
         // x axis
-        self.render_x_axis(
-            c.child(Box {
-                top: c.height() - self.x_axis_height,
-                left: left_y_axis_width,
-                right: right_y_axis_width,
-                ..Default::default()
-            }),
-            self.x_axis_data.clone(),
-            axis_width,
-        );
+        if !self.x_axis_hidden {
+            self.render_x_axis(
+                c.child(Box {
+                    top: c.height() - x_axis_height,
+                    left: left_y_axis_width,
+                    right: right_y_axis_width,
+                    ..Default::default()
+                }),
+                self.x_axis_data.clone(),
+                axis_width,
+            );
+        }
 
         // line point
         let y_axis_values_list = vec![&left_y_axis_values, &right_y_axis_values];
-        let max_height = c.height() - self.x_axis_height;
+        let max_height = c.height() - x_axis_height;
         let line_series_list: Vec<&Series> = self.series_list.iter().collect();
         let series_labels_list = self.render_line(
             c.child(Box {
@@ -644,6 +663,70 @@ mod tests {
         line_chart.series_list[3].label_show = true;
         assert_eq!(
             include_str!("../../asset/line_chart/value_count_unequal.svg"),
+            line_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn line_chart_no_axis() {
+        let mut line_chart = LineChart::new(
+            vec![
+                (
+                    "Email",
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                )
+                    .into(),
+                (
+                    "Union Ads",
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                )
+                    .into(),
+                (
+                    "Direct",
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                )
+                    .into(),
+                (
+                    "Search Engine",
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                )
+                    .into(),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        line_chart.series_list[0].stroke_dash_array = Some("4,2".to_string());
+        line_chart.margin.right = 50.0;
+        line_chart.title_text = "Stacked Area Chart".to_string();
+        line_chart.sub_title_text = "Hello World".to_string();
+        line_chart.legend_margin = Some(Box {
+            top: 50.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        line_chart.series_list[3].mark_lines = vec![MarkLine {
+            category: MarkLineCategory::Average,
+        }];
+        line_chart.series_list[3].label_show = true;
+        line_chart.series_list[2].mark_points = vec![
+            MarkPoint {
+                category: MarkPointCategory::Max,
+            },
+            MarkPoint {
+                category: MarkPointCategory::Min,
+            },
+        ];
+        line_chart.x_axis_hidden = true;
+        line_chart.y_axis_hidden = true;
+        assert_eq!(
+            include_str!("../../asset/line_chart/no_axis.svg"),
             line_chart.svg().unwrap()
         );
     }

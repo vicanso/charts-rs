@@ -1,0 +1,115 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="196.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Stacked Area Chart
+</text>
+<text font-size="14" x="240" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Hello World
+</text>
+<g>
+<line stroke-width="2" x1="91.5" y1="65" x2="116.5" y2="65" stroke="#5470C6"/>
+<circle cx="104" cy="65" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="119.5" y="69" font-family="Roboto" fill="#464646">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="160.5" y1="65" x2="185.5" y2="65" stroke="#91CC75"/>
+<circle cx="173" cy="65" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="188.5" y="69" font-family="Roboto" fill="#464646">
+Union Ads
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="260.5" y1="65" x2="285.5" y2="65" stroke="#FAC858"/>
+<circle cx="273" cy="65" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="288.5" y="69" font-family="Roboto" fill="#464646">
+Direct
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="333.5" y1="65" x2="358.5" y2="65" stroke="#EE6666"/>
+<circle cx="346" cy="65" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="361.5" y="69" font-family="Roboto" fill="#464646">
+Search Engine
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="5" y1="87" x2="550" y2="87"/><line stroke-width="1" x1="5" y1="138.3" x2="550" y2="138.3"/><line stroke-width="1" x1="5" y1="189.7" x2="550" y2="189.7"/><line stroke-width="1" x1="5" y1="241" x2="550" y2="241"/><line stroke-width="1" x1="5" y1="292.3" x2="550" y2="292.3"/><line stroke-width="1" x1="5" y1="343.7" x2="550" y2="343.7"/>
+</g>
+<g>
+<path d="M 43.9 374.5 L 121.8 372.4 L 199.6 377.7 L 277.5 372.1 L 355.4 379.6 L 433.2 355.6 L 511.1 359.1" stroke-width="2" fill="none" stroke="#5470C6" stroke-dasharray="4,2"/>
+<circle cx="43.9" cy="374.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="121.8" cy="372.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="199.6" cy="377.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="277.5" cy="372.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="355.4" cy="379.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="433.2" cy="355.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="511.1" cy="359.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+</g>
+<g>
+<path d="M 43.9 357.4 L 121.8 363.9 L 199.6 362.3 L 277.5 355 L 355.4 345.4 L 433.2 338.5 L 511.1 342" stroke-width="2" fill="none" stroke="#91CC75"/>
+<circle cx="43.9" cy="357.4" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="121.8" cy="363.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="199.6" cy="362.3" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="277.5" cy="355" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="355.4" cy="345.4" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="433.2" cy="338.5" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="511.1" cy="342" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+</g>
+<g>
+<path d="M 43.9 340.2 L 121.8 338.2 L 199.6 343.5 L 277.5 337.8 L 355.4 328.3 L 433.2 338.5 L 511.1 340.2" stroke-width="2" fill="none" stroke="#FAC858"/>
+<circle cx="43.9" cy="340.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="121.8" cy="338.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="199.6" cy="343.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="277.5" cy="337.8" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="355.4" cy="328.3" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="433.2" cy="338.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="511.1" cy="340.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+</g>
+<path d="M 345.7,309.8 A 15,15 0,0,1 340.4,298.3 A 15,15 0,0,1 370.4,298.3 A 15,15 0,0,1 365,309.8 L 355.4,320.8 Z" fill="#FAC858"/>
+<text font-size="14" x="355.4" y="292.8" dx="-11" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+390
+</text>
+<path d="M 190,325 A 15,15 0,0,1 184.6,313.5 A 15,15 0,0,1 214.6,313.5 A 15,15 0,0,1 209.3,325 L 199.6,336 Z" fill="#FAC858"/>
+<text font-size="14" x="199.6" y="308" dx="-9.5" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+301
+</text>
+<g>
+<path d="M 43.9 254.7 L 121.8 235.5 L 199.6 240.8 L 277.5 235.2 L 355.4 174.3 L 433.2 167.4 L 511.1 169.1" stroke-width="2" fill="none" stroke="#EE6666"/>
+<circle cx="43.9" cy="254.7" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="121.8" cy="235.5" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="199.6" cy="240.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="277.5" cy="235.2" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="355.4" cy="174.3" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="433.2" cy="167.4" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="511.1" cy="169.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+</g>
+<text font-size="14" x="43.9" y="254.7" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+820
+</text>
+<text font-size="14" x="121.8" y="235.5" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+932
+</text>
+<text font-size="14" x="199.6" y="240.8" dx="-10.5" dy="-8" font-family="Roboto" fill="#464646">
+901
+</text>
+<text font-size="14" x="277.5" y="235.2" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+934
+</text>
+<text font-size="14" x="355.4" y="174.3" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+1290
+</text>
+<text font-size="14" x="433.2" y="167.4" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+1330
+</text>
+<text font-size="14" x="511.1" y="169.1" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+1320
+</text>
+<circle cx="8" cy="211" r="3.5" stroke-width="1" stroke="#EE6666" fill="#EE6666"/>
+<line stroke-width="1" x1="13" y1="211" x2="540" y2="211" stroke="#EE6666" stroke-dasharray="4,2"/>
+<path d="M 540 211 L 535 206 L 550 211 L 535 216 Z" stroke-width="1" fill="#EE6666" stroke="#EE6666"/>
+<text font-size="14" x="552" y="202" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+1075.3
+</text>
+</svg>

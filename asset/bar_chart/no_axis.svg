@@ -1,0 +1,65 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="260.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Bar Chart
+</text>
+<g>
+<line stroke-width="2" x1="114" y1="50" x2="139" y2="50" stroke="#5470C6"/>
+<circle cx="126.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="142" y="54" font-family="Roboto" fill="#464646">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="183" y1="50" x2="208" y2="50" stroke="#91CC75"/>
+<circle cx="195.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="211" y="54" font-family="Roboto" fill="#464646">
+Union Ads
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="283" y1="50" x2="308" y2="50" stroke="#FAC858"/>
+<circle cx="295.5" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="311" y="54" font-family="Roboto" fill="#464646">
+Direct
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="356" y1="50" x2="381" y2="50" stroke="#EE6666"/>
+<circle cx="368.5" cy="50" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="384" y="54" font-family="Roboto" fill="#464646">
+Search Engine
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="5" y1="72" x2="595" y2="72"/><line stroke-width="1" x1="5" y1="125.8" x2="595" y2="125.8"/><line stroke-width="1" x1="5" y1="179.7" x2="595" y2="179.7"/><line stroke-width="1" x1="5" y1="233.5" x2="595" y2="233.5"/><line stroke-width="1" x1="5" y1="287.3" x2="595" y2="287.3"/><line stroke-width="1" x1="5" y1="341.2" x2="595" y2="341.2"/>
+</g>
+<rect x="10" y="373.5" width="16.3" height="21.5" fill="#5470C6"/>
+<rect x="94.3" y="371.3" width="16.3" height="23.7" fill="#5470C6"/>
+<rect x="178.6" y="376.9" width="16.3" height="18.1" fill="#5470C6"/>
+<rect x="262.9" y="371" width="16.3" height="24" fill="#5470C6"/>
+<rect x="347.1" y="378.9" width="16.3" height="16.1" fill="#5470C6"/>
+<rect x="431.4" y="353.7" width="16.3" height="41.3" fill="#5470C6"/>
+<rect x="515.7" y="357.3" width="16.3" height="37.7" fill="#5470C6"/>
+<rect x="29.3" y="355.5" width="16.3" height="39.5" fill="#91CC75"/>
+<rect x="113.6" y="362.3" width="16.3" height="32.7" fill="#91CC75"/>
+<rect x="197.9" y="360.7" width="16.3" height="34.3" fill="#91CC75"/>
+<rect x="282.2" y="353" width="16.3" height="42" fill="#91CC75"/>
+<rect x="366.5" y="343" width="16.3" height="52" fill="#91CC75"/>
+<rect x="450.8" y="335.8" width="16.3" height="59.2" fill="#91CC75"/>
+<rect x="535" y="339.4" width="16.3" height="55.6" fill="#91CC75"/>
+<rect x="48.6" y="337.6" width="16.3" height="57.4" fill="#FAC858"/>
+<rect x="132.9" y="335.4" width="16.3" height="59.6" fill="#FAC858"/>
+<rect x="217.2" y="341" width="16.3" height="54" fill="#FAC858"/>
+<rect x="301.5" y="335.1" width="16.3" height="59.9" fill="#FAC858"/>
+<rect x="385.8" y="325" width="16.3" height="70" fill="#FAC858"/>
+<rect x="470.1" y="335.8" width="16.3" height="59.2" fill="#FAC858"/>
+<rect x="554.4" y="337.6" width="16.3" height="57.4" fill="#FAC858"/>
+<rect x="68" y="247.9" width="16.3" height="147.1" fill="#EE6666"/>
+<rect x="152.2" y="227.8" width="16.3" height="167.2" fill="#EE6666"/>
+<rect x="236.5" y="233.3" width="16.3" height="161.7" fill="#EE6666"/>
+<rect x="320.8" y="227.4" width="16.3" height="167.6" fill="#EE6666"/>
+<rect x="405.1" y="163.5" width="16.3" height="231.5" fill="#EE6666"/>
+<rect x="489.4" y="156.3" width="16.3" height="238.7" fill="#EE6666"/>
+<rect x="573.7" y="158.1" width="16.3" height="236.9" fill="#EE6666"/>
+</svg>

@@ -1,0 +1,79 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Male and female height and weight distribution
+</text>
+<text font-size="14" x="5" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Data from: Heinz 2003
+</text>
+<g>
+<line stroke-width="2" x1="436" y1="15" x2="461" y2="15" stroke="#5470C6"/>
+<circle cx="448.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="464" y="19" font-family="Roboto" fill="#464646">
+Female
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="517" y1="15" x2="542" y2="15" stroke="#91CC75"/>
+<circle cx="529.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="545" y="19" font-family="Roboto" fill="#464646">
+Male
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="5" y1="60" x2="580" y2="60"/><line stroke-width="1" x1="5" y1="115.8" x2="580" y2="115.8"/><line stroke-width="1" x1="5" y1="171.7" x2="580" y2="171.7"/><line stroke-width="1" x1="5" y1="227.5" x2="580" y2="227.5"/><line stroke-width="1" x1="5" y1="283.3" x2="580" y2="283.3"/><line stroke-width="1" x1="5" y1="339.2" x2="580" y2="339.2"/>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="100.8" y1="60" x2="100.8" y2="395"/><line stroke-width="1" x1="196.7" y1="60" x2="196.7" y2="395"/><line stroke-width="1" x1="292.5" y1="60" x2="292.5" y2="395"/><line stroke-width="1" x1="388.3" y1="60" x2="388.3" y2="395"/><line stroke-width="1" x1="484.2" y1="60" x2="484.2" y2="395"/><line stroke-width="1" x1="580" y1="60" x2="580" y2="395"/>
+</g>
+<circle cx="140.4" cy="351.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="180.7" cy="324.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="129.6" cy="360.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="113.6" cy="309.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="105.9" cy="344.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="196.7" cy="324.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="127" cy="366.7" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="171.1" cy="284.1" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="236.3" cy="295.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="134.1" cy="264" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="212.6" cy="338.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="202.4" cy="342.1" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="215.2" cy="311.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="90.6" cy="387.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="132.8" cy="357.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="51" cy="358.5" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="185.2" cy="360.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="228.6" cy="271.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="113.6" cy="366" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="181.3" cy="287.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="129.6" cy="355.5" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="228.6" cy="236.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="176.2" cy="331" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="238.2" cy="217.1" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="197.9" cy="272.9" r="6" stroke-width="1" fill-opacity="0.8" fill="#5470C6"/>
+<circle cx="222.2" cy="299.7" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="230.5" cy="276.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="346.8" cy="243.5" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="302.1" cy="273.7" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="306.6" cy="250.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="270.1" cy="265.5" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="286.1" cy="222.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="289.3" cy="252.1" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="228.6" cy="313.1" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="286.1" cy="240.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="260.6" cy="258.8" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="246.5" cy="232.7" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="337.2" cy="208.9" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="235" cy="266.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="222.2" cy="279.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="286.1" cy="247.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="341.7" cy="194.7" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="206.2" cy="283.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="215.8" cy="274.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="235" cy="224.2" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="235" cy="250.6" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="263.8" cy="254.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="213.9" cy="297.5" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="235" cy="222.3" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+<circle cx="219" cy="239.4" r="6" stroke-width="1" fill-opacity="0.8" fill="#91CC75"/>
+</svg>

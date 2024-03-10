@@ -114,9 +114,11 @@ pub struct HeatmapChart {
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_axis_margin: Option<Box>,
+    pub x_axis_hidden: bool,
     pub x_boundary_gap: Option<bool>,
 
     // y axis
+    pub y_axis_hidden: bool,
     pub y_axis_data: Vec<String>,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -212,6 +214,12 @@ impl HeatmapChart {
             }
         }
         h.fill_default();
+        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
+            h.x_axis_hidden = x_axis_hidden;
+        }
+        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
+            h.y_axis_hidden = y_axis_hidden;
+        }
         Ok(h)
     }
     /// Creates a heatmap chart with default theme.
@@ -259,6 +267,10 @@ impl HeatmapChart {
         }
 
         self.render_background(c.child(Box::default()));
+        let mut x_axis_height = self.x_axis_height;
+        if self.x_axis_hidden {
+            x_axis_height = 0.0;
+        }
 
         c.margin = self.margin.clone();
 
@@ -271,13 +283,8 @@ impl HeatmapChart {
         } else {
             title_height
         };
-        let axis_height = c.height() - self.x_axis_height - axis_top;
+        let axis_height = c.height() - x_axis_height - axis_top;
 
-        let max_text_width_box = measure_max_text_width_family(
-            &self.font_family,
-            self.y_axis_configs[0].axis_font_size,
-            self.y_axis_data.iter().map(|item| item.as_str()).collect(),
-        )?;
         // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
@@ -285,28 +292,38 @@ impl HeatmapChart {
                 ..Default::default()
             });
         }
-        let y_axis_width = max_text_width_box.width() + self.margin.left;
-        // y axis
-        let mut y_axis_data = self.y_axis_data.clone();
-        y_axis_data.reverse();
-        self.render_y_axis(
-            c.child_left_top(Box::default()),
-            y_axis_data,
-            axis_height,
-            y_axis_width,
-            0,
-        );
+        let mut y_axis_width = 0.0;
+        if !self.y_axis_hidden {
+            let max_text_width_box = measure_max_text_width_family(
+                &self.font_family,
+                self.y_axis_configs[0].axis_font_size,
+                self.y_axis_data.iter().map(|item| item.as_str()).collect(),
+            )?;
+            y_axis_width = max_text_width_box.width() + self.margin.left;
+            // y axis
+            let mut y_axis_data = self.y_axis_data.clone();
+            y_axis_data.reverse();
+            self.render_y_axis(
+                c.child_left_top(Box::default()),
+                y_axis_data,
+                axis_height,
+                y_axis_width,
+                0,
+            );
+        }
         let axis_width = c.width() - y_axis_width;
         // x axis
-        self.render_x_axis(
-            c.child(Box {
-                top: c.height() - self.x_axis_height,
-                left: y_axis_width,
-                ..Default::default()
-            }),
-            self.x_axis_data.clone(),
-            axis_width,
-        );
+        if !self.x_axis_hidden {
+            self.render_x_axis(
+                c.child(Box {
+                    top: c.height() - x_axis_height,
+                    left: y_axis_width,
+                    ..Default::default()
+                }),
+                self.x_axis_data.clone(),
+                axis_width,
+            );
+        }
         let mut data = vec![None; self.x_axis_data.len() * self.y_axis_data.len()];
         for item in self.series.data.iter() {
             if item.index < data.len() {
@@ -490,6 +507,53 @@ mod tests {
 
         assert_eq!(
             include_str!("../../asset/heatmap_chart/basic_dark.svg"),
+            heatmap_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn heatmap_chart_no_axis() {
+        let x_axis_data = vec![
+            "12a", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12p", "1p",
+            "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p",
+        ]
+        .iter()
+        .map(|item| item.to_string())
+        .collect();
+        let y_axis_data = vec![
+            "Saturday",
+            "Friday",
+            "Thursday",
+            "Wednesday",
+            "Tuesday",
+            "Monday",
+            "Sunday",
+        ]
+        .iter()
+        .map(|item| item.to_string())
+        .collect();
+        let mut heatmap_chart = HeatmapChart::new(
+            vec![
+                (0, 9.0),
+                (1, 3.0),
+                (7, 3.0),
+                (12, 3.0),
+                (24, 12.0),
+                (28, 10.0),
+                (31, 8.0),
+                (50, 4.0),
+                (63, 2.0),
+            ],
+            x_axis_data,
+            y_axis_data,
+        );
+        heatmap_chart.width = 800.0;
+        heatmap_chart.series.max = 10.0;
+        heatmap_chart.x_axis_hidden = true;
+        heatmap_chart.y_axis_hidden = true;
+
+        assert_eq!(
+            include_str!("../../asset/heatmap_chart/no_axis.svg"),
             heatmap_chart.svg().unwrap()
         );
     }

@@ -59,9 +59,11 @@ pub struct BarChart {
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_axis_margin: Option<Box>,
+    pub x_axis_hidden: bool,
     pub x_boundary_gap: Option<bool>,
 
     // y axis
+    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
@@ -86,7 +88,13 @@ impl BarChart {
         let mut b = BarChart {
             ..Default::default()
         };
-        b.fill_option(data)?;
+        let value = b.fill_option(data)?;
+        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
+            b.x_axis_hidden = x_axis_hidden;
+        }
+        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
+            b.y_axis_hidden = y_axis_hidden;
+        }
         Ok(b)
     }
     /// Creates a bar chart with custom theme.
@@ -121,6 +129,10 @@ impl BarChart {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
+        let mut x_axis_height = self.x_axis_height;
+        if self.x_axis_hidden {
+            x_axis_height = 0.0;
+        }
         c.margin = self.margin.clone();
 
         let title_height = self.render_title(c.child(Box::default()));
@@ -133,7 +145,10 @@ impl BarChart {
             title_height
         };
 
-        let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
+        if self.y_axis_hidden {
+            left_y_axis_width = 0.0;
+        }
         let mut exist_right_y_axis = false;
         // check the right y axis
         for series in self.series_list.iter() {
@@ -143,11 +158,11 @@ impl BarChart {
         }
         let mut right_y_axis_values = AxisValues::default();
         let mut right_y_axis_width = 0.0_f32;
-        if exist_right_y_axis {
+        if !self.y_axis_hidden && exist_right_y_axis {
             (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
         }
 
-        let axis_height = c.height() - self.x_axis_height - axis_top;
+        let axis_height = c.height() - x_axis_height - axis_top;
         let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
         // minus the height of top text area
         if axis_top > 0.0 {
@@ -167,13 +182,15 @@ impl BarChart {
         );
 
         // y axis
-        self.render_y_axis(
-            c.child(Box::default()),
-            left_y_axis_values.data.clone(),
-            axis_height,
-            left_y_axis_width,
-            0,
-        );
+        if left_y_axis_width > 0.0 {
+            self.render_y_axis(
+                c.child(Box::default()),
+                left_y_axis_values.data.clone(),
+                axis_height,
+                left_y_axis_width,
+                0,
+            );
+        }
         // render right y axis
         if right_y_axis_width > 0.0 {
             self.render_y_axis(
@@ -189,19 +206,21 @@ impl BarChart {
         }
 
         // x axis
-        self.render_x_axis(
-            c.child(Box {
-                top: c.height() - self.x_axis_height,
-                left: left_y_axis_width,
-                right: right_y_axis_width,
-                ..Default::default()
-            }),
-            self.x_axis_data.clone(),
-            axis_width,
-        );
+        if !self.x_axis_hidden {
+            self.render_x_axis(
+                c.child(Box {
+                    top: c.height() - x_axis_height,
+                    left: left_y_axis_width,
+                    right: right_y_axis_width,
+                    ..Default::default()
+                }),
+                self.x_axis_data.clone(),
+                axis_width,
+            );
+        }
 
         // bar point
-        let max_height = c.height() - self.x_axis_height;
+        let max_height = c.height() - x_axis_height;
         let mut bar_series_list = vec![];
         let mut line_series_list = vec![];
         // filter line and bar series points
@@ -718,6 +737,56 @@ mod tests {
         bar_chart.series_list[0].label_show = true;
         assert_eq!(
             include_str!("../../asset/bar_chart/nil_value.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn bar_chart_no_axis() {
+        let mut bar_chart = BarChart::new(
+            vec![
+                (
+                    "Email",
+                    vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
+                )
+                    .into(),
+                (
+                    "Union Ads",
+                    vec![220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0],
+                )
+                    .into(),
+                (
+                    "Direct",
+                    vec![320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0],
+                )
+                    .into(),
+                (
+                    "Search Engine",
+                    vec![820.0, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
+                )
+                    .into(),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        bar_chart.x_axis_hidden = true;
+        bar_chart.y_axis_hidden = true;
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 35.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+
+        assert_eq!(
+            include_str!("../../asset/bar_chart/no_axis.svg"),
             bar_chart.svg().unwrap()
         );
     }

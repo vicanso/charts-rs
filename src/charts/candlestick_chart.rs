@@ -60,9 +60,11 @@ pub struct CandlestickChart {
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_axis_margin: Option<Box>,
+    pub x_axis_hidden: bool,
     pub x_boundary_gap: Option<bool>,
 
     // y axis
+    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
@@ -119,6 +121,12 @@ impl CandlestickChart {
         if let Some(value) = get_color_from_value(&value, "candlestick_down_border_color") {
             c.candlestick_down_border_color = value;
         }
+        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
+            c.x_axis_hidden = x_axis_hidden;
+        }
+        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
+            c.y_axis_hidden = y_axis_hidden;
+        }
         c.fill_default();
         Ok(c)
     }
@@ -154,6 +162,10 @@ impl CandlestickChart {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
         self.render_background(c.child(Box::default()));
+        let mut x_axis_height = self.x_axis_height;
+        if self.x_axis_hidden {
+            x_axis_height = 0.0;
+        }
         c.margin = self.margin.clone();
 
         let title_height = self.render_title(c.child(Box::default()));
@@ -166,9 +178,12 @@ impl CandlestickChart {
             title_height
         };
 
-        let (left_y_axis_values, left_y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
+        if self.y_axis_hidden {
+            left_y_axis_width = 0.0;
+        }
 
-        let axis_height = c.height() - self.x_axis_height - axis_top;
+        let axis_height = c.height() - x_axis_height - axis_top;
         let axis_width = c.width() - left_y_axis_width;
         // minus the height of top text area
         if axis_top > 0.0 {
@@ -188,24 +203,28 @@ impl CandlestickChart {
         );
 
         // y axis
-        self.render_y_axis(
-            c.child(Box::default()),
-            left_y_axis_values.data.clone(),
-            axis_height,
-            left_y_axis_width,
-            0,
-        );
+        if !self.y_axis_hidden {
+            self.render_y_axis(
+                c.child(Box::default()),
+                left_y_axis_values.data.clone(),
+                axis_height,
+                left_y_axis_width,
+                0,
+            );
+        }
 
         // x axis
-        self.render_x_axis(
-            c.child(Box {
-                top: c.height() - self.x_axis_height,
-                left: left_y_axis_width,
-                ..Default::default()
-            }),
-            self.x_axis_data.clone(),
-            axis_width,
-        );
+        if !self.x_axis_hidden {
+            self.render_x_axis(
+                c.child(Box {
+                    top: c.height() - x_axis_height,
+                    left: left_y_axis_width,
+                    ..Default::default()
+                }),
+                self.x_axis_data.clone(),
+                axis_width,
+            );
+        }
         let chunk_width = axis_width / self.x_axis_data.len() as f32;
         let half_chunk_width = chunk_width / 2.0;
         for series in self.series_list.iter() {
@@ -275,7 +294,7 @@ impl CandlestickChart {
         });
 
         let y_axis_values_list = vec![&left_y_axis_values];
-        let max_height = c.height() - self.x_axis_height;
+        let max_height = c.height() - x_axis_height;
         let line_series_labels_list = self.render_line(
             c.child(Box {
                 left: left_y_axis_width,
@@ -328,6 +347,33 @@ mod tests {
             candlestick_chart.svg().unwrap()
         );
     }
+
+    #[test]
+    fn candlestick_chart_no_axis() {
+        let mut candlestick_chart = CandlestickChart::new(
+            vec![(
+                "",
+                vec![
+                    20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0, 38.0,
+                    15.0, 5.0, 42.0,
+                ],
+            )
+                .into()],
+            vec![
+                "2017-10-24".to_string(),
+                "2017-10-25".to_string(),
+                "2017-10-26".to_string(),
+                "2017-10-27".to_string(),
+            ],
+        );
+        candlestick_chart.x_axis_hidden = true;
+        candlestick_chart.y_axis_hidden = true;
+        assert_eq!(
+            include_str!("../../asset/candlestick_chart/no_axis.svg"),
+            candlestick_chart.svg().unwrap()
+        );
+    }
+
     #[test]
     fn candlestick_chart_sh() {
         let mut candlestick_chart = CandlestickChart::new(
