@@ -565,10 +565,10 @@ impl TableChart {
             c.rect(Rect {
                 color: Some(self.border_color),
                 fill: Some(Color::transparent()),
-                left: 1.0,
+                left: 0.0,
                 top: 0.0,
-                width: c.width() - 1.0,
-                height: top - 1.0,
+                width: c.width(),
+                height: top,
                 ..Default::default()
             });
         }
