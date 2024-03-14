@@ -8,7 +8,6 @@
 [![MIT licensed][apache2-badge]][apache2-url]
 [![Build status](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml)
 
-
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
 [crates-url]: https://crates.io/crates/charts-rs
 [apache2-badge]: https://img.shields.io/badge/license-Apache2-blue.svg
@@ -16,7 +15,7 @@
 
 ## Overview
 
-`charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk` and `shine`. The default theme is `light`. These charts are supported: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`,  `Table`， `Heatmap` and `MultiChart`.
+`charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk` and `shine`. The default theme is `light`. These charts are supported: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`， `Heatmap` and `MultiChart`.
 
 `Apache ECharts` is popular among Front-end developers, and `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`.
 
@@ -48,53 +47,61 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
 </p>
 
 ## Mix line bar
+
 <p align="center">
     <img src="./asset/image/mix-line-bar.png" alt="charts-rs">
 </p>
 
 ## Horizontal bar
+
 <p align="center">
     <img src="./asset/image/horizontal-bar.png" alt="charts-rs">
 </p>
 
 ## Line
+
 <p align="center">
     <img src="./asset/image/line.png" alt="charts-rs">
 </p>
 
 ## Pie
+
 <p align="center">
     <img src="./asset/image/pie.png" alt="charts-rs">
 </p>
 
 ## Radar
+
 <p align="center">
     <img src="./asset/image/radar.png" alt="charts-rs">
 </p>
 
 ## Scatter
+
 <p align="center">
     <img src="./asset/image/scatter.png" alt="charts-rs">
 </p>
 
-
 ## Candlestick
+
 <p align="center">
     <img src="./asset/image/candlestick.png" alt="charts-rs">
 </p>
 
 ## Table
+
 <p align="center">
     <img src="./asset/image/table.avif" alt="charts-rs">
 </p>
 
 ## Heatmap
+
 <p align="center">
     <img src="./asset/image/heatmap.png" alt="charts-rs">
 </p>
 
-
 ## Multi Chart
+
 <p align="center">
     <img src="./asset/image/multi-chart.webp" alt="charts-rs">
 </p>
@@ -190,6 +197,13 @@ let bar_chart = BarChart::from_json(
 ).unwrap();
 println!("{}", bar_chart.svg().unwrap());
 svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+```
+
+## Load more fonts
+
+```rust
+let buf = fs::read(file).unwrap();
+get_or_try_init_fonts(vec![&buf]));
 ```
 
 ## License

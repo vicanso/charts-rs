@@ -6,7 +6,6 @@
 [![MIT licensed][apache2-badge]][apache2-url]
 [![Build status](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml)
 
-
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
 [crates-url]: https://crates.io/crates/charts-rs
 [apache2-badge]: https://img.shields.io/badge/license-Apache2-blue.svg
@@ -17,7 +16,6 @@
 `charts-rs`提供简单的方式生成图表，它支持`svg`、`png`、`jepg`、`webp`以及`avif`等多种输出格式，以及支持`light`， `dark`， `grafana`，`ant`，`vintage`, `walden`, `westeros`, `chalk`与`shine`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar`，`Scatter`，`Candlestick`，`Table`，`Heatmap` 以及 `MultiChart`，其相关样式参考`Apache ECharts`。
 
 ## 更多主题色
-
 
 [更多主题色](./theme.md)
 
@@ -48,52 +46,61 @@
 </p>
 
 ## Mix line bar
+
 <p align="center">
     <img src="./asset/image/mix-line-bar.png" alt="charts-rs">
 </p>
 
 ## Horizontal bar
+
 <p align="center">
     <img src="./asset/image/horizontal-bar.png" alt="charts-rs">
 </p>
 
 ## Line
+
 <p align="center">
     <img src="./asset/image/line.png" alt="charts-rs">
 </p>
 
 ## Pie
+
 <p align="center">
     <img src="./asset/image/pie.png" alt="charts-rs">
 </p>
 
 ## Radar
+
 <p align="center">
     <img src="./asset/image/radar.png" alt="charts-rs">
 </p>
 
 ## Scatter
+
 <p align="center">
     <img src="./asset/image/scatter.png" alt="charts-rs">
 </p>
 
 ## Candlestick
+
 <p align="center">
     <img src="./asset/image/candlestick.png" alt="charts-rs">
 </p>
 
 ## Table
+
 <p align="center">
     <img src="./asset/image/table.avif" alt="charts-rs">
 </p>
 
 ## Heatmap
+
 <p align="center">
     <img src="./asset/image/heatmap.png" alt="charts-rs">
 </p>
 
-
 ## Multi Chart
+
 <p align="center">
     <img src="./asset/image/multi-chart.webp" alt="charts-rs">
 </p>
@@ -189,6 +196,13 @@ let bar_chart = BarChart::from_json(
 ).unwrap();
 println!("{}", bar_chart.svg().unwrap());
 svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+```
+
+## 加载更多的字体集
+
+```rust
+let buf = fs::read(file).unwrap();
+get_or_try_init_fonts(vec![&buf]));
 ```
 
 ## 开源协议声明
