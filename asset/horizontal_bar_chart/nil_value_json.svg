@@ -53,35 +53,35 @@ Brazil
 0
 </text>
 <text font-size="14" x="145.7" y="387" font-family="Roboto" fill="#6E7079">
-150k
+136k
 </text>
 <text font-size="14" x="229.3" y="387" font-family="Roboto" fill="#6E7079">
-300k
+272k
 </text>
 <text font-size="14" x="313" y="387" font-family="Roboto" fill="#6E7079">
-450k
+408k
 </text>
 <text font-size="14" x="396.7" y="387" font-family="Roboto" fill="#6E7079">
-600k
+544k
 </text>
 <text font-size="14" x="480.3" y="387" font-family="Roboto" fill="#6E7079">
-750k
+680k
 </text>
 <text font-size="14" x="564" y="387" font-family="Roboto" fill="#6E7079">
-900k
+816k
 </text>
 </g>
 <g stroke="#E0E6F2">
 <line stroke-width="1" x1="161.7" y1="50" x2="161.7" y2="365"/><line stroke-width="1" x1="245.3" y1="50" x2="245.3" y2="365"/><line stroke-width="1" x1="329" y1="50" x2="329" y2="365"/><line stroke-width="1" x1="412.7" y1="50" x2="412.7" y2="365"/><line stroke-width="1" x1="496.3" y1="50" x2="496.3" y2="365"/><line stroke-width="1" x1="580" y1="50" x2="580" y2="365"/>
 </g>
-<rect x="78" y="317.5" width="10.2" height="19.8" fill="#5470C6"/>
-<rect x="78" y="212.5" width="16.2" height="19.8" fill="#5470C6"/>
-<rect x="78" y="160" width="58.5" height="19.8" fill="#5470C6"/>
-<rect x="78" y="107.5" width="73.5" height="19.8" fill="#5470C6"/>
-<rect x="78" y="55" width="351.5" height="19.8" fill="#5470C6"/>
-<rect x="78" y="340.2" width="10.8" height="19.8" fill="#91CC75"/>
-<rect x="78" y="287.8" width="13.1" height="19.8" fill="#91CC75"/>
-<rect x="78" y="235.2" width="17.3" height="19.8" fill="#91CC75"/>
-<rect x="78" y="130.2" width="74.8" height="19.8" fill="#91CC75"/>
-<rect x="78" y="77.8" width="380.3" height="19.8" fill="#91CC75"/>
+<rect x="78" y="317.5" width="11.2" height="19.8" fill="#5470C6"/>
+<rect x="78" y="212.5" width="17.9" height="19.8" fill="#5470C6"/>
+<rect x="78" y="160" width="64.6" height="19.8" fill="#5470C6"/>
+<rect x="78" y="107.5" width="81" height="19.8" fill="#5470C6"/>
+<rect x="78" y="55" width="387.7" height="19.8" fill="#5470C6"/>
+<rect x="78" y="340.2" width="11.9" height="19.8" fill="#91CC75"/>
+<rect x="78" y="287.8" width="14.4" height="19.8" fill="#91CC75"/>
+<rect x="78" y="235.2" width="19.1" height="19.8" fill="#91CC75"/>
+<rect x="78" y="130.2" width="82.5" height="19.8" fill="#91CC75"/>
+<rect x="78" y="77.8" width="419.4" height="19.8" fill="#91CC75"/>
 </svg>

@@ -40,22 +40,22 @@ Search Engine
 <g>
 
 <text font-size="14" x="7" y="97" font-family="Roboto" fill="#6E7079">
-1.8k
+1.4k
 </text>
 <text font-size="14" x="7" y="141.7" font-family="Roboto" fill="#6E7079">
-1.5k
+1.1k
 </text>
-<text font-size="14" x="7" y="186.3" font-family="Roboto" fill="#6E7079">
-1.2k
+<text font-size="14" x="11" y="186.3" font-family="Roboto" fill="#6E7079">
+920
 </text>
 <text font-size="14" x="11" y="231" font-family="Roboto" fill="#6E7079">
-900
+690
 </text>
 <text font-size="14" x="11" y="275.7" font-family="Roboto" fill="#6E7079">
-600
+460
 </text>
 <text font-size="14" x="11" y="320.3" font-family="Roboto" fill="#6E7079">
-300
+230
 </text>
 <text font-size="14" x="27" y="365" font-family="Roboto" fill="#6E7079">
 0
@@ -96,78 +96,78 @@ Sun
 </text>
 </g>
 <g>
-<path d="M 79.2 342.1 L 151.6 340.3 L 224.1 345 L 296.5 340 L 368.9 346.6 L 441.4 325.8 L 513.8 328.7" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="79.2" cy="342.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="151.6" cy="340.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="224.1" cy="345" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="296.5" cy="340" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="368.9" cy="346.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="441.4" cy="325.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="513.8" cy="328.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<path d="M 79.2 336.7 L 151.6 334.4 L 224.1 340.4 L 296.5 334 L 368.9 342.5 L 441.4 315.3 L 513.8 319.2" stroke-width="2" fill="none" stroke="#5470C6"/>
+<circle cx="79.2" cy="336.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="151.6" cy="334.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="224.1" cy="340.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="296.5" cy="334" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="368.9" cy="342.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="441.4" cy="315.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="513.8" cy="319.2" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 <g>
-<path d="M 79.2 327.2 L 151.6 332.9 L 224.1 331.6 L 296.5 325.2 L 368.9 316.8 L 441.4 310.9 L 513.8 313.8" stroke-width="2" fill="none" stroke="#91CC75"/>
-<circle cx="79.2" cy="327.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="151.6" cy="332.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="224.1" cy="331.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="296.5" cy="325.2" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="368.9" cy="316.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="441.4" cy="310.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="513.8" cy="313.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<path d="M 79.2 317.3 L 151.6 324.7 L 224.1 322.9 L 296.5 314.6 L 368.9 303.7 L 441.4 295.9 L 513.8 299.8" stroke-width="2" fill="none" stroke="#91CC75"/>
+<circle cx="79.2" cy="317.3" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="151.6" cy="324.7" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="224.1" cy="322.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="296.5" cy="314.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="368.9" cy="303.7" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="441.4" cy="295.9" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<circle cx="513.8" cy="299.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
 </g>
 <g>
-<path d="M 79.2 312.4 L 151.6 310.6 L 224.1 315.2 L 296.5 310.3 L 368.9 301.9 L 441.4 310.9 L 513.8 312.4" stroke-width="2" fill="none" stroke="#FAC858"/>
-<circle cx="79.2" cy="312.4" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="151.6" cy="310.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="224.1" cy="315.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="296.5" cy="310.3" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="368.9" cy="301.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="441.4" cy="310.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="513.8" cy="312.4" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<path d="M 79.2 297.9 L 151.6 295.5 L 224.1 301.5 L 296.5 295.1 L 368.9 284.3 L 441.4 295.9 L 513.8 297.9" stroke-width="2" fill="none" stroke="#FAC858"/>
+<circle cx="79.2" cy="297.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="151.6" cy="295.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="224.1" cy="301.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="296.5" cy="295.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="368.9" cy="284.3" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="441.4" cy="295.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<circle cx="513.8" cy="297.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
 </g>
-<path d="M 359.3,283.4 A 15,15 0,0,1 353.9,271.9 A 15,15 0,0,1 383.9,271.9 A 15,15 0,0,1 378.6,283.4 L 368.9,294.4 Z" fill="#FAC858"/>
-<text font-size="14" x="368.9" y="266.4" dx="-11" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<path d="M 359.3,265.8 A 15,15 0,0,1 353.9,254.3 A 15,15 0,0,1 383.9,254.3 A 15,15 0,0,1 378.6,265.8 L 368.9,276.8 Z" fill="#FAC858"/>
+<text font-size="14" x="368.9" y="248.8" dx="-11" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 390
 </text>
-<path d="M 214.4,296.7 A 15,15 0,0,1 209.1,285.2 A 15,15 0,0,1 239.1,285.2 A 15,15 0,0,1 233.7,296.7 L 224.1,307.7 Z" fill="#FAC858"/>
-<text font-size="14" x="224.1" y="279.7" dx="-9.5" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<path d="M 214.4,283 A 15,15 0,0,1 209.1,271.5 A 15,15 0,0,1 239.1,271.5 A 15,15 0,0,1 233.7,283 L 224.1,294 Z" fill="#FAC858"/>
+<text font-size="14" x="224.1" y="266" dx="-9.5" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 301
 </text>
 <g>
-<path d="M 79.2 237.9 L 151.6 221.2 L 224.1 225.9 L 296.5 220.9 L 368.9 167.9 L 441.4 162 L 513.8 163.5" stroke-width="2" fill="none" stroke="#EE6666"/>
-<circle cx="79.2" cy="237.9" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="151.6" cy="221.2" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="224.1" cy="225.9" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="296.5" cy="220.9" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="368.9" cy="167.9" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="441.4" cy="162" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="513.8" cy="163.5" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<path d="M 79.2 200.8 L 151.6 179 L 224.1 185 L 296.5 178.6 L 368.9 109.5 L 441.4 101.7 L 513.8 103.7" stroke-width="2" fill="none" stroke="#EE6666"/>
+<circle cx="79.2" cy="200.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="151.6" cy="179" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="224.1" cy="185" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="296.5" cy="178.6" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="368.9" cy="109.5" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="441.4" cy="101.7" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="513.8" cy="103.7" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
 </g>
-<text font-size="14" x="79.2" y="237.9" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="79.2" y="200.8" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
 820
 </text>
-<text font-size="14" x="151.6" y="221.2" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="151.6" y="179" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
 932
 </text>
-<text font-size="14" x="224.1" y="225.9" dx="-10.5" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="224.1" y="185" dx="-10.5" dy="-8" font-family="Roboto" fill="#464646">
 901
 </text>
-<text font-size="14" x="296.5" y="220.9" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="296.5" y="178.6" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
 934
 </text>
-<text font-size="14" x="368.9" y="167.9" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="368.9" y="109.5" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
 1290
 </text>
-<text font-size="14" x="441.4" y="162" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="441.4" y="101.7" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
 1330
 </text>
-<text font-size="14" x="513.8" y="163.5" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="513.8" y="103.7" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
 1320
 </text>
-<circle cx="46" cy="199.9" r="3.5" stroke-width="1" stroke="#EE6666" fill="#EE6666"/>
-<line stroke-width="1" x1="51" y1="199.9" x2="540" y2="199.9" stroke="#EE6666" stroke-dasharray="4,2"/>
-<path d="M 540 199.9 L 535 194.9 L 550 199.9 L 535 204.9 Z" stroke-width="1" fill="#EE6666" stroke="#EE6666"/>
-<text font-size="14" x="552" y="190.9" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<circle cx="46" cy="151.2" r="3.5" stroke-width="1" stroke="#EE6666" fill="#EE6666"/>
+<line stroke-width="1" x1="51" y1="151.2" x2="540" y2="151.2" stroke="#EE6666" stroke-dasharray="4,2"/>
+<path d="M 540 151.2 L 535 146.2 L 550 151.2 L 535 156.2 Z" stroke-width="1" fill="#EE6666" stroke="#EE6666"/>
+<text font-size="14" x="552" y="142.2" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 1075.3
 </text>
 </svg>

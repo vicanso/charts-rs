@@ -19,22 +19,22 @@ Search Engine
 <g>
 
 <text font-size="14" x="2" y="92" font-family="Roboto" fill="#6E7079">
-1.8k
+1.4k
 </text>
 <text font-size="14" x="2" y="138.3" font-family="Roboto" fill="#6E7079">
-1.5k
+1.1k
 </text>
-<text font-size="14" x="2" y="184.7" font-family="Roboto" fill="#6E7079">
-1.2k
+<text font-size="14" x="6" y="184.7" font-family="Roboto" fill="#6E7079">
+920
 </text>
 <text font-size="14" x="6" y="231" font-family="Roboto" fill="#6E7079">
-900
+690
 </text>
 <text font-size="14" x="6" y="277.3" font-family="Roboto" fill="#6E7079">
-600
+460
 </text>
 <text font-size="14" x="6" y="323.7" font-family="Roboto" fill="#6E7079">
-300
+230
 </text>
 <text font-size="14" x="22" y="370" font-family="Roboto" fill="#6E7079">
 0
@@ -74,15 +74,15 @@ Sat
 Sun
 </text>
 </g>
-<path d="M77.8,238.4 C97.7 234, 137.3 222.6, 157.4 221.1 C177 219.5, 217 225.9, 236.9 225.8 C256.8 225.8, 298.5 227.5, 316.5 220.7 C338.3 212.5, 374.3 174.1, 396.1 165.8 C414.1 158.9, 455.7 160.2, 475.6 159.6 C495.5 159, 535.3 160.7, 555.2 161.1M 555.2 161.1 L 555.2 365 L 77.8 365 L 77.8 238.4" fill="#5470C6" fill-opacity="0.4"/>
+<path d="M77.8,199.8 C97.7 194.2, 137.1 179.3, 157.4 177.2 C176.9 175.2, 217 183.5, 236.9 183.5 C256.8 183.4, 299.5 185.2, 316.5 176.8 C339.3 165.6, 373.3 116.5, 396.1 105.1 C413.1 96.6, 455.7 97.8, 475.6 97.1 C495.5 96.3, 535.3 98.6, 555.2 99.1M 555.2 99.1 L 555.2 365 L 77.8 365 L 77.8 199.8" fill="#5470C6" fill-opacity="0.4"/>
 <g>
-<path d="M77.8,238.4 C97.7 234, 137.3 222.6, 157.4 221.1 C177 219.5, 217 225.9, 236.9 225.8 C256.8 225.8, 298.5 227.5, 316.5 220.7 C338.3 212.5, 374.3 174.1, 396.1 165.8 C414.1 158.9, 455.7 160.2, 475.6 159.6 C495.5 159, 535.3 160.7, 555.2 161.1" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="77.8" cy="238.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="157.4" cy="221.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="236.9" cy="225.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="316.5" cy="220.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="396.1" cy="165.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="475.6" cy="159.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="555.2" cy="161.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<path d="M77.8,199.8 C97.7 194.2, 137.1 179.3, 157.4 177.2 C176.9 175.2, 217 183.5, 236.9 183.5 C256.8 183.4, 299.5 185.2, 316.5 176.8 C339.3 165.6, 373.3 116.5, 396.1 105.1 C413.1 96.6, 455.7 97.8, 475.6 97.1 C495.5 96.3, 535.3 98.6, 555.2 99.1" stroke-width="2" fill="none" stroke="#5470C6"/>
+<circle cx="77.8" cy="199.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="157.4" cy="177.2" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="236.9" cy="183.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="316.5" cy="176.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="396.1" cy="105.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="475.6" cy="97.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<circle cx="555.2" cy="99.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
 </g>
 </svg>

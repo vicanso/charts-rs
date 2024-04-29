@@ -64,22 +64,22 @@ Search Engine
 <g>
 
 <text font-size="14" x="570" y="94" font-family="Roboto" fill="#EE6666">
-1.8k
+1.4k
 </text>
 <text font-size="14" x="570" y="140.3" font-family="Roboto" fill="#EE6666">
-1.5k
+1.1k
 </text>
 <text font-size="14" x="570" y="186.7" font-family="Roboto" fill="#EE6666">
-1.2k
+920
 </text>
 <text font-size="14" x="570" y="233" font-family="Roboto" fill="#EE6666">
-900
+690
 </text>
 <text font-size="14" x="570" y="279.3" font-family="Roboto" fill="#EE6666">
-600
+460
 </text>
 <text font-size="14" x="570" y="325.7" font-family="Roboto" fill="#EE6666">
-300
+230
 </text>
 <text font-size="14" x="570" y="372" font-family="Roboto" fill="#EE6666">
 0
@@ -150,13 +150,13 @@ Sun
 <circle cx="524.3" cy="153.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
 </g>
 <g>
-<path d="M 71.7 238.4 L 147.1 221.1 L 222.6 225.8 L 298 220.7 L 373.4 165.8 L 448.9 159.6 L 524.3 161.1" stroke-width="2" fill="none" stroke="#EE6666"/>
-<circle cx="71.7" cy="238.4" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="147.1" cy="221.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="222.6" cy="225.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="298" cy="220.7" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="373.4" cy="165.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="448.9" cy="159.6" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="524.3" cy="161.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<path d="M 71.7 199.8 L 147.1 177.2 L 222.6 183.5 L 298 176.8 L 373.4 105.1 L 448.9 97.1 L 524.3 99.1" stroke-width="2" fill="none" stroke="#EE6666"/>
+<circle cx="71.7" cy="199.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="147.1" cy="177.2" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="222.6" cy="183.5" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="298" cy="176.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="373.4" cy="105.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="448.9" cy="97.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<circle cx="524.3" cy="99.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
 </g>
 </svg>

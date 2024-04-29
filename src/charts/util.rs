@@ -211,19 +211,28 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     }
     let mut unit = ((max - min) / split_number as f32) as i32;
     if !is_custom_max {
-        let mut base = 1;
-        let mut multiply = 10;
-        while unit >= multiply {
-            unit /= multiply;
-            base *= multiply;
-            if base > 1000 {
-                multiply = 5;
-            } else if base > 10000 {
-                multiply = 2;
+        let adjust_unit = |current: i32, small_unit: i32| -> i32 {
+            if current % small_unit == 0 {
+                return current + small_unit;
             }
+            ((current / small_unit) + 1) * small_unit
+        };
+        if unit < 10 {
+            unit = adjust_unit(unit, 2);
+        } else if unit < 100 {
+            unit = adjust_unit(unit, 5);
+        } else if unit < 500 {
+            unit = adjust_unit(unit, 10);
+        } else if unit < 1000 {
+            unit = adjust_unit(unit, 20);
+        } else if unit < 5000 {
+            unit = adjust_unit(unit, 50);
+        } else if unit < 10000 {
+            unit = adjust_unit(unit, 100);
+        } else {
+            let small_unit = ((max - min) / 20.0) as i32;
+            unit = adjust_unit(unit, small_unit / 100 * 100);
         }
-
-        unit = if unit < 1 { base } else { base * (unit + 1) };
     }
     let split_unit = unit as usize;
 

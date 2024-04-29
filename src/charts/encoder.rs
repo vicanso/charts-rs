@@ -1,3 +1,4 @@
+use image::ImageFormat;
 use once_cell::sync::OnceCell;
 use resvg::{tiny_skia, usvg};
 use snafu::{ResultExt, Snafu};
@@ -37,7 +38,7 @@ pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> &fontdb::Database
     })
 }
 
-fn save_image(svg: &str, format: image::ImageOutputFormat) -> Result<Vec<u8>> {
+fn save_image(svg: &str, format: image::ImageFormat) -> Result<Vec<u8>> {
     let fontdb = get_or_init_fontdb(None);
     let tree =
         usvg::Tree::from_str(svg, &usvg::Options::default(), fontdb).context(ParseSnafu {})?;
@@ -55,26 +56,33 @@ fn save_image(svg: &str, format: image::ImageOutputFormat) -> Result<Vec<u8>> {
         .ok_or(Error::Raw { size })?;
     let mut buf = Cursor::new(vec![]);
 
-    rgba_image.write_to(&mut buf, format).context(ImageSnafu)?;
+    if format == ImageFormat::Jpeg {
+        image::DynamicImage::ImageRgba8(rgba_image)
+            .to_rgb8()
+            .write_to(&mut buf, format)
+            .context(ImageSnafu)?;
+    } else {
+        rgba_image.write_to(&mut buf, format).context(ImageSnafu)?;
+    }
     Ok(buf.into_inner())
 }
 
 /// Converts svg to png.
 pub fn svg_to_png(svg: &str) -> Result<Vec<u8>> {
-    save_image(svg, image::ImageOutputFormat::Png)
+    save_image(svg, image::ImageFormat::Png)
 }
 
 /// Converts svg to jpeg, the quality is 80.
 pub fn svg_to_jpeg(svg: &str) -> Result<Vec<u8>> {
-    save_image(svg, image::ImageOutputFormat::Jpeg(80))
+    save_image(svg, image::ImageFormat::Jpeg)
 }
 
 /// Converts svg to webp.
 pub fn svg_to_webp(svg: &str) -> Result<Vec<u8>> {
-    save_image(svg, image::ImageOutputFormat::WebP)
+    save_image(svg, image::ImageFormat::WebP)
 }
 
 /// Converts svg to avif.
 pub fn svg_to_avif(svg: &str) -> Result<Vec<u8>> {
-    save_image(svg, image::ImageOutputFormat::Avif)
+    save_image(svg, image::ImageFormat::Avif)
 }

@@ -53,50 +53,50 @@ Brazil
 0
 </text>
 <text font-size="14" x="142.3" y="392" font-family="Roboto" fill="#6E7079">
-150k
+136k
 </text>
 <text font-size="14" x="227.7" y="392" font-family="Roboto" fill="#6E7079">
-300k
+272k
 </text>
 <text font-size="14" x="313" y="392" font-family="Roboto" fill="#6E7079">
-450k
+408k
 </text>
 <text font-size="14" x="398.3" y="392" font-family="Roboto" fill="#6E7079">
-600k
+544k
 </text>
 <text font-size="14" x="483.7" y="392" font-family="Roboto" fill="#6E7079">
-750k
+680k
 </text>
 <text font-size="14" x="569" y="392" font-family="Roboto" fill="#6E7079">
-900k
+816k
 </text>
 </g>
 <g stroke="#E0E6F2">
 <line stroke-width="1" x1="158.3" y1="40" x2="158.3" y2="370"/><line stroke-width="1" x1="243.7" y1="40" x2="243.7" y2="370"/><line stroke-width="1" x1="329" y1="40" x2="329" y2="370"/><line stroke-width="1" x1="414.3" y1="40" x2="414.3" y2="370"/><line stroke-width="1" x1="499.7" y1="40" x2="499.7" y2="370"/><line stroke-width="1" x1="585" y1="40" x2="585" y2="370"/>
 </g>
-<rect x="73" y="320" width="10.4" height="21" fill="#5470C6"/>
-<rect x="73" y="265" width="13.4" height="21" fill="#5470C6"/>
-<rect x="73" y="155" width="59.7" height="21" fill="#5470C6"/>
-<rect x="73" y="100" width="74.9" height="21" fill="#5470C6"/>
-<rect x="73" y="45" width="358.5" height="21" fill="#5470C6"/>
-<rect x="73" y="344" width="11" height="21" fill="#91CC75"/>
-<rect x="73" y="289" width="13.3" height="21" fill="#91CC75"/>
-<rect x="73" y="234" width="17.6" height="21" fill="#91CC75"/>
-<rect x="73" y="179" width="69.2" height="21" fill="#91CC75"/>
-<rect x="73" y="69" width="387.9" height="21" fill="#91CC75"/>
-<text font-size="14" x="83.4" y="330.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
+<rect x="73" y="320" width="11.4" height="21" fill="#5470C6"/>
+<rect x="73" y="265" width="14.7" height="21" fill="#5470C6"/>
+<rect x="73" y="155" width="65.9" height="21" fill="#5470C6"/>
+<rect x="73" y="100" width="82.7" height="21" fill="#5470C6"/>
+<rect x="73" y="45" width="395.4" height="21" fill="#5470C6"/>
+<rect x="73" y="344" width="12.1" height="21" fill="#91CC75"/>
+<rect x="73" y="289" width="14.7" height="21" fill="#91CC75"/>
+<rect x="73" y="234" width="19.5" height="21" fill="#91CC75"/>
+<rect x="73" y="179" width="76.3" height="21" fill="#91CC75"/>
+<rect x="73" y="69" width="427.8" height="21" fill="#91CC75"/>
+<text font-size="14" x="84.4" y="330.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
 18203
 </text>
-<text font-size="14" x="86.4" y="275.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="87.7" y="275.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
 23489
 </text>
-<text font-size="14" x="132.7" y="165.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="138.9" y="165.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
 104970
 </text>
-<text font-size="14" x="147.9" y="110.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="155.7" y="110.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
 131744
 </text>
-<text font-size="14" x="431.5" y="55.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="468.4" y="55.5" dx="3" dy="5" font-family="Roboto" fill="#464646">
 630230
 </text>
 </svg>

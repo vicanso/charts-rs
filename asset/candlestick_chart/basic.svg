@@ -6,22 +6,22 @@
 <g>
 
 <text font-size="14" x="2" y="32" font-family="Roboto" fill="#6E7079">
-54
+60
 </text>
 <text font-size="14" x="2" y="88.3" font-family="Roboto" fill="#6E7079">
-45
+50
 </text>
 <text font-size="14" x="2" y="144.7" font-family="Roboto" fill="#6E7079">
-36
+40
 </text>
 <text font-size="14" x="2" y="201" font-family="Roboto" fill="#6E7079">
-27
+30
 </text>
 <text font-size="14" x="2" y="257.3" font-family="Roboto" fill="#6E7079">
-18
+20
 </text>
-<text font-size="14" x="11" y="313.7" font-family="Roboto" fill="#6E7079">
-9
+<text font-size="14" x="2" y="313.7" font-family="Roboto" fill="#6E7079">
+10
 </text>
 <text font-size="14" x="10" y="370" font-family="Roboto" fill="#6E7079">
 0
@@ -49,12 +49,12 @@
 2017-10-27
 </text>
 </g>
-<line stroke-width="1" x1="96.1" y1="127.1" x2="96.1" y2="302.4" stroke="#EC0000"/>
-<rect x="60.6" y="152.2" width="71.1" height="87.6" stroke="#8A0000" fill="#EC0000"/>
-<line stroke-width="1" x1="238.4" y1="52" x2="238.4" y2="177.2" stroke="#00DA3C"/>
-<rect x="202.8" y="114.6" width="71.1" height="31.3" stroke="#008F28" fill="#00DA3C"/>
-<line stroke-width="1" x1="380.6" y1="89.6" x2="380.6" y2="158.4" stroke="#EC0000"/>
-<rect x="345.1" y="127.1" width="71.1" height="43.8" stroke="#8A0000" fill="#EC0000"/>
-<line stroke-width="1" x1="522.9" y1="102.1" x2="522.9" y2="333.7" stroke="#00DA3C"/>
-<rect x="487.3" y="127.1" width="71.1" height="144" stroke="#008F28" fill="#00DA3C"/>
+<line stroke-width="1" x1="96.1" y1="150.9" x2="96.1" y2="308.7" stroke="#EC0000"/>
+<rect x="60.6" y="173.5" width="71.1" height="78.9" stroke="#8A0000" fill="#EC0000"/>
+<line stroke-width="1" x1="238.4" y1="83.3" x2="238.4" y2="196" stroke="#00DA3C"/>
+<rect x="202.8" y="139.7" width="71.1" height="28.2" stroke="#008F28" fill="#00DA3C"/>
+<line stroke-width="1" x1="380.6" y1="117.1" x2="380.6" y2="179.1" stroke="#EC0000"/>
+<rect x="345.1" y="150.9" width="71.1" height="39.4" stroke="#8A0000" fill="#EC0000"/>
+<line stroke-width="1" x1="522.9" y1="128.4" x2="522.9" y2="336.8" stroke="#00DA3C"/>
+<rect x="487.3" y="150.9" width="71.1" height="129.6" stroke="#008F28" fill="#00DA3C"/>
 </svg>
