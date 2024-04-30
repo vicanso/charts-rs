@@ -730,4 +730,41 @@ mod tests {
             line_chart.svg().unwrap()
         );
     }
+
+    #[test]
+    fn line_chart_small_value() {
+        let mut line_chart = LineChart::new(
+            vec![(
+                "latency",
+                vec![
+                    1.12, 1.18, 1.65, 1.87, 1.92, 1.43, 1.65, 0.83, 0.65, 0.12, 1.1, 0.87,
+                ],
+            )
+                .into()],
+            vec![
+                "01".to_string(),
+                "02".to_string(),
+                "03".to_string(),
+                "04".to_string(),
+                "05".to_string(),
+                "06".to_string(),
+                "07".to_string(),
+                "08".to_string(),
+                "09".to_string(),
+                "10".to_string(),
+                "11".to_string(),
+                "12".to_string(),
+            ],
+        );
+        line_chart.title_text = "Request Latency".to_string();
+        line_chart.legend_margin = Some(Box {
+            top: 50.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        assert_eq!(
+            include_str!("../../asset/line_chart/small_value.svg"),
+            line_chart.svg().unwrap()
+        );
+    }
 }

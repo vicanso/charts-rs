@@ -209,36 +209,43 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             is_custom_max = true
         }
     }
-    let mut unit = ((max - min) / split_number as f32) as i32;
+    let mut unit = (max - min) / split_number as f32;
     if !is_custom_max {
-        let adjust_unit = |current: i32, small_unit: i32| -> i32 {
-            if current % small_unit == 0 {
-                return current + small_unit;
-            }
-            ((current / small_unit) + 1) * small_unit
-        };
-        if unit < 10 {
-            unit = adjust_unit(unit, 2);
-        } else if unit < 100 {
-            unit = adjust_unit(unit, 5);
-        } else if unit < 500 {
-            unit = adjust_unit(unit, 10);
-        } else if unit < 1000 {
-            unit = adjust_unit(unit, 20);
-        } else if unit < 5000 {
-            unit = adjust_unit(unit, 50);
-        } else if unit < 10000 {
-            unit = adjust_unit(unit, 100);
+        let ceil_value = (unit * 10.0).ceil();
+        if ceil_value < 12.0 {
+            unit = ceil_value / 10.0;
         } else {
-            let small_unit = ((max - min) / 20.0) as i32;
-            unit = adjust_unit(unit, small_unit / 100 * 100);
+            let mut new_unit = unit as i32;
+            let adjust_unit = |current: i32, small_unit: i32| -> i32 {
+                if current % small_unit == 0 {
+                    return current + small_unit;
+                }
+                ((current / small_unit) + 1) * small_unit
+            };
+            if new_unit < 10 {
+                new_unit = adjust_unit(new_unit, 2);
+            } else if new_unit < 100 {
+                new_unit = adjust_unit(new_unit, 5);
+            } else if new_unit < 500 {
+                new_unit = adjust_unit(new_unit, 10);
+            } else if new_unit < 1000 {
+                new_unit = adjust_unit(new_unit, 20);
+            } else if new_unit < 5000 {
+                new_unit = adjust_unit(new_unit, 50);
+            } else if new_unit < 10000 {
+                new_unit = adjust_unit(new_unit, 100);
+            } else {
+                let small_unit = ((max - min) / 20.0) as i32;
+                new_unit = adjust_unit(new_unit, small_unit / 100 * 100);
+            }
+            unit = new_unit as f32;
         }
     }
-    let split_unit = unit as usize;
+    let split_unit = unit as f32;
 
     let mut data = vec![];
     for i in 0..=split_number {
-        let mut value = min + (i * split_unit) as f32;
+        let mut value = min + (i as f32) * split_unit;
         if params.thousands_format {
             data.push(thousands_format_float(value));
             continue;
@@ -268,7 +275,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     AxisValues {
         data,
         min,
-        max: min + (split_unit * split_number) as f32,
+        max: min + split_unit * split_number as f32,
     }
 }
 pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
