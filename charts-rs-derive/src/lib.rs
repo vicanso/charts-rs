@@ -532,6 +532,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 y_axis_values_list: &[&AxisValues],
                 max_height: f32,
                 series_data_count: usize,
+                radius: Option<f32>,
             ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
                     return vec![];
@@ -589,6 +590,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             top: y,
                             width: bar_width,
                             height: max_height - y,
+                            rx: radius,
+                            ry: radius,
                             ..Default::default()
                         });
                         series_labels.push(SeriesLabel{

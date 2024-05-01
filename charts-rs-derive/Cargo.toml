@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs-derive"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 keywords = ["charts", "svg"]
 description = "A derive library for charts-rs"
@@ -14,5 +14,5 @@ repository = "https://github.com/vicanso/charts-rs"
 proc-macro = true
 
 [dependencies]
-quote = "1.0.35"
-syn = "2.0.49"
+quote = "1.0.36"
+syn = "2.0.60"
