@@ -14,7 +14,7 @@ readme = "./README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.0" }
+charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.1" }
 fontdue = "0.8.0"
 image = { version = "0.25.1", features = [
     "webp",

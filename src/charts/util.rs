@@ -241,7 +241,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             unit = new_unit as f32;
         }
     }
-    let split_unit = unit as f32;
+    let split_unit = unit;
 
     let mut data = vec![];
     for i in 0..=split_number {

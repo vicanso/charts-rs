@@ -80,6 +80,8 @@ pub struct BarChart {
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
     pub series_fill: bool,
+
+    pub radius: Option<f32>,
 }
 
 impl BarChart {
@@ -94,6 +96,9 @@ impl BarChart {
         }
         if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
             b.y_axis_hidden = y_axis_hidden;
+        }
+        if let Some(radius) = get_f32_from_value(&value, "radius") {
+            b.radius = Some(radius);
         }
         Ok(b)
     }
@@ -245,6 +250,7 @@ impl BarChart {
             &y_axis_values_list,
             max_height,
             self.x_axis_data.len(),
+            self.radius,
         );
 
         let mut line_series_labels_list = self.render_line(
@@ -376,6 +382,7 @@ mod tests {
             bottom: 10.0,
             ..Default::default()
         });
+        bar_chart.radius = Some(5.0);
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.legend_category = LegendCategory::Circle;
