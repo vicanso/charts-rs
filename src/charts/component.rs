@@ -1858,7 +1858,6 @@ Hello World!
             start_angle: 45.0,
             delta: 45.0,
             border_radius: 0.0,
-            ..Default::default()
         };
         assert_eq!(
             r###"<path d="M250,250 L426.8,73.2 A0 0 0 0 1 432.8,79.5 A250 250 0 0 1 499.8,241.3 A0 0 0 0 1 500,250 L250,250 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,

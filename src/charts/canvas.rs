@@ -442,7 +442,7 @@ mod tests {
         let b = c.polyline(Polyline {
             color: Some((0, 0, 0).into()),
             stroke_width: 1.0,
-            points: convert_to_points(&vec![(1.0, 5.0), (30.0, 60.0), (50.0, 10.0), (70.0, 40.0)]),
+            points: convert_to_points(&[(1.0, 5.0), (30.0, 60.0), (50.0, 10.0), (70.0, 40.0)]),
         });
         assert_eq!("(1,5,70,60)", b.to_string());
         assert_eq!(
@@ -479,7 +479,7 @@ Hello World!
         let mut c = Canvas::new(400.0, 300.0);
         let b = c.smooth_line(SmoothLine {
             color: Some((0, 0, 0).into()),
-            points: convert_to_points(&vec![
+            points: convert_to_points(&[
                 (10.0, 10.0),
                 (30.0, 50.0),
                 (50.0, 80.0),
@@ -510,7 +510,7 @@ Hello World!
         let mut c = Canvas::new(400.0, 300.0);
         let b = c.straight_line(StraightLine {
             color: Some((0, 0, 0).into()),
-            points: convert_to_points(&vec![
+            points: convert_to_points(&[
                 (10.0, 10.0),
                 (30.0, 50.0),
                 (50.0, 80.0),
@@ -542,7 +542,7 @@ Hello World!
         let mut c = Canvas::new(400.0, 300.0);
         let b = c.smooth_line_fill(SmoothLineFill {
             fill: (0, 0, 0).into(),
-            points: convert_to_points(&vec![
+            points: convert_to_points(&[
                 (10.0, 10.0),
                 (30.0, 50.0),
                 (50.0, 80.0),
@@ -564,7 +564,7 @@ Hello World!
         let mut c = Canvas::new(400.0, 300.0);
         let b = c.straight_line_fill(StraightLineFill {
             fill: (0, 0, 0).into(),
-            points: convert_to_points(&vec![
+            points: convert_to_points(&[
                 (10.0, 10.0),
                 (30.0, 50.0),
                 (50.0, 80.0),

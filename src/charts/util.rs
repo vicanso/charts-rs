@@ -404,7 +404,7 @@ mod tests {
         assert_eq!("100", thousands_format_float(100.04));
         assert_eq!("1,000", thousands_format_float(1000.14));
         assert_eq!("100,000", thousands_format_float(100000.14));
-        assert_eq!("1,000,000", thousands_format_float(1000000.14));
+        assert_eq!("1,000,000", thousands_format_float(1_000_000.1));
     }
 
     #[test]
@@ -423,7 +423,7 @@ mod tests {
 
     #[test]
     fn get_box() {
-        let points: Vec<Point> = convert_to_points(&vec![
+        let points: Vec<Point> = convert_to_points(&[
             (2.0, 10.0),
             (50.0, 10.0),
             (50.0, 30.0),

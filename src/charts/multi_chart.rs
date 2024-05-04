@@ -148,8 +148,8 @@ impl MultiChart {
                     c.y = y;
                     // fix postion, no need  gap
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {
@@ -170,8 +170,8 @@ impl MultiChart {
                 ChildChart::Candlestick(c, position) => {
                     c.y = y;
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {
@@ -192,8 +192,8 @@ impl MultiChart {
                 ChildChart::HorizontalBar(c, position) => {
                     c.y = y;
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {
@@ -213,8 +213,8 @@ impl MultiChart {
                 ChildChart::Line(c, position) => {
                     c.y = y;
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {
@@ -234,8 +234,8 @@ impl MultiChart {
                 ChildChart::Pie(c, position) => {
                     c.y = y;
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {
@@ -255,8 +255,8 @@ impl MultiChart {
                 ChildChart::Radar(c, position) => {
                     c.y = y;
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {
@@ -276,8 +276,8 @@ impl MultiChart {
                 ChildChart::Scatter(c, position) => {
                     c.y = y;
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {
@@ -297,8 +297,8 @@ impl MultiChart {
                 ChildChart::Table(c, position) => {
                     c.y = y;
                     if let Some((x, y)) = position {
-                        c.y = y.to_owned();
-                        c.x = x.to_owned();
+                        y.clone_into(&mut c.y);
+                        x.clone_into(&mut c.x);
                     } else if y == 0.0 {
                         c.y = margin_top;
                     } else {

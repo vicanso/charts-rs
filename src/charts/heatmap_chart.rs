@@ -429,7 +429,7 @@ mod tests {
         .iter()
         .map(|item| item.to_string())
         .collect();
-        let y_axis_data = vec![
+        let y_axis_data = [
             "Saturday",
             "Friday",
             "Thursday",
@@ -474,7 +474,7 @@ mod tests {
         .iter()
         .map(|item| item.to_string())
         .collect();
-        let y_axis_data = vec![
+        let y_axis_data = [
             "Saturday",
             "Friday",
             "Thursday",
@@ -520,7 +520,7 @@ mod tests {
         .iter()
         .map(|item| item.to_string())
         .collect();
-        let y_axis_data = vec![
+        let y_axis_data = [
             "Saturday",
             "Friday",
             "Thursday",

@@ -110,13 +110,11 @@ fn bar_chart_line_mixin_png() {
 }
 
 fn bar_chart_benchmark(c: &mut Criterion) {
-    c.bench_function("bar chart test", |b| b.iter(|| bar_chart_line_mixin()));
+    c.bench_function("bar chart test", |b| b.iter(bar_chart_line_mixin));
 }
 
 fn bar_chart_png_benchmark(c: &mut Criterion) {
-    c.bench_function("bar chart png test", |b| {
-        b.iter(|| bar_chart_line_mixin_png())
-    });
+    c.bench_function("bar chart png test", |b| b.iter(bar_chart_line_mixin_png));
 }
 
 criterion_group!(

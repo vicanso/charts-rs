@@ -243,20 +243,20 @@ impl TableChart {
         table
     }
     fn fill_theme(&mut self, t: &Theme) {
-        self.font_family = t.font_family.clone();
+        self.font_family.clone_from(&t.font_family);
         self.width = t.width;
         self.background_color = t.background_color;
 
         self.title_font_color = t.title_font_color;
         self.title_font_size = t.title_font_size;
-        self.title_font_weight = t.title_font_weight.clone();
-        self.title_margin = t.title_margin.clone();
+        self.title_font_weight.clone_from(&t.title_font_weight);
+        self.title_margin.clone_from(&t.title_margin);
         self.title_align = t.title_align.clone();
         self.title_height = t.title_height * 1.5;
 
         self.sub_title_font_color = t.sub_title_font_color;
         self.sub_title_font_size = t.sub_title_font_size;
-        self.sub_title_margin = t.sub_title_margin.clone();
+        self.sub_title_margin.clone_from(&t.sub_title_margin);
         self.sub_title_align = t.sub_title_align.clone();
         self.sub_title_height = t.sub_title_height;
 
@@ -266,7 +266,7 @@ impl TableChart {
 
         self.body_font_size = t.sub_title_font_size;
         self.body_font_color = t.sub_title_font_color;
-        self.body_background_colors = t.table_body_colors.clone();
+        self.body_background_colors.clone_from(&t.table_body_colors);
         self.border_color = t.table_border_color;
     }
     /// Creates a table chart with default theme.
@@ -462,7 +462,7 @@ impl TableChart {
                 padding = self.header_row_padding.top + self.header_row_padding.bottom;
                 font_size = self.header_font_size;
                 font_color = self.header_font_color;
-                font_weight = self.header_font_weight.clone();
+                font_weight.clone_from(&self.header_font_weight);
                 self.header_background_color
             } else {
                 self.body_background_colors[(i - 1) % body_background_color_count]
@@ -532,7 +532,7 @@ impl TableChart {
                     {
                         let mut align = Align::Left;
                         if let Some(value) = self.text_aligns.get(j) {
-                            align = value.to_owned();
+                            value.clone_into(&mut align);
                         }
                         let text_width = measurement.width();
                         let text_max_width = span_width - row_padding.left - row_padding.right;
