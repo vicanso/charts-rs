@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs"
-version = "0.3.8"
+version = "0.3.9"
 authors = ["Tree Xie <tree.xie@outlook.com>"]
 edition = "2021"
 categories = ["multimedia::images"]
@@ -11,11 +11,12 @@ homepage = "https://github.com/vicanso/charts-rs"
 repository = "https://github.com/vicanso/charts-rs"
 exclude = ["asset/*", "test/*", "charts-rs-derive/*", "Cargo.lock"]
 readme = "./README.md"
+rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.1" }
-fontdue = "0.8.0"
+fontdue = "0.9.0"
 image = { version = "0.25.1", features = [
     "webp",
     "avif",
@@ -28,8 +29,8 @@ resvg = { version = "0.41.0", default-features = false, features = [
     "text",
     "system-fonts",
 ], optional = true }
-serde = { version = "1.0.199", features = ["derive"] }
-serde_json = "1.0.116"
+serde = { version = "1.0.202", features = ["derive"] }
+serde_json = "1.0.117"
 snafu = "0.8.2"
 substring = "1.4.5"
 
