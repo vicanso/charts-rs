@@ -3,6 +3,7 @@ use once_cell::sync::OnceCell;
 use resvg::{tiny_skia, usvg};
 use snafu::{ResultExt, Snafu};
 use std::io::Cursor;
+use std::sync::Arc;
 use usvg::fontdb;
 
 #[derive(Debug, Snafu)]
@@ -23,25 +24,33 @@ pub enum Error {
 }
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> &fontdb::Database {
-    static GLOBAL_FONT_DB: OnceCell<fontdb::Database> = OnceCell::new();
-    GLOBAL_FONT_DB.get_or_init(|| {
-        let mut fontdb = fontdb::Database::new();
-        if let Some(value) = fonts {
-            for item in value.iter() {
-                fontdb.load_font_data((*item).to_vec());
+pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> Arc<fontdb::Database> {
+    static GLOBAL_FONT_DB: OnceCell<Arc<fontdb::Database>> = OnceCell::new();
+    GLOBAL_FONT_DB
+        .get_or_init(|| {
+            let mut fontdb = fontdb::Database::new();
+            if let Some(value) = fonts {
+                for item in value.iter() {
+                    fontdb.load_font_data((*item).to_vec());
+                }
+            } else {
+                fontdb.load_system_fonts();
             }
-        } else {
-            fontdb.load_system_fonts();
-        }
-        fontdb
-    })
+            Arc::new(fontdb)
+        })
+        .clone()
 }
 
 fn save_image(svg: &str, format: image::ImageFormat) -> Result<Vec<u8>> {
     let fontdb = get_or_init_fontdb(None);
-    let tree =
-        usvg::Tree::from_str(svg, &usvg::Options::default(), fontdb).context(ParseSnafu {})?;
+    let tree = usvg::Tree::from_str(
+        svg,
+        &usvg::Options {
+            fontdb,
+            ..Default::default()
+        },
+    )
+    .context(ParseSnafu {})?;
     let pixmap_size = tree.size().to_int_size();
     let mut pixmap =
         tiny_skia::Pixmap::new(pixmap_size.width(), pixmap_size.height()).ok_or(Error::Size {
