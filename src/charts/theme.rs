@@ -696,6 +696,70 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
+static SHADCN_THEME: Lazy<Theme> = Lazy::new(|| {
+    let x_axis_color = (39, 39, 42).into();
+
+    let font_color: Color = (161, 161, 170).into();
+    let bg_color = (9, 9, 11).into();
+    Theme {
+        is_light: false,
+        font_family: DEFAULT_FONT_FAMILY.to_string(),
+        margin: (5.0).into(),
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+        background_color: bg_color,
+
+        title_font_color: font_color,
+        title_font_size: 18.0,
+        title_font_weight: Some("bold".to_string()),
+        title_margin: None,
+        title_align: Align::Center,
+        title_height: DEFAULT_TITLE_HEIGHT,
+
+        sub_title_font_color: font_color,
+        sub_title_font_size: DEFAULT_FONT_SIZE,
+        sub_title_margin: None,
+        sub_title_align: Align::Center,
+        sub_title_height: DEFAULT_SUB_TITLE_HEIGHT,
+
+        legend_font_size: DEFAULT_FONT_SIZE,
+        legend_font_color: font_color,
+        legend_align: Align::Center,
+        legend_margin: None,
+
+        x_axis_font_size: DEFAULT_FONT_SIZE,
+        x_axis_stroke_color: x_axis_color,
+        x_axis_font_color: font_color,
+        x_axis_name_gap: DEFAULT_X_AXIS_NAME_GAP,
+        x_axis_height: DEFAULT_X_AXIS_HEIGHT,
+
+        y_axis_font_size: DEFAULT_FONT_SIZE,
+        y_axis_font_color: font_color,
+        y_axis_stroke_color: Color::transparent(),
+        y_axis_split_number: DEFAULT_Y_AXIS_SPLIT_NUMBER,
+        y_axis_name_gap: DEFAULT_Y_AXIS_NAME_GAP,
+
+        grid_stroke_color: (39, 39, 42).into(),
+        grid_stroke_width: 1.0,
+
+        series_stroke_width: DEFAULT_SERIES_STROKE_WIDTH,
+        series_label_font_size: DEFAULT_FONT_SIZE,
+        series_label_font_color: font_color,
+
+        series_colors: vec![
+            "#2662d9".into(),
+            "#e23670".into(),
+            "#2eb88a".into(),
+            "#e88c30".into(),
+            "#af57db".into(),
+        ],
+
+        table_header_color: bg_color.with_alpha(230),
+        table_body_colors: vec![bg_color],
+        table_border_color: (39, 39, 42).into(),
+    }
+});
+
 pub fn get_theme(theme: &str) -> &'static Theme {
     match theme {
         "dark" => &DARK_THEME,
@@ -706,6 +770,7 @@ pub fn get_theme(theme: &str) -> &'static Theme {
         "walden" => &WALDEN_THEME,
         "westeros" => &WESTEROS_THEME,
         "chalk" => &CHALK_THEME,
+        "shadcn" => &SHADCN_THEME,
         // echart
         _ => &LIGHT_THEME,
     }

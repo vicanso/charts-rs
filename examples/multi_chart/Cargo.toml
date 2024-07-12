@@ -1,0 +1,11 @@
+[package]
+name = "multi_chart"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+charts-rs = { path = "../.." }
+
+[[bin]]
+name = "multi_chart"
+path = "main.rs"

@@ -1,0 +1,693 @@
+<svg width="620" height="3056" viewBox="0 0 620 3056" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="620" height="3056" fill="#1F1D1D" fill-opacity="0.6"/>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" x="10" y="10">
+<rect x="0" y="0" width="600" height="400" fill="#09090B"/>
+<g>
+<line stroke-width="2" x1="114" y1="15" x2="139" y2="15" stroke="#2662D9"/>
+<circle cx="126.5" cy="15" r="5.5" stroke-width="2" stroke="#2662D9" fill="#2662D9"/>
+<text font-size="14" x="142" y="19" font-family="Roboto" fill="#A1A1AA">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="183" y1="15" x2="208" y2="15" stroke="#E23670"/>
+<circle cx="195.5" cy="15" r="5.5" stroke-width="2" stroke="#E23670" fill="#E23670"/>
+<text font-size="14" x="211" y="19" font-family="Roboto" fill="#A1A1AA">
+Union Ads
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="283" y1="15" x2="308" y2="15" stroke="#2EB88A"/>
+<circle cx="295.5" cy="15" r="5.5" stroke-width="2" stroke="#2EB88A" fill="#2EB88A"/>
+<text font-size="14" x="311" y="19" font-family="Roboto" fill="#A1A1AA">
+Direct
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="356" y1="15" x2="381" y2="15" stroke="#E88C30"/>
+<circle cx="368.5" cy="15" r="5.5" stroke-width="2" stroke="#E88C30" fill="#E88C30"/>
+<text font-size="14" x="384" y="19" font-family="Roboto" fill="#A1A1AA">
+Search Engine
+</text>
+</g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="38" y1="27" x2="595" y2="27"/><line stroke-width="1" x1="38" y1="83.3" x2="595" y2="83.3"/><line stroke-width="1" x1="38" y1="139.7" x2="595" y2="139.7"/><line stroke-width="1" x1="38" y1="196" x2="595" y2="196"/><line stroke-width="1" x1="38" y1="252.3" x2="595" y2="252.3"/><line stroke-width="1" x1="38" y1="308.7" x2="595" y2="308.7"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="32" font-family="Roboto" fill="#A1A1AA">
+1.4k
+</text>
+<text font-size="14" x="2" y="88.3" font-family="Roboto" fill="#A1A1AA">
+1.1k
+</text>
+<text font-size="14" x="6" y="144.7" font-family="Roboto" fill="#A1A1AA">
+920
+</text>
+<text font-size="14" x="6" y="201" font-family="Roboto" fill="#A1A1AA">
+690
+</text>
+<text font-size="14" x="6" y="257.3" font-family="Roboto" fill="#A1A1AA">
+460
+</text>
+<text font-size="14" x="6" y="313.7" font-family="Roboto" fill="#A1A1AA">
+230
+</text>
+<text font-size="14" x="22" y="370" font-family="Roboto" fill="#A1A1AA">
+0
+</text>
+</g>
+<g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
+<line stroke-width="1" x1="117.6" y1="365" x2="117.6" y2="370"/>
+<line stroke-width="1" x1="197.1" y1="365" x2="197.1" y2="370"/>
+<line stroke-width="1" x1="276.7" y1="365" x2="276.7" y2="370"/>
+<line stroke-width="1" x1="356.3" y1="365" x2="356.3" y2="370"/>
+<line stroke-width="1" x1="435.9" y1="365" x2="435.9" y2="370"/>
+<line stroke-width="1" x1="515.4" y1="365" x2="515.4" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="63.8" y="384" font-family="Roboto" fill="#A1A1AA">
+Mon
+</text>
+<text font-size="14" x="145.4" y="384" font-family="Roboto" fill="#A1A1AA">
+Tue
+</text>
+<text font-size="14" x="222.9" y="384" font-family="Roboto" fill="#A1A1AA">
+Wed
+</text>
+<text font-size="14" x="304.5" y="384" font-family="Roboto" fill="#A1A1AA">
+Thu
+</text>
+<text font-size="14" x="388.1" y="384" font-family="Roboto" fill="#A1A1AA">
+Fri
+</text>
+<text font-size="14" x="464.6" y="384" font-family="Roboto" fill="#A1A1AA">
+Sat
+</text>
+<text font-size="14" x="543.2" y="384" font-family="Roboto" fill="#A1A1AA">
+Sun
+</text>
+</g>
+<rect x="43" y="335.6" width="15.1" height="29.4" fill="#2662D9"/>
+<rect x="122.6" y="332.7" width="15.1" height="32.3" fill="#2662D9"/>
+<rect x="202.1" y="340.3" width="15.1" height="24.7" fill="#2662D9"/>
+<rect x="281.7" y="332.2" width="15.1" height="32.8" fill="#2662D9"/>
+<rect x="361.3" y="343" width="15.1" height="22" fill="#2662D9"/>
+<rect x="440.9" y="308.7" width="15.1" height="56.3" fill="#2662D9"/>
+<rect x="520.4" y="313.6" width="15.1" height="51.4" fill="#2662D9"/>
+<rect x="61.1" y="311.1" width="15.1" height="53.9" fill="#E23670"/>
+<rect x="140.7" y="320.4" width="15.1" height="44.6" fill="#E23670"/>
+<rect x="220.3" y="318.2" width="15.1" height="46.8" fill="#E23670"/>
+<rect x="299.9" y="307.7" width="15.1" height="57.3" fill="#E23670"/>
+<rect x="379.4" y="294" width="15.1" height="71" fill="#E23670"/>
+<rect x="459" y="284.2" width="15.1" height="80.8" fill="#E23670"/>
+<rect x="538.6" y="289.1" width="15.1" height="75.9" fill="#E23670"/>
+<rect x="79.3" y="286.6" width="15.1" height="78.4" fill="#2EB88A"/>
+<rect x="158.9" y="283.7" width="15.1" height="81.3" fill="#2EB88A"/>
+<rect x="238.4" y="291.3" width="15.1" height="73.7" fill="#2EB88A"/>
+<rect x="318" y="283.2" width="15.1" height="81.8" fill="#2EB88A"/>
+<rect x="397.6" y="269.5" width="15.1" height="95.5" fill="#2EB88A"/>
+<rect x="477.1" y="284.2" width="15.1" height="80.8" fill="#2EB88A"/>
+<rect x="556.7" y="286.6" width="15.1" height="78.4" fill="#2EB88A"/>
+<rect x="97.4" y="164.2" width="15.1" height="200.8" fill="#E88C30"/>
+<rect x="177" y="136.7" width="15.1" height="228.3" fill="#E88C30"/>
+<rect x="256.6" y="144.3" width="15.1" height="220.7" fill="#E88C30"/>
+<rect x="336.1" y="136.2" width="15.1" height="228.8" fill="#E88C30"/>
+<rect x="415.7" y="49" width="15.1" height="316" fill="#E88C30"/>
+<rect x="495.3" y="39.2" width="15.1" height="325.8" fill="#E88C30"/>
+<rect x="574.9" y="41.7" width="15.1" height="323.3" fill="#E88C30"/>
+</svg>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" x="10" y="420">
+<rect x="0" y="0" width="600" height="400" fill="#09090B"/>
+<g stroke="#27272A">
+<line stroke-width="1" x1="26" y1="27" x2="595" y2="27"/><line stroke-width="1" x1="26" y1="83.3" x2="595" y2="83.3"/><line stroke-width="1" x1="26" y1="139.7" x2="595" y2="139.7"/><line stroke-width="1" x1="26" y1="196" x2="595" y2="196"/><line stroke-width="1" x1="26" y1="252.3" x2="595" y2="252.3"/><line stroke-width="1" x1="26" y1="308.7" x2="595" y2="308.7"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="32" font-family="Roboto" fill="#A1A1AA">
+60
+</text>
+<text font-size="14" x="2" y="88.3" font-family="Roboto" fill="#A1A1AA">
+50
+</text>
+<text font-size="14" x="2" y="144.7" font-family="Roboto" fill="#A1A1AA">
+40
+</text>
+<text font-size="14" x="2" y="201" font-family="Roboto" fill="#A1A1AA">
+30
+</text>
+<text font-size="14" x="2" y="257.3" font-family="Roboto" fill="#A1A1AA">
+20
+</text>
+<text font-size="14" x="2" y="313.7" font-family="Roboto" fill="#A1A1AA">
+10
+</text>
+<text font-size="14" x="10" y="370" font-family="Roboto" fill="#A1A1AA">
+0
+</text>
+</g>
+<g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="26" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="26" y1="365" x2="26" y2="370"/>
+<line stroke-width="1" x1="168.2" y1="365" x2="168.2" y2="370"/>
+<line stroke-width="1" x1="310.5" y1="365" x2="310.5" y2="370"/>
+<line stroke-width="1" x1="452.8" y1="365" x2="452.8" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="61.1" y="384" font-family="Roboto" fill="#A1A1AA">
+2017-10-24
+</text>
+<text font-size="14" x="203.4" y="384" font-family="Roboto" fill="#A1A1AA">
+2017-10-25
+</text>
+<text font-size="14" x="345.6" y="384" font-family="Roboto" fill="#A1A1AA">
+2017-10-26
+</text>
+<text font-size="14" x="487.9" y="384" font-family="Roboto" fill="#A1A1AA">
+2017-10-27
+</text>
+</g>
+<line stroke-width="1" x1="96.1" y1="150.9" x2="96.1" y2="308.7" stroke="#EC0000"/>
+<rect x="60.6" y="173.5" width="71.1" height="78.9" stroke="#8A0000" fill="#EC0000"/>
+<line stroke-width="1" x1="238.4" y1="83.3" x2="238.4" y2="196" stroke="#00DA3C"/>
+<rect x="202.8" y="139.7" width="71.1" height="28.2" stroke="#008F28" fill="#00DA3C"/>
+<line stroke-width="1" x1="380.6" y1="117.1" x2="380.6" y2="179.1" stroke="#EC0000"/>
+<rect x="345.1" y="150.9" width="71.1" height="39.4" stroke="#8A0000" fill="#EC0000"/>
+<line stroke-width="1" x1="522.9" y1="128.4" x2="522.9" y2="336.8" stroke="#00DA3C"/>
+<rect x="487.3" y="150.9" width="71.1" height="129.6" stroke="#008F28" fill="#00DA3C"/>
+</svg>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" x="10" y="830">
+<rect x="0" y="0" width="600" height="400" fill="#09090B"/>
+<g>
+<line stroke-width="2" x1="237.5" y1="15" x2="262.5" y2="15" stroke="#2662D9"/>
+<circle cx="250" cy="15" r="5.5" stroke-width="2" stroke="#2662D9" fill="#2662D9"/>
+<text font-size="14" x="265.5" y="19" font-family="Roboto" fill="#A1A1AA">
+2011
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="299.5" y1="15" x2="324.5" y2="15" stroke="#E23670"/>
+<circle cx="312" cy="15" r="5.5" stroke-width="2" stroke="#E23670" fill="#E23670"/>
+<text font-size="14" x="327.5" y="19" font-family="Roboto" fill="#A1A1AA">
+2012
+</text>
+</g>
+<g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="73" y1="27" x2="73" y2="370"/>
+<line stroke-width="1" x1="73" y1="27" x2="68" y2="27"/>
+<line stroke-width="1" x1="73" y1="84.2" x2="68" y2="84.2"/>
+<line stroke-width="1" x1="73" y1="141.3" x2="68" y2="141.3"/>
+<line stroke-width="1" x1="73" y1="198.5" x2="68" y2="198.5"/>
+<line stroke-width="1" x1="73" y1="255.7" x2="68" y2="255.7"/>
+<line stroke-width="1" x1="73" y1="312.8" x2="68" y2="312.8"/>
+<line stroke-width="1" x1="73" y1="370" x2="68" y2="370"/>
+</g>
+<text font-size="14" x="31" y="60.6" font-family="Roboto" fill="#A1A1AA">
+World
+</text>
+<text font-size="14" x="31" y="117.8" font-family="Roboto" fill="#A1A1AA">
+China
+</text>
+<text font-size="14" x="37" y="174.9" font-family="Roboto" fill="#A1A1AA">
+India
+</text>
+<text font-size="14" x="40" y="232.1" font-family="Roboto" fill="#A1A1AA">
+USA
+</text>
+<text font-size="14" x="5" y="289.2" font-family="Roboto" fill="#A1A1AA">
+Indonesia
+</text>
+<text font-size="14" x="32" y="346.4" font-family="Roboto" fill="#A1A1AA">
+Brazil
+</text>
+</g>
+<g>
+
+<text font-size="14" x="69" y="392" font-family="Roboto" fill="#A1A1AA">
+0
+</text>
+<text font-size="14" x="144" y="392" font-family="Roboto" fill="#A1A1AA">
+136k
+</text>
+<text font-size="14" x="231" y="392" font-family="Roboto" fill="#A1A1AA">
+272k
+</text>
+<text font-size="14" x="318" y="392" font-family="Roboto" fill="#A1A1AA">
+408k
+</text>
+<text font-size="14" x="405" y="392" font-family="Roboto" fill="#A1A1AA">
+544k
+</text>
+<text font-size="14" x="492" y="392" font-family="Roboto" fill="#A1A1AA">
+680k
+</text>
+<text font-size="14" x="579" y="392" font-family="Roboto" fill="#A1A1AA">
+816k
+</text>
+</g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="160" y1="27" x2="160" y2="370"/><line stroke-width="1" x1="247" y1="27" x2="247" y2="370"/><line stroke-width="1" x1="334" y1="27" x2="334" y2="370"/><line stroke-width="1" x1="421" y1="27" x2="421" y2="370"/><line stroke-width="1" x1="508" y1="27" x2="508" y2="370"/><line stroke-width="1" x1="595" y1="27" x2="595" y2="370"/>
+</g>
+<rect x="73" y="317.8" width="11.6" height="22.1" fill="#2662D9"/>
+<rect x="73" y="260.7" width="15" height="22.1" fill="#2662D9"/>
+<rect x="73" y="203.5" width="18.6" height="22.1" fill="#2662D9"/>
+<rect x="73" y="146.3" width="67.1" height="22.1" fill="#2662D9"/>
+<rect x="73" y="89.2" width="84.3" height="22.1" fill="#2662D9"/>
+<rect x="73" y="32" width="403.2" height="22.1" fill="#2662D9"/>
+<rect x="73" y="342.9" width="12.4" height="22.1" fill="#E23670"/>
+<rect x="73" y="285.8" width="15" height="22.1" fill="#E23670"/>
+<rect x="73" y="228.6" width="19.8" height="22.1" fill="#E23670"/>
+<rect x="73" y="171.4" width="77.8" height="22.1" fill="#E23670"/>
+<rect x="73" y="114.2" width="85.8" height="22.1" fill="#E23670"/>
+<rect x="73" y="57.1" width="436.2" height="22.1" fill="#E23670"/>
+</svg>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" x="10" y="1240">
+<rect x="0" y="0" width="600" height="400" fill="#09090B"/>
+<g>
+<line stroke-width="2" x1="114" y1="15" x2="139" y2="15" stroke="#2662D9"/>
+<circle cx="126.5" cy="15" r="5.5" stroke-width="2" stroke="#2662D9" fill="#2662D9"/>
+<text font-size="14" x="142" y="19" font-family="Roboto" fill="#A1A1AA">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="183" y1="15" x2="208" y2="15" stroke="#E23670"/>
+<circle cx="195.5" cy="15" r="5.5" stroke-width="2" stroke="#E23670" fill="#E23670"/>
+<text font-size="14" x="211" y="19" font-family="Roboto" fill="#A1A1AA">
+Union Ads
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="283" y1="15" x2="308" y2="15" stroke="#2EB88A"/>
+<circle cx="295.5" cy="15" r="5.5" stroke-width="2" stroke="#2EB88A" fill="#2EB88A"/>
+<text font-size="14" x="311" y="19" font-family="Roboto" fill="#A1A1AA">
+Direct
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="356" y1="15" x2="381" y2="15" stroke="#E88C30"/>
+<circle cx="368.5" cy="15" r="5.5" stroke-width="2" stroke="#E88C30" fill="#E88C30"/>
+<text font-size="14" x="384" y="19" font-family="Roboto" fill="#A1A1AA">
+Search Engine
+</text>
+</g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="38" y1="27" x2="595" y2="27"/><line stroke-width="1" x1="38" y1="83.3" x2="595" y2="83.3"/><line stroke-width="1" x1="38" y1="139.7" x2="595" y2="139.7"/><line stroke-width="1" x1="38" y1="196" x2="595" y2="196"/><line stroke-width="1" x1="38" y1="252.3" x2="595" y2="252.3"/><line stroke-width="1" x1="38" y1="308.7" x2="595" y2="308.7"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="32" font-family="Roboto" fill="#A1A1AA">
+1.4k
+</text>
+<text font-size="14" x="2" y="88.3" font-family="Roboto" fill="#A1A1AA">
+1.1k
+</text>
+<text font-size="14" x="6" y="144.7" font-family="Roboto" fill="#A1A1AA">
+920
+</text>
+<text font-size="14" x="6" y="201" font-family="Roboto" fill="#A1A1AA">
+690
+</text>
+<text font-size="14" x="6" y="257.3" font-family="Roboto" fill="#A1A1AA">
+460
+</text>
+<text font-size="14" x="6" y="313.7" font-family="Roboto" fill="#A1A1AA">
+230
+</text>
+<text font-size="14" x="22" y="370" font-family="Roboto" fill="#A1A1AA">
+0
+</text>
+</g>
+<g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
+<line stroke-width="1" x1="117.6" y1="365" x2="117.6" y2="370"/>
+<line stroke-width="1" x1="197.1" y1="365" x2="197.1" y2="370"/>
+<line stroke-width="1" x1="276.7" y1="365" x2="276.7" y2="370"/>
+<line stroke-width="1" x1="356.3" y1="365" x2="356.3" y2="370"/>
+<line stroke-width="1" x1="435.9" y1="365" x2="435.9" y2="370"/>
+<line stroke-width="1" x1="515.4" y1="365" x2="515.4" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="63.8" y="384" font-family="Roboto" fill="#A1A1AA">
+Mon
+</text>
+<text font-size="14" x="145.4" y="384" font-family="Roboto" fill="#A1A1AA">
+Tue
+</text>
+<text font-size="14" x="222.9" y="384" font-family="Roboto" fill="#A1A1AA">
+Wed
+</text>
+<text font-size="14" x="304.5" y="384" font-family="Roboto" fill="#A1A1AA">
+Thu
+</text>
+<text font-size="14" x="388.1" y="384" font-family="Roboto" fill="#A1A1AA">
+Fri
+</text>
+<text font-size="14" x="464.6" y="384" font-family="Roboto" fill="#A1A1AA">
+Sat
+</text>
+<text font-size="14" x="543.2" y="384" font-family="Roboto" fill="#A1A1AA">
+Sun
+</text>
+</g>
+<g>
+<path d="M 77.8 335.6 L 157.4 332.7 L 236.9 340.3 L 316.5 332.2 L 396.1 343 L 475.6 308.7 L 555.2 313.6" stroke-width="2" fill="none" stroke="#2662D9"/>
+<circle cx="77.8" cy="335.6" r="2" stroke-width="2" stroke="#2662D9" fill="#09090B"/>
+<circle cx="157.4" cy="332.7" r="2" stroke-width="2" stroke="#2662D9" fill="#09090B"/>
+<circle cx="236.9" cy="340.3" r="2" stroke-width="2" stroke="#2662D9" fill="#09090B"/>
+<circle cx="316.5" cy="332.2" r="2" stroke-width="2" stroke="#2662D9" fill="#09090B"/>
+<circle cx="396.1" cy="343" r="2" stroke-width="2" stroke="#2662D9" fill="#09090B"/>
+<circle cx="475.6" cy="308.7" r="2" stroke-width="2" stroke="#2662D9" fill="#09090B"/>
+<circle cx="555.2" cy="313.6" r="2" stroke-width="2" stroke="#2662D9" fill="#09090B"/>
+</g>
+<g>
+<path d="M 77.8 311.1 L 157.4 320.4 L 236.9 318.2 L 316.5 307.7 L 396.1 294 L 475.6 284.2 L 555.2 289.1" stroke-width="2" fill="none" stroke="#E23670"/>
+<circle cx="77.8" cy="311.1" r="2" stroke-width="2" stroke="#E23670" fill="#09090B"/>
+<circle cx="157.4" cy="320.4" r="2" stroke-width="2" stroke="#E23670" fill="#09090B"/>
+<circle cx="236.9" cy="318.2" r="2" stroke-width="2" stroke="#E23670" fill="#09090B"/>
+<circle cx="316.5" cy="307.7" r="2" stroke-width="2" stroke="#E23670" fill="#09090B"/>
+<circle cx="396.1" cy="294" r="2" stroke-width="2" stroke="#E23670" fill="#09090B"/>
+<circle cx="475.6" cy="284.2" r="2" stroke-width="2" stroke="#E23670" fill="#09090B"/>
+<circle cx="555.2" cy="289.1" r="2" stroke-width="2" stroke="#E23670" fill="#09090B"/>
+</g>
+<g>
+<path d="M 77.8 286.6 L 157.4 283.7 L 236.9 291.3 L 316.5 283.2 L 396.1 269.5 L 475.6 284.2 L 555.2 286.6" stroke-width="2" fill="none" stroke="#2EB88A"/>
+<circle cx="77.8" cy="286.6" r="2" stroke-width="2" stroke="#2EB88A" fill="#09090B"/>
+<circle cx="157.4" cy="283.7" r="2" stroke-width="2" stroke="#2EB88A" fill="#09090B"/>
+<circle cx="236.9" cy="291.3" r="2" stroke-width="2" stroke="#2EB88A" fill="#09090B"/>
+<circle cx="316.5" cy="283.2" r="2" stroke-width="2" stroke="#2EB88A" fill="#09090B"/>
+<circle cx="396.1" cy="269.5" r="2" stroke-width="2" stroke="#2EB88A" fill="#09090B"/>
+<circle cx="475.6" cy="284.2" r="2" stroke-width="2" stroke="#2EB88A" fill="#09090B"/>
+<circle cx="555.2" cy="286.6" r="2" stroke-width="2" stroke="#2EB88A" fill="#09090B"/>
+</g>
+<g>
+<path d="M 77.8 164.2 L 157.4 136.7 L 236.9 144.3 L 316.5 136.2 L 396.1 49 L 475.6 39.2 L 555.2 41.7" stroke-width="2" fill="none" stroke="#E88C30"/>
+<circle cx="77.8" cy="164.2" r="2" stroke-width="2" stroke="#E88C30" fill="#09090B"/>
+<circle cx="157.4" cy="136.7" r="2" stroke-width="2" stroke="#E88C30" fill="#09090B"/>
+<circle cx="236.9" cy="144.3" r="2" stroke-width="2" stroke="#E88C30" fill="#09090B"/>
+<circle cx="316.5" cy="136.2" r="2" stroke-width="2" stroke="#E88C30" fill="#09090B"/>
+<circle cx="396.1" cy="49" r="2" stroke-width="2" stroke="#E88C30" fill="#09090B"/>
+<circle cx="475.6" cy="39.2" r="2" stroke-width="2" stroke="#E88C30" fill="#09090B"/>
+<circle cx="555.2" cy="41.7" r="2" stroke-width="2" stroke="#E88C30" fill="#09090B"/>
+</g>
+</svg>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" x="10" y="1650">
+<rect x="0" y="0" width="600" height="400" fill="#09090B"/>
+<path d="M294,146 L294,52 A8 8 0 0 1 299.2,44.1 A150 150 0 0 1 396.3,84.3 A8 8 0 0 1 394.4,93.6 L327.9,160.1 A8 8 0 0 1 321.3,164.7 A40 40 0 0 0 295.4,154 A8 8 0 0 1 294,146 Z" fill="#2662D9"/>
+<path d="M351.4,55.4 C353.3 50.8, 355.6 39.3, 359.1 36.9 C362.5 34.6, 374.1 36.9, 379.1 36.9" stroke-width="1" fill="none" stroke="#2662D9"/>
+<text font-size="14" x="382.1" y="41.9" font-family="Roboto" fill="#A1A1AA">
+rose 1: 17.1%
+</text>
+<path d="M327.9,160.1 L390.5,97.5 A8 8 0 0 1 399.7,95.5 A144.5 144.5 0 0 1 438.4,189 A8 8 0 0 1 430.5,194 L342,194 A8 8 0 0 1 334,192.6 A40 40 0 0 0 323.3,166.7 A8 8 0 0 1 327.9,160.1 Z" fill="#E23670"/>
+<path d="M427.5,138.7 C433.4 136.3, 445 130.3, 451.1 128.9 C455.8 127.9, 466.1 128.9, 471.1 128.9" stroke-width="1" fill="none" stroke="#E23670"/>
+<text font-size="14" x="474.1" y="133.9" font-family="Roboto" fill="#A1A1AA">
+rose 2: 16.2%
+</text>
+<path d="M342,194 L414,194 A8 8 0 0 1 421.9,198.5 A128 128 0 0 1 387.6,281.3 A8 8 0 0 1 378.9,278.9 L327.9,227.9 A8 8 0 0 1 323.3,221.3 A40 40 0 0 0 334,195.4 A8 8 0 0 1 342,194 Z" fill="#2EB88A"/>
+<path d="M412.3,243 C422 247, 441.1 256.3, 451.1 259.1 C455.8 260.4, 466.1 259.1, 471.1 259.1" stroke-width="1" fill="none" stroke="#2EB88A"/>
+<text font-size="14" x="474.1" y="264.1" font-family="Roboto" fill="#A1A1AA">
+rose 3: 13.7%
+</text>
+<path d="M327.9,227.9 L375,275 A8 8 0 0 1 377.5,283.6 A122.5 122.5 0 0 1 298.3,316.4 A8 8 0 0 1 294,308.5 L294,242 A8 8 0 0 1 295.4,234 A40 40 0 0 0 321.3,223.3 A8 8 0 0 1 327.9,227.9 Z" fill="#E88C30"/>
+<path d="M340.9,307.2 C345.4 318.1, 352.3 343.3, 359.1 351.1 C361.9 354.3, 374.1 351.1, 379.1 351.1" stroke-width="1" fill="none" stroke="#E88C30"/>
+<text font-size="14" x="382.1" y="356.1" font-family="Roboto" fill="#A1A1AA">
+rose 4: 12.8%
+</text>
+<path d="M294,242 L294,303 A8 8 0 0 1 289.9,310.9 A117 117 0 0 1 214.2,279.6 A8 8 0 0 1 216.9,271.1 L260.1,227.9 A8 8 0 0 1 266.7,223.3 A40 40 0 0 0 292.6,234 A8 8 0 0 1 294,242 Z" fill="#AF57DB"/>
+<path d="M249.2,302.1 C244.2 314.3, 236.3 342.2, 228.9 351.1 C226.2 354.4, 213.9 351.1, 208.9 351.1" stroke-width="1" fill="none" stroke="#AF57DB"/>
+<text font-size="14" x="133.9" y="356.1" font-family="Roboto" fill="#A1A1AA">
+rose 5: 12%
+</text>
+<path d="M260.1,227.9 L220.8,267.2 A8 8 0 0 1 212.5,270 A111.5 111.5 0 0 1 182.6,197.9 A8 8 0 0 1 190.5,194 L246,194 A8 8 0 0 1 254,195.4 A40 40 0 0 0 264.7,221.3 A8 8 0 0 1 260.1,227.9 Z" fill="#2662D9"/>
+<path d="M191,236.7 C177.5 242.3, 150.7 254.9, 136.9 259.1 C132.2 260.5, 121.9 259.1, 116.9 259.1" stroke-width="1" fill="none" stroke="#2662D9"/>
+<text font-size="14" x="29.9" y="264.1" font-family="Roboto" fill="#A1A1AA">
+rose 6: 11.1%
+</text>
+<path d="M246,194 L201.5,194 A8 8 0 0 1 193.6,190.5 A100.5 100.5 0 0 1 220.5,125.5 A8 8 0 0 1 228.6,128.6 L260.1,160.1 A8 8 0 0 1 264.7,166.7 A40 40 0 0 0 254,192.6 A8 8 0 0 1 246,194 Z" fill="#E23670"/>
+<path d="M201.2,155.5 C185.1 148.9, 153.3 134.1, 136.9 128.9 C132.2 127.5, 121.9 128.9, 116.9 128.9" stroke-width="1" fill="none" stroke="#E23670"/>
+<text font-size="14" x="37.9" y="133.9" font-family="Roboto" fill="#A1A1AA">
+rose 7: 9.4%
+</text>
+<path d="M260.1,160.1 L236.4,136.4 A8 8 0 0 1 233,128.5 A89.5 89.5 0 0 1 290.9,104.6 A8 8 0 0 1 294,112.5 L294,146 A8 8 0 0 1 292.6,154 A40 40 0 0 0 266.7,164.7 A8 8 0 0 1 260.1,160.1 Z" fill="#2EB88A"/>
+<path d="M259.7,111.3 C252 92.7, 239.1 51.8, 228.9 36.9 C226.4 33.2, 213.9 36.9, 208.9 36.9" stroke-width="1" fill="none" stroke="#2EB88A"/>
+<text font-size="14" x="129.9" y="41.9" font-family="Roboto" fill="#A1A1AA">
+rose 8: 7.7%
+</text>
+</svg>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" x="10" y="2060">
+<rect x="0" y="0" width="600" height="400" fill="#09090B"/>
+<g>
+<line stroke-width="2" x1="158" y1="15" x2="183" y2="15" stroke="#2662D9"/>
+<circle cx="170.5" cy="15" r="5.5" stroke-width="2" stroke="#2662D9" fill="#2662D9"/>
+<text font-size="14" x="186" y="19" font-family="Roboto" fill="#A1A1AA">
+Allocated Budget
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="304" y1="15" x2="329" y2="15" stroke="#E23670"/>
+<circle cx="316.5" cy="15" r="5.5" stroke-width="2" stroke="#E23670" fill="#E23670"/>
+<text font-size="14" x="332" y="19" font-family="Roboto" fill="#A1A1AA">
+Actual Spending
+</text>
+</g>
+<path d="M 300 182.2 L 324.9 196.6 L 324.9 225.4 L 300 239.8 L 275.1 225.4 L 275.1 196.6 Z" stroke-width="1" fill="none" stroke="#27272A"/>
+<path d="M 300 153.4 L 349.9 182.2 L 349.9 239.8 L 300 268.6 L 250.1 239.8 L 250.1 182.2 Z" stroke-width="1" fill="none" stroke="#27272A"/>
+<path d="M 300 124.6 L 374.8 167.8 L 374.8 254.2 L 300 297.4 L 225.2 254.2 L 225.2 167.8 Z" stroke-width="1" fill="none" stroke="#27272A"/>
+<path d="M 300 95.8 L 399.8 153.4 L 399.8 268.6 L 300 326.2 L 200.2 268.6 L 200.2 153.4 Z" stroke-width="1" fill="none" stroke="#27272A"/>
+<path d="M 300 67 L 424.7 139 L 424.7 283 L 300 355 L 175.3 283 L 175.3 139 Z" stroke-width="1" fill="none" stroke="#27272A"/>
+<text font-size="14" x="282" y="62" font-family="Roboto" fill="#A1A1AA">
+Sales
+</text>
+<line stroke-width="1" x1="300" y1="67" x2="300" y2="211" stroke="#27272A"/>
+<text font-size="14" x="427.7" y="139" font-family="Roboto" fill="#A1A1AA">
+Administration
+</text>
+<line stroke-width="1" x1="424.7" y1="139" x2="300" y2="211" stroke="#27272A"/>
+<text font-size="14" x="427.7" y="290.9" font-family="Roboto" fill="#A1A1AA">
+Information Technology
+</text>
+<line stroke-width="1" x1="424.7" y1="283" x2="300" y2="211" stroke="#27272A"/>
+<text font-size="14" x="240" y="371" font-family="Roboto" fill="#A1A1AA">
+Customer Support
+</text>
+<line stroke-width="1" x1="300" y1="355" x2="300" y2="211" stroke="#27272A"/>
+<text font-size="14" x="85.3" y="290.9" font-family="Roboto" fill="#A1A1AA">
+Development
+</text>
+<line stroke-width="1" x1="175.3" y1="283" x2="300" y2="211" stroke="#27272A"/>
+<text font-size="14" x="106.3" y="139" font-family="Roboto" fill="#A1A1AA">
+Marketing
+</text>
+<line stroke-width="1" x1="175.3" y1="139" x2="300" y2="211" stroke="#27272A"/>
+<g>
+<path d="M 300 118 L 323.4 197.5 L 383.1 259 L 300 343.6 L 180.1 280.2 L 210.2 159.2 Z" stroke-width="2" fill="#2662D9" fill-opacity="0.2" stroke="#2662D9"/>
+<circle cx="300" cy="118" r="2" stroke-width="2" stroke="#2662D9" fill="none"/>
+<circle cx="323.4" cy="197.5" r="2" stroke-width="2" stroke="#2662D9" fill="none"/>
+<circle cx="383.1" cy="259" r="2" stroke-width="2" stroke="#2662D9" fill="none"/>
+<circle cx="300" cy="343.6" r="2" stroke-width="2" stroke="#2662D9" fill="none"/>
+<circle cx="180.1" cy="280.2" r="2" stroke-width="2" stroke="#2662D9" fill="none"/>
+<circle cx="210.2" cy="159.2" r="2" stroke-width="2" stroke="#2662D9" fill="none"/>
+</g>
+<g>
+<path d="M 300 100.2 L 409.1 148 L 416.4 278.2 L 300 309.5 L 199.3 269.2 L 195.2 150.5 Z" stroke-width="2" fill="#E23670" fill-opacity="0.2" stroke="#E23670"/>
+<circle cx="300" cy="100.2" r="2" stroke-width="2" stroke="#E23670" fill="none"/>
+<circle cx="409.1" cy="148" r="2" stroke-width="2" stroke="#E23670" fill="none"/>
+<circle cx="416.4" cy="278.2" r="2" stroke-width="2" stroke="#E23670" fill="none"/>
+<circle cx="300" cy="309.5" r="2" stroke-width="2" stroke="#E23670" fill="none"/>
+<circle cx="199.3" cy="269.2" r="2" stroke-width="2" stroke="#E23670" fill="none"/>
+<circle cx="195.2" cy="150.5" r="2" stroke-width="2" stroke="#E23670" fill="none"/>
+</g>
+</svg>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" x="10" y="2470">
+<rect x="0" y="0" width="600" height="400" fill="#09090B"/>
+<g>
+<line stroke-width="2" x1="228" y1="15" x2="253" y2="15" stroke="#2662D9"/>
+<circle cx="240.5" cy="15" r="5.5" stroke-width="2" stroke="#2662D9" fill="#2662D9"/>
+<text font-size="14" x="256" y="19" font-family="Roboto" fill="#A1A1AA">
+Female
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="309" y1="15" x2="334" y2="15" stroke="#E23670"/>
+<circle cx="321.5" cy="15" r="5.5" stroke-width="2" stroke="#E23670" fill="#E23670"/>
+<text font-size="14" x="337" y="19" font-family="Roboto" fill="#A1A1AA">
+Male
+</text>
+</g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="34" y1="27" x2="595" y2="27"/><line stroke-width="1" x1="34" y1="83.3" x2="595" y2="83.3"/><line stroke-width="1" x1="34" y1="139.7" x2="595" y2="139.7"/><line stroke-width="1" x1="34" y1="196" x2="595" y2="196"/><line stroke-width="1" x1="34" y1="252.3" x2="595" y2="252.3"/><line stroke-width="1" x1="34" y1="308.7" x2="595" y2="308.7"/>
+</g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="127.5" y1="27" x2="127.5" y2="365"/><line stroke-width="1" x1="221" y1="27" x2="221" y2="365"/><line stroke-width="1" x1="314.5" y1="27" x2="314.5" y2="365"/><line stroke-width="1" x1="408" y1="27" x2="408" y2="365"/><line stroke-width="1" x1="501.5" y1="27" x2="501.5" y2="365"/><line stroke-width="1" x1="595" y1="27" x2="595" y2="365"/>
+</g>
+<g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="34" y1="27" x2="34" y2="365"/>
+<line stroke-width="1" x1="34" y1="27" x2="29" y2="27"/>
+<line stroke-width="1" x1="34" y1="83.3" x2="29" y2="83.3"/>
+<line stroke-width="1" x1="34" y1="139.7" x2="29" y2="139.7"/>
+<line stroke-width="1" x1="34" y1="196" x2="29" y2="196"/>
+<line stroke-width="1" x1="34" y1="252.3" x2="29" y2="252.3"/>
+<line stroke-width="1" x1="34" y1="308.7" x2="29" y2="308.7"/>
+<line stroke-width="1" x1="34" y1="365" x2="29" y2="365"/>
+</g>
+<text font-size="14" x="2" y="32" font-family="Roboto" fill="#A1A1AA">
+120
+</text>
+<text font-size="14" x="2" y="88.3" font-family="Roboto" fill="#A1A1AA">
+100
+</text>
+<text font-size="14" x="10" y="144.7" font-family="Roboto" fill="#A1A1AA">
+80
+</text>
+<text font-size="14" x="10" y="201" font-family="Roboto" fill="#A1A1AA">
+60
+</text>
+<text font-size="14" x="10" y="257.3" font-family="Roboto" fill="#A1A1AA">
+40
+</text>
+<text font-size="14" x="10" y="313.7" font-family="Roboto" fill="#A1A1AA">
+20
+</text>
+<text font-size="14" x="18" y="370" font-family="Roboto" fill="#A1A1AA">
+0
+</text>
+</g>
+<g>
+<g stroke="#27272A">
+<line stroke-width="1" x1="34" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="34" y1="365" x2="34" y2="370"/>
+<line stroke-width="1" x1="127.5" y1="365" x2="127.5" y2="370"/>
+<line stroke-width="1" x1="221" y1="365" x2="221" y2="370"/>
+<line stroke-width="1" x1="314.5" y1="365" x2="314.5" y2="370"/>
+<line stroke-width="1" x1="408" y1="365" x2="408" y2="370"/>
+<line stroke-width="1" x1="501.5" y1="365" x2="501.5" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="30" y="384" font-family="Roboto" fill="#A1A1AA">
+0
+</text>
+<text font-size="14" x="119.5" y="384" font-family="Roboto" fill="#A1A1AA">
+35
+</text>
+<text font-size="14" x="213" y="384" font-family="Roboto" fill="#A1A1AA">
+70
+</text>
+<text font-size="14" x="302.5" y="384" font-family="Roboto" fill="#A1A1AA">
+105
+</text>
+<text font-size="14" x="396" y="384" font-family="Roboto" fill="#A1A1AA">
+140
+</text>
+<text font-size="14" x="489.5" y="384" font-family="Roboto" fill="#A1A1AA">
+175
+</text>
+<text font-size="14" x="583" y="384" font-family="Roboto" fill="#A1A1AA">
+210
+</text>
+</g>
+<circle cx="464.6" cy="219.7" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="481.5" cy="198.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="460.1" cy="226.4" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="453.4" cy="187.6" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="450.2" cy="214" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="488.1" cy="198.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="459" cy="230.9" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="477.5" cy="168.4" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="504.7" cy="176.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="462" cy="153.2" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="494.8" cy="209.5" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="490.5" cy="212.3" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="495.9" cy="189" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="443.8" cy="246.7" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="461.4" cy="224.2" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="427.2" cy="224.7" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="483.3" cy="226.4" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="501.5" cy="158.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="453.4" cy="230.4" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="481.7" cy="171.2" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="460.1" cy="222.5" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="501.5" cy="132.6" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="479.6" cy="203.9" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="505.5" cy="117.7" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="488.7" cy="159.9" r="10" stroke-width="1" fill-opacity="0.8" fill="#2662D9"/>
+<circle cx="498.8" cy="180.2" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="502.3" cy="162.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="550.9" cy="137.7" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="532.2" cy="160.5" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="534.1" cy="143" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="518.9" cy="154.3" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="525.5" cy="121.6" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="526.9" cy="144.2" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="501.5" cy="190.4" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="525.5" cy="135.2" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="514.9" cy="149.2" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="509" cy="129.5" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="546.9" cy="111.5" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="504.2" cy="154.9" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="498.8" cy="165" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="525.5" cy="140.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="548.8" cy="100.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="492.1" cy="167.8" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="496.2" cy="161.1" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="504.2" cy="123" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="504.2" cy="143" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="516.2" cy="145.9" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="495.4" cy="178.5" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="504.2" cy="121.6" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+<circle cx="497.5" cy="134.6" r="10" stroke-width="1" fill-opacity="0.8" fill="#E23670"/>
+</svg>
+<svg width="600" height="166" viewBox="0 0 600 166" xmlns="http://www.w3.org/2000/svg" x="10" y="2880">
+<rect x="0" y="0" width="600" height="46" fill="#09090B" fill-opacity="0.9"/>
+<line stroke-width="1" x1="0" y1="0" x2="600" y2="0" stroke="#27272A"/>
+<text font-size="14" x="10" y="8" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+Name
+</text>
+<text font-size="14" x="210" y="8" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+Price
+</text>
+<text font-size="14" x="410" y="8" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+Change
+</text>
+<rect x="0" y="46" width="600" height="40" fill="#09090B"/>
+<line stroke-width="1" x1="0" y1="46" x2="600" y2="46" stroke="#27272A"/>
+<text font-size="14" x="10" y="51" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+Datadog Inc
+</text>
+<text font-size="14" x="210" y="51" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+97.32
+</text>
+<text font-size="14" x="410" y="51" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+-7.49%
+</text>
+<rect x="0" y="86" width="600" height="40" fill="#09090B"/>
+<line stroke-width="1" x1="0" y1="86" x2="600" y2="86" stroke="#27272A"/>
+<text font-size="14" x="10" y="91" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+Hashicorp Inc
+</text>
+<text font-size="14" x="210" y="91" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+28.66
+</text>
+<text font-size="14" x="410" y="91" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+-9.25%
+</text>
+<rect x="0" y="126" width="600" height="40" fill="#09090B"/>
+<line stroke-width="1" x1="0" y1="126" x2="600" y2="126" stroke="#27272A"/>
+<text font-size="14" x="10" y="131" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+Gitlab Inc
+</text>
+<text font-size="14" x="210" y="131" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
+51.63
+</text>
+<text font-size="14" x="410" y="131" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#A1A1AA">
++4.32%
+</text>
+</svg>
+</svg>
