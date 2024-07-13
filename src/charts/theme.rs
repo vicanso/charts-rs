@@ -752,6 +752,9 @@ static SHADCN_THEME: Lazy<Theme> = Lazy::new(|| {
             "#2eb88a".into(),
             "#e88c30".into(),
             "#af57db".into(),
+            "#0e2014".into(),
+            "#3b86f7".into(),
+            "#f17e92".into(),
         ],
 
         table_header_color: bg_color.with_alpha(230),
