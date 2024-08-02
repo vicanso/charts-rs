@@ -3,12 +3,13 @@ use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
 use super::util::*;
 use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default, Chart)]
 pub struct ScatterChart {
@@ -133,7 +134,7 @@ impl ScatterChart {
     }
     /// Creates a scatter chart with default theme.
     pub fn new(series_list: Vec<Series>) -> ScatterChart {
-        ScatterChart::new_with_theme(series_list, &get_default_theme())
+        ScatterChart::new_with_theme(series_list, &get_default_theme_name())
     }
     /// Converts scatter chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {

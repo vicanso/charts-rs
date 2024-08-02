@@ -15,9 +15,11 @@ rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.1" }
+ahash = "0.8.11"
+arc-swap = "1.7.1"
+charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.2" }
 fontdue = "0.9.2"
-image = { version = "0.25.1", features = [
+image = { version = "0.25.2", features = [
     "webp",
     "avif",
     "jpeg",
@@ -29,9 +31,9 @@ resvg = { version = "0.42.0", default-features = false, features = [
     "text",
     "system-fonts",
 ], optional = true }
-serde = { version = "1.0.203", features = ["derive"] }
-serde_json = "1.0.117"
-snafu = "0.8.3"
+serde = { version = "1.0.204", features = ["derive"] }
+serde_json = "1.0.122"
+snafu = "0.8.4"
 substring = "1.4.5"
 
 [features]

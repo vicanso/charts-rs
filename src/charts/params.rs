@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Position, Symbol, NIL_VALUE,
 };
@@ -212,7 +214,7 @@ pub(crate) fn get_string_slice_from_value(
 }
 
 /// Gets y axis config value from serde json.
-pub(crate) fn get_y_axis_config_from_value(t: &Theme, item: &serde_json::Value) -> YAxisConfig {
+pub(crate) fn get_y_axis_config_from_value(t: Arc<Theme>, item: &serde_json::Value) -> YAxisConfig {
     let mut y_config = YAxisConfig {
         axis_font_size: t.y_axis_font_size,
         axis_font_color: t.y_axis_font_color,
@@ -259,7 +261,7 @@ pub(crate) fn get_y_axis_config_from_value(t: &Theme, item: &serde_json::Value) 
 
 /// Gets y axis config value from serde json.
 pub(crate) fn get_y_axis_configs_from_value(
-    t: &Theme,
+    t: Arc<Theme>,
     value: &serde_json::Value,
     key: &str,
 ) -> Option<Vec<YAxisConfig>> {
@@ -268,7 +270,7 @@ pub(crate) fn get_y_axis_configs_from_value(
             return Some(
                 values
                     .iter()
-                    .map(|item| get_y_axis_config_from_value(t, item))
+                    .map(|item| get_y_axis_config_from_value(t.clone(), item))
                     .collect(),
             );
         }

@@ -4,10 +4,11 @@ use super::common::*;
 use super::component::*;
 use super::font::text_wrap_fit;
 use super::params::*;
-use super::theme::{get_default_theme, get_theme, Theme};
+use super::theme::{get_default_theme_name, get_theme, Theme};
 use super::util::*;
 use super::Canvas;
 use crate::charts::measure_text_width_family;
+use std::sync::Arc;
 
 #[derive(Clone, Debug, Default)]
 pub struct TableCellStyle {
@@ -242,7 +243,7 @@ impl TableChart {
         table.fill_theme(get_theme(theme));
         table
     }
-    fn fill_theme(&mut self, t: &Theme) {
+    fn fill_theme(&mut self, t: Arc<Theme>) {
         self.font_family.clone_from(&t.font_family);
         self.width = t.width;
         self.background_color = t.background_color;
@@ -271,7 +272,7 @@ impl TableChart {
     }
     /// Creates a table chart with default theme.
     pub fn new(data: Vec<Vec<String>>) -> TableChart {
-        TableChart::new_with_theme(data, &get_default_theme())
+        TableChart::new_with_theme(data, &get_default_theme_name())
     }
     fn render_title(&self, c: Canvas) -> f32 {
         let mut title_height = 0.0;

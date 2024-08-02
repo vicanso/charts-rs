@@ -3,12 +3,13 @@ use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
 use super::util::*;
 use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default, Chart)]
 pub struct CandlestickChart {
@@ -155,7 +156,7 @@ impl CandlestickChart {
     }
     /// Creates a candlestick chart with default theme.
     pub fn new(series_list: Vec<Series>, x_axis_data: Vec<String>) -> CandlestickChart {
-        CandlestickChart::new_with_theme(series_list, x_axis_data, &get_default_theme())
+        CandlestickChart::new_with_theme(series_list, x_axis_data, &get_default_theme_name())
     }
     /// Converts candlestick chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {

@@ -71,15 +71,6 @@
 //! println!("{}", bar_chart.svg().unwrap());
 //!```
 //!
-//! # Change default theme
-//! The default theme will be initialized only once,
-//! so it can be changed before any chart is created.
-//! ```rust
-//! use charts_rs::{get_or_init_default_theme, THEME_GRAFANA};
-//! let theme = get_or_init_default_theme(THEME_GRAFANA);
-//! assert_eq!(theme, THEME_GRAFANA);
-//! // now the default theme of new chart is grafana
-//! ```
 //!
 //! # Add more font
 //! The fonts will be initialized once, it can be changed before used.

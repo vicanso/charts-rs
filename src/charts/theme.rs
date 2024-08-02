@@ -2,7 +2,10 @@ use super::color::Color;
 use super::common::Align;
 use super::font::DEFAULT_FONT_FAMILY;
 use super::util::Box;
-use once_cell::sync::{Lazy, OnceCell};
+use ahash::AHashMap;
+use arc_swap::ArcSwap;
+use once_cell::sync::Lazy;
+use std::sync::Arc;
 
 pub static DEFAULT_WIDTH: f32 = 600.0;
 pub static DEFAULT_HEIGHT: f32 = 400.0;
@@ -25,21 +28,6 @@ pub static THEME_ANT: &str = "ant";
 pub static THEME_GRAFANA: &str = "grafana";
 
 static LIGHT_THEME_NAME: &str = "light";
-
-pub fn get_or_init_default_theme(theme: &str) -> String {
-    static DEFAULT_THEME: OnceCell<String> = OnceCell::new();
-    let value = DEFAULT_THEME.get_or_init(|| {
-        if theme.is_empty() {
-            return LIGHT_THEME_NAME.to_string();
-        }
-        theme.to_string()
-    });
-    value.to_owned()
-}
-
-pub fn get_default_theme() -> String {
-    get_or_init_default_theme(LIGHT_THEME_NAME)
-}
 
 #[derive(Clone, Debug, Default)]
 
@@ -763,18 +751,42 @@ static SHADCN_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-pub fn get_theme(theme: &str) -> &'static Theme {
-    match theme {
-        "dark" => &DARK_THEME,
-        "ant" => &ANT_THEME,
-        "grafana" => &GRAFANA_THEME,
-        "vintage" => &VINTAGE_THEME,
-        "shine" => &SHINE_THEME,
-        "walden" => &WALDEN_THEME,
-        "westeros" => &WESTEROS_THEME,
-        "chalk" => &CHALK_THEME,
-        "shadcn" => &SHADCN_THEME,
-        // echart
-        _ => &LIGHT_THEME,
+type Themes = AHashMap<String, Arc<Theme>>;
+static THEME_MAP: Lazy<ArcSwap<Themes>> = Lazy::new(|| {
+    let mut m = AHashMap::new();
+    m.insert("dark".to_string(), Arc::new(DARK_THEME.clone()));
+    m.insert("ant".to_string(), Arc::new(ANT_THEME.clone()));
+    m.insert("grafana".to_string(), Arc::new(GRAFANA_THEME.clone()));
+    m.insert("vintage".to_string(), Arc::new(VINTAGE_THEME.clone()));
+    m.insert("shine".to_string(), Arc::new(SHINE_THEME.clone()));
+    m.insert("walden".to_string(), Arc::new(WALDEN_THEME.clone()));
+    m.insert("westeros".to_string(), Arc::new(WESTEROS_THEME.clone()));
+    m.insert("chalk".to_string(), Arc::new(CHALK_THEME.clone()));
+    m.insert("shadcn".to_string(), Arc::new(SHADCN_THEME.clone()));
+    m.insert("light".to_string(), Arc::new(LIGHT_THEME.clone()));
+    ArcSwap::from_pointee(m)
+});
+
+/// Add theme of charts
+pub fn add_theme(name: &str, data: Theme) {
+    let mut m: Themes = AHashMap::new();
+    for (name, data) in THEME_MAP.load().iter() {
+        m.insert(name.to_string(), data.clone());
     }
+    m.insert(name.to_string(), Arc::new(data));
+    THEME_MAP.store(Arc::new(m))
+}
+
+/// Get the theme of charts
+pub fn get_theme(theme: &str) -> Arc<Theme> {
+    if let Some(theme) = THEME_MAP.load().get(theme) {
+        theme.clone()
+    } else {
+        Arc::new(LIGHT_THEME.clone())
+    }
+}
+
+/// Get default theme
+pub fn get_default_theme_name() -> String {
+    LIGHT_THEME_NAME.to_string()
 }

@@ -3,11 +3,12 @@ use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
 use super::util::*;
 use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
+use std::sync::Arc;
 
 #[derive(Clone, Debug, Default)]
 pub struct RadarIndicator {
@@ -142,7 +143,7 @@ impl RadarChart {
     }
     /// Creates a radar chart with default theme.
     pub fn new(series_list: Vec<Series>, indicators: Vec<RadarIndicator>) -> RadarChart {
-        RadarChart::new_with_theme(series_list, indicators, &get_default_theme())
+        RadarChart::new_with_theme(series_list, indicators, &get_default_theme_name())
     }
     /// Converts bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
