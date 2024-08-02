@@ -11,7 +11,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
     let gen = quote! {
         impl #id {
             /// Fills the default options of current theme.
-            fn fill_theme(&mut self, t: &Theme) {
+            fn fill_theme(&mut self, t: Arc<Theme>) {
                 self.font_family = t.font_family.clone();
                 self.margin = t.margin.clone();
                 self.width = t.width;
@@ -73,7 +73,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let series_list = get_series_list_from_value(&data).unwrap_or_default();
                 let theme = get_string_from_value(&data, "theme").unwrap_or_default();
                 let theme = get_theme(&theme);
-                self.fill_theme(theme);
+                self.fill_theme(theme.clone());
                 self.series_list = series_list;
 
                 if let Some(width) = get_f32_from_value(&data, "width") {
@@ -191,7 +191,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     self.x_boundary_gap = Some(x_boundary_gap);
                 }
 
-                if let Some(y_axis_configs) = get_y_axis_configs_from_value(&theme, &data, "y_axis_configs") {
+                if let Some(y_axis_configs) = get_y_axis_configs_from_value(theme.clone(), &data, "y_axis_configs") {
                     self.y_axis_configs = y_axis_configs;
                 }
 
