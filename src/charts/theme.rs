@@ -787,6 +787,15 @@ pub fn get_theme(theme: &str) -> Arc<Theme> {
     }
 }
 
+/// List the theme name
+pub fn list_theme_name() -> Vec<String> {
+    let mut themes = vec![];
+    for name in THEME_MAP.load().keys() {
+        themes.push(name.to_string());
+    }
+    themes
+}
+
 /// Get default theme
 pub fn get_default_theme_name() -> String {
     LIGHT_THEME_NAME.to_string()

@@ -53,5 +53,5 @@ pub use radar_chart::{RadarChart, RadarIndicator};
 pub use scatter_chart::ScatterChart;
 pub use table_chart::{TableCellStyle, TableChart};
 pub use theme::Theme;
-pub use theme::{add_theme, get_theme, THEME_ANT, THEME_DARK, THEME_GRAFANA};
+pub use theme::{add_theme, get_theme, list_theme_name, THEME_ANT, THEME_DARK, THEME_GRAFANA};
 pub use util::*;
