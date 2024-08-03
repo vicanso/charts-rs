@@ -5,6 +5,7 @@ use super::util::Box;
 use ahash::AHashMap;
 use arc_swap::ArcSwap;
 use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 pub static DEFAULT_WIDTH: f32 = 600.0;
@@ -29,7 +30,7 @@ pub static THEME_GRAFANA: &str = "grafana";
 
 static LIGHT_THEME_NAME: &str = "light";
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 
 pub struct Theme {
     pub is_light: bool,
