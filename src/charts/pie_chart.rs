@@ -8,7 +8,9 @@ use super::util::*;
 use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
+use core::f32;
 use std::sync::Arc;
+use std::u8;
 
 #[derive(Clone, Debug, Default, Chart)]
 pub struct PieChart {
@@ -186,6 +188,8 @@ impl PieChart {
         }
         let rose_type = self.rose_type.unwrap_or_default();
 
+        let mut prev_quadrant = u8::MAX;
+        let mut prev_end_y = f32::MAX;
         for (index, series) in self.series_list.iter().enumerate() {
             let value = values[index];
             let mut cr = value / max * (r - self.inner_radius) + self.inner_radius;
@@ -219,6 +223,23 @@ impl PieChart {
             let mut points = vec![];
             points.push(get_pie_point(cx, cy, cr, angle));
             let mut end = get_pie_point(cx, cy, r + label_offset, angle);
+
+            let quadrant = get_quadrant(cx, cy, &end);
+            // quadrant change
+            if quadrant != prev_quadrant {
+                prev_end_y = f32::MAX;
+                prev_quadrant = quadrant;
+            }
+            // label overlap
+            if (end.y - prev_end_y).abs() < self.series_label_font_size {
+                if quadrant == 1 || quadrant == 4 {
+                    end.y = prev_end_y + self.series_label_font_size;
+                } else {
+                    end.y = prev_end_y - self.series_label_font_size;
+                }
+            }
+            prev_end_y = end.y;
+
             points.push(end);
 
             let is_left = angle > 180.0;
@@ -339,7 +360,7 @@ mod tests {
         pie_chart.title_text = "Pie Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
         assert_eq!(
-            include_str!("../../asset/pie_chart/not_rose.svg"),
+            include_str!("../../asset/pie_chart/not_rose.svg").trim(),
             pie_chart.svg().unwrap()
         );
     }
@@ -362,7 +383,7 @@ mod tests {
         pie_chart.title_text = "Pie Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
         assert_eq!(
-            include_str!("../../asset/pie_chart/not_rose_radius.svg"),
+            include_str!("../../asset/pie_chart/not_rose_radius.svg").trim(),
             pie_chart.svg().unwrap()
         );
     }

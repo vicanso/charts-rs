@@ -282,6 +282,22 @@ pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
     values.iter().map(|item| item.to_owned().into()).collect()
 }
 
+pub fn get_quadrant(cx: f32, cy: f32, point: &Point) -> u8 {
+    if point.x > cx {
+        if point.y > cy {
+            4
+        } else {
+            1
+        }
+    } else {
+        if point.y > cy {
+            3
+        } else {
+            2
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default)]
 pub(crate) struct LabelOption {
     pub series_name: String,
