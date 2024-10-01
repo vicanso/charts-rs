@@ -208,6 +208,6 @@ get_or_try_init_fonts(vec![&buf]));
 
 ## License
 
-This project is licensed under the [Apache License 2.0 license].
+This project is licensed under the [MPL-2.0 license].
 
-[Apache License 2.0 license]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
+[MPL-2.0 license]: https://github.com/vicanso/charts-rs/blob/main/LICENSE

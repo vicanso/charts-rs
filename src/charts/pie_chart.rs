@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -10,7 +14,6 @@ use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use core::f32;
 use std::sync::Arc;
-use std::u8;
 
 #[derive(Clone, Debug, Default, Chart)]
 pub struct PieChart {

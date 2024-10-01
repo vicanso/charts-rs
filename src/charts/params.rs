@@ -1,10 +1,12 @@
-use std::sync::Arc;
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 use crate::{
     MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Position, Symbol, NIL_VALUE,
 };
-
-use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
+use std::sync::Arc;
 
 /// Gets bool value from serde json.
 pub(crate) fn get_bool_from_value(value: &serde_json::Value, key: &str) -> Option<bool> {

@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use substring::Substring;
@@ -289,12 +293,10 @@ pub fn get_quadrant(cx: f32, cy: f32, point: &Point) -> u8 {
         } else {
             1
         }
+    } else if point.y > cy {
+        3
     } else {
-        if point.y > cy {
-            3
-        } else {
-            2
-        }
+        2
     }
 }
 
