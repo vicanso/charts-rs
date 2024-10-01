@@ -3,13 +3,13 @@
 `charts-rs` 是纯rust实现的图表库，使用简单而且性能高效，生成svg低于10ms，而png也低于50ms，便于在各种无法直接渲染svg的场景下使用，现已支持更多的图片格式，如：jpeg，webp，以及avif。
 
 [![Crates.io][crates-badge]][crates-url]
-[![MIT licensed][apache2-badge]][apache2-url]
+[![MPL licensed][mpl2-badge]][mpl2-url]
 [![Build status](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml)
 
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
 [crates-url]: https://crates.io/crates/charts-rs
-[apache2-badge]: https://img.shields.io/badge/license-Apache2-blue.svg
-[apache2-url]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
+[mpl2-badge]: https://img.shields.io/badge/license-mpl2-blue.svg
+[mpl2-url]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
 
 ## 概要
 
