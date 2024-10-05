@@ -274,11 +274,11 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     value
                 } else {
                     let y_axis_formatter = &y_axis_config.axis_formatter.clone().unwrap_or_default();
-                    let mut longest_item = String::new();
+                    let mut longest_item: &str = "";
                     for item in &y_axis_values.data {
-                        if item.chars().count() > longest_item.chars().count() { longest_item = item.clone() }
+                        if item.chars().count() > longest_item.chars().count() { longest_item = item }
                     }
-                    let value = format_string(&longest_item, y_axis_formatter);
+                    let value = format_string(longest_item, y_axis_formatter);
                     if let Ok(b) = measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &value)
                     {
                         b.width() + 5.0
