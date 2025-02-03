@@ -350,7 +350,7 @@ impl HeatmapChart {
         let y_axis_count = self.y_axis_data.len();
         for i in 0..y_axis_count {
             for j in 0..self.x_axis_data.len() {
-                let index = i * self.y_axis_data.len() + j;
+                let index = i * self.x_axis_data.len() + j;
                 let x = x_unit * j as f32;
                 // position of y axis starts from bottom
                 let y = y_unit * (y_axis_count - i - 1) as f32;
