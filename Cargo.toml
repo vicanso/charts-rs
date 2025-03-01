@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs"
-version = "0.3.19"
+version = "0.3.20"
 authors = ["Tree Xie <tree.xie@outlook.com>"]
 edition = "2021"
 categories = ["multimedia::images"]
@@ -18,21 +18,21 @@ rust-version = "1.65"
 ahash = "0.8.11"
 arc-swap = "1.7.1"
 charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.2" }
-fontdue = "0.9.2"
-image = { version = "0.25.4", features = [
+fontdue = "0.9.3"
+image = { version = "0.25.5", features = [
     "webp",
     "avif",
     "jpeg",
     "png",
 ], optional = true }
-once_cell = "1.20.2"
-regex = "1.11.0"
-resvg = { version = "0.44.0", default-features = false, features = [
+once_cell = "1.20.3"
+regex = "1.11.1"
+resvg = { version = "0.45.0", default-features = false, features = [
     "text",
     "system-fonts",
 ], optional = true }
-serde = { version = "1.0.213", features = ["derive"] }
-serde_json = "1.0.132"
+serde = { version = "1.0.218", features = ["derive"] }
+serde_json = "1.0.139"
 snafu = "0.8.5"
 substring = "1.4.5"
 

@@ -107,7 +107,7 @@ impl<'a> SVGTag<'a> {
     }
 }
 
-impl<'a> fmt::Display for SVGTag<'a> {
+impl fmt::Display for SVGTag<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.tag == TAG_GROUP {
             if let Some(ref data) = self.data {
