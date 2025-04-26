@@ -198,7 +198,8 @@ impl RadarChart {
         let angle = 360.0 / indicators.len() as f32;
         let cx = c.width() / 2.0;
         let cy = c.height() / 2.0;
-        let round_count = 5;
+        let max_value = indicators.iter().map(|indicator| indicator.max as i32).max().unwrap_or(5);
+        let round_count = (2..=10).filter(|round_option| max_value % round_option == 0).max().unwrap_or(5);
         for i in 1..=round_count {
             let ir = r / round_count as f32 * i as f32;
             let mut points = vec![];
