@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs"
-version = "0.3.22"
+version = "0.3.23"
 authors = ["Tree Xie <tree.xie@outlook.com>"]
 edition = "2021"
 categories = ["multimedia::images"]
@@ -15,9 +15,9 @@ rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ahash = "0.8.11"
+ahash = "0.8.12"
 arc-swap = "1.7.1"
-charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.3" }
+charts-rs-derive = { path = "./charts-rs-derive", version = "0.2.4" }
 fontdue = "0.9.3"
 image = { version = "0.25.6", features = [
     "webp",
@@ -33,14 +33,14 @@ resvg = { version = "0.45.1", default-features = false, features = [
 ], optional = true }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-snafu = "0.8.5"
+snafu = "0.8.6"
 substring = "1.4.5"
 
 [features]
 image-encoder = ["resvg", "image"]
 
 [dev-dependencies]
-criterion = "0.5.1"
+criterion = "0.6.0"
 pretty_assertions = "1.4.1"
 
 [[bench]]
