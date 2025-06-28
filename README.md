@@ -15,24 +15,24 @@
 
 ## Overview
 
-`charts-rs` is simpler way for generating charts, which supports `svg` and `png` format and themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk` and `shine`. The default theme is `light`. These charts are supported: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`， `Heatmap` and `MultiChart`.
+`charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers nine distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, and `shine`, with `light` as the default theme. 
 
-`Apache ECharts` is popular among Front-end developers, and `charts-rs` reference it. Developers can generate charts almost the same as `Apache ECharts`.
+The library supports ten chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, and `MultiChart`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
 [themes](./theme.md)
 
-## Feature
+## Features
 
-- Multiple themes for all charts
-- Load font family from ttf or otf
-- Smooth, fill, mark point and mark line for line chart
-- Multiple legends for all charts, for example: `round rect`, `circle` and `rect`
-- Supports two y axises, which are useful
-- New from json is simple and easy
-- Svg, png, jpeg, webp and avif format support more available scenarios
-- Web json editor to try using more options by one step
+- Nine built-in themes available for all chart types
+- Custom font loading from ttf or otf files
+- Advanced line chart features: smooth curves, area filling, mark points and mark lines
+- Multiple legend styles across all charts: `round rect`, `circle`, and `rect`
+- Dual y-axis support for enhanced data visualization
+- JSON-based chart configuration for simplified setup
+- Multiple output formats (svg, png, jpeg, webp, avif) for various use cases
+- Web-based JSON editor for interactive chart configuration and testing
 
 ## Demo
 
@@ -133,7 +133,7 @@ let mut bar_chart = BarChart::new_with_theme(
         "Sat".to_string(),
         "Sun".to_string(),
     ],
-    THEME_GRAFANA,
+****    THEME_GRAFANA,
 );
 bar_chart.title_text = "Mixed Line and Bar".to_string();
 bar_chart.legend_margin = Some(Box {

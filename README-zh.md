@@ -13,7 +13,9 @@
 
 ## 概要
 
-`charts-rs`提供简单的方式生成图表，它支持`svg`、`png`、`jepg`、`webp`以及`avif`等多种输出格式，以及支持`light`， `dark`， `grafana`，`ant`，`vintage`, `walden`, `westeros`, `chalk`与`shine`主题，默认的主题为`light`。现已支持以下类型的图表：`Bar`， `HorizontalBar`， `Line`， `Pie`， `Radar`，`Scatter`，`Candlestick`，`Table`，`Heatmap` 以及 `MultiChart`，其相关样式参考`Apache ECharts`。
+`charts-rs`提供简洁的图表生成方案，支持`svg`、`png`、`jpeg`、`webp`以及`avif`等多种输出格式。该库提供九种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`以及`shine`，默认主题为`light`。
+
+该库支持十种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`以及`MultiChart`。参考`Apache ECharts`的设计理念，`charts-rs`使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -21,17 +23,14 @@
 
 ## 特性
 
-- 所有图表均支持多种主题，当前已支持了9种主题颜色
-- 可通过ttf或otf中加载更多的字体库，默认的`Roboto`字体并未支持中文，需要选择`Noto Sans SC`
-- 支持平滑，填充，最低最高点以及线标示
-- 图表使用多种文本标示，例如：圆角矩形、圆形以及矩形等
-- 曲线图支持平滑曲线、拆线、区域填充等效果
-- 饼图支持普通与玫瑰饼图
-- 支持两组Y轴线的展示
-- 图表中的所有元素均支持颜色、字体、字体颜色等基本属性配置
-- 支持以`json`的形式初始化图表，更简单易用
-- svg、png、jpeg、webp以及avif的格式便于更多的应用场景
-- 网页版的json编辑器可用于一步式尝试各选项的效果，填充简化与完整版的配置选择
+- 为所有图表类型提供九种内置主题
+- 支持从ttf或otf文件加载自定义字体
+- 曲线图高级功能：平滑曲线、区域填充、标记点和标记线
+- 所有图表支持多种图例样式：圆角矩形、圆形以及矩形
+- 双Y轴支持，增强数据可视化效果
+- 基于JSON的图表配置，简化设置过程
+- 多种输出格式（svg、png、jpeg、webp、avif）适用于不同应用场景
+- 基于Web的JSON编辑器，支持交互式图表配置和测试
 
 ## 示例
 
