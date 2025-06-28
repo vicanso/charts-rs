@@ -700,6 +700,7 @@ Sun
         assert_eq!("(5,5,395,5)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
 <g stroke="#000000">
 <line stroke-width="1" x1="5" y1="5" x2="395" y2="5"/>
 <line stroke-width="1" x1="5" y1="5" x2="5" y2="10"/>
@@ -752,6 +753,7 @@ Sat
         assert_eq!("(5,5,395,5)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<g>
 <g stroke="#000000">
 <line stroke-width="1" x1="5" y1="5" x2="395" y2="5"/>
 <line stroke-width="1" x1="5" y1="5" x2="5" y2="10"/>
