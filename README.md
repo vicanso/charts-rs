@@ -5,13 +5,13 @@
 `charts-rs` is a charting library for rust. It's simple and fast.
 
 [![Crates.io][crates-badge]][crates-url]
-[![MPL licensed][mpl2-badge]][mpl2-url]
+[![Apache licensed][apache-badge]][apache-url]
 [![Build status](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml)
 
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
 [crates-url]: https://crates.io/crates/charts-rs
-[mpl2-badge]: https://img.shields.io/badge/license-mpl2-blue.svg
-[mpl2-url]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
+[apache-badge]: https://img.shields.io/badge/license-apache2-blue.svg
+[apache-url]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
 
 ## Overview
 
@@ -208,6 +208,6 @@ get_or_try_init_fonts(vec![&buf]));
 
 ## License
 
-This project is licensed under the [MPL-2.0 license].
+This project is licensed under the [Apache-2.0 license].
 
-[MPL-2.0 license]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
+[Apache-2.0 license]: https://github.com/vicanso/charts-rs/blob/main/LICENSE

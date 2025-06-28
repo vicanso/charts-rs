@@ -1,6 +1,14 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 use super::component::{
     generate_svg, Arrow, Axis, Bubble, Circle, Component, Grid, Legend, Line, Pie, Polygon,
@@ -692,7 +700,6 @@ Sun
         assert_eq!("(5,5,395,5)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-<g>
 <g stroke="#000000">
 <line stroke-width="1" x1="5" y1="5" x2="395" y2="5"/>
 <line stroke-width="1" x1="5" y1="5" x2="5" y2="10"/>
@@ -745,7 +752,6 @@ Sat
         assert_eq!("(5,5,395,5)", b.to_string());
         assert_eq!(
             r###"<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-<g>
 <g stroke="#000000">
 <line stroke-width="1" x1="5" y1="5" x2="395" y2="5"/>
 <line stroke-width="1" x1="5" y1="5" x2="5" y2="10"/>
