@@ -36,20 +36,23 @@
 <rect x="696.4" y="338.4" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="729.2" y="338.4" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="762.1" y="338.4" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="6" y="282.9" width="32.9" height="55.6" stroke="#E2AD84" fill="#E2AD84"/>
-<text font-size="14" x="18.9" y="310.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
-3
+<rect x="6" y="282.9" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="14.4" y="310.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+12
 </text>
 <rect x="38.9" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="71.8" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="104.6" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
-<rect x="137.5" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="170.4" y="282.9" width="32.9" height="55.6" stroke="#E2AD84" fill="#E2AD84"/>
-<text font-size="14" x="183.3" y="310.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
-3
+<rect x="137.5" y="282.9" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="145.9" y="310.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+10
 </text>
+<rect x="170.4" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="203.2" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="236.1" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="236.1" y="282.9" width="32.9" height="55.6" stroke="#C9625C" fill="#C9625C"/>
+<text font-size="14" x="248.6" y="310.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+8
+</text>
 <rect x="269" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="301.9" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="334.8" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
@@ -59,22 +62,19 @@
 <rect x="466.2" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="499.1" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="532" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="564.9" y="282.9" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="573.3" y="310.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-12
-</text>
+<rect x="564.9" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="597.8" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="630.6" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="663.5" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="696.4" y="282.9" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="704.8" y="310.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
-</text>
+<rect x="696.4" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="729.2" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="762.1" y="282.9" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="6" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="38.9" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="71.8" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="71.8" y="227.3" width="32.9" height="55.6" stroke="#DD9E7C" fill="#DD9E7C"/>
+<text font-size="14" x="84.2" y="255.1" dominant-baseline="central" font-family="Roboto" fill="#464646">
+4
+</text>
 <rect x="104.6" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="137.5" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="170.4" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
@@ -82,23 +82,17 @@
 <rect x="236.1" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="269" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="301.9" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="334.8" y="227.3" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="343.2" y="255.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-12
-</text>
+<rect x="334.8" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="367.6" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="400.5" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="433.4" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="466.2" y="227.3" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="474.7" y="255.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
+<rect x="466.2" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
+<rect x="499.1" y="227.3" width="32.9" height="55.6" stroke="#E7BC8C" fill="#E7BC8C"/>
+<text font-size="14" x="511.6" y="255.1" dominant-baseline="central" font-family="Roboto" fill="#464646">
+2
 </text>
-<rect x="499.1" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="532" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
-<rect x="564.9" y="227.3" width="32.9" height="55.6" stroke="#C9625C" fill="#C9625C"/>
-<text font-size="14" x="577.3" y="255.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-8
-</text>
+<rect x="564.9" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="597.8" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="630.6" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="663.5" y="227.3" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
@@ -108,23 +102,14 @@
 <rect x="6" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="38.9" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="71.8" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="104.6" y="171.7" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="113.1" y="199.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-12
-</text>
+<rect x="104.6" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="137.5" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="170.4" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="203.2" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="236.1" y="171.7" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="244.6" y="199.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
-</text>
+<rect x="236.1" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="269" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="301.9" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
-<rect x="334.8" y="171.7" width="32.9" height="55.6" stroke="#C9625C" fill="#C9625C"/>
-<text font-size="14" x="347.2" y="199.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-8
-</text>
+<rect x="334.8" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="367.6" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="400.5" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="433.4" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
@@ -138,16 +123,10 @@
 <rect x="696.4" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="729.2" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="762.1" y="171.7" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
-<rect x="6" y="116.1" width="32.9" height="55.6" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="14.4" y="143.9" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
-</text>
+<rect x="6" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="38.9" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="71.8" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
-<rect x="104.6" y="116.1" width="32.9" height="55.6" stroke="#C9625C" fill="#C9625C"/>
-<text font-size="14" x="117.1" y="143.9" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-8
-</text>
+<rect x="104.6" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="137.5" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="170.4" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="203.2" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
@@ -166,10 +145,7 @@
 <rect x="630.6" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="663.5" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="696.4" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="729.2" y="116.1" width="32.9" height="55.6" stroke="#DD9E7C" fill="#DD9E7C"/>
-<text font-size="14" x="741.7" y="143.9" dominant-baseline="central" font-family="Roboto" fill="#464646">
-4
-</text>
+<rect x="729.2" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="762.1" y="116.1" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="6" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="38.9" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
@@ -186,10 +162,7 @@
 <rect x="400.5" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="433.4" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="466.2" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="499.1" y="60.6" width="32.9" height="55.6" stroke="#DD9E7C" fill="#DD9E7C"/>
-<text font-size="14" x="511.6" y="88.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
-4
-</text>
+<rect x="499.1" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="532" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="564.9" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="597.8" y="60.6" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
@@ -206,10 +179,7 @@
 <rect x="170.4" y="5" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="203.2" y="5" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="236.1" y="5" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
-<rect x="269" y="5" width="32.9" height="55.6" stroke="#DD9E7C" fill="#DD9E7C"/>
-<text font-size="14" x="281.4" y="32.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
-4
-</text>
+<rect x="269" y="5" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="301.9" y="5" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="334.8" y="5" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="367.6" y="5" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
@@ -222,10 +192,7 @@
 <rect x="597.8" y="5" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="630.6" y="5" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="663.5" y="5" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
-<rect x="696.4" y="5" width="32.9" height="55.6" stroke="#E7BC8C" fill="#E7BC8C"/>
-<text font-size="14" x="708.8" y="32.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
-2
-</text>
+<rect x="696.4" y="5" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 <rect x="729.2" y="5" width="32.9" height="55.6" stroke="#EBEBEB" fill="#EBEBEB"/>
 <rect x="762.1" y="5" width="32.9" height="55.6" stroke="#EBEBEB" stroke-opacity="0.4" fill="#EBEBEB" fill-opacity="0.4"/>
 </svg>

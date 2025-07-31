@@ -108,20 +108,23 @@ Saturday
 <rect x="531.5" y="312.7" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="552.7" y="312.7" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="573.8" y="312.7" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="87" y="261.4" width="21.2" height="51.3" stroke="#E4B488" fill="#E4B488"/>
-<text font-size="14" x="94.1" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#464646">
-3
+<rect x="87" y="261.4" width="21.2" height="51.3" stroke="#BF444C" fill="#BF444C"/>
+<text font-size="14" x="89.6" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+12
 </text>
 <rect x="108.2" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="129.3" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="150.5" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
-<rect x="171.7" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="192.8" y="261.4" width="21.2" height="51.3" stroke="#E4B488" fill="#E4B488"/>
-<text font-size="14" x="199.9" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#464646">
-3
+<rect x="171.7" y="261.4" width="21.2" height="51.3" stroke="#C85D5A" fill="#C85D5A"/>
+<text font-size="14" x="174.2" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+10
 </text>
+<rect x="192.8" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="214" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="235.2" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
+<rect x="235.2" y="261.4" width="21.2" height="51.3" stroke="#D07667" fill="#D07667"/>
+<text font-size="14" x="241.7" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#464646">
+8
+</text>
 <rect x="256.3" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="277.5" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="298.7" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
@@ -131,22 +134,19 @@ Saturday
 <rect x="383.3" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="404.5" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="425.7" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="446.8" y="261.4" width="21.2" height="51.3" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="449.4" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-12
-</text>
+<rect x="446.8" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="468" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="489.2" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="510.3" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="531.5" y="261.4" width="21.2" height="51.3" stroke="#C85D5A" fill="#C85D5A"/>
-<text font-size="14" x="534.1" y="287.1" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
-</text>
+<rect x="531.5" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="552.7" y="261.4" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="573.8" y="261.4" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="87" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="108.2" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="129.3" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
+<rect x="129.3" y="210.1" width="21.2" height="51.3" stroke="#E0A882" fill="#E0A882"/>
+<text font-size="14" x="135.9" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
+4
+</text>
 <rect x="150.5" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="171.7" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="192.8" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
@@ -154,23 +154,17 @@ Saturday
 <rect x="235.2" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="256.3" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="277.5" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="298.7" y="210.1" width="21.2" height="51.3" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="301.2" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-12
-</text>
+<rect x="298.7" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="319.8" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="341" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="362.2" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="383.3" y="210.1" width="21.2" height="51.3" stroke="#C85D5A" fill="#C85D5A"/>
-<text font-size="14" x="385.9" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
+<rect x="383.3" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
+<rect x="404.5" y="210.1" width="21.2" height="51.3" stroke="#E8C18F" fill="#E8C18F"/>
+<text font-size="14" x="411.1" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
+2
 </text>
-<rect x="404.5" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="425.7" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
-<rect x="446.8" y="210.1" width="21.2" height="51.3" stroke="#D07667" fill="#D07667"/>
-<text font-size="14" x="453.4" y="235.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
-8
-</text>
+<rect x="446.8" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="468" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="489.2" y="210.1" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="510.3" y="210.1" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
@@ -180,23 +174,14 @@ Saturday
 <rect x="87" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="108.2" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="129.3" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="150.5" y="158.9" width="21.2" height="51.3" stroke="#BF444C" fill="#BF444C"/>
-<text font-size="14" x="153.1" y="184.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-12
-</text>
+<rect x="150.5" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="171.7" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="192.8" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="214" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="235.2" y="158.9" width="21.2" height="51.3" stroke="#C85D5A" fill="#C85D5A"/>
-<text font-size="14" x="237.7" y="184.5" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
-</text>
+<rect x="235.2" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="256.3" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="277.5" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
-<rect x="298.7" y="158.9" width="21.2" height="51.3" stroke="#D07667" fill="#D07667"/>
-<text font-size="14" x="305.2" y="184.5" dominant-baseline="central" font-family="Roboto" fill="#464646">
-8
-</text>
+<rect x="298.7" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="319.8" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="341" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="362.2" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
@@ -210,16 +195,10 @@ Saturday
 <rect x="531.5" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="552.7" y="158.9" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="573.8" y="158.9" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
-<rect x="87" y="107.6" width="21.2" height="51.3" stroke="#C85D5A" fill="#C85D5A"/>
-<text font-size="14" x="89.6" y="133.2" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
-10
-</text>
+<rect x="87" y="107.6" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="108.2" y="107.6" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="129.3" y="107.6" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
-<rect x="150.5" y="107.6" width="21.2" height="51.3" stroke="#D07667" fill="#D07667"/>
-<text font-size="14" x="157.1" y="133.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
-8
-</text>
+<rect x="150.5" y="107.6" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="171.7" y="107.6" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="192.8" y="107.6" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="214" y="107.6" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
@@ -238,10 +217,7 @@ Saturday
 <rect x="489.2" y="107.6" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="510.3" y="107.6" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="531.5" y="107.6" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="552.7" y="107.6" width="21.2" height="51.3" stroke="#E0A882" fill="#E0A882"/>
-<text font-size="14" x="559.2" y="133.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
-4
-</text>
+<rect x="552.7" y="107.6" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="573.8" y="107.6" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="87" y="56.3" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="108.2" y="56.3" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
@@ -258,10 +234,7 @@ Saturday
 <rect x="341" y="56.3" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="362.2" y="56.3" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="383.3" y="56.3" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="404.5" y="56.3" width="21.2" height="51.3" stroke="#E0A882" fill="#E0A882"/>
-<text font-size="14" x="411.1" y="81.9" dominant-baseline="central" font-family="Roboto" fill="#464646">
-4
-</text>
+<rect x="404.5" y="56.3" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="425.7" y="56.3" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="446.8" y="56.3" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="468" y="56.3" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
@@ -278,10 +251,7 @@ Saturday
 <rect x="192.8" y="5" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="214" y="5" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="235.2" y="5" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
-<rect x="256.3" y="5" width="21.2" height="51.3" stroke="#E0A882" fill="#E0A882"/>
-<text font-size="14" x="262.9" y="30.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
-4
-</text>
+<rect x="256.3" y="5" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="277.5" y="5" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="298.7" y="5" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="319.8" y="5" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
@@ -294,10 +264,7 @@ Saturday
 <rect x="468" y="5" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="489.2" y="5" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="510.3" y="5" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
-<rect x="531.5" y="5" width="21.2" height="51.3" stroke="#E8C18F" fill="#E8C18F"/>
-<text font-size="14" x="538.1" y="30.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
-2
-</text>
+<rect x="531.5" y="5" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 <rect x="552.7" y="5" width="21.2" height="51.3" stroke="#333131" fill="#333131"/>
 <rect x="573.8" y="5" width="21.2" height="51.3" stroke="#333131" stroke-opacity="0.4" fill="#333131" fill-opacity="0.4"/>
 </svg>
