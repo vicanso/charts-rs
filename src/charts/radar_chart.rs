@@ -136,6 +136,9 @@ impl RadarChart {
         if let Some(indicators) = get_radar_indicator_list_from_value(&data) {
             r.indicators = indicators;
         }
+        if data.get("series_fill").is_none() {
+            r.series_fill = true;
+        }
         Ok(r)
     }
     /// Creates a radar chart with custom theme.
@@ -147,6 +150,7 @@ impl RadarChart {
         let mut r = RadarChart {
             series_list,
             indicators,
+            series_fill: true,
             ..Default::default()
         };
         let theme = get_theme(theme);
@@ -299,9 +303,14 @@ impl RadarChart {
                     points.push(p);
                 }
             }
+            let fill = if self.series_fill {
+                Some(color.with_alpha(50))
+            } else {
+                None
+            };
             c.straight_line(StraightLine {
                 color: Some(color),
-                fill: Some(color.with_alpha(50)),
+                fill,
                 points: points.clone(),
                 stroke_width: self.series_stroke_width,
                 close: true,
