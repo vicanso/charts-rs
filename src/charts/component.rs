@@ -1383,24 +1383,67 @@ pub(crate) static LEGEND_HEIGHT: f32 = 20.0;
 pub(crate) static LEGEND_TEXT_MARGIN: f32 = 3.0;
 pub(crate) static LEGEND_MARGIN: f32 = 8.0;
 
-pub(crate) fn measure_legends(
+pub(crate) fn measure_legend_widths(
     font_family: &str,
     font_size: f32,
     legends: &[&str],
-) -> (f32, Vec<f32>) {
-    let widths: Vec<f32> = legends
+) -> Vec<f32> {
+    legends
         .iter()
         .map(|item| {
             let text_box = measure_text_width_family(font_family, font_size, item.to_owned())
                 .unwrap_or_default();
             text_box.width() + LEGEND_WIDTH + LEGEND_TEXT_MARGIN
         })
-        .collect();
-    let width: f32 = widths.iter().sum();
-    let margin = LEGEND_MARGIN * (legends.len() - 1) as f32;
-
-    (width + margin, widths)
+        .collect()
 }
+
+pub(crate) fn wrap_legends_to_rows<'a>(
+    font_family: &str,
+    font_size: f32,
+    legends: &[&'a str],
+    max_width: f32,
+) -> Vec<(f32, Vec<&'a str>)> {
+    let widths = measure_legend_widths(font_family, font_size, legends);
+    let mut rows = Vec::new();
+    let mut current_row_legends = Vec::new();
+    let mut current_row_width: f32 = 0.0;
+
+    for (&legend_str, &legend_width) in legends.iter().zip(widths.iter()) {
+        let cost_to_add = if current_row_legends.is_empty() {
+            legend_width
+        } else {
+            legend_width + LEGEND_MARGIN
+        };
+        if current_row_width + cost_to_add > max_width && !current_row_legends.is_empty() {
+            rows.push((current_row_width, std::mem::take(&mut current_row_legends)));
+
+            current_row_legends.push(legend_str);
+            current_row_width = legend_width;
+        } else {
+            current_row_legends.push(legend_str);
+            current_row_width += cost_to_add;
+        }
+    }
+
+    if !current_row_legends.is_empty() {
+        rows.push((current_row_width, current_row_legends));
+    }
+
+    rows
+}
+
+// pub(crate) fn measure_legends(
+//     font_family: &str,
+//     font_size: f32,
+//     legends: &[&str],
+// ) -> (f32, Vec<f32>) {
+//     let widths = measure_legend_widths(font_family, font_size, legends);
+//     let width: f32 = widths.iter().sum();
+//     let margin = LEGEND_MARGIN * (legends.len() - 1) as f32;
+
+//     (width + margin, widths)
+// }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub enum LegendCategory {
@@ -1524,13 +1567,13 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        Arrow, Axis, Bubble, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline,
-        Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+        wrap_legends_to_rows, Arrow, Axis, Bubble, Circle, Grid, Legend, LegendCategory, Line, Pie,
+        Polygon, Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
     };
     use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
     use pretty_assertions::assert_eq;
     #[test]
-    fn line() {
+    fn test_line() {
         let line = Line::default();
         assert_eq!(1.0, line.stroke_width);
         assert_eq!(None, line.color);
@@ -1593,7 +1636,7 @@ mod tests {
     }
 
     #[test]
-    fn rect() {
+    fn test_rect() {
         assert_eq!(
             r###"<rect x="0" y="0" width="50" height="20" rx="3" ry="4" stroke="#000000" fill="#FFFFFF"/>"###,
             Rect {
@@ -1638,7 +1681,7 @@ mod tests {
     }
 
     #[test]
-    fn bubble() {
+    fn test_bubble() {
         let c = Bubble {
             r: 15.0,
             x: 50.0,
@@ -1653,7 +1696,7 @@ mod tests {
     }
 
     #[test]
-    fn polyline() {
+    fn test_polyline() {
         let polyline = Polyline::default();
         assert_eq!(1.0, polyline.stroke_width);
         assert_eq!(None, polyline.color);
@@ -1705,7 +1748,7 @@ mod tests {
     }
 
     #[test]
-    fn circle() {
+    fn test_circle() {
         let c = Circle::default();
         assert_eq!(None, c.stroke_color);
         assert_eq!(None, c.fill);
@@ -1753,7 +1796,7 @@ mod tests {
     }
 
     #[test]
-    fn arrow() {
+    fn test_arrow() {
         assert_eq!(
             r###"<path d="M 30 30 L 25 25 L 40 30 L 25 35 Z" stroke-width="1" fill="#7EB26D" stroke="#7EB26D"/>"###,
             Arrow {
@@ -1767,7 +1810,7 @@ mod tests {
     }
 
     #[test]
-    fn polygon() {
+    fn test_polygon() {
         assert_eq!(
             r###"<polygon points="0,0 10,30 20,60 30,20" stroke="#000000" fill="#FFFFFF"/>"###,
             Polygon {
@@ -1813,7 +1856,7 @@ mod tests {
     }
 
     #[test]
-    fn text() {
+    fn test_text() {
         assert_eq!(
             r###"<text font-size="14" x="0" y="0" dx="5" dy="5" font-weight="bold" transform="translate(-36 45.5)" font-family="Roboto" fill="#000000">
 Hello World!
@@ -1847,7 +1890,7 @@ Hello World!
     }
 
     #[test]
-    fn pie() {
+    fn test_pie() {
         let p = Pie {
             fill: (0, 0, 0, 128).into(),
             stroke_color: Some((0, 0, 0).into()),
@@ -1914,7 +1957,7 @@ Hello World!
     }
 
     #[test]
-    fn smooth_line() {
+    fn test_smooth_line() {
         let line = SmoothLine::default();
         assert_eq!(None, line.color);
         assert_eq!(1.0, line.stroke_width);
@@ -1965,7 +2008,7 @@ Hello World!
     }
 
     #[test]
-    fn straight_line() {
+    fn test_straight_line() {
         let line = StraightLine::default();
         assert_eq!(None, line.color);
         assert_eq!(1.0, line.stroke_width);
@@ -2016,7 +2059,7 @@ Hello World!
     }
 
     #[test]
-    fn smooth_line_fill() {
+    fn test_smooth_line_fill() {
         let fill = SmoothLineFill::default();
         assert_eq!(0.0, fill.bottom);
         assert_eq!("rgba(255,255,255,1.0)", fill.fill.rgba());
@@ -2038,7 +2081,7 @@ Hello World!
         );
     }
     #[test]
-    fn straight_line_fill() {
+    fn test_straight_line_fill() {
         let fill = StraightLineFill::default();
         assert_eq!("rgba(0,0,0,0.0)", fill.fill.rgba());
         assert_eq!(0.0, fill.bottom);
@@ -2062,7 +2105,7 @@ Hello World!
     }
 
     #[test]
-    fn grid() {
+    fn test_grid() {
         assert_eq!(
             r###"<g stroke="#000000">
 <line stroke-width="1" x1="58.3" y1="10" x2="58.3" y2="300"/><line stroke-width="1" x1="106.7" y1="10" x2="106.7" y2="300"/><line stroke-width="1" x1="155" y1="10" x2="155" y2="300"/><line stroke-width="1" x1="203.3" y1="10" x2="203.3" y2="300"/><line stroke-width="1" x1="251.7" y1="10" x2="251.7" y2="300"/><line stroke-width="1" x1="10" y1="68" x2="300" y2="68"/><line stroke-width="1" x1="10" y1="126" x2="300" y2="126"/><line stroke-width="1" x1="10" y1="184" x2="300" y2="184"/><line stroke-width="1" x1="10" y1="242" x2="300" y2="242"/>
@@ -2083,7 +2126,7 @@ Hello World!
         );
     }
     #[test]
-    fn axis() {
+    fn test_axis() {
         let a = Axis::default();
         assert_eq!(Position::Bottom, a.position);
         assert_eq!(14.0, a.font_size);
@@ -2155,7 +2198,7 @@ Sun
     }
 
     #[test]
-    fn legend() {
+    fn test_legend() {
         assert_eq!(
             r###"<g>
 <line stroke-width="2" x1="10" y1="40" x2="35" y2="40" stroke="#000000"/>
@@ -2198,6 +2241,35 @@ Line
                 ..Default::default()
             }
             .svg()
+        );
+    }
+
+    #[test]
+    fn test_wrap_legends_to_rows() {
+        let rows = wrap_legends_to_rows(
+            DEFAULT_FONT_FAMILY,
+            14.0,
+            &[
+                "M1 - End of Inception",
+                "M2 - End of Elaboration",
+                "M3 - End of Construction",
+                "M4 - End of Completion",
+            ],
+            600.0,
+        );
+        assert_eq!(
+            rows,
+            vec![
+                (
+                    551.0,
+                    vec![
+                        "M1 - End of Inception",
+                        "M2 - End of Elaboration",
+                        "M3 - End of Construction"
+                    ]
+                ),
+                (181.0, vec!["M4 - End of Completion"])
+            ]
         );
     }
 }

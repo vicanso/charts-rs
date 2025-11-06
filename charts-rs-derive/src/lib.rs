@@ -367,7 +367,6 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 if !self.legend_show.unwrap_or(true) || self.series_list.is_empty() {
                     return 0.0
                 }
-                let mut legend_left = 0.0;
                 let legends: Vec<&str> = self
                     .series_list
                     .iter()
@@ -376,11 +375,14 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let legend_margin = self.legend_margin.clone().unwrap_or_default();
                 let legend_margin_value = legend_margin.top + legend_margin.bottom;
                 let mut legend_canvas = c.child(legend_margin);
-                let (legend_width, legend_width_list) =
-                    measure_legends(&self.font_family, self.legend_font_size, &legends);
                 let legend_canvas_width = legend_canvas.width();
-                if legend_width < legend_canvas_width {
-                    legend_left = match self.legend_align {
+                let rows = wrap_legends_to_rows(&self.font_family, self.legend_font_size, &legends, legend_canvas_width);
+                let mut current_legend_index = 0;
+                let legend_unit_height = self.legend_font_size + LEGEND_MARGIN;
+                let mut legend_top = 0.0;
+                let row_count = rows.len();
+                for (row_index, (legend_width, legend_texts)) in rows.iter().enumerate() {
+                    let mut legend_left = match self.legend_align {
                         Align::Right => legend_canvas_width - legend_width,
                         Align::Left => 0.0,
                         Align::Center => (legend_canvas_width - legend_width) / 2.0,
@@ -388,38 +390,40 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     if legend_left < 0.0 {
                         legend_left = 0.0;
                     }
-                }
-                let legend_unit_height = self.legend_font_size + LEGEND_MARGIN;
-                let mut legend_top = 0.0;
-                for (index, series) in self.series_list.iter().enumerate() {
-                    if series.name.is_empty() {
-                        continue;
+                    for text in legend_texts.iter() {
+                        let index = current_legend_index;
+                        current_legend_index += 1;
+                        let Some(series) = &self.series_list.get(index) else {
+                            continue;
+                        };
+                        if series.name.is_empty() {
+                            continue;
+                        }
+                        let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+                        let fill = if self.is_light {
+                            Some(self.background_color)
+                        } else {
+                            Some(color)
+                        };
+                        let b = legend_canvas.legend(Legend {
+                            text: series.name.to_string(),
+                            font_size: self.legend_font_size,
+                            font_family: self.font_family.clone(),
+                            font_color: Some(self.legend_font_color),
+                            font_weight: self.legend_font_weight.clone(),
+                            stroke_color: Some(color),
+                            fill,
+                            left: legend_left,
+                            top: legend_top,
+                            category: self.legend_category.clone(),
+                        });
+                        legend_left += b.width() + LEGEND_MARGIN;
                     }
-                    let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-                    let fill = if self.is_light {
-                        Some(self.background_color)
-                    } else {
-                        Some(color)
-                    };
-                    if legend_left + legend_width_list[index] > legend_canvas_width {
-                        legend_left = 0.0;
+                    // if not the last row, add the legend unit height
+                    if row_index < row_count - 1 {
                         legend_top += legend_unit_height;
                     }
-                    let b = legend_canvas.legend(Legend {
-                        text: series.name.to_string(),
-                        font_size: self.legend_font_size,
-                        font_family: self.font_family.clone(),
-                        font_color: Some(self.legend_font_color),
-                        font_weight: self.legend_font_weight.clone(),
-                        stroke_color: Some(color),
-                        fill,
-                        left: legend_left,
-                        top: legend_top,
-                        category: self.legend_category.clone(),
-                    });
-                    legend_left += b.width() + LEGEND_MARGIN;
                 }
-
                 legend_unit_height + legend_top + legend_margin_value
             }
             /// Renders grid for canvas, the axis width is the right padding of grid canvas,

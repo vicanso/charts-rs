@@ -299,7 +299,7 @@ fn multi_chart() {
     .unwrap();
 
     assert_eq!(
-        include_str!("../asset/multi_chart/basic_json.svg"),
+        include_str!("../asset/multi_chart/basic_json.svg").trim(),
         multi_chart.svg().unwrap()
     );
 }

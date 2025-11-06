@@ -1,0 +1,84 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<g>
+<line stroke-width="2" x1="89" y1="15" x2="114" y2="15" stroke="#5470C6"/>
+<circle cx="101.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="117" y="19" font-family="Roboto" fill="#464646">
+None
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="155" y1="15" x2="180" y2="15" stroke="#91CC75"/>
+<circle cx="167.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="183" y="19" font-family="Roboto" fill="#464646">
+M1 - End of Inception
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="326" y1="15" x2="351" y2="15" stroke="#FAC858"/>
+<circle cx="338.5" cy="15" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="354" y="19" font-family="Roboto" fill="#464646">
+M2 - End of Elaboration
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="205" y1="37" x2="230" y2="37" stroke="#EE6666"/>
+<circle cx="217.5" cy="37" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="233" y="41" font-family="Roboto" fill="#464646">
+M3 - End of Construction
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="26" y1="49" x2="595" y2="49"/><line stroke-width="1" x1="26" y1="101.7" x2="595" y2="101.7"/><line stroke-width="1" x1="26" y1="154.3" x2="595" y2="154.3"/><line stroke-width="1" x1="26" y1="207" x2="595" y2="207"/><line stroke-width="1" x1="26" y1="259.7" x2="595" y2="259.7"/><line stroke-width="1" x1="26" y1="312.3" x2="595" y2="312.3"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="54" font-family="Roboto" fill="#6E7079">
+90
+</text>
+<text font-size="14" x="2" y="106.7" font-family="Roboto" fill="#6E7079">
+75
+</text>
+<text font-size="14" x="2" y="159.3" font-family="Roboto" fill="#6E7079">
+60
+</text>
+<text font-size="14" x="2" y="212" font-family="Roboto" fill="#6E7079">
+45
+</text>
+<text font-size="14" x="2" y="264.7" font-family="Roboto" fill="#6E7079">
+30
+</text>
+<text font-size="14" x="2" y="317.3" font-family="Roboto" fill="#6E7079">
+15
+</text>
+<text font-size="14" x="10" y="370" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="26" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="26" y1="365" x2="26" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="274" y="384" font-family="Roboto" fill="#6E7079">
+Milestones
+</text>
+</g>
+<rect x="31" y="210.5" width="137.5" height="154.5" fill="#5470C6"/>
+<rect x="171.5" y="91.1" width="137.5" height="273.9" fill="#91CC75"/>
+<rect x="312" y="273.7" width="137.5" height="91.3" fill="#FAC858"/>
+<rect x="452.5" y="354.5" width="137.5" height="10.5" fill="#EE6666"/>
+<text font-size="14" x="99.8" y="210.5" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+44
+</text>
+<text font-size="14" x="240.2" y="91.1" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+78
+</text>
+<text font-size="14" x="380.8" y="273.7" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+26
+</text>
+<text font-size="14" x="521.2" y="354.5" dx="-3.5" dy="-8" font-family="Roboto" fill="#464646">
+3
+</text>
+</svg>

@@ -826,4 +826,52 @@ mod tests {
             bar_chart.svg().unwrap()
         );
     }
+
+    #[test]
+    fn test_render_legend_center() {
+        let bar_chart = BarChart::from_json(
+            r###"{
+  "legend_align": "center",
+  "series_list": [
+    {
+      "name": "None",
+      "label_show": true,
+      "data": [
+        44
+      ]
+    },
+        {
+      "name": "M1 - End of Inception",
+      "label_show": true,
+      "data": [
+        78
+      ]
+    },
+        {
+      "name": "M2 - End of Elaboration",
+      "label_show": true,
+      "data": [
+        26
+      ]
+    },
+        {
+      "name": "M3 - End of Construction",
+      "label_show": true,
+      "data": [
+        3
+      ]
+    }
+  ],
+  "type": "bar",
+  "x_axis_data": [
+    "Milestones"
+  ]
+}"###,
+        )
+        .unwrap();
+        assert_eq!(
+            include_str!("../../asset/bar_chart/legend_center.svg").trim(),
+            bar_chart.svg().unwrap()
+        );
+    }
 }
