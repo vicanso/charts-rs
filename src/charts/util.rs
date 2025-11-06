@@ -114,11 +114,50 @@ impl From<(f32, f32, f32, f32)> for Box {
     }
 }
 
+fn parse_precision(formatter: &str) -> Option<usize> {
+    if formatter.is_empty() {
+        return None;
+    }
+    // 1. parse usize
+    if let Ok(precision) = formatter.parse::<usize>() {
+        return Some(precision);
+    }
+
+    // 2. if formatter is "{:.N}", parse N
+    if let Some(inner) = formatter
+        .strip_prefix("{:.")
+        .and_then(|s| s.strip_suffix("}"))
+    {
+        if let Ok(precision) = inner.parse::<usize>() {
+            return Some(precision);
+        }
+    }
+
+    None
+}
+
 pub(crate) fn format_series_value(value: f32, formatter: &str) -> String {
     if formatter == THOUSANDS_FORMAT_LABEL {
         return thousands_format_float(value);
     }
-    format_float(value)
+    let mut str = if let Some(precision) = parse_precision(formatter) {
+        format!("{:.precision$}", value, precision = precision)
+    } else if value < 1.1 {
+        format!("{:.2}", value)
+    } else {
+        format!("{:.1}", value)
+    };
+    if str.contains('.') {
+        while str.ends_with('0') {
+            str.pop();
+        }
+
+        if str.ends_with('.') {
+            str.pop();
+        }
+    }
+
+    str
 }
 
 pub(crate) fn thousands_format_float(value: f32) -> String {

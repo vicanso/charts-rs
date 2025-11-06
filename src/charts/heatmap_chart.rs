@@ -58,8 +58,8 @@ impl HeatmapSeries {
             return self.max_color;
         }
         let percent = (value - self.min) / (self.max - self.min);
-        let get_value = |max, min| {
-            let offset = if max > min { max - min } else { min - max };
+        let get_value = |max: u8, min: u8| {
+            let offset = max.abs_diff(min);
             let offset = (offset as f32 * percent) as u8;
             if max > min {
                 min + offset

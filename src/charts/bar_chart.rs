@@ -810,4 +810,20 @@ mod tests {
             bar_chart.svg().unwrap()
         );
     }
+
+    #[test]
+    fn bar_chart_custom_label_formatter() {
+        let mut bar_chart = BarChart::new(
+            vec![("values", vec![0.0, 0.25, 0.5, 0.75, 1.0]).into()],
+            vec!["1".into(), "2".into(), "3".into(), "4".into(), "5".into()],
+        );
+
+        bar_chart.series_list[0].label_show = true;
+        bar_chart.series_label_formatter = "{:.1}".to_string();
+
+        assert_eq!(
+            include_str!("../../asset/bar_chart/custom_label_formatter.svg").trim(),
+            bar_chart.svg().unwrap()
+        );
+    }
 }

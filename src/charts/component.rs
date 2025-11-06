@@ -1218,7 +1218,7 @@ impl Axis {
                 let total_measure = font::measure_text(f, font_size, &text_list.join(" "));
                 let mut total_measure_width = total_measure.width();
                 if self.name_rotate != 0.0 {
-                    total_measure_width = self.name_rotate.sin().abs() * total_measure_width;
+                    total_measure_width *= self.name_rotate.sin().abs();
                 }
                 // 位置不够
                 if total_measure_width > axis_length {
