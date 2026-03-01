@@ -85,7 +85,7 @@ fn generate_image() {
     let mut line_chart = LineChart::new_with_theme(
         vec![
             (
-                "Email",
+                "Email & Instagram",
                 vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
             )
                 .into(),
@@ -106,7 +106,7 @@ fn generate_image() {
                 .into(),
         ],
         vec![
-            "Mon".to_string(),
+            "Mon & Mo".to_string(),
             "Tue".to_string(),
             "Wed".to_string(),
             "Thu".to_string(),
@@ -117,7 +117,7 @@ fn generate_image() {
         THEME_GRAFANA,
     );
     line_chart.margin.right = 50.0;
-    line_chart.title_text = "Smoothed Line Chart".to_string();
+    line_chart.title_text = "Smoothed Line & Instagram Chart".to_string();
     line_chart.legend_margin = Some(Box {
         top: line_chart.title_height,
         bottom: 5.0,

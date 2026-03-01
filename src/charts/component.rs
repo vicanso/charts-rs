@@ -10,6 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use html_escape::encode_text;
 use serde::{Deserialize, Serialize};
 use snafu::{ResultExt, Snafu};
 use std::fmt;
@@ -557,7 +558,7 @@ impl Text {
         SVGTag {
             tag: TAG_TEXT,
             attrs,
-            data: Some(self.text.clone()),
+            data: Some(encode_text(&self.text).to_string()),
         }
         .to_string()
     }

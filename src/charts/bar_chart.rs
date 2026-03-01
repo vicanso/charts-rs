@@ -306,7 +306,7 @@ mod tests {
         let mut bar_chart = BarChart::new(
             vec![
                 (
-                    "Email",
+                    "Email & Instagram",
                     vec![120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0],
                 )
                     .into(),
@@ -327,7 +327,7 @@ mod tests {
                     .into(),
             ],
             vec![
-                "Mon".to_string(),
+                "Mon & Mo".to_string(),
                 "Tue".to_string(),
                 "Wed".to_string(),
                 "Thu".to_string(),
@@ -337,7 +337,7 @@ mod tests {
             ],
         );
         bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.title_text = "Bar & Line Chart".to_string();
         bar_chart.legend_margin = Some(Box {
             top: 35.0,
             bottom: 10.0,

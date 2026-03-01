@@ -1,29 +1,29 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<text font-size="18" x="260.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
-Bar Chart
+<text font-size="18" x="232" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Bar &amp; Line Chart
 </text>
 <g>
-<rect x="114" y="45" width="25" height="10" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
-<text font-size="14" x="142" y="54" font-family="Roboto" fill="#464646">
-Email
+<rect x="72" y="45" width="25" height="10" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="100" y="54" font-family="Roboto" fill="#464646">
+Email &amp; Instagram
 </text>
 </g>
 <g>
-<rect x="183" y="45" width="25" height="10" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
-<text font-size="14" x="211" y="54" font-family="Roboto" fill="#464646">
+<rect x="225" y="45" width="25" height="10" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="253" y="54" font-family="Roboto" fill="#464646">
 Union Ads
 </text>
 </g>
 <g>
-<rect x="283" y="45" width="25" height="10" rx="2" ry="2" stroke="#FAC858" fill="#FAC858"/>
-<text font-size="14" x="311" y="54" font-family="Roboto" fill="#464646">
+<rect x="325" y="45" width="25" height="10" rx="2" ry="2" stroke="#FAC858" fill="#FAC858"/>
+<text font-size="14" x="353" y="54" font-family="Roboto" fill="#464646">
 Direct
 </text>
 </g>
 <g>
-<rect x="356" y="45" width="25" height="10" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
-<text font-size="14" x="384" y="54" font-family="Roboto" fill="#464646">
+<rect x="398" y="45" width="25" height="10" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<text font-size="14" x="426" y="54" font-family="Roboto" fill="#464646">
 Search Engine
 </text>
 </g>
@@ -66,8 +66,8 @@ Search Engine
 <line stroke-width="1" x1="518.6" y1="365" x2="518.6" y2="370"/>
 <line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
 </g>
-<text font-size="14" x="84.2" y="384" font-family="Roboto" fill="#6E7079">
-Mon
+<text font-size="14" x="64.7" y="384" font-family="Roboto" fill="#6E7079">
+Mon &amp; Mo
 </text>
 <text font-size="14" x="162.6" y="384" font-family="Roboto" fill="#6E7079">
 Tue
