@@ -66,6 +66,7 @@ pub struct PieChart {
     pub inner_radius: f32,
     pub rose_type: Option<bool>,
     pub border_radius: Option<f32>,
+    pub start_angle: f32,
 
     // x axis
     pub x_axis_data: Vec<String>,
@@ -92,6 +93,7 @@ pub struct PieChart {
     pub series_label_font_size: f32,
     pub series_label_font_weight: Option<String>,
     pub series_label_formatter: String,
+    pub series_label_position: Option<String>,
     pub series_colors: Vec<Color>,
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
@@ -178,7 +180,7 @@ impl PieChart {
         }
         let mut delta = 360.0 / values.len() as f32;
         let mut half_delta = delta / 2.0;
-        let mut start_angle = 0.0_f32;
+        let mut start_angle = self.start_angle;
         let mut radius_double = c.height();
 
         if c.width() < radius_double {
@@ -230,40 +232,9 @@ impl PieChart {
 
             c.pie(pie);
 
+            let is_inside = self.series_label_position == Some("inside".to_string());
+
             let angle = start_angle + half_delta;
-            let mut points = vec![];
-            points.push(get_pie_point(cx, cy, cr, angle));
-            let mut end = get_pie_point(cx, cy, r + label_offset, angle);
-
-            let quadrant = get_quadrant(cx, cy, &end);
-            // quadrant change
-            if quadrant != prev_quadrant {
-                prev_end_y = f32::MAX;
-                prev_quadrant = quadrant;
-            }
-            // label overlap
-            if (end.y - prev_end_y).abs() < self.series_label_font_size {
-                if quadrant == 1 || quadrant == 4 {
-                    end.y = prev_end_y + self.series_label_font_size;
-                } else {
-                    end.y = prev_end_y - self.series_label_font_size;
-                }
-            }
-            prev_end_y = end.y;
-
-            points.push(end);
-
-            let is_left = angle > 180.0;
-            if is_left {
-                end.x -= label_offset;
-            } else {
-                end.x += label_offset;
-            }
-            let mut label_margin = Box {
-                left: end.x,
-                top: end.y + 5.0,
-                ..Default::default()
-            };
             let label_option = LabelOption {
                 series_name: series.name.clone(),
                 value,
@@ -273,25 +244,79 @@ impl PieChart {
             };
             let label_text = label_option.format();
 
-            if is_left {
+            let label_margin = if is_inside {
+                let label_point = get_pie_point(cx, cy, 2. * cr / 3., angle);
+                let mut label_margin = Box {
+                    left: label_point.x,
+                    top: label_point.y,
+                    ..Default::default()
+                };
                 if let Ok(b) = measure_text_width_family(
                     &self.font_family,
                     self.series_label_font_size,
                     &label_text,
                 ) {
-                    label_margin.left -= b.width();
+                    label_margin.left -= b.width() / 2.;
                 }
-            } else {
-                label_margin.left += 3.0;
-            }
 
-            points.push(end);
-            c.smooth_line(SmoothLine {
-                color: Some(color),
-                points,
-                symbol: None,
-                ..Default::default()
-            });
+                label_margin
+            } else {
+                let mut points = vec![];
+                points.push(get_pie_point(cx, cy, cr, angle));
+                let mut end = get_pie_point(cx, cy, r + label_offset, angle);
+
+                let quadrant = get_quadrant(cx, cy, &end);
+                // quadrant change
+                if quadrant != prev_quadrant {
+                    prev_end_y = f32::MAX;
+                    prev_quadrant = quadrant;
+                }
+                // label overlap
+                if (end.y - prev_end_y).abs() < self.series_label_font_size {
+                    if quadrant == 1 || quadrant == 4 {
+                        end.y = prev_end_y + self.series_label_font_size;
+                    } else {
+                        end.y = prev_end_y - self.series_label_font_size;
+                    }
+                }
+                prev_end_y = end.y;
+
+                points.push(end);
+
+                let is_left = angle > 180.0;
+                if is_left {
+                    end.x -= label_offset;
+                } else {
+                    end.x += label_offset;
+                }
+                let mut label_margin = Box {
+                    left: end.x,
+                    top: end.y + 5.0,
+                    ..Default::default()
+                };
+
+                if is_left {
+                    if let Ok(b) = measure_text_width_family(
+                        &self.font_family,
+                        self.series_label_font_size,
+                        &label_text,
+                    ) {
+                        label_margin.left -= b.width();
+                    }
+                } else {
+                    label_margin.left += 3.0;
+                }
+
+                points.push(end);
+
+                c.smooth_line(SmoothLine {
+                    color: Some(color),
+                    points,
+                    symbol: None,
+                    ..Default::default()
+                });
+                label_margin
+            };
 
             c.child(label_margin).text(Text {
                 text: label_text,
@@ -379,15 +404,13 @@ mod tests {
     #[test]
     fn not_rose_radius_pie() {
         let mut pie_chart = PieChart::new(vec![
-            ("rose 1", vec![400.0]).into(),
+            ("rose 1", vec![40.0]).into(),
             ("rose 2", vec![38.0]).into(),
             ("rose 3", vec![32.0]).into(),
             ("rose 4", vec![30.0]).into(),
-            ("rose 5", vec![28.0]).into(),
-            ("rose 6", vec![26.0]).into(),
-            ("rose 7", vec![22.0]).into(),
-            ("rose 8", vec![18.0]).into(),
         ]);
+        pie_chart.start_angle = 10.0;
+        pie_chart.series_label_position = Some("inside".to_string());
         pie_chart.rose_type = Some(false);
         pie_chart.inner_radius = 0.0;
         pie_chart.border_radius = Some(0.0);
