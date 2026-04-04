@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        toolchain: [1.87.0, 1.88.0, 1.89.0, stable]
+        toolchain: [1.88.0, 1.89.0, 1.90.0, stable]
 
     steps:
     - uses: actions/checkout@v4
