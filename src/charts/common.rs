@@ -93,6 +93,8 @@ pub struct Series {
     pub category: Option<SeriesCategory>,
     // stroke dash array for series
     pub stroke_dash_array: Option<String>,
+    // stack group name; series with the same name and y_axis_index are stacked
+    pub stack: Option<String>,
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]

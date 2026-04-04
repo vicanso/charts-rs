@@ -250,10 +250,42 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             fn get_y_axis_values(&self, y_axis_index: usize) -> (AxisValues, f32) {
                 let y_axis_config = self.get_y_axis_config(y_axis_index);
                 let mut data_list = vec![];
+                // Non-stacked series: include individual values directly.
                 for series in self.series_list.iter() {
-                    if series.y_axis_index == y_axis_index {
+                    if series.y_axis_index == y_axis_index && series.stack.is_none() {
                         data_list.append(series.data.clone().as_mut());
                     }
+                }
+                // Stacked series: the effective max at each x-position is the sum of all
+                // series in the same stack group, so collect per-x sums per stack key.
+                let mut stack_keys: Vec<String> = vec![];
+                for series in self.series_list.iter() {
+                    if series.y_axis_index == y_axis_index {
+                        if let Some(ref s) = series.stack {
+                            if !stack_keys.contains(s) {
+                                stack_keys.push(s.clone());
+                            }
+                        }
+                    }
+                }
+                for stack_key in &stack_keys {
+                    let max_len = self.series_list.iter()
+                        .filter(|s| s.y_axis_index == y_axis_index && s.stack.as_deref() == Some(stack_key.as_str()))
+                        .map(|s| s.data.len() + s.start_index)
+                        .max()
+                        .unwrap_or(0);
+                    let mut sums = vec![0.0_f32; max_len];
+                    for series in self.series_list.iter() {
+                        if series.y_axis_index == y_axis_index && series.stack.as_deref() == Some(stack_key.as_str()) {
+                            for (i, &v) in series.data.iter().enumerate() {
+                                let actual_i = i + series.start_index;
+                                if actual_i < sums.len() && v != NIL_VALUE {
+                                    sums[actual_i] += v;
+                                }
+                            }
+                        }
+                    }
+                    data_list.extend(sums);
                 }
                 if data_list.is_empty() {
                    return (AxisValues::default(), 0.0);
@@ -550,15 +582,46 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 let unit_width = c1.width() / series_data_count as f32;
                 let bar_chart_margin = 5.0_f32;
                 let bar_chart_gap = 3.0_f32;
-
                 let bar_chart_margin_width = bar_chart_margin * 2.0;
-                let bar_chart_gap_width = bar_chart_gap * (series_list.len() - 1) as f32;
-                let bar_width = (unit_width - bar_chart_margin_width - bar_chart_gap_width) / series_list.len() as f32;
+
+                // Assign each series a visual slot index.
+                // Non-stacked series each occupy their own slot.
+                // All series sharing the same stack key (name + y_axis_index) share one slot.
+                let mut stack_slot_keys: Vec<String> = vec![];
+                let mut slot_count = 0_usize;
+                let mut series_slot_indices: Vec<usize> = Vec::with_capacity(series_list.len());
+                for series in series_list.iter() {
+                    if let Some(ref s) = series.stack {
+                        let key = format!("{}_{}", s, series.y_axis_index);
+                        if let Some(pos) = stack_slot_keys.iter().position(|k| k == &key) {
+                            series_slot_indices.push(pos);
+                        } else {
+                            series_slot_indices.push(slot_count);
+                            stack_slot_keys.push(key);
+                            slot_count += 1;
+                        }
+                    } else {
+                        series_slot_indices.push(slot_count);
+                        slot_count += 1;
+                    }
+                }
+                if slot_count == 0 {
+                    return vec![];
+                }
+
+                let bar_chart_gap_width = bar_chart_gap * (slot_count - 1) as f32;
+                let bar_width = (unit_width - bar_chart_margin_width - bar_chart_gap_width) / slot_count as f32;
                 let half_bar_width = bar_width / 2.0;
+
+                // Per-stack accumulator: maps slot key → per-x cumulative data values.
+                let mut stack_acc: Vec<(String, Vec<f32>)> = stack_slot_keys
+                    .iter()
+                    .map(|k| (k.clone(), vec![0.0_f32; series_data_count]))
+                    .collect();
 
                 let mut series_labels_list = vec![];
                 let get_bar_color = |colors: &Option<Vec<Option<Color>>>, index: usize| -> Option<Color> {
-                    if let Some(colors) = &colors  {
+                    if let Some(colors) = &colors {
                         if colors.len() <= index {
                             return None;
                         }
@@ -568,24 +631,49 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     }
                     None
                 };
-                for (index, series) in series_list.iter().enumerate() {
-                    let y_axis_values = if index >= y_axis_values_list.len() {
+
+                for (series_idx, series) in series_list.iter().enumerate() {
+                    let slot_index = series_slot_indices[series_idx];
+                    let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
                         y_axis_values_list[0]
                     } else {
                         y_axis_values_list[series.y_axis_index]
                     };
-                    let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+                    let color = get_color(&self.series_colors, series.index.unwrap_or(series_idx));
+
+                    // Find this series' stack accumulator (None for non-stacked).
+                    let stack_key = series.stack.as_ref().map(|s| format!("{}_{}", s, series.y_axis_index));
+                    let acc_idx = stack_key.as_ref().and_then(|k| {
+                        stack_acc.iter().position(|(ak, _)| ak == k)
+                    });
+
                     let mut series_labels = vec![];
                     for (i, p) in series.data.iter().enumerate() {
                         let value = p.to_owned();
-                        // nil value忽略
                         if value == NIL_VALUE {
                             continue;
                         }
-                        let mut left = unit_width * (i + series.start_index) as f32 + bar_chart_margin;
-                        left += (bar_width + bar_chart_gap) * index as f32;
+                        let actual_i = i + series.start_index;
+                        if actual_i >= series_data_count {
+                            continue;
+                        }
 
-                        let y = y_axis_values.get_offset_height(value, max_height);
+                        let mut left = unit_width * actual_i as f32 + bar_chart_margin;
+                        left += (bar_width + bar_chart_gap) * slot_index as f32;
+
+                        let (y_top, bar_height) = if let Some(aidx) = acc_idx {
+                            let acc = stack_acc[aidx].1[actual_i];
+                            let y_top = y_axis_values.get_offset_height(acc + value, max_height);
+                            let y_bottom = if acc == 0.0 {
+                                max_height
+                            } else {
+                                y_axis_values.get_offset_height(acc, max_height)
+                            };
+                            (y_top, y_bottom - y_top)
+                        } else {
+                            let y = y_axis_values.get_offset_height(value, max_height);
+                            (y, max_height - y)
+                        };
 
                         let mut fill = get_bar_color(&series.colors, i);
                         if fill.is_none() {
@@ -595,17 +683,23 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         c1.rect(Rect {
                             fill,
                             left,
-                            top: y,
+                            top: y_top,
                             width: bar_width,
-                            height: max_height - y,
+                            height: bar_height,
                             rx: radius,
                             ry: radius,
                             ..Default::default()
                         });
-                        series_labels.push(SeriesLabel{
-                            point: (left + half_bar_width, y).into(),
-                            text: format_series_value(p.to_owned(), &self.series_label_formatter),
-                        })
+
+                        // Update stack accumulator after rendering this bar segment.
+                        if let Some(aidx) = acc_idx {
+                            stack_acc[aidx].1[actual_i] += value;
+                        }
+
+                        series_labels.push(SeriesLabel {
+                            point: (left + half_bar_width, y_top).into(),
+                            text: format_series_value(value, &self.series_label_formatter),
+                        });
                     }
                     if series.label_show {
                         series_labels_list.push(series_labels);
@@ -628,11 +722,14 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 let mut c1 = c;
                 let x_boundary_gap = self.x_boundary_gap.unwrap_or(true);
-                let mut split_unit_offset = 0.0;
-                if !x_boundary_gap {
-                    split_unit_offset = 1.0;
-                }
+                let split_unit_offset = if !x_boundary_gap { 1.0_f32 } else { 0.0_f32 };
+                let split_unit_count = series_data_count as f32 - split_unit_offset;
+                let unit_width = c1.width() / split_unit_count;
                 let mut series_labels_list = vec![];
+
+                // Stack accumulators for line series: stack_key -> Vec<f32> of cumulative
+                // data values per x-position (data space, not pixel space).
+                let mut stack_acc: Vec<(String, Vec<f32>)> = vec![];
 
                 for (index, series) in series_list.iter().enumerate() {
                     let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
@@ -640,64 +737,133 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     } else {
                         y_axis_values_list[series.y_axis_index]
                     };
-                    let split_unit_count = series_data_count as f32 - split_unit_offset;
-                    let unit_width = c1.width() / split_unit_count;
+
+                    let stack_key = series.stack.as_ref()
+                        .map(|s| format!("{}_{}", s, series.y_axis_index));
+                    let is_stacked = stack_key.is_some();
+
+                    // Retrieve the current accumulated data values for this stack group.
+                    let acc_data: Vec<f32> = if let Some(ref key) = stack_key {
+                        stack_acc.iter()
+                            .find(|(k, _)| k == key)
+                            .map(|(_, v)| v.clone())
+                            .unwrap_or_else(|| vec![0.0_f32; series_data_count])
+                    } else {
+                        vec![0.0_f32; series_data_count]
+                    };
+
                     let mut points: Vec<Point> = vec![];
+                    // For stacked fills: the "floor" points of the previous stack level.
+                    let mut floor_points: Vec<Point> = vec![];
                     let mut points_list: Vec<Vec<Point>> = vec![];
+                    let mut floor_points_list: Vec<Vec<Point>> = vec![];
                     let mut series_labels = vec![];
 
                     let mut max_value = f32::MIN;
                     let mut min_value = f32::MAX;
                     let mut max_index = 0;
                     let mut min_index = 0;
+
+                    // Build updated accumulator for this series.
+                    let mut new_acc = acc_data.clone();
+
                     for (i, p) in series.data.iter().enumerate() {
                         let value = p.to_owned();
+                        let actual_i = i + series.start_index;
                         if value == NIL_VALUE {
                             if !points.is_empty() {
                                 points_list.push(points);
+                                floor_points_list.push(floor_points);
                                 points = vec![];
+                                floor_points = vec![];
                             }
                             continue;
                         }
-                        if value > max_value {
-                            max_value = value;
+                        if actual_i >= series_data_count {
+                            continue;
+                        }
+
+                        let base_acc = acc_data[actual_i];
+                        let effective_value = base_acc + value;
+
+                        if effective_value > max_value {
+                            max_value = effective_value;
                             max_index = i;
                         }
-                        if value < min_value {
-                            min_value = value;
+                        if effective_value < min_value {
+                            min_value = effective_value;
                             min_index = i;
                         }
-                        // 居中
-                        let mut x = unit_width * (i + series.start_index) as f32;
+
+                        let mut x = unit_width * actual_i as f32;
                         if x_boundary_gap {
                             x += unit_width / 2.0;
                         }
-                        let y = y_axis_values.get_offset_height(value, max_height);
+                        let y = y_axis_values.get_offset_height(effective_value, max_height);
                         points.push((x, y).into());
-                        series_labels.push(SeriesLabel{
+
+                        // Floor points for stacked area fill (previous cumulative level).
+                        if is_stacked {
+                            let floor_y = y_axis_values.get_offset_height(base_acc, max_height);
+                            floor_points.push((x, floor_y).into());
+                        }
+
+                        new_acc[actual_i] += value;
+
+                        series_labels.push(SeriesLabel {
                             point: (x, y).into(),
                             text: format_series_value(value, &self.series_label_formatter),
-                        })
+                        });
                     }
+
+                    if !points.is_empty() {
+                        points_list.push(points);
+                        floor_points_list.push(floor_points);
+                    }
+
+                    // Update stack accumulator for subsequent series in the same group.
+                    if let Some(ref key) = stack_key {
+                        if let Some(entry) = stack_acc.iter_mut().find(|(k, _)| k == key) {
+                            entry.1 = new_acc;
+                        } else {
+                            stack_acc.push((key.clone(), new_acc));
+                        }
+                    }
+
                     if series.label_show {
                         series_labels_list.push(series_labels.clone());
                     }
-                    if !points.is_empty() {
-                        points_list.push(points);
-                    }
 
                     let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-
                     let fill = color.with_alpha(100);
                     let series_fill = self.series_fill;
-                    for points in points_list.iter() {
+
+                    for (seg_idx, points) in points_list.iter().enumerate() {
+                        let floor = floor_points_list.get(seg_idx);
+
                         if self.series_smooth {
                             if series_fill {
-                                c1.smooth_line_fill(SmoothLineFill {
-                                    fill,
-                                    points: points.clone(),
-                                    bottom: axis_height,
-                                });
+                                if is_stacked {
+                                    if let Some(fp) = floor {
+                                        // Fill the area between current and previous stack level
+                                        // using a polygon: top points forward + floor reversed.
+                                        let mut poly = points.clone();
+                                        let mut rev_floor = fp.clone();
+                                        rev_floor.reverse();
+                                        poly.extend(rev_floor);
+                                        c1.polygon(Polygon {
+                                            fill: Some(fill),
+                                            points: poly,
+                                            ..Default::default()
+                                        });
+                                    }
+                                } else {
+                                    c1.smooth_line_fill(SmoothLineFill {
+                                        fill,
+                                        points: points.clone(),
+                                        bottom: axis_height,
+                                    });
+                                }
                             }
                             c1.smooth_line(SmoothLine {
                                 points: points.clone(),
@@ -708,12 +874,26 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             });
                         } else {
                             if series_fill {
-                                c1.straight_line_fill(StraightLineFill {
-                                    fill,
-                                    points: points.clone(),
-                                    bottom: axis_height,
-                                    ..Default::default()
-                                });
+                                if is_stacked {
+                                    if let Some(fp) = floor {
+                                        let mut poly = points.clone();
+                                        let mut rev_floor = fp.clone();
+                                        rev_floor.reverse();
+                                        poly.extend(rev_floor);
+                                        c1.polygon(Polygon {
+                                            fill: Some(fill),
+                                            points: poly,
+                                            ..Default::default()
+                                        });
+                                    }
+                                } else {
+                                    c1.straight_line_fill(StraightLineFill {
+                                        fill,
+                                        points: points.clone(),
+                                        bottom: axis_height,
+                                        ..Default::default()
+                                    });
+                                }
                             }
                             c1.straight_line(StraightLine {
                                 points: points.clone(),
@@ -725,15 +905,16 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             });
                         }
                     }
+
                     for mark_point in series.mark_points.iter() {
-                        let index = match mark_point.category {
+                        let mp_index = match mark_point.category {
                             MarkPointCategory::Max => max_index,
                             MarkPointCategory::Min => min_index,
                         };
-                        if let Some(ref label) = series_labels.get(index) {
+                        if let Some(ref label) = series_labels.get(mp_index) {
                             let r = 15.0;
                             let y = label.point.y - r * 2.0;
-                            c1.bubble(Bubble{
+                            c1.bubble(Bubble {
                                 x: label.point.x,
                                 y,
                                 r,
@@ -754,7 +935,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             };
                             c1.text(Text {
                                 text: label.text.clone(),
-                                line_height: Some(r) ,
+                                line_height: Some(r),
                                 dx,
                                 font_color: Some(font_color),
                                 font_family: Some(self.font_family.clone()),
@@ -765,7 +946,6 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             });
                         }
                     }
-
                 }
                 series_labels_list
             }

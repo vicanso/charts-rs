@@ -447,6 +447,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         mark_points: get_mark_points(value, "mark_points"),
         colors: get_series_colors_from_value(value, "colors"),
         stroke_dash_array: get_string_from_value(value, "stroke_dash_array"),
+        stack: get_string_from_value(value, "stack"),
     })
 }
 
