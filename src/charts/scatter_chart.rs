@@ -103,7 +103,14 @@ pub struct ScatterChart {
     pub series_symbols: Vec<Symbol>,
 }
 
-fn render_scatter_symbol(canvas: &mut Canvas, symbol: &Symbol, cx: f32, cy: f32, r: f32, color: Color) {
+fn render_scatter_symbol(
+    canvas: &mut Canvas,
+    symbol: &Symbol,
+    cx: f32,
+    cy: f32,
+    r: f32,
+    color: Color,
+) {
     match symbol {
         Symbol::Circle(_, fill_override) => {
             canvas.circle(Circle {
@@ -166,15 +173,17 @@ impl ScatterChart {
         if let Some(arr) = value.get("series_symbols").and_then(|v| v.as_array()) {
             s.series_symbols = arr
                 .iter()
-                .filter_map(|item| get_series_symbol_from_value(item, "type").or_else(|| {
-                    // also allow bare string: "circle", "triangle", etc.
-                    item.as_str().map(|t| match t {
-                        "rect" | "square" => Symbol::Rect(3.0, None),
-                        "triangle" => Symbol::Triangle(3.0, None),
-                        "diamond" => Symbol::Diamond(3.0, None),
-                        _ => Symbol::Circle(3.0, None),
+                .filter_map(|item| {
+                    get_series_symbol_from_value(item, "type").or_else(|| {
+                        // also allow bare string: "circle", "triangle", etc.
+                        item.as_str().map(|t| match t {
+                            "rect" | "square" => Symbol::Rect(3.0, None),
+                            "triangle" => Symbol::Triangle(3.0, None),
+                            "diamond" => Symbol::Diamond(3.0, None),
+                            _ => Symbol::Circle(3.0, None),
+                        })
                     })
-                }))
+                })
                 .collect();
         }
         if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
@@ -401,8 +410,8 @@ mod tests {
     use super::ScatterChart;
     use crate::Align;
     use pretty_assertions::assert_eq;
-    #[test]
-    fn scatter_chart_basic() {
+
+    fn make_scatter() -> ScatterChart {
         let mut scatter_chart = ScatterChart::new(vec![
             (
                 "Female",
@@ -427,7 +436,6 @@ mod tests {
             )
                 .into(),
         ]);
-
         scatter_chart.title_text = "Male and female height and weight distribution".to_string();
         scatter_chart.margin.right = 20.0;
         scatter_chart.title_align = Align::Left;
@@ -437,64 +445,26 @@ mod tests {
         scatter_chart.y_axis_configs[0].axis_min = Some(40.0);
         scatter_chart.y_axis_configs[0].axis_max = Some(130.0);
         scatter_chart.y_axis_configs[0].axis_formatter = Some("{c} kg".to_string());
-
         scatter_chart.x_axis_config.axis_min = Some(140.0);
         scatter_chart.x_axis_config.axis_max = Some(230.0);
         scatter_chart.x_axis_config.axis_formatter = Some("{c} cm".to_string());
-
         scatter_chart.series_symbol_sizes = vec![6.0, 6.0];
+        scatter_chart
+    }
 
+    #[test]
+    fn scatter_chart_basic() {
         assert_eq!(
             include_str!("../../asset/scatter_chart/basic.svg"),
-            scatter_chart.svg().unwrap()
+            make_scatter().svg().unwrap()
         );
     }
 
     #[test]
     fn scatter_chart_no_axis() {
-        let mut scatter_chart = ScatterChart::new(vec![
-            (
-                "Female",
-                vec![
-                    161.2, 51.6, 167.5, 59.0, 159.5, 49.2, 157.0, 63.0, 155.8, 53.6, 170.0, 59.0,
-                    159.1, 47.6, 166.0, 69.8, 176.2, 66.8, 160.2, 75.2, 172.5, 55.2, 170.9, 54.2,
-                    172.9, 62.5, 153.4, 42.0, 160.0, 50.0, 147.2, 49.8, 168.2, 49.2, 175.0, 73.2,
-                    157.0, 47.8, 167.6, 68.8, 159.5, 50.6, 175.0, 82.5, 166.8, 57.2, 176.5, 87.8,
-                    170.2, 72.8,
-                ],
-            )
-                .into(),
-            (
-                "Male",
-                vec![
-                    174.0, 65.6, 175.3, 71.8, 193.5, 80.7, 186.5, 72.6, 187.2, 78.8, 181.5, 74.8,
-                    184.0, 86.4, 184.5, 78.4, 175.0, 62.0, 184.0, 81.6, 180.0, 76.6, 177.8, 83.6,
-                    192.0, 90.0, 176.0, 74.6, 174.0, 71.0, 184.0, 79.6, 192.7, 93.8, 171.5, 70.0,
-                    173.0, 72.4, 176.0, 85.9, 176.0, 78.8, 180.5, 77.8, 172.7, 66.2, 176.0, 86.4,
-                    173.5, 81.8,
-                ],
-            )
-                .into(),
-        ]);
-
-        scatter_chart.title_text = "Male and female height and weight distribution".to_string();
-        scatter_chart.margin.right = 20.0;
-        scatter_chart.title_align = Align::Left;
-        scatter_chart.sub_title_text = "Data from: Heinz 2003".to_string();
-        scatter_chart.sub_title_align = Align::Left;
-        scatter_chart.legend_align = Align::Right;
-        scatter_chart.y_axis_configs[0].axis_min = Some(40.0);
-        scatter_chart.y_axis_configs[0].axis_max = Some(130.0);
-        scatter_chart.y_axis_configs[0].axis_formatter = Some("{c} kg".to_string());
-
-        scatter_chart.x_axis_config.axis_min = Some(140.0);
-        scatter_chart.x_axis_config.axis_max = Some(230.0);
-        scatter_chart.x_axis_config.axis_formatter = Some("{c} cm".to_string());
-
-        scatter_chart.series_symbol_sizes = vec![6.0, 6.0];
+        let mut scatter_chart = make_scatter();
         scatter_chart.x_axis_hidden = true;
         scatter_chart.y_axis_hidden = true;
-
         assert_eq!(
             include_str!("../../asset/scatter_chart/no_axis.svg"),
             scatter_chart.svg().unwrap()

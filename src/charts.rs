@@ -11,6 +11,7 @@
 // limitations under the License.
 
 mod bar_chart;
+mod calendar_chart;
 mod candlestick_chart;
 mod canvas;
 mod color;
@@ -49,6 +50,7 @@ pub use encoder::Error as EncoderError;
 #[cfg(feature = "image-encoder")]
 pub use encoder::*;
 
+pub use calendar_chart::CalendarChart;
 pub use candlestick_chart::CandlestickChart;
 pub use font::Error as FontError;
 pub use font::{
