@@ -355,8 +355,9 @@ impl Canvas {
     }
     /// Generates the svg of canvas.
     pub fn svg(&self) -> Result<String> {
-        let mut data = vec![];
-        for c in self.components.borrow().iter() {
+        let components = self.components.borrow();
+        let mut data = String::with_capacity(components.len() * 128);
+        for (i, c) in components.iter().enumerate() {
             let value = match c {
                 Component::Line(c) => c.svg(),
                 Component::Rect(c) => c.svg(),
@@ -375,15 +376,12 @@ impl Canvas {
                 Component::Legend(c) => c.svg(),
                 Component::Pie(c) => c.svg(),
             };
-            data.push(value);
+            if i > 0 {
+                data.push('\n');
+            }
+            data.push_str(&value);
         }
-        Ok(generate_svg(
-            self.width,
-            self.height,
-            self.x,
-            self.y,
-            data.join("\n"),
-        ))
+        Ok(generate_svg(self.width, self.height, self.x, self.y, data))
     }
 }
 

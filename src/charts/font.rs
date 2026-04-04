@@ -159,14 +159,15 @@ pub fn text_wrap_fit(
         return Ok(vec![text.to_string()]);
     }
 
-    let mut current = "".to_string();
+    let mut current = String::new();
     let mut result = vec![];
     for item in text.chars() {
-        let new_str = current.clone() + &item.to_string();
+        let mut new_str = current.clone();
+        new_str.push(item);
         let b = measure_text(font, font_size, &new_str);
         if b.width() > width {
             result.push(current);
-            current = item.to_string();
+            current = String::from(item);
             continue;
         }
         current = new_str;

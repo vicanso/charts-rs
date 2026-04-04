@@ -765,6 +765,7 @@ static SHADCN_THEME: Lazy<Theme> = Lazy::new(|| {
 });
 
 type Themes = AHashMap<String, Arc<Theme>>;
+static LIGHT_THEME_ARC: Lazy<Arc<Theme>> = Lazy::new(|| Arc::new(LIGHT_THEME.clone()));
 static THEME_MAP: Lazy<ArcSwap<Themes>> = Lazy::new(|| {
     let mut m = AHashMap::new();
     m.insert("dark".to_string(), Arc::new(DARK_THEME.clone()));
@@ -776,36 +777,29 @@ static THEME_MAP: Lazy<ArcSwap<Themes>> = Lazy::new(|| {
     m.insert("westeros".to_string(), Arc::new(WESTEROS_THEME.clone()));
     m.insert("chalk".to_string(), Arc::new(CHALK_THEME.clone()));
     m.insert("shadcn".to_string(), Arc::new(SHADCN_THEME.clone()));
-    m.insert("light".to_string(), Arc::new(LIGHT_THEME.clone()));
+    m.insert("light".to_string(), Arc::clone(&LIGHT_THEME_ARC));
     ArcSwap::from_pointee(m)
 });
 
 /// Add theme of charts
 pub fn add_theme(name: &str, data: Theme) {
-    let mut m: Themes = AHashMap::new();
-    for (name, data) in THEME_MAP.load().iter() {
-        m.insert(name.to_string(), data.clone());
-    }
+    let mut m: Themes = (**THEME_MAP.load()).clone();
     m.insert(name.to_string(), Arc::new(data));
-    THEME_MAP.store(Arc::new(m))
+    THEME_MAP.store(Arc::new(m));
 }
 
 /// Get the theme of charts
 pub fn get_theme(theme: &str) -> Arc<Theme> {
     if let Some(theme) = THEME_MAP.load().get(theme) {
-        theme.clone()
+        Arc::clone(theme)
     } else {
-        Arc::new(LIGHT_THEME.clone())
+        Arc::clone(&LIGHT_THEME_ARC)
     }
 }
 
 /// List the theme name
 pub fn list_theme_name() -> Vec<String> {
-    let mut themes = vec![];
-    for name in THEME_MAP.load().keys() {
-        themes.push(name.to_string());
-    }
-    themes
+    THEME_MAP.load().keys().cloned().collect()
 }
 
 /// Get default theme

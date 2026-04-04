@@ -749,10 +749,10 @@ impl Pie {
     }
 }
 
-struct BaseLine {
+struct BaseLine<'a> {
     pub color: Option<Color>,
     pub fill: Option<Color>,
-    pub points: Vec<Point>,
+    pub points: &'a [Point],
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
     pub is_smooth: bool,
@@ -760,14 +760,14 @@ struct BaseLine {
     pub stroke_dash_array: Option<String>,
 }
 
-impl BaseLine {
+impl<'a> BaseLine<'a> {
     pub fn svg(&self) -> String {
         if self.points.is_empty() || self.stroke_width <= 0.0 {
             return "".to_string();
         }
         let path = if self.is_smooth {
             SmoothCurve {
-                points: self.points.clone(),
+                points: self.points.to_vec(),
                 ..Default::default()
             }
             .to_string()
@@ -818,7 +818,7 @@ impl BaseLine {
         let symbol_svg = if let Some(ref symbol) = self.symbol {
             match symbol {
                 Symbol::Circle(r, fill) => generate_circle_symbol(
-                    &self.points,
+                    self.points,
                     Circle {
                         stroke_color: self.color,
                         fill: fill.to_owned(),
@@ -872,7 +872,7 @@ impl SmoothLine {
         BaseLine {
             color: self.color,
             fill: None,
-            points: self.points.clone(),
+            points: &self.points,
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: true,
@@ -967,7 +967,7 @@ impl StraightLine {
         BaseLine {
             color: self.color,
             fill: self.fill,
-            points: self.points.clone(),
+            points: &self.points,
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: false,
@@ -991,9 +991,10 @@ impl StraightLineFill {
         if self.points.is_empty() || self.fill.is_transparent() {
             return "".to_string();
         }
-        let mut points = self.points.clone();
-        let last = points[self.points.len() - 1];
-        let first = points[0];
+        let mut points = Vec::with_capacity(self.points.len() + 3);
+        points.extend_from_slice(&self.points);
+        let last = self.points[self.points.len() - 1];
+        let first = self.points[0];
         points.push((last.x, self.bottom).into());
         points.push((first.x, self.bottom).into());
         points.push(first);
