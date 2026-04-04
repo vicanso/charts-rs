@@ -917,12 +917,27 @@ mod tests {
         let svg = chart.svg().unwrap();
         assert!(svg.contains("bar-grow"), "missing @keyframes bar-grow");
         assert!(svg.contains(".bar-anim"), "missing .bar-anim class rule");
-        assert!(svg.contains("transform-origin:center bottom"), "missing transform-origin");
+        assert!(
+            svg.contains("transform-origin:center bottom"),
+            "missing transform-origin"
+        );
         assert!(svg.contains("800ms ease-out"), "missing duration/easing");
-        assert!(svg.contains(r#"class="bar-anim""#), "missing class attr on bar");
-        assert!(svg.contains("animation-delay:0ms"), "missing delay for col 0");
-        assert!(svg.contains("animation-delay:50ms"), "missing delay for col 1");
-        assert!(svg.contains("animation-delay:100ms"), "missing delay for col 2");
+        assert!(
+            svg.contains(r#"class="bar-anim""#),
+            "missing class attr on bar"
+        );
+        assert!(
+            svg.contains("animation-delay:0ms"),
+            "missing delay for col 0"
+        );
+        assert!(
+            svg.contains("animation-delay:50ms"),
+            "missing delay for col 1"
+        );
+        assert!(
+            svg.contains("animation-delay:100ms"),
+            "missing delay for col 2"
+        );
     }
 
     #[test]
@@ -942,11 +957,26 @@ mod tests {
         .unwrap();
         let svg = chart.svg().unwrap();
         assert!(svg.contains("line-draw"), "missing @keyframes line-draw");
-        assert!(svg.contains(".line-anim-0"), "missing .line-anim-0 class rule");
-        assert!(svg.contains(".line-anim-1"), "missing .line-anim-1 class rule");
-        assert!(svg.contains("0ms forwards"), "missing 0ms delay for series 0");
-        assert!(svg.contains("200ms forwards"), "missing 200ms delay for series 1");
+        assert!(
+            svg.contains(".line-anim-0"),
+            "missing .line-anim-0 class rule"
+        );
+        assert!(
+            svg.contains(".line-anim-1"),
+            "missing .line-anim-1 class rule"
+        );
+        assert!(
+            svg.contains("0ms forwards"),
+            "missing 0ms delay for series 0"
+        );
+        assert!(
+            svg.contains("200ms forwards"),
+            "missing 200ms delay for series 1"
+        );
         assert!(svg.contains("pathLength"), "missing pathLength attribute");
-        assert!(svg.contains(r#"class="line-anim-0""#), "missing class attr on line");
+        assert!(
+            svg.contains(r#"class="line-anim-0""#),
+            "missing class attr on line"
+        );
     }
 }

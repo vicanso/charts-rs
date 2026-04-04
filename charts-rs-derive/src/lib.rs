@@ -301,6 +301,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     min: y_axis_config.axis_min,
                     max: y_axis_config.axis_max,
                     thousands_format,
+                    scale: y_axis_config.axis_scale.clone(),
                 });
                 let y_axis_width = if let Some(value) = y_axis_config.axis_width {
                     value

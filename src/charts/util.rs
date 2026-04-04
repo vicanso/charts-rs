@@ -10,6 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::common::AxisScale;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use substring::Substring;
@@ -198,21 +199,43 @@ pub(crate) struct AxisValueParams {
     pub split_number: usize,
     pub reverse: Option<bool>,
     pub thousands_format: bool,
+    pub scale: AxisScale,
 }
 #[derive(Clone, Debug, Default)]
 pub struct AxisValues {
     pub data: Vec<String>,
     pub min: f32,
     pub max: f32,
+    pub scale: AxisScale,
 }
 
 impl AxisValues {
-    fn get_offset(&self) -> f32 {
+    pub(crate) fn get_offset(&self) -> f32 {
         self.max - self.min
     }
     pub(crate) fn get_offset_height(&self, value: f32, max_height: f32) -> f32 {
-        let percent = (value - self.min) / self.get_offset();
-        max_height - percent * max_height
+        match &self.scale {
+            AxisScale::Linear => {
+                let offset = self.get_offset();
+                if offset == 0.0 {
+                    return max_height;
+                }
+                let percent = (value - self.min) / offset;
+                max_height - percent * max_height
+            }
+            AxisScale::Log(base) => {
+                let safe = value.max(f32::MIN_POSITIVE);
+                let log_val = safe.log(*base);
+                let log_min = self.min.max(f32::MIN_POSITIVE).log(*base);
+                let log_max = self.max.max(f32::MIN_POSITIVE).log(*base);
+                let log_range = log_max - log_min;
+                if log_range == 0.0 {
+                    return max_height;
+                }
+                let percent = (log_val - log_min) / log_range;
+                max_height - percent * max_height
+            }
+        }
     }
 }
 
@@ -221,7 +244,95 @@ const M_VALUE: f32 = K_VALUE * K_VALUE;
 const G_VALUE: f32 = M_VALUE * K_VALUE;
 const T_VALUE: f32 = G_VALUE * K_VALUE;
 
+fn format_axis_value(value: f32) -> String {
+    let mut v = value;
+    let mut unit = "";
+    v = if v >= T_VALUE {
+        unit = "T";
+        v / T_VALUE
+    } else if v >= G_VALUE {
+        unit = "G";
+        v / G_VALUE
+    } else if v >= M_VALUE {
+        unit = "M";
+        v / M_VALUE
+    } else if v >= K_VALUE {
+        unit = "k";
+        v / K_VALUE
+    } else {
+        v
+    };
+    format_float(v) + unit
+}
+
+fn get_log_axis_values(params: AxisValueParams, base: f32) -> AxisValues {
+    let split_number = if params.split_number == 0 {
+        6
+    } else {
+        params.split_number
+    };
+
+    let mut min_val = f32::MAX;
+    let mut max_val = f32::MIN_POSITIVE;
+    for &v in &params.data_list {
+        if v != NIL_VALUE && v > 0.0 {
+            if v < min_val {
+                min_val = v;
+            }
+            if v > max_val {
+                max_val = v;
+            }
+        }
+    }
+    if let Some(m) = params.min {
+        if m > 0.0 && m < min_val {
+            min_val = m;
+        }
+    }
+    if let Some(m) = params.max {
+        if m > 0.0 && m > max_val {
+            max_val = m;
+        }
+    }
+
+    if min_val == f32::MAX || max_val <= 0.0 {
+        return AxisValues::default();
+    }
+
+    let exp_min = min_val.log(base).floor() as i32;
+    let exp_max = max_val.log(base).ceil() as i32;
+
+    // Choose a step so we generate at most split_number+1 ticks.
+    let num_powers = (exp_max - exp_min).max(1) as usize;
+    let step = ((num_powers as f32 / split_number as f32).ceil() as i32).max(1);
+
+    let mut data = vec![];
+    let mut exp = exp_min;
+    loop {
+        data.push(format_axis_value(base.powi(exp)));
+        if exp >= exp_max {
+            break;
+        }
+        exp = (exp + step).min(exp_max);
+    }
+
+    if params.reverse.unwrap_or_default() {
+        data.reverse();
+    }
+
+    AxisValues {
+        data,
+        min: base.powi(exp_min),
+        max: base.powi(exp_max),
+        scale: AxisScale::Log(base),
+    }
+}
+
 pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
+    if let AxisScale::Log(base) = params.scale {
+        return get_log_axis_values(params, base);
+    }
+
     let mut min = f32::MAX;
     let mut max = f32::MIN;
 
@@ -296,28 +407,12 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
 
     let mut data = vec![];
     for i in 0..=split_number {
-        let mut value = min + (i as f32) * split_unit;
+        let value = min + (i as f32) * split_unit;
         if params.thousands_format {
             data.push(thousands_format_float(value));
-            continue;
-        }
-        let mut unit = "";
-        value = if value >= T_VALUE {
-            unit = "T";
-            value / T_VALUE
-        } else if value >= G_VALUE {
-            unit = "G";
-            value / G_VALUE
-        } else if value >= M_VALUE {
-            unit = "M";
-            value / M_VALUE
-        } else if value >= K_VALUE {
-            unit = "k";
-            value / K_VALUE
         } else {
-            value
-        };
-        data.push(format_float(value) + unit);
+            data.push(format_axis_value(value));
+        }
     }
     if params.reverse.unwrap_or_default() {
         data.reverse();
@@ -327,6 +422,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         data,
         min,
         max: min + split_unit * split_number as f32,
+        scale: AxisScale::Linear,
     }
 }
 pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
@@ -413,7 +509,7 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
 
 #[cfg(test)]
 mod tests {
-    use crate::thousands_format_float;
+    use crate::{thousands_format_float, AxisScale};
 
     use super::{
         convert_to_points, format_float, get_axis_values, get_box_of_points, AxisValueParams, Box,
@@ -484,6 +580,31 @@ mod tests {
         assert_eq!(24.0, values.max);
         assert_eq!(24.0, values.get_offset());
         assert_eq!(50.0, values.get_offset_height(12.0, 100.0));
+    }
+
+    #[test]
+    fn axis_values_log() {
+        // Base-10 log scale over [1, 1000]: ticks at 1, 10, 100, 1000
+        let values = get_axis_values(AxisValueParams {
+            data_list: vec![1.0, 5.0, 100.0, 800.0],
+            scale: AxisScale::Log(10.0),
+            ..Default::default()
+        });
+        // exp_min = floor(log10(1)) = 0  → 10^0 = 1
+        // exp_max = ceil(log10(800)) = 3 → 10^3 = 1000
+        assert_eq!(1.0, values.min);
+        assert_eq!(1000.0, values.max);
+        // Ticks: 1, 10, 100, 1000  (step=1, 4 ticks ≤ split_number=6+1)
+        assert_eq!(vec!["1", "10", "100", "1k"], values.data);
+        // 10 is at 1/3 of the log range → pixel = 100 - 33.3.. = 66.6..
+        let h = values.get_offset_height(10.0, 100.0);
+        assert!((h - 66.67).abs() < 0.1, "expected ~66.67, got {h}");
+        // 100 is at 2/3 → pixel = 100 - 66.6.. = 33.3..
+        let h = values.get_offset_height(100.0, 100.0);
+        assert!((h - 33.33).abs() < 0.1, "expected ~33.33, got {h}");
+        // min maps to max_height, max maps to 0
+        assert!((values.get_offset_height(1.0, 100.0) - 100.0).abs() < 0.01);
+        assert!((values.get_offset_height(1000.0, 100.0)).abs() < 0.01);
     }
 
     #[test]

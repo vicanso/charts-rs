@@ -189,6 +189,7 @@ impl ScatterChart {
             min: y_axis_config.axis_min,
             max: y_axis_config.axis_max,
             thousands_format: false,
+            ..Default::default()
         });
         let y_axis_width = if self.y_axis_hidden {
             0.0

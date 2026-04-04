@@ -362,7 +362,8 @@ impl LineChart {
 
         if let Some(ref anim) = self.animation {
             let series_count = self.series_list.len();
-            let mut css = "@keyframes line-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}".to_string();
+            let mut css = "@keyframes line-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}"
+                .to_string();
             for i in 0..series_count {
                 let delay = i as u32 * anim.delay;
                 css.push_str(&format!(
@@ -812,5 +813,4 @@ mod tests {
             line_chart.svg().unwrap()
         );
     }
-
 }

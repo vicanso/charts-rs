@@ -14,6 +14,14 @@ use super::{Box, Color};
 use crate::Point;
 use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub enum AxisScale {
+    #[default]
+    Linear,
+    /// Logarithmic scale; the field is the base (commonly 10.0).
+    Log(f32),
+}
+
 #[derive(Clone, PartialEq, Debug, Default, Serialize, Deserialize)]
 pub enum Position {
     #[default]
@@ -156,4 +164,5 @@ pub struct YAxisConfig {
     pub axis_formatter: Option<String>,
     pub axis_min: Option<f32>,
     pub axis_max: Option<f32>,
+    pub axis_scale: AxisScale,
 }

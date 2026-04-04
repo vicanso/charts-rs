@@ -12,7 +12,8 @@
 
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 use crate::{
-    MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Position, Symbol, NIL_VALUE,
+    AxisScale, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Position, Symbol,
+    NIL_VALUE,
 };
 use std::sync::Arc;
 
@@ -266,7 +267,38 @@ pub(crate) fn get_y_axis_config_from_value(t: Arc<Theme>, item: &serde_json::Val
     if let Some(axis_max) = get_f32_from_value(item, "axis_max") {
         y_config.axis_max = Some(axis_max);
     }
+    if let Some(scale) = get_axis_scale_from_value(item, "axis_scale") {
+        y_config.axis_scale = scale;
+    }
     y_config
+}
+
+/// Gets axis scale value from serde json.
+/// Accepts a string `"log"` / `"log10"` / `"log2"` / `"linear"`,
+/// or an object `{"type": "log", "base": 10}`.
+pub(crate) fn get_axis_scale_from_value(value: &serde_json::Value, key: &str) -> Option<AxisScale> {
+    let v = value.get(key)?;
+    if v.is_null() {
+        return None;
+    }
+    if let Some(s) = v.as_str() {
+        return Some(match s.to_lowercase().as_str() {
+            "log" | "log10" => AxisScale::Log(10.0),
+            "log2" => AxisScale::Log(2.0),
+            _ => AxisScale::Linear,
+        });
+    }
+    // {"type": "log", "base": 2.0}
+    if v.is_object()
+        && v.get("type")
+            .and_then(|t| t.as_str())
+            .map(|t| t.to_lowercase())
+            == Some("log".into())
+    {
+        let base = v.get("base").and_then(|b| b.as_f64()).unwrap_or(10.0) as f32;
+        return Some(AxisScale::Log(base));
+    }
+    None
 }
 
 /// Gets y axis config value from serde json.
