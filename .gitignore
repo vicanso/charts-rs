@@ -11,3 +11,4 @@ Cargo.lock
 .vscode
 
 asset/*.png
+.claude

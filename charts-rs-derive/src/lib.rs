@@ -565,6 +565,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
             }
             /// Renders the bar widget for canvas.
+            #[allow(clippy::too_many_arguments)]
             fn render_bar(
                 &self,
                 c: Canvas,
@@ -573,6 +574,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 max_height: f32,
                 series_data_count: usize,
                 radius: Option<f32>,
+                animation: Option<&AnimationConfig>,
             ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
                     return vec![];
@@ -680,6 +682,15 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             fill = Some(color);
                         }
 
+                        let (bar_class, bar_style) = if let Some(a) = animation {
+                            (
+                                Some("bar-anim".to_string()),
+                                Some(format!("animation-delay:{}ms", actual_i as u32 * a.delay)),
+                            )
+                        } else {
+                            (None, None)
+                        };
+
                         c1.rect(Rect {
                             fill,
                             left,
@@ -688,6 +699,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             height: bar_height,
                             rx: radius,
                             ry: radius,
+                            class: bar_class,
+                            style: bar_style,
                             ..Default::default()
                         });
 
@@ -708,6 +721,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 series_labels_list
             }
             /// Renders the line widget for canvas.
+            #[allow(clippy::too_many_arguments)]
             fn render_line(
                 &self,
                 c: Canvas,
@@ -716,6 +730,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 max_height: f32,
                 axis_height: f32,
                 series_data_count: usize,
+                animation: Option<&AnimationConfig>,
             ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
                     return vec![];
@@ -841,6 +856,9 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     for (seg_idx, points) in points_list.iter().enumerate() {
                         let floor = floor_points_list.get(seg_idx);
 
+                        let line_class = animation.map(|_| format!("line-anim-{}", index));
+                        let line_path_length = animation.map(|_| 1.0_f32);
+
                         if self.series_smooth {
                             if series_fill {
                                 if is_stacked {
@@ -871,6 +889,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 stroke_width: self.series_stroke_width,
                                 symbol: self.series_symbol.clone(),
                                 stroke_dash_array: series.stroke_dash_array.clone(),
+                                class: line_class.clone(),
+                                path_length: line_path_length,
                             });
                         } else {
                             if series_fill {
@@ -901,6 +921,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 stroke_width: self.series_stroke_width,
                                 symbol: self.series_symbol.clone(),
                                 stroke_dash_array: series.stroke_dash_array.clone(),
+                                class: line_class.clone(),
+                                path_length: line_path_length,
                                 ..Default::default()
                             });
                         }

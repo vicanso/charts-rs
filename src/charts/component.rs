@@ -65,6 +65,9 @@ static ATTR_DX: &str = "dx";
 static ATTR_DY: &str = "dy";
 static ATTR_R: &str = "r";
 static ATTR_D: &str = "d";
+static ATTR_CLASS: &str = "class";
+static ATTR_STYLE: &str = "style";
+static ATTR_PATH_LENGTH: &str = "pathLength";
 
 /// Converts opacity to string value.
 fn convert_opacity(color: &Color) -> String {
@@ -239,6 +242,8 @@ pub struct Rect {
     pub height: f32,
     pub rx: Option<f32>,
     pub ry: Option<f32>,
+    pub class: Option<String>,
+    pub style: Option<String>,
 }
 impl Rect {
     pub fn svg(&self) -> String {
@@ -262,6 +267,12 @@ impl Rect {
                 attrs.push((ATTR_FILL, color.hex()));
                 attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
             }
+        }
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
+        if let Some(ref style) = self.style {
+            attrs.push((ATTR_STYLE, style.clone()));
         }
 
         SVGTag {
@@ -758,6 +769,8 @@ struct BaseLine<'a> {
     pub is_smooth: bool,
     pub close: bool,
     pub stroke_dash_array: Option<String>,
+    pub class: Option<String>,
+    pub path_length: Option<f32>,
 }
 
 impl<'a> BaseLine<'a> {
@@ -809,6 +822,12 @@ impl<'a> BaseLine<'a> {
         if let Some(stroke_dash_array) = &self.stroke_dash_array {
             attrs.push((ATTR_STROKE_DASH_ARRAY, stroke_dash_array.to_string()));
         }
+        if let Some(pl) = self.path_length {
+            attrs.push((ATTR_PATH_LENGTH, format_float(pl)));
+        }
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
         let line_svg = SVGTag {
             tag: TAG_PATH,
             attrs,
@@ -853,6 +872,8 @@ pub struct SmoothLine {
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
     pub stroke_dash_array: Option<String>,
+    pub class: Option<String>,
+    pub path_length: Option<f32>,
 }
 
 impl Default for SmoothLine {
@@ -863,6 +884,8 @@ impl Default for SmoothLine {
             stroke_width: 1.0,
             symbol: Some(Symbol::Circle(2.0, None)),
             stroke_dash_array: None,
+            class: None,
+            path_length: None,
         }
     }
 }
@@ -878,6 +901,8 @@ impl SmoothLine {
             is_smooth: true,
             close: false,
             stroke_dash_array: self.stroke_dash_array.clone(),
+            class: self.class.clone(),
+            path_length: self.path_length,
         }
         .svg()
     }
@@ -946,6 +971,8 @@ pub struct StraightLine {
     pub symbol: Option<Symbol>,
     pub close: bool,
     pub stroke_dash_array: Option<String>,
+    pub class: Option<String>,
+    pub path_length: Option<f32>,
 }
 
 impl Default for StraightLine {
@@ -958,6 +985,8 @@ impl Default for StraightLine {
             symbol: Some(Symbol::Circle(2.0, None)),
             close: false,
             stroke_dash_array: None,
+            class: None,
+            path_length: None,
         }
     }
 }
@@ -973,6 +1002,8 @@ impl StraightLine {
             is_smooth: false,
             close: self.close,
             stroke_dash_array: self.stroke_dash_array.clone(),
+            class: self.class.clone(),
+            path_length: self.path_length,
         }
         .svg()
     }
@@ -1501,6 +1532,7 @@ impl Legend {
                         height,
                         rx: Some(2.0),
                         ry: Some(2.0),
+                        ..Default::default()
                     }
                     .svg(),
                 );
@@ -1650,6 +1682,7 @@ mod tests {
                 height: 20.0,
                 rx: Some(3.0),
                 ry: Some(4.0),
+                ..Default::default()
             }
             .svg()
         );
@@ -1665,6 +1698,7 @@ mod tests {
                 height: 20.0,
                 rx: Some(3.0),
                 ry: Some(4.0),
+                ..Default::default()
             }
             .svg()
         );

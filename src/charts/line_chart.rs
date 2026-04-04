@@ -92,6 +92,7 @@ pub struct LineChart {
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
     pub series_fill: bool,
+    pub animation: Option<AnimationConfig>,
 }
 
 impl LineChart {
@@ -106,6 +107,21 @@ impl LineChart {
         }
         if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
             l.y_axis_hidden = y_axis_hidden;
+        }
+        if let Some(anim) = value.get("animation") {
+            if !anim.is_null() {
+                let mut config = AnimationConfig::default();
+                if let Some(d) = get_usize_from_value(anim, "duration") {
+                    config.duration = d as u32;
+                }
+                if let Some(e) = get_string_from_value(anim, "easing") {
+                    config.easing = e;
+                }
+                if let Some(d) = get_usize_from_value(anim, "delay") {
+                    config.delay = d as u32;
+                }
+                l.animation = Some(config);
+            }
         }
         Ok(l)
     }
@@ -322,6 +338,7 @@ impl LineChart {
             max_height,
             axis_height,
             self.x_axis_data.len(),
+            self.animation.as_ref(),
         );
         self.render_series_label(
             c.child(Box {
@@ -342,7 +359,22 @@ impl LineChart {
             &y_axis_values_list,
             max_height,
         );
-        c.svg()
+
+        if let Some(ref anim) = self.animation {
+            let series_count = self.series_list.len();
+            let mut css = "@keyframes line-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}".to_string();
+            for i in 0..series_count {
+                let delay = i as u32 * anim.delay;
+                css.push_str(&format!(
+                    " .line-anim-{}{{stroke-dasharray:1;stroke-dashoffset:1;\
+                     animation:line-draw {}ms {} {}ms forwards}}",
+                    i, anim.duration, anim.easing, delay
+                ));
+            }
+            c.svg_with_style(&css)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -780,4 +812,5 @@ mod tests {
             line_chart.svg().unwrap()
         );
     }
+
 }

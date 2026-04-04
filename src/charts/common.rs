@@ -97,6 +97,29 @@ pub struct Series {
     pub stack: Option<String>,
 }
 
+/// Animation configuration for SVG chart animations.
+/// When set, bars grow from the bottom and lines draw progressively.
+/// PNG/JPEG export via resvg renders the fully-drawn static state.
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
+pub struct AnimationConfig {
+    /// Total animation duration in milliseconds (default: 1000).
+    pub duration: u32,
+    /// CSS easing function: "ease", "linear", "ease-in", "ease-out", "ease-in-out" (default: "ease").
+    pub easing: String,
+    /// Stagger delay in milliseconds between each column (bars) or series (lines) (default: 80).
+    pub delay: u32,
+}
+
+impl Default for AnimationConfig {
+    fn default() -> Self {
+        AnimationConfig {
+            duration: 1000,
+            easing: "ease".to_string(),
+            delay: 80,
+        }
+    }
+}
+
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct SeriesLabel {
     pub point: Point,

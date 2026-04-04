@@ -383,6 +383,37 @@ impl Canvas {
         }
         Ok(generate_svg(self.width, self.height, self.x, self.y, data))
     }
+    /// Generates the svg of canvas with an embedded CSS style block prepended.
+    pub fn svg_with_style(&self, style: &str) -> Result<String> {
+        let components = self.components.borrow();
+        let mut data = String::with_capacity(components.len() * 128 + style.len() + 30);
+        data.push_str("<style>");
+        data.push_str(style);
+        data.push_str("</style>");
+        for c in components.iter() {
+            let value = match c {
+                Component::Line(c) => c.svg(),
+                Component::Rect(c) => c.svg(),
+                Component::Arrow(c) => c.svg(),
+                Component::Bubble(c) => c.svg(),
+                Component::Polyline(c) => c.svg(),
+                Component::Circle(c) => c.svg(),
+                Component::Polygon(c) => c.svg(),
+                Component::Text(c) => c.svg(),
+                Component::SmoothLine(c) => c.svg(),
+                Component::StraightLine(c) => c.svg(),
+                Component::SmoothLineFill(c) => c.svg(),
+                Component::StraightLineFill(c) => c.svg(),
+                Component::Grid(c) => c.svg(),
+                Component::Axis(c) => c.svg().context(ToSVGSnafu)?,
+                Component::Legend(c) => c.svg(),
+                Component::Pie(c) => c.svg(),
+            };
+            data.push('\n');
+            data.push_str(&value);
+        }
+        Ok(generate_svg(self.width, self.height, self.x, self.y, data))
+    }
 }
 
 #[cfg(test)]
@@ -437,6 +468,7 @@ mod tests {
             height: 30.0,
             rx: Some(3.0),
             ry: Some(5.0),
+            ..Default::default()
         });
         assert_eq!("(10,10,110,40)", b.to_string());
         assert_eq!(

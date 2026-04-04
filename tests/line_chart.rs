@@ -2,6 +2,29 @@ use charts_rs::LineChart;
 use pretty_assertions::assert_eq;
 
 #[test]
+fn line_chart_animation() {
+    let line_chart = LineChart::from_json(
+        r###"{
+            "width": 630, "height": 410,
+            "title_text": "Line Chart with Animation",
+            "series_list": [
+                {"name": "Email",         "data": [120.0, 132.0, 101.0, 134.0,  90.0, 230.0, 210.0]},
+                {"name": "Union Ads",     "data": [220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0]},
+                {"name": "Direct",        "data": [150.0, 232.0, 201.0, 154.0, 190.0, 330.0, 410.0]},
+                {"name": "Search Engine", "data": [320.0, 332.0, 301.0, 334.0, 390.0, 330.0, 320.0]}
+            ],
+            "x_axis_data": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+            "animation": {"duration": 1000, "easing": "ease", "delay": 80}
+        }"###,
+    )
+    .unwrap();
+    assert_eq!(
+        include_str!("../asset/line_chart/animation_json.svg"),
+        line_chart.svg().unwrap()
+    );
+}
+
+#[test]
 fn line_chart_stacked_area() {
     let line_chart = LineChart::from_json(
         r###"{
