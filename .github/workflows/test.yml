@@ -18,6 +18,7 @@ jobs:
         toolchain: [1.88.0, 1.90.0, 1.91.0, 1.92.0, stable]
 
     steps:
+    - uses: actions/checkout@v4
     - name: setup node
       uses: actions/setup-node@v4
     - uses: ilammy/setup-nasm@v1
