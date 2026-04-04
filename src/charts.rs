@@ -22,7 +22,6 @@ mod encoder;
 mod font;
 mod funnel_chart;
 mod heatmap_chart;
-mod waterfall_chart;
 mod horizontal_bar_chart;
 mod line_chart;
 mod multi_chart;
@@ -34,6 +33,7 @@ mod scatter_chart;
 mod table_chart;
 mod theme;
 mod util;
+mod waterfall_chart;
 
 pub use bar_chart::BarChart;
 pub use canvas::Canvas;
@@ -60,7 +60,6 @@ pub use font::{
     DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY,
 };
 pub use funnel_chart::FunnelChart;
-pub use waterfall_chart::{WaterfallChart, WaterfallData};
 pub use heatmap_chart::{HeatmapChart, HeatmapData, HeatmapSeries};
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
@@ -73,3 +72,4 @@ pub use table_chart::{TableCellStyle, TableChart};
 pub use theme::Theme;
 pub use theme::{add_theme, get_theme, list_theme_name, THEME_ANT, THEME_DARK, THEME_GRAFANA};
 pub use util::*;
+pub use waterfall_chart::{WaterfallChart, WaterfallData};

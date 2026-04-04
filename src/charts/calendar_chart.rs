@@ -520,7 +520,7 @@ impl CalendarChart {
 
             grid_c.rect(Rect {
                 color: Some(color),
-                fill: Some(color),
+                fill: Some(color.into()),
                 left: x,
                 top: y,
                 width: self.cell_size,

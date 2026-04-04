@@ -343,7 +343,7 @@ impl MultiChart {
             arr.insert(
                 0,
                 Rect {
-                    fill: Some(background_color),
+                    fill: Some(background_color.into()),
                     left: 0.0,
                     top: 0.0,
                     width: x,

@@ -263,7 +263,7 @@ impl HorizontalBarChart {
 
                     let x = max_width - x_axis_values.get_offset_height(value, max_width);
                     c1.rect(Rect {
-                        fill: Some(color),
+                        fill: Some(color.into()),
                         top,
                         width: x,
                         height: bar_height,

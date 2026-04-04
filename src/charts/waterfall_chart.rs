@@ -129,7 +129,6 @@ pub struct WaterfallChart {
     pub series_fill: bool,
 
     // ── Waterfall-specific fields ─────────────────────────────────────────────
-
     /// The data points.  Each value is an increment/decrement, except for
     /// entries where `is_total = true` which reset to 0 and show the running sum.
     pub data: Vec<WaterfallData>,
@@ -238,9 +237,15 @@ impl WaterfallChart {
                 if let Some(pair) = item.as_array() {
                     let val = pair.first().and_then(|v| v.as_f64()).unwrap_or(0.0) as f32;
                     let is_total = pair.get(1).and_then(|v| v.as_bool()).unwrap_or(false);
-                    items.push(WaterfallData { value: val, is_total });
+                    items.push(WaterfallData {
+                        value: val,
+                        is_total,
+                    });
                 } else if let Some(v) = item.as_f64() {
-                    items.push(WaterfallData { value: v as f32, is_total: false });
+                    items.push(WaterfallData {
+                        value: v as f32,
+                        is_total: false,
+                    });
                 }
             }
             c.data = items;
@@ -307,10 +312,7 @@ impl WaterfallChart {
         // ── Compute axis values ───────────────────────────────────────────────
         let cum = self.compute_cumulative();
         // Collect all boundary values for the y-axis range
-        let all_vals: Vec<f32> = cum
-            .iter()
-            .flat_map(|(b, t)| [*b, *t])
-            .collect();
+        let all_vals: Vec<f32> = cum.iter().flat_map(|(b, t)| [*b, *t]).collect();
 
         let y_axis_config = &self.y_axis_configs[0];
         let y_axis_values = get_axis_values(AxisValueParams {
@@ -434,7 +436,7 @@ impl WaterfallChart {
 
             draw_c.rect(Rect {
                 color: Some(color),
-                fill: Some(color),
+                fill: Some(color.into()),
                 left: x_left,
                 top: y_high,
                 width: bar_w,

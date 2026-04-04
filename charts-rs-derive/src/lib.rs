@@ -328,7 +328,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 }
                 let mut c1 = c;
                 c1.rect(Rect {
-                    fill: Some(self.background_color),
+                    fill: Some(self.background_color.into()),
                     left: 0.0,
                     top: 0.0,
                     width: self.width,
@@ -678,10 +678,11 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             (y, max_height - y)
                         };
 
-                        let mut fill = get_bar_color(&series.colors, i);
-                        if fill.is_none() {
-                            fill = Some(color);
+                        let mut fill_color = get_bar_color(&series.colors, i);
+                        if fill_color.is_none() {
+                            fill_color = Some(color);
                         }
+                        let fill: Option<Fill> = fill_color.map(|c| c.into());
 
                         let (bar_class, bar_style) = if let Some(a) = animation {
                             (
@@ -851,7 +852,8 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     }
 
                     let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-                    let fill = color.with_alpha(100);
+                    let fill_color = color.with_alpha(100);
+                    let fill: Fill = fill_color.into();
                     let series_fill = self.series_fill;
 
                     for (seg_idx, points) in points_list.iter().enumerate() {
@@ -871,7 +873,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                         rev_floor.reverse();
                                         poly.extend(rev_floor);
                                         c1.polygon(Polygon {
-                                            fill: Some(fill),
+                                            fill: Some(fill_color),
                                             points: poly,
                                             ..Default::default()
                                         });
@@ -902,7 +904,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                         rev_floor.reverse();
                                         poly.extend(rev_floor);
                                         c1.polygon(Polygon {
-                                            fill: Some(fill),
+                                            fill: Some(fill_color),
                                             points: poly,
                                             ..Default::default()
                                         });

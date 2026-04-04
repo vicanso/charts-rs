@@ -173,3 +173,34 @@ pub struct YAxisConfig {
     pub axis_max: Option<f32>,
     pub axis_scale: AxisScale,
 }
+
+/// A fill that can be either a solid color or a linear gradient.
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum Fill {
+    Solid(Color),
+    LinearGradient {
+        start_color: Color,
+        end_color: Color,
+        /// Angle in degrees: 0 = top→bottom, 90 = left→right, 180 = bottom→top, 270 = right→left.
+        angle: f32,
+    },
+}
+
+impl Default for Fill {
+    fn default() -> Self {
+        Fill::Solid(Color::default())
+    }
+}
+
+impl From<Color> for Fill {
+    fn from(c: Color) -> Self {
+        Fill::Solid(c)
+    }
+}
+
+impl Fill {
+    /// Returns true if the fill is fully transparent (only for solid fills).
+    pub fn is_transparent(&self) -> bool {
+        matches!(self, Fill::Solid(c) if c.is_transparent())
+    }
+}

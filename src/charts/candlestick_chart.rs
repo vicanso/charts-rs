@@ -288,7 +288,7 @@ impl CandlestickChart {
                 })
                 .rect(Rect {
                     color: Some(border_color),
-                    fill: Some(fill),
+                    fill: Some(fill.into()),
                     left: half_chunk_width / 2.0 + chunk_width * index as f32 - 1.0,
                     top: open.min(close),
                     width: half_chunk_width,

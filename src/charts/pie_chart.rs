@@ -217,7 +217,7 @@ impl PieChart {
                 cr = self.inner_radius + 1.0;
             }
             let mut pie = Pie {
-                fill: color,
+                fill: color.into(),
                 cx,
                 cy,
                 r: cr,

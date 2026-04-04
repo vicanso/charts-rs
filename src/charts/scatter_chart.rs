@@ -123,7 +123,7 @@ fn render_scatter_symbol(
         }
         Symbol::Rect(_, fill_override) => {
             canvas.rect(Rect {
-                fill: Some(fill_override.unwrap_or(color)),
+                fill: Some(fill_override.unwrap_or(color).into()),
                 left: cx - r,
                 top: cy - r,
                 width: r * 2.0,

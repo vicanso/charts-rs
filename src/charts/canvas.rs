@@ -420,7 +420,7 @@ impl Canvas {
 mod tests {
     use super::Canvas;
     use crate::{
-        convert_to_points, Align, Axis, Grid, Legend, LegendCategory, Line, Polyline, Rect,
+        convert_to_points, Align, Axis, Fill, Grid, Legend, LegendCategory, Line, Polyline, Rect,
         SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Symbol, Text,
         DEFAULT_FONT_FAMILY,
     };
@@ -461,7 +461,7 @@ mod tests {
         let mut c = Canvas::new(400.0, 300.0);
         let b = c.rect(Rect {
             color: Some((0, 0, 0).into()),
-            fill: Some((0, 255, 0).into()),
+            fill: Some(Fill::Solid((0, 255, 0).into())),
             left: 10.0,
             top: 10.0,
             width: 100.0,
@@ -583,7 +583,7 @@ Hello World!
     fn canvas_smooth_line_fill() {
         let mut c = Canvas::new(400.0, 300.0);
         let b = c.smooth_line_fill(SmoothLineFill {
-            fill: (0, 0, 0).into(),
+            fill: Fill::Solid((0, 0, 0).into()),
             points: convert_to_points(&[
                 (10.0, 10.0),
                 (30.0, 50.0),
@@ -605,7 +605,7 @@ Hello World!
     fn canvas_straight_line_fill() {
         let mut c = Canvas::new(400.0, 300.0);
         let b = c.straight_line_fill(StraightLineFill {
-            fill: (0, 0, 0).into(),
+            fill: Fill::Solid((0, 0, 0).into()),
             points: convert_to_points(&[
                 (10.0, 10.0),
                 (30.0, 50.0),

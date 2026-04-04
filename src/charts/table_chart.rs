@@ -376,7 +376,7 @@ impl TableChart {
                 title_height += self.sub_title_height;
             }
             c.rect(Rect {
-                fill: Some(self.background_color),
+                fill: Some(self.background_color.into()),
                 left: 0.0,
                 top: 0.0,
                 width: self.width,
@@ -495,7 +495,7 @@ impl TableChart {
             let row_height = line_height * count as f32 + padding;
 
             c.rect(Rect {
-                fill: Some(bg_color),
+                fill: Some(bg_color.into()),
                 top,
                 width: c.width(),
                 height: row_height,
@@ -528,7 +528,7 @@ impl TableChart {
                     }
                     if let Some(value) = cell_style.background_color {
                         c.rect(Rect {
-                            fill: Some(value),
+                            fill: Some(value.into()),
                             left,
                             top: top + 1.0,
                             width: span_width,
@@ -577,7 +577,7 @@ impl TableChart {
         if self.outlined {
             c.rect(Rect {
                 color: Some(self.border_color),
-                fill: Some(Color::transparent()),
+                fill: Some(Color::transparent().into()),
                 left: 0.0,
                 top: 0.0,
                 width: c.width(),

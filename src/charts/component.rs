@@ -78,6 +78,80 @@ fn convert_opacity(color: &Color) -> String {
     }
 }
 
+fn fill_grad_id(start: &Color, end: &Color, angle: f32) -> String {
+    format!(
+        "grad_{:02X}{:02X}{:02X}{:02X}_{:02X}{:02X}{:02X}{:02X}_{}",
+        start.r,
+        start.g,
+        start.b,
+        start.a,
+        end.r,
+        end.g,
+        end.b,
+        end.a,
+        angle.round() as i32
+    )
+}
+
+fn fill_svg_defs(fill: &Fill) -> String {
+    match fill {
+        Fill::Solid(_) => String::new(),
+        Fill::LinearGradient {
+            start_color,
+            end_color,
+            angle,
+        } => {
+            let angle_rad = angle * std::f32::consts::PI / 180.0;
+            let x1 = 0.5 - 0.5 * angle_rad.sin();
+            let y1 = 0.5 - 0.5 * angle_rad.cos();
+            let x2 = 0.5 + 0.5 * angle_rad.sin();
+            let y2 = 0.5 + 0.5 * angle_rad.cos();
+            let id = fill_grad_id(start_color, end_color, *angle);
+            let start_opacity = if start_color.is_nontransparent() {
+                String::new()
+            } else {
+                format!(" stop-opacity=\"{:.2}\"", start_color.opacity())
+            };
+            let end_opacity = if end_color.is_nontransparent() {
+                String::new()
+            } else {
+                format!(" stop-opacity=\"{:.2}\"", end_color.opacity())
+            };
+            format!(
+                "<defs><linearGradient id=\"{id}\" x1=\"{x1:.2}\" y1=\"{y1:.2}\" x2=\"{x2:.2}\" y2=\"{y2:.2}\" gradientUnits=\"objectBoundingBox\"><stop offset=\"0%\" stop-color=\"{}\"{start_opacity}/><stop offset=\"100%\" stop-color=\"{}\"{end_opacity}/></linearGradient></defs>",
+                start_color.hex(),
+                end_color.hex(),
+            )
+        }
+    }
+}
+
+fn fill_svg_attr(fill: &Fill) -> String {
+    match fill {
+        Fill::Solid(c) => {
+            if c.is_transparent() {
+                "none".to_string()
+            } else {
+                c.hex()
+            }
+        }
+        Fill::LinearGradient {
+            start_color,
+            end_color,
+            angle,
+        } => {
+            format!("url(#{})", fill_grad_id(start_color, end_color, *angle))
+        }
+    }
+}
+
+fn fill_svg_opacity(fill: &Fill) -> String {
+    match fill {
+        Fill::Solid(c) => convert_opacity(c),
+        Fill::LinearGradient { .. } => String::new(),
+    }
+}
+
 fn format_option_float(value: Option<f32>) -> String {
     if let Some(f) = value {
         format_float(f)
@@ -235,7 +309,7 @@ impl Line {
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct Rect {
     pub color: Option<Color>,
-    pub fill: Option<Color>,
+    pub fill: Option<Fill>,
     pub left: f32,
     pub top: f32,
     pub width: f32,
@@ -260,14 +334,18 @@ impl Rect {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
-        if let Some(color) = self.fill {
-            if color.is_transparent() {
+        let defs = if let Some(fill) = &self.fill {
+            let fill_attr = fill_svg_attr(fill);
+            if fill_attr == "none" {
                 attrs.push((ATTR_FILL, "none".to_string()));
             } else {
-                attrs.push((ATTR_FILL, color.hex()));
-                attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+                attrs.push((ATTR_FILL, fill_attr));
+                attrs.push((ATTR_FILL_OPACITY, fill_svg_opacity(fill)));
             }
-        }
+            fill_svg_defs(fill)
+        } else {
+            String::new()
+        };
         if let Some(ref class) = self.class {
             attrs.push((ATTR_CLASS, class.clone()));
         }
@@ -275,12 +353,17 @@ impl Rect {
             attrs.push((ATTR_STYLE, style.clone()));
         }
 
-        SVGTag {
+        let element = SVGTag {
             tag: TAG_RECT,
             attrs,
             data: None,
         }
-        .to_string()
+        .to_string();
+        if defs.is_empty() {
+            element
+        } else {
+            format!("{defs}{element}")
+        }
     }
 }
 
@@ -596,7 +679,7 @@ fn generate_rect_symbol(
     for p in points.iter() {
         arr.push(
             Rect {
-                fill,
+                fill: fill.map(|c| c.into()),
                 color: stroke,
                 left: p.x - r,
                 top: p.y - r,
@@ -662,7 +745,7 @@ fn generate_diamond_symbol(
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Pie {
-    pub fill: Color,
+    pub fill: Fill,
     pub stroke_color: Option<Color>,
     pub cx: f32,
     pub cy: f32,
@@ -676,7 +759,7 @@ pub struct Pie {
 impl Default for Pie {
     fn default() -> Self {
         Pie {
-            fill: (0, 0, 0).into(),
+            fill: Fill::Solid((0, 0, 0).into()),
             stroke_color: None,
             cx: 0.0,
             cy: 0.0,
@@ -816,21 +899,27 @@ impl Pie {
 
         path_list.push("Z".to_string());
 
+        let defs = fill_svg_defs(&self.fill);
         let mut attrs = vec![
             (ATTR_D, path_list.join(" ")),
-            (ATTR_FILL, self.fill.hex()),
-            (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
+            (ATTR_FILL, fill_svg_attr(&self.fill)),
+            (ATTR_FILL_OPACITY, fill_svg_opacity(&self.fill)),
         ];
         if let Some(color) = self.stroke_color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
-        SVGTag {
+        let element = SVGTag {
             tag: TAG_PATH,
             attrs,
             ..Default::default()
         }
-        .to_string()
+        .to_string();
+        if defs.is_empty() {
+            element
+        } else {
+            format!("{defs}{element}")
+        }
     }
 }
 
@@ -993,7 +1082,7 @@ impl SmoothLine {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SmoothLineFill {
-    pub fill: Color,
+    pub fill: Fill,
     pub points: Vec<Point>,
     pub bottom: f32,
 }
@@ -1001,7 +1090,7 @@ pub struct SmoothLineFill {
 impl Default for SmoothLineFill {
     fn default() -> Self {
         SmoothLineFill {
-            fill: (255, 255, 255, 255).into(),
+            fill: Fill::Solid((255, 255, 255, 255).into()),
             points: vec![],
             bottom: 0.0,
         }
@@ -1030,18 +1119,24 @@ impl SmoothLineFill {
         .join(" ");
         path.push_str(&fill_path);
 
+        let defs = fill_svg_defs(&self.fill);
         let attrs = vec![
             (ATTR_D, path),
-            (ATTR_FILL, self.fill.hex()),
-            (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
+            (ATTR_FILL, fill_svg_attr(&self.fill)),
+            (ATTR_FILL_OPACITY, fill_svg_opacity(&self.fill)),
         ];
 
-        SVGTag {
+        let element = SVGTag {
             tag: TAG_PATH,
             attrs,
             data: None,
         }
-        .to_string()
+        .to_string();
+        if defs.is_empty() {
+            element
+        } else {
+            format!("{defs}{element}")
+        }
     }
 }
 
@@ -1094,7 +1189,7 @@ impl StraightLine {
 
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct StraightLineFill {
-    pub fill: Color,
+    pub fill: Fill,
     pub points: Vec<Point>,
     pub bottom: f32,
     pub close: bool,
@@ -1128,18 +1223,24 @@ impl StraightLineFill {
         if self.close {
             arr.push('Z'.to_string());
         }
+        let defs = fill_svg_defs(&self.fill);
         let attrs = vec![
             (ATTR_D, arr.join(" ")),
-            (ATTR_FILL, self.fill.hex()),
-            (ATTR_FILL_OPACITY, convert_opacity(&self.fill)),
+            (ATTR_FILL, fill_svg_attr(&self.fill)),
+            (ATTR_FILL_OPACITY, fill_svg_opacity(&self.fill)),
         ];
 
-        SVGTag {
+        let element = SVGTag {
             tag: TAG_PATH,
             attrs,
             data: None,
         }
-        .to_string()
+        .to_string();
+        if defs.is_empty() {
+            element
+        } else {
+            format!("{defs}{element}")
+        }
     }
 }
 
@@ -1593,7 +1694,7 @@ impl Legend {
                 data.push(
                     Rect {
                         color: self.stroke_color,
-                        fill: self.stroke_color,
+                        fill: self.stroke_color.map(|c| c.into()),
                         left: self.left,
                         top: self.top + (LEGEND_HEIGHT - height) / 2.0,
                         width: LEGEND_WIDTH,
@@ -1608,7 +1709,7 @@ impl Legend {
                 data.push(
                     Rect {
                         color: self.stroke_color,
-                        fill: self.stroke_color,
+                        fill: self.stroke_color.map(|c| c.into()),
                         left: self.left,
                         top: self.top + (LEGEND_HEIGHT - height) / 2.0,
                         width: LEGEND_WIDTH,
@@ -1684,10 +1785,11 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        wrap_legends_to_rows, Arrow, Axis, Bubble, Circle, Grid, Legend, LegendCategory, Line, Pie,
-        Polygon, Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+        wrap_legends_to_rows, Arrow, Axis, Bubble, Circle, Fill, Grid, Legend, LegendCategory,
+        Line, Pie, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine,
+        StraightLineFill, Text,
     };
-    use crate::{Align, Position, Symbol, DEFAULT_FONT_FAMILY};
+    use crate::{Align, Color, Position, Symbol, DEFAULT_FONT_FAMILY};
     use pretty_assertions::assert_eq;
     #[test]
     fn test_line() {
@@ -1758,7 +1860,7 @@ mod tests {
             r###"<rect x="0" y="0" width="50" height="20" rx="3" ry="4" stroke="#000000" fill="#FFFFFF"/>"###,
             Rect {
                 color: Some((0, 0, 0).into()),
-                fill: Some((255, 255, 255).into()),
+                fill: Some(Fill::Solid((255, 255, 255).into())),
                 left: 0.0,
                 top: 0.0,
                 width: 50.0,
@@ -1774,7 +1876,7 @@ mod tests {
             r###"<rect x="0" y="0" width="50" height="20" rx="3" ry="4" stroke="#000000" stroke-opacity="0.5" fill="#FFFFFF" fill-opacity="0.2"/>"###,
             Rect {
                 color: Some((0, 0, 0, 128).into()),
-                fill: Some((255, 255, 255, 50).into()),
+                fill: Some(Fill::Solid((255, 255, 255, 50).into())),
                 left: 0.0,
                 top: 0.0,
                 width: 50.0,
@@ -1793,6 +1895,24 @@ mod tests {
                 top: 0.0,
                 width: 50.0,
                 height: 20.0,
+                ..Default::default()
+            }
+            .svg()
+        );
+
+        // Linear gradient fill
+        assert_eq!(
+            r###"<defs><linearGradient id="grad_FF0000FF_0000FFFF_90" x1="0.00" y1="0.50" x2="1.00" y2="0.50" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#FF0000"/><stop offset="100%" stop-color="#0000FF"/></linearGradient></defs><rect x="0" y="0" width="100" height="50" fill="url(#grad_FF0000FF_0000FFFF_90)"/>"###,
+            Rect {
+                fill: Some(Fill::LinearGradient {
+                    start_color: (255, 0, 0).into(),
+                    end_color: (0, 0, 255).into(),
+                    angle: 90.0,
+                }),
+                left: 0.0,
+                top: 0.0,
+                width: 100.0,
+                height: 50.0,
                 ..Default::default()
             }
             .svg()
@@ -2011,7 +2131,7 @@ Hello World!
     #[test]
     fn test_pie() {
         let p = Pie {
-            fill: (0, 0, 0, 128).into(),
+            fill: Fill::Solid((0, 0, 0, 128).into()),
             stroke_color: Some((0, 0, 0).into()),
             cx: 250.0,
             cy: 250.0,
@@ -2027,7 +2147,7 @@ Hello World!
         );
 
         let p = Pie {
-            fill: (0, 0, 0, 128).into(),
+            fill: Fill::Solid((0, 0, 0, 128).into()),
             stroke_color: Some((0, 0, 0).into()),
             cx: 250.0,
             cy: 250.0,
@@ -2043,7 +2163,7 @@ Hello World!
         );
 
         let p = Pie {
-            fill: (0, 0, 0, 128).into(),
+            fill: Fill::Solid((0, 0, 0, 128).into()),
             stroke_color: Some((0, 0, 0).into()),
             cx: 250.0,
             cy: 250.0,
@@ -2059,7 +2179,7 @@ Hello World!
         );
 
         let p = Pie {
-            fill: (0, 0, 0, 128).into(),
+            fill: Fill::Solid((0, 0, 0, 128).into()),
             stroke_color: Some((0, 0, 0).into()),
             cx: 150.0,
             cy: 150.0,
@@ -2181,12 +2301,12 @@ Hello World!
     fn test_smooth_line_fill() {
         let fill = SmoothLineFill::default();
         assert_eq!(0.0, fill.bottom);
-        assert_eq!("rgba(255,255,255,1.0)", fill.fill.rgba());
+        assert_eq!(Fill::Solid((255, 255, 255, 255).into()), fill.fill);
 
         assert_eq!(
             r###"<path d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50M 40 50 L 40 100 L 0 100 L 0 0" fill="#000000" fill-opacity="0.5"/>"###,
             SmoothLineFill {
-                fill: (0, 0, 0, 128).into(),
+                fill: Fill::Solid((0, 0, 0, 128).into()),
                 points: vec![
                     (0.0, 0.0).into(),
                     (10.0, 30.0).into(),
@@ -2202,13 +2322,13 @@ Hello World!
     #[test]
     fn test_straight_line_fill() {
         let fill = StraightLineFill::default();
-        assert_eq!("rgba(0,0,0,0.0)", fill.fill.rgba());
+        assert_eq!(Fill::Solid(Color::default()), fill.fill);
         assert_eq!(0.0, fill.bottom);
 
         assert_eq!(
             r###"<path d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50 L 40 100 L 0 100 L 0 0" fill="#000000" fill-opacity="0.5"/>"###,
             StraightLineFill {
-                fill: (0, 0, 0, 128).into(),
+                fill: Fill::Solid((0, 0, 0, 128).into()),
                 points: vec![
                     (0.0, 0.0).into(),
                     (10.0, 30.0).into(),

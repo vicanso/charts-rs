@@ -395,7 +395,7 @@ impl HeatmapChart {
                 };
                 c1.rect(Rect {
                     color: Some(color),
-                    fill: Some(color),
+                    fill: Some(color.into()),
                     left: x,
                     top: y,
                     width: x_unit,
