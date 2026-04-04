@@ -22,6 +22,7 @@ mod encoder;
 mod font;
 mod funnel_chart;
 mod heatmap_chart;
+mod waterfall_chart;
 mod horizontal_bar_chart;
 mod line_chart;
 mod multi_chart;
@@ -59,6 +60,7 @@ pub use font::{
     DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY,
 };
 pub use funnel_chart::FunnelChart;
+pub use waterfall_chart::{WaterfallChart, WaterfallData};
 pub use heatmap_chart::{HeatmapChart, HeatmapData, HeatmapSeries};
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;

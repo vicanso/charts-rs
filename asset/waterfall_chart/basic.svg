@@ -1,0 +1,93 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="38" y1="5" x2="595" y2="5"/><line stroke-width="1" x1="38" y1="65" x2="595" y2="65"/><line stroke-width="1" x1="38" y1="125" x2="595" y2="125"/><line stroke-width="1" x1="38" y1="185" x2="595" y2="185"/><line stroke-width="1" x1="38" y1="245" x2="595" y2="245"/><line stroke-width="1" x1="38" y1="305" x2="595" y2="305"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="10" font-family="Roboto" fill="#6E7079">
+1.7k
+</text>
+<text font-size="14" x="2" y="70" font-family="Roboto" fill="#6E7079">
+1.5k
+</text>
+<text font-size="14" x="2" y="130" font-family="Roboto" fill="#6E7079">
+1.2k
+</text>
+<text font-size="14" x="6" y="190" font-family="Roboto" fill="#6E7079">
+870
+</text>
+<text font-size="14" x="6" y="250" font-family="Roboto" fill="#6E7079">
+580
+</text>
+<text font-size="14" x="6" y="310" font-family="Roboto" fill="#6E7079">
+290
+</text>
+<text font-size="14" x="22" y="370" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
+<line stroke-width="1" x1="223.7" y1="365" x2="223.7" y2="370"/>
+<line stroke-width="1" x1="409.3" y1="365" x2="409.3" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="50.9" y="384" font-family="Roboto" fill="#6E7079">
+Initial
+</text>
+<text font-size="14" x="220.1" y="384" font-family="Roboto" fill="#6E7079">
+Purchases
+</text>
+<text font-size="14" x="418.3" y="384" font-family="Roboto" fill="#6E7079">
+Payroll
+</text>
+</g>
+<rect x="50.4" y="178.8" width="37.1" height="186.2" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="56.9" y="174.8" font-family="Roboto" fill="#464646">
+900
+</text>
+<line stroke-width="1" x1="87.5" y1="178.8" x2="112.3" y2="178.8" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="112.3" y="107.4" width="37.1" height="71.4" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="118.8" y="103.4" font-family="Roboto" fill="#464646">
+345
+</text>
+<line stroke-width="1" x1="149.4" y1="107.4" x2="174.2" y2="107.4" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="174.2" y="26.1" width="37.1" height="81.3" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="181.2" y="22.1" font-family="Roboto" fill="#464646">
+393
+</text>
+<line stroke-width="1" x1="211.3" y1="26.1" x2="236" y2="26.1" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="236" y="26.1" width="37.1" height="22.3" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<text font-size="14" x="242.6" y="64.4" font-family="Roboto" fill="#464646">
+108
+</text>
+<line stroke-width="1" x1="273.2" y1="48.4" x2="297.9" y2="48.4" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="297.9" y="48.4" width="37.1" height="31.9" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<text font-size="14" x="304.5" y="96.3" font-family="Roboto" fill="#464646">
+154
+</text>
+<line stroke-width="1" x1="335.1" y1="80.3" x2="359.8" y2="80.3" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="359.8" y="52.4" width="37.1" height="27.9" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="366.4" y="48.4" font-family="Roboto" fill="#464646">
+135
+</text>
+<line stroke-width="1" x1="397" y1="52.4" x2="421.7" y2="52.4" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="421.7" y="52.4" width="37.1" height="68.9" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<text font-size="14" x="428.8" y="137.3" font-family="Roboto" fill="#464646">
+333
+</text>
+<line stroke-width="1" x1="458.8" y1="121.3" x2="483.6" y2="121.3" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="483.6" y="7.9" width="37.1" height="113.4" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="490.2" y="3.9" font-family="Roboto" fill="#464646">
+548
+</text>
+<line stroke-width="1" x1="520.7" y1="7.9" x2="545.5" y2="7.9" stroke="#E0E6F2" stroke-dasharray="4,4"/>
+<rect x="545.5" y="7.9" width="37.1" height="357.1" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="560.1" y="3.9" font-family="Roboto" fill="#464646">
+0
+</text>
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365" stroke="#6E7079"/>
+</svg>
