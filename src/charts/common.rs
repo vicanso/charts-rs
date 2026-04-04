@@ -43,7 +43,14 @@ pub enum Align {
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum Symbol {
     None,
+    /// Circle: (radius, optional fill color override)
     Circle(f32, Option<Color>),
+    /// Square: (half-side, optional fill color override)
+    Rect(f32, Option<Color>),
+    /// Equilateral triangle pointing up: (circumradius, optional fill color override)
+    Triangle(f32, Option<Color>),
+    /// Diamond (rotated square): (half-diagonal, optional fill color override)
+    Diamond(f32, Option<Color>),
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]

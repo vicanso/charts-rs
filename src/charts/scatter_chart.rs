@@ -97,6 +97,58 @@ pub struct ScatterChart {
 
     // symbol
     pub series_symbol_sizes: Vec<f32>,
+    /// Per-series symbol shapes. When empty the chart cycles through
+    /// Circle → Triangle → Rect → Diamond by series index.
+    /// `series_symbol` (if Some) overrides all per-series symbols.
+    pub series_symbols: Vec<Symbol>,
+}
+
+fn render_scatter_symbol(canvas: &mut Canvas, symbol: &Symbol, cx: f32, cy: f32, r: f32, color: Color) {
+    match symbol {
+        Symbol::Circle(_, fill_override) => {
+            canvas.circle(Circle {
+                fill: Some(fill_override.unwrap_or(color)),
+                cx,
+                cy,
+                r,
+                ..Default::default()
+            });
+        }
+        Symbol::Rect(_, fill_override) => {
+            canvas.rect(Rect {
+                fill: Some(fill_override.unwrap_or(color)),
+                left: cx - r,
+                top: cy - r,
+                width: r * 2.0,
+                height: r * 2.0,
+                ..Default::default()
+            });
+        }
+        Symbol::Triangle(_, fill_override) => {
+            canvas.polygon(Polygon {
+                fill: Some(fill_override.unwrap_or(color)),
+                points: vec![
+                    (cx, cy - r).into(),
+                    (cx + r * 0.866, cy + r * 0.5).into(),
+                    (cx - r * 0.866, cy + r * 0.5).into(),
+                ],
+                ..Default::default()
+            });
+        }
+        Symbol::Diamond(_, fill_override) => {
+            canvas.polygon(Polygon {
+                fill: Some(fill_override.unwrap_or(color)),
+                points: vec![
+                    (cx, cy - r).into(),
+                    (cx + r, cy).into(),
+                    (cx, cy + r).into(),
+                    (cx - r, cy).into(),
+                ],
+                ..Default::default()
+            });
+        }
+        Symbol::None => {}
+    }
 }
 
 impl ScatterChart {
@@ -110,6 +162,20 @@ impl ScatterChart {
 
         if let Some(series_symbol_sizes) = get_f32_slice_from_value(&value, "series_symbol_sizes") {
             s.series_symbol_sizes = series_symbol_sizes;
+        }
+        if let Some(arr) = value.get("series_symbols").and_then(|v| v.as_array()) {
+            s.series_symbols = arr
+                .iter()
+                .filter_map(|item| get_series_symbol_from_value(item, "type").or_else(|| {
+                    // also allow bare string: "circle", "triangle", etc.
+                    item.as_str().map(|t| match t {
+                        "rect" | "square" => Symbol::Rect(3.0, None),
+                        "triangle" => Symbol::Triangle(3.0, None),
+                        "diamond" => Symbol::Diamond(3.0, None),
+                        _ => Symbol::Circle(3.0, None),
+                    })
+                }))
+                .collect();
         }
         if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
             s.x_axis_hidden = x_axis_hidden;
@@ -283,6 +349,14 @@ impl ScatterChart {
             );
         }
 
+        // Default cycling order when no per-series symbol is configured.
+        const DEFAULT_SYMBOLS: [Symbol; 4] = [
+            Symbol::Circle(0.0, None),
+            Symbol::Triangle(0.0, None),
+            Symbol::Rect(0.0, None),
+            Symbol::Diamond(0.0, None),
+        ];
+
         // render dot
         let mut content_canvas = c.child(Box {
             left: y_axis_width,
@@ -290,25 +364,31 @@ impl ScatterChart {
         });
         let default_symbol_size = 10.0_f32;
         for (index, series) in self.series_list.iter().enumerate() {
-            let mut color = get_color(&self.series_colors, series.index.unwrap_or(index));
-            let symbol_size = self
+            let series_idx = series.index.unwrap_or(index);
+            let mut color = get_color(&self.series_colors, series_idx);
+            let size = *self
                 .series_symbol_sizes
-                .get(series.index.unwrap_or(index))
+                .get(series_idx)
                 .unwrap_or(&default_symbol_size);
             color = color.with_alpha(210);
+
+            // Resolve which symbol to use for this series.
+            // series_symbols takes precedence; otherwise cycle through defaults.
+            // (series_symbol is intentionally ignored here — it's set by fill_theme
+            //  for line-chart node colors and is not meaningful for scatter dots.)
+            let symbol = if let Some(s) = self.series_symbols.get(series_idx) {
+                s.clone()
+            } else {
+                DEFAULT_SYMBOLS[index % DEFAULT_SYMBOLS.len()].clone()
+            };
+
             for chunk in series.data.chunks(2) {
                 if chunk.len() != 2 {
                     continue;
                 }
-                let x = content_width - x_axis_values.get_offset_height(chunk[0], content_width);
-                let y = y_axis_values.get_offset_height(chunk[1], content_height);
-                content_canvas.circle(Circle {
-                    fill: Some(color),
-                    cx: x,
-                    cy: y,
-                    r: *symbol_size,
-                    ..Default::default()
-                });
+                let cx = content_width - x_axis_values.get_offset_height(chunk[0], content_width);
+                let cy = y_axis_values.get_offset_height(chunk[1], content_height);
+                render_scatter_symbol(&mut content_canvas, &symbol, cx, cy, size, color);
             }
         }
 

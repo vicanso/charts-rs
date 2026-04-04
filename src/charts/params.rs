@@ -391,17 +391,28 @@ fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Optio
 }
 
 /// Gets series symbol value from serde json.
+/// Accepts `null` (→ None marker), or an object with optional fields:
+/// `type` ("circle"|"rect"|"triangle"|"diamond"), `size`/`radius`, `color`.
 pub(crate) fn get_series_symbol_from_value(value: &serde_json::Value, key: &str) -> Option<Symbol> {
-    if let Some(value) = value.get(key) {
-        if value.is_null() {
-            return Some(Symbol::None);
-        }
-        // only supports circle
-        let color = get_color_from_value(value, "color");
-        let radius = get_f32_from_value(value, "radius").unwrap_or(3.0);
-        return Some(Symbol::Circle(radius, color));
+    let v = value.get(key)?;
+    if v.is_null() {
+        return Some(Symbol::None);
     }
-    None
+    let color = get_color_from_value(v, "color");
+    let size = get_f32_from_value(v, "size")
+        .or_else(|| get_f32_from_value(v, "radius"))
+        .unwrap_or(3.0);
+    let symbol_type = v
+        .get("type")
+        .and_then(|t| t.as_str())
+        .unwrap_or("circle")
+        .to_lowercase();
+    Some(match symbol_type.as_str() {
+        "rect" | "square" => Symbol::Rect(size, color),
+        "triangle" => Symbol::Triangle(size, color),
+        "diamond" => Symbol::Diamond(size, color),
+        _ => Symbol::Circle(size, color),
+    })
 }
 
 fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {

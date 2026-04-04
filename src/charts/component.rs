@@ -586,6 +586,80 @@ fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
     arr.join("\n")
 }
 
+fn generate_rect_symbol(
+    points: &[Point],
+    r: f32,
+    fill: Option<Color>,
+    stroke: Option<Color>,
+) -> String {
+    let mut arr = vec![];
+    for p in points.iter() {
+        arr.push(
+            Rect {
+                fill,
+                color: stroke,
+                left: p.x - r,
+                top: p.y - r,
+                width: r * 2.0,
+                height: r * 2.0,
+                ..Default::default()
+            }
+            .svg(),
+        );
+    }
+    arr.join("\n")
+}
+
+fn generate_triangle_symbol(
+    points: &[Point],
+    r: f32,
+    fill: Option<Color>,
+    stroke: Option<Color>,
+) -> String {
+    // Equilateral triangle pointing upward; r = circumradius.
+    let mut arr = vec![];
+    for p in points.iter() {
+        arr.push(
+            Polygon {
+                fill,
+                color: stroke,
+                points: vec![
+                    (p.x, p.y - r).into(),
+                    (p.x + r * 0.866, p.y + r * 0.5).into(),
+                    (p.x - r * 0.866, p.y + r * 0.5).into(),
+                ],
+            }
+            .svg(),
+        );
+    }
+    arr.join("\n")
+}
+
+fn generate_diamond_symbol(
+    points: &[Point],
+    r: f32,
+    fill: Option<Color>,
+    stroke: Option<Color>,
+) -> String {
+    let mut arr = vec![];
+    for p in points.iter() {
+        arr.push(
+            Polygon {
+                fill,
+                color: stroke,
+                points: vec![
+                    (p.x, p.y - r).into(),
+                    (p.x + r, p.y).into(),
+                    (p.x, p.y + r).into(),
+                    (p.x - r, p.y).into(),
+                ],
+            }
+            .svg(),
+        );
+    }
+    arr.join("\n")
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct Pie {
     pub fill: Color,
@@ -846,6 +920,15 @@ impl<'a> BaseLine<'a> {
                         ..Default::default()
                     },
                 ),
+                Symbol::Rect(r, fill) => {
+                    generate_rect_symbol(self.points, *r, fill.to_owned(), self.color)
+                }
+                Symbol::Triangle(r, fill) => {
+                    generate_triangle_symbol(self.points, *r, fill.to_owned(), self.color)
+                }
+                Symbol::Diamond(r, fill) => {
+                    generate_diamond_symbol(self.points, *r, fill.to_owned(), self.color)
+                }
                 Symbol::None => "".to_string(),
             }
         } else {
