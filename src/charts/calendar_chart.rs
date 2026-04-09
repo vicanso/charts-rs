@@ -358,13 +358,10 @@ impl CalendarChart {
             c.data = items;
         }
         c.fill_default();
-        // Auto-size when the user did not explicitly set width/height
-        if c.width <= 0.0 {
-            c.width = c.auto_width();
-        }
-        if c.height <= 0.0 {
-            c.height = c.auto_height();
-        }
+        // CalendarChart always auto-sizes: layout is driven by cell_size/cell_gap,
+        // not by a fixed canvas width. Users control size via those fields instead.
+        c.width = c.auto_width();
+        c.height = c.auto_height();
         Ok(c)
     }
 
