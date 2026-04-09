@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers nine distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, and `shine`, with `light` as the default theme. 
 
-The library supports ten chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, and `MultiChart`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports twelve chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `MultiChart`, `Calendar`, and `Gauge`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -30,8 +30,11 @@ The library supports ten chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Ra
 - Advanced line chart features: smooth curves, area filling, mark points and mark lines
 - Multiple legend styles across all charts: `round rect`, `circle`, and `rect`
 - Dual y-axis support for enhanced data visualization
+- Logarithmic scale support (`"log"`, `"log2"`, or `{"type":"log","base":N}`)
+- Gradient fill support for bars, areas, and pie slices (`LinearGradient`)
 - JSON-based chart configuration for simplified setup
 - Multiple output formats (svg, png, jpeg, webp, avif) for various use cases
+- Scaled image export via `svg_to_png_with_size` and equivalent functions for other formats
 - Web-based JSON editor for interactive chart configuration and testing
 
 ## Demo
@@ -133,7 +136,7 @@ let mut bar_chart = BarChart::new_with_theme(
         "Sat".to_string(),
         "Sun".to_string(),
     ],
-****    THEME_GRAFANA,
+    THEME_GRAFANA,
 );
 bar_chart.title_text = "Mixed Line and Bar".to_string();
 bar_chart.legend_margin = Some(Box {
@@ -197,6 +200,20 @@ let bar_chart = BarChart::from_json(
 ).unwrap();
 println!("{}", bar_chart.svg().unwrap());
 svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+```
+
+### Scaled image export
+
+```rust
+use charts_rs::{BarChart, svg_to_png_with_size};
+let chart = BarChart::from_json(r###"{ ... }"###).unwrap();
+let svg = chart.svg().unwrap();
+
+// Scale to exactly 800×400
+let png = svg_to_png_with_size(&svg, Some(800), Some(400)).unwrap();
+
+// Scale to width 800, preserve aspect ratio
+let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
 ```
 
 ## Load more fonts

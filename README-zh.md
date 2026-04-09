@@ -15,7 +15,7 @@
 
 `charts-rs`提供简洁的图表生成方案，支持`svg`、`png`、`jpeg`、`webp`以及`avif`等多种输出格式。该库提供九种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`以及`shine`，默认主题为`light`。
 
-该库支持十种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`以及`MultiChart`。参考`Apache ECharts`的设计理念，`charts-rs`使开发者能够创建具有相似功能和外观的图表。
+该库支持十二种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`MultiChart`、`Calendar`以及`Gauge`。参考`Apache ECharts`的设计理念，`charts-rs`使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -28,8 +28,11 @@
 - 曲线图高级功能：平滑曲线、区域填充、标记点和标记线
 - 所有图表支持多种图例样式：圆角矩形、圆形以及矩形
 - 双Y轴支持，增强数据可视化效果
+- 对数坐标轴支持（`"log"`、`"log2"` 或 `{"type":"log","base":N}`）
+- 渐变填充支持，可用于柱状图、面积图和饼图（`LinearGradient`）
 - 基于JSON的图表配置，简化设置过程
 - 多种输出格式（svg、png、jpeg、webp、avif）适用于不同应用场景
+- 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
 - 基于Web的JSON编辑器，支持交互式图表配置和测试
 
 ## 示例
@@ -195,6 +198,20 @@ let bar_chart = BarChart::from_json(
 ).unwrap();
 println!("{}", bar_chart.svg().unwrap());
 svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+```
+
+### 指定尺寸的图片导出
+
+```rust
+use charts_rs::{BarChart, svg_to_png_with_size};
+let chart = BarChart::from_json(r###"{ ... }"###).unwrap();
+let svg = chart.svg().unwrap();
+
+// 缩放到指定的 800×400
+let png = svg_to_png_with_size(&svg, Some(800), Some(400)).unwrap();
+
+// 仅指定宽度，高度按比例自动计算
+let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
 ```
 
 ## 加载更多的字体集
