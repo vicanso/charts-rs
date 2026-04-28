@@ -15,9 +15,9 @@
 
 ## Overview
 
-`charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers nine distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, and `shine`, with `light` as the default theme. 
+`charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports twelve chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `MultiChart`, `Calendar`, and `Gauge`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports sixteen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, and `BoxPlot`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -25,16 +25,20 @@ The library supports twelve chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, 
 
 ## Features
 
-- Nine built-in themes available for all chart types
+- Ten built-in themes; custom themes supported via `add_theme()`
 - Custom font loading from ttf or otf files
 - Advanced line chart features: smooth curves, area filling, mark points and mark lines
 - Multiple legend styles across all charts: `round rect`, `circle`, and `rect`
-- Dual y-axis support for enhanced data visualization
+- Dual y-axis support via `y_axis_configs` and `series.y_axis_index`
 - Logarithmic scale support (`"log"`, `"log2"`, or `{"type":"log","base":N}`)
-- Gradient fill support for bars, areas, and pie slices (`LinearGradient`)
-- JSON-based chart configuration for simplified setup
-- Multiple output formats (svg, png, jpeg, webp, avif) for various use cases
-- Scaled image export via `svg_to_png_with_size` and equivalent functions for other formats
+- Gradient fill for bars, areas, and pie slices (`Fill::LinearGradient`)
+- Per-series mixed chart types (bar + line on the same chart)
+- Series stacking, dash patterns, and per-bar custom colors
+- SVG animation support (duration, easing, stagger) for bar and line charts
+- Null / missing data points via `NIL_VALUE` (`null` in JSON)
+- JSON-based chart configuration for all chart types
+- Multiple output formats: svg, png, jpeg, webp, avif
+- Scaled image export via `svg_to_png_with_size` and equivalent functions
 - Web-based JSON editor for interactive chart configuration and testing
 
 ## Demo
@@ -216,11 +220,36 @@ let png = svg_to_png_with_size(&svg, Some(800), Some(400)).unwrap();
 let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
 ```
 
+### Null data points
+
+Use `null` in JSON arrays (or `NIL_VALUE` in Rust) to represent missing data; the chart skips rendering for those positions.
+
+```json
+{
+  "series_list": [{
+    "name": "Sales",
+    "data": [120.0, null, 101.0, null, 90.0]
+  }]
+}
+```
+
+### Label formatters
+
+Formatters are supported in `series_label_formatter`, `axis_formatter`, and `value_formatter` (GaugeChart).
+
+| Placeholder | Meaning |
+|-------------|---------|
+| `{c}` | Data value |
+| `{a}` | Series name |
+| `{b}` | Category (x-axis label) |
+| `{d}` | Percentage (pie / funnel) |
+| `{t}` | Thousands notation (1.2K, 5.6M) |
+
 ## Load more fonts
 
 ```rust
 let buf = fs::read(file).unwrap();
-get_or_try_init_fonts(vec![&buf]));
+get_or_try_init_fonts(vec![&buf]);
 ```
 
 ## License

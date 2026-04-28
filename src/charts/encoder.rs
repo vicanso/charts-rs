@@ -71,24 +71,27 @@ fn render_to_pixmap(
     target_height: Option<u32>,
 ) -> Result<tiny_skia::Pixmap> {
     let svg_size = tree.size().to_int_size();
+    let svg_w = svg_size.width();
+    let svg_h = svg_size.height();
+    if svg_w == 0 || svg_h == 0 {
+        return Err(Error::Size {
+            width: svg_w,
+            height: svg_h,
+        });
+    }
     let (out_w, out_h, sx, sy) = match (target_width, target_height) {
-        (Some(w), Some(h)) => (
-            w,
-            h,
-            w as f32 / svg_size.width() as f32,
-            h as f32 / svg_size.height() as f32,
-        ),
+        (Some(w), Some(h)) => (w, h, w as f32 / svg_w as f32, h as f32 / svg_h as f32),
         (Some(w), None) => {
-            let sx = w as f32 / svg_size.width() as f32;
-            let h = (svg_size.height() as f32 * sx).round() as u32;
+            let sx = w as f32 / svg_w as f32;
+            let h = (svg_h as f32 * sx).round() as u32;
             (w, h, sx, sx)
         }
         (None, Some(h)) => {
-            let sy = h as f32 / svg_size.height() as f32;
-            let w = (svg_size.width() as f32 * sy).round() as u32;
+            let sy = h as f32 / svg_h as f32;
+            let w = (svg_w as f32 * sy).round() as u32;
             (w, h, sy, sy)
         }
-        (None, None) => (svg_size.width(), svg_size.height(), 1.0, 1.0),
+        (None, None) => (svg_w, svg_h, 1.0, 1.0),
     };
     let mut pixmap = tiny_skia::Pixmap::new(out_w, out_h).ok_or(Error::Size {
         width: out_w,
@@ -153,7 +156,11 @@ pub fn svg_to_jpeg(svg: &str) -> Result<Vec<u8>> {
 }
 
 /// Converts svg to jpeg, scaling to the given width and/or height.
-pub fn svg_to_jpeg_with_size(svg: &str, width: Option<u32>, height: Option<u32>) -> Result<Vec<u8>> {
+pub fn svg_to_jpeg_with_size(
+    svg: &str,
+    width: Option<u32>,
+    height: Option<u32>,
+) -> Result<Vec<u8>> {
     save_image_with_size(svg, image::ImageFormat::Jpeg, width, height)
 }
 
@@ -163,7 +170,11 @@ pub fn svg_to_webp(svg: &str) -> Result<Vec<u8>> {
 }
 
 /// Converts svg to webp, scaling to the given width and/or height.
-pub fn svg_to_webp_with_size(svg: &str, width: Option<u32>, height: Option<u32>) -> Result<Vec<u8>> {
+pub fn svg_to_webp_with_size(
+    svg: &str,
+    width: Option<u32>,
+    height: Option<u32>,
+) -> Result<Vec<u8>> {
     save_image_with_size(svg, image::ImageFormat::WebP, width, height)
 }
 
@@ -173,6 +184,10 @@ pub fn svg_to_avif(svg: &str) -> Result<Vec<u8>> {
 }
 
 /// Converts svg to avif, scaling to the given width and/or height.
-pub fn svg_to_avif_with_size(svg: &str, width: Option<u32>, height: Option<u32>) -> Result<Vec<u8>> {
+pub fn svg_to_avif_with_size(
+    svg: &str,
+    width: Option<u32>,
+    height: Option<u32>,
+) -> Result<Vec<u8>> {
     save_image_with_size(svg, image::ImageFormat::Avif, width, height)
 }

@@ -97,6 +97,26 @@ fn add_days(mut year: i32, mut month: u32, mut day: u32, mut n: u32) -> (i32, u3
     (year, month, day)
 }
 
+fn current_year() -> i32 {
+    // std::time gives seconds since Unix epoch; derive the year without external crates.
+    let secs = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    // Rough: 400-year Gregorian cycle = 146_097 days = 12_622_780_800 s
+    let days = (secs / 86_400) as i64;
+    // Shift to 1970-01-01; use the same JDN approach as jdn()
+    let jdn = days + 2_440_588; // JDN of 1970-01-01
+    let a = jdn + 32_044;
+    let b = (4 * a + 3) / 146_097;
+    let c = a - (146_097 * b) / 4;
+    let d = (4 * c + 3) / 1_461;
+    let e = c - (1_461 * d) / 4;
+    let m = (5 * e + 2) / 153;
+    let year = 100 * b + d - 4_800 + m / 10;
+    year as i32
+}
+
 static MONTH_ABBR: [&str; 12] = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
@@ -250,21 +270,28 @@ impl CalendarChart {
             c = c.with_alpha(180);
             self.empty_color = c;
         }
-        // auto min / max
-        if self.max == 0.0 {
+        // auto min / max from data when not explicitly set
+        if self.min == 0.0 && self.max == 0.0 && !self.data.is_empty() {
+            let mut lo = f32::MAX;
+            let mut hi = f32::MIN;
             for (_, v) in &self.data {
-                if *v > self.max {
-                    self.max = *v;
+                if *v < lo {
+                    lo = *v;
+                }
+                if *v > hi {
+                    hi = *v;
                 }
             }
+            self.min = lo.min(0.0);
+            self.max = hi.max(0.0);
         }
-        // default date range: current year (fall back to a hardcoded year if we
-        // cannot determine it – 2024 is a safe arbitrary default)
+        // default date range: current year
+        let current_year = current_year();
         if self.start_date.is_empty() {
-            self.start_date = "2024-01-01".to_string();
+            self.start_date = format!("{current_year}-01-01");
         }
         if self.end_date.is_empty() {
-            self.end_date = "2024-12-31".to_string();
+            self.end_date = format!("{current_year}-12-31");
         }
     }
 
@@ -342,6 +369,18 @@ impl CalendarChart {
         }
         if let Some(v) = get_f32_from_value(&value, "cell_gap") {
             c.cell_gap = v;
+        }
+        if let Some(v) = get_f32_from_value(&value, "month_label_height") {
+            c.month_label_height = v;
+        }
+        if let Some(v) = get_f32_from_value(&value, "week_label_width") {
+            c.week_label_width = v;
+        }
+        if let Some(arr) = value.get("show_dow_labels").and_then(|v| v.as_array()) {
+            c.show_dow_labels = arr
+                .iter()
+                .filter_map(|v| v.as_u64().map(|n| n as usize))
+                .collect();
         }
         // parse data: [[date_str, value], ...]
         if let Some(arr) = value.get("data").and_then(|v| v.as_array()) {

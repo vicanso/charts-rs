@@ -1,6 +1,6 @@
 # charts-rs
 
-`charts-rs` 是纯rust实现的图表库，使用简单而且性能高效，生成svg低于10ms，而png也低于50ms，便于在各种无法直接渲染svg的场景下使用，现已支持更多的图片格式，如：jpeg，webp，以及avif。
+`charts-rs` 是纯 Rust 实现的图表库，使用简单而且性能高效，生成 SVG 低于 10ms，而 PNG 也低于 50ms，便于在各种无法直接渲染 SVG 的场景下使用，现已支持更多的图片格式，如：jpeg、webp 以及 avif。
 
 [![Crates.io][crates-badge]][crates-url]
 [![Apache licensed][apache-badge]][apache-url]
@@ -13,9 +13,9 @@
 
 ## 概要
 
-`charts-rs`提供简洁的图表生成方案，支持`svg`、`png`、`jpeg`、`webp`以及`avif`等多种输出格式。该库提供九种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`以及`shine`，默认主题为`light`。
+`charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持十二种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`MultiChart`、`Calendar`以及`Gauge`。参考`Apache ECharts`的设计理念，`charts-rs`使开发者能够创建具有相似功能和外观的图表。
+该库支持十六种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap` 以及 `BoxPlot`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -23,25 +23,29 @@
 
 ## 特性
 
-- 为所有图表类型提供九种内置主题
-- 支持从ttf或otf文件加载自定义字体
+- 十种内置主题，支持通过 `add_theme()` 添加自定义主题
+- 支持从 ttf 或 otf 文件加载自定义字体
 - 曲线图高级功能：平滑曲线、区域填充、标记点和标记线
 - 所有图表支持多种图例样式：圆角矩形、圆形以及矩形
-- 双Y轴支持，增强数据可视化效果
+- 双 Y 轴支持（`y_axis_configs` + `series.y_axis_index`），增强数据可视化效果
 - 对数坐标轴支持（`"log"`、`"log2"` 或 `{"type":"log","base":N}`）
-- 渐变填充支持，可用于柱状图、面积图和饼图（`LinearGradient`）
-- 基于JSON的图表配置，简化设置过程
-- 多种输出格式（svg、png、jpeg、webp、avif）适用于不同应用场景
+- 渐变填充支持，可用于柱状图、面积图和饼图（`Fill::LinearGradient`）
+- 同一图表中混合多种系列类型（柱状 + 折线）
+- 系列堆叠、自定义虚线样式、按柱自定义颜色
+- 柱状图与折线图的 SVG 动画支持（时长、缓动函数、错开延迟）
+- 通过 `NIL_VALUE` 支持空值 / 缺失数据点（JSON 中使用 `null`）
+- 所有图表类型均支持基于 JSON 的配置方式
+- 多种输出格式：svg、png、jpeg、webp、avif
 - 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
-- 基于Web的JSON编辑器，支持交互式图表配置和测试
+- 基于 Web 的 JSON 编辑器，支持交互式图表配置和测试
 
 ## 示例
 
-可以使用网页版尝试使用`charts-rs`的相关图表示例，可以直接改动配置后，重新生成效果图，非常简单而有用。
+可以使用网页版尝试使用 `charts-rs` 的相关图表示例，可以直接改动配置后，重新生成效果图，非常简单而有用。
 
-示例地址: [https://charts.npmtrend.com/](https://charts.npmtrend.com/)
+示例地址：[https://charts.npmtrend.com/](https://charts.npmtrend.com/)
 
-示例项目代码: [https://github.com/vicanso/charts-rs-web](https://github.com/vicanso/charts-rs-web)
+示例项目代码：[https://github.com/vicanso/charts-rs-web](https://github.com/vicanso/charts-rs-web)
 
 <p align="center">
     <img src="./asset/image/charts-demo.png" alt="charts-rs">
@@ -107,9 +111,9 @@
     <img src="./asset/image/multi-chart.webp" alt="charts-rs">
 </p>
 
-## Rust示例
+## Rust 示例
 
-### 使用Option的形式创建图表
+### 使用 Builder API 创建图表
 
 ```rust
 use charts_rs::{
@@ -156,7 +160,7 @@ println!("{}", &bar_chart.svg().unwrap());
 svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 ```
 
-### 通过JSON字符串配置的形式创建图表
+### 通过 JSON 字符串配置创建图表
 
 ```rust,no_run
 use charts_rs::{BarChart, svg_to_png};
@@ -214,11 +218,36 @@ let png = svg_to_png_with_size(&svg, Some(800), Some(400)).unwrap();
 let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
 ```
 
-## 加载更多的字体集
+### 空值数据点
+
+在 JSON 数组中使用 `null`（或在 Rust 中使用 `NIL_VALUE`）表示缺失数据，图表会跳过该位置的渲染。
+
+```json
+{
+  "series_list": [{
+    "name": "销售额",
+    "data": [120.0, null, 101.0, null, 90.0]
+  }]
+}
+```
+
+### 标签格式化占位符
+
+`series_label_formatter`、`axis_formatter`、`value_formatter`（仪表盘）等字段均支持以下占位符：
+
+| 占位符 | 含义 |
+|--------|------|
+| `{c}` | 数据值 |
+| `{a}` | 系列名称 |
+| `{b}` | 分类名（X 轴标签） |
+| `{d}` | 百分比（饼图 / 漏斗图） |
+| `{t}` | 千位格式（1.2K、5.6M） |
+
+## 加载更多字体
 
 ```rust
 let buf = fs::read(file).unwrap();
-get_or_try_init_fonts(vec![&buf]));
+get_or_try_init_fonts(vec![&buf]);
 ```
 
 ## 开源协议声明

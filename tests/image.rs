@@ -2,9 +2,10 @@
 #[cfg(feature = "image-encoder")]
 fn generate_image() {
     use charts_rs::{
-        svg_to_avif, svg_to_png, svg_to_webp, Align, BarChart, Box, CandlestickChart, HeatmapChart,
-        HorizontalBarChart, LineChart, MarkLine, MarkLineCategory, MultiChart, PieChart,
-        RadarChart, ScatterChart, SeriesCategory, TableCellStyle, TableChart, THEME_GRAFANA,
+        svg_to_avif, svg_to_png, svg_to_webp, Align, BarChart, BoxPlotChart, BoxPlotSeries, Box,
+        CandlestickChart, HeatmapChart, HorizontalBarChart, LineChart, MarkLine, MarkLineCategory,
+        MultiChart, PieChart, RadarChart, ScatterChart, SeriesCategory, TableCellStyle, TableChart,
+        TreemapChart, THEME_GRAFANA,
     };
     // bar chart
     let mut bar_chart = BarChart::new_with_theme(
@@ -928,4 +929,54 @@ fn generate_image() {
   .unwrap();
     let buf = svg_to_png(&heatmap_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/heatmap.png", buf).unwrap();
+
+    // treemap chart
+    let treemap_chart = TreemapChart::new_with_theme(
+        vec![
+            ("nodeExcel", vec![600.0]).into(),
+            ("nodePPT", vec![500.0]).into(),
+            ("nodeDoc", vec![400.0]).into(),
+            ("nodeWeb", vec![300.0]).into(),
+            ("nodeWord", vec![200.0]).into(),
+            ("nodeOther", vec![100.0]).into(),
+        ],
+        THEME_GRAFANA,
+    );
+    let buf = svg_to_png(&treemap_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/treemap.png", buf).unwrap();
+
+    // box plot chart
+    let box_plot_chart = BoxPlotChart::new_with_theme(
+        vec![
+            BoxPlotSeries {
+                name: "Series A".to_string(),
+                data: vec![
+                    [3.0, 10.0, 18.0, 28.0, 40.0],
+                    [5.0, 14.0, 22.0, 32.0, 45.0],
+                    [1.0, 8.0, 15.0, 24.0, 35.0],
+                    [6.0, 12.0, 20.0, 30.0, 42.0],
+                ],
+                index: None,
+            },
+            BoxPlotSeries {
+                name: "Series B".to_string(),
+                data: vec![
+                    [5.0, 13.0, 21.0, 31.0, 43.0],
+                    [2.0, 9.0, 17.0, 26.0, 38.0],
+                    [4.0, 11.0, 19.0, 29.0, 41.0],
+                    [7.0, 15.0, 23.0, 33.0, 46.0],
+                ],
+                index: None,
+            },
+        ],
+        vec![
+            "Category A".to_string(),
+            "Category B".to_string(),
+            "Category C".to_string(),
+            "Category D".to_string(),
+        ],
+        THEME_GRAFANA,
+    );
+    let buf = svg_to_png(&box_plot_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/box-plot.png", buf).unwrap();
 }

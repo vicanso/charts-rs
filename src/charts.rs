@@ -11,6 +11,7 @@
 // limitations under the License.
 
 mod bar_chart;
+mod box_plot_chart;
 mod calendar_chart;
 mod candlestick_chart;
 mod canvas;
@@ -33,10 +34,12 @@ mod radar_chart;
 mod scatter_chart;
 mod table_chart;
 mod theme;
+mod treemap_chart;
 mod util;
 mod waterfall_chart;
 
 pub use bar_chart::BarChart;
+pub use box_plot_chart::{BoxPlotChart, BoxPlotSeries};
 pub use canvas::Canvas;
 pub use canvas::Error as CanvasError;
 pub use canvas::Result as CanvasResult;
@@ -74,4 +77,5 @@ pub use table_chart::{TableCellStyle, TableChart};
 pub use theme::Theme;
 pub use theme::{add_theme, get_theme, list_theme_name, THEME_ANT, THEME_DARK, THEME_GRAFANA};
 pub use util::*;
+pub use treemap_chart::TreemapChart;
 pub use waterfall_chart::{WaterfallChart, WaterfallData};
