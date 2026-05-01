@@ -143,7 +143,9 @@ impl BoxPlotChart {
     }
 
     pub fn from_json(json: &str) -> canvas::Result<BoxPlotChart> {
-        let mut c = BoxPlotChart { ..Default::default() };
+        let mut c = BoxPlotChart {
+            ..Default::default()
+        };
         let value = c.fill_option(json)?;
         // Parse box_series array
         if let Some(arr) = value.get("box_series").and_then(|v| v.as_array()) {
@@ -278,7 +280,11 @@ impl BoxPlotChart {
         let col_w = axis_width / num_cats as f32;
         // step = spacing between adjacent box centres; box_w = rendered width (80% of step)
         let total_boxes_w = col_w * 0.6_f32;
-        let box_step = if num_series > 0 { total_boxes_w / num_series as f32 } else { total_boxes_w };
+        let box_step = if num_series > 0 {
+            total_boxes_w / num_series as f32
+        } else {
+            total_boxes_w
+        };
         let box_w = box_step * 0.8;
         // Cap width for whisker line
         let cap_half = box_w * 0.3;
@@ -301,8 +307,7 @@ impl BoxPlotChart {
 
                 // Centre x of this box
                 let cat_cx = col_w * (ci as f32 + 0.5);
-                let series_offset =
-                    (si as f32 - (num_series as f32 - 1.0) / 2.0) * box_step;
+                let series_offset = (si as f32 - (num_series as f32 - 1.0) / 2.0) * box_step;
                 let cx = cat_cx + series_offset;
 
                 let y_min = y_axis_values.get_offset_height(v_min, axis_height);

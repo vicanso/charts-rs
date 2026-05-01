@@ -229,7 +229,9 @@ impl TreemapChart {
     }
 
     pub fn from_json(json: &str) -> canvas::Result<TreemapChart> {
-        let mut c = TreemapChart { ..Default::default() };
+        let mut c = TreemapChart {
+            ..Default::default()
+        };
         let value = c.fill_option(json)?;
         if let Some(v) = get_f32_from_value(&value, "item_gap") {
             c.item_gap = v;
@@ -283,7 +285,11 @@ impl TreemapChart {
             return c.svg();
         }
 
-        items.sort_by(|a, b| b.area.partial_cmp(&a.area).unwrap_or(std::cmp::Ordering::Equal));
+        items.sort_by(|a, b| {
+            b.area
+                .partial_cmp(&a.area)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
 
         // Normalise to canvas area
         let total: f32 = items.iter().map(|it| it.area).sum();
@@ -337,9 +343,19 @@ impl TreemapChart {
 
             // Lighten text colour against dark background for readability
             let text_color = if r.color.is_light() {
-                Color { r: 30, g: 30, b: 30, a: 255 }
+                Color {
+                    r: 30,
+                    g: 30,
+                    b: 30,
+                    a: 255,
+                }
             } else {
-                Color { r: 255, g: 255, b: 255, a: 230 }
+                Color {
+                    r: 255,
+                    g: 255,
+                    b: 255,
+                    a: 230,
+                }
             };
             let _ = font_color; // use auto-contrast instead
 

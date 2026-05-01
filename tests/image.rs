@@ -2,7 +2,7 @@
 #[cfg(feature = "image-encoder")]
 fn generate_image() {
     use charts_rs::{
-        svg_to_avif, svg_to_png, svg_to_webp, Align, BarChart, BoxPlotChart, BoxPlotSeries, Box,
+        svg_to_avif, svg_to_png, svg_to_webp, Align, BarChart, Box, BoxPlotChart, BoxPlotSeries,
         CandlestickChart, HeatmapChart, HorizontalBarChart, LineChart, MarkLine, MarkLineCategory,
         MultiChart, PieChart, RadarChart, ScatterChart, SeriesCategory, TableCellStyle, TableChart,
         TreemapChart, THEME_GRAFANA,

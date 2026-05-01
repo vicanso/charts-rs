@@ -76,6 +76,6 @@ pub use scatter_chart::ScatterChart;
 pub use table_chart::{TableCellStyle, TableChart};
 pub use theme::Theme;
 pub use theme::{add_theme, get_theme, list_theme_name, THEME_ANT, THEME_DARK, THEME_GRAFANA};
-pub use util::*;
 pub use treemap_chart::TreemapChart;
+pub use util::*;
 pub use waterfall_chart::{WaterfallChart, WaterfallData};
