@@ -10,14 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
@@ -174,22 +174,11 @@ impl CandlestickChart {
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
-        self.render_background(c.child(Box::default()));
         let mut x_axis_height = self.x_axis_height;
         if self.x_axis_hidden {
             x_axis_height = 0.0;
         }
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-
-        let legend_height = self.render_legend(c.child(Box::default()));
-        // get the max height of title and legend
-        let axis_top = if legend_height > title_height {
-            legend_height
-        } else {
-            title_height
-        };
+        let axis_top = self.render_header(&mut c);
 
         let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
         if self.y_axis_hidden {
@@ -299,10 +288,10 @@ impl CandlestickChart {
         }
         let mut line_series_list = vec![];
         self.series_list.iter().for_each(|item| {
-            if let Some(ref cat) = item.category {
-                if *cat == SeriesCategory::Line {
-                    line_series_list.push(item);
-                }
+            if let Some(ref cat) = item.category
+                && *cat == SeriesCategory::Line
+            {
+                line_series_list.push(item);
             }
         });
 
@@ -341,14 +330,16 @@ mod tests {
     #[test]
     fn candlestick_chart_basic() {
         let candlestick_chart = CandlestickChart::new(
-            vec![(
-                "",
-                vec![
-                    20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0, 38.0,
-                    15.0, 5.0, 42.0,
-                ],
-            )
-                .into()],
+            vec![
+                (
+                    "",
+                    vec![
+                        20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0,
+                        38.0, 15.0, 5.0, 42.0,
+                    ],
+                )
+                    .into(),
+            ],
             vec![
                 "2017-10-24".to_string(),
                 "2017-10-25".to_string(),
@@ -365,14 +356,16 @@ mod tests {
     #[test]
     fn candlestick_chart_no_axis() {
         let mut candlestick_chart = CandlestickChart::new(
-            vec![(
-                "",
-                vec![
-                    20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0, 38.0,
-                    15.0, 5.0, 42.0,
-                ],
-            )
-                .into()],
+            vec![
+                (
+                    "",
+                    vec![
+                        20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0,
+                        38.0, 15.0, 5.0, 42.0,
+                    ],
+                )
+                    .into(),
+            ],
             vec![
                 "2017-10-24".to_string(),
                 "2017-10-25".to_string(),

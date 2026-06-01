@@ -32,6 +32,7 @@ mod path;
 mod pie_chart;
 mod radar_chart;
 mod scatter_chart;
+mod sunburst_chart;
 mod table_chart;
 mod theme;
 mod treemap_chart;
@@ -50,9 +51,9 @@ pub use component::{
     SmoothLineFill, StraightLine, StraightLineFill, Text,
 };
 #[cfg(feature = "image-encoder")]
-pub(crate) use encoder::get_or_init_fontdb;
-#[cfg(feature = "image-encoder")]
 pub use encoder::Error as EncoderError;
+#[cfg(feature = "image-encoder")]
+pub(crate) use encoder::get_or_init_fontdb;
 #[cfg(feature = "image-encoder")]
 pub use encoder::*;
 
@@ -60,8 +61,8 @@ pub use calendar_chart::CalendarChart;
 pub use candlestick_chart::CandlestickChart;
 pub use font::Error as FontError;
 pub use font::{
-    get_font, get_font_families, get_or_try_init_fonts, measure_text_width_family,
-    DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY,
+    DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, get_font, get_font_families, get_or_try_init_fonts,
+    measure_text_width_family,
 };
 pub use funnel_chart::FunnelChart;
 pub use gauge_chart::GaugeChart;
@@ -73,9 +74,10 @@ pub use path::*;
 pub use pie_chart::PieChart;
 pub use radar_chart::{RadarChart, RadarIndicator};
 pub use scatter_chart::ScatterChart;
+pub use sunburst_chart::{SunburstChart, SunburstData};
 pub use table_chart::{TableCellStyle, TableChart};
 pub use theme::Theme;
-pub use theme::{add_theme, get_theme, list_theme_name, THEME_ANT, THEME_DARK, THEME_GRAFANA};
+pub use theme::{THEME_ANT, THEME_DARK, THEME_GRAFANA, add_theme, get_theme, list_theme_name};
 pub use treemap_chart::TreemapChart;
 pub use util::*;
 pub use waterfall_chart::{WaterfallChart, WaterfallData};

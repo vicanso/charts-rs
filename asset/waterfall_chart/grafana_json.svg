@@ -1,0 +1,93 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#1F1D1D"/>
+<text font-size="18" x="237" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+Waterfall Chart
+</text>
+<g stroke="#444343">
+<line stroke-width="1" x1="38" y1="40" x2="595" y2="40"/><line stroke-width="1" x1="38" y1="94.2" x2="595" y2="94.2"/><line stroke-width="1" x1="38" y1="148.3" x2="595" y2="148.3"/><line stroke-width="1" x1="38" y1="202.5" x2="595" y2="202.5"/><line stroke-width="1" x1="38" y1="256.7" x2="595" y2="256.7"/><line stroke-width="1" x1="38" y1="310.8" x2="595" y2="310.8"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="45" font-family="Roboto" fill="#B9B8CE">
+1.7k
+</text>
+<text font-size="14" x="2" y="99.2" font-family="Roboto" fill="#B9B8CE">
+1.4k
+</text>
+<text font-size="14" x="2" y="153.3" font-family="Roboto" fill="#B9B8CE">
+1.1k
+</text>
+<text font-size="14" x="6" y="207.5" font-family="Roboto" fill="#B9B8CE">
+840
+</text>
+<text font-size="14" x="6" y="261.7" font-family="Roboto" fill="#B9B8CE">
+560
+</text>
+<text font-size="14" x="6" y="315.8" font-family="Roboto" fill="#B9B8CE">
+280
+</text>
+<text font-size="14" x="22" y="370" font-family="Roboto" fill="#B9B8CE">
+0
+</text>
+</g>
+<g>
+<g stroke="#B9B8CE">
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
+<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
+<line stroke-width="1" x1="130.8" y1="365" x2="130.8" y2="370"/>
+<line stroke-width="1" x1="223.7" y1="365" x2="223.7" y2="370"/>
+<line stroke-width="1" x1="316.5" y1="365" x2="316.5" y2="370"/>
+<line stroke-width="1" x1="409.3" y1="365" x2="409.3" y2="370"/>
+<line stroke-width="1" x1="502.2" y1="365" x2="502.2" y2="370"/>
+<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="66.4" y="384" font-family="Roboto" fill="#B9B8CE">
+Initial
+</text>
+<text font-size="14" x="149.8" y="384" font-family="Roboto" fill="#B9B8CE">
+Revenue
+</text>
+<text font-size="14" x="242.1" y="384" font-family="Roboto" fill="#B9B8CE">
+Services
+</text>
+<text font-size="14" x="328.4" y="384" font-family="Roboto" fill="#B9B8CE">
+Purchases
+</text>
+<text font-size="14" x="422.8" y="384" font-family="Roboto" fill="#B9B8CE">
+Marketing
+</text>
+<text font-size="14" x="530.6" y="384" font-family="Roboto" fill="#B9B8CE">
+Profit
+</text>
+</g>
+<rect x="56.6" y="190.9" width="55.7" height="174.1" rx="2" ry="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="72.4" y="186.9" font-family="Roboto" fill="#D8D9DA">
+900
+</text>
+<line stroke-width="1" x1="112.3" y1="190.9" x2="149.4" y2="190.9" stroke="#444343" stroke-dasharray="4,4"/>
+<rect x="149.4" y="124.2" width="55.7" height="66.7" rx="2" ry="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="165.2" y="120.2" font-family="Roboto" fill="#D8D9DA">
+345
+</text>
+<line stroke-width="1" x1="205.1" y1="124.2" x2="242.2" y2="124.2" stroke="#444343" stroke-dasharray="4,4"/>
+<rect x="242.2" y="48.1" width="55.7" height="76" rx="2" ry="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="258.6" y="44.1" font-family="Roboto" fill="#D8D9DA">
+393
+</text>
+<line stroke-width="1" x1="297.9" y1="48.1" x2="335.1" y2="48.1" stroke="#444343" stroke-dasharray="4,4"/>
+<rect x="335.1" y="48.1" width="55.7" height="20.9" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<text font-size="14" x="350.9" y="85" font-family="Roboto" fill="#D8D9DA">
+108
+</text>
+<line stroke-width="1" x1="390.8" y1="69" x2="427.9" y2="69" stroke="#444343" stroke-dasharray="4,4"/>
+<rect x="427.9" y="69" width="55.7" height="29.8" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<text font-size="14" x="443.8" y="114.8" font-family="Roboto" fill="#D8D9DA">
+154
+</text>
+<line stroke-width="1" x1="483.6" y1="98.8" x2="520.7" y2="98.8" stroke="#444343" stroke-dasharray="4,4"/>
+<rect x="520.7" y="98.8" width="55.7" height="266.2" rx="2" ry="2" stroke="#EAB839" fill="#EAB839"/>
+<text font-size="14" x="544.6" y="94.8" font-family="Roboto" fill="#D8D9DA">
+0
+</text>
+<line stroke-width="1" x1="38" y1="365" x2="595" y2="365" stroke="#B9B8CE"/>
+</svg>

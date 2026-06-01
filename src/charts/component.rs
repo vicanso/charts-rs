@@ -195,12 +195,11 @@ impl<'a> SVGTag<'a> {
 
 impl fmt::Display for SVGTag<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if self.tag == TAG_GROUP {
-            if let Some(ref data) = self.data {
-                if data.is_empty() {
-                    return write!(f, "");
-                }
-            }
+        if self.tag == TAG_GROUP
+            && let Some(ref data) = self.data
+            && data.is_empty()
+        {
+            return write!(f, "");
         }
         let mut value = "<".to_string();
         value.push_str(self.tag);
@@ -1785,11 +1784,11 @@ impl Legend {
 #[cfg(test)]
 mod tests {
     use super::{
-        wrap_legends_to_rows, Arrow, Axis, Bubble, Circle, Fill, Grid, Legend, LegendCategory,
-        Line, Pie, Polygon, Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine,
-        StraightLineFill, Text,
+        Arrow, Axis, Bubble, Circle, Fill, Grid, Legend, LegendCategory, Line, Pie, Polygon,
+        Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+        wrap_legends_to_rows,
     };
-    use crate::{Align, Color, Position, Symbol, DEFAULT_FONT_FAMILY};
+    use crate::{Align, Color, DEFAULT_FONT_FAMILY, Position, Symbol};
     use pretty_assertions::assert_eq;
     #[test]
     fn test_line() {

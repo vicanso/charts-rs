@@ -137,21 +137,21 @@ impl fmt::Display for SmoothCurve {
                     format_float(next_point_value.x),
                     format_float(next_point_value.y)
                 );
-                if let Some(cp1_value) = cp1 {
-                    if let Some(cp2_value) = cp2 {
-                        let c1 = format!(
-                            "{} {}",
-                            format_float(cp1_value.x),
-                            format_float(cp1_value.y)
-                        );
-                        let c2 = format!(
-                            "{} {}",
-                            format_float(cp2_value.x),
-                            format_float(cp2_value.y)
-                        );
-                        arr.push(format!("C{}, {}, {}", c1, c2, next_point));
-                        continue;
-                    }
+                if let Some(cp1_value) = cp1
+                    && let Some(cp2_value) = cp2
+                {
+                    let c1 = format!(
+                        "{} {}",
+                        format_float(cp1_value.x),
+                        format_float(cp1_value.y)
+                    );
+                    let c2 = format!(
+                        "{} {}",
+                        format_float(cp2_value.x),
+                        format_float(cp2_value.y)
+                    );
+                    arr.push(format!("C{}, {}, {}", c1, c2, next_point));
+                    continue;
                 }
                 let p = cp1.unwrap_or(cp2.unwrap_or_default());
 
@@ -192,7 +192,10 @@ mod tests {
             close: false,
         }
         .to_string();
-        assert_eq!("M10,10 C12.5 20, 17.2 40.1, 20 50 C22.2 57.6, 28.1 81.9, 30 80 C33.1 76.9, 36.5 42.2, 40 30 C41.5 24.7, 47.5 15, 50 10", str);
+        assert_eq!(
+            "M10,10 C12.5 20, 17.2 40.1, 20 50 C22.2 57.6, 28.1 81.9, 30 80 C33.1 76.9, 36.5 42.2, 40 30 C41.5 24.7, 47.5 15, 50 10",
+            str
+        );
 
         let str = SmoothCurve {
             points: vec![
@@ -205,6 +208,9 @@ mod tests {
             close: true,
         }
         .to_string();
-        assert_eq!("M10,10 C6.2 15.1, 17.2 40.1, 20 50 C22.2 57.6, 28.1 81.9, 30 80 C33.1 76.9, 36.5 42.2, 40 30 C41.5 24.7, 52.7 11.8, 50 10 C45.2 6.8, 13.7 5.1, 10 10", str);
+        assert_eq!(
+            "M10,10 C6.2 15.1, 17.2 40.1, 20 50 C22.2 57.6, 28.1 81.9, 30 80 C33.1 76.9, 36.5 42.2, 40 30 C41.5 24.7, 52.7 11.8, 50 10 C45.2 6.8, 13.7 5.1, 10 10",
+            str
+        );
     }
 }

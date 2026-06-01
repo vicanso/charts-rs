@@ -1,8 +1,8 @@
 use charts_rs::{
-    measure_text_width_family, svg_to_png, BarChart, Box, LegendCategory, SeriesCategory,
-    DEFAULT_FONT_FAMILY,
+    BarChart, Box, DEFAULT_FONT_FAMILY, LegendCategory, SeriesCategory, measure_text_width_family,
+    svg_to_png,
 };
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 fn measure_text_benchmark(c: &mut Criterion) {
     c.bench_function("measure test", |b| {

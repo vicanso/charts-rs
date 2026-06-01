@@ -10,14 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use std::sync::Arc;
@@ -130,18 +130,7 @@ impl HorizontalBarChart {
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
-        self.render_background(c.child(Box::default()));
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-
-        let legend_height = self.render_legend(c.child(Box::default()));
-        // get the max height of title and legend
-        let axis_top = if legend_height > title_height {
-            legend_height
-        } else {
-            title_height
-        };
+        let axis_top = self.render_header(&mut c);
 
         let x_axis_height = 25.0_f32;
         let axis_height = c.height() - axis_top - x_axis_height;
@@ -158,10 +147,9 @@ impl HorizontalBarChart {
         let mut max_width = 0.0;
         for text in data.iter() {
             if let Ok(b) = measure_text_width_family(&self.font_family, self.x_axis_font_size, text)
+                && b.width() > max_width
             {
-                if b.width() > max_width {
-                    max_width = b.width();
-                }
+                max_width = b.width();
             }
         }
 
@@ -329,7 +317,7 @@ impl HorizontalBarChart {
 #[cfg(test)]
 mod tests {
     use super::HorizontalBarChart;
-    use crate::{Align, Position, NIL_VALUE};
+    use crate::{Align, NIL_VALUE, Position};
     use pretty_assertions::assert_eq;
     #[test]
     fn horizontal_bar_chart_basic() {

@@ -8,7 +8,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
     let id = ast.ident;
 
-    let gen = quote! {
+    let expanded = quote! {
         impl #id {
             /// Fills the default options of current theme.
             fn fill_theme(&mut self, t: Arc<Theme>) {
@@ -335,6 +335,22 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     height: self.height,
                     ..Default::default()
                 });
+            }
+            /// Renders background, title and legend, returning the top offset
+            /// for the plotting area (the greater of the title and legend heights).
+            fn render_header(&self, c: &mut Canvas) -> f32 {
+                self.render_background(c.child(Box::default()));
+                c.margin = self.margin.clone();
+
+                let title_height = self.render_title(c.child(Box::default()));
+
+                let legend_height = self.render_legend(c.child(Box::default()));
+                // get the max height of title and legend
+                if legend_height > title_height {
+                    legend_height
+                } else {
+                    title_height
+                }
             }
             /// Render title widget for canvas.
             fn render_title(&self, c: Canvas) -> f32 {
@@ -976,5 +992,5 @@ pub fn my_default(input: TokenStream) -> TokenStream {
             }
         }
     };
-    gen.into()
+    expanded.into()
 }

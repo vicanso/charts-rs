@@ -10,14 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use std::sync::Arc;
@@ -37,18 +37,18 @@ impl From<(&str, f32)> for RadarIndicator {
 }
 
 fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<RadarIndicator>> {
-    if let Some(data) = value.get("indicators") {
-        if let Some(arr) = data.as_array() {
-            let mut indicators = vec![];
-            for item in arr.iter() {
-                let name = get_string_from_value(item, "name").unwrap_or_default();
-                let max = get_f32_from_value(item, "max").unwrap_or_default();
-                if !name.is_empty() {
-                    indicators.push(RadarIndicator { name, max });
-                }
+    if let Some(data) = value.get("indicators")
+        && let Some(arr) = data.as_array()
+    {
+        let mut indicators = vec![];
+        for item in arr.iter() {
+            let name = get_string_from_value(item, "name").unwrap_or_default();
+            let max = get_f32_from_value(item, "max").unwrap_or_default();
+            if !name.is_empty() {
+                indicators.push(RadarIndicator { name, max });
             }
-            return Some(indicators);
         }
+        return Some(indicators);
     }
     None
 }
@@ -170,18 +170,7 @@ impl RadarChart {
         }
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
-        self.render_background(c.child(Box::default()));
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-
-        let legend_height = self.render_legend(c.child(Box::default()));
-        // get the max height of title and legend
-        let axis_top = if legend_height > title_height {
-            legend_height
-        } else {
-            title_height
-        };
+        let axis_top = self.render_header(&mut c);
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,

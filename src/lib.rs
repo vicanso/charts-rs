@@ -10,11 +10,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Charts support multi charts: bar chart, horizontal bar chart,
-//! line chart, pie chart, radar chart and table.
+#![forbid(unsafe_code)]
+
+//! Charts supports seventeen chart types: bar, horizontal bar, line, pie,
+//! radar, scatter, candlestick, table, heatmap, funnel, waterfall, multi
+//! chart, calendar, gauge, treemap, box plot and sunburst.
 //!
-//! It supports four themes and very easy to use.
-//! Each attribute can be customized, it can be save as svg or png.
+//! It supports ten built-in themes and is very easy to use.
+//! Each attribute can be customized, it can be saved as svg, png, jpeg,
+//! webp or avif.
 //! The chart can be new from json, which sets default value if the field is undefined.
 //!
 //! # New a bar chart from json, the other charts also support the function.
@@ -61,8 +65,9 @@
 //!
 //! # New bar chart with theme
 //!
-//! There are four themes: echart, dark, ant and grafana.
-//! The echart is default theme.
+//! There are ten built-in themes: light, dark, ant, grafana, vintage,
+//! walden, westeros, chalk, shine and shadcn.
+//! The light is the default theme.
 //! ```rust
 //! use charts_rs::{BarChart, Series, THEME_GRAFANA};
 //! let bar_chart = BarChart::new_with_theme(

@@ -43,14 +43,16 @@ fn main() {
     charts.add(ChildChart::Bar(bar_chart, None));
 
     let candlestick_chart = CandlestickChart::new_with_theme(
-        vec![(
-            "",
-            vec![
-                20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0, 38.0, 15.0,
-                5.0, 42.0,
-            ],
-        )
-            .into()],
+        vec![
+            (
+                "",
+                vec![
+                    20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0, 38.0,
+                    15.0, 5.0, 42.0,
+                ],
+            )
+                .into(),
+        ],
         vec![
             "2017-10-24".to_string(),
             "2017-10-25".to_string(),

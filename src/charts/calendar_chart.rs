@@ -10,14 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use std::sync::Arc;
@@ -386,12 +386,11 @@ impl CalendarChart {
         if let Some(arr) = value.get("data").and_then(|v| v.as_array()) {
             let mut items = vec![];
             for item in arr {
-                if let Some(pair) = item.as_array() {
-                    if pair.len() == 2 {
-                        if let (Some(date), Some(val)) = (pair[0].as_str(), pair[1].as_f64()) {
-                            items.push((date.to_string(), val as f32));
-                        }
-                    }
+                if let Some(pair) = item.as_array()
+                    && pair.len() == 2
+                    && let (Some(date), Some(val)) = (pair[0].as_str(), pair[1].as_f64())
+                {
+                    items.push((date.to_string(), val as f32));
                 }
             }
             c.data = items;

@@ -11,8 +11,8 @@
 // limitations under the License.
 
 use super::component::{
-    generate_svg, Arrow, Axis, Bubble, Circle, Component, Grid, Legend, Line, Pie, Polygon,
-    Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, LEGEND_WIDTH,
+    Arrow, Axis, Bubble, Circle, Component, Grid, LEGEND_WIDTH, Legend, Line, Pie, Polygon,
+    Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, generate_svg,
 };
 
 use super::{measure_text_width_family, util::*};
@@ -420,9 +420,9 @@ impl Canvas {
 mod tests {
     use super::Canvas;
     use crate::{
-        convert_to_points, Align, Axis, Fill, Grid, Legend, LegendCategory, Line, Polyline, Rect,
+        Align, Axis, DEFAULT_FONT_FAMILY, Fill, Grid, Legend, LegendCategory, Line, Polyline, Rect,
         SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Symbol, Text,
-        DEFAULT_FONT_FAMILY,
+        convert_to_points,
     };
     use pretty_assertions::assert_eq;
     #[test]

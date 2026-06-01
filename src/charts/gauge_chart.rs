@@ -10,14 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use std::sync::Arc;
@@ -433,20 +433,20 @@ impl GaugeChart {
         });
 
         // Series name label below the value
-        if let Some(series) = self.series_list.first() {
-            if !series.name.is_empty() {
-                body.text(Text {
-                    text: series.name.clone(),
-                    font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
-                    dominant_baseline: Some("middle".to_string()),
-                    text_anchor: Some("middle".to_string()),
-                    x: Some(cx),
-                    y: Some(detail_y + value_font_size + 4.0),
-                    ..Default::default()
-                });
-            }
+        if let Some(series) = self.series_list.first()
+            && !series.name.is_empty()
+        {
+            body.text(Text {
+                text: series.name.clone(),
+                font_family: Some(self.font_family.clone()),
+                font_color: Some(self.series_label_font_color),
+                font_size: Some(self.series_label_font_size),
+                dominant_baseline: Some("middle".to_string()),
+                text_anchor: Some("middle".to_string()),
+                x: Some(cx),
+                y: Some(detail_y + value_font_size + 4.0),
+                ..Default::default()
+            });
         }
 
         c.svg()

@@ -10,14 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use core::f32;
@@ -146,18 +146,7 @@ impl PieChart {
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
-        self.render_background(c.child(Box::default()));
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-
-        let legend_height = self.render_legend(c.child(Box::default()));
-        // get the max height of title and legend
-        let axis_top = if legend_height > title_height {
-            legend_height
-        } else {
-            title_height
-        };
+        let axis_top = self.render_header(&mut c);
         if axis_top > 0.0 {
             c = c.child(Box {
                 top: axis_top,

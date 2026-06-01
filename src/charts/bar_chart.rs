@@ -10,14 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme, DEFAULT_Y_AXIS_WIDTH};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
@@ -114,20 +114,20 @@ impl BarChart {
         if let Some(radius) = get_f32_from_value(&value, "radius") {
             b.radius = Some(radius);
         }
-        if let Some(anim) = value.get("animation") {
-            if !anim.is_null() {
-                let mut config = AnimationConfig::default();
-                if let Some(d) = get_usize_from_value(anim, "duration") {
-                    config.duration = d as u32;
-                }
-                if let Some(e) = get_string_from_value(anim, "easing") {
-                    config.easing = e;
-                }
-                if let Some(d) = get_usize_from_value(anim, "delay") {
-                    config.delay = d as u32;
-                }
-                b.animation = Some(config);
+        if let Some(anim) = value.get("animation")
+            && !anim.is_null()
+        {
+            let mut config = AnimationConfig::default();
+            if let Some(d) = get_usize_from_value(anim, "duration") {
+                config.duration = d as u32;
             }
+            if let Some(e) = get_string_from_value(anim, "easing") {
+                config.easing = e;
+            }
+            if let Some(d) = get_usize_from_value(anim, "delay") {
+                config.delay = d as u32;
+            }
+            b.animation = Some(config);
         }
         Ok(b)
     }
@@ -162,22 +162,11 @@ impl BarChart {
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
-        self.render_background(c.child(Box::default()));
         let mut x_axis_height = self.x_axis_height;
         if self.x_axis_hidden {
             x_axis_height = 0.0;
         }
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-
-        let legend_height = self.render_legend(c.child(Box::default()));
-        // get the max height of title and legend
-        let axis_top = if legend_height > title_height {
-            legend_height
-        } else {
-            title_height
-        };
+        let axis_top = self.render_header(&mut c);
 
         let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
         if self.y_axis_hidden {
@@ -259,11 +248,11 @@ impl BarChart {
         let mut line_series_list = vec![];
         // filter line and bar series points
         self.series_list.iter().for_each(|item| {
-            if let Some(ref cat) = item.category {
-                if *cat == SeriesCategory::Line {
-                    line_series_list.push(item);
-                    return;
-                }
+            if let Some(ref cat) = item.category
+                && *cat == SeriesCategory::Line
+            {
+                line_series_list.push(item);
+                return;
             }
             bar_series_list.push(item);
         });
@@ -326,7 +315,7 @@ impl BarChart {
 mod tests {
     use super::BarChart;
     use crate::{
-        Box, LegendCategory, SeriesCategory, NIL_VALUE, THEME_ANT, THEME_DARK, THEME_GRAFANA,
+        Box, LegendCategory, NIL_VALUE, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA,
     };
     use pretty_assertions::assert_eq;
     #[test]

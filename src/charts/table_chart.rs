@@ -10,15 +10,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Canvas;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::font::text_wrap_fit;
 use super::params::*;
-use super::theme::{get_default_theme_name, get_theme, Theme};
+use super::theme::{Theme, get_default_theme_name, get_theme};
 use super::util::*;
-use super::Canvas;
 use crate::charts::measure_text_width_family;
 use std::sync::Arc;
 
@@ -143,47 +143,47 @@ impl TableChart {
         if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
             self.sub_title_height = sub_title_height;
         }
-        if let Some(data) = data.get("cell_styles") {
-            if let Some(arr) = data.as_array() {
-                let mut cell_styles = vec![];
-                for item in arr.iter() {
-                    let mut style = TableCellStyle {
-                        ..Default::default()
-                    };
-                    if let Some(font_color) = get_color_from_value(item, "font_color") {
-                        style.font_color = Some(font_color);
-                    }
-                    if let Some(background_color) = get_color_from_value(item, "background_color") {
-                        style.background_color = Some(background_color);
-                    }
-                    if let Some(font_weight) = get_string_from_value(item, "font_weight") {
-                        style.font_weight = Some(font_weight);
-                    }
-                    if let Some(indexes) = get_usize_slice_from_value(item, "indexes") {
-                        style.indexes = indexes;
-                    }
-                    cell_styles.push(style);
+        if let Some(data) = data.get("cell_styles")
+            && let Some(arr) = data.as_array()
+        {
+            let mut cell_styles = vec![];
+            for item in arr.iter() {
+                let mut style = TableCellStyle {
+                    ..Default::default()
+                };
+                if let Some(font_color) = get_color_from_value(item, "font_color") {
+                    style.font_color = Some(font_color);
                 }
-                self.cell_styles = cell_styles;
+                if let Some(background_color) = get_color_from_value(item, "background_color") {
+                    style.background_color = Some(background_color);
+                }
+                if let Some(font_weight) = get_string_from_value(item, "font_weight") {
+                    style.font_weight = Some(font_weight);
+                }
+                if let Some(indexes) = get_usize_slice_from_value(item, "indexes") {
+                    style.indexes = indexes;
+                }
+                cell_styles.push(style);
             }
+            self.cell_styles = cell_styles;
         }
 
-        if let Some(data) = data.get("data") {
-            if let Some(arr) = data.as_array() {
-                let mut data_list = vec![];
-                for items in arr.iter() {
-                    let mut list = vec![];
-                    if let Some(sub_arr) = items.as_array() {
-                        for item in sub_arr.iter() {
-                            if let Some(str) = item.as_str() {
-                                list.push(str.to_string());
-                            }
+        if let Some(data) = data.get("data")
+            && let Some(arr) = data.as_array()
+        {
+            let mut data_list = vec![];
+            for items in arr.iter() {
+                let mut list = vec![];
+                if let Some(sub_arr) = items.as_array() {
+                    for item in sub_arr.iter() {
+                        if let Some(str) = item.as_str() {
+                            list.push(str.to_string());
                         }
                     }
-                    data_list.push(list);
                 }
-                self.data = data_list;
+                data_list.push(list);
             }
+            self.data = data_list;
         }
         if let Some(spans) = get_f32_slice_from_value(&data, "spans") {
             self.spans = spans;

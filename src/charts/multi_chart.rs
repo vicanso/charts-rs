@@ -11,8 +11,8 @@
 // limitations under the License.
 
 use super::canvas;
-use super::component::generate_svg;
 use super::component::Rect;
+use super::component::generate_svg;
 use super::params::{get_color_from_value, get_f32_from_value, get_margin_from_value};
 use super::{
     BarChart, CandlestickChart, CanvasResult, HorizontalBarChart, LineChart, PieChart, RadarChart,
@@ -62,73 +62,74 @@ impl MultiChart {
         if let Some(background_color) = get_color_from_value(&value, "background_color") {
             multi_chart.background_color = Some(background_color);
         }
-        if let Some(child_charts) = value.get("child_charts") {
-            if let Some(values) = child_charts.as_array() {
-                for item in values.iter() {
-                    let chart_type = if let Some(value) = item.get("type") {
-                        value.as_str().unwrap_or_default()
-                    } else {
-                        ""
-                    };
-                    let mut x = 0.0;
-                    let mut y = 0.0;
-                    let mut exists_position = false;
-                    if let Some(v) = get_f32_from_value(item, "x") {
-                        x = v;
-                        exists_position = true;
-                    }
-                    if let Some(v) = get_f32_from_value(item, "y") {
-                        y = v;
-                        exists_position = true;
-                    }
-                    let mut position = None;
-                    if exists_position {
-                        position = Some((x, y));
-                    }
-
-                    // 由json转换，因此不会出错
-                    let mut str = serde_json::to_string(item).unwrap();
-                    if item.get("theme").is_none() {
-                        str = format!(
-                            r###"{},"theme":{theme}}}"###,
-                            str.substring(0, str.len() - 1)
-                        );
-                    }
-                    match chart_type {
-                        "line" => {
-                            let chart = LineChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::Line(chart, position));
-                        }
-                        "horizontal_bar" => {
-                            let chart = HorizontalBarChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::HorizontalBar(chart, position));
-                        }
-                        "pie" => {
-                            let chart = PieChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::Pie(chart, position));
-                        }
-                        "radar" => {
-                            let chart = RadarChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::Radar(chart, position));
-                        }
-                        "table" => {
-                            let chart = TableChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::Table(chart, position));
-                        }
-                        "scatter" => {
-                            let chart = ScatterChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::Scatter(chart, position));
-                        }
-                        "candlestick" => {
-                            let chart = CandlestickChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::Candlestick(chart, position));
-                        }
-                        _ => {
-                            let chart = BarChart::from_json(&str)?;
-                            multi_chart.add(ChildChart::Bar(chart, position));
-                        }
-                    };
+        if let Some(child_charts) = value.get("child_charts")
+            && let Some(values) = child_charts.as_array()
+        {
+            for item in values.iter() {
+                let chart_type = if let Some(value) = item.get("type") {
+                    value.as_str().unwrap_or_default()
+                } else {
+                    ""
+                };
+                let mut x = 0.0;
+                let mut y = 0.0;
+                let mut exists_position = false;
+                if let Some(v) = get_f32_from_value(item, "x") {
+                    x = v;
+                    exists_position = true;
                 }
+                if let Some(v) = get_f32_from_value(item, "y") {
+                    y = v;
+                    exists_position = true;
+                }
+                let mut position = None;
+                if exists_position {
+                    position = Some((x, y));
+                }
+
+                // item is a value parsed from json, so serialization will
+                // not fail in practice; propagate as an error just in case.
+                let mut str = serde_json::to_string(item)?;
+                if item.get("theme").is_none() {
+                    str = format!(
+                        r###"{},"theme":{theme}}}"###,
+                        str.substring(0, str.len() - 1)
+                    );
+                }
+                match chart_type {
+                    "line" => {
+                        let chart = LineChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::Line(chart, position));
+                    }
+                    "horizontal_bar" => {
+                        let chart = HorizontalBarChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::HorizontalBar(chart, position));
+                    }
+                    "pie" => {
+                        let chart = PieChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::Pie(chart, position));
+                    }
+                    "radar" => {
+                        let chart = RadarChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::Radar(chart, position));
+                    }
+                    "table" => {
+                        let chart = TableChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::Table(chart, position));
+                    }
+                    "scatter" => {
+                        let chart = ScatterChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::Scatter(chart, position));
+                    }
+                    "candlestick" => {
+                        let chart = CandlestickChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::Candlestick(chart, position));
+                    }
+                    _ => {
+                        let chart = BarChart::from_json(&str)?;
+                        multi_chart.add(ChildChart::Bar(chart, position));
+                    }
+                };
             }
         }
         Ok(multi_chart)
@@ -408,14 +409,16 @@ mod tests {
         charts.add(ChildChart::Bar(bar_chart, None));
 
         let candlestick_chart = CandlestickChart::new(
-            vec![(
-                "",
-                vec![
-                    20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0, 38.0,
-                    15.0, 5.0, 42.0,
-                ],
-            )
-                .into()],
+            vec![
+                (
+                    "",
+                    vec![
+                        20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0,
+                        38.0, 15.0, 5.0, 42.0,
+                    ],
+                )
+                    .into(),
+            ],
             vec![
                 "2017-10-24".to_string(),
                 "2017-10-25".to_string(),
@@ -623,14 +626,16 @@ mod tests {
             );
             charts.add(ChildChart::Bar(bar_chart, None));
             let candlestick_chart = CandlestickChart::new(
-                vec![(
-                    "",
-                    vec![
-                        20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0,
-                        38.0, 15.0, 5.0, 42.0,
-                    ],
-                )
-                    .into()],
+                vec![
+                    (
+                        "",
+                        vec![
+                            20.0, 34.0, 10.0, 38.0, 40.0, 35.0, 30.0, 50.0, 31.0, 38.0, 33.0, 44.0,
+                            38.0, 15.0, 5.0, 42.0,
+                        ],
+                    )
+                        .into(),
+                ],
                 vec![
                     "2017-10-24".to_string(),
                     "2017-10-25".to_string(),

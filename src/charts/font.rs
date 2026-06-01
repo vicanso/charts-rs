@@ -11,8 +11,8 @@
 // limitations under the License.
 
 use super::util::*;
-use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
 use fontdue::Font;
+use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
 use once_cell::sync::OnceCell;
 use snafu::Snafu;
 use std::collections::HashMap;

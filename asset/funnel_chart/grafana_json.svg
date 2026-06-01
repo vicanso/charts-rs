@@ -1,0 +1,61 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#1F1D1D"/>
+<text font-size="18" x="247.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+Funnel Chart
+</text>
+<g>
+<line stroke-width="2" x1="93" y1="15" x2="118" y2="15" stroke="#7EB26D"/>
+<circle cx="105.5" cy="15" r="5.5" stroke-width="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="121" y="19" font-family="Roboto" fill="#D8D9DA">
+Impression
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="199" y1="15" x2="224" y2="15" stroke="#EAB839"/>
+<circle cx="211.5" cy="15" r="5.5" stroke-width="2" stroke="#EAB839" fill="#EAB839"/>
+<text font-size="14" x="227" y="19" font-family="Roboto" fill="#D8D9DA">
+Click
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="266" y1="15" x2="291" y2="15" stroke="#6ED0E0"/>
+<circle cx="278.5" cy="15" r="5.5" stroke-width="2" stroke="#6ED0E0" fill="#6ED0E0"/>
+<text font-size="14" x="294" y="19" font-family="Roboto" fill="#D8D9DA">
+Inquiry
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="343" y1="15" x2="368" y2="15" stroke="#EF843C"/>
+<circle cx="355.5" cy="15" r="5.5" stroke-width="2" stroke="#EF843C" fill="#EF843C"/>
+<text font-size="14" x="371" y="19" font-family="Roboto" fill="#D8D9DA">
+Order
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="412" y1="15" x2="437" y2="15" stroke="#E24D42"/>
+<circle cx="424.5" cy="15" r="5.5" stroke-width="2" stroke="#E24D42" fill="#E24D42"/>
+<text font-size="14" x="440" y="19" font-family="Roboto" fill="#D8D9DA">
+Re-order
+</text>
+</g>
+<polygon points="5,40 595,40 496.7,107.8 103.3,107.8" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="239" y="73.9" dominant-baseline="central" font-family="Roboto" fill="#D8D9DA">
+Impression: 60000
+</text>
+<polygon points="103.3,111.8 496.7,111.8 398.3,179.6 201.7,179.6" stroke="#EAB839" fill="#EAB839"/>
+<text font-size="14" x="259" y="145.7" dominant-baseline="central" font-family="Roboto" fill="#D8D9DA">
+Click: 40000
+</text>
+<polygon points="201.7,183.6 398.3,183.6 339.3,251.4 260.7,251.4" stroke="#6ED0E0" fill="#6ED0E0"/>
+<text font-size="14" x="254" y="217.5" dominant-baseline="central" font-family="Roboto" fill="#D8D9DA">
+Inquiry: 20000
+</text>
+<polygon points="260.7,255.4 339.3,255.4 310,323.2 290,323.2" stroke="#EF843C" fill="#EF843C"/>
+<text font-size="14" x="262" y="289.3" dominant-baseline="central" font-family="Roboto" fill="#D8D9DA">
+Order: 8000
+</text>
+<polygon points="290.2,327.2 309.8,327.2 310,395 290,395" stroke="#E24D42" fill="#E24D42"/>
+<text font-size="14" x="252.5" y="361.1" dominant-baseline="central" font-family="Roboto" fill="#D8D9DA">
+Re-order: 2000
+</text>
+</svg>

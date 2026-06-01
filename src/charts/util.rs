@@ -128,10 +128,9 @@ fn parse_precision(formatter: &str) -> Option<usize> {
     if let Some(inner) = formatter
         .strip_prefix("{:.")
         .and_then(|s| s.strip_suffix("}"))
+        && let Ok(precision) = inner.parse::<usize>()
     {
-        if let Ok(precision) = inner.parse::<usize>() {
-            return Some(precision);
-        }
+        return Some(precision);
     }
 
     None
@@ -284,15 +283,17 @@ fn get_log_axis_values(params: AxisValueParams, base: f32) -> AxisValues {
             }
         }
     }
-    if let Some(m) = params.min {
-        if m > 0.0 && m < min_val {
-            min_val = m;
-        }
+    if let Some(m) = params.min
+        && m > 0.0
+        && m < min_val
+    {
+        min_val = m;
     }
-    if let Some(m) = params.max {
-        if m > 0.0 && m > max_val {
-            max_val = m;
-        }
+    if let Some(m) = params.max
+        && m > 0.0
+        && m > max_val
+    {
+        max_val = m;
     }
 
     if min_val == f32::MAX || max_val <= 0.0 {
@@ -354,22 +355,22 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     }
     let mut is_custom_min = false;
 
-    if let Some(value) = params.min {
-        if value < min {
-            min = value;
-            is_custom_min = true;
-        }
+    if let Some(value) = params.min
+        && value < min
+    {
+        min = value;
+        is_custom_min = true;
     }
     // it should use 0, if min gt 0 and not custom value
     if !is_custom_min && min > 0.0 {
         min = 0.0;
     }
     let mut is_custom_max = false;
-    if let Some(value) = params.max {
-        if value > max {
-            max = value;
-            is_custom_max = true
-        }
+    if let Some(value) = params.max
+        && value > max
+    {
+        max = value;
+        is_custom_max = true
     }
     let mut unit = (max - min) / split_number as f32;
     if !is_custom_max {
@@ -431,11 +432,7 @@ pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
 
 pub fn get_quadrant(cx: f32, cy: f32, point: &Point) -> u8 {
     if point.x > cx {
-        if point.y > cy {
-            4
-        } else {
-            1
-        }
+        if point.y > cy { 4 } else { 1 }
     } else if point.y > cy {
         3
     } else {
@@ -509,11 +506,11 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
 
 #[cfg(test)]
 mod tests {
-    use crate::{thousands_format_float, AxisScale};
+    use crate::{AxisScale, thousands_format_float};
 
     use super::{
-        convert_to_points, format_float, get_axis_values, get_box_of_points, AxisValueParams, Box,
-        Point,
+        AxisValueParams, Box, Point, convert_to_points, format_float, get_axis_values,
+        get_box_of_points,
     };
     use pretty_assertions::assert_eq;
 
