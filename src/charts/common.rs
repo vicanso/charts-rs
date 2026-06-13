@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Box, Color};
+use super::{Box, Color, NIL_VALUE};
 use crate::Point;
 use serde::{Deserialize, Serialize};
 
@@ -88,8 +88,8 @@ pub struct MarkPoint {
 pub struct Series {
     // name of series
     pub name: String,
-    // data list of series
-    pub data: Vec<f32>,
+    // data list of series; `None` marks a missing / null data point
+    pub data: Vec<Option<f32>>,
     // start index of series
     pub start_index: usize,
     // index of series
@@ -144,7 +144,22 @@ pub struct SeriesLabel {
 }
 
 impl Series {
+    /// Creates a series from a flat value list. For backward compatibility the
+    /// legacy `NIL_VALUE` sentinel is mapped to a missing point (`None`).
     pub fn new(name: String, data: Vec<f32>) -> Self {
+        Series {
+            name,
+            data: data
+                .into_iter()
+                .map(|v| if v == NIL_VALUE { None } else { Some(v) })
+                .collect(),
+            index: None,
+            ..Default::default()
+        }
+    }
+    /// Creates a series from nullable values, where `None` marks a missing
+    /// data point (rendered as a gap).
+    pub fn new_nullable(name: String, data: Vec<Option<f32>>) -> Self {
         Series {
             name,
             data,
@@ -152,10 +167,21 @@ impl Series {
             ..Default::default()
         }
     }
+    /// Effective values with the legacy `NIL_VALUE` sentinel substituted for
+    /// missing points. Lets the renderers keep their existing sentinel-based
+    /// arithmetic while the public data model uses `Option<f32>`.
+    pub(crate) fn data_values(&self) -> Vec<f32> {
+        self.data.iter().map(|v| v.unwrap_or(NIL_VALUE)).collect()
+    }
 }
 impl From<(&str, Vec<f32>)> for Series {
     fn from(value: (&str, Vec<f32>)) -> Self {
         Series::new(value.0.to_string(), value.1)
+    }
+}
+impl From<(&str, Vec<Option<f32>>)> for Series {
+    fn from(value: (&str, Vec<Option<f32>>)) -> Self {
+        Series::new_nullable(value.0.to_string(), value.1)
     }
 }
 

@@ -174,7 +174,7 @@ impl PieChart {
         let values: Vec<f32> = self
             .series_list
             .iter()
-            .map(|item| item.data.iter().sum())
+            .map(|item| item.data_values().iter().sum())
             .collect();
         let mut max = 0.0;
         let mut sum = 0.0;

@@ -253,7 +253,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 // Non-stacked series: include individual values directly.
                 for series in self.series_list.iter() {
                     if series.y_axis_index == y_axis_index && series.stack.is_none() {
-                        data_list.append(series.data.clone().as_mut());
+                        data_list.append(&mut series.data_values());
                     }
                 }
                 // Stacked series: the effective max at each x-position is the sum of all
@@ -277,7 +277,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     let mut sums = vec![0.0_f32; max_len];
                     for series in self.series_list.iter() {
                         if series.y_axis_index == y_axis_index && series.stack.as_deref() == Some(stack_key.as_str()) {
-                            for (i, &v) in series.data.iter().enumerate() {
+                            for (i, &v) in series.data_values().iter().enumerate() {
                                 let actual_i = i + series.start_index;
                                 if actual_i < sums.len() && v != NIL_VALUE {
                                     sums[actual_i] += v;
@@ -667,7 +667,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     });
 
                     let mut series_labels = vec![];
-                    for (i, p) in series.data.iter().enumerate() {
+                    for (i, p) in series.data_values().iter().enumerate() {
                         let value = p.to_owned();
                         if value == NIL_VALUE {
                             continue;
@@ -800,7 +800,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                     // Build updated accumulator for this series.
                     let mut new_acc = acc_data.clone();
 
-                    for (i, p) in series.data.iter().enumerate() {
+                    for (i, p) in series.data_values().iter().enumerate() {
                         let value = p.to_owned();
                         let actual_i = i + series.start_index;
                         if value == NIL_VALUE {

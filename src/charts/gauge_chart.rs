@@ -255,7 +255,7 @@ impl GaugeChart {
         let raw_value = self
             .series_list
             .first()
-            .and_then(|s| s.data.first().copied())
+            .and_then(|s| s.data_values().first().copied())
             .unwrap_or(self.min)
             .clamp(self.min, self.max);
 

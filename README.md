@@ -35,7 +35,7 @@ The library supports seventeen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie
 - Per-series mixed chart types (bar + line on the same chart)
 - Series stacking, dash patterns, and per-bar custom colors
 - SVG animation support (duration, easing, stagger) for bar, line, pie, and sunburst charts
-- Null / missing data points via `NIL_VALUE` (`null` in JSON)
+- Null / missing data points via `Option<f32>` (`null` in JSON; legacy `NIL_VALUE` still accepted)
 - JSON-based chart configuration for all chart types
 - Multiple output formats: svg, png, jpeg, webp, avif
 - Scaled image export via `svg_to_png_with_size` and equivalent functions
@@ -264,7 +264,7 @@ let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
 
 ### Null data points
 
-Use `null` in JSON arrays (or `NIL_VALUE` in Rust) to represent missing data; the chart skips rendering for those positions.
+Use `null` in JSON arrays to represent missing data; the chart skips rendering for those positions.
 
 ```json
 {
@@ -274,6 +274,20 @@ Use `null` in JSON arrays (or `NIL_VALUE` in Rust) to represent missing data; th
   }]
 }
 ```
+
+In Rust, build the series with `Option<f32>` values (`None` is a missing point):
+
+```rust
+use charts_rs::Series;
+let series = Series::new_nullable(
+    "Sales".to_string(),
+    vec![Some(120.0), None, Some(101.0), None, Some(90.0)],
+);
+// or via the tuple conversion
+let series: Series = ("Sales", vec![Some(120.0), None, Some(101.0)]).into();
+```
+
+The legacy `NIL_VALUE` sentinel (`Series::new` / `Vec<f32>`) still works and is treated as `None`.
 
 ### Label formatters
 

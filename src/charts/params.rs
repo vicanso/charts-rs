@@ -78,7 +78,7 @@ pub(crate) fn get_f32_from_value(value: &serde_json::Value, key: &str) -> Option
 pub(crate) fn get_f32_slice_from_value_support_nil(
     value: &serde_json::Value,
     key: &str,
-) -> Option<Vec<f32>> {
+) -> Option<Vec<Option<f32>>> {
     if let Some(arr) = value.get(key)
         && let Some(values) = arr.as_array()
     {
@@ -87,12 +87,14 @@ pub(crate) fn get_f32_slice_from_value_support_nil(
                 .iter()
                 .map(|item| {
                     if item.is_null() {
-                        return NIL_VALUE;
+                        return None;
                     }
-                    if let Some(v) = item.as_f64() {
-                        v as f32
-                    } else {
-                        0.0
+                    // The legacy sentinel is also treated as a missing point so
+                    // that callers passing `NIL_VALUE` numerically keep working.
+                    match item.as_f64() {
+                        Some(v) if v as f32 != NIL_VALUE => Some(v as f32),
+                        Some(_) => None,
+                        None => Some(0.0),
                     }
                 })
                 .collect(),

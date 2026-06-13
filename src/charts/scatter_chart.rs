@@ -238,7 +238,7 @@ impl ScatterChart {
         let mut y_axis_data_list = vec![];
         let mut x_axis_data_list = vec![];
         for series in self.series_list.iter() {
-            for (index, data) in series.data.iter().enumerate() {
+            for (index, data) in series.data_values().iter().enumerate() {
                 if index % 2 == 0 {
                     x_axis_data_list.push(*data);
                 } else {
@@ -380,7 +380,7 @@ impl ScatterChart {
                 DEFAULT_SYMBOLS[index % DEFAULT_SYMBOLS.len()].clone()
             };
 
-            for chunk in series.data.chunks(2) {
+            for chunk in series.data_values().chunks(2) {
                 if chunk.len() != 2 {
                     continue;
                 }

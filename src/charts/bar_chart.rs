@@ -315,7 +315,8 @@ impl BarChart {
 mod tests {
     use super::BarChart;
     use crate::{
-        Box, LegendCategory, NIL_VALUE, SeriesCategory, THEME_ANT, THEME_DARK, THEME_GRAFANA,
+        Box, LegendCategory, NIL_VALUE, Series, SeriesCategory, THEME_ANT, THEME_DARK,
+        THEME_GRAFANA,
     };
     use pretty_assertions::assert_eq;
     #[test]
@@ -752,6 +753,90 @@ mod tests {
                     vec![NIL_VALUE, 932.0, 901.0, 934.0, 1290.0, 1330.0, 1320.0],
                 )
                     .into(),
+            ],
+            vec![
+                "Mon".to_string(),
+                "Tue".to_string(),
+                "Wed".to_string(),
+                "Thu".to_string(),
+                "Fri".to_string(),
+                "Sat".to_string(),
+                "Sun".to_string(),
+            ],
+        );
+        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
+        bar_chart.title_text = "Bar Chart".to_string();
+        bar_chart.legend_margin = Some(Box {
+            top: 35.0,
+            bottom: 10.0,
+            ..Default::default()
+        });
+        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.series_list[0].label_show = true;
+        assert_eq!(
+            include_str!("../../asset/bar_chart/nil_value.svg"),
+            bar_chart.svg().unwrap()
+        );
+    }
+
+    // The nullable `Option<f32>` API must render identically to the legacy
+    // `NIL_VALUE` sentinel path: `None` is equivalent to a missing point.
+    #[test]
+    fn bar_chart_nil_value_nullable_api() {
+        let n = None;
+        let mut bar_chart = BarChart::new(
+            vec![
+                (
+                    "Email",
+                    vec![
+                        Some(120.0),
+                        n,
+                        Some(132.0),
+                        Some(101.0),
+                        Some(134.0),
+                        Some(90.0),
+                        Some(230.0),
+                    ],
+                )
+                    .into(),
+                (
+                    "Union Ads",
+                    vec![
+                        Some(220.0),
+                        Some(182.0),
+                        Some(191.0),
+                        n,
+                        Some(290.0),
+                        Some(330.0),
+                        Some(310.0),
+                    ],
+                )
+                    .into(),
+                (
+                    "Direct",
+                    vec![
+                        Some(320.0),
+                        Some(332.0),
+                        Some(301.0),
+                        Some(334.0),
+                        Some(390.0),
+                        n,
+                        Some(320.0),
+                    ],
+                )
+                    .into(),
+                Series::new_nullable(
+                    "Search Engine".to_string(),
+                    vec![
+                        n,
+                        Some(932.0),
+                        Some(901.0),
+                        Some(934.0),
+                        Some(1290.0),
+                        Some(1330.0),
+                        Some(1320.0),
+                    ],
+                ),
             ],
             vec![
                 "Mon".to_string(),

@@ -172,7 +172,7 @@ impl HorizontalBarChart {
 
         let mut data_list = vec![];
         for series in self.series_list.iter() {
-            data_list.append(series.data.clone().as_mut());
+            data_list.append(&mut series.data_values());
         }
         let x_axis_config = self.get_y_axis_config(0);
         let x_axis_values = get_axis_values(AxisValueParams {
@@ -240,7 +240,7 @@ impl HorizontalBarChart {
 
                 let mut series_labels = vec![];
                 let series_data_count = series.data.len();
-                for (i, p) in series.data.iter().enumerate() {
+                for (i, p) in series.data_values().iter().enumerate() {
                     let value = p.to_owned();
                     if value == NIL_VALUE {
                         continue;

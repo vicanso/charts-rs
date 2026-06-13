@@ -180,7 +180,7 @@ impl RadarChart {
 
         let mut max_values: Vec<f32> = vec![0.0; self.indicators.len()];
         for series in self.series_list.iter() {
-            for (index, item) in series.data.iter().enumerate() {
+            for (index, item) in series.data_values().iter().enumerate() {
                 if index < max_values.len() && *item > max_values[index] {
                     max_values[index] = *item
                 }
@@ -272,8 +272,9 @@ impl RadarChart {
         for (index, series) in self.series_list.iter().enumerate() {
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
             let mut points = vec![];
+            let values = series.data_values();
             for (i, item) in indicators.iter().enumerate() {
-                if let Some(value) = series.data.get(i) {
+                if let Some(value) = values.get(i) {
                     let mut ir = if item.max <= 0.0 {
                         0.0
                     } else {

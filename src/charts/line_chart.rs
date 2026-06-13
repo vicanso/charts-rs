@@ -163,7 +163,7 @@ impl LineChart {
             };
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
             let values: Vec<_> = series
-                .data
+                .data_values()
                 .iter()
                 .filter(|x| *x.to_owned() != NIL_VALUE)
                 .map(|x| x.to_owned())

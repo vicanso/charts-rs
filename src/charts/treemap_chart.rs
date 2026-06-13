@@ -266,7 +266,7 @@ impl TreemapChart {
             .iter()
             .enumerate()
             .filter_map(|(i, s)| {
-                let v = *s.data.first()?;
+                let v = *s.data_values().first()?;
                 if v <= 0.0 {
                     return None;
                 }

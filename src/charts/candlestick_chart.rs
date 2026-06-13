@@ -235,7 +235,8 @@ impl CandlestickChart {
             }
             // split the series point to chunk
             // [open, close, lowest, highest]
-            let chunks = series.data.chunks(4);
+            let data = series.data_values();
+            let chunks = data.chunks(4);
 
             for (index, chunk) in chunks.enumerate() {
                 if chunk.len() != 4 {

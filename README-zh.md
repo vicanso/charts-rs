@@ -33,7 +33,7 @@
 - 同一图表中混合多种系列类型（柱状 + 折线）
 - 系列堆叠、自定义虚线样式、按柱自定义颜色
 - 柱状图、折线图、饼图与旭日图的 SVG 动画支持（时长、缓动函数、错开延迟）
-- 通过 `NIL_VALUE` 支持空值 / 缺失数据点（JSON 中使用 `null`）
+- 通过 `Option<f32>` 支持空值 / 缺失数据点（JSON 中使用 `null`；旧的 `NIL_VALUE` 仍兼容）
 - 所有图表类型均支持基于 JSON 的配置方式
 - 多种输出格式：svg、png、jpeg、webp、avif
 - 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
@@ -262,7 +262,7 @@ let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
 
 ### 空值数据点
 
-在 JSON 数组中使用 `null`（或在 Rust 中使用 `NIL_VALUE`）表示缺失数据，图表会跳过该位置的渲染。
+在 JSON 数组中使用 `null` 表示缺失数据，图表会跳过该位置的渲染。
 
 ```json
 {
@@ -272,6 +272,20 @@ let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
   }]
 }
 ```
+
+在 Rust 中使用 `Option<f32>` 构造系列（`None` 即缺失点）：
+
+```rust
+use charts_rs::Series;
+let series = Series::new_nullable(
+    "销售额".to_string(),
+    vec![Some(120.0), None, Some(101.0), None, Some(90.0)],
+);
+// 或使用元组转换
+let series: Series = ("销售额", vec![Some(120.0), None, Some(101.0)]).into();
+```
+
+旧的 `NIL_VALUE` 哨兵值（`Series::new` / `Vec<f32>`）仍然可用，会被当作 `None` 处理。
 
 ### 标签格式化占位符
 
