@@ -98,6 +98,8 @@ pub struct PieChart {
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
     pub series_fill: bool,
+
+    pub animation: Option<AnimationConfig>,
 }
 
 impl PieChart {
@@ -125,6 +127,21 @@ impl PieChart {
         }
         if let Some(border_radius) = get_f32_from_value(&value, "border_radius") {
             p.border_radius = Some(border_radius);
+        }
+        if let Some(anim) = value.get("animation")
+            && !anim.is_null()
+        {
+            let mut config = AnimationConfig::default();
+            if let Some(d) = get_usize_from_value(anim, "duration") {
+                config.duration = d as u32;
+            }
+            if let Some(e) = get_string_from_value(anim, "easing") {
+                config.easing = e;
+            }
+            if let Some(d) = get_usize_from_value(anim, "delay") {
+                config.delay = d as u32;
+            }
+            p.animation = Some(config);
         }
         Ok(p)
     }
@@ -205,6 +222,15 @@ impl PieChart {
             if cr - self.inner_radius < 1.0 {
                 cr = self.inner_radius + 1.0;
             }
+            let (anim_class, anim_style, fade_class) = if let Some(ref a) = self.animation {
+                (
+                    Some("pie-anim".to_string()),
+                    Some(format!("animation-delay:{}ms", index as u32 * a.delay)),
+                    Some("pie-fade".to_string()),
+                )
+            } else {
+                (None, None, None)
+            };
             let mut pie = Pie {
                 fill: color.into(),
                 cx,
@@ -213,6 +239,8 @@ impl PieChart {
                 ir: self.inner_radius,
                 start_angle,
                 delta,
+                class: anim_class,
+                style: anim_style,
                 ..Default::default()
             };
             if let Some(border_radius) = self.border_radius {
@@ -302,6 +330,7 @@ impl PieChart {
                     color: Some(color),
                     points,
                     symbol: None,
+                    class: fade_class.clone(),
                     ..Default::default()
                 });
                 label_margin
@@ -312,13 +341,30 @@ impl PieChart {
                 font_family: Some(self.font_family.clone()),
                 font_size: Some(self.series_label_font_size),
                 font_color: Some(self.series_label_font_color),
+                class: fade_class,
                 ..Default::default()
             });
 
             start_angle += delta;
         }
 
-        c.svg()
+        if let Some(ref anim) = self.animation {
+            let css = format!(
+                "@keyframes pie-grow{{from{{transform:scale(0)}}to{{transform:scale(1)}}}} \
+                 @keyframes pie-fade{{from{{opacity:0}}to{{opacity:1}}}} \
+                 .pie-anim{{transform-origin:{}px {}px;animation:pie-grow {}ms {} both}} \
+                 .pie-fade{{animation:pie-fade {}ms {} both}}",
+                format_float(cx + c.margin.left),
+                format_float(cy + c.margin.top),
+                anim.duration,
+                anim.easing,
+                anim.duration,
+                anim.easing
+            );
+            c.svg_with_style(&css)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -408,6 +454,42 @@ mod tests {
         assert_eq!(
             include_str!("../../asset/pie_chart/not_rose_radius.svg").trim(),
             pie_chart.svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn pie_animation_json() {
+        let chart = PieChart::from_json(
+            r###"{
+                "series_list": [
+                    {"name": "a", "data": [40]},
+                    {"name": "b", "data": [60]}
+                ],
+                "rose_type": false,
+                "animation": {"duration": 800, "easing": "ease-out", "delay": 50}
+            }"###,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains("pie-grow"), "missing @keyframes pie-grow");
+        assert!(svg.contains(".pie-anim"), "missing .pie-anim class rule");
+        assert!(svg.contains("transform-origin"), "missing transform-origin");
+        assert!(svg.contains("800ms ease-out"), "missing duration/easing");
+        assert!(
+            svg.contains(r#"class="pie-anim""#),
+            "missing class attr on slice"
+        );
+        assert!(
+            svg.contains("animation-delay:0ms"),
+            "missing delay for slice 0"
+        );
+        assert!(
+            svg.contains("animation-delay:50ms"),
+            "missing delay for slice 1"
+        );
+        assert!(
+            svg.contains(r#"class="pie-fade""#),
+            "missing fade class on labels"
         );
     }
 

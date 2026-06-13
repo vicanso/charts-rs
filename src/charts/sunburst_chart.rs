@@ -177,6 +177,9 @@ pub struct SunburstChart {
     pub inner_radius: f32,
     /// Starting angle in degrees, clockwise from the top. Default: 0.0.
     pub start_angle: f32,
+    /// Optional expand animation: rings scale out from the center, staggered
+    /// by depth (`delay` ms per level); labels fade in alongside.
+    pub animation: Option<AnimationConfig>,
 }
 
 impl SunburstChart {
@@ -209,6 +212,21 @@ impl SunburstChart {
         }
         if let Some(v) = get_f32_from_value(&value, "start_angle") {
             c.start_angle = v;
+        }
+        if let Some(anim) = value.get("animation")
+            && !anim.is_null()
+        {
+            let mut config = AnimationConfig::default();
+            if let Some(d) = get_usize_from_value(anim, "duration") {
+                config.duration = d as u32;
+            }
+            if let Some(e) = get_string_from_value(anim, "easing") {
+                config.easing = e;
+            }
+            if let Some(d) = get_usize_from_value(anim, "delay") {
+                config.delay = d as u32;
+            }
+            c.animation = Some(config);
         }
         Ok(c)
     }
@@ -252,6 +270,14 @@ impl SunburstChart {
             // Tiny slices would render as degenerate arcs; skip drawing but
             // still consume their angle so the layout stays consistent.
             if delta >= 1.0 {
+                let (anim_class, anim_style) = if let Some(ref a) = self.animation {
+                    (
+                        Some("sunburst-anim".to_string()),
+                        Some(format!("animation-delay:{}ms", depth as u32 * a.delay)),
+                    )
+                } else {
+                    (None, None)
+                };
                 c.pie(Pie {
                     fill: color.into(),
                     stroke_color: Some(self.background_color),
@@ -262,6 +288,8 @@ impl SunburstChart {
                     start_angle: angle,
                     delta,
                     border_radius: 0.0,
+                    class: anim_class,
+                    style: anim_style,
                 });
                 self.draw_label(c, node, angle, delta, cx, cy, inner_r, thickness, color);
             }
@@ -365,6 +393,7 @@ impl SunburstChart {
             transform: Some(transform),
             text_anchor: Some("middle".to_string()),
             dominant_baseline: Some("central".to_string()),
+            class: self.animation.as_ref().map(|_| "sunburst-fade".to_string()),
             ..Default::default()
         });
     }
@@ -417,7 +446,23 @@ impl SunburstChart {
             Color::black(),
         );
 
-        c.svg()
+        if let Some(ref anim) = self.animation {
+            let css = format!(
+                "@keyframes sunburst-grow{{from{{transform:scale(0)}}to{{transform:scale(1)}}}} \
+                 @keyframes sunburst-fade{{from{{opacity:0}}to{{opacity:1}}}} \
+                 .sunburst-anim{{transform-origin:{}px {}px;animation:sunburst-grow {}ms {} both}} \
+                 .sunburst-fade{{animation:sunburst-fade {}ms {} both}}",
+                format_float(cx + content.margin.left),
+                format_float(cy + content.margin.top),
+                anim.duration,
+                anim.easing,
+                anim.duration,
+                anim.easing
+            );
+            c.svg_with_style(&css)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -469,6 +514,42 @@ mod tests {
         assert_eq!(
             include_str!("../../asset/sunburst_chart/basic.svg"),
             make_sunburst().svg().unwrap()
+        );
+    }
+
+    #[test]
+    fn sunburst_chart_animation() {
+        let mut chart = make_sunburst();
+        chart.animation = Some(super::AnimationConfig {
+            duration: 600,
+            easing: "linear".to_string(),
+            delay: 100,
+        });
+        let svg = chart.svg().unwrap();
+        assert!(
+            svg.contains("sunburst-grow"),
+            "missing @keyframes sunburst-grow"
+        );
+        assert!(
+            svg.contains(r#"class="sunburst-anim""#),
+            "missing class attr on arc"
+        );
+        assert!(svg.contains("600ms linear"), "missing duration/easing");
+        assert!(
+            svg.contains("animation-delay:0ms"),
+            "missing delay for depth 0"
+        );
+        assert!(
+            svg.contains("animation-delay:100ms"),
+            "missing delay for depth 1"
+        );
+        assert!(
+            svg.contains("animation-delay:200ms"),
+            "missing delay for depth 2"
+        );
+        assert!(
+            svg.contains(r#"class="sunburst-fade""#),
+            "missing fade class on labels"
         );
     }
 

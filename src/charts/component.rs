@@ -609,6 +609,7 @@ pub struct Text {
     pub dominant_baseline: Option<String>,
     pub text_anchor: Option<String>,
     pub alignment_baseline: Option<String>,
+    pub class: Option<String>,
 }
 
 impl Text {
@@ -646,6 +647,9 @@ impl Text {
         if let Some(color) = self.font_color {
             attrs.push((ATTR_FILL, color.hex()));
             attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+        }
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
         }
 
         SVGTag {
@@ -753,6 +757,8 @@ pub struct Pie {
     pub start_angle: f32,
     pub delta: f32,
     pub border_radius: f32,
+    pub class: Option<String>,
+    pub style: Option<String>,
 }
 
 impl Default for Pie {
@@ -767,6 +773,8 @@ impl Default for Pie {
             start_angle: 0.0,
             delta: 0.0,
             border_radius: 8.0,
+            class: None,
+            style: None,
         }
     }
 }
@@ -907,6 +915,12 @@ impl Pie {
         if let Some(color) = self.stroke_color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        }
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
+        if let Some(ref style) = self.style {
+            attrs.push((ATTR_STYLE, style.clone()));
         }
         let element = SVGTag {
             tag: TAG_PATH,
@@ -2155,6 +2169,7 @@ Hello World!
             start_angle: 45.0,
             delta: 45.0,
             border_radius: 0.0,
+            ..Default::default()
         };
         assert_eq!(
             r###"<path d="M250,250 L426.8,73.2 A0 0 0 0 1 432.8,79.5 A250 250 0 0 1 499.8,241.3 A0 0 0 0 1 500,250 L250,250 Z" fill="#000000" fill-opacity="0.5" stroke="#000000"/>"###,

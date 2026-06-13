@@ -113,7 +113,8 @@ pub struct Series {
 }
 
 /// Animation configuration for SVG chart animations.
-/// When set, bars grow from the bottom and lines draw progressively.
+/// When set, bars grow from the bottom, lines draw progressively, and
+/// pie / sunburst slices expand from the center while labels fade in.
 /// PNG/JPEG export via resvg renders the fully-drawn static state.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct AnimationConfig {
@@ -121,7 +122,8 @@ pub struct AnimationConfig {
     pub duration: u32,
     /// CSS easing function: "ease", "linear", "ease-in", "ease-out", "ease-in-out" (default: "ease").
     pub easing: String,
-    /// Stagger delay in milliseconds between each column (bars) or series (lines) (default: 80).
+    /// Stagger delay in milliseconds between each column (bars), series
+    /// (lines), slice (pie), or ring level (sunburst) (default: 80).
     pub delay: u32,
 }
 

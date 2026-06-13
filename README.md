@@ -34,7 +34,7 @@ The library supports seventeen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie
 - Gradient fill for bars, areas, and pie slices (`Fill::LinearGradient`)
 - Per-series mixed chart types (bar + line on the same chart)
 - Series stacking, dash patterns, and per-bar custom colors
-- SVG animation support (duration, easing, stagger) for bar and line charts
+- SVG animation support (duration, easing, stagger) for bar, line, pie, and sunburst charts
 - Null / missing data points via `NIL_VALUE` (`null` in JSON)
 - JSON-based chart configuration for all chart types
 - Multiple output formats: svg, png, jpeg, webp, avif
