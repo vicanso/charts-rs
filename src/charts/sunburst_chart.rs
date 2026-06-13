@@ -99,6 +99,15 @@ fn parse_node(value: &serde_json::Value) -> Option<SunburstData> {
     })
 }
 
+/// Geometry and totals shared by every ring while drawing the hierarchy.
+struct RingLayout<'a> {
+    cx: f32,
+    cy: f32,
+    grand_total: f32,
+    /// Pixel thickness of each ring level, indexed by depth.
+    thicknesses: &'a [f32],
+}
+
 // ── SunburstChart ──────────────────────────────────────────────────────────────
 
 #[derive(Clone, Debug, Default, Chart)]
@@ -177,6 +186,10 @@ pub struct SunburstChart {
     pub inner_radius: f32,
     /// Starting angle in degrees, clockwise from the top. Default: 0.0.
     pub start_angle: f32,
+    /// Relative thickness weight of each ring level; unspecified levels
+    /// default to `1.0`. E.g. `[2.0]` makes the innermost ring twice as thick
+    /// as the others. Empty (default) splits all rings equally.
+    pub level_thickness: Vec<f32>,
     /// Optional expand animation: rings scale out from the center, staggered
     /// by depth (`delay` ms per level); labels fade in alongside.
     pub animation: Option<AnimationConfig>,
@@ -213,6 +226,9 @@ impl SunburstChart {
         if let Some(v) = get_f32_from_value(&value, "start_angle") {
             c.start_angle = v;
         }
+        if let Some(v) = get_f32_slice_from_value(&value, "level_thickness") {
+            c.level_thickness = v;
+        }
         if let Some(anim) = value.get("animation")
             && !anim.is_null()
         {
@@ -242,15 +258,16 @@ impl SunburstChart {
         // level spans the full 360; children only span their parent's slice.
         span: f32,
         depth: usize,
-        cx: f32,
-        cy: f32,
         inner_r: f32,
-        thickness: f32,
         base_color: Color,
+        l: &RingLayout,
     ) {
         if total <= 0.0 {
             return;
         }
+        let Some(thickness) = l.thicknesses.get(depth).copied() else {
+            return;
+        };
         let mut angle = start_angle;
         for (i, node) in nodes.iter().enumerate() {
             let node_total = node.total();
@@ -281,8 +298,8 @@ impl SunburstChart {
                 c.pie(Pie {
                     fill: color.into(),
                     stroke_color: Some(self.background_color),
-                    cx,
-                    cy,
+                    cx: l.cx,
+                    cy: l.cy,
                     r: outer_r,
                     ir: inner_r,
                     start_angle: angle,
@@ -291,7 +308,9 @@ impl SunburstChart {
                     class: anim_class,
                     style: anim_style,
                 });
-                self.draw_label(c, node, angle, delta, cx, cy, inner_r, thickness, color);
+                self.draw_label(
+                    c, node, angle, delta, inner_r, thickness, color, node_total, l,
+                );
             }
 
             if !node.children.is_empty() {
@@ -303,11 +322,9 @@ impl SunburstChart {
                     node_total,
                     delta,
                     depth + 1,
-                    cx,
-                    cy,
                     outer_r,
-                    thickness,
                     child_base,
+                    l,
                 );
             }
             angle += delta;
@@ -321,23 +338,40 @@ impl SunburstChart {
         node: &SunburstData,
         start_angle: f32,
         delta: f32,
-        cx: f32,
-        cy: f32,
         inner_r: f32,
         thickness: f32,
         fill: Color,
+        value: f32,
+        l: &RingLayout,
     ) {
-        if node.name.is_empty() || thickness < 12.0 {
+        // {a}/{b}: node name, {c}: value, {d}: percentage of the grand total.
+        let text = if self.series_label_formatter.is_empty() {
+            node.name.clone()
+        } else {
+            LabelOption {
+                series_name: node.name.clone(),
+                category_name: node.name.clone(),
+                value,
+                percentage: if l.grand_total > 0.0 {
+                    value / l.grand_total
+                } else {
+                    0.0
+                },
+                formatter: self.series_label_formatter.clone(),
+            }
+            .format()
+        };
+        if text.is_empty() || thickness < 12.0 {
             return;
         }
         let font_size = self.series_label_font_size.max(10.0);
         let mid_angle = start_angle + delta / 2.0;
         let mid_r = inner_r + thickness / 2.0;
-        let point = get_pie_point(cx, cy, mid_r, mid_angle);
+        let point = get_pie_point(l.cx, l.cy, mid_r, mid_angle);
 
-        let name_w = measure_text_width_family(&self.font_family, font_size, &node.name)
+        let name_w = measure_text_width_family(&self.font_family, font_size, &text)
             .map(|b| b.width())
-            .unwrap_or(node.name.len() as f32 * font_size * 0.6);
+            .unwrap_or(text.len() as f32 * font_size * 0.6);
         // Labels are drawn tangentially (along the arc). Skip the label when
         // the slice's arc length cannot hold the text — this keeps the text
         // inside its own ring band instead of overflowing onto neighbours.
@@ -384,7 +418,7 @@ impl SunburstChart {
             }
         };
         c.text(Text {
-            text: node.name.clone(),
+            text,
             font_family: Some(self.font_family.clone()),
             font_color: Some(text_color),
             font_size: Some(font_size),
@@ -427,10 +461,23 @@ impl SunburstChart {
             max_r = max_r.min(self.radius);
         }
         let inner = self.inner_radius.max(0.0);
-        let thickness = (max_r - inner) / depth as f32;
-        if thickness <= 0.0 {
+        let available = max_r - inner;
+        if available <= 0.0 {
             return c.svg();
         }
+        // Ring thicknesses from relative weights; levels without an explicit
+        // weight get 1.0, so an empty `level_thickness` splits rings equally.
+        let mut weights: Vec<f32> = (0..depth)
+            .map(|i| self.level_thickness.get(i).copied().unwrap_or(1.0).max(0.0))
+            .collect();
+        let weight_sum: f32 = weights.iter().sum();
+        if weight_sum <= 0.0 {
+            weights = vec![1.0; depth];
+        }
+        let weight_sum: f32 = weights.iter().sum();
+        // Multiply before dividing so the equal-weight case is bit-identical
+        // to the previous `available / depth` computation.
+        let thicknesses: Vec<f32> = weights.iter().map(|w| available * w / weight_sum).collect();
 
         self.draw_nodes(
             &mut content,
@@ -439,11 +486,14 @@ impl SunburstChart {
             total,
             360.0,
             0,
-            cx,
-            cy,
             inner,
-            thickness,
             Color::black(),
+            &RingLayout {
+                cx,
+                cy,
+                grand_total: total,
+                thicknesses: &thicknesses,
+            },
         );
 
         if let Some(ref anim) = self.animation {
@@ -515,6 +565,37 @@ mod tests {
             include_str!("../../asset/sunburst_chart/basic.svg"),
             make_sunburst().svg().unwrap()
         );
+    }
+
+    #[test]
+    fn sunburst_chart_label_formatter() {
+        let mut chart = make_sunburst();
+        chart.series_label_formatter = "{b}: {c} ({d})".to_string();
+        let svg = chart.svg().unwrap();
+        // "Me" leaf: value 40 of grand total 130 -> 30.8%
+        assert!(
+            svg.contains("Me: 40 (30.8%)"),
+            "missing formatted leaf label"
+        );
+        // "Father" branch: 40 + 20 = 60 -> 46.2%
+        assert!(
+            svg.contains("Father: 60 (46.2%)"),
+            "missing formatted branch label"
+        );
+    }
+
+    #[test]
+    fn sunburst_chart_level_thickness() {
+        let mut chart = make_sunburst();
+        // Three levels with weights 2:1:1 over 160px (radius 180, inner 20):
+        // ring outer radii become 100, 140 and 180.
+        chart.radius = 180.0;
+        chart.inner_radius = 20.0;
+        chart.level_thickness = vec![2.0, 1.0, 1.0];
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains("A100 100"), "inner ring should end at r=100");
+        assert!(svg.contains("A140 140"), "middle ring should end at r=140");
+        assert!(svg.contains("A180 180"), "outer ring should end at r=180");
     }
 
     #[test]
