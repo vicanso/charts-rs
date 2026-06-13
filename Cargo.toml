@@ -17,7 +17,7 @@ rust-version = "1.88"
 [dependencies]
 ahash = "0.8.12"
 arc-swap = "1.9.1"
-charts-rs-derive = { path = "./charts-rs-derive", version = "0.3.1" }
+charts-rs-derive = { path = "./charts-rs-derive", version = "0.6.0" }
 fontdue = "0.9.3"
 html-escape = "0.2.13"
 image = { version = "0.25.10", features = [
