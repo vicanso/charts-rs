@@ -157,6 +157,15 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
 
 ## Example
 
+Runnable examples live in [`examples/`](./examples); each writes an `svg` file:
+
+```bash
+cargo run --example bar       # basic bar chart
+cargo run --example line      # smooth line with area fill and mark line / points
+cargo run --example pie       # nightingale (rose) chart
+cargo run --example sunburst  # sunburst with label formatter, ring thickness, animation
+```
+
 ### New from option
 
 ```rust

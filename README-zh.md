@@ -155,6 +155,15 @@
 
 ## Rust 示例
 
+可运行示例位于 [`examples/`](./examples) 目录，每个都会生成一个 `svg` 文件：
+
+```bash
+cargo run --example bar       # 基础柱状图
+cargo run --example line      # 平滑折线 + 面积填充 + 均值线 / 标记点
+cargo run --example pie       # 南丁格尔（玫瑰）图
+cargo run --example sunburst  # 旭日图：标签格式化、分层厚度、动画
+```
+
 ### 使用 Builder API 创建图表
 
 ```rust
