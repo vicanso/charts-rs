@@ -53,3 +53,9 @@
 <p align="center">
     <img src="./asset/image/theme-shine.png" alt="charts-rs">
 </p>
+
+## Shadcn
+
+<p align="center">
+    <img src="./asset/image/theme-shadcn.png" alt="charts-rs">
+</p>

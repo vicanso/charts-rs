@@ -2,10 +2,11 @@
 #[cfg(feature = "image-encoder")]
 fn generate_image() {
     use charts_rs::{
-        Align, BarChart, Box, BoxPlotChart, BoxPlotSeries, CandlestickChart, HeatmapChart,
-        HorizontalBarChart, LineChart, MarkLine, MarkLineCategory, MultiChart, PieChart,
-        RadarChart, ScatterChart, SeriesCategory, THEME_GRAFANA, TableCellStyle, TableChart,
-        TreemapChart, svg_to_avif, svg_to_png, svg_to_webp,
+        Align, BarChart, Box, BoxPlotChart, BoxPlotSeries, CalendarChart, CandlestickChart,
+        FunnelChart, GaugeChart, HeatmapChart, HorizontalBarChart, LineChart, MarkLine,
+        MarkLineCategory, MultiChart, PieChart, RadarChart, ScatterChart, SeriesCategory,
+        SunburstChart, THEME_GRAFANA, TableCellStyle, TableChart, TreemapChart, WaterfallChart,
+        svg_to_avif, svg_to_png, svg_to_webp,
     };
     // bar chart
     let mut bar_chart = BarChart::new_with_theme(
@@ -401,8 +402,7 @@ fn generate_image() {
     let buf = svg_to_avif(&table_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/table.avif", buf).unwrap();
 
-    let mut multi_chart = MultiChart::from_json(
-        r###"{
+    let multi_chart_json = r###"{
             "type": "multi_chart",
             "margin": {
               "left": 10,
@@ -889,11 +889,18 @@ fn generate_image() {
               }
             ],
             "theme": "grafana"
-          }"###,
-    )
-    .unwrap();
+          }"###;
+    let mut multi_chart = MultiChart::from_json(multi_chart_json).unwrap();
     let buf = svg_to_webp(&multi_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/multi-chart.webp", buf).unwrap();
+
+    // theme preview image for shadcn
+    let mut shadcn_chart = MultiChart::from_json(
+        &multi_chart_json.replace(r###""theme": "grafana""###, r###""theme": "shadcn""###),
+    )
+    .unwrap();
+    let buf = svg_to_png(&shadcn_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/theme-shadcn.png", buf).unwrap();
 
     let heatmap_chart = HeatmapChart::from_json(
       r###"{
@@ -979,4 +986,118 @@ fn generate_image() {
     );
     let buf = svg_to_png(&box_plot_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/box-plot.png", buf).unwrap();
+
+    // funnel chart
+    let funnel_chart = FunnelChart::from_json(
+        r##"{
+            "theme": "grafana",
+            "title_text": "Funnel Chart",
+            "legend_show": false,
+            "series_label_position": "inside",
+            "funnel_gap": 4,
+            "series_list": [
+                {"name": "Impression", "data": [60000]},
+                {"name": "Click",      "data": [40000]},
+                {"name": "Inquiry",    "data": [20000]},
+                {"name": "Order",      "data": [8000]},
+                {"name": "Re-order",   "data": [2000]}
+            ]
+        }"##,
+    )
+    .unwrap();
+    let buf = svg_to_png(&funnel_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/funnel.png", buf).unwrap();
+
+    // waterfall chart
+    let waterfall_chart = WaterfallChart::from_json(
+        r#"{
+            "theme": "grafana",
+            "title_text": "Waterfall Chart",
+            "x_axis_data": ["Initial","Revenue","Services","Purchases","Marketing","Profit"],
+            "data": [
+                [900, false],
+                [345, false],
+                [393, false],
+                [-108, false],
+                [-154, false],
+                [0, true]
+            ]
+        }"#,
+    )
+    .unwrap();
+    let buf = svg_to_png(&waterfall_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/waterfall.png", buf).unwrap();
+
+    // calendar chart
+    let calendar_chart = CalendarChart::from_json(
+        r##"{
+            "theme": "grafana",
+            "start_date": "2024-01-01",
+            "end_date": "2024-12-31",
+            "title_text": "2024 Contributions",
+            "cell_size": 11,
+            "cell_gap": 2,
+            "data": [
+                ["2024-01-05", 2],
+                ["2024-02-14", 8],
+                ["2024-06-15", 9],
+                ["2024-09-01", 4],
+                ["2024-12-25", 10]
+            ]
+        }"##,
+    )
+    .unwrap();
+    let buf = svg_to_png(&calendar_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/calendar.png", buf).unwrap();
+
+    // gauge chart
+    let gauge_chart = GaugeChart::from_json(
+        r##"{
+            "theme": "grafana",
+            "title_text": "Gauge",
+            "legend_show": false,
+            "min": 0,
+            "max": 200,
+            "series_list": [{"name": "Speed", "data": [120]}]
+        }"##,
+    )
+    .unwrap();
+    let buf = svg_to_png(&gauge_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/gauge.png", buf).unwrap();
+
+    // sunburst chart
+    let sunburst_chart = SunburstChart::from_json(
+        r##"{
+            "theme": "grafana",
+            "title_text": "Sunburst",
+            "inner_radius": 20,
+            "series_data": [
+                {
+                    "name": "Grandpa",
+                    "children": [
+                        {"name": "Uncle Leo", "children": [
+                            {"name": "Cousin Jack", "value": 18},
+                            {"name": "Cousin Mary", "value": 12}
+                        ]},
+                        {"name": "Father", "children": [
+                            {"name": "Me", "value": 40},
+                            {"name": "Brother Peter", "value": 20}
+                        ]}
+                    ]
+                },
+                {
+                    "name": "Nancy",
+                    "children": [
+                        {"name": "Uncle Nike", "children": [
+                            {"name": "Cousin Betty", "value": 10},
+                            {"name": "Cousin Jenny", "value": 30}
+                        ]}
+                    ]
+                }
+            ]
+        }"##,
+    )
+    .unwrap();
+    let buf = svg_to_png(&sunburst_chart.svg().unwrap()).unwrap();
+    std::fs::write("./asset/image/sunburst.png", buf).unwrap();
 }

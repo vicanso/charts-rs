@@ -6,7 +6,7 @@
 
 [![Crates.io][crates-badge]][crates-url]
 [![Apache licensed][apache-badge]][apache-url]
-[![Build status](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml)
+[![Build status](https://github.com/vicanso/charts-rs/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/test.yml)
 
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
 [crates-url]: https://crates.io/crates/charts-rs
@@ -105,6 +105,48 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
 
 <p align="center">
     <img src="./asset/image/heatmap.png" alt="charts-rs">
+</p>
+
+## Funnel
+
+<p align="center">
+    <img src="./asset/image/funnel.png" alt="charts-rs">
+</p>
+
+## Waterfall
+
+<p align="center">
+    <img src="./asset/image/waterfall.png" alt="charts-rs">
+</p>
+
+## Calendar
+
+<p align="center">
+    <img src="./asset/image/calendar.png" alt="charts-rs">
+</p>
+
+## Gauge
+
+<p align="center">
+    <img src="./asset/image/gauge.png" alt="charts-rs">
+</p>
+
+## Treemap
+
+<p align="center">
+    <img src="./asset/image/treemap.png" alt="charts-rs">
+</p>
+
+## Box Plot
+
+<p align="center">
+    <img src="./asset/image/box-plot.png" alt="charts-rs">
+</p>
+
+## Sunburst
+
+<p align="center">
+    <img src="./asset/image/sunburst.png" alt="charts-rs">
 </p>
 
 ## Multi Chart

@@ -4,7 +4,7 @@
 
 [![Crates.io][crates-badge]][crates-url]
 [![Apache licensed][apache-badge]][apache-url]
-[![Build status](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/ci.yml)
+[![Build status](https://github.com/vicanso/charts-rs/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/vicanso/charts-rs/actions/workflows/test.yml)
 
 [crates-badge]: https://img.shields.io/crates/v/charts-rs.svg
 [crates-url]: https://crates.io/crates/charts-rs
@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持十六种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap` 以及 `BoxPlot`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持十七种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot` 以及 `Sunburst`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -103,6 +103,48 @@
 
 <p align="center">
     <img src="./asset/image/heatmap.png" alt="charts-rs">
+</p>
+
+## Funnel
+
+<p align="center">
+    <img src="./asset/image/funnel.png" alt="charts-rs">
+</p>
+
+## Waterfall
+
+<p align="center">
+    <img src="./asset/image/waterfall.png" alt="charts-rs">
+</p>
+
+## Calendar
+
+<p align="center">
+    <img src="./asset/image/calendar.png" alt="charts-rs">
+</p>
+
+## Gauge
+
+<p align="center">
+    <img src="./asset/image/gauge.png" alt="charts-rs">
+</p>
+
+## Treemap
+
+<p align="center">
+    <img src="./asset/image/treemap.png" alt="charts-rs">
+</p>
+
+## Box Plot
+
+<p align="center">
+    <img src="./asset/image/box-plot.png" alt="charts-rs">
+</p>
+
+## Sunburst
+
+<p align="center">
+    <img src="./asset/image/sunburst.png" alt="charts-rs">
 </p>
 
 ## Multi Chart
