@@ -517,6 +517,8 @@ impl Arrow {
 pub struct Polygon {
     pub color: Option<Color>,
     pub fill: Option<Color>,
+    /// Optional gradient fill; when set it overrides `fill`.
+    pub gradient: Option<Fill>,
     pub points: Vec<Point>,
     pub class: Option<String>,
     pub style: Option<String>,
@@ -537,22 +539,37 @@ impl Polygon {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
-        if let Some(color) = self.fill {
-            attrs.push((ATTR_FILL, color.hex()));
-            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
-        }
+        let defs = if let Some(ref fill) = self.gradient {
+            attrs.push((ATTR_FILL, fill_svg_attr(fill)));
+            let opacity = fill_svg_opacity(fill);
+            if !opacity.is_empty() {
+                attrs.push((ATTR_FILL_OPACITY, opacity));
+            }
+            fill_svg_defs(fill)
+        } else {
+            if let Some(color) = self.fill {
+                attrs.push((ATTR_FILL, color.hex()));
+                attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+            }
+            String::new()
+        };
         if let Some(ref class) = self.class {
             attrs.push((ATTR_CLASS, class.clone()));
         }
         if let Some(ref style) = self.style {
             attrs.push((ATTR_STYLE, style.clone()));
         }
-        SVGTag {
+        let element = SVGTag {
             tag: TAG_POLYGON,
             attrs,
             data: None,
         }
-        .to_string()
+        .to_string();
+        if defs.is_empty() {
+            element
+        } else {
+            format!("{defs}{element}")
+        }
     }
 }
 

@@ -191,6 +191,13 @@ pub struct SankeyChart {
     /// left, staggered column by column (`delay` ms per layer), so the flow
     /// reveals left to right; labels fade in alongside.
     pub animation: Option<AnimationConfig>,
+    /// Horizontal node alignment: `"left"` (default — column = longest path
+    /// from a source), `"right"` (column = longest path to a sink), or
+    /// `"justify"` (sink nodes pushed to the last column).
+    pub node_align: Option<String>,
+    /// When `true`, each link is filled with a source→target color gradient
+    /// instead of a translucent source color. Default: false.
+    pub link_gradient: bool,
 }
 
 /// Number of iterations of the relaxation pass that reduces link crossings.
@@ -280,6 +287,12 @@ impl SankeyChart {
         }
         if let Some(v) = get_f32_from_value(&value, "link_opacity") {
             c.link_opacity = v;
+        }
+        if let Some(s) = get_string_from_value(&value, "node_align") {
+            c.node_align = Some(s);
+        }
+        if let Some(b) = get_bool_from_value(&value, "link_gradient") {
+            c.link_gradient = b;
         }
         if let Some(anim) = value.get("animation")
             && !anim.is_null()
@@ -392,6 +405,39 @@ impl SankeyChart {
             }
         }
         let layer_count = nodes.iter().map(|n| n.layer).max().unwrap_or(0) + 1;
+
+        // Node alignment. "left" (default) keeps the longest-path-from-source
+        // columns computed above; "justify" pushes sinks to the last column;
+        // "right" re-columns every node by its longest path to a sink.
+        match self.node_align.as_deref() {
+            Some("justify") => {
+                for node in nodes.iter_mut() {
+                    if node.out_links.is_empty() {
+                        node.layer = layer_count - 1;
+                    }
+                }
+            }
+            Some("right") => {
+                let mut backward = vec![0usize; node_count];
+                for _ in 0..node_count {
+                    let mut changed = false;
+                    for link in &links {
+                        let want = backward[link.target] + 1;
+                        if backward[link.source] < want {
+                            backward[link.source] = want;
+                            changed = true;
+                        }
+                    }
+                    if !changed {
+                        break;
+                    }
+                }
+                for (i, node) in nodes.iter_mut().enumerate() {
+                    node.layer = (layer_count - 1) - backward[i];
+                }
+            }
+            _ => {}
+        }
 
         // Column x positions.
         for node in nodes.iter_mut() {
@@ -533,9 +579,23 @@ impl SankeyChart {
                 &mut points,
             );
 
+            let (fill, gradient) = if self.link_gradient {
+                (
+                    None,
+                    Some(Fill::LinearGradient {
+                        start_color: source.color.with_alpha(alpha),
+                        end_color: target.color.with_alpha(alpha),
+                        // 90 degrees = left (source) to right (target).
+                        angle: 90.0,
+                    }),
+                )
+            } else {
+                (Some(source.color.with_alpha(alpha)), None)
+            };
             content.polygon(Polygon {
                 color: None,
-                fill: Some(source.color.with_alpha(alpha)),
+                fill,
+                gradient,
                 points,
                 class: self.animation.as_ref().map(|_| "sankey-anim".to_string()),
                 style: self
@@ -844,6 +904,34 @@ mod tests {
             svg.contains("animation-delay:100ms"),
             "missing layer-1 delay"
         );
+    }
+
+    #[test]
+    fn sankey_chart_link_gradient() {
+        let mut chart = SankeyChart::new(vec![], make_links());
+        chart.link_gradient = true;
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains("<linearGradient"), "missing gradient def");
+        assert!(
+            svg.contains("url(#grad_"),
+            "links should reference a gradient"
+        );
+    }
+
+    #[test]
+    fn sankey_chart_node_align() {
+        // a -> b -> c is the long path; x is a sink reachable directly from a.
+        let links: Vec<SankeyLink> = vec![
+            ("a", "b", 4.0).into(),
+            ("b", "c", 4.0).into(),
+            ("a", "x", 2.0).into(),
+        ];
+        let left = SankeyChart::new(vec![], links.clone()).svg().unwrap();
+        let mut justify = SankeyChart::new(vec![], links);
+        justify.node_align = Some("justify".to_string());
+        // "justify" moves the sink "x" from the middle column to the last one,
+        // so the layout (and therefore the SVG) must change.
+        assert_ne!(left, justify.svg().unwrap());
     }
 
     #[test]

@@ -26,6 +26,8 @@ fn main() {
     sankey_chart.title_text = "Energy Flow".to_string();
     // "{b}" node name, "{c}" throughput — see the README for all placeholders
     sankey_chart.series_label_formatter = "{b} ({c})".to_string();
+    // Fill each ribbon with a source -> target color gradient.
+    sankey_chart.link_gradient = true;
     // Flow-grow: columns expand left to right, 200ms apart; labels fade in.
     sankey_chart.animation = Some(AnimationConfig {
         duration: 1000,
