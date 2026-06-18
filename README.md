@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports seventeen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, and `Sunburst`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports eighteen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, and `Sankey`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -34,12 +34,30 @@ The library supports seventeen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie
 - Gradient fill for bars, areas, and pie slices (`Fill::LinearGradient`)
 - Per-series mixed chart types (bar + line on the same chart)
 - Series stacking, dash patterns, and per-bar custom colors
-- SVG animation support (duration, easing, stagger) for bar, line, pie, and sunburst charts
+- SVG animation support (duration, easing, stagger) for bar, line, pie, sunburst, funnel, treemap, and sankey charts
 - Null / missing data points via `Option<f32>` (`null` in JSON; legacy `NIL_VALUE` still accepted)
 - JSON-based chart configuration for all chart types
 - Multiple output formats: svg, png, jpeg, webp, avif
 - Scaled image export via `svg_to_png_with_size` and equivalent functions
 - Web-based JSON editor for interactive chart configuration and testing
+
+## Installation
+
+Add `charts-rs` to your `Cargo.toml`:
+
+```toml
+[dependencies]
+charts-rs = "0.6"
+```
+
+SVG output works with the default build. Raster export (`png`, `jpeg`, `webp`,
+`avif`) — the `svg_to_png`, `svg_to_png_with_size`, and related functions used
+below — requires the `image-encoder` feature:
+
+```toml
+[dependencies]
+charts-rs = { version = "0.6", features = ["image-encoder"] }
+```
 
 ## Demo
 
@@ -164,6 +182,7 @@ cargo run --example bar       # basic bar chart
 cargo run --example line      # smooth line with area fill and mark line / points
 cargo run --example pie       # nightingale (rose) chart
 cargo run --example sunburst  # sunburst with label formatter, ring thickness, animation
+cargo run --example sankey     # sankey flow diagram (nodes auto-derived from links)
 ```
 
 ### New from option

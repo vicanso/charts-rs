@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持十七种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot` 以及 `Sunburst`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持十八种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst` 以及 `Sankey`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -32,12 +32,29 @@
 - 渐变填充支持，可用于柱状图、面积图和饼图（`Fill::LinearGradient`）
 - 同一图表中混合多种系列类型（柱状 + 折线）
 - 系列堆叠、自定义虚线样式、按柱自定义颜色
-- 柱状图、折线图、饼图与旭日图的 SVG 动画支持（时长、缓动函数、错开延迟）
+- 柱状图、折线图、饼图、旭日图、漏斗图、矩形树图与桑基图的 SVG 动画支持（时长、缓动函数、错开延迟）
 - 通过 `Option<f32>` 支持空值 / 缺失数据点（JSON 中使用 `null`；旧的 `NIL_VALUE` 仍兼容）
 - 所有图表类型均支持基于 JSON 的配置方式
 - 多种输出格式：svg、png、jpeg、webp、avif
 - 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
 - 基于 Web 的 JSON 编辑器，支持交互式图表配置和测试
+
+## 安装
+
+在 `Cargo.toml` 中添加 `charts-rs`：
+
+```toml
+[dependencies]
+charts-rs = "0.6"
+```
+
+默认构建即可生成 SVG。若需导出位图格式（`png`、`jpeg`、`webp`、`avif`），即下文用到的
+`svg_to_png`、`svg_to_png_with_size` 等函数，需开启 `image-encoder` feature：
+
+```toml
+[dependencies]
+charts-rs = { version = "0.6", features = ["image-encoder"] }
+```
 
 ## 示例
 
@@ -162,6 +179,7 @@ cargo run --example bar       # 基础柱状图
 cargo run --example line      # 平滑折线 + 面积填充 + 均值线 / 标记点
 cargo run --example pie       # 南丁格尔（玫瑰）图
 cargo run --example sunburst  # 旭日图：标签格式化、分层厚度、动画
+cargo run --example sankey     # 桑基流向图（节点由 links 自动推导）
 ```
 
 ### 使用 Builder API 创建图表

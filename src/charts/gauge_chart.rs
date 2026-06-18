@@ -390,6 +390,7 @@ impl GaugeChart {
                 color: Some(progress_color),
                 fill: Some(progress_color),
                 points: vec![tip, base_l, base_r],
+                ..Default::default()
             });
 
             // Center hub circle

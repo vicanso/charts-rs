@@ -518,6 +518,8 @@ pub struct Polygon {
     pub color: Option<Color>,
     pub fill: Option<Color>,
     pub points: Vec<Point>,
+    pub class: Option<String>,
+    pub style: Option<String>,
 }
 
 impl Polygon {
@@ -538,6 +540,12 @@ impl Polygon {
         if let Some(color) = self.fill {
             attrs.push((ATTR_FILL, color.hex()));
             attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+        }
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
+        if let Some(ref style) = self.style {
+            attrs.push((ATTR_STYLE, style.clone()));
         }
         SVGTag {
             tag: TAG_POLYGON,
@@ -714,6 +722,7 @@ fn generate_triangle_symbol(
                     (p.x + r * 0.866, p.y + r * 0.5).into(),
                     (p.x - r * 0.866, p.y + r * 0.5).into(),
                 ],
+                ..Default::default()
             }
             .svg(),
         );
@@ -739,6 +748,7 @@ fn generate_diamond_symbol(
                     (p.x, p.y + r).into(),
                     (p.x - r, p.y).into(),
                 ],
+                ..Default::default()
             }
             .svg(),
         );
@@ -2074,6 +2084,7 @@ mod tests {
                     (20.0, 60.0).into(),
                     (30.0, 20.0).into(),
                 ],
+                ..Default::default()
             }
             .svg()
         );
@@ -2088,6 +2099,7 @@ mod tests {
                     (20.0, 60.0).into(),
                     (30.0, 20.0).into(),
                 ],
+                ..Default::default()
             }
             .svg()
         );
@@ -2102,6 +2114,7 @@ mod tests {
                     (20.0, 60.0).into(),
                     (30.0, 20.0).into(),
                 ],
+                ..Default::default()
             }
             .svg()
         );

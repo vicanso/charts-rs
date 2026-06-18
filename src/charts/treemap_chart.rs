@@ -202,6 +202,9 @@ pub struct TreemapChart {
     // treemap-specific
     /// Pixel gap between adjacent cells. Default: 2.0.
     pub item_gap: f32,
+    /// Optional fade-in animation for the cells and their labels. The
+    /// `delay` field is not used (all cells fade in together).
+    pub animation: Option<AnimationConfig>,
 }
 
 impl TreemapChart {
@@ -235,6 +238,21 @@ impl TreemapChart {
         let value = c.fill_option(json)?;
         if let Some(v) = get_f32_from_value(&value, "item_gap") {
             c.item_gap = v;
+        }
+        if let Some(anim) = value.get("animation")
+            && !anim.is_null()
+        {
+            let mut config = AnimationConfig::default();
+            if let Some(d) = get_usize_from_value(anim, "duration") {
+                config.duration = d as u32;
+            }
+            if let Some(e) = get_string_from_value(anim, "easing") {
+                config.easing = e;
+            }
+            if let Some(d) = get_usize_from_value(anim, "delay") {
+                config.delay = d as u32;
+            }
+            c.animation = Some(config);
         }
         c.fill_default();
         Ok(c)
@@ -304,6 +322,7 @@ impl TreemapChart {
         let half_gap = self.item_gap / 2.0;
         let font_size = self.series_label_font_size.max(10.0);
         let font_color = self.series_label_font_color;
+        let anim_class = self.animation.as_ref().map(|_| "treemap-anim".to_string());
 
         for r in &rects {
             let rx = r.x + half_gap;
@@ -320,6 +339,7 @@ impl TreemapChart {
                 top: ry,
                 width: rw,
                 height: rh,
+                class: anim_class.clone(),
                 ..Default::default()
             });
 
@@ -368,6 +388,7 @@ impl TreemapChart {
                 y: Some(label_y),
                 text_anchor: Some("middle".to_string()),
                 dominant_baseline: Some("central".to_string()),
+                class: anim_class.clone(),
                 ..Default::default()
             });
 
@@ -382,12 +403,22 @@ impl TreemapChart {
                     y: Some(label_y + font_size * 1.3),
                     text_anchor: Some("middle".to_string()),
                     dominant_baseline: Some("central".to_string()),
+                    class: anim_class.clone(),
                     ..Default::default()
                 });
             }
         }
 
-        c.svg()
+        if let Some(ref anim) = self.animation {
+            let css = format!(
+                "@keyframes treemap-fade{{from{{opacity:0}}to{{opacity:1}}}} \
+                 .treemap-anim{{animation:treemap-fade {}ms {} both}}",
+                anim.duration, anim.easing
+            );
+            c.svg_with_style(&css)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -437,5 +468,25 @@ mod tests {
             include_str!("../../asset/treemap_chart/basic_json.svg"),
             chart.svg().unwrap()
         );
+    }
+
+    #[test]
+    fn treemap_chart_animation() {
+        let mut chart = make_treemap();
+        chart.animation = Some(super::AnimationConfig {
+            duration: 600,
+            easing: "linear".to_string(),
+            delay: 0,
+        });
+        let svg = chart.svg().unwrap();
+        assert!(
+            svg.contains("treemap-fade"),
+            "missing @keyframes treemap-fade"
+        );
+        assert!(
+            svg.contains(r#"class="treemap-anim""#),
+            "missing class on cell"
+        );
+        assert!(svg.contains("600ms linear"), "missing duration/easing");
     }
 }

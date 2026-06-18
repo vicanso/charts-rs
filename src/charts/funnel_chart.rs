@@ -105,6 +105,10 @@ pub struct FunnelChart {
 
     /// Minimum trapezoid width for the narrowest end, in pixels (default: 20).
     pub min_width: f32,
+
+    /// Optional fade-in animation for the trapezoids and their labels. The
+    /// `delay` field is not used (all stages fade in together).
+    pub animation: Option<AnimationConfig>,
 }
 
 impl FunnelChart {
@@ -157,6 +161,21 @@ impl FunnelChart {
         }
         if let Some(a) = get_align_from_value(&value, "funnel_align") {
             c.funnel_align = a;
+        }
+        if let Some(anim) = value.get("animation")
+            && !anim.is_null()
+        {
+            let mut config = AnimationConfig::default();
+            if let Some(d) = get_usize_from_value(anim, "duration") {
+                config.duration = d as u32;
+            }
+            if let Some(e) = get_string_from_value(anim, "easing") {
+                config.easing = e;
+            }
+            if let Some(d) = get_usize_from_value(anim, "delay") {
+                config.delay = d as u32;
+            }
+            c.animation = Some(config);
         }
         c.fill_default();
         Ok(c)
@@ -226,6 +245,7 @@ impl FunnelChart {
         if formatter.is_empty() {
             formatter = "{a}: {c}".to_string();
         }
+        let anim_class = self.animation.as_ref().map(|_| "funnel-anim".to_string());
 
         for (stage_idx, (color_idx, val, name)) in stages.iter().enumerate() {
             let top_w = (val / max_val) * funnel_width;
@@ -260,6 +280,8 @@ impl FunnelChart {
                     (x_right_bot, y_bot).into(),
                     (x_left_bot, y_bot).into(),
                 ],
+                class: anim_class.clone(),
+                ..Default::default()
             });
 
             let label_option = LabelOption {
@@ -292,6 +314,7 @@ impl FunnelChart {
                         dominant_baseline: Some("central".to_string()),
                         x: Some(text_x),
                         y: Some(mid_y),
+                        class: anim_class.clone(),
                         ..Default::default()
                     });
                 }
@@ -312,6 +335,7 @@ impl FunnelChart {
                         dominant_baseline: Some("central".to_string()),
                         x: Some(text_x.max(0.0)),
                         y: Some(mid_y),
+                        class: anim_class.clone(),
                         ..Default::default()
                     });
                 }
@@ -327,13 +351,23 @@ impl FunnelChart {
                         dominant_baseline: Some("central".to_string()),
                         x: Some(x_edge),
                         y: Some(mid_y),
+                        class: anim_class.clone(),
                         ..Default::default()
                     });
                 }
             }
         }
 
-        c.svg()
+        if let Some(ref anim) = self.animation {
+            let css = format!(
+                "@keyframes funnel-fade{{from{{opacity:0}}to{{opacity:1}}}} \
+                 .funnel-anim{{animation:funnel-fade {}ms {} both}}",
+                anim.duration, anim.easing
+            );
+            c.svg_with_style(&css)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -394,5 +428,25 @@ mod tests {
             include_str!("../../asset/funnel_chart/basic_json.svg"),
             chart.svg().unwrap()
         );
+    }
+
+    #[test]
+    fn funnel_chart_animation() {
+        let mut chart = FunnelChart::new(make_series());
+        chart.animation = Some(super::AnimationConfig {
+            duration: 800,
+            easing: "ease-in".to_string(),
+            delay: 0,
+        });
+        let svg = chart.svg().unwrap();
+        assert!(
+            svg.contains("funnel-fade"),
+            "missing @keyframes funnel-fade"
+        );
+        assert!(
+            svg.contains(r#"class="funnel-anim""#),
+            "missing class on trapezoid"
+        );
+        assert!(svg.contains("800ms ease-in"), "missing duration/easing");
     }
 }

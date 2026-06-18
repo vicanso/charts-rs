@@ -37,7 +37,7 @@ jobs:
       run: |
         ls -l
         cargo build --verbose
-    - name: Run tests
+    - name: Run tests (image-encoder)
       run: cargo test --verbose --features "image-encoder"
-      
-      
+    - name: Run tests (default features)
+      run: cargo test --verbose --no-default-features
