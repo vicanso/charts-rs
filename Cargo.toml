@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["Tree Xie <tree.xie@outlook.com>"]
 edition = "2024"
 categories = ["multimedia::images"]
@@ -17,7 +17,7 @@ rust-version = "1.88"
 [dependencies]
 ahash = "0.8.12"
 arc-swap = "1.9.1"
-charts-rs-derive = { path = "./charts-rs-derive", version = "0.6.0" }
+charts-rs-derive = { path = "./charts-rs-derive", version = "0.7.0" }
 fontdue = "0.9.3"
 html-escape = "0.2.13"
 image = { version = "0.25.10", features = [
