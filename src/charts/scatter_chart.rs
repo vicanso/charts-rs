@@ -101,6 +101,9 @@ pub struct ScatterChart {
     /// Circle → Triangle → Rect → Diamond by series index.
     /// `series_symbol` (if Some) overrides all per-series symbols.
     pub series_symbols: Vec<Symbol>,
+    /// When `true`, each point carries a native `<title>` tooltip
+    /// (`series: (x, y)`). Default: false; output is unchanged when off.
+    pub tooltip_show: bool,
 }
 
 fn render_scatter_symbol(
@@ -110,6 +113,7 @@ fn render_scatter_symbol(
     cy: f32,
     r: f32,
     color: Color,
+    title: Option<String>,
 ) {
     match symbol {
         Symbol::Circle(_, fill_override) => {
@@ -118,6 +122,7 @@ fn render_scatter_symbol(
                 cx,
                 cy,
                 r,
+                title,
                 ..Default::default()
             });
         }
@@ -128,6 +133,7 @@ fn render_scatter_symbol(
                 top: cy - r,
                 width: r * 2.0,
                 height: r * 2.0,
+                title,
                 ..Default::default()
             });
         }
@@ -139,6 +145,7 @@ fn render_scatter_symbol(
                     (cx + r * 0.866, cy + r * 0.5).into(),
                     (cx - r * 0.866, cy + r * 0.5).into(),
                 ],
+                title,
                 ..Default::default()
             });
         }
@@ -151,6 +158,7 @@ fn render_scatter_symbol(
                     (cx, cy + r).into(),
                     (cx - r, cy).into(),
                 ],
+                title,
                 ..Default::default()
             });
         }
@@ -191,6 +199,9 @@ impl ScatterChart {
         }
         if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
             s.y_axis_hidden = y_axis_hidden;
+        }
+        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
+            s.tooltip_show = v;
         }
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
@@ -386,7 +397,17 @@ impl ScatterChart {
                 }
                 let cx = content_width - x_axis_values.get_offset_height(chunk[0], content_width);
                 let cy = y_axis_values.get_offset_height(chunk[1], content_height);
-                render_scatter_symbol(&mut content_canvas, &symbol, cx, cy, size, color);
+                let title = if self.tooltip_show {
+                    Some(format!(
+                        "{}: ({}, {})",
+                        series.name,
+                        format_float(chunk[0]),
+                        format_float(chunk[1])
+                    ))
+                } else {
+                    None
+                };
+                render_scatter_symbol(&mut content_canvas, &symbol, cx, cy, size, color, title);
             }
         }
 
@@ -458,5 +479,21 @@ mod tests {
             include_str!("../../asset/scatter_chart/no_axis.svg"),
             scatter_chart.svg().unwrap()
         );
+    }
+
+    #[test]
+    fn scatter_chart_tooltip() {
+        let chart = ScatterChart::from_json(
+            r#"{"tooltip_show": true, "series_list": [{"name": "a", "data": [1, 2, 3, 4]}]}"#,
+        )
+        .unwrap();
+        assert!(
+            chart.svg().unwrap().contains("<title>"),
+            "missing scatter tooltip"
+        );
+        let off =
+            ScatterChart::from_json(r#"{"series_list": [{"name": "a", "data": [1, 2, 3, 4]}]}"#)
+                .unwrap();
+        assert!(!off.svg().unwrap().contains("<title>"));
     }
 }

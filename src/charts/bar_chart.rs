@@ -96,6 +96,10 @@ pub struct BarChart {
 
     pub radius: Option<f32>,
     pub animation: Option<AnimationConfig>,
+    /// When `true`, every bar gets a hover tooltip (`series: value`): a
+    /// CSS-revealed label that works in any browser, plus a native `<title>`
+    /// for accessibility. Default: false; output is unchanged when off.
+    pub tooltip_show: bool,
 }
 
 impl BarChart {
@@ -128,6 +132,9 @@ impl BarChart {
                 config.delay = d as u32;
             }
             b.animation = Some(config);
+        }
+        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
+            b.tooltip_show = v;
         }
         Ok(b)
     }
@@ -270,6 +277,7 @@ impl BarChart {
             self.x_axis_data.len(),
             self.radius,
             self.animation.as_ref(),
+            self.tooltip_show,
         );
 
         let mut line_series_labels_list = self.render_line(
@@ -284,6 +292,7 @@ impl BarChart {
             axis_height,
             self.x_axis_data.len(),
             None,
+            self.tooltip_show,
         );
 
         bar_series_labels_list.append(&mut line_series_labels_list);
@@ -297,16 +306,26 @@ impl BarChart {
             bar_series_labels_list,
         );
 
+        let mut css = String::new();
         if let Some(ref anim) = self.animation {
-            let css = format!(
+            css.push_str(&format!(
                 "@keyframes bar-grow{{from{{transform:scaleY(0)}}to{{transform:scaleY(1)}}}} \
                  .bar-anim{{transform-box:fill-box;transform-origin:center bottom;\
-                 animation:bar-grow {}ms {} both}}",
+                 animation:bar-grow {}ms {} both}} ",
                 anim.duration, anim.easing
+            ));
+        }
+        if self.tooltip_show {
+            // Hidden hover labels, revealed when the adjacent bar is hovered.
+            css.push_str(
+                ".ct-tip{opacity:0;pointer-events:none} \
+                 .ct-trigger:hover+.ct-tip{opacity:1}",
             );
-            c.svg_with_style(&css)
-        } else {
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }
@@ -1052,5 +1071,35 @@ mod tests {
             svg.contains(r#"class="line-anim-0""#),
             "missing class attr on line"
         );
+    }
+
+    #[test]
+    fn bar_chart_tooltip() {
+        let chart = BarChart::from_json(
+            r#"{"tooltip_show": true, "series_list": [{"name": "A", "data": [1, 2]}], "x_axis_data": ["x", "y"]}"#,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        // Native <title> for accessibility.
+        assert!(svg.contains("<title>A: 1</title>"), "missing bar title");
+        // CSS hover tooltip: trigger class, hidden label, and reveal rule.
+        assert!(
+            svg.contains(r#"class="ct-trigger""#),
+            "missing trigger class"
+        );
+        assert!(svg.contains(r#"class="ct-tip""#), "missing hover label");
+        assert!(
+            svg.contains(".ct-trigger:hover+.ct-tip"),
+            "missing hover css rule"
+        );
+        // Off by default: byte-for-byte free of tooltip markup.
+        let off = BarChart::from_json(
+            r#"{"series_list": [{"name": "A", "data": [1, 2]}], "x_axis_data": ["x", "y"]}"#,
+        )
+        .unwrap();
+        let off_svg = off.svg().unwrap();
+        assert!(!off_svg.contains("<title>"));
+        assert!(!off_svg.contains("ct-tip"));
+        assert!(!off_svg.contains("ct-trigger"));
     }
 }

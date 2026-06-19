@@ -307,6 +307,7 @@ impl SunburstChart {
                     border_radius: 0.0,
                     class: anim_class,
                     style: anim_style,
+                    ..Default::default()
                 });
                 self.draw_label(
                     c, node, angle, delta, inner_r, thickness, color, node_total, l,

@@ -12,3 +12,6 @@ Cargo.lock
 
 asset/*.png
 .claude
+
+# SVG files written by the examples to the repo root (reproducible demos)
+/*.svg

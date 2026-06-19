@@ -91,6 +91,9 @@ pub struct HorizontalBarChart {
     pub series_symbol: Option<Symbol>,
     pub series_smooth: bool,
     pub series_fill: bool,
+    /// When `true`, each bar carries a native `<title>` tooltip
+    /// (`series: value`). Default: false; output is unchanged when off.
+    pub tooltip_show: bool,
 }
 
 impl HorizontalBarChart {
@@ -104,6 +107,9 @@ impl HorizontalBarChart {
             get_position_from_value(&value, "series_label_position")
         {
             h.series_label_position = Some(series_label_position);
+        }
+        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
+            h.tooltip_show = v;
         }
         Ok(h)
     }
@@ -255,6 +261,15 @@ impl HorizontalBarChart {
                         top,
                         width: x,
                         height: bar_height,
+                        title: if self.tooltip_show {
+                            Some(format!(
+                                "{}: {}",
+                                series.name,
+                                format_series_value(value, &self.series_label_formatter)
+                            ))
+                        } else {
+                            None
+                        },
                         ..Default::default()
                     });
                     series_labels.push(SeriesLabel {
@@ -422,5 +437,22 @@ mod tests {
             include_str!("../../asset/horizontal_bar_chart/nil_value.svg"),
             horizontal_bar_chart.svg().unwrap()
         );
+    }
+
+    #[test]
+    fn horizontal_bar_chart_tooltip() {
+        let chart = HorizontalBarChart::from_json(
+            r#"{"tooltip_show": true, "series_list": [{"name": "A", "data": [1]}], "x_axis_data": ["x"]}"#,
+        )
+        .unwrap();
+        assert!(
+            chart.svg().unwrap().contains("<title>A: 1</title>"),
+            "missing horizontal bar tooltip"
+        );
+        let off = HorizontalBarChart::from_json(
+            r#"{"series_list": [{"name": "A", "data": [1]}], "x_axis_data": ["x"]}"#,
+        )
+        .unwrap();
+        assert!(!off.svg().unwrap().contains("<title>"));
     }
 }

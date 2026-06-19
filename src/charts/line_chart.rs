@@ -93,6 +93,9 @@ pub struct LineChart {
     pub series_smooth: bool,
     pub series_fill: bool,
     pub animation: Option<AnimationConfig>,
+    /// When `true`, each data point carries a native `<title>` tooltip
+    /// (`series: value`). Default: false; output is unchanged when off.
+    pub tooltip_show: bool,
 }
 
 impl LineChart {
@@ -122,6 +125,9 @@ impl LineChart {
                 config.delay = d as u32;
             }
             l.animation = Some(config);
+        }
+        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
+            l.tooltip_show = v;
         }
         Ok(l)
     }
@@ -328,6 +334,7 @@ impl LineChart {
             axis_height,
             self.x_axis_data.len(),
             self.animation.as_ref(),
+            self.tooltip_show,
         );
         self.render_series_label(
             c.child(Box {
@@ -805,5 +812,20 @@ mod tests {
             include_str!("../../asset/line_chart/small_value.svg"),
             line_chart.svg().unwrap()
         );
+    }
+
+    #[test]
+    fn line_chart_tooltip() {
+        let chart = LineChart::from_json(
+            r#"{"tooltip_show": true, "series_list": [{"name": "A", "data": [1, 2]}], "x_axis_data": ["x", "y"]}"#,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains("<title>A: 1</title>"), "missing line tooltip");
+        let off = LineChart::from_json(
+            r#"{"series_list": [{"name": "A", "data": [1, 2]}], "x_axis_data": ["x", "y"]}"#,
+        )
+        .unwrap();
+        assert!(!off.svg().unwrap().contains("<title>"));
     }
 }

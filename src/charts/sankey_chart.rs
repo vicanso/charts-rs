@@ -602,6 +602,7 @@ impl SankeyChart {
                     .animation
                     .as_ref()
                     .map(|a| format!("animation-delay:{}ms", source.layer as u32 * a.delay)),
+                ..Default::default()
             });
         }
 

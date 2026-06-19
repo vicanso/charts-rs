@@ -160,6 +160,14 @@ fn format_option_float(value: Option<f32>) -> String {
     }
 }
 
+/// Builds the `<title>` child element (escaped) for a shape's tooltip, or
+/// `None` when no title is set (keeping the shape a self-closing tag).
+fn title_data(title: &Option<String>) -> Option<String> {
+    title
+        .as_ref()
+        .map(|t| format!("<title>{}</title>", encode_text(t)))
+}
+
 #[derive(Clone, PartialEq, Debug, Default)]
 struct SVGTag<'a> {
     tag: &'a str,
@@ -317,6 +325,8 @@ pub struct Rect {
     pub ry: Option<f32>,
     pub class: Option<String>,
     pub style: Option<String>,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
 }
 impl Rect {
     pub fn svg(&self) -> String {
@@ -355,7 +365,7 @@ impl Rect {
         let element = SVGTag {
             tag: TAG_RECT,
             attrs,
-            data: None,
+            data: title_data(&self.title),
         }
         .to_string();
         if defs.is_empty() {
@@ -421,6 +431,8 @@ pub struct Circle {
     pub cx: f32,
     pub cy: f32,
     pub r: f32,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
 }
 
 impl Default for Circle {
@@ -432,6 +444,7 @@ impl Default for Circle {
             cx: 0.0,
             cy: 0.0,
             r: 3.0,
+            title: None,
         }
     }
 }
@@ -458,7 +471,7 @@ impl Circle {
         SVGTag {
             tag: TAG_CIRCLE,
             attrs,
-            data: None,
+            data: title_data(&self.title),
         }
         .to_string()
     }
@@ -522,6 +535,8 @@ pub struct Polygon {
     pub points: Vec<Point>,
     pub class: Option<String>,
     pub style: Option<String>,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
 }
 
 impl Polygon {
@@ -562,7 +577,7 @@ impl Polygon {
         let element = SVGTag {
             tag: TAG_POLYGON,
             attrs,
-            data: None,
+            data: title_data(&self.title),
         }
         .to_string();
         if defs.is_empty() {
@@ -786,6 +801,8 @@ pub struct Pie {
     pub border_radius: f32,
     pub class: Option<String>,
     pub style: Option<String>,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
 }
 
 impl Default for Pie {
@@ -802,6 +819,7 @@ impl Default for Pie {
             border_radius: 8.0,
             class: None,
             style: None,
+            title: None,
         }
     }
 }
@@ -952,7 +970,7 @@ impl Pie {
         let element = SVGTag {
             tag: TAG_PATH,
             attrs,
-            ..Default::default()
+            data: title_data(&self.title),
         }
         .to_string();
         if defs.is_empty() {
@@ -1770,6 +1788,7 @@ impl Legend {
                         cx: self.left + LEGEND_WIDTH * 0.6,
                         cy: self.top + LEGEND_HEIGHT / 2.0,
                         r: 5.5,
+                        ..Default::default()
                     }
                     .svg(),
                 );
@@ -1795,6 +1814,7 @@ impl Legend {
                         cx: self.left + LEGEND_WIDTH / 2.0,
                         cy: self.top + LEGEND_HEIGHT / 2.0,
                         r: 5.5,
+                        ..Default::default()
                     }
                     .svg(),
                 );
@@ -2043,6 +2063,7 @@ mod tests {
                 cx: 10.0,
                 cy: 10.0,
                 r: 3.0,
+                ..Default::default()
             }
             .svg()
         );
@@ -2056,6 +2077,7 @@ mod tests {
                 cx: 10.0,
                 cy: 10.0,
                 r: 3.0,
+                ..Default::default()
             }
             .svg()
         );
@@ -2069,6 +2091,7 @@ mod tests {
                 cx: 10.0,
                 cy: 10.0,
                 r: 3.0,
+                ..Default::default()
             }
             .svg()
         );

@@ -309,6 +309,7 @@ impl CandlestickChart {
             axis_height,
             self.x_axis_data.len(),
             None,
+            false,
         );
 
         self.render_series_label(

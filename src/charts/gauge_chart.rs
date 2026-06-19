@@ -401,6 +401,7 @@ impl GaugeChart {
                 stroke_color: Some(progress_color),
                 fill: Some(progress_color),
                 stroke_width: 1.0,
+                ..Default::default()
             });
         }
 

@@ -33,6 +33,9 @@ fn main() {
     bar_chart.sub_title_text = "Weekly traffic".to_string();
     // show the value on top of every bar of the first series
     bar_chart.series_list[0].label_show = true;
+    // native <title> hover tooltip on each bar ("series: value");
+    // open bar.svg in a browser and hover to see it
+    bar_chart.tooltip_show = true;
 
     std::fs::write("bar.svg", bar_chart.svg().unwrap()).unwrap();
     println!("wrote bar.svg");

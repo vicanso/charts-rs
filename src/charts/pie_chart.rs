@@ -100,6 +100,9 @@ pub struct PieChart {
     pub series_fill: bool,
 
     pub animation: Option<AnimationConfig>,
+    /// When `true`, each slice carries a native `<title>` tooltip
+    /// (`name: value (pct%)`). Default: false; output is unchanged when off.
+    pub tooltip_show: bool,
 }
 
 impl PieChart {
@@ -142,6 +145,9 @@ impl PieChart {
                 config.delay = d as u32;
             }
             p.animation = Some(config);
+        }
+        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
+            p.tooltip_show = v;
         }
         Ok(p)
     }
@@ -245,6 +251,18 @@ impl PieChart {
             };
             if let Some(border_radius) = self.border_radius {
                 pie.border_radius = border_radius;
+            }
+            if self.tooltip_show {
+                pie.title = Some(
+                    LabelOption {
+                        series_name: series.name.clone(),
+                        value,
+                        percentage: value / sum,
+                        formatter: "{a}: {c} ({d})".to_string(),
+                        ..Default::default()
+                    }
+                    .format(),
+                );
             }
 
             c.pie(pie);
@@ -511,5 +529,24 @@ mod tests {
             include_str!("../../asset/pie_chart/rose_small_piece.svg"),
             pie_chart.svg().unwrap()
         );
+    }
+
+    #[test]
+    fn pie_chart_tooltip() {
+        let chart = PieChart::from_json(
+            r#"{"tooltip_show": true, "series_list": [{"name": "a", "data": [10]}, {"name": "b", "data": [30]}]}"#,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        // "a" is 10 of 40 -> 25%.
+        assert!(
+            svg.contains("<title>a: 10 (25%)</title>"),
+            "missing pie tooltip"
+        );
+        let off = PieChart::from_json(
+            r#"{"series_list": [{"name": "a", "data": [10]}, {"name": "b", "data": [30]}]}"#,
+        )
+        .unwrap();
+        assert!(!off.svg().unwrap().contains("<title>"));
     }
 }

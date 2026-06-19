@@ -592,6 +592,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 series_data_count: usize,
                 radius: Option<f32>,
                 animation: Option<&AnimationConfig>,
+                tooltip: bool,
             ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
                     return vec![];
@@ -700,14 +701,27 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         }
                         let fill: Option<Fill> = fill_color.map(|c| c.into());
 
-                        let (bar_class, bar_style) = if let Some(a) = animation {
-                            (
-                                Some("bar-anim".to_string()),
-                                Some(format!("animation-delay:{}ms", actual_i as u32 * a.delay)),
-                            )
+                        let bar_style = animation
+                            .map(|a| format!("animation-delay:{}ms", actual_i as u32 * a.delay));
+                        // A bar may carry both the grow-animation class and the
+                        // CSS hover-tooltip trigger class.
+                        let mut bar_classes: Vec<&str> = vec![];
+                        if animation.is_some() {
+                            bar_classes.push("bar-anim");
+                        }
+                        if tooltip {
+                            bar_classes.push("ct-trigger");
+                        }
+                        let bar_class = if bar_classes.is_empty() {
+                            None
                         } else {
-                            (None, None)
+                            Some(bar_classes.join(" "))
                         };
+                        let tooltip_text = format!(
+                            "{}: {}",
+                            series.name,
+                            format_series_value(value, &self.series_label_formatter)
+                        );
 
                         c1.rect(Rect {
                             fill,
@@ -719,8 +733,32 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                             ry: radius,
                             class: bar_class,
                             style: bar_style,
+                            // Native <title> for accessibility / screen readers.
+                            title: if tooltip {
+                                Some(tooltip_text.clone())
+                            } else {
+                                None
+                            },
                             ..Default::default()
                         });
+
+                        // CSS hover tooltip: a hidden label drawn immediately
+                        // after the bar, revealed via the adjacent-sibling rule
+                        // `.ct-trigger:hover + .ct-tip`. Works in any browser.
+                        if tooltip {
+                            c1.text(Text {
+                                text: tooltip_text,
+                                class: Some("ct-tip".to_string()),
+                                font_family: Some(self.font_family.clone()),
+                                font_color: Some(self.series_label_font_color),
+                                font_size: Some(self.series_label_font_size),
+                                x: Some(left + half_bar_width),
+                                y: Some(y_top),
+                                dy: Some(-6.0),
+                                text_anchor: Some("middle".to_string()),
+                                ..Default::default()
+                            });
+                        }
 
                         // Update stack accumulator after rendering this bar segment.
                         if let Some(aidx) = acc_idx {
@@ -749,6 +787,7 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                 axis_height: f32,
                 series_data_count: usize,
                 animation: Option<&AnimationConfig>,
+                tooltip: bool,
             ) -> Vec<Vec<SeriesLabel>> {
                 if series_list.is_empty() {
                     return vec![];
@@ -942,6 +981,21 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 stroke_dash_array: series.stroke_dash_array.clone(),
                                 class: line_class.clone(),
                                 path_length: line_path_length,
+                                ..Default::default()
+                            });
+                        }
+                    }
+
+                    // Transparent hit-circles carrying a native <title> tooltip
+                    // at each data point (the line's own symbols are batch-drawn).
+                    if tooltip {
+                        for label in series_labels.iter() {
+                            c1.circle(Circle {
+                                cx: label.point.x,
+                                cy: label.point.y,
+                                r: self.series_stroke_width.max(2.0) + 2.0,
+                                fill: Some(Color::transparent()),
+                                title: Some(format!("{}: {}", series.name, label.text)),
                                 ..Default::default()
                             });
                         }
