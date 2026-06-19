@@ -12,7 +12,6 @@
 
 use html_escape::encode_text;
 use serde::{Deserialize, Serialize};
-use snafu::{ResultExt, Snafu};
 use std::fmt;
 use std::vec;
 
@@ -232,13 +231,8 @@ impl fmt::Display for SVGTag<'_> {
     }
 }
 
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Error get font: {source}"))]
-    GetFont { source: font::Error },
-}
-
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+// Crate-level result type (see `error.rs`).
+use super::error::Result;
 
 pub enum Component {
     Arrow(Arrow),
@@ -1489,7 +1483,7 @@ impl Axis {
                 .map(|item| format_string(item, formatter))
                 .collect();
             if self.position == Position::Top || self.position == Position::Bottom {
-                let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
+                let f = font::get_font(&self.font_family)?;
                 let total_measure = font::measure_text(f, font_size, &text_list.join(" "));
                 let mut total_measure_width = total_measure.width();
                 if self.name_rotate != 0.0 {
@@ -1557,7 +1551,7 @@ impl Axis {
         let name_rotate = self.name_rotate / std::f32::consts::PI * 180.0;
         if !text_list.is_empty() {
             let name_gap = self.name_gap;
-            let f = font::get_font(&self.font_family).context(GetFontSnafu)?;
+            let f = font::get_font(&self.font_family)?;
             let mut data_len = self.data.len();
             let is_name_align_start = self.name_align == Align::Left;
             if is_name_align_start {

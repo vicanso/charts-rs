@@ -20,6 +20,7 @@ mod common;
 mod component;
 #[cfg(feature = "image-encoder")]
 mod encoder;
+mod error;
 mod font;
 mod funnel_chart;
 mod gauge_chart;
@@ -58,6 +59,7 @@ pub use encoder::Error as EncoderError;
 pub(crate) use encoder::get_or_init_fontdb;
 #[cfg(feature = "image-encoder")]
 pub use encoder::*;
+pub use error::{Error, Result};
 
 pub use calendar_chart::CalendarChart;
 pub use candlestick_chart::CandlestickChart;

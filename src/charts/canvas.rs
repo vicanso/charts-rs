@@ -16,35 +16,12 @@ use super::component::{
 };
 
 use super::{measure_text_width_family, util::*};
-use snafu::{ResultExt, Snafu};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Error to svg: {source}"))]
-    ToSVG { source: super::component::Error },
-    #[snafu(display("Params is invalid: {message}"))]
-    Params { message: String },
-    #[snafu(display("Json is invalid: {source}"))]
-    Json { source: serde_json::Error },
-    #[snafu(display("Font is invalid: {source}"))]
-    Font { source: super::FontError },
-}
-
-impl From<serde_json::Error> for Error {
-    fn from(value: serde_json::Error) -> Self {
-        Error::Json { source: value }
-    }
-}
-
-impl From<super::FontError> for Error {
-    fn from(value: super::FontError) -> Self {
-        Error::Font { source: value }
-    }
-}
-
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+// The crate-level error/result types (defined in `error.rs`). Re-exported here
+// so the historical `canvas::Error` / `canvas::Result` paths keep working.
+pub use super::error::{Error, Result};
 
 #[derive(Clone)]
 pub struct Canvas {
@@ -372,7 +349,7 @@ impl Canvas {
                 Component::SmoothLineFill(c) => c.svg(),
                 Component::StraightLineFill(c) => c.svg(),
                 Component::Grid(c) => c.svg(),
-                Component::Axis(c) => c.svg().context(ToSVGSnafu)?,
+                Component::Axis(c) => c.svg()?,
                 Component::Legend(c) => c.svg(),
                 Component::Pie(c) => c.svg(),
             };
@@ -405,7 +382,7 @@ impl Canvas {
                 Component::SmoothLineFill(c) => c.svg(),
                 Component::StraightLineFill(c) => c.svg(),
                 Component::Grid(c) => c.svg(),
-                Component::Axis(c) => c.svg().context(ToSVGSnafu)?,
+                Component::Axis(c) => c.svg()?,
                 Component::Legend(c) => c.svg(),
                 Component::Pie(c) => c.svg(),
             };

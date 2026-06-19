@@ -13,28 +13,15 @@
 use image::ImageFormat;
 use once_cell::sync::OnceCell;
 use resvg::{tiny_skia, usvg};
-use snafu::{ResultExt, Snafu};
+use snafu::ResultExt;
 use std::io::Cursor;
 use std::sync::Arc;
 use usvg::fontdb;
 
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Io {file}: {source}"))]
-    Io {
-        file: String,
-        source: std::io::Error,
-    },
-    #[snafu(display("Image size is invalid, width: {width}, height: {height}"))]
-    Size { width: u32, height: u32 },
-    #[snafu(display("Image from raw is fail, size:{size}"))]
-    Raw { size: usize },
-    #[snafu(display("Error to parse: {source}"))]
-    Parse { source: usvg::Error },
-    #[snafu(display("Encode fail: {source}"))]
-    Image { source: image::ImageError },
-}
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+// Crate-level error/result (see `error.rs`); re-exported to keep
+// `encoder::Error` / `encoder::Result` paths working.
+pub use super::error::{Error, Result};
+use super::error::{ImageSnafu, ParseSnafu};
 
 pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> Arc<fontdb::Database> {
     static GLOBAL_FONT_DB: OnceCell<Arc<fontdb::Database>> = OnceCell::new();

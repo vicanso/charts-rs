@@ -14,26 +14,11 @@ use super::util::*;
 use fontdue::Font;
 use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
 use once_cell::sync::OnceCell;
-use snafu::Snafu;
 use std::collections::HashMap;
 
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Error font: {name} not found"))]
-    FontNotFound { name: String },
-    #[snafu(display("Error parse font: {message}"))]
-    ParseFont { message: String },
-}
-
-impl From<&str> for Error {
-    fn from(value: &str) -> Self {
-        Error::ParseFont {
-            message: value.to_string(),
-        }
-    }
-}
-
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+// Crate-level error/result (see `error.rs`); re-exported to keep `font::Error`.
+use super::error::FontNotFoundSnafu;
+pub use super::error::{Error, Result};
 
 pub static DEFAULT_FONT_FAMILY: &str = "Roboto";
 pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Roboto.ttf");
