@@ -79,6 +79,9 @@ fn render_scatter_symbol(
     color: Color,
     title: Option<String>,
 ) {
+    // When a tooltip is present the symbol is the hover trigger; a hidden
+    // `.ct-tip` label is drawn right after it (adjacent-sibling reveal).
+    let class = title.as_ref().map(|_| "ct-trigger".to_string());
     match symbol {
         Symbol::Circle(_, fill_override) => {
             canvas.circle(Circle {
@@ -86,7 +89,8 @@ fn render_scatter_symbol(
                 cx,
                 cy,
                 r,
-                title,
+                title: title.clone(),
+                class,
                 ..Default::default()
             });
         }
@@ -97,7 +101,8 @@ fn render_scatter_symbol(
                 top: cy - r,
                 width: r * 2.0,
                 height: r * 2.0,
-                title,
+                title: title.clone(),
+                class,
                 ..Default::default()
             });
         }
@@ -109,7 +114,8 @@ fn render_scatter_symbol(
                     (cx + r * 0.866, cy + r * 0.5).into(),
                     (cx - r * 0.866, cy + r * 0.5).into(),
                 ],
-                title,
+                title: title.clone(),
+                class,
                 ..Default::default()
             });
         }
@@ -122,11 +128,23 @@ fn render_scatter_symbol(
                     (cx, cy + r).into(),
                     (cx - r, cy).into(),
                 ],
-                title,
+                title: title.clone(),
+                class,
                 ..Default::default()
             });
         }
-        Symbol::None => {}
+        Symbol::None => return,
+    }
+    if let Some(text) = title {
+        canvas.text(Text {
+            text,
+            class: Some("ct-tip".to_string()),
+            x: Some(cx),
+            y: Some(cy),
+            dy: Some(-8.0),
+            text_anchor: Some("middle".to_string()),
+            ..Default::default()
+        });
     }
 }
 
@@ -375,7 +393,11 @@ impl ScatterChart {
             }
         }
 
-        c.svg()
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -451,13 +473,18 @@ mod tests {
             r#"{"tooltip_show": true, "series_list": [{"name": "a", "data": [1, 2, 3, 4]}]}"#,
         )
         .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains("<title>"), "missing scatter title");
+        assert!(svg.contains(r#"class="ct-tip""#), "missing hover label");
         assert!(
-            chart.svg().unwrap().contains("<title>"),
-            "missing scatter tooltip"
+            svg.contains(".ct-trigger:hover+.ct-tip"),
+            "missing hover css"
         );
         let off =
             ScatterChart::from_json(r#"{"series_list": [{"name": "a", "data": [1, 2, 3, 4]}]}"#)
                 .unwrap();
-        assert!(!off.svg().unwrap().contains("<title>"));
+        let off_svg = off.svg().unwrap();
+        assert!(!off_svg.contains("<title>"));
+        assert!(!off_svg.contains("ct-tip"));
     }
 }

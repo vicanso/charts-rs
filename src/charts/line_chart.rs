@@ -320,10 +320,10 @@ impl LineChart {
             max_height,
         );
 
+        let mut css = String::new();
         if let Some(ref anim) = self.animation {
             let series_count = self.series_list.len();
-            let mut css = "@keyframes line-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}"
-                .to_string();
+            css.push_str("@keyframes line-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}");
             for i in 0..series_count {
                 let delay = i as u32 * anim.delay;
                 css.push_str(&format!(
@@ -332,9 +332,17 @@ impl LineChart {
                     i, anim.duration, anim.easing, delay
                 ));
             }
-            c.svg_with_style(&css)
-        } else {
+        }
+        if self.tooltip_show {
+            if !css.is_empty() {
+                css.push(' ');
+            }
+            css.push_str(TOOLTIP_STYLE);
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }
@@ -785,11 +793,18 @@ mod tests {
         )
         .unwrap();
         let svg = chart.svg().unwrap();
-        assert!(svg.contains("<title>A: 1</title>"), "missing line tooltip");
+        assert!(svg.contains("<title>A: 1</title>"), "missing line title");
+        assert!(svg.contains(r#"class="ct-tip""#), "missing hover label");
+        assert!(
+            svg.contains(".ct-trigger:hover+.ct-tip"),
+            "missing hover css"
+        );
         let off = LineChart::from_json(
             r#"{"series_list": [{"name": "A", "data": [1, 2]}], "x_axis_data": ["x", "y"]}"#,
         )
         .unwrap();
-        assert!(!off.svg().unwrap().contains("<title>"));
+        let off_svg = off.svg().unwrap();
+        assert!(!off_svg.contains("<title>"));
+        assert!(!off_svg.contains("ct-tip"));
     }
 }

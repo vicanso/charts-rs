@@ -216,8 +216,8 @@ impl PieChart {
             if let Some(border_radius) = self.border_radius {
                 pie.border_radius = border_radius;
             }
-            if self.tooltip_show {
-                pie.title = Some(
+            let tooltip_text = if self.tooltip_show {
+                Some(
                     LabelOption {
                         series_name: series.name.clone(),
                         value,
@@ -226,7 +226,17 @@ impl PieChart {
                         ..Default::default()
                     }
                     .format(),
-                );
+                )
+            } else {
+                None
+            };
+            if let Some(ref t) = tooltip_text {
+                pie.title = Some(t.clone());
+                let trigger = match pie.class.take() {
+                    Some(c) => format!("{c} ct-trigger"),
+                    None => "ct-trigger".to_string(),
+                };
+                pie.class = Some(trigger);
             }
 
             c.pie(pie);
@@ -234,6 +244,23 @@ impl PieChart {
             let is_inside = self.series_label_position == Some("inside".to_string());
 
             let angle = start_angle + half_delta;
+            // Hidden hover label, drawn immediately after the slice so the
+            // adjacent-sibling CSS rule reveals it on hover.
+            if let Some(text) = tooltip_text {
+                let p = get_pie_point(cx, cy, (cr + self.inner_radius) / 2.0, angle);
+                c.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(self.series_label_font_size),
+                    x: Some(p.x),
+                    y: Some(p.y),
+                    text_anchor: Some("middle".to_string()),
+                    dominant_baseline: Some("central".to_string()),
+                    ..Default::default()
+                });
+            }
             let label_option = LabelOption {
                 series_name: series.name.clone(),
                 value,
@@ -330,8 +357,9 @@ impl PieChart {
             start_angle += delta;
         }
 
+        let mut css = String::new();
         if let Some(ref anim) = self.animation {
-            let css = format!(
+            css.push_str(&format!(
                 "@keyframes pie-grow{{from{{transform:scale(0)}}to{{transform:scale(1)}}}} \
                  @keyframes pie-fade{{from{{opacity:0}}to{{opacity:1}}}} \
                  .pie-anim{{transform-origin:{}px {}px;animation:pie-grow {}ms {} both}} \
@@ -342,10 +370,18 @@ impl PieChart {
                 anim.easing,
                 anim.duration,
                 anim.easing
-            );
-            c.svg_with_style(&css)
-        } else {
+            ));
+        }
+        if self.tooltip_show {
+            if !css.is_empty() {
+                css.push(' ');
+            }
+            css.push_str(TOOLTIP_STYLE);
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }
@@ -505,12 +541,19 @@ mod tests {
         // "a" is 10 of 40 -> 25%.
         assert!(
             svg.contains("<title>a: 10 (25%)</title>"),
-            "missing pie tooltip"
+            "missing pie title"
+        );
+        assert!(svg.contains(r#"class="ct-tip""#), "missing hover label");
+        assert!(
+            svg.contains(".ct-trigger:hover+.ct-tip"),
+            "missing hover css"
         );
         let off = PieChart::from_json(
             r#"{"series_list": [{"name": "a", "data": [10]}, {"name": "b", "data": [30]}]}"#,
         )
         .unwrap();
-        assert!(!off.svg().unwrap().contains("<title>"));
+        let off_svg = off.svg().unwrap();
+        assert!(!off_svg.contains("<title>"));
+        assert!(!off_svg.contains("ct-tip"));
     }
 }

@@ -220,22 +220,38 @@ impl HorizontalBarChart {
                     top += (bar_height + bar_chart_gap) * index as f32;
 
                     let x = max_width - x_axis_values.get_offset_height(value, max_width);
+                    let tip = if self.tooltip_show {
+                        Some(format!(
+                            "{}: {}",
+                            series.name,
+                            format_series_value(value, &self.series_label_formatter)
+                        ))
+                    } else {
+                        None
+                    };
                     c1.rect(Rect {
                         fill: Some(color.into()),
                         top,
                         width: x,
                         height: bar_height,
-                        title: if self.tooltip_show {
-                            Some(format!(
-                                "{}: {}",
-                                series.name,
-                                format_series_value(value, &self.series_label_formatter)
-                            ))
-                        } else {
-                            None
-                        },
+                        title: tip.clone(),
+                        class: tip.as_ref().map(|_| "ct-trigger".to_string()),
                         ..Default::default()
                     });
+                    if let Some(text) = tip {
+                        c1.text(Text {
+                            text,
+                            class: Some("ct-tip".to_string()),
+                            font_family: Some(self.font_family.clone()),
+                            font_color: Some(self.series_label_font_color),
+                            font_size: Some(self.series_label_font_size),
+                            x: Some(x),
+                            y: Some(top + half_bar_height),
+                            dy: Some(-4.0),
+                            text_anchor: Some("end".to_string()),
+                            ..Default::default()
+                        });
+                    }
                     series_labels.push(SeriesLabel {
                         point: (x, top + half_bar_height).into(),
                         text: format_series_value(value, &self.series_label_formatter),
@@ -289,7 +305,11 @@ impl HorizontalBarChart {
             }
         }
 
-        c.svg()
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -409,14 +429,19 @@ mod tests {
             r#"{"tooltip_show": true, "series_list": [{"name": "A", "data": [1]}], "x_axis_data": ["x"]}"#,
         )
         .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains("<title>A: 1</title>"), "missing hbar title");
+        assert!(svg.contains(r#"class="ct-tip""#), "missing hover label");
         assert!(
-            chart.svg().unwrap().contains("<title>A: 1</title>"),
-            "missing horizontal bar tooltip"
+            svg.contains(".ct-trigger:hover+.ct-tip"),
+            "missing hover css"
         );
         let off = HorizontalBarChart::from_json(
             r#"{"series_list": [{"name": "A", "data": [1]}], "x_axis_data": ["x"]}"#,
         )
         .unwrap();
-        assert!(!off.svg().unwrap().contains("<title>"));
+        let off_svg = off.svg().unwrap();
+        assert!(!off_svg.contains("<title>"));
+        assert!(!off_svg.contains("ct-tip"));
     }
 }

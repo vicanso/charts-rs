@@ -280,11 +280,7 @@ impl BarChart {
             ));
         }
         if self.tooltip_show {
-            // Hidden hover labels, revealed when the adjacent bar is hovered.
-            css.push_str(
-                ".ct-tip{opacity:0;pointer-events:none} \
-                 .ct-trigger:hover+.ct-tip{opacity:1}",
-            );
+            css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
             c.svg()

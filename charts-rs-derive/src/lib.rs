@@ -1039,16 +1039,32 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         }
                     }
 
-                    // Transparent hit-circles carrying a native <title> tooltip
-                    // at each data point (the line's own symbols are batch-drawn).
+                    // Transparent hit-circles at each data point (the line's own
+                    // symbols are batch-drawn). Each carries a native <title>
+                    // (accessibility) and the `ct-trigger` class, immediately
+                    // followed by a hidden `.ct-tip` label revealed on hover.
                     if tooltip {
                         for label in series_labels.iter() {
+                            let text = format!("{}: {}", series.name, label.text);
                             c1.circle(Circle {
                                 cx: label.point.x,
                                 cy: label.point.y,
                                 r: self.series_stroke_width.max(2.0) + 2.0,
                                 fill: Some(Color::transparent()),
-                                title: Some(format!("{}: {}", series.name, label.text)),
+                                title: Some(text.clone()),
+                                class: Some("ct-trigger".to_string()),
+                                ..Default::default()
+                            });
+                            c1.text(Text {
+                                text,
+                                class: Some("ct-tip".to_string()),
+                                font_family: Some(self.font_family.clone()),
+                                font_color: Some(self.series_label_font_color),
+                                font_size: Some(self.series_label_font_size),
+                                x: Some(label.point.x),
+                                y: Some(label.point.y),
+                                dy: Some(-8.0),
+                                text_anchor: Some("middle".to_string()),
                                 ..Default::default()
                             });
                         }

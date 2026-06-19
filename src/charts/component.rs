@@ -174,6 +174,13 @@ struct SVGTag<'a> {
     data: Option<String>,
 }
 
+/// Shared CSS for the opt-in hover tooltip: a hidden `.ct-tip` label revealed
+/// when the adjacent `.ct-trigger` data shape is hovered. Charts inject this
+/// (via `svg_with_style`) when `tooltip_show` is set. Works in any browser,
+/// unlike the bare `<title>` element.
+pub(crate) const TOOLTIP_STYLE: &str =
+    ".ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}";
+
 pub fn generate_svg(width: f32, height: f32, x: f32, y: f32, data: String) -> String {
     let mut attrs = vec![
         (ATTR_WIDTH, format!("{}", width)),
@@ -459,6 +466,8 @@ pub struct Circle {
     pub r: f32,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
+    /// Optional CSS class (used for the hover-tooltip trigger).
+    pub class: Option<String>,
 }
 
 impl Default for Circle {
@@ -471,6 +480,7 @@ impl Default for Circle {
             cy: 0.0,
             r: 3.0,
             title: None,
+            class: None,
         }
     }
 }
@@ -493,6 +503,9 @@ impl Circle {
             attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
         }
         attrs.push((ATTR_FILL, fill));
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
 
         SVGTag {
             tag: TAG_CIRCLE,
