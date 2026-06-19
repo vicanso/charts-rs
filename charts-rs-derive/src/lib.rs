@@ -3,6 +3,59 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::DeriveInput;
 
+/// Injects the header fields shared by every chart struct (width/height,
+/// position, margin, `series_list`, font/background, and the title, sub-title
+/// and legend blocks). Place it directly above `#[derive(Chart)]` so the
+/// generated `fill_theme`/`fill_option` see the fields. The fields stay direct
+/// public fields, so the chart API is unchanged; adding a shared themeable
+/// field now means editing this one list instead of every chart struct.
+#[proc_macro_attribute]
+pub fn chart_common_fields(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let mut item_struct = syn::parse_macro_input!(item as syn::ItemStruct);
+    if let syn::Fields::Named(ref mut fields) = item_struct.fields {
+        let header: syn::FieldsNamed = syn::parse_quote!({
+            pub width: f32,
+            pub height: f32,
+            pub x: f32,
+            pub y: f32,
+            pub margin: Box,
+            pub series_list: Vec<Series>,
+            pub font_family: String,
+            pub background_color: Color,
+            pub is_light: bool,
+
+            pub title_text: String,
+            pub title_font_size: f32,
+            pub title_font_color: Color,
+            pub title_font_weight: Option<String>,
+            pub title_margin: Option<Box>,
+            pub title_align: Align,
+            pub title_height: f32,
+
+            pub sub_title_text: String,
+            pub sub_title_font_size: f32,
+            pub sub_title_font_color: Color,
+            pub sub_title_font_weight: Option<String>,
+            pub sub_title_margin: Option<Box>,
+            pub sub_title_align: Align,
+            pub sub_title_height: f32,
+
+            pub legend_font_size: f32,
+            pub legend_font_color: Color,
+            pub legend_font_weight: Option<String>,
+            pub legend_align: Align,
+            pub legend_margin: Option<Box>,
+            pub legend_category: LegendCategory,
+            pub legend_show: Option<bool>,
+        });
+        // Prepend the header fields (front insertion in reverse keeps order).
+        for field in header.named.into_iter().rev() {
+            fields.named.insert(0, field);
+        }
+    }
+    quote!(#item_struct).into()
+}
+
 #[proc_macro_derive(Chart)]
 pub fn my_default(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();

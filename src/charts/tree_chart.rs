@@ -147,45 +147,9 @@ fn place(
 
 // ── TreeChart ────────────────────────────────────────────────────────────────
 
+#[charts_rs_derive::chart_common_fields]
 #[derive(Clone, Debug, Default, Chart)]
 pub struct TreeChart {
-    pub width: f32,
-    pub height: f32,
-    pub x: f32,
-    pub y: f32,
-    pub margin: Box,
-    pub series_list: Vec<Series>,
-    pub font_family: String,
-    pub background_color: Color,
-    pub is_light: bool,
-
-    // title
-    pub title_text: String,
-    pub title_font_size: f32,
-    pub title_font_color: Color,
-    pub title_font_weight: Option<String>,
-    pub title_margin: Option<Box>,
-    pub title_align: Align,
-    pub title_height: f32,
-
-    // sub title
-    pub sub_title_text: String,
-    pub sub_title_font_size: f32,
-    pub sub_title_font_color: Color,
-    pub sub_title_font_weight: Option<String>,
-    pub sub_title_margin: Option<Box>,
-    pub sub_title_align: Align,
-    pub sub_title_height: f32,
-
-    // legend
-    pub legend_font_size: f32,
-    pub legend_font_color: Color,
-    pub legend_font_weight: Option<String>,
-    pub legend_align: Align,
-    pub legend_margin: Option<Box>,
-    pub legend_category: LegendCategory,
-    pub legend_show: Option<bool>,
-
     // x/y axis (required by #[derive(Chart)], unused in rendering)
     pub x_axis_data: Vec<String>,
     pub x_axis_height: f32,

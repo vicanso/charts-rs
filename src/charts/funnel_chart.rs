@@ -22,45 +22,9 @@ use crate::charts::measure_text_width_family;
 use charts_rs_derive::Chart;
 use std::sync::Arc;
 
+#[charts_rs_derive::chart_common_fields]
 #[derive(Clone, Debug, Default, Chart)]
 pub struct FunnelChart {
-    pub width: f32,
-    pub height: f32,
-    pub x: f32,
-    pub y: f32,
-    pub margin: Box,
-    pub series_list: Vec<Series>,
-    pub font_family: String,
-    pub background_color: Color,
-    pub is_light: bool,
-
-    // title
-    pub title_text: String,
-    pub title_font_size: f32,
-    pub title_font_color: Color,
-    pub title_font_weight: Option<String>,
-    pub title_margin: Option<Box>,
-    pub title_align: Align,
-    pub title_height: f32,
-
-    // sub title
-    pub sub_title_text: String,
-    pub sub_title_font_size: f32,
-    pub sub_title_font_color: Color,
-    pub sub_title_font_weight: Option<String>,
-    pub sub_title_margin: Option<Box>,
-    pub sub_title_align: Align,
-    pub sub_title_height: f32,
-
-    // legend
-    pub legend_font_size: f32,
-    pub legend_font_color: Color,
-    pub legend_font_weight: Option<String>,
-    pub legend_align: Align,
-    pub legend_margin: Option<Box>,
-    pub legend_category: LegendCategory,
-    pub legend_show: Option<bool>,
-
     // x axis (required by derive – not rendered)
     pub x_axis_data: Vec<String>,
     pub x_axis_height: f32,
