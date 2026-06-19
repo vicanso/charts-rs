@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs-derive"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2024"
 keywords = ["charts", "svg"]
 description = "A derive library for charts-rs"
@@ -15,4 +15,4 @@ proc-macro = true
 
 [dependencies]
 quote = "1.0.45"
-syn = { version = "2.0.117", features = ["full"] }
+syn = "2.0.118"
