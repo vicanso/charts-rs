@@ -1,0 +1,30 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="281.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Tree
+</text>
+<polyline fill="none" stroke-width="2" points="371.8,70 370.2,80.1 365.7,89.2 358.7,97.5 349.4,105.1 338.1,112 325.3,118.4 311.1,124.4 296,130 280.2,135.4 264.1,140.8 248,146.1 232.3,151.5 217.1,157.1 203,163.1 190.1,169.5 178.9,176.4 169.6,184 162.5,192.3 158.1,201.4 156.5,211.5" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="156.5,223.5 155.5,233.6 152.5,242.7 147.8,251 141.6,258.6 134.1,265.5 125.5,271.9 116.1,277.9 106,283.5 95.5,288.9 84.8,294.2 74,299.6 63.5,305 53.4,310.6 44,316.6 35.4,323 27.9,329.9 21.7,337.5 17,345.8 14,354.9 13,365" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="156.5,223.5 157.5,233.6 160.5,242.7 165.2,251 171.4,258.6 178.9,265.5 187.5,271.9 196.9,277.9 207,283.5 217.5,288.9 228.2,294.2 239,299.6 249.5,305 259.6,310.6 269,316.6 277.6,323 285.1,329.9 291.3,337.5 296,345.8 299,354.9 300,365" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="371.8,70 373.3,80.1 377.8,89.2 384.8,97.5 394.1,105.1 405.4,112 418.2,118.4 432.4,124.4 447.5,130 463.3,135.4 479.4,140.8 495.5,146.1 511.2,151.5 526.4,157.1 540.5,163.1 553.4,169.5 564.6,176.4 573.9,184 581,192.3 585.4,201.4 587,211.5" stroke="#E0E6F2"/>
+<circle cx="371.8" cy="64" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<circle cx="156.5" cy="217.5" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<circle cx="13" cy="371" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<circle cx="300" cy="371" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<circle cx="587" cy="217.5" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<text font-size="14" x="371.8" y="54" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+root
+</text>
+<text font-size="14" x="156.5" y="207.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+A
+</text>
+<text font-size="14" x="13" y="388" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+A1
+</text>
+<text font-size="14" x="300" y="388" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+A2
+</text>
+<text font-size="14" x="587" y="234.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+B
+</text>
+</svg>

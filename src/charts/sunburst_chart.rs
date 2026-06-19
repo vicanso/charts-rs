@@ -76,7 +76,7 @@ fn lighten(c: Color, factor: f32) -> Color {
     }
 }
 
-fn parse_node(value: &serde_json::Value) -> Option<SunburstData> {
+pub(crate) fn parse_node(value: &serde_json::Value) -> Option<SunburstData> {
     let name = get_string_from_value(value, "name").unwrap_or_default();
     let val = get_f32_from_value(value, "value").unwrap_or_default();
     let color = get_color_from_value(value, "color");

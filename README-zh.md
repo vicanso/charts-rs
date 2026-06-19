@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持十八种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst` 以及 `Sankey`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持十九种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey` 以及 `Tree`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -180,6 +180,7 @@ cargo run --example line      # 平滑折线 + 面积填充 + 均值线 / 标记
 cargo run --example pie       # 南丁格尔（玫瑰）图
 cargo run --example sunburst  # 旭日图：标签格式化、分层厚度、动画
 cargo run --example sankey     # 桑基流向图（节点由 links 自动推导）
+cargo run --example tree       # 节点-连线树图（曲线连线，LR 布局）
 ```
 
 ### 使用 Builder API 创建图表

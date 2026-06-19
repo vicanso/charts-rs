@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports eighteen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, and `Sankey`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports nineteen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, and `Tree`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -183,6 +183,7 @@ cargo run --example line      # smooth line with area fill and mark line / point
 cargo run --example pie       # nightingale (rose) chart
 cargo run --example sunburst  # sunburst with label formatter, ring thickness, animation
 cargo run --example sankey     # sankey flow diagram (nodes auto-derived from links)
+cargo run --example tree       # node-link tree with curved links (LR layout)
 ```
 
 ### New from option
