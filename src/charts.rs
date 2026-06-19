@@ -51,7 +51,7 @@ pub use color::*;
 pub use common::*;
 pub use component::{
     Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
-    SmoothLineFill, StraightLine, StraightLineFill, Text,
+    SmoothLineFill, StraightLine, StraightLineFill, Text, svg_with_accessibility,
 };
 #[cfg(feature = "image-encoder")]
 pub use encoder::Error as EncoderError;

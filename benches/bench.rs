@@ -1,6 +1,7 @@
+#[cfg(feature = "image-encoder")]
+use charts_rs::svg_to_png;
 use charts_rs::{
     BarChart, Box, DEFAULT_FONT_FAMILY, LegendCategory, SeriesCategory, measure_text_width_family,
-    svg_to_png,
 };
 use criterion::{Criterion, criterion_group, criterion_main};
 
@@ -59,6 +60,7 @@ fn bar_chart_line_mixin() {
     bar_chart.svg().unwrap();
 }
 
+#[cfg(feature = "image-encoder")]
 fn bar_chart_line_mixin_png() {
     let mut bar_chart = BarChart::new(
         vec![
@@ -113,14 +115,18 @@ fn bar_chart_benchmark(c: &mut Criterion) {
     c.bench_function("bar chart test", |b| b.iter(bar_chart_line_mixin));
 }
 
+#[cfg(feature = "image-encoder")]
 fn bar_chart_png_benchmark(c: &mut Criterion) {
     c.bench_function("bar chart png test", |b| b.iter(bar_chart_line_mixin_png));
 }
 
+#[cfg(feature = "image-encoder")]
 criterion_group!(
     benches,
     measure_text_benchmark,
     bar_chart_benchmark,
     bar_chart_png_benchmark,
 );
+#[cfg(not(feature = "image-encoder"))]
+criterion_group!(benches, measure_text_benchmark, bar_chart_benchmark);
 criterion_main!(benches);

@@ -190,6 +190,38 @@ pub fn generate_svg(width: f32, height: f32, x: f32, y: f32, data: String) -> St
     SVGTag::new(TAG_SVG, data, attrs).to_string()
 }
 
+/// Adds accessibility metadata to an SVG produced by a chart's `svg()`: sets
+/// `role="img"` on the root `<svg>` and inserts a `<title>` (and, when `desc`
+/// is non-empty, a `<desc>`) as its first children, giving assistive
+/// technology an accessible name. This is opt-in — chart output is unchanged
+/// unless you call it — and `role="img"` is only added together with a
+/// non-empty `title`, since a role without a name would hide the content.
+///
+/// ```rust
+/// use charts_rs::{BarChart, svg_with_accessibility};
+/// let chart = BarChart::new(vec![("v", vec![1.0]).into()], vec!["a".to_string()]);
+/// let svg = svg_with_accessibility(&chart.svg().unwrap(), "Weekly traffic", "");
+/// assert!(svg.contains(r#"role="img""#));
+/// assert!(svg.contains("<title>Weekly traffic</title>"));
+/// ```
+pub fn svg_with_accessibility(svg: &str, title: &str, desc: &str) -> String {
+    if title.is_empty() {
+        return svg.to_string();
+    }
+    let Some(tag_end) = svg.find('>') else {
+        return svg.to_string();
+    };
+    let (open, rest) = svg.split_at(tag_end + 1);
+    // The first `>` closes the root `<svg …>` tag (attribute values are quoted
+    // and contain no `>`), so this turns it into `<svg … role="img">`.
+    let open = open.replacen('>', " role=\"img\">", 1);
+    let mut children = format!("\n<title>{}</title>", encode_text(title));
+    if !desc.is_empty() {
+        children.push_str(&format!("\n<desc>{}</desc>", encode_text(desc)));
+    }
+    format!("{open}{children}{rest}")
+}
+
 impl<'a> SVGTag<'a> {
     pub fn new(tag: &'a str, data: String, attrs: Vec<(&'a str, String)>) -> Self {
         Self {

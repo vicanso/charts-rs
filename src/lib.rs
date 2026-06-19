@@ -349,6 +349,71 @@
 //! table_chart.title_text = "NASDAQ".to_string();
 //! println!("{}", table_chart.svg().unwrap());
 //! ```
+//!
+//! # Basic funnel chart
+//! ```rust
+//! use charts_rs::FunnelChart;
+//! let funnel_chart = FunnelChart::new(vec![
+//!     ("Impression", vec![100.0]).into(),
+//!     ("Click", vec![80.0]).into(),
+//!     ("Order", vec![30.0]).into(),
+//! ]);
+//! println!("{}", funnel_chart.svg().unwrap());
+//! ```
+//!
+//! # Basic treemap chart
+//! ```rust
+//! use charts_rs::TreemapChart;
+//! let treemap_chart = TreemapChart::new(vec![
+//!     ("A", vec![60.0]).into(),
+//!     ("B", vec![30.0]).into(),
+//!     ("C", vec![10.0]).into(),
+//! ]);
+//! println!("{}", treemap_chart.svg().unwrap());
+//! ```
+//!
+//! # Basic sunburst chart
+//! ```rust
+//! use charts_rs::{SunburstChart, SunburstData};
+//! let sunburst_chart = SunburstChart::new(vec![SunburstData {
+//!     name: "Root".to_string(),
+//!     children: vec![
+//!         SunburstData { name: "A".to_string(), value: 3.0, ..Default::default() },
+//!         SunburstData { name: "B".to_string(), value: 2.0, ..Default::default() },
+//!     ],
+//!     ..Default::default()
+//! }]);
+//! println!("{}", sunburst_chart.svg().unwrap());
+//! ```
+//!
+//! # Basic sankey chart
+//! ```rust
+//! use charts_rs::SankeyChart;
+//! // Nodes are derived from the link endpoints when left empty.
+//! let sankey_chart = SankeyChart::new(
+//!     vec![],
+//!     vec![
+//!         ("a", "b", 8.0).into(),
+//!         ("a", "c", 4.0).into(),
+//!         ("b", "d", 8.0).into(),
+//!     ],
+//! );
+//! println!("{}", sankey_chart.svg().unwrap());
+//! ```
+//!
+//! # Basic tree chart
+//! ```rust
+//! use charts_rs::{TreeChart, TreeData};
+//! let tree_chart = TreeChart::new(vec![TreeData {
+//!     name: "Root".to_string(),
+//!     children: vec![
+//!         TreeData { name: "A".to_string(), ..Default::default() },
+//!         TreeData { name: "B".to_string(), ..Default::default() },
+//!     ],
+//!     ..Default::default()
+//! }]);
+//! println!("{}", tree_chart.svg().unwrap());
+//! ```
 
 mod charts;
 pub use charts::*;

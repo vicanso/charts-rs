@@ -33,6 +33,9 @@ jobs:
     - name: Clippy
       if: matrix.toolchain == 'stable'
       run: cargo clippy --features=image-encoder --all-targets --all -- --deny=warnings
+    - name: Clippy (default features)
+      if: matrix.toolchain == 'stable'
+      run: cargo clippy --no-default-features --all-targets --all -- --deny=warnings
     - name: Build
       run: |
         ls -l
