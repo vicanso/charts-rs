@@ -1,0 +1,37 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<polygon points="5,105.3 123,94.1 241,81.4 359,61.6 477,40.4 595,23.5 595,136.4 477,139.2 359,140.6 241,137.8 123,133.6 5,133.6" fill="#5470C6" fill-opacity="0.9"/>
+<polygon points="5,133.6 123,133.6 241,137.8 359,140.6 477,139.2 595,136.4 595,221 477,215.4 359,214 241,205.5 123,195.6 5,184.4" fill="#91CC75" fill-opacity="0.9"/>
+<polygon points="5,184.4 123,195.6 241,205.5 359,214 477,215.4 595,221 595,294.4 477,271.8 359,247.9 241,225.3 123,206.9 5,190" fill="#FAC858" fill-opacity="0.9"/>
+<polygon points="5,190 123,206.9 241,225.3 359,247.9 477,271.8 595,294.4 595,356.5 477,339.6 359,318.4 241,298.6 123,285.9 5,274.7" fill="#EE6666" fill-opacity="0.9"/>
+<text font-size="14" x="593" y="79.9" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Rust
+</text>
+<text font-size="14" x="593" y="178.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Go
+</text>
+<text font-size="14" x="593" y="257.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Zig
+</text>
+<text font-size="14" x="7" y="232.3" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+C++
+</text>
+<text font-size="14" x="5" y="386.2" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+2020
+</text>
+<text font-size="14" x="123" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+2021
+</text>
+<text font-size="14" x="241" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+2022
+</text>
+<text font-size="14" x="359" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+2023
+</text>
+<text font-size="14" x="477" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+2024
+</text>
+<text font-size="14" x="595" y="386.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+2025
+</text>
+</svg>

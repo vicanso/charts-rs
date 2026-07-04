@@ -1,0 +1,85 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<g>
+<line stroke-width="2" x1="116.5" y1="15" x2="141.5" y2="15" stroke="#5470C6"/>
+<circle cx="129" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="144.5" y="19" font-family="Roboto" fill="#464646">
+Laptop A
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="207.5" y1="15" x2="232.5" y2="15" stroke="#91CC75"/>
+<circle cx="220" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="235.5" y="19" font-family="Roboto" fill="#464646">
+Laptop B
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="297.5" y1="15" x2="322.5" y2="15" stroke="#FAC858"/>
+<circle cx="310" cy="15" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="325.5" y="19" font-family="Roboto" fill="#464646">
+Laptop C
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="388.5" y1="15" x2="413.5" y2="15" stroke="#EE6666"/>
+<circle cx="401" cy="15" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="416.5" y="19" font-family="Roboto" fill="#464646">
+Laptop D
+</text>
+</g>
+<line stroke-width="1" x1="40.4" y1="47" x2="40.4" y2="375" stroke="#E0E6F2"/>
+<text font-size="14" x="40.4" y="38.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Price
+</text>
+<text font-size="11.9" x="43.4" y="55.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+1800
+</text>
+<text font-size="11.9" x="43.4" y="366.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+700
+</text>
+<line stroke-width="1" x1="170.2" y1="47" x2="170.2" y2="375" stroke="#E0E6F2"/>
+<text font-size="14" x="170.2" y="38.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Weight
+</text>
+<text font-size="11.9" x="173.2" y="55.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+2.1
+</text>
+<text font-size="11.9" x="173.2" y="366.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+1.2
+</text>
+<line stroke-width="1" x1="300" y1="47" x2="300" y2="375" stroke="#E0E6F2"/>
+<text font-size="14" x="300" y="38.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Cores
+</text>
+<text font-size="11.9" x="303" y="55.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+12
+</text>
+<text font-size="11.9" x="303" y="366.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+4
+</text>
+<line stroke-width="1" x1="429.8" y1="47" x2="429.8" y2="375" stroke="#E0E6F2"/>
+<text font-size="14" x="429.8" y="38.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Storage
+</text>
+<text font-size="11.9" x="432.8" y="55.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+1024
+</text>
+<text font-size="11.9" x="432.8" y="366.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+256
+</text>
+<line stroke-width="1" x1="559.6" y1="47" x2="559.6" y2="375" stroke="#E0E6F2"/>
+<text font-size="14" x="559.6" y="38.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Score
+</text>
+<text font-size="11.9" x="556.6" y="55.4" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+96
+</text>
+<text font-size="11.9" x="556.6" y="366.6" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+65
+</text>
+<polyline fill="none" stroke-width="2" points="40.4,225.9 170.2,302.1 300,211 429.8,265.7 559.6,89.3" stroke="#5470C6"/>
+<polyline fill="none" stroke-width="2" points="40.4,300.5 170.2,156.3 300,293 429.8,375 559.6,237.5" stroke="#91CC75"/>
+<polyline fill="none" stroke-width="2" points="40.4,47 170.2,375 300,47 429.8,47 559.6,47" stroke="#FAC858"/>
+<polyline fill="none" stroke-width="2" points="40.4,375 170.2,47 300,375 429.8,375 559.6,375" stroke="#EE6666"/>
+</svg>

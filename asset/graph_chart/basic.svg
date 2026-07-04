@@ -1,0 +1,29 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<line stroke-width="1" x1="407.9" y1="199.9" x2="379.3" y2="369" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="407.9" y1="199.9" x2="256.8" y2="249" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="379.3" y1="369" x2="256.8" y2="249" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="256.8" y1="249" x2="192.1" y2="70" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="192.1" y1="70" x2="355.1" y2="17" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="355.1" y1="17" x2="407.9" y2="199.9" stroke="#E0E6F2"/>
+<circle cx="407.9" cy="199.9" r="10" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<circle cx="379.3" cy="369" r="10" stroke-width="1" stroke="#FFFFFF" fill="#91CC75"/>
+<circle cx="256.8" cy="249" r="10" stroke-width="1" stroke="#FFFFFF" fill="#FAC858"/>
+<circle cx="192.1" cy="70" r="10" stroke-width="1" stroke="#FFFFFF" fill="#EE6666"/>
+<circle cx="355.1" cy="17" r="10" stroke-width="1" stroke="#FFFFFF" fill="#73C0DE"/>
+<text font-size="14" x="407.9" y="219.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+A
+</text>
+<text font-size="14" x="379.3" y="388.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+B
+</text>
+<text font-size="14" x="256.8" y="268.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+C
+</text>
+<text font-size="14" x="192.1" y="89.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+D
+</text>
+<text font-size="14" x="355.1" y="36.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+E
+</text>
+</svg>

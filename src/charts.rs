@@ -24,10 +24,12 @@ mod error;
 mod font;
 mod funnel_chart;
 mod gauge_chart;
+mod graph_chart;
 mod heatmap_chart;
 mod horizontal_bar_chart;
 mod line_chart;
 mod multi_chart;
+mod parallel_chart;
 mod params;
 mod path;
 mod pie_chart;
@@ -37,6 +39,7 @@ mod scatter_chart;
 mod sunburst_chart;
 mod table_chart;
 mod theme;
+mod theme_river_chart;
 mod tree_chart;
 mod treemap_chart;
 mod util;
@@ -70,10 +73,12 @@ pub use font::{
 };
 pub use funnel_chart::FunnelChart;
 pub use gauge_chart::GaugeChart;
+pub use graph_chart::{GraphChart, GraphLink, GraphNode};
 pub use heatmap_chart::{HeatmapChart, HeatmapData, HeatmapSeries};
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use multi_chart::{ChildChart, MultiChart};
+pub use parallel_chart::ParallelChart;
 pub use path::*;
 pub use pie_chart::PieChart;
 pub use radar_chart::{RadarChart, RadarIndicator};
@@ -86,6 +91,7 @@ pub use theme::{
     THEME_ANT, THEME_CHALK, THEME_DARK, THEME_GRAFANA, THEME_LIGHT, THEME_SHADCN, THEME_SHINE,
     THEME_VINTAGE, THEME_WALDEN, THEME_WESTEROS, add_theme, get_theme, list_theme_name,
 };
+pub use theme_river_chart::ThemeRiverChart;
 pub use tree_chart::{TreeChart, TreeData};
 pub use treemap_chart::TreemapChart;
 pub use util::*;

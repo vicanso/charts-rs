@@ -1,0 +1,44 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="238.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Team Network
+</text>
+<line stroke-width="1" x1="394.5" y1="256.7" x2="331.7" y2="365" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="394.5" y1="256.7" x2="299.9" y2="210.6" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="394.5" y1="256.7" x2="368.8" y2="131" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="331.7" y1="365" x2="231.2" y2="290.2" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="299.9" y1="210.6" x2="231.2" y2="290.2" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="299.9" y1="210.6" x2="205.5" y2="164.3" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="205.5" y1="164.3" x2="268.5" y2="56" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="268.5" y1="56" x2="368.8" y2="131" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="368.8" y1="131" x2="299.9" y2="210.6" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="231.2" y1="290.2" x2="205.5" y2="164.3" stroke="#E0E6F2"/>
+<circle cx="394.5" cy="256.7" r="14" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<circle cx="331.7" cy="365" r="12.2" stroke-width="1" stroke="#FFFFFF" fill="#5470C6"/>
+<circle cx="299.9" cy="210.6" r="13.2" stroke-width="1" stroke="#FFFFFF" fill="#91CC75"/>
+<circle cx="231.2" cy="290.2" r="11.1" stroke-width="1" stroke="#FFFFFF" fill="#91CC75"/>
+<circle cx="205.5" cy="164.3" r="12.7" stroke-width="1" stroke="#FFFFFF" fill="#FAC858"/>
+<circle cx="268.5" cy="56" r="11.7" stroke-width="1" stroke="#FFFFFF" fill="#FAC858"/>
+<circle cx="368.8" cy="131" r="13.6" stroke-width="1" stroke="#FFFFFF" fill="#91CC75"/>
+<text font-size="14" x="394.5" y="280.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Alice
+</text>
+<text font-size="14" x="331.7" y="387" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Bob
+</text>
+<text font-size="14" x="299.9" y="233.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Carol
+</text>
+<text font-size="14" x="231.2" y="311" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Dave
+</text>
+<text font-size="14" x="205.5" y="186.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Erin
+</text>
+<text font-size="14" x="268.5" y="77.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Frank
+</text>
+<text font-size="14" x="368.8" y="154.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Grace
+</text>
+</svg>

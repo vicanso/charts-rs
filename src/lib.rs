@@ -12,9 +12,10 @@
 
 #![forbid(unsafe_code)]
 
-//! Charts supports nineteen chart types: bar, horizontal bar, line, pie,
+//! Charts supports twenty-two chart types: bar, horizontal bar, line, pie,
 //! radar, scatter, candlestick, table, heatmap, funnel, waterfall, multi
-//! chart, calendar, gauge, treemap, box plot, sunburst, sankey and tree.
+//! chart, calendar, gauge, treemap, box plot, sunburst, sankey, tree, graph,
+//! parallel and theme river.
 //!
 //! It supports ten built-in themes and is very easy to use.
 //! Each attribute can be customized, it can be saved as svg, png, jpeg,

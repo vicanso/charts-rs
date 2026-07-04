@@ -1,0 +1,40 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="235" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Traffic Sources
+</text>
+<polygon points="5,115.6 123,104.5 241,95.4 359,84.3 477,74.2 595,56.8 595,185.4 477,188.2 359,191 241,187.3 123,185.4 5,189.1" fill="#5470C6" fill-opacity="0.9"/>
+<polygon points="5,189.1 123,185.4 241,187.3 359,191 477,188.2 595,185.4 595,259 477,252.5 359,242.4 241,242.4 123,233.2 5,225.9" fill="#91CC75" fill-opacity="0.9"/>
+<polygon points="5,225.9 123,233.2 241,242.4 359,242.4 477,252.5 595,259 595,321.5 477,307.7 359,301.3 241,293.9 123,288.4 5,281" fill="#FAC858" fill-opacity="0.9"/>
+<polygon points="5,281 123,288.4 241,293.9 359,301.3 477,307.7 595,321.5 595,358.2 477,340.8 359,330.7 241,319.6 123,310.5 5,299.4" fill="#EE6666" fill-opacity="0.9"/>
+<text font-size="14" x="593" y="121.1" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Search
+</text>
+<text font-size="14" x="593" y="222.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Social
+</text>
+<text font-size="14" x="593" y="290.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Direct
+</text>
+<text font-size="14" x="593" y="339.9" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Referral
+</text>
+<text font-size="14" x="5" y="386.2" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+Jan
+</text>
+<text font-size="14" x="123" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Feb
+</text>
+<text font-size="14" x="241" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Mar
+</text>
+<text font-size="14" x="359" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Apr
+</text>
+<text font-size="14" x="477" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+May
+</text>
+<text font-size="14" x="595" y="386.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Jun
+</text>
+</svg>
