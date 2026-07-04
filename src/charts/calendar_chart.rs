@@ -174,10 +174,8 @@ pub struct CalendarChart {
     pub x_axis_name_gap: f32,
     pub x_axis_name_rotate: f32,
     pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
     pub x_boundary_gap: Option<bool>,
 
-    pub y_axis_hidden: bool,
     y_axis_configs: Vec<YAxisConfig>,
 
     grid_stroke_color: Color,

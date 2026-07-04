@@ -47,7 +47,7 @@ Add `charts-rs` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-charts-rs = "0.6"
+charts-rs = "0.7"
 ```
 
 SVG output works with the default build. Raster export (`png`, `jpeg`, `webp`,
@@ -56,7 +56,7 @@ below — requires the `image-encoder` feature:
 
 ```toml
 [dependencies]
-charts-rs = { version = "0.6", features = ["image-encoder"] }
+charts-rs = { version = "0.7", features = ["image-encoder"] }
 ```
 
 ## Demo

@@ -227,7 +227,9 @@ impl CandlestickChart {
                 axis_width,
             );
         }
-        let chunk_width = axis_width / self.x_axis_data.len() as f32;
+        // `.max(1)` guards against an empty `x_axis_data` producing `inf`/`NaN`
+        // coordinates (division by zero).
+        let chunk_width = axis_width / self.x_axis_data.len().max(1) as f32;
         let half_chunk_width = chunk_width / 2.0;
         for series in self.series_list.iter() {
             if series.category.is_some() {
@@ -510,5 +512,18 @@ mod tests {
             include_str!("../../asset/candlestick_chart/sh.svg"),
             candlestick_chart.svg().unwrap()
         );
+    }
+
+    // An empty `x_axis_data` previously divided by zero (`chunk_width`),
+    // producing `inf`/`NaN` rect and line coordinates.
+    #[test]
+    fn empty_x_axis_no_nan() {
+        let chart = CandlestickChart::from_json(
+            r#"{"series_list":[{"name":"A","data":[20,34,10,38]}],"x_axis_data":[]}"#,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(!svg.contains("NaN"), "empty x_axis must not emit NaN");
+        assert!(!svg.contains("inf"), "empty x_axis must not emit inf");
     }
 }

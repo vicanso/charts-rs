@@ -194,7 +194,11 @@ impl HorizontalBarChart {
                 ..Default::default()
             });
             let max_width = c1.width();
-            let unit_height = c1.height() / self.series_list[0].data.len() as f32;
+            // Row count is the number of categories (the y-axis ticks use
+            // `x_axis_data.len()`), not the first series' length: a short/empty
+            // first series must not divide by zero or misplace every bar.
+            let category_count = self.x_axis_data.len().max(1);
+            let unit_height = c1.height() / category_count as f32;
             let bar_chart_margin = 5.0_f32;
             let bar_chart_gap = 3.0_f32;
 
@@ -443,5 +447,18 @@ mod tests {
         let off_svg = off.svg().unwrap();
         assert!(!off_svg.contains("<title>"));
         assert!(!off_svg.contains("ct-tip"));
+    }
+
+    // An empty first series must not divide by zero (row count comes from the
+    // categories now), so later series still render finite bars.
+    #[test]
+    fn empty_first_series_no_inf() {
+        let chart = HorizontalBarChart::from_json(
+            r#"{"series_list":[{"name":"A","data":[]},{"name":"B","data":[10,20,30]}],"x_axis_data":["x","y","z"]}"#,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(!svg.contains("inf"), "empty first series must not emit inf");
+        assert!(!svg.contains("NaN"), "empty first series must not emit NaN");
     }
 }

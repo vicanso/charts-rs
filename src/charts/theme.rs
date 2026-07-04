@@ -16,9 +16,9 @@ use super::font::DEFAULT_FONT_FAMILY;
 use super::util::Box;
 use ahash::AHashMap;
 use arc_swap::ArcSwap;
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use std::sync::LazyLock;
 
 pub static DEFAULT_WIDTH: f32 = 600.0;
 pub static DEFAULT_HEIGHT: f32 = 400.0;
@@ -36,11 +36,19 @@ pub static DEFAULT_FONT_SIZE: f32 = 14.0;
 
 pub static DEFAULT_SERIES_STROKE_WIDTH: f32 = 2.0;
 
+pub static THEME_LIGHT: &str = "light";
 pub static THEME_DARK: &str = "dark";
 pub static THEME_ANT: &str = "ant";
+pub static THEME_VINTAGE: &str = "vintage";
+pub static THEME_SHINE: &str = "shine";
+pub static THEME_WALDEN: &str = "walden";
+pub static THEME_WESTEROS: &str = "westeros";
+pub static THEME_CHALK: &str = "chalk";
 pub static THEME_GRAFANA: &str = "grafana";
+pub static THEME_SHADCN: &str = "shadcn";
 
-static LIGHT_THEME_NAME: &str = "light";
+// Internal alias for the default theme name.
+static LIGHT_THEME_NAME: &str = THEME_LIGHT;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 
@@ -103,7 +111,7 @@ pub struct Theme {
     pub table_border_color: Color,
 }
 
-static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
+static LIGHT_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (110, 112, 121).into();
     let font_color: Color = (70, 70, 70).into();
     Theme {
@@ -168,7 +176,7 @@ static LIGHT_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
+static DARK_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (185, 184, 206).into();
     let bg_color = (16, 12, 42).into();
 
@@ -235,7 +243,7 @@ static DARK_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
+static ANT_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (110, 112, 121).into();
 
     let font_color: Color = (70, 70, 70).into();
@@ -301,7 +309,7 @@ static ANT_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static VINTAGE_THEME: Lazy<Theme> = Lazy::new(|| {
+static VINTAGE_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (0, 0, 0).into();
 
     let font_color: Color = (51, 51, 51).into();
@@ -369,7 +377,7 @@ static VINTAGE_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static SHINE_THEME: Lazy<Theme> = Lazy::new(|| {
+static SHINE_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (0, 0, 0).into();
 
     let font_color: Color = (51, 51, 51).into();
@@ -435,7 +443,7 @@ static SHINE_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static WALDEN_THEME: Lazy<Theme> = Lazy::new(|| {
+static WALDEN_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (110, 112, 121).into();
 
     let font_color: Color = (70, 70, 70).into();
@@ -499,7 +507,7 @@ static WALDEN_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static WESTEROS_THEME: Lazy<Theme> = Lazy::new(|| {
+static WESTEROS_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (110, 112, 121).into();
 
     let font_color: Color = (70, 70, 70).into();
@@ -563,7 +571,7 @@ static WESTEROS_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static CHALK_THEME: Lazy<Theme> = Lazy::new(|| {
+static CHALK_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (170, 170, 170).into();
 
     let font_color: Color = (255, 255, 255).into();
@@ -630,7 +638,7 @@ static CHALK_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
+static GRAFANA_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (185, 184, 206).into();
 
     let font_color: Color = (216, 217, 218).into();
@@ -697,7 +705,7 @@ static GRAFANA_THEME: Lazy<Theme> = Lazy::new(|| {
     }
 });
 
-static SHADCN_THEME: Lazy<Theme> = Lazy::new(|| {
+static SHADCN_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let x_axis_color = (39, 39, 42).into();
 
     let font_color: Color = (161, 161, 170).into();
@@ -765,8 +773,8 @@ static SHADCN_THEME: Lazy<Theme> = Lazy::new(|| {
 });
 
 type Themes = AHashMap<String, Arc<Theme>>;
-static LIGHT_THEME_ARC: Lazy<Arc<Theme>> = Lazy::new(|| Arc::new(LIGHT_THEME.clone()));
-static THEME_MAP: Lazy<ArcSwap<Themes>> = Lazy::new(|| {
+static LIGHT_THEME_ARC: LazyLock<Arc<Theme>> = LazyLock::new(|| Arc::new(LIGHT_THEME.clone()));
+static THEME_MAP: LazyLock<ArcSwap<Themes>> = LazyLock::new(|| {
     let mut m = AHashMap::new();
     m.insert("dark".to_string(), Arc::new(DARK_THEME.clone()));
     m.insert("ant".to_string(), Arc::new(ANT_THEME.clone()));

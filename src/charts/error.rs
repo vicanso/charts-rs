@@ -20,6 +20,10 @@ use snafu::Snafu;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub(crate)))]
+// Non-exhaustive so future variants (and the `image-encoder`-gated ones that
+// appear/disappear with that feature) are not a breaking change for downstream
+// `match` arms; callers must include a wildcard arm.
+#[non_exhaustive]
 pub enum Error {
     #[snafu(display("Params is invalid: {message}"))]
     Params { message: String },

@@ -12,15 +12,21 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         toolchain: [1.88.0, 1.89.0, 1.90.0, stable]
+        # Cross-platform coverage on stable only, to keep the matrix small.
+        include:
+          - os: macos-latest
+            toolchain: stable
+          - os: windows-latest
+            toolchain: stable
 
     steps:
     - uses: actions/checkout@v4
-    - name: setup node
-      uses: actions/setup-node@v4
     - uses: ilammy/setup-nasm@v1
     - name: Install toolchain
       uses: dtolnay/rust-toolchain@master
@@ -28,19 +34,30 @@ jobs:
         toolchain: ${{ matrix.toolchain }}
         components: rustfmt, clippy
     - name: Check format
-      if: matrix.toolchain == 'stable'
+      if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
       run: cargo fmt --all --check
     - name: Clippy
-      if: matrix.toolchain == 'stable'
+      if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
       run: cargo clippy --features=image-encoder --all-targets --all -- --deny=warnings
     - name: Clippy (default features)
-      if: matrix.toolchain == 'stable'
+      if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
       run: cargo clippy --no-default-features --all-targets --all -- --deny=warnings
     - name: Build
-      run: |
-        ls -l
-        cargo build --verbose
+      run: cargo build --verbose
+    # Raster export renders with resvg + system fonts, which are platform
+    # dependent, and AVIF needs nasm; keep the image-encoder run on Linux only.
     - name: Run tests (image-encoder)
+      if: matrix.os == 'ubuntu-latest'
       run: cargo test --verbose --features "image-encoder"
+    # The SVG output is deterministic, so run it on every platform.
     - name: Run tests (default features)
       run: cargo test --verbose --no-default-features
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Security audit
+      uses: rustsec/audit-check@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}

@@ -154,6 +154,11 @@ impl LineChart {
                     min = v;
                 }
             }
+            // No valid points → average/min/max are undefined (`sum / 0` would
+            // be NaN and min/max would stay at their sentinels); skip the marks.
+            if values.is_empty() {
+                continue;
+            }
             let average = sum / values.len() as f32;
             for mark_line in series.mark_lines.iter() {
                 let value = match mark_line.category {
@@ -329,7 +334,10 @@ impl LineChart {
                 css.push_str(&format!(
                     " .line-anim-{}{{stroke-dasharray:1;stroke-dashoffset:1;\
                      animation:line-draw {}ms {} {}ms forwards}}",
-                    i, anim.duration, anim.easing, delay
+                    i,
+                    anim.duration,
+                    anim.safe_easing(),
+                    delay
                 ));
             }
         }
@@ -806,5 +814,19 @@ mod tests {
         let off_svg = off.svg().unwrap();
         assert!(!off_svg.contains("<title>"));
         assert!(!off_svg.contains("ct-tip"));
+    }
+
+    // Empty data + a mark line exercises three guards at once: the mark-line
+    // average (`sum / 0`), the x-axis split (`axis_length / 0`), and the y-axis
+    // value range (all-sentinel min/max). None may leak NaN/inf.
+    #[test]
+    fn empty_data_and_mark_line_no_nan() {
+        let chart = LineChart::from_json(
+            r#"{"series_list":[{"name":"A","data":[],"mark_lines":[{"category":"average"}]}],"x_axis_data":[]}"#,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(!svg.contains("NaN"), "empty data must not emit NaN");
+        assert!(!svg.contains("inf"), "empty data must not emit inf");
     }
 }

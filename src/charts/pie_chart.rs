@@ -154,6 +154,16 @@ impl PieChart {
                 max = *item;
             }
         }
+        // Guard against non-positive totals (e.g. every series value is 0):
+        // all numerators are 0 in that case, so flooring the divisors to a
+        // positive value keeps `delta` / `cr` / percentages finite instead of
+        // producing NaN coordinates.
+        if sum <= 0.0 {
+            sum = 1.0;
+        }
+        if max <= 0.0 {
+            max = 1.0;
+        }
         let mut delta = 360.0 / values.len() as f32;
         let mut half_delta = delta / 2.0;
         let mut start_angle = self.start_angle;
@@ -367,9 +377,9 @@ impl PieChart {
                 format_float(cx + c.margin.left),
                 format_float(cy + c.margin.top),
                 anim.duration,
-                anim.easing,
+                anim.safe_easing(),
                 anim.duration,
-                anim.easing
+                anim.safe_easing()
             ));
         }
         if self.tooltip_show {
@@ -555,5 +565,16 @@ mod tests {
         let off_svg = off.svg().unwrap();
         assert!(!off_svg.contains("<title>"));
         assert!(!off_svg.contains("ct-tip"));
+    }
+
+    // All-zero totals previously divided by zero, producing `LNaN,NaN` paths.
+    #[test]
+    fn all_zero_values_no_nan() {
+        let chart = PieChart::from_json(
+            r#"{"series_list":[{"name":"a","data":[0.0]},{"name":"b","data":[0.0]}]}"#,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(!svg.contains("NaN"), "all-zero pie must not emit NaN");
     }
 }

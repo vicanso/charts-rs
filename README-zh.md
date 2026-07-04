@@ -45,7 +45,7 @@
 
 ```toml
 [dependencies]
-charts-rs = "0.6"
+charts-rs = "0.7"
 ```
 
 默认构建即可生成 SVG。若需导出位图格式（`png`、`jpeg`、`webp`、`avif`），即下文用到的
@@ -53,7 +53,7 @@ charts-rs = "0.6"
 
 ```toml
 [dependencies]
-charts-rs = { version = "0.6", features = ["image-encoder"] }
+charts-rs = { version = "0.7", features = ["image-encoder"] }
 ```
 
 ## 示例

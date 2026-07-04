@@ -82,7 +82,10 @@ pub use scatter_chart::ScatterChart;
 pub use sunburst_chart::{SunburstChart, SunburstData};
 pub use table_chart::{TableCellStyle, TableChart};
 pub use theme::Theme;
-pub use theme::{THEME_ANT, THEME_DARK, THEME_GRAFANA, add_theme, get_theme, list_theme_name};
+pub use theme::{
+    THEME_ANT, THEME_CHALK, THEME_DARK, THEME_GRAFANA, THEME_LIGHT, THEME_SHADCN, THEME_SHINE,
+    THEME_VINTAGE, THEME_WALDEN, THEME_WESTEROS, add_theme, get_theme, list_theme_name,
+};
 pub use tree_chart::{TreeChart, TreeData};
 pub use treemap_chart::TreemapChart;
 pub use util::*;

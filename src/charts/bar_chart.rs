@@ -276,7 +276,8 @@ impl BarChart {
                 "@keyframes bar-grow{{from{{transform:scaleY(0)}}to{{transform:scaleY(1)}}}} \
                  .bar-anim{{transform-box:fill-box;transform-origin:center bottom;\
                  animation:bar-grow {}ms {} both}} ",
-                anim.duration, anim.easing
+                anim.duration,
+                anim.safe_easing()
             ));
         }
         if self.tooltip_show {
@@ -1061,5 +1062,68 @@ mod tests {
         assert!(!off_svg.contains("<title>"));
         assert!(!off_svg.contains("ct-tip"));
         assert!(!off_svg.contains("ct-trigger"));
+    }
+
+    // An empty `series_colors` palette from JSON must not panic (previously
+    // `index % colors.len()` divided by zero in `get_color`).
+    #[test]
+    fn empty_series_colors_no_panic() {
+        let chart = BarChart::from_json(
+            r###"{
+                "series_colors": [],
+                "series_list": [{"name": "A", "data": [1.0, 2.0]}],
+                "x_axis_data": ["x", "y"]
+            }"###,
+        )
+        .unwrap();
+        assert!(chart.svg().is_ok(), "empty series_colors must not panic");
+    }
+
+    // A free-form string field that lands in an SVG attribute must be escaped,
+    // not emitted as raw markup (XSS prevention).
+    #[test]
+    fn attribute_value_is_escaped() {
+        let chart = BarChart::from_json(
+            r###"{
+                "title_text": "T",
+                "title_font_weight": "bold\"><script>alert(1)</script>",
+                "series_list": [{"name": "A", "data": [1.0, 2.0]}],
+                "x_axis_data": ["x", "y"]
+            }"###,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(
+            !svg.contains("<script>"),
+            "attribute value must not break out into raw markup"
+        );
+        assert!(
+            svg.contains("&lt;script&gt;"),
+            "payload should be entity-escaped"
+        );
+    }
+
+    // A malicious `animation.easing` must not break out of the `<style>` block;
+    // it falls back to the safe default keyword.
+    #[test]
+    fn animation_easing_is_sanitized() {
+        let chart = BarChart::from_json(
+            r###"{
+                "series_list": [{"name": "A", "data": [1.0, 2.0]}],
+                "x_axis_data": ["x", "y"],
+                "animation": {"duration": 800, "easing": "ease}} </style><script>alert(1)</script>", "delay": 50}
+            }"###,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(!svg.contains("<script>"), "no raw script tag");
+        assert!(
+            !svg.contains("alert(1)"),
+            "malicious easing payload must not reach the output"
+        );
+        assert!(
+            svg.contains("animation:bar-grow 800ms ease both"),
+            "easing should fall back to the safe default"
+        );
     }
 }

@@ -137,6 +137,23 @@ impl Default for AnimationConfig {
     }
 }
 
+impl AnimationConfig {
+    /// Returns the easing value sanitized for safe interpolation into a CSS
+    /// `<style>` block. Any value containing characters outside those valid for
+    /// a CSS timing-function (ASCII letters/digits and ` .,()%+-`) falls back to
+    /// `"ease"`. This prevents `<style>`/tag breakout (CSS/SVG injection) when
+    /// `easing` originates from untrusted JSON.
+    pub(crate) fn safe_easing(&self) -> &str {
+        const DEFAULT: &str = "ease";
+        let ok = !self.easing.is_empty()
+            && self.easing.chars().all(|c| {
+                c.is_ascii_alphanumeric()
+                    || matches!(c, ' ' | '.' | ',' | '(' | ')' | '%' | '+' | '-')
+            });
+        if ok { &self.easing } else { DEFAULT }
+    }
+}
+
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct SeriesLabel {
     pub point: Point,

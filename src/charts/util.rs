@@ -372,6 +372,12 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         max = value;
         is_custom_max = true
     }
+    // No finite data was seen (e.g. an empty series or every point is
+    // `NIL_VALUE`), so `max` is still `f32::MIN`. Fall back to a finite range
+    // instead of emitting `-inf` / `NaN` tick labels.
+    if max <= min {
+        max = min + 1.0;
+    }
     let mut unit = (max - min) / split_number as f32;
     if !is_custom_max {
         let ceil_value = (unit * 10.0).ceil();

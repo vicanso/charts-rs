@@ -13,8 +13,8 @@
 use super::util::*;
 use fontdue::Font;
 use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
-use once_cell::sync::OnceCell;
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
 // Crate-level error/result (see `error.rs`); re-exported to keep `font::Error`.
 use super::error::FontNotFoundSnafu;
@@ -40,27 +40,30 @@ fn get_family_from_font(font: &fontdue::Font) -> String {
 }
 
 pub fn get_or_try_init_fonts(fonts: Option<Vec<&[u8]>>) -> Result<&'static HashMap<String, Font>> {
-    static GLOBAL_FONTS: OnceCell<HashMap<String, Font>> = OnceCell::new();
-    GLOBAL_FONTS.get_or_try_init(|| {
-        let mut m = HashMap::new();
-        // init fonts, will returns an error if load font fails.
-        let font = fontdue::Font::from_bytes(DEFAULT_FONT_DATA, fontdue::FontSettings::default())?;
-        m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
-        let mut font_datas = vec![DEFAULT_FONT_DATA];
-        if let Some(value) = fonts {
-            for data in value.iter() {
-                let font = fontdue::Font::from_bytes(*data, fontdue::FontSettings::default())?;
-                let family = get_family_from_font(&font);
-                if !family.is_empty() {
-                    m.insert(family, font);
-                    font_datas.push(*data);
-                }
+    static GLOBAL_FONTS: OnceLock<HashMap<String, Font>> = OnceLock::new();
+    if let Some(m) = GLOBAL_FONTS.get() {
+        return Ok(m);
+    }
+    // Build outside the cell: std's `OnceLock` has no stable `get_or_try_init`,
+    // so a font-parse failure is propagated here before anything is stored.
+    let mut m = HashMap::new();
+    let font = fontdue::Font::from_bytes(DEFAULT_FONT_DATA, fontdue::FontSettings::default())?;
+    m.insert(DEFAULT_FONT_FAMILY.to_string(), font);
+    let mut font_datas = vec![DEFAULT_FONT_DATA];
+    if let Some(value) = fonts {
+        for data in value.iter() {
+            let font = fontdue::Font::from_bytes(*data, fontdue::FontSettings::default())?;
+            let family = get_family_from_font(&font);
+            if !family.is_empty() {
+                m.insert(family, font);
+                font_datas.push(*data);
             }
         }
-        #[cfg(feature = "image-encoder")]
-        crate::get_or_init_fontdb(Some(font_datas));
-        Ok(m)
-    })
+    }
+    #[cfg(feature = "image-encoder")]
+    crate::get_or_init_fontdb(Some(font_datas));
+    // A concurrent caller may have initialized first; keep whichever won.
+    Ok(GLOBAL_FONTS.get_or_init(|| m))
 }
 /// Gets font by font family.
 pub fn get_font(name: &str) -> Result<&Font> {

@@ -239,15 +239,16 @@ impl RadarChart {
             let values = series.data_values();
             for (i, item) in indicators.iter().enumerate() {
                 if let Some(value) = values.get(i) {
-                    let mut ir = if item.max <= 0.0 {
+                    // Treat a missing point (`NIL_VALUE`) or a non-positive
+                    // indicator max as the center, so the sentinel `f32::MIN`
+                    // cannot leak into the polygon as a huge coordinate.
+                    let mut ir = if item.max <= 0.0 || *value == NIL_VALUE {
                         0.0
                     } else {
                         *value / item.max * r
                     };
 
-                    if ir > r {
-                        ir = r;
-                    }
+                    ir = ir.clamp(0.0, r);
                     let p = get_pie_point(cx, cy, ir, angle * i as f32);
                     if series.label_show {
                         let label =
@@ -444,5 +445,37 @@ mod tests {
             include_str!("../../asset/radar_chart/three_points.svg"),
             radar_chart.svg().unwrap()
         );
+    }
+
+    // A missing point (`f32::MIN` / `NIL_VALUE`) must collapse to the center
+    // rather than leaking the sentinel into the polygon as a huge coordinate.
+    #[test]
+    fn radar_missing_point_no_overflow() {
+        let radar_chart = RadarChart::new(
+            vec![Series::new(
+                "A".to_string(),
+                vec![f32::MIN, 3000.0, 20000.0],
+            )],
+            vec![
+                ("Sales", 6500.0).into(),
+                ("Admin", 16000.0).into(),
+                ("IT", 30000.0).into(),
+            ],
+        );
+        let svg = radar_chart.svg().unwrap();
+        assert!(!svg.contains("NaN"));
+        // Valid coordinates are ≤ 3-4 digits; a run of 7+ digits means the
+        // overflowed sentinel leaked into a coordinate.
+        let mut run = 0;
+        let mut max_run = 0;
+        for b in svg.bytes() {
+            if b.is_ascii_digit() {
+                run += 1;
+                max_run = max_run.max(run);
+            } else {
+                run = 0;
+            }
+        }
+        assert!(max_run < 7, "overflowed radar coordinate leaked into SVG");
     }
 }

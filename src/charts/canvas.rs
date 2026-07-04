@@ -335,28 +335,10 @@ impl Canvas {
         let components = self.components.borrow();
         let mut data = String::with_capacity(components.len() * 128);
         for (i, c) in components.iter().enumerate() {
-            let value = match c {
-                Component::Line(c) => c.svg(),
-                Component::Rect(c) => c.svg(),
-                Component::Arrow(c) => c.svg(),
-                Component::Bubble(c) => c.svg(),
-                Component::Polyline(c) => c.svg(),
-                Component::Circle(c) => c.svg(),
-                Component::Polygon(c) => c.svg(),
-                Component::Text(c) => c.svg(),
-                Component::SmoothLine(c) => c.svg(),
-                Component::StraightLine(c) => c.svg(),
-                Component::SmoothLineFill(c) => c.svg(),
-                Component::StraightLineFill(c) => c.svg(),
-                Component::Grid(c) => c.svg(),
-                Component::Axis(c) => c.svg()?,
-                Component::Legend(c) => c.svg(),
-                Component::Pie(c) => c.svg(),
-            };
             if i > 0 {
                 data.push('\n');
             }
-            data.push_str(&value);
+            data.push_str(&render_component(c)?);
         }
         Ok(generate_svg(self.width, self.height, self.x, self.y, data))
     }
@@ -368,29 +350,34 @@ impl Canvas {
         data.push_str(style);
         data.push_str("</style>");
         for c in components.iter() {
-            let value = match c {
-                Component::Line(c) => c.svg(),
-                Component::Rect(c) => c.svg(),
-                Component::Arrow(c) => c.svg(),
-                Component::Bubble(c) => c.svg(),
-                Component::Polyline(c) => c.svg(),
-                Component::Circle(c) => c.svg(),
-                Component::Polygon(c) => c.svg(),
-                Component::Text(c) => c.svg(),
-                Component::SmoothLine(c) => c.svg(),
-                Component::StraightLine(c) => c.svg(),
-                Component::SmoothLineFill(c) => c.svg(),
-                Component::StraightLineFill(c) => c.svg(),
-                Component::Grid(c) => c.svg(),
-                Component::Axis(c) => c.svg()?,
-                Component::Legend(c) => c.svg(),
-                Component::Pie(c) => c.svg(),
-            };
             data.push('\n');
-            data.push_str(&value);
+            data.push_str(&render_component(c)?);
         }
         Ok(generate_svg(self.width, self.height, self.x, self.y, data))
     }
+}
+
+/// Renders a single component to its SVG fragment. Shared by `svg` and
+/// `svg_with_style` so the per-variant dispatch lives in exactly one place.
+fn render_component(c: &Component) -> Result<String> {
+    Ok(match c {
+        Component::Line(c) => c.svg(),
+        Component::Rect(c) => c.svg(),
+        Component::Arrow(c) => c.svg(),
+        Component::Bubble(c) => c.svg(),
+        Component::Polyline(c) => c.svg(),
+        Component::Circle(c) => c.svg(),
+        Component::Polygon(c) => c.svg(),
+        Component::Text(c) => c.svg(),
+        Component::SmoothLine(c) => c.svg(),
+        Component::StraightLine(c) => c.svg(),
+        Component::SmoothLineFill(c) => c.svg(),
+        Component::StraightLineFill(c) => c.svg(),
+        Component::Grid(c) => c.svg(),
+        Component::Axis(c) => c.svg()?,
+        Component::Legend(c) => c.svg(),
+        Component::Pie(c) => c.svg(),
+    })
 }
 
 #[cfg(test)]

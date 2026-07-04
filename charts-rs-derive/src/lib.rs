@@ -11,8 +11,12 @@ use syn::DeriveInput;
 /// field now means editing this one list instead of every chart struct.
 #[proc_macro_attribute]
 pub fn chart_common_fields(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let mut item_struct = syn::parse_macro_input!(item as syn::ItemStruct);
-    if let syn::Fields::Named(ref mut fields) = item_struct.fields {
+    let mut input = syn::parse_macro_input!(item as DeriveInput);
+    if let syn::Data::Struct(syn::DataStruct {
+        fields: syn::Fields::Named(ref mut fields),
+        ..
+    }) = input.data
+    {
         let header: syn::FieldsNamed = syn::parse_quote!({
             pub width: f32,
             pub height: f32,
@@ -53,7 +57,7 @@ pub fn chart_common_fields(_attr: TokenStream, item: TokenStream) -> TokenStream
             fields.named.insert(0, field);
         }
     }
-    quote!(#item_struct).into()
+    quote!(#input).into()
 }
 
 #[proc_macro_derive(Chart)]
@@ -970,30 +974,41 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                         let line_class = animation.map(|_| format!("line-anim-{}", index));
                         let line_path_length = animation.map(|_| 1.0_f32);
 
-                        if self.series_smooth {
-                            if series_fill {
-                                if is_stacked {
-                                    if let Some(fp) = floor {
-                                        // Fill the area between current and previous stack level
-                                        // using a polygon: top points forward + floor reversed.
-                                        let mut poly = points.clone();
-                                        let mut rev_floor = fp.clone();
-                                        rev_floor.reverse();
-                                        poly.extend(rev_floor);
-                                        c1.polygon(Polygon {
-                                            fill: Some(fill_color),
-                                            points: poly,
-                                            ..Default::default()
-                                        });
-                                    }
-                                } else {
-                                    c1.smooth_line_fill(SmoothLineFill {
-                                        fill,
-                                        points: points.clone(),
-                                        bottom: axis_height,
+                        // Fill first, then stroke. The stacked-area polygon is
+                        // identical for smooth and straight lines, so it lives in
+                        // one place; only the non-stacked fill and the stroke
+                        // itself differ by `series_smooth`.
+                        if series_fill {
+                            if is_stacked {
+                                if let Some(fp) = floor {
+                                    // Area between the current and previous stack
+                                    // level: top points forward + floor reversed.
+                                    let mut poly = points.clone();
+                                    let mut rev_floor = fp.clone();
+                                    rev_floor.reverse();
+                                    poly.extend(rev_floor);
+                                    c1.polygon(Polygon {
+                                        fill: Some(fill_color),
+                                        points: poly,
+                                        ..Default::default()
                                     });
                                 }
+                            } else if self.series_smooth {
+                                c1.smooth_line_fill(SmoothLineFill {
+                                    fill,
+                                    points: points.clone(),
+                                    bottom: axis_height,
+                                });
+                            } else {
+                                c1.straight_line_fill(StraightLineFill {
+                                    fill,
+                                    points: points.clone(),
+                                    bottom: axis_height,
+                                    ..Default::default()
+                                });
                             }
+                        }
+                        if self.series_smooth {
                             c1.smooth_line(SmoothLine {
                                 points: points.clone(),
                                 color: Some(color),
@@ -1004,28 +1019,6 @@ pub fn my_default(input: TokenStream) -> TokenStream {
                                 path_length: line_path_length,
                             });
                         } else {
-                            if series_fill {
-                                if is_stacked {
-                                    if let Some(fp) = floor {
-                                        let mut poly = points.clone();
-                                        let mut rev_floor = fp.clone();
-                                        rev_floor.reverse();
-                                        poly.extend(rev_floor);
-                                        c1.polygon(Polygon {
-                                            fill: Some(fill_color),
-                                            points: poly,
-                                            ..Default::default()
-                                        });
-                                    }
-                                } else {
-                                    c1.straight_line_fill(StraightLineFill {
-                                        fill,
-                                        points: points.clone(),
-                                        bottom: axis_height,
-                                        ..Default::default()
-                                    });
-                                }
-                            }
                             c1.straight_line(StraightLine {
                                 points: points.clone(),
                                 color: Some(color),

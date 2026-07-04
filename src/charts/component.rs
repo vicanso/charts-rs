@@ -239,6 +239,29 @@ impl<'a> SVGTag<'a> {
     }
 }
 
+/// Writes an SVG/XML attribute value into `out`, escaping the characters that
+/// could otherwise break out of the double-quoted attribute (`&`, `<`, `>`,
+/// `"`). Without this, free-form string fields sourced from JSON (e.g.
+/// `stroke_dash_array`, the various `*_font_weight` values) could inject
+/// arbitrary markup — a stored/reflected XSS vector for any consumer that
+/// serves `svg()` output to a browser. Only does per-character work when an
+/// unsafe byte is present, so the common case stays a single `push_str`.
+fn push_escaped_attr(out: &mut String, raw: &str) {
+    if raw.bytes().any(|b| matches!(b, b'&' | b'<' | b'>' | b'"')) {
+        for c in raw.chars() {
+            match c {
+                '&' => out.push_str("&amp;"),
+                '<' => out.push_str("&lt;"),
+                '>' => out.push_str("&gt;"),
+                '"' => out.push_str("&quot;"),
+                _ => out.push(c),
+            }
+        }
+    } else {
+        out.push_str(raw);
+    }
+}
+
 impl fmt::Display for SVGTag<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.tag == TAG_GROUP
@@ -256,7 +279,7 @@ impl fmt::Display for SVGTag<'_> {
             value.push(' ');
             value.push_str(k);
             value.push_str("=\"");
-            value.push_str(v);
+            push_escaped_attr(&mut value, v);
             value.push('\"');
         }
         if let Some(ref data) = self.data {
@@ -1545,6 +1568,9 @@ impl Axis {
         if split_number == 0 {
             split_number = self.data.len();
         }
+        // Floor at 1 so an empty axis cannot divide `axis_length` by zero
+        // (which would emit `NaN` tick coordinates).
+        let split_number = split_number.max(1);
         if !is_transparent {
             let unit = axis_length / split_number as f32;
             let tick_interval = self.tick_interval.max(text_unit_count);
@@ -1599,10 +1625,13 @@ impl Axis {
             let f = font::get_font(&self.font_family)?;
             let mut data_len = self.data.len();
             let is_name_align_start = self.name_align == Align::Left;
-            if is_name_align_start {
+            // Only shrink when there is more than one tick — otherwise this
+            // would underflow (usize) on an empty axis — and floor the divisor
+            // at 1 so a single-category axis cannot produce an `inf` unit.
+            if is_name_align_start && data_len > 1 {
                 data_len -= 1;
             }
-            let unit = axis_length / data_len as f32;
+            let unit = axis_length / data_len.max(1) as f32;
 
             for (index, text) in text_list.iter().enumerate() {
                 if index % text_unit_count != 0 {

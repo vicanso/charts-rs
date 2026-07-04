@@ -134,6 +134,12 @@ impl BoxPlotChart {
                 });
             }
         }
+        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
+            c.x_axis_hidden = x_axis_hidden;
+        }
+        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
+            c.y_axis_hidden = y_axis_hidden;
+        }
         c.fill_default();
         Ok(c)
     }
@@ -433,5 +439,32 @@ mod tests {
             include_str!("../../asset/box_plot_chart/basic_json.svg"),
             chart.svg().unwrap()
         );
+    }
+
+    // `x_axis_hidden` / `y_axis_hidden` must be honored from JSON (previously
+    // parsed nowhere, so `svg()` ignored them).
+    #[test]
+    fn box_plot_axis_hidden_from_json() {
+        let hidden = BoxPlotChart::from_json(
+            r##"{
+                "x_axis_data": ["A"],
+                "x_axis_hidden": true,
+                "y_axis_hidden": true,
+                "box_series": [{"name": "G", "data": [[1, 2, 3, 4, 5]]}]
+            }"##,
+        )
+        .unwrap();
+        assert!(hidden.x_axis_hidden, "x_axis_hidden must be parsed");
+        assert!(hidden.y_axis_hidden, "y_axis_hidden must be parsed");
+
+        let shown = BoxPlotChart::from_json(
+            r##"{
+                "x_axis_data": ["A"],
+                "box_series": [{"name": "G", "data": [[1, 2, 3, 4, 5]]}]
+            }"##,
+        )
+        .unwrap();
+        // Hiding the axes must actually change the rendered output.
+        assert_ne!(hidden.svg().unwrap(), shown.svg().unwrap());
     }
 }

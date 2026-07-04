@@ -326,7 +326,8 @@ impl FunnelChart {
             let css = format!(
                 "@keyframes funnel-fade{{from{{opacity:0}}to{{opacity:1}}}} \
                  .funnel-anim{{animation:funnel-fade {}ms {} both}}",
-                anim.duration, anim.easing
+                anim.duration,
+                anim.safe_easing()
             );
             c.svg_with_style(&css)
         } else {

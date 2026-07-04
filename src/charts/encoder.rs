@@ -11,11 +11,11 @@
 // limitations under the License.
 
 use image::ImageFormat;
-use once_cell::sync::OnceCell;
 use resvg::{tiny_skia, usvg};
 use snafu::ResultExt;
 use std::io::Cursor;
 use std::sync::Arc;
+use std::sync::OnceLock;
 use usvg::fontdb;
 
 // Crate-level error/result (see `error.rs`); re-exported to keep
@@ -24,7 +24,7 @@ pub use super::error::{Error, Result};
 use super::error::{ImageSnafu, ParseSnafu};
 
 pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> Arc<fontdb::Database> {
-    static GLOBAL_FONT_DB: OnceCell<Arc<fontdb::Database>> = OnceCell::new();
+    static GLOBAL_FONT_DB: OnceLock<Arc<fontdb::Database>> = OnceLock::new();
     GLOBAL_FONT_DB
         .get_or_init(|| {
             let mut fontdb = fontdb::Database::new();

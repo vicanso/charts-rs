@@ -1,0 +1,4 @@
+# Normalize line endings to LF on checkout across all platforms so that the
+# SVG snapshot tests (which compare `include_str!`ed fixtures byte-for-byte)
+# pass on Windows CI as well.
+* text=auto eol=lf
