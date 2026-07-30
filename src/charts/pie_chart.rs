@@ -11,21 +11,22 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
 use core::f32;
-use std::sync::Arc;
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct PieChart {
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     pub radius: f32,
     pub inner_radius: f32,
     pub rose_type: Option<bool>,
@@ -33,40 +34,26 @@ pub struct PieChart {
     pub start_angle: f32,
 
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
     pub series_label_position: Option<String>,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
+}
 
-    pub animation: Option<AnimationConfig>,
-    /// When `true`, each slice carries a native `<title>` tooltip
-    /// (`name: value (pct%)`). Default: false; output is unchanged when off.
-    pub tooltip_show: bool,
+impl std::ops::Deref for PieChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for PieChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl PieChart {
@@ -82,7 +69,7 @@ impl PieChart {
             ..Default::default()
         };
         p.fill_default();
-        let value = p.fill_option(data)?;
+        let value = p.base.fill_option(data, &mut p.y_axis_configs)?;
         if let Some(radius) = get_f32_from_value(&value, "radius") {
             p.radius = radius;
         }
@@ -95,34 +82,16 @@ impl PieChart {
         if let Some(border_radius) = get_f32_from_value(&value, "border_radius") {
             p.border_radius = Some(border_radius);
         }
-        if let Some(anim) = value.get("animation")
-            && !anim.is_null()
-        {
-            let mut config = AnimationConfig::default();
-            if let Some(d) = get_usize_from_value(anim, "duration") {
-                config.duration = d as u32;
-            }
-            if let Some(e) = get_string_from_value(anim, "easing") {
-                config.easing = e;
-            }
-            if let Some(d) = get_usize_from_value(anim, "delay") {
-                config.delay = d as u32;
-            }
-            p.animation = Some(config);
-        }
-        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
-            p.tooltip_show = v;
-        }
         Ok(p)
     }
     /// Creates a pie chart with custom theme.
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> PieChart {
         let mut p = PieChart {
-            series_list,
             ..Default::default()
         };
+        p.series_list = series_list;
         p.fill_default();
-        p.fill_theme(get_theme(theme));
+        p.base.fill_theme(get_theme(theme), &mut p.y_axis_configs);
         p
     }
     /// Creates a pie chart with default theme.

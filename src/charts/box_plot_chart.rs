@@ -11,16 +11,15 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::{ChartBase, get_y_axis_config};
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 /// One data series for a box plot.
 ///
@@ -33,54 +32,45 @@ pub struct BoxPlotSeries {
     pub index: Option<usize>,
 }
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct BoxPlotChart {
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
-    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
-
-    // series (required by #[derive(Chart)])
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // box plot specific
     pub box_series: Vec<BoxPlotSeries>,
+}
+
+impl std::ops::Deref for BoxPlotChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for BoxPlotChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl BoxPlotChart {
     fn fill_default(&mut self) {
         // Sync series_list from box_series so legend and color-cycling work.
         if self.series_list.is_empty() {
+            let mut series_list = vec![];
             for (i, bs) in self.box_series.iter().enumerate() {
                 let mut s = Series::new(bs.name.clone(), vec![]);
                 s.index = Some(bs.index.unwrap_or(i));
-                self.series_list.push(s);
+                series_list.push(s);
             }
+            self.series_list = series_list;
         }
         if self.y_axis_configs[0].axis_stroke_color.is_zero() {
             self.y_axis_configs[0].axis_stroke_color = self.x_axis_stroke_color;
@@ -94,10 +84,10 @@ impl BoxPlotChart {
     ) -> BoxPlotChart {
         let mut c = BoxPlotChart {
             box_series,
-            x_axis_data,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.x_axis_data = x_axis_data;
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
     }
@@ -110,7 +100,7 @@ impl BoxPlotChart {
         let mut c = BoxPlotChart {
             ..Default::default()
         };
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         // Parse box_series array
         if let Some(arr) = value.get("box_series").and_then(|v| v.as_array()) {
             for (i, item) in arr.iter().enumerate() {
@@ -133,12 +123,6 @@ impl BoxPlotChart {
                     index: index.or(Some(i)),
                 });
             }
-        }
-        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
-            c.x_axis_hidden = x_axis_hidden;
-        }
-        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
-            c.y_axis_hidden = y_axis_hidden;
         }
         c.fill_default();
         Ok(c)
@@ -169,7 +153,7 @@ impl BoxPlotChart {
             return c.svg();
         }
 
-        let y_axis_config = self.get_y_axis_config(0);
+        let y_axis_config = get_y_axis_config(&self.y_axis_configs, 0);
         let y_axis_values = get_axis_values(AxisValueParams {
             data_list: all_values,
             split_number: y_axis_config.axis_split_number,
@@ -207,6 +191,7 @@ impl BoxPlotChart {
                 left: y_axis_width,
                 ..Default::default()
             }),
+            &self.y_axis_configs,
             axis_width,
             axis_height,
         );
@@ -215,6 +200,7 @@ impl BoxPlotChart {
         if !self.y_axis_hidden {
             self.render_y_axis(
                 c.child(Box::default()),
+                &self.y_axis_configs,
                 y_axis_values.data.clone(),
                 axis_height,
                 y_axis_width,

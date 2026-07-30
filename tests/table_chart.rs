@@ -3,7 +3,7 @@ use pretty_assertions::assert_eq;
 
 #[test]
 fn table_chart() {
-    let mut table_chart = TableChart::from_json(
+    let table_chart = TableChart::from_json(
         r###"{
         "theme": "grafana",
         "title_text": "NASDAQ",

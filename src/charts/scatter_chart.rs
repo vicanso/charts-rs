@@ -11,53 +11,32 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::{ChartBase, get_y_axis_config};
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{DEFAULT_Y_AXIS_WIDTH, get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Serialize, Deserialize, Clone, Debug, Default, Chart)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct ScatterChart {
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    #[serde(flatten)]
+    pub base: ChartBase,
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
     pub x_axis_config: YAxisConfig,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
-    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // symbol
     pub series_symbol_sizes: Vec<f32>,
@@ -65,9 +44,18 @@ pub struct ScatterChart {
     /// Circle → Triangle → Rect → Diamond by series index.
     /// `series_symbol` (if Some) overrides all per-series symbols.
     pub series_symbols: Vec<Symbol>,
-    /// When `true`, each point carries a native `<title>` tooltip
-    /// (`series: (x, y)`). Default: false; output is unchanged when off.
-    pub tooltip_show: bool,
+}
+
+impl std::ops::Deref for ScatterChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for ScatterChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 fn render_scatter_symbol(
@@ -154,7 +142,7 @@ impl ScatterChart {
         let mut s = ScatterChart {
             ..Default::default()
         };
-        let value = s.fill_option(data)?;
+        let value = s.base.fill_option(data, &mut s.y_axis_configs)?;
         s.fill_default();
 
         if let Some(series_symbol_sizes) = get_f32_slice_from_value(&value, "series_symbol_sizes") {
@@ -176,15 +164,6 @@ impl ScatterChart {
                 })
                 .collect();
         }
-        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
-            s.x_axis_hidden = x_axis_hidden;
-        }
-        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
-            s.y_axis_hidden = y_axis_hidden;
-        }
-        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
-            s.tooltip_show = v;
-        }
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
             s.x_axis_config = get_y_axis_config_from_value(get_theme(&theme), x_axis_config);
@@ -194,11 +173,11 @@ impl ScatterChart {
     /// Creates a scatter chart with  theme.
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> ScatterChart {
         let mut s = ScatterChart {
-            series_list,
             ..Default::default()
         };
+        s.series_list = series_list;
         let theme = get_theme(theme);
-        s.fill_theme(theme);
+        s.base.fill_theme(theme, &mut s.y_axis_configs);
         s.fill_default();
 
         s
@@ -226,7 +205,7 @@ impl ScatterChart {
         }
         let axis_top = self.render_header(&mut c);
 
-        let y_axis_config = self.get_y_axis_config(0);
+        let y_axis_config = get_y_axis_config(&self.y_axis_configs, 0);
 
         let mut y_axis_data_list = vec![];
         let mut x_axis_data_list = vec![];
@@ -280,6 +259,7 @@ impl ScatterChart {
                 left: y_axis_width,
                 ..Default::default()
             }),
+            &self.y_axis_configs,
             axis_width,
             axis_height,
         );
@@ -302,6 +282,7 @@ impl ScatterChart {
         if !self.y_axis_hidden {
             self.render_y_axis(
                 c.child(Box::default()),
+                &self.y_axis_configs,
                 y_axis_values.data.clone(),
                 axis_height,
                 y_axis_width,

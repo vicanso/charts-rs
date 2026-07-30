@@ -15,11 +15,10 @@ use super::component::Rect;
 use super::component::generate_svg;
 use super::params::{get_color_from_value, get_f32_from_value, get_margin_from_value};
 use super::{
-    BarChart, CandlestickChart, CanvasResult, HorizontalBarChart, LineChart, PieChart, RadarChart,
-    ScatterChart, TableChart,
+    BarChart, CandlestickChart, HorizontalBarChart, LineChart, PieChart, RadarChart, ScatterChart,
+    TableChart,
 };
 use super::{Box, Color};
-use substring::Substring;
 
 pub enum ChildChart {
     Bar(BarChart, Option<(f32, f32)>),
@@ -91,10 +90,9 @@ impl MultiChart {
                 // not fail in practice; propagate as an error just in case.
                 let mut str = serde_json::to_string(item)?;
                 if item.get("theme").is_none() {
-                    str = format!(
-                        r###"{},"theme":{theme}}}"###,
-                        str.substring(0, str.len() - 1)
-                    );
+                    // Splice the theme into the object: drop the closing '}'.
+                    let body = str.strip_suffix('}').unwrap_or(&str);
+                    str = format!(r###"{body},"theme":{theme}}}"###);
                 }
                 match chart_type {
                     "line" => {
@@ -148,31 +146,39 @@ impl MultiChart {
         self.charts.push(c);
     }
     /// Converts the chart to svg.
-    pub fn svg(&mut self) -> CanvasResult<String> {
+    pub fn svg(&self) -> canvas::Result<String> {
         let mut arr = vec![];
         let mut y = 0.0;
         let mut x = 0.0;
         let margin_top = self.margin.top;
         let margin_left = self.margin.left;
-        for item in self.charts.iter_mut() {
+        // Places a child chart on a local clone: an explicit position wins,
+        // otherwise charts stack vertically with `gap` between them.
+        macro_rules! place_child {
+            ($chart:expr, $position:expr) => {{
+                let mut c = $chart.clone();
+                c.y = y;
+                // fixed position, no need for gap
+                if let Some((px, py)) = $position {
+                    c.y = *py;
+                    c.x = *px;
+                } else if y == 0.0 {
+                    c.y = margin_top;
+                } else {
+                    // not the first chart and not set position
+                    y += self.gap;
+                    c.y = y;
+                }
+                if $position.is_none() {
+                    c.x = c.x.max(margin_left);
+                }
+                c
+            }};
+        }
+        for item in self.charts.iter() {
             let result = match item {
                 ChildChart::Bar(c, position) => {
-                    c.y = y;
-                    // fix postion, no need  gap
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        // not the first chart and not set position
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-
+                    let c = place_child!(c, position);
                     ChildChartResult {
                         svg: c.svg()?,
                         right: c.x + c.width,
@@ -180,21 +186,7 @@ impl MultiChart {
                     }
                 }
                 ChildChart::Candlestick(c, position) => {
-                    c.y = y;
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        // not the first chart and not set position
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-
+                    let c = place_child!(c, position);
                     ChildChartResult {
                         svg: c.svg()?,
                         right: c.x + c.width,
@@ -202,20 +194,7 @@ impl MultiChart {
                     }
                 }
                 ChildChart::HorizontalBar(c, position) => {
-                    c.y = y;
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-
+                    let c = place_child!(c, position);
                     ChildChartResult {
                         svg: c.svg()?,
                         right: c.x + c.width,
@@ -223,20 +202,7 @@ impl MultiChart {
                     }
                 }
                 ChildChart::Line(c, position) => {
-                    c.y = y;
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-
+                    let c = place_child!(c, position);
                     ChildChartResult {
                         svg: c.svg()?,
                         right: c.x + c.width,
@@ -244,20 +210,7 @@ impl MultiChart {
                     }
                 }
                 ChildChart::Pie(c, position) => {
-                    c.y = y;
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-
+                    let c = place_child!(c, position);
                     ChildChartResult {
                         svg: c.svg()?,
                         right: c.x + c.width,
@@ -265,20 +218,7 @@ impl MultiChart {
                     }
                 }
                 ChildChart::Radar(c, position) => {
-                    c.y = y;
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-
+                    let c = place_child!(c, position);
                     ChildChartResult {
                         svg: c.svg()?,
                         right: c.x + c.width,
@@ -286,20 +226,7 @@ impl MultiChart {
                     }
                 }
                 ChildChart::Scatter(c, position) => {
-                    c.y = y;
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-
+                    let c = place_child!(c, position);
                     ChildChartResult {
                         svg: c.svg()?,
                         right: c.x + c.width,
@@ -307,25 +234,13 @@ impl MultiChart {
                     }
                 }
                 ChildChart::Table(c, position) => {
-                    c.y = y;
-                    if let Some((x, y)) = position {
-                        y.clone_into(&mut c.y);
-                        x.clone_into(&mut c.x);
-                    } else if y == 0.0 {
-                        c.y = margin_top;
-                    } else {
-                        y += self.gap;
-                        c.y = y;
-                    }
-                    if position.is_none() {
-                        c.x = c.x.max(margin_left);
-                    }
-                    // the height will be recount
-                    let svg = c.svg()?;
+                    let c = place_child!(c, position);
+                    // the height is recomputed by the table itself
+                    let (svg, height) = c.render()?;
                     ChildChartResult {
                         svg,
                         right: c.x + c.width,
-                        bottom: c.y + c.height,
+                        bottom: c.y + height,
                     }
                 }
             };

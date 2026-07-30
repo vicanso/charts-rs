@@ -890,12 +890,12 @@ fn generate_image() {
             ],
             "theme": "grafana"
           }"###;
-    let mut multi_chart = MultiChart::from_json(multi_chart_json).unwrap();
+    let multi_chart = MultiChart::from_json(multi_chart_json).unwrap();
     let buf = svg_to_webp(&multi_chart.svg().unwrap()).unwrap();
     std::fs::write("./asset/image/multi-chart.webp", buf).unwrap();
 
     // theme preview image for shadcn
-    let mut shadcn_chart = MultiChart::from_json(
+    let shadcn_chart = MultiChart::from_json(
         &multi_chart_json.replace(r###""theme": "grafana""###, r###""theme": "shadcn""###),
     )
     .unwrap();

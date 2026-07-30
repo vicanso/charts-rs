@@ -11,16 +11,14 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 // ── ThemeRiverChart ──────────────────────────────────────────────────────────
 
@@ -30,41 +28,28 @@ use std::sync::Arc;
 ///
 /// Data reuses the shared model: `series_list` holds one [`Series`] per stream
 /// and `x_axis_data` holds the time-axis labels.
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct ThemeRiverChart {
-    // x/y axis (required by #[derive(Chart)]); `x_axis_data` doubles as the
-    // time-axis labels, the rest are unused in rendering.
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
-    pub y_axis_hidden: bool,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
-
-    // series (required by #[derive(Chart)])
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // theme-river-specific
     /// Opacity of the stream bands in `0.0..=1.0`. Default: 0.85.
     pub stream_opacity: f32,
+}
+
+impl std::ops::Deref for ThemeRiverChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for ThemeRiverChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl ThemeRiverChart {
@@ -87,11 +72,11 @@ impl ThemeRiverChart {
         theme: &str,
     ) -> ThemeRiverChart {
         let mut c = ThemeRiverChart {
-            series_list,
-            x_axis_data,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.series_list = series_list;
+        c.x_axis_data = x_axis_data;
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
     }
@@ -102,7 +87,7 @@ impl ThemeRiverChart {
             ..Default::default()
         };
         // `series_list` and `x_axis_data` are parsed by the derived fill_option.
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         if let Some(v) = get_f32_from_value(&value, "stream_opacity") {
             c.stream_opacity = v;
         }
@@ -150,10 +135,25 @@ impl ThemeRiverChart {
             s.data.get(t).and_then(|v| *v).unwrap_or(0.0).max(0.0)
         };
 
+        // Per-step totals and stacked prefix sums (`belows[i][t]` = sum of
+        // series `0..i` at step `t`), computed once up front — re-summing per
+        // band would be O(series² × steps).
+        let mut totals = vec![0.0_f32; t_count];
+        for (t, total) in totals.iter_mut().enumerate() {
+            *total = self.series_list.iter().map(|s| val(s, t)).sum();
+        }
+        let mut belows: Vec<Vec<f32>> = Vec::with_capacity(self.series_list.len());
+        let mut acc = vec![0.0_f32; t_count];
+        for s in self.series_list.iter() {
+            belows.push(acc.clone());
+            for (t, a) in acc.iter_mut().enumerate() {
+                *a += val(s, t);
+            }
+        }
+
         // Peak total across time drives the vertical scale.
         let mut max_total = 0.0_f32;
-        for t in 0..t_count {
-            let total: f32 = self.series_list.iter().map(|s| val(s, t)).sum();
+        for &total in totals.iter() {
             max_total = max_total.max(total);
         }
         if max_total <= 0.0 {
@@ -179,11 +179,9 @@ impl ThemeRiverChart {
             let mut top_pts: Vec<Point> = Vec::with_capacity(t_count);
             let mut bottom_pts: Vec<Point> = Vec::with_capacity(t_count);
             for t in 0..t_count {
-                let total: f32 = self.series_list.iter().map(|s| val(s, t)).sum();
-                let below: f32 = self.series_list[..i].iter().map(|s| val(s, t)).sum();
                 let v = val(s, t);
-                let base = center_y - total * ky / 2.0;
-                let y_top = base + below * ky;
+                let base = center_y - totals[t] * ky / 2.0;
+                let y_top = base + belows[i][t] * ky;
                 let y_bottom = y_top + v * ky;
                 let x = x_at(t);
                 top_pts.push((x, y_top).into());
@@ -217,10 +215,8 @@ impl ThemeRiverChart {
             if best_v * ky < font_size {
                 continue;
             }
-            let total: f32 = self.series_list.iter().map(|s| val(s, best_t)).sum();
-            let below: f32 = self.series_list[..i].iter().map(|s| val(s, best_t)).sum();
-            let base = center_y - total * ky / 2.0;
-            let y = base + (below + best_v / 2.0) * ky;
+            let base = center_y - totals[best_t] * ky / 2.0;
+            let y = base + (belows[i][best_t] + best_v / 2.0) * ky;
             // Keep the label inside the plot: anchor the first step's label to
             // the start and the last step's to the end.
             let (lx, la) = if best_t == 0 {

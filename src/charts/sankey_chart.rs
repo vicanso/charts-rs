@@ -11,16 +11,14 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 // ── Public data model ──────────────────────────────────────────────────────────
 
@@ -108,36 +106,12 @@ fn sample_link_edge(x0: f32, y0: f32, x1: f32, y1: f32, segments: usize, out: &m
 
 // ── SankeyChart ────────────────────────────────────────────────────────────────
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct SankeyChart {
-    // x/y axis (required by #[derive(Chart)], unused in rendering)
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
-    pub y_axis_hidden: bool,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
-
-    // series (required by #[derive(Chart)])
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // sankey-specific
     /// Diagram nodes. May be left empty, in which case nodes are derived from
@@ -151,10 +125,6 @@ pub struct SankeyChart {
     pub node_gap: f32,
     /// Opacity of the flow ribbons in `0.0..=1.0`. Default: 0.45.
     pub link_opacity: f32,
-    /// Optional expand animation: nodes and links grow horizontally from the
-    /// left, staggered column by column (`delay` ms per layer), so the flow
-    /// reveals left to right; labels fade in alongside.
-    pub animation: Option<AnimationConfig>,
     /// Horizontal node alignment: `"left"` (default — column = longest path
     /// from a source), `"right"` (column = longest path to a sink), or
     /// `"justify"` (sink nodes pushed to the last column).
@@ -162,6 +132,18 @@ pub struct SankeyChart {
     /// When `true`, each link is filled with a source→target color gradient
     /// instead of a translucent source color. Default: false.
     pub link_gradient: bool,
+}
+
+impl std::ops::Deref for SankeyChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for SankeyChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 /// Number of iterations of the relaxation pass that reduces link crossings.
@@ -200,7 +182,7 @@ impl SankeyChart {
             links,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
     }
@@ -210,7 +192,7 @@ impl SankeyChart {
         let mut c = SankeyChart {
             ..Default::default()
         };
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         if let Some(arr) = value.get("nodes").and_then(|v| v.as_array()) {
             c.nodes = arr
                 .iter()
@@ -257,21 +239,6 @@ impl SankeyChart {
         }
         if let Some(b) = get_bool_from_value(&value, "link_gradient") {
             c.link_gradient = b;
-        }
-        if let Some(anim) = value.get("animation")
-            && !anim.is_null()
-        {
-            let mut config = AnimationConfig::default();
-            if let Some(d) = get_usize_from_value(anim, "duration") {
-                config.duration = d as u32;
-            }
-            if let Some(e) = get_string_from_value(anim, "easing") {
-                config.easing = e;
-            }
-            if let Some(d) = get_usize_from_value(anim, "delay") {
-                config.delay = d as u32;
-            }
-            c.animation = Some(config);
         }
         c.fill_default();
         Ok(c)

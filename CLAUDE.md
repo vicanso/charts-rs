@@ -23,10 +23,10 @@ cargo fmt
 
 ## Architecture
 
-**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 19 chart types and 10 built-in themes, with an API inspired by Apache ECharts.
+**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 22 chart types and 10 built-in themes, with an API inspired by Apache ECharts.
 
 ### Chart Types
-`BarChart`, `HorizontalBarChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, `CandlestickChart`, `TableChart`, `HeatmapChart`, `FunnelChart`, `WaterfallChart`, `MultiChart`, `CalendarChart`, `GaugeChart`, `TreemapChart`, `BoxPlotChart`, `SunburstChart`, `SankeyChart`, `TreeChart`
+`BarChart`, `HorizontalBarChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, `CandlestickChart`, `TableChart`, `HeatmapChart`, `FunnelChart`, `WaterfallChart`, `MultiChart`, `CalendarChart`, `GaugeChart`, `TreemapChart`, `BoxPlotChart`, `SunburstChart`, `SankeyChart`, `TreeChart`, `GraphChart`, `ParallelChart`, `ThemeRiverChart`
 
 ### Two Creation Paths
 
@@ -45,7 +45,7 @@ chart.svg()?;
 
 ### Rendering Pipeline
 ```
-Chart struct → fill_theme() [via #[derive(Chart)] macro] → svg() method
+Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
     → Canvas (coordinate system + SVG context)
     → Component primitives (Text, Line, Rect, Circle, etc.)
     → SVG string
@@ -64,7 +64,7 @@ Chart struct → fill_theme() [via #[derive(Chart)] macro] → svg() method
 | `src/charts/color.rs` | `Color` type with hex parsing (`"#345"`, `"#ffcc00"`) and opacity |
 | `src/charts/font.rs` | Font management via `fontdue`; custom TTF/OTF loading; default: embedded `Roboto.ttf` |
 | `src/charts/encoder.rs` | Raster image encoding via `resvg` + `image` (gated on `image-encoder` feature) |
-| `charts-rs-derive/` | Proc-macro crate providing `#[derive(Chart)]` — auto-generates `fill_theme()` for chart structs |
+| `src/charts/base.rs` | `ChartBase` — the ~50 shared chart fields plus `fill_theme()`/`fill_option()`/`render_header()`/`render_bar()`/`render_line()` etc.; every chart embeds it and exposes it via `Deref`/`DerefMut` (`chart.title_text` works directly) |
 
 ### Important Conventions
 

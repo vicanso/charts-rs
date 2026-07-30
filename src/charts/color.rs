@@ -11,7 +11,6 @@
 // limitations under the License.
 
 use serde::{Deserialize, Serialize};
-use substring::Substring;
 
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug, Default)]
 pub struct Color {
@@ -105,20 +104,26 @@ fn parse_hex(hex: &str) -> u8 {
 impl From<&str> for Color {
     fn from(value: &str) -> Self {
         let mut c = Color::default();
-        if !value.starts_with('#') {
+        let Some(hex) = value.strip_prefix('#') else {
+            return c;
+        };
+        c.a = 255;
+        // Hex colors are ASCII; anything else falls through to the 0 default
+        // that invalid hex digits produce anyway.
+        if !hex.is_ascii() {
             return c;
         }
-        let hex = value.substring(1, value.len());
         if hex.len() == 3 {
-            c.r = parse_hex(&hex.substring(0, 1).repeat(2));
-            c.g = parse_hex(&hex.substring(1, 2).repeat(2));
-            c.b = parse_hex(&hex.substring(2, 3).repeat(2));
+            // Shorthand "#abc": each digit doubles ("a" → 0xaa = digit * 17).
+            let digit = |i: usize| parse_hex(hex.get(i..i + 1).unwrap_or_default()) * 17;
+            c.r = digit(0);
+            c.g = digit(1);
+            c.b = digit(2);
         } else {
-            c.r = parse_hex(hex.substring(0, 2));
-            c.g = parse_hex(hex.substring(2, 4));
-            c.b = parse_hex(hex.substring(4, 6));
+            c.r = parse_hex(hex.get(0..2).unwrap_or_default());
+            c.g = parse_hex(hex.get(2..4).unwrap_or_default());
+            c.b = parse_hex(hex.get(4..6).unwrap_or_default());
         }
-        c.a = 255;
         c
     }
 }

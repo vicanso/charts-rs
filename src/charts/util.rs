@@ -13,7 +13,6 @@
 use super::common::AxisScale;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use substring::Substring;
 
 pub static NIL_VALUE: f32 = f32::MIN;
 
@@ -35,8 +34,7 @@ impl From<(f32, f32)> for Point {
 }
 impl fmt::Display for Point {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let m = format!("({},{})", format_float(self.x), format_float(self.y));
-        write!(f, "{m}")
+        write!(f, "({},{})", format_float(self.x), format_float(self.y))
     }
 }
 
@@ -63,14 +61,14 @@ impl Box {
 }
 impl fmt::Display for Box {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let m = format!(
+        write!(
+            f,
             "({},{},{},{})",
             format_float(self.left),
             format_float(self.top),
             format_float(self.right),
             format_float(self.bottom)
-        );
-        write!(f, "{m}")
+        )
     }
 }
 
@@ -164,28 +162,24 @@ pub(crate) fn thousands_format_float(value: f32) -> String {
     if value < 1000.0 {
         return format_float(value);
     }
+    // All-ASCII digits (negatives take the branch above), so byte positions
+    // are char positions.
     let str = format!("{:.0}", value);
-    let unit = 3;
-    let mut index = str.len() % unit;
-    let mut arr = vec![];
-    if index != 0 {
-        arr.push(str.substring(0, index))
-    }
-
-    loop {
-        if index >= str.len() {
-            break;
+    let offset = str.len() % 3;
+    let mut out = String::with_capacity(str.len() + str.len() / 3);
+    for (i, ch) in str.chars().enumerate() {
+        if i != 0 && i % 3 == offset {
+            out.push(',');
         }
-        arr.push(str.substring(index, index + unit));
-        index += unit;
+        out.push(ch);
     }
-    arr.join(",")
+    out
 }
 
 pub(crate) fn format_float(value: f32) -> String {
-    let str = format!("{:.1}", value);
+    let mut str = format!("{:.1}", value);
     if str.ends_with(".0") {
-        return str.substring(0, str.len() - 2).to_string();
+        str.truncate(str.len() - 2);
     }
     str
 }
@@ -457,17 +451,28 @@ pub(crate) struct LabelOption {
 impl LabelOption {
     pub fn format(&self) -> String {
         // {a} for series name, {b} for category name, {c} for data value, {d} for percentage
-        let value = format_float(self.value);
-        let percentage = format_float(self.percentage * 100.0) + "%";
         if self.formatter.is_empty() {
-            return value;
+            return format_float(self.value);
         }
-        self.formatter
-            .replace(SERIES_NAME_FORMAT_LABEL, &self.series_name)
-            .replace(CATEGORY_NAME_FORMAT_LABEL, &self.category_name)
-            .replace(VALUE_FORMAT_LABEL, &value)
-            .replace(PERCENTAGE_FORMAT_LABEL, &percentage)
-            .replace(THOUSANDS_FORMAT_LABEL, &thousands_format_float(self.value))
+        // Only pay for the replacements the formatter actually uses.
+        let mut result = self.formatter.clone();
+        if result.contains(SERIES_NAME_FORMAT_LABEL) {
+            result = result.replace(SERIES_NAME_FORMAT_LABEL, &self.series_name);
+        }
+        if result.contains(CATEGORY_NAME_FORMAT_LABEL) {
+            result = result.replace(CATEGORY_NAME_FORMAT_LABEL, &self.category_name);
+        }
+        if result.contains(VALUE_FORMAT_LABEL) {
+            result = result.replace(VALUE_FORMAT_LABEL, &format_float(self.value));
+        }
+        if result.contains(PERCENTAGE_FORMAT_LABEL) {
+            let percentage = format_float(self.percentage * 100.0) + "%";
+            result = result.replace(PERCENTAGE_FORMAT_LABEL, &percentage);
+        }
+        if result.contains(THOUSANDS_FORMAT_LABEL) {
+            result = result.replace(THOUSANDS_FORMAT_LABEL, &thousands_format_float(self.value));
+        }
+        result
     }
 }
 
@@ -488,10 +493,16 @@ pub(crate) fn get_pie_point(cx: f32, cy: f32, r: f32, angle: f32) -> Point {
     Point { x, y }
 }
 pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
+    if points.is_empty() {
+        return Box::default();
+    }
+    // Start from the opposite extremes so all-negative coordinates still
+    // produce a correct bounding box.
     let mut b = Box {
         left: f32::MAX,
         top: f32::MAX,
-        ..Default::default()
+        right: f32::MIN,
+        bottom: f32::MIN,
     };
     for p in points.iter() {
         if p.x < b.left {

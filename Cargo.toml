@@ -9,35 +9,34 @@ description = "A charts library for rust"
 license = "Apache-2.0"
 homepage = "https://github.com/vicanso/charts-rs"
 repository = "https://github.com/vicanso/charts-rs"
-exclude = ["asset/*", "tests/*", "examples/*", "charts-rs-derive/*", "Cargo.lock"]
+exclude = ["asset/*", "tests/*", "examples/*", "Cargo.lock"]
 readme = "./README.md"
 rust-version = "1.88"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ahash = "0.8.12"
 arc-swap = "1.9.1"
-charts-rs-derive = { path = "./charts-rs-derive", version = "0.7.1" }
 fontdue = "0.9.3"
-html-escape = "0.2.13"
-image = { version = "0.25.10", default-features = false, features = [
-    "webp",
-    "avif",
-    "jpeg",
-    "png",
-], optional = true }
-regex = "1.12.4"
+image = { version = "0.25.10", default-features = false, optional = true }
 resvg = { version = "0.47.0", default-features = false, features = [
     "text",
     "system-fonts",
 ], optional = true }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.150"
-snafu = "0.9.1"
-substring = "1.4.5"
 
 [features]
-image-encoder = ["resvg", "image"]
+# Internal plumbing: the shared raster pipeline (resvg + image). Enabled
+# automatically by the per-format features below; not meant to be used alone.
+raster = ["dep:resvg", "dep:image"]
+# Per-format raster export. Pick only what you need — AVIF in particular
+# pulls in the heavyweight rav1e encoder.
+png = ["raster", "image/png"]
+jpeg = ["raster", "image/jpeg"]
+webp = ["raster", "image/webp"]
+avif = ["raster", "image/avif"]
+# Backwards-compatible umbrella enabling every raster format.
+image-encoder = ["png", "jpeg", "webp", "avif"]
 
 [dev-dependencies]
 criterion = "0.8.2"

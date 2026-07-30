@@ -10,9 +10,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use html_escape::encode_text;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::fmt;
+use std::fmt::Write as _;
 use std::vec;
 
 use super::color::*;
@@ -92,7 +93,11 @@ fn fill_grad_id(start: &Color, end: &Color, angle: f32) -> String {
     )
 }
 
-fn fill_svg_defs(fill: &Fill) -> String {
+/// Renders the `<defs>` block for a gradient fill. When a render-scoped
+/// `grad_seen` set is provided, a gradient id that was already emitted in this
+/// document is skipped — identical gradients share one definition instead of
+/// repeating an (invalid) duplicate id per shape.
+fn fill_svg_defs(fill: &Fill, grad_seen: Option<&mut HashSet<String>>) -> String {
     match fill {
         Fill::Solid(_) => String::new(),
         Fill::LinearGradient {
@@ -100,6 +105,11 @@ fn fill_svg_defs(fill: &Fill) -> String {
             end_color,
             angle,
         } => {
+            if let Some(seen) = grad_seen
+                && !seen.insert(fill_grad_id(start_color, end_color, *angle))
+            {
+                return String::new();
+            }
             let angle_rad = angle * std::f32::consts::PI / 180.0;
             let x1 = 0.5 - 0.5 * angle_rad.sin();
             let y1 = 0.5 - 0.5 * angle_rad.cos();
@@ -246,50 +256,70 @@ impl<'a> SVGTag<'a> {
 /// arbitrary markup — a stored/reflected XSS vector for any consumer that
 /// serves `svg()` output to a browser. Only does per-character work when an
 /// unsafe byte is present, so the common case stays a single `push_str`.
-fn push_escaped_attr(out: &mut String, raw: &str) {
+/// Escapes a string for use as SVG/XML text content (`&`, `<`, `>`); the
+/// quote characters are fine inside text nodes, matching the escaping set of
+/// the `html_escape::encode_text` this replaced (byte-identical output).
+fn encode_text(raw: &str) -> String {
+    let mut out = String::with_capacity(raw.len());
+    for c in raw.chars() {
+        match c {
+            '&' => out.push_str("&amp;"),
+            '<' => out.push_str("&lt;"),
+            '>' => out.push_str("&gt;"),
+            _ => out.push(c),
+        }
+    }
+    out
+}
+
+fn push_escaped_attr<W: fmt::Write>(out: &mut W, raw: &str) -> fmt::Result {
     if raw.bytes().any(|b| matches!(b, b'&' | b'<' | b'>' | b'"')) {
         for c in raw.chars() {
             match c {
-                '&' => out.push_str("&amp;"),
-                '<' => out.push_str("&lt;"),
-                '>' => out.push_str("&gt;"),
-                '"' => out.push_str("&quot;"),
-                _ => out.push(c),
+                '&' => out.write_str("&amp;")?,
+                '<' => out.write_str("&lt;")?,
+                '>' => out.write_str("&gt;")?,
+                '"' => out.write_str("&quot;")?,
+                _ => out.write_char(c)?,
             }
         }
+        Ok(())
     } else {
-        out.push_str(raw);
+        out.write_str(raw)
     }
 }
 
 impl fmt::Display for SVGTag<'_> {
+    // Streams straight into the output (a chart-level shared buffer via
+    // `write!`), instead of assembling an intermediate String per tag.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.tag == TAG_GROUP
             && let Some(ref data) = self.data
             && data.is_empty()
         {
-            return write!(f, "");
+            return Ok(());
         }
-        let mut value = "<".to_string();
-        value.push_str(self.tag);
+        f.write_char('<')?;
+        f.write_str(self.tag)?;
         for (k, v) in self.attrs.iter() {
             if k.is_empty() || v.is_empty() {
                 continue;
             }
-            value.push(' ');
-            value.push_str(k);
-            value.push_str("=\"");
-            push_escaped_attr(&mut value, v);
-            value.push('\"');
+            f.write_char(' ')?;
+            f.write_str(k)?;
+            f.write_str("=\"")?;
+            push_escaped_attr(f, v)?;
+            f.write_char('"')?;
         }
         if let Some(ref data) = self.data {
-            value.push_str(">\n");
-            value.push_str(data);
-            value.push_str(&format!("\n</{}>", self.tag));
+            f.write_str(">\n")?;
+            f.write_str(data)?;
+            f.write_str("\n</")?;
+            f.write_str(self.tag)?;
+            f.write_char('>')
         } else {
-            value.push_str("/>");
+            f.write_str("/>")
         }
-        write!(f, "{}", value)
     }
 }
 
@@ -343,8 +373,13 @@ impl Default for Line {
 
 impl Line {
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String) {
         if self.stroke_width <= 0.0 {
-            return "".to_string();
+            return;
         }
         let mut attrs = vec![
             (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
@@ -360,12 +395,15 @@ impl Line {
         if let Some(ref stroke_dash_array) = self.stroke_dash_array {
             attrs.push((ATTR_STROKE_DASH_ARRAY, stroke_dash_array.to_string()));
         }
-        SVGTag {
-            tag: TAG_LINE,
-            attrs,
-            data: None,
-        }
-        .to_string()
+        let _ = write!(
+            out,
+            "{}",
+            SVGTag {
+                tag: TAG_LINE,
+                attrs,
+                data: None,
+            }
+        );
     }
 }
 
@@ -386,6 +424,11 @@ pub struct Rect {
 }
 impl Rect {
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out, None);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String, grad_seen: Option<&mut HashSet<String>>) {
         let mut attrs = vec![
             (ATTR_X, format_float(self.left)),
             (ATTR_Y, format_float(self.top)),
@@ -407,7 +450,7 @@ impl Rect {
                 attrs.push((ATTR_FILL, fill_attr));
                 attrs.push((ATTR_FILL_OPACITY, fill_svg_opacity(fill)));
             }
-            fill_svg_defs(fill)
+            fill_svg_defs(fill, grad_seen)
         } else {
             String::new()
         };
@@ -418,17 +461,16 @@ impl Rect {
             attrs.push((ATTR_STYLE, style.clone()));
         }
 
-        let element = SVGTag {
-            tag: TAG_RECT,
-            attrs,
-            data: title_data(&self.title),
-        }
-        .to_string();
-        if defs.is_empty() {
-            element
-        } else {
-            format!("{defs}{element}")
-        }
+        out.push_str(&defs);
+        let _ = write!(
+            out,
+            "{}",
+            SVGTag {
+                tag: TAG_RECT,
+                attrs,
+                data: title_data(&self.title),
+            }
+        );
     }
 }
 
@@ -451,18 +493,27 @@ impl Default for Polyline {
 
 impl Polyline {
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String) {
         if self.stroke_width <= 0.0 {
-            return "".to_string();
+            return;
         }
-        let points: Vec<String> = self
-            .points
-            .iter()
-            .map(|p| format!("{},{}", format_float(p.x), format_float(p.y)))
-            .collect();
+        let mut points = String::with_capacity(self.points.len() * 10);
+        for (i, p) in self.points.iter().enumerate() {
+            if i > 0 {
+                points.push(' ');
+            }
+            points.push_str(&format_float(p.x));
+            points.push(',');
+            points.push_str(&format_float(p.y));
+        }
         let mut attrs = vec![
             (ATTR_FILL, "none".to_string()),
             (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
-            (ATTR_POINTS, points.join(" ")),
+            (ATTR_POINTS, points),
         ];
 
         if let Some(color) = self.color {
@@ -470,12 +521,15 @@ impl Polyline {
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
 
-        SVGTag {
-            tag: TAG_POLYLINE,
-            attrs,
-            data: None,
-        }
-        .to_string()
+        let _ = write!(
+            out,
+            "{}",
+            SVGTag {
+                tag: TAG_POLYLINE,
+                attrs,
+                data: None,
+            }
+        );
     }
 }
 
@@ -510,6 +564,11 @@ impl Default for Circle {
 
 impl Circle {
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String) {
         let mut attrs = vec![
             (ATTR_CX, format_float(self.cx)),
             (ATTR_CY, format_float(self.cy)),
@@ -530,12 +589,15 @@ impl Circle {
             attrs.push((ATTR_CLASS, class.clone()));
         }
 
-        SVGTag {
-            tag: TAG_CIRCLE,
-            attrs,
-            data: title_data(&self.title),
-        }
-        .to_string()
+        let _ = write!(
+            out,
+            "{}",
+            SVGTag {
+                tag: TAG_CIRCLE,
+                attrs,
+                data: title_data(&self.title),
+            }
+        );
     }
 }
 
@@ -603,15 +665,24 @@ pub struct Polygon {
 
 impl Polygon {
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out, None);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String, grad_seen: Option<&mut HashSet<String>>) {
         if self.points.is_empty() {
-            return "".to_string();
+            return;
         }
-        let points: Vec<String> = self
-            .points
-            .iter()
-            .map(|p| format!("{},{}", format_float(p.x), format_float(p.y)))
-            .collect();
-        let mut attrs = vec![(ATTR_POINTS, points.join(" "))];
+        let mut points = String::with_capacity(self.points.len() * 10);
+        for (i, p) in self.points.iter().enumerate() {
+            if i > 0 {
+                points.push(' ');
+            }
+            points.push_str(&format_float(p.x));
+            points.push(',');
+            points.push_str(&format_float(p.y));
+        }
+        let mut attrs = vec![(ATTR_POINTS, points)];
         if let Some(color) = self.color {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
@@ -622,7 +693,7 @@ impl Polygon {
             if !opacity.is_empty() {
                 attrs.push((ATTR_FILL_OPACITY, opacity));
             }
-            fill_svg_defs(fill)
+            fill_svg_defs(fill, grad_seen)
         } else {
             if let Some(color) = self.fill {
                 attrs.push((ATTR_FILL, color.hex()));
@@ -636,17 +707,16 @@ impl Polygon {
         if let Some(ref style) = self.style {
             attrs.push((ATTR_STYLE, style.clone()));
         }
-        let element = SVGTag {
-            tag: TAG_POLYGON,
-            attrs,
-            data: title_data(&self.title),
-        }
-        .to_string();
-        if defs.is_empty() {
-            element
-        } else {
-            format!("{defs}{element}")
-        }
+        out.push_str(&defs);
+        let _ = write!(
+            out,
+            "{}",
+            SVGTag {
+                tag: TAG_POLYGON,
+                attrs,
+                data: title_data(&self.title),
+            }
+        );
     }
 }
 
@@ -716,8 +786,13 @@ pub struct Text {
 
 impl Text {
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String) {
         if self.text.is_empty() {
-            return "".to_string();
+            return;
         }
         let mut attrs = vec![
             (ATTR_FONT_SIZE, format_option_float(self.font_size)),
@@ -754,12 +829,15 @@ impl Text {
             attrs.push((ATTR_CLASS, class.clone()));
         }
 
-        SVGTag {
-            tag: TAG_TEXT,
-            attrs,
-            data: Some(encode_text(&self.text).to_string()),
-        }
-        .to_string()
+        let _ = write!(
+            out,
+            "{}",
+            SVGTag {
+                tag: TAG_TEXT,
+                attrs,
+                data: Some(encode_text(&self.text)),
+            }
+        );
     }
 }
 
@@ -888,6 +966,9 @@ impl Default for Pie {
 
 impl Pie {
     pub fn svg(&self) -> String {
+        self.svg_with_grad_seen(None)
+    }
+    pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
         let r = self.r;
         let r_str = format_float(r);
 
@@ -1013,7 +1094,7 @@ impl Pie {
 
         path_list.push("Z".to_string());
 
-        let defs = fill_svg_defs(&self.fill);
+        let defs = fill_svg_defs(&self.fill, grad_seen);
         let mut attrs = vec![
             (ATTR_D, path_list.join(" ")),
             (ATTR_FILL, fill_svg_attr(&self.fill)),
@@ -1219,6 +1300,9 @@ impl Default for SmoothLineFill {
 
 impl SmoothLineFill {
     pub fn svg(&self) -> String {
+        self.svg_with_grad_seen(None)
+    }
+    pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
         if self.points.is_empty() || self.fill.is_transparent() {
             return "".to_string();
         }
@@ -1239,7 +1323,7 @@ impl SmoothLineFill {
         .join(" ");
         path.push_str(&fill_path);
 
-        let defs = fill_svg_defs(&self.fill);
+        let defs = fill_svg_defs(&self.fill, grad_seen);
         let attrs = vec![
             (ATTR_D, path),
             (ATTR_FILL, fill_svg_attr(&self.fill)),
@@ -1317,6 +1401,9 @@ pub struct StraightLineFill {
 
 impl StraightLineFill {
     pub fn svg(&self) -> String {
+        self.svg_with_grad_seen(None)
+    }
+    pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
         if self.points.is_empty() || self.fill.is_transparent() {
             return "".to_string();
         }
@@ -1343,7 +1430,7 @@ impl StraightLineFill {
         if self.close {
             arr.push('Z'.to_string());
         }
-        let defs = fill_svg_defs(&self.fill);
+        let defs = fill_svg_defs(&self.fill, grad_seen);
         let attrs = vec![
             (ATTR_D, arr.join(" ")),
             (ATTR_FILL, fill_svg_attr(&self.fill)),
@@ -1552,7 +1639,7 @@ impl Axis {
                 .collect();
             if self.position == Position::Top || self.position == Position::Bottom {
                 let f = font::get_font(&self.font_family)?;
-                let total_measure = font::measure_text(f, font_size, &text_list.join(" "));
+                let total_measure = font::measure_text(&f, font_size, &text_list.join(" "));
                 let mut total_measure_width = total_measure.width();
                 if self.name_rotate != 0.0 {
                     total_measure_width *= self.name_rotate.sin().abs();
@@ -1637,7 +1724,7 @@ impl Axis {
                 if index % text_unit_count != 0 {
                     continue;
                 }
-                let b = font::measure_text(f, font_size, text);
+                let b = font::measure_text(&f, font_size, text);
                 let mut unit_offset = unit * index as f32 + unit / 2.0;
                 if is_name_align_start {
                     unit_offset -= unit / 2.0;

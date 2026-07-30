@@ -11,16 +11,14 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 /// Generate arc approximation points (360 segments per full revolution).
 fn arc_points(cx: f32, cy: f32, r: f32, start: f32, end_deg: f32, n: usize) -> Vec<Point> {
@@ -32,34 +30,12 @@ fn arc_points(cx: f32, cy: f32, r: f32, start: f32, end_deg: f32, n: usize) -> V
         .collect()
 }
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct GaugeChart {
-    // x/y axis — required by derive but not rendered
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_boundary_gap: Option<bool>,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
-
-    // series — required by derive
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // ── Gauge-specific ──────────────────────────────────────────────────────
     /// Minimum value on the scale (default: 0).
@@ -99,6 +75,18 @@ pub struct GaugeChart {
     pub value_formatter: String,
 }
 
+impl std::ops::Deref for GaugeChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for GaugeChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
+}
+
 impl GaugeChart {
     fn fill_default(&mut self) {
         if self.max <= self.min {
@@ -127,10 +115,10 @@ impl GaugeChart {
 
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> GaugeChart {
         let mut c = GaugeChart {
-            series_list,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.series_list = series_list;
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
     }
@@ -139,7 +127,7 @@ impl GaugeChart {
         let mut c = GaugeChart {
             ..Default::default()
         };
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         if let Some(v) = get_f32_from_value(&value, "min") {
             c.min = v;
         }

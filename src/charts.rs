@@ -11,6 +11,7 @@
 // limitations under the License.
 
 mod bar_chart;
+mod base;
 mod box_plot_chart;
 mod calendar_chart;
 mod candlestick_chart;
@@ -18,7 +19,7 @@ mod canvas;
 mod color;
 mod common;
 mod component;
-#[cfg(feature = "image-encoder")]
+#[cfg(feature = "raster")]
 mod encoder;
 mod error;
 mod font;
@@ -46,29 +47,25 @@ mod util;
 mod waterfall_chart;
 
 pub use bar_chart::BarChart;
+pub use base::ChartBase;
 pub use box_plot_chart::{BoxPlotChart, BoxPlotSeries};
 pub use canvas::Canvas;
-pub use canvas::Error as CanvasError;
-pub use canvas::Result as CanvasResult;
 pub use color::*;
 pub use common::*;
 pub use component::{
     Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
     SmoothLineFill, StraightLine, StraightLineFill, Text, svg_with_accessibility,
 };
-#[cfg(feature = "image-encoder")]
-pub use encoder::Error as EncoderError;
-#[cfg(feature = "image-encoder")]
-pub(crate) use encoder::get_or_init_fontdb;
-#[cfg(feature = "image-encoder")]
+#[cfg(feature = "raster")]
 pub use encoder::*;
 pub use error::{Error, Result};
 
 pub use calendar_chart::CalendarChart;
 pub use candlestick_chart::CandlestickChart;
-pub use font::Error as FontError;
+#[allow(deprecated)]
+pub use font::get_or_try_init_fonts;
 pub use font::{
-    DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, get_font, get_font_families, get_or_try_init_fonts,
+    DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, add_fonts, get_font, get_font_families,
     measure_text_width_family,
 };
 pub use funnel_chart::FunnelChart;
@@ -96,3 +93,53 @@ pub use tree_chart::{TreeChart, TreeData};
 pub use treemap_chart::TreemapChart;
 pub use util::*;
 pub use waterfall_chart::{WaterfallChart, WaterfallData};
+
+/// Behavior shared by every chart type, so mixed charts can be held and
+/// rendered uniformly (e.g. `Vec<Box<dyn Chart>>`).
+pub trait Chart {
+    /// Renders the chart to an SVG string.
+    fn svg(&self) -> Result<String>;
+    /// Creates the chart from a JSON string.
+    fn from_json(json: &str) -> Result<Self>
+    where
+        Self: Sized;
+}
+
+macro_rules! impl_chart {
+    ($($chart:ty),+ $(,)?) => {
+        $(
+            impl Chart for $chart {
+                fn svg(&self) -> Result<String> {
+                    <$chart>::svg(self)
+                }
+                fn from_json(json: &str) -> Result<Self> {
+                    <$chart>::from_json(json)
+                }
+            }
+        )+
+    };
+}
+impl_chart!(
+    BarChart,
+    BoxPlotChart,
+    CalendarChart,
+    CandlestickChart,
+    FunnelChart,
+    GaugeChart,
+    GraphChart,
+    HeatmapChart,
+    HorizontalBarChart,
+    LineChart,
+    MultiChart,
+    ParallelChart,
+    PieChart,
+    RadarChart,
+    SankeyChart,
+    ScatterChart,
+    SunburstChart,
+    TableChart,
+    ThemeRiverChart,
+    TreeChart,
+    TreemapChart,
+    WaterfallChart,
+);

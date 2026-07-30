@@ -91,11 +91,12 @@
 //!
 //!
 //! # Add more font
-//! The fonts will be initialized once, it can be changed before used.
+//! Fonts can be registered at any time; new fonts take effect for
+//! subsequent renders.
 //! ```rust
-//! use charts_rs::{get_or_try_init_fonts, BarChart};
+//! use charts_rs::{add_fonts, BarChart};
 //! let data = include_bytes!("./Roboto.ttf") as &[u8];
-//! get_or_try_init_fonts(Some(vec![data])).unwrap();
+//! add_fonts(&[data]).unwrap();
 //! let bar_chart = BarChart::from_json(
 //!     r###"{
 //!         "width": 630,
@@ -420,6 +421,6 @@ mod charts;
 pub use charts::*;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-pub fn version() -> String {
-    VERSION.to_string()
+pub fn version() -> &'static str {
+    VERSION
 }

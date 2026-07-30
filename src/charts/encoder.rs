@@ -12,7 +12,6 @@
 
 use image::ImageFormat;
 use resvg::{tiny_skia, usvg};
-use snafu::ResultExt;
 use std::io::Cursor;
 use std::sync::Arc;
 use std::sync::OnceLock;
@@ -21,27 +20,38 @@ use usvg::fontdb;
 // Crate-level error/result (see `error.rs`); re-exported to keep
 // `encoder::Error` / `encoder::Result` paths working.
 pub use super::error::{Error, Result};
-use super::error::{ImageSnafu, ParseSnafu};
 
-pub(crate) fn get_or_init_fontdb(fonts: Option<Vec<&[u8]>>) -> Arc<fontdb::Database> {
-    static GLOBAL_FONT_DB: OnceLock<Arc<fontdb::Database>> = OnceLock::new();
+static GLOBAL_FONT_DB: OnceLock<arc_swap::ArcSwap<fontdb::Database>> = OnceLock::new();
+
+fn build_fontdb(datas: &[Vec<u8>]) -> Arc<fontdb::Database> {
+    let mut fontdb = fontdb::Database::new();
+    if datas.is_empty() {
+        fontdb.load_system_fonts();
+    } else {
+        for item in datas.iter() {
+            fontdb.load_font_data(item.clone());
+        }
+    }
+    Arc::new(fontdb)
+}
+
+/// Rebuilds the raster fontdb from the given font datas; called by the font
+/// registry whenever fonts are added, so late registrations still reach the
+/// rasterizer (the previous OnceLock design silently ignored them).
+pub(crate) fn rebuild_fontdb(datas: &[Vec<u8>]) {
+    let db = build_fontdb(datas);
+    let cell = GLOBAL_FONT_DB.get_or_init(|| arc_swap::ArcSwap::new(db.clone()));
+    cell.store(db);
+}
+
+fn get_fontdb() -> Arc<fontdb::Database> {
     GLOBAL_FONT_DB
-        .get_or_init(|| {
-            let mut fontdb = fontdb::Database::new();
-            if let Some(value) = fonts {
-                for item in value.iter() {
-                    fontdb.load_font_data((*item).to_vec());
-                }
-            } else {
-                fontdb.load_system_fonts();
-            }
-            Arc::new(fontdb)
-        })
-        .clone()
+        .get_or_init(|| arc_swap::ArcSwap::new(build_fontdb(&super::font::registered_font_datas())))
+        .load_full()
 }
 
 fn parse_tree(svg: &str) -> Result<usvg::Tree> {
-    let fontdb = get_or_init_fontdb(None);
+    let fontdb = get_fontdb();
     usvg::Tree::from_str(
         svg,
         &usvg::Options {
@@ -49,7 +59,7 @@ fn parse_tree(svg: &str) -> Result<usvg::Tree> {
             ..Default::default()
         },
     )
-    .context(ParseSnafu {})
+    .map_err(|source| Error::Parse { source })
 }
 
 fn render_to_pixmap(
@@ -93,18 +103,21 @@ fn render_to_pixmap(
 }
 
 fn encode_pixmap(pixmap: tiny_skia::Pixmap, format: image::ImageFormat) -> Result<Vec<u8>> {
-    let data = pixmap.data().to_vec();
+    let (width, height) = (pixmap.width(), pixmap.height());
+    // `take` hands over the pixel buffer without copying the whole frame.
+    let data = pixmap.take();
     let size = data.len();
-    let rgba_image = image::RgbaImage::from_raw(pixmap.width(), pixmap.height(), data)
-        .ok_or(Error::Raw { size })?;
+    let rgba_image = image::RgbaImage::from_raw(width, height, data).ok_or(Error::Raw { size })?;
     let mut buf = Cursor::new(vec![]);
     if format == ImageFormat::Jpeg {
         image::DynamicImage::ImageRgba8(rgba_image)
             .to_rgb8()
             .write_to(&mut buf, format)
-            .context(ImageSnafu)?;
+            .map_err(|source| Error::Image { source })?;
     } else {
-        rgba_image.write_to(&mut buf, format).context(ImageSnafu)?;
+        rgba_image
+            .write_to(&mut buf, format)
+            .map_err(|source| Error::Image { source })?;
     }
     Ok(buf.into_inner())
 }
@@ -127,22 +140,26 @@ fn save_image_with_size(
 }
 
 /// Converts svg to png.
+#[cfg(feature = "png")]
 pub fn svg_to_png(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::Png)
 }
 
 /// Converts svg to png, scaling to the given width and/or height.
 /// If only one dimension is provided the other is computed to preserve aspect ratio.
+#[cfg(feature = "png")]
 pub fn svg_to_png_with_size(svg: &str, width: Option<u32>, height: Option<u32>) -> Result<Vec<u8>> {
     save_image_with_size(svg, image::ImageFormat::Png, width, height)
 }
 
 /// Converts svg to jpeg.
+#[cfg(feature = "jpeg")]
 pub fn svg_to_jpeg(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::Jpeg)
 }
 
 /// Converts svg to jpeg, scaling to the given width and/or height.
+#[cfg(feature = "jpeg")]
 pub fn svg_to_jpeg_with_size(
     svg: &str,
     width: Option<u32>,
@@ -152,11 +169,13 @@ pub fn svg_to_jpeg_with_size(
 }
 
 /// Converts svg to webp.
+#[cfg(feature = "webp")]
 pub fn svg_to_webp(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::WebP)
 }
 
 /// Converts svg to webp, scaling to the given width and/or height.
+#[cfg(feature = "webp")]
 pub fn svg_to_webp_with_size(
     svg: &str,
     width: Option<u32>,
@@ -166,11 +185,13 @@ pub fn svg_to_webp_with_size(
 }
 
 /// Converts svg to avif.
+#[cfg(feature = "avif")]
 pub fn svg_to_avif(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::Avif)
 }
 
 /// Converts svg to avif, scaling to the given width and/or height.
+#[cfg(feature = "avif")]
 pub fn svg_to_avif_with_size(
     svg: &str,
     width: Option<u32>,

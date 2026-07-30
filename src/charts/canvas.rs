@@ -17,6 +17,7 @@ use super::component::{
 
 use super::{measure_text_width_family, util::*};
 use std::cell::RefCell;
+use std::collections::HashSet;
 use std::rc::Rc;
 
 // The crate-level error/result types (defined in `error.rs`). Re-exported here
@@ -334,11 +335,12 @@ impl Canvas {
     pub fn svg(&self) -> Result<String> {
         let components = self.components.borrow();
         let mut data = String::with_capacity(components.len() * 128);
+        let mut grad_seen = HashSet::new();
         for (i, c) in components.iter().enumerate() {
             if i > 0 {
                 data.push('\n');
             }
-            data.push_str(&render_component(c)?);
+            write_component(c, &mut data, &mut grad_seen)?;
         }
         Ok(generate_svg(self.width, self.height, self.x, self.y, data))
     }
@@ -349,35 +351,39 @@ impl Canvas {
         data.push_str("<style>");
         data.push_str(style);
         data.push_str("</style>");
+        let mut grad_seen = HashSet::new();
         for c in components.iter() {
             data.push('\n');
-            data.push_str(&render_component(c)?);
+            write_component(c, &mut data, &mut grad_seen)?;
         }
         Ok(generate_svg(self.width, self.height, self.x, self.y, data))
     }
 }
 
-/// Renders a single component to its SVG fragment. Shared by `svg` and
-/// `svg_with_style` so the per-variant dispatch lives in exactly one place.
-fn render_component(c: &Component) -> Result<String> {
-    Ok(match c {
-        Component::Line(c) => c.svg(),
-        Component::Rect(c) => c.svg(),
-        Component::Arrow(c) => c.svg(),
-        Component::Bubble(c) => c.svg(),
-        Component::Polyline(c) => c.svg(),
-        Component::Circle(c) => c.svg(),
-        Component::Polygon(c) => c.svg(),
-        Component::Text(c) => c.svg(),
-        Component::SmoothLine(c) => c.svg(),
-        Component::StraightLine(c) => c.svg(),
-        Component::SmoothLineFill(c) => c.svg(),
-        Component::StraightLineFill(c) => c.svg(),
-        Component::Grid(c) => c.svg(),
-        Component::Axis(c) => c.svg()?,
-        Component::Legend(c) => c.svg(),
-        Component::Pie(c) => c.svg(),
-    })
+/// Renders a single component into the shared output buffer. Shared by `svg`
+/// and `svg_with_style` so the per-variant dispatch lives in exactly one place;
+/// hot components stream directly (`write_svg`), the rest go through their
+/// `svg()` string.
+fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<String>) -> Result<()> {
+    match c {
+        Component::Line(c) => c.write_svg(out),
+        Component::Rect(c) => c.write_svg(out, Some(grad_seen)),
+        Component::Arrow(c) => out.push_str(&c.svg()),
+        Component::Bubble(c) => out.push_str(&c.svg()),
+        Component::Polyline(c) => c.write_svg(out),
+        Component::Circle(c) => c.write_svg(out),
+        Component::Polygon(c) => c.write_svg(out, Some(grad_seen)),
+        Component::Text(c) => c.write_svg(out),
+        Component::SmoothLine(c) => out.push_str(&c.svg()),
+        Component::StraightLine(c) => out.push_str(&c.svg()),
+        Component::SmoothLineFill(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+        Component::StraightLineFill(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+        Component::Grid(c) => out.push_str(&c.svg()),
+        Component::Axis(c) => out.push_str(&c.svg()?),
+        Component::Legend(c) => out.push_str(&c.svg()),
+        Component::Pie(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+    }
+    Ok(())
 }
 
 #[cfg(test)]

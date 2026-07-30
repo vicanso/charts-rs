@@ -11,53 +11,42 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::{ChartBase, get_y_axis_config};
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct HorizontalBarChart {
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
     pub series_label_position: Option<Position>,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
-    /// When `true`, each bar carries a native `<title>` tooltip
-    /// (`series: value`). Default: false; output is unchanged when off.
-    pub tooltip_show: bool,
+}
+
+impl std::ops::Deref for HorizontalBarChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for HorizontalBarChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl HorizontalBarChart {
@@ -66,14 +55,11 @@ impl HorizontalBarChart {
         let mut h = HorizontalBarChart {
             ..Default::default()
         };
-        let value = h.fill_option(data)?;
+        let value = h.base.fill_option(data, &mut h.y_axis_configs)?;
         if let Some(series_label_position) =
             get_position_from_value(&value, "series_label_position")
         {
             h.series_label_position = Some(series_label_position);
-        }
-        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
-            h.tooltip_show = v;
         }
         Ok(h)
     }
@@ -84,12 +70,12 @@ impl HorizontalBarChart {
         theme: &str,
     ) -> HorizontalBarChart {
         let mut h = HorizontalBarChart {
-            series_list,
-            x_axis_data,
             ..Default::default()
         };
+        h.series_list = series_list;
+        h.x_axis_data = x_axis_data;
         let theme = get_theme(theme);
-        h.fill_theme(theme);
+        h.base.fill_theme(theme, &mut h.y_axis_configs);
         h
     }
     /// Creates a horizontal bar with default theme.
@@ -144,7 +130,7 @@ impl HorizontalBarChart {
         for series in self.series_list.iter() {
             data_list.append(&mut series.data_values());
         }
-        let x_axis_config = self.get_y_axis_config(0);
+        let x_axis_config = get_y_axis_config(&self.y_axis_configs, 0);
         let x_axis_values = get_axis_values(AxisValueParams {
             data_list,
             split_number: x_axis_config.axis_split_number,

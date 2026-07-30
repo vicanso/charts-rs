@@ -11,94 +11,54 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
-#[derive(Serialize, Deserialize, Clone, Debug, Default, Chart)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct CandlestickChart {
-    pub width: f32,
-    pub height: f32,
-    pub x: f32,
-    pub y: f32,
-    pub margin: Box,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    #[serde(flatten)]
+    pub base: ChartBase,
     // [open price1, close price1, lowest price1, highest price1, open price2, close price2, ...]
-    pub series_list: Vec<Series>,
-    pub font_family: String,
-    pub background_color: Color,
-    pub is_light: bool,
 
     // title
-    pub title_text: String,
-    pub title_font_size: f32,
-    pub title_font_color: Color,
-    pub title_font_weight: Option<String>,
-    pub title_margin: Option<Box>,
-    pub title_align: Align,
-    pub title_height: f32,
 
     // sub title
-    pub sub_title_text: String,
-    pub sub_title_font_size: f32,
-    pub sub_title_font_color: Color,
-    pub sub_title_font_weight: Option<String>,
-    pub sub_title_margin: Option<Box>,
-    pub sub_title_align: Align,
-    pub sub_title_height: f32,
 
     // legend
-    pub legend_font_size: f32,
-    pub legend_font_color: Color,
-    pub legend_font_weight: Option<String>,
-    pub legend_align: Align,
-    pub legend_margin: Option<Box>,
-    pub legend_category: LegendCategory,
-    pub legend_show: Option<bool>,
 
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
-    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
-
     pub candlestick_up_color: Color,
     pub candlestick_up_border_color: Color,
     pub candlestick_down_color: Color,
     pub candlestick_down_border_color: Color,
+}
+
+impl std::ops::Deref for CandlestickChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for CandlestickChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl CandlestickChart {
@@ -121,7 +81,7 @@ impl CandlestickChart {
         let mut c = CandlestickChart {
             ..Default::default()
         };
-        let value = c.fill_option(data)?;
+        let value = c.base.fill_option(data, &mut c.y_axis_configs)?;
         if let Some(value) = get_color_from_value(&value, "candlestick_up_color") {
             c.candlestick_up_color = value;
         }
@@ -133,12 +93,6 @@ impl CandlestickChart {
         }
         if let Some(value) = get_color_from_value(&value, "candlestick_down_border_color") {
             c.candlestick_down_border_color = value;
-        }
-        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
-            c.x_axis_hidden = x_axis_hidden;
-        }
-        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
-            c.y_axis_hidden = y_axis_hidden;
         }
         c.fill_default();
         Ok(c)
@@ -157,12 +111,12 @@ impl CandlestickChart {
                 item.index = Some(index);
             });
         let mut c = CandlestickChart {
-            series_list,
-            x_axis_data,
             ..Default::default()
         };
+        c.series_list = series_list;
+        c.x_axis_data = x_axis_data;
         let theme = get_theme(theme);
-        c.fill_theme(theme);
+        c.base.fill_theme(theme, &mut c.y_axis_configs);
         c.fill_default();
         c
     }
@@ -180,7 +134,8 @@ impl CandlestickChart {
         }
         let axis_top = self.render_header(&mut c);
 
-        let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, mut left_y_axis_width) =
+            self.get_y_axis_values(&self.y_axis_configs, 0);
         if self.y_axis_hidden {
             left_y_axis_width = 0.0;
         }
@@ -200,6 +155,7 @@ impl CandlestickChart {
                 left: left_y_axis_width,
                 ..Default::default()
             }),
+            &self.y_axis_configs,
             axis_width,
             axis_height,
         );
@@ -208,6 +164,7 @@ impl CandlestickChart {
         if !self.y_axis_hidden {
             self.render_y_axis(
                 c.child(Box::default()),
+                &self.y_axis_configs,
                 left_y_axis_values.data.clone(),
                 axis_height,
                 left_y_axis_width,

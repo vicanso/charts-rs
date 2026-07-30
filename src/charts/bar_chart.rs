@@ -11,59 +11,37 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
-use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Serialize, Deserialize, Clone, Debug, Default, Chart)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct BarChart {
-    // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    #[serde(flatten)]
+    pub base: ChartBase,
 
-    // y axis
-    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
 
-    // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
-
-    // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
-
     pub radius: Option<f32>,
-    pub animation: Option<AnimationConfig>,
-    /// When `true`, every bar gets a hover tooltip (`series: value`): a
-    /// CSS-revealed label that works in any browser, plus a native `<title>`
-    /// for accessibility. Default: false; output is unchanged when off.
-    pub tooltip_show: bool,
+}
+
+impl std::ops::Deref for BarChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for BarChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl BarChart {
@@ -72,33 +50,9 @@ impl BarChart {
         let mut b = BarChart {
             ..Default::default()
         };
-        let value = b.fill_option(data)?;
-        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
-            b.x_axis_hidden = x_axis_hidden;
-        }
-        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
-            b.y_axis_hidden = y_axis_hidden;
-        }
+        let value = b.base.fill_option(data, &mut b.y_axis_configs)?;
         if let Some(radius) = get_f32_from_value(&value, "radius") {
             b.radius = Some(radius);
-        }
-        if let Some(anim) = value.get("animation")
-            && !anim.is_null()
-        {
-            let mut config = AnimationConfig::default();
-            if let Some(d) = get_usize_from_value(anim, "duration") {
-                config.duration = d as u32;
-            }
-            if let Some(e) = get_string_from_value(anim, "easing") {
-                config.easing = e;
-            }
-            if let Some(d) = get_usize_from_value(anim, "delay") {
-                config.delay = d as u32;
-            }
-            b.animation = Some(config);
-        }
-        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
-            b.tooltip_show = v;
         }
         Ok(b)
     }
@@ -117,12 +71,15 @@ impl BarChart {
                 item.index = Some(index);
             });
         let mut b = BarChart {
-            series_list,
-            x_axis_data,
+            base: ChartBase {
+                series_list,
+                x_axis_data,
+                ..Default::default()
+            },
             ..Default::default()
         };
         let theme = get_theme(theme);
-        b.fill_theme(theme);
+        b.base.fill_theme(theme, &mut b.y_axis_configs);
         b
     }
     /// Creates a bar chart with default theme.
@@ -139,7 +96,8 @@ impl BarChart {
         }
         let axis_top = self.render_header(&mut c);
 
-        let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, mut left_y_axis_width) =
+            self.get_y_axis_values(&self.y_axis_configs, 0);
         if self.y_axis_hidden {
             left_y_axis_width = 0.0;
         }
@@ -153,7 +111,8 @@ impl BarChart {
         let mut right_y_axis_values = AxisValues::default();
         let mut right_y_axis_width = 0.0_f32;
         if !self.y_axis_hidden && exist_right_y_axis {
-            (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
+            (right_y_axis_values, right_y_axis_width) =
+                self.get_y_axis_values(&self.y_axis_configs, 1);
         }
 
         let axis_height = c.height() - x_axis_height - axis_top;
@@ -171,6 +130,7 @@ impl BarChart {
                 left: left_y_axis_width,
                 ..Default::default()
             }),
+            &self.y_axis_configs,
             axis_width,
             axis_height,
         );
@@ -179,6 +139,7 @@ impl BarChart {
         if left_y_axis_width > 0.0 {
             self.render_y_axis(
                 c.child(Box::default()),
+                &self.y_axis_configs,
                 left_y_axis_values.data.clone(),
                 axis_height,
                 left_y_axis_width,
@@ -192,6 +153,7 @@ impl BarChart {
                     left: c.width() - right_y_axis_width,
                     ..Default::default()
                 }),
+                &self.y_axis_configs,
                 right_y_axis_values.data.clone(),
                 axis_height,
                 right_y_axis_width,
@@ -610,7 +572,7 @@ mod tests {
             bar_chart.svg().unwrap()
         );
 
-        #[cfg(feature = "image-encoder")]
+        #[cfg(feature = "jpeg")]
         {
             use crate::svg_to_jpeg;
             let buf = svg_to_jpeg(&bar_chart.svg().unwrap()).unwrap();

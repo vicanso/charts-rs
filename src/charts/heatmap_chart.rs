@@ -11,17 +11,16 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::font::measure_max_text_width_family;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 #[derive(Clone, Debug, Default)]
 pub struct HeatmapData {
@@ -76,79 +75,40 @@ impl HeatmapSeries {
     }
 }
 
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct HeatmapChart {
-    pub width: f32,
-    pub height: f32,
-    pub x: f32,
-    pub y: f32,
-    pub margin: Box,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     // no use, but for derive chart
-    series_list: Vec<Series>,
     pub series: HeatmapSeries,
-    pub font_family: String,
-    pub background_color: Color,
-    pub is_light: bool,
 
     // title
-    pub title_text: String,
-    pub title_font_size: f32,
-    pub title_font_color: Color,
-    pub title_font_weight: Option<String>,
-    pub title_margin: Option<Box>,
-    pub title_align: Align,
-    pub title_height: f32,
 
     // sub title
-    pub sub_title_text: String,
-    pub sub_title_font_size: f32,
-    pub sub_title_font_color: Color,
-    pub sub_title_font_weight: Option<String>,
-    pub sub_title_margin: Option<Box>,
-    pub sub_title_align: Align,
-    pub sub_title_height: f32,
 
     // legend
-    pub legend_font_size: f32,
-    pub legend_font_color: Color,
-    pub legend_font_weight: Option<String>,
-    pub legend_align: Align,
-    pub legend_margin: Option<Box>,
-    pub legend_category: LegendCategory,
-    pub legend_show: Option<bool>,
 
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
-    pub y_axis_hidden: bool,
     pub y_axis_data: Vec<String>,
     y_axis_configs: Vec<YAxisConfig>,
-
     // grid
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
+}
+
+impl std::ops::Deref for HeatmapChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for HeatmapChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl HeatmapChart {
@@ -185,7 +145,7 @@ impl HeatmapChart {
         let mut h = HeatmapChart {
             ..Default::default()
         };
-        let value = h.fill_option(data)?;
+        let value = h.base.fill_option(data, &mut h.y_axis_configs)?;
         if let Some(y_axis_data) = get_string_slice_from_value(&value, "y_axis_data") {
             h.y_axis_data = y_axis_data;
         }
@@ -227,12 +187,6 @@ impl HeatmapChart {
             }
         }
         h.fill_default();
-        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
-            h.x_axis_hidden = x_axis_hidden;
-        }
-        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
-            h.y_axis_hidden = y_axis_hidden;
-        }
         Ok(h)
     }
     /// Creates a heatmap chart with default theme.
@@ -256,10 +210,10 @@ impl HeatmapChart {
         theme: &str,
     ) -> HeatmapChart {
         let mut h = HeatmapChart {
-            x_axis_data,
             y_axis_data,
             ..Default::default()
         };
+        h.x_axis_data = x_axis_data;
         let mut max = 0.0_f32;
         let mut data = vec![];
         for item in series_data.iter() {
@@ -270,7 +224,7 @@ impl HeatmapChart {
         }
         h.series.data = data;
         let theme = get_theme(theme);
-        h.fill_theme(theme);
+        h.base.fill_theme(theme, &mut h.y_axis_configs);
         h.fill_default();
         h
     }
@@ -311,6 +265,7 @@ impl HeatmapChart {
             y_axis_data.reverse();
             self.render_y_axis(
                 c.child_left_top(Box::default()),
+                &self.y_axis_configs,
                 y_axis_data,
                 axis_height,
                 y_axis_width,

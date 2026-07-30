@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports nineteen chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, and `Tree`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports twenty-two chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, and `ThemeRiver`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -334,7 +334,7 @@ Formatters are supported in `series_label_formatter`, `axis_formatter`, and `val
 
 ```rust
 let buf = fs::read(file).unwrap();
-get_or_try_init_fonts(vec![&buf]);
+add_fonts(&[&buf]).unwrap();
 ```
 
 ## License

@@ -3,7 +3,7 @@ use pretty_assertions::assert_eq;
 
 #[test]
 fn multi_chart() {
-    let mut multi_chart = MultiChart::from_json(
+    let multi_chart = MultiChart::from_json(
         r###"{
         "child_charts": [
             {

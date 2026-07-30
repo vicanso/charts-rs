@@ -11,16 +11,15 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 // ── Hierarchical data ─────────────────────────────────────────────────────────
 
@@ -110,36 +109,12 @@ struct RingLayout<'a> {
 
 // ── SunburstChart ──────────────────────────────────────────────────────────────
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct SunburstChart {
-    // x/y axis (required by #[derive(Chart)], unused in rendering)
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
-    pub y_axis_hidden: bool,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
-
-    // series (required by #[derive(Chart)])
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // sunburst-specific
     /// Hierarchy roots. Multiple roots form a forest sharing the full circle.
@@ -154,9 +129,18 @@ pub struct SunburstChart {
     /// default to `1.0`. E.g. `[2.0]` makes the innermost ring twice as thick
     /// as the others. Empty (default) splits all rings equally.
     pub level_thickness: Vec<f32>,
-    /// Optional expand animation: rings scale out from the center, staggered
-    /// by depth (`delay` ms per level); labels fade in alongside.
-    pub animation: Option<AnimationConfig>,
+}
+
+impl std::ops::Deref for SunburstChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for SunburstChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl SunburstChart {
@@ -165,7 +149,7 @@ impl SunburstChart {
             series_data,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c
     }
 
@@ -177,7 +161,7 @@ impl SunburstChart {
         let mut c = SunburstChart {
             ..Default::default()
         };
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         if let Some(arr) = value.get("series_data").and_then(|v| v.as_array()) {
             c.series_data = arr.iter().filter_map(parse_node).collect();
         }
@@ -192,21 +176,6 @@ impl SunburstChart {
         }
         if let Some(v) = get_f32_slice_from_value(&value, "level_thickness") {
             c.level_thickness = v;
-        }
-        if let Some(anim) = value.get("animation")
-            && !anim.is_null()
-        {
-            let mut config = AnimationConfig::default();
-            if let Some(d) = get_usize_from_value(anim, "duration") {
-                config.duration = d as u32;
-            }
-            if let Some(e) = get_string_from_value(anim, "easing") {
-                config.easing = e;
-            }
-            if let Some(d) = get_usize_from_value(anim, "delay") {
-                config.delay = d as u32;
-            }
-            c.animation = Some(config);
         }
         Ok(c)
     }

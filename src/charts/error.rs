@@ -16,57 +16,85 @@
 //! those modules now re-exports `Error`/`Result` from here, keeping the old
 //! `canvas::Error`, `font::Error`, … paths valid.
 
-use snafu::Snafu;
+use std::fmt;
 
-#[derive(Debug, Snafu)]
-#[snafu(visibility(pub(crate)))]
+#[derive(Debug)]
 // Non-exhaustive so future variants (and the `image-encoder`-gated ones that
 // appear/disappear with that feature) are not a breaking change for downstream
 // `match` arms; callers must include a wildcard arm.
 #[non_exhaustive]
 pub enum Error {
-    #[snafu(display("Params is invalid: {message}"))]
-    Params { message: String },
-    #[snafu(display("Json is invalid: {source}"))]
-    Json { source: serde_json::Error },
-    #[snafu(display("Error font: {name} not found"))]
-    FontNotFound { name: String },
-    #[snafu(display("Error parse font: {message}"))]
-    ParseFont { message: String },
+    Params {
+        message: String,
+    },
+    Json {
+        source: serde_json::Error,
+    },
+    FontNotFound {
+        name: String,
+    },
+    ParseFont {
+        message: String,
+    },
 
     // Raster encoding (image-encoder feature); the source types live behind
     // the optional `resvg` / `image` dependencies, so the variants are gated.
-    #[cfg(feature = "image-encoder")]
-    #[snafu(display("Io {file}: {source}"))]
-    Io {
-        file: String,
-        source: std::io::Error,
+    #[cfg(feature = "raster")]
+    Size {
+        width: u32,
+        height: u32,
     },
-    #[cfg(feature = "image-encoder")]
-    #[snafu(display("Image size is invalid, width: {width}, height: {height}"))]
-    Size { width: u32, height: u32 },
-    #[cfg(feature = "image-encoder")]
-    #[snafu(display("Image from raw is fail, size:{size}"))]
-    Raw { size: usize },
-    #[cfg(feature = "image-encoder")]
-    #[snafu(display("Error to parse: {source}"))]
-    Parse { source: resvg::usvg::Error },
-    #[cfg(feature = "image-encoder")]
-    #[snafu(display("Encode fail: {source}"))]
-    Image { source: image::ImageError },
+    #[cfg(feature = "raster")]
+    Raw {
+        size: usize,
+    },
+    #[cfg(feature = "raster")]
+    Parse {
+        source: resvg::usvg::Error,
+    },
+    #[cfg(feature = "raster")]
+    Image {
+        source: image::ImageError,
+    },
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Error::Params { message } => write!(f, "Params is invalid: {message}"),
+            Error::Json { source } => write!(f, "Json is invalid: {source}"),
+            Error::FontNotFound { name } => write!(f, "Error font: {name} not found"),
+            Error::ParseFont { message } => write!(f, "Error parse font: {message}"),
+            #[cfg(feature = "raster")]
+            Error::Size { width, height } => {
+                write!(f, "Image size is invalid, width: {width}, height: {height}")
+            }
+            #[cfg(feature = "raster")]
+            Error::Raw { size } => write!(f, "Image from raw is fail, size:{size}"),
+            #[cfg(feature = "raster")]
+            Error::Parse { source } => write!(f, "Error to parse: {source}"),
+            #[cfg(feature = "raster")]
+            Error::Image { source } => write!(f, "Encode fail: {source}"),
+        }
+    }
+}
+
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Error::Json { source } => Some(source),
+            #[cfg(feature = "raster")]
+            Error::Parse { source } => Some(source),
+            #[cfg(feature = "raster")]
+            Error::Image { source } => Some(source),
+            _ => None,
+        }
+    }
 }
 
 impl From<serde_json::Error> for Error {
     fn from(value: serde_json::Error) -> Self {
         Error::Json { source: value }
-    }
-}
-
-impl From<&str> for Error {
-    fn from(value: &str) -> Self {
-        Error::ParseFont {
-            message: value.to_string(),
-        }
     }
 }
 

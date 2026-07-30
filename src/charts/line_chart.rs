@@ -11,55 +11,38 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
-use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct LineChart {
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
-    pub y_axis_hidden: bool,
     pub y_axis_configs: Vec<YAxisConfig>,
-
     // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
-    pub animation: Option<AnimationConfig>,
-    /// When `true`, each data point carries a native `<title>` tooltip
-    /// (`series: value`). Default: false; output is unchanged when off.
-    pub tooltip_show: bool,
+}
+
+impl std::ops::Deref for LineChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for LineChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl LineChart {
@@ -68,31 +51,7 @@ impl LineChart {
         let mut l = LineChart {
             ..Default::default()
         };
-        let value = l.fill_option(data)?;
-        if let Some(x_axis_hidden) = get_bool_from_value(&value, "x_axis_hidden") {
-            l.x_axis_hidden = x_axis_hidden;
-        }
-        if let Some(y_axis_hidden) = get_bool_from_value(&value, "y_axis_hidden") {
-            l.y_axis_hidden = y_axis_hidden;
-        }
-        if let Some(anim) = value.get("animation")
-            && !anim.is_null()
-        {
-            let mut config = AnimationConfig::default();
-            if let Some(d) = get_usize_from_value(anim, "duration") {
-                config.duration = d as u32;
-            }
-            if let Some(e) = get_string_from_value(anim, "easing") {
-                config.easing = e;
-            }
-            if let Some(d) = get_usize_from_value(anim, "delay") {
-                config.delay = d as u32;
-            }
-            l.animation = Some(config);
-        }
-        if let Some(v) = get_bool_from_value(&value, "tooltip_show") {
-            l.tooltip_show = v;
-        }
+        l.base.fill_option(data, &mut l.y_axis_configs)?;
         Ok(l)
     }
     /// Creates a line chart with custom theme.
@@ -102,12 +61,12 @@ impl LineChart {
         theme: &str,
     ) -> LineChart {
         let mut l = LineChart {
-            series_list,
-            x_axis_data,
             ..Default::default()
         };
+        l.series_list = series_list;
+        l.x_axis_data = x_axis_data;
         let theme = get_theme(theme);
-        l.fill_theme(theme);
+        l.base.fill_theme(theme, &mut l.y_axis_configs);
         l
     }
     /// Creates a line chart with default theme.
@@ -215,7 +174,8 @@ impl LineChart {
         }
         let axis_top = self.render_header(&mut c);
 
-        let (left_y_axis_values, mut left_y_axis_width) = self.get_y_axis_values(0);
+        let (left_y_axis_values, mut left_y_axis_width) =
+            self.get_y_axis_values(&self.y_axis_configs, 0);
         if self.y_axis_hidden {
             left_y_axis_width = 0.0;
         }
@@ -228,7 +188,8 @@ impl LineChart {
         let mut right_y_axis_values = AxisValues::default();
         let mut right_y_axis_width = 0.0_f32;
         if exist_right_y_axis {
-            (right_y_axis_values, right_y_axis_width) = self.get_y_axis_values(1);
+            (right_y_axis_values, right_y_axis_width) =
+                self.get_y_axis_values(&self.y_axis_configs, 1);
         }
 
         let axis_height = c.height() - x_axis_height - axis_top;
@@ -246,6 +207,7 @@ impl LineChart {
                 left: left_y_axis_width,
                 ..Default::default()
             }),
+            &self.y_axis_configs,
             axis_width,
             axis_height,
         );
@@ -254,6 +216,7 @@ impl LineChart {
         if left_y_axis_width > 0.0 {
             self.render_y_axis(
                 c.child(Box::default()),
+                &self.y_axis_configs,
                 left_y_axis_values.data.clone(),
                 axis_height,
                 left_y_axis_width,
@@ -266,6 +229,7 @@ impl LineChart {
                     left: c.width() - right_y_axis_width,
                     ..Default::default()
                 }),
+                &self.y_axis_configs,
                 right_y_axis_values.data.clone(),
                 axis_height,
                 right_y_axis_width,

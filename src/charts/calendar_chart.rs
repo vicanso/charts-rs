@@ -11,16 +11,14 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 // ── Simple date helpers (no external crate) ──────────────────────────────────
 
@@ -124,73 +122,16 @@ static DOW_ABBR: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // ── CalendarChart ─────────────────────────────────────────────────────────────
 
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct CalendarChart {
-    pub width: f32,
-    pub height: f32,
-    pub x: f32,
-    pub y: f32,
-    pub margin: Box,
-    // dummy – required by #[derive(Chart)]
-    series_list: Vec<Series>,
-    pub font_family: String,
-    pub background_color: Color,
-    pub is_light: bool,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
 
     // title
-    pub title_text: String,
-    pub title_font_size: f32,
-    pub title_font_color: Color,
-    pub title_font_weight: Option<String>,
-    pub title_margin: Option<Box>,
-    pub title_align: Align,
-    pub title_height: f32,
 
     // sub title
-    pub sub_title_text: String,
-    pub sub_title_font_size: f32,
-    pub sub_title_font_color: Color,
-    pub sub_title_font_weight: Option<String>,
-    pub sub_title_margin: Option<Box>,
-    pub sub_title_align: Align,
-    pub sub_title_height: f32,
-
-    // legend (required by derive, not rendered)
-    pub legend_font_size: f32,
-    pub legend_font_color: Color,
-    pub legend_font_weight: Option<String>,
-    pub legend_align: Align,
-    pub legend_margin: Option<Box>,
-    pub legend_category: LegendCategory,
-    pub legend_show: Option<bool>,
-
-    // x/y axis fields required by derive (not used in rendering)
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_boundary_gap: Option<bool>,
-
     y_axis_configs: Vec<YAxisConfig>,
-
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
-
-    // series fields required by derive
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // ── Calendar-specific fields ──────────────────────────────────────────────
     /// Data points: each entry is `("YYYY-MM-DD", value)`.
@@ -233,6 +174,18 @@ pub struct CalendarChart {
     /// Each entry is a day-of-week index (0 = Sun … 6 = Sat).
     /// Defaults to `[1, 3, 5]` (Mon, Wed, Fri), matching the GitHub style.
     pub show_dow_labels: Vec<usize>,
+}
+
+impl std::ops::Deref for CalendarChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for CalendarChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl CalendarChart {
@@ -327,7 +280,7 @@ impl CalendarChart {
             ..Default::default()
         };
         let t = get_theme(theme);
-        c.fill_theme(t);
+        c.base.fill_theme(t, &mut c.y_axis_configs);
         c.fill_default();
         // Auto-size to fit the calendar
         c.width = c.auto_width();
@@ -340,7 +293,7 @@ impl CalendarChart {
         let mut c = CalendarChart {
             ..Default::default()
         };
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         if let Some(start) = get_string_from_value(&value, "start_date") {
             c.start_date = start;
         }

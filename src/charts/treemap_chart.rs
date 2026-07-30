@@ -11,16 +11,15 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 // ── Squarify algorithm ───────────────────────────────────────────────────────
 
@@ -132,43 +131,28 @@ fn squarify(items: &[TmItem], x: f32, y: f32, w: f32, h: f32, out: &mut Vec<TmRe
 
 // ── TreemapChart ─────────────────────────────────────────────────────────────
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct TreemapChart {
-    // x/y axis (required by #[derive(Chart)], unused in rendering)
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
-    pub y_axis_hidden: bool,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
-
-    // series (required by #[derive(Chart)])
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // treemap-specific
     /// Pixel gap between adjacent cells. Default: 2.0.
     pub item_gap: f32,
-    /// Optional fade-in animation for the cells and their labels. The
-    /// `delay` field is not used (all cells fade in together).
-    pub animation: Option<AnimationConfig>,
+}
+
+impl std::ops::Deref for TreemapChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for TreemapChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl TreemapChart {
@@ -183,10 +167,10 @@ impl TreemapChart {
 
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> TreemapChart {
         let mut c = TreemapChart {
-            series_list,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.series_list = series_list;
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
     }
@@ -199,24 +183,9 @@ impl TreemapChart {
         let mut c = TreemapChart {
             ..Default::default()
         };
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         if let Some(v) = get_f32_from_value(&value, "item_gap") {
             c.item_gap = v;
-        }
-        if let Some(anim) = value.get("animation")
-            && !anim.is_null()
-        {
-            let mut config = AnimationConfig::default();
-            if let Some(d) = get_usize_from_value(anim, "duration") {
-                config.duration = d as u32;
-            }
-            if let Some(e) = get_string_from_value(anim, "easing") {
-                config.easing = e;
-            }
-            if let Some(d) = get_usize_from_value(anim, "delay") {
-                config.delay = d as u32;
-            }
-            c.animation = Some(config);
         }
         c.fill_default();
         Ok(c)

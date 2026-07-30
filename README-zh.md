@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持十九种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey` 以及 `Tree`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持二十二种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel` 以及 `ThemeRiver`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -331,7 +331,7 @@ let series: Series = ("销售额", vec![Some(120.0), None, Some(101.0)]).into();
 
 ```rust
 let buf = fs::read(file).unwrap();
-get_or_try_init_fonts(vec![&buf]);
+add_fonts(&[&buf]).unwrap();
 ```
 
 ## 开源协议声明

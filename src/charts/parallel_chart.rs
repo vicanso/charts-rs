@@ -11,16 +11,13 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
-use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
-use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 // ── ParallelChart ────────────────────────────────────────────────────────────
 
@@ -31,37 +28,24 @@ use std::sync::Arc;
 /// Data reuses the shared model: `series_list` holds one [`Series`] per record
 /// (its `data` are the values, one per dimension) and `x_axis_data` holds the
 /// dimension names. Each axis is scaled independently to its own min..max.
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct ParallelChart {
-    // x/y axis (required by #[derive(Chart)]); `x_axis_data` doubles as the
-    // dimension names, the rest are unused in rendering.
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
-    pub y_axis_hidden: bool,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
+}
 
-    // series (required by #[derive(Chart)])
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
+impl std::ops::Deref for ParallelChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for ParallelChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl ParallelChart {
@@ -77,11 +61,11 @@ impl ParallelChart {
         theme: &str,
     ) -> ParallelChart {
         let mut c = ParallelChart {
-            series_list,
-            x_axis_data,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.series_list = series_list;
+        c.x_axis_data = x_axis_data;
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c
     }
 
@@ -91,7 +75,7 @@ impl ParallelChart {
             ..Default::default()
         };
         // `series_list` and `x_axis_data` are parsed by the derived fill_option.
-        c.fill_option(json)?;
+        c.base.fill_option(json, &mut c.y_axis_configs)?;
         Ok(c)
     }
 

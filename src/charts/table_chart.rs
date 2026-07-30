@@ -11,6 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -32,30 +33,9 @@ pub struct TableCellStyle {
 
 #[derive(Clone, Debug, Default)]
 pub struct TableChart {
-    pub width: f32,
-    pub height: f32,
-    pub x: f32,
-    pub y: f32,
-    pub font_family: String,
-    pub background_color: Color,
-
-    // title
-    pub title_text: String,
-    pub title_font_size: f32,
-    pub title_font_color: Color,
-    pub title_font_weight: Option<String>,
-    pub title_margin: Option<Box>,
-    pub title_align: Align,
-    pub title_height: f32,
-
-    // sub title
-    pub sub_title_text: String,
-    pub sub_title_font_size: f32,
-    pub sub_title_font_color: Color,
-    pub sub_title_font_weight: Option<String>,
-    pub sub_title_margin: Option<Box>,
-    pub sub_title_align: Align,
-    pub sub_title_height: f32,
+    /// The shared chart options (size, title/sub-title, font); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
 
     pub data: Vec<Vec<String>>,
     pub spans: Vec<f32>,
@@ -77,6 +57,18 @@ pub struct TableChart {
     pub body_background_colors: Vec<Color>,
 
     pub cell_styles: Vec<TableCellStyle>,
+}
+
+impl std::ops::Deref for TableChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for TableChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl TableChart {
@@ -344,8 +336,14 @@ impl TableChart {
         }
         title_height
     }
-    /// Converts bar chart to svg.
-    pub fn svg(&mut self) -> canvas::Result<String> {
+    /// Converts table chart to svg. The table sizes itself to its content;
+    /// the rendered height is the `height` attribute of the returned svg.
+    pub fn svg(&self) -> canvas::Result<String> {
+        Ok(self.render()?.0)
+    }
+
+    /// Renders the svg and returns it with the computed (auto-sized) height.
+    pub(crate) fn render(&self) -> canvas::Result<(String, f32)> {
         if self.data.is_empty() {
             return Err(canvas::Error::Params {
                 message: "data is empty".to_string(),
@@ -586,9 +584,9 @@ impl TableChart {
             });
         }
         c.height = c.margin.top + top;
-        self.height = c.height;
+        let height = c.height;
 
-        c.svg()
+        Ok((c.svg()?, height))
     }
 }
 

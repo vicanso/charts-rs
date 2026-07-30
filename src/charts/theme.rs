@@ -14,9 +14,9 @@ use super::color::Color;
 use super::common::Align;
 use super::font::DEFAULT_FONT_FAMILY;
 use super::util::Box;
-use ahash::AHashMap;
 use arc_swap::ArcSwap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::LazyLock;
 
@@ -772,10 +772,10 @@ static SHADCN_THEME: LazyLock<Theme> = LazyLock::new(|| {
     }
 });
 
-type Themes = AHashMap<String, Arc<Theme>>;
+type Themes = HashMap<String, Arc<Theme>>;
 static LIGHT_THEME_ARC: LazyLock<Arc<Theme>> = LazyLock::new(|| Arc::new(LIGHT_THEME.clone()));
 static THEME_MAP: LazyLock<ArcSwap<Themes>> = LazyLock::new(|| {
-    let mut m = AHashMap::new();
+    let mut m = HashMap::new();
     m.insert("dark".to_string(), Arc::new(DARK_THEME.clone()));
     m.insert("ant".to_string(), Arc::new(ANT_THEME.clone()));
     m.insert("grafana".to_string(), Arc::new(GRAFANA_THEME.clone()));

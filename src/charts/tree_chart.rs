@@ -11,17 +11,16 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
 use super::sunburst_chart::{SunburstData, parse_node};
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 /// Hierarchical node data for the tree chart — identical to the sunburst
 /// model (`{ name, value, children, color }`), so the two share a data layer.
@@ -147,36 +146,12 @@ fn place(
 
 // ── TreeChart ────────────────────────────────────────────────────────────────
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct TreeChart {
-    // x/y axis (required by #[derive(Chart)], unused in rendering)
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_axis_hidden: bool,
-    pub x_boundary_gap: Option<bool>,
-    pub y_axis_hidden: bool,
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
-    grid_stroke_color: Color,
-    grid_stroke_width: f32,
-
-    // series (required by #[derive(Chart)])
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // tree-specific
     /// Hierarchy roots. Multiple roots form a forest laid out side by side.
@@ -186,6 +161,18 @@ pub struct TreeChart {
     pub orient: Option<String>,
     /// Radius of the node circle in pixels. Default: 6.0.
     pub symbol_size: f32,
+}
+
+impl std::ops::Deref for TreeChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for TreeChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl TreeChart {
@@ -206,7 +193,7 @@ impl TreeChart {
             series_data,
             ..Default::default()
         };
-        c.fill_theme(get_theme(theme));
+        c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
     }
@@ -216,7 +203,7 @@ impl TreeChart {
         let mut c = TreeChart {
             ..Default::default()
         };
-        let value = c.fill_option(json)?;
+        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
         if let Some(arr) = value.get("series_data").and_then(|v| v.as_array()) {
             c.series_data = arr.iter().filter_map(parse_node).collect();
         }

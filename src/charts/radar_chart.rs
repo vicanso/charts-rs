@@ -11,16 +11,15 @@
 // limitations under the License.
 
 use super::Canvas;
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
-use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_default_theme_name, get_theme};
+use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use charts_rs_derive::Chart;
-use std::sync::Arc;
 
 #[derive(Clone, Debug, Default)]
 pub struct RadarIndicator {
@@ -53,41 +52,34 @@ fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<
     None
 }
 
-#[charts_rs_derive::chart_common_fields]
-#[derive(Clone, Debug, Default, Chart)]
+#[derive(Clone, Debug, Default)]
 pub struct RadarChart {
+    /// The shared chart options (size, series, title/legend, axes); exposed
+    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    pub base: ChartBase,
     // x axis
-    pub x_axis_data: Vec<String>,
-    pub x_axis_height: f32,
-    pub x_axis_stroke_color: Color,
-    pub x_axis_font_size: f32,
-    pub x_axis_font_color: Color,
-    pub x_axis_font_weight: Option<String>,
-    pub x_axis_name_gap: f32,
-    pub x_axis_name_rotate: f32,
-    pub x_axis_margin: Option<Box>,
-    pub x_boundary_gap: Option<bool>,
 
     // y axis
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
-    pub grid_stroke_color: Color,
-    pub grid_stroke_width: f32,
 
     // series
-    pub series_stroke_width: f32,
-    pub series_label_font_color: Color,
-    pub series_label_font_size: f32,
-    pub series_label_font_weight: Option<String>,
-    pub series_label_formatter: String,
-    pub series_colors: Vec<Color>,
-    pub series_symbol: Option<Symbol>,
-    pub series_smooth: bool,
-    pub series_fill: bool,
 
     // indicators
     pub indicators: Vec<RadarIndicator>,
+}
+
+impl std::ops::Deref for RadarChart {
+    type Target = ChartBase;
+    fn deref(&self) -> &ChartBase {
+        &self.base
+    }
+}
+impl std::ops::DerefMut for RadarChart {
+    fn deref_mut(&mut self) -> &mut ChartBase {
+        &mut self.base
+    }
 }
 
 impl RadarChart {
@@ -96,7 +88,7 @@ impl RadarChart {
         let mut r = RadarChart {
             ..Default::default()
         };
-        let data = r.fill_option(data)?;
+        let data = r.base.fill_option(data, &mut r.y_axis_configs)?;
         if let Some(indicators) = get_radar_indicator_list_from_value(&data) {
             r.indicators = indicators;
         }
@@ -112,13 +104,13 @@ impl RadarChart {
         theme: &str,
     ) -> RadarChart {
         let mut r = RadarChart {
-            series_list,
             indicators,
-            series_fill: true,
             ..Default::default()
         };
+        r.series_list = series_list;
+        r.series_fill = true;
         let theme = get_theme(theme);
-        r.fill_theme(theme);
+        r.base.fill_theme(theme, &mut r.y_axis_configs);
         r
     }
     /// Creates a radar chart with default theme.
