@@ -15,15 +15,15 @@ rust-version = "1.88"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-arc-swap = "1.9.1"
-fontdue = "0.9.3"
+arc-swap = "1.9.2"
+fontdue = "0.9.4"
 image = { version = "0.25.10", default-features = false, optional = true }
 resvg = { version = "0.47.0", default-features = false, features = [
     "text",
     "system-fonts",
 ], optional = true }
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.150"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
 
 [features]
 # Internal plumbing: the shared raster pipeline (resvg + image). Enabled

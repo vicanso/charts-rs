@@ -21,9 +21,12 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 
+/// One radar axis: its name and maximum value.
 #[derive(Clone, Debug, Default)]
 pub struct RadarIndicator {
+    /// Name of the indicator axis.
     pub name: String,
+    /// Maximum value of the indicator.
     pub max: f32,
 }
 impl From<(&str, f32)> for RadarIndicator {
@@ -52,6 +55,7 @@ fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<
     None
 }
 
+/// A radar chart plotting each series against a ring of indicators.
 #[derive(Clone, Debug, Default)]
 pub struct RadarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -60,6 +64,7 @@ pub struct RadarChart {
     // x axis
 
     // y axis
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
@@ -67,6 +72,7 @@ pub struct RadarChart {
     // series
 
     // indicators
+    /// The indicator axes of the radar.
     pub indicators: Vec<RadarIndicator>,
 }
 

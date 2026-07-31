@@ -18,42 +18,60 @@
 
 use std::fmt;
 
+/// The crate-level error type returned by every fallible operation.
 #[derive(Debug)]
 // Non-exhaustive so future variants (and the `image-encoder`-gated ones that
 // appear/disappear with that feature) are not a breaking change for downstream
 // `match` arms; callers must include a wildcard arm.
 #[non_exhaustive]
 pub enum Error {
+    /// Invalid chart parameters.
     Params {
+        /// What was invalid.
         message: String,
     },
+    /// Invalid JSON input.
     Json {
+        /// The underlying JSON error.
         source: serde_json::Error,
     },
+    /// The requested font family is not registered.
     FontNotFound {
+        /// The font family that was requested.
         name: String,
     },
+    /// The font data could not be parsed.
     ParseFont {
+        /// The parse failure reported by fontdue.
         message: String,
     },
 
     // Raster encoding (image-encoder feature); the source types live behind
     // the optional `resvg` / `image` dependencies, so the variants are gated.
+    /// The raster output size is invalid (zero width or height).
     #[cfg(feature = "raster")]
     Size {
+        /// Output width.
         width: u32,
+        /// Output height.
         height: u32,
     },
+    /// The rendered pixel buffer could not be converted to an image.
     #[cfg(feature = "raster")]
     Raw {
+        /// Size of the pixel buffer.
         size: usize,
     },
+    /// The SVG could not be parsed for rasterization.
     #[cfg(feature = "raster")]
     Parse {
+        /// The underlying SVG parse error.
         source: resvg::usvg::Error,
     },
+    /// The image encoder failed.
     #[cfg(feature = "raster")]
     Image {
+        /// The underlying encoding error.
         source: image::ImageError,
     },
 }
@@ -98,4 +116,5 @@ impl From<serde_json::Error> for Error {
     }
 }
 
+/// The crate-level result type.
 pub type Result<T, E = Error> = std::result::Result<T, E>;

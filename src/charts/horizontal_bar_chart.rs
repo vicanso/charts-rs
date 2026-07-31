@@ -21,6 +21,7 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 
+/// A horizontal bar chart: categories on the y axis, values on the x axis.
 #[derive(Clone, Debug, Default)]
 pub struct HorizontalBarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -29,11 +30,13 @@ pub struct HorizontalBarChart {
     // x axis
 
     // y axis
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
 
     // series
+    /// Position of the series value labels.
     pub series_label_position: Option<Position>,
 }
 

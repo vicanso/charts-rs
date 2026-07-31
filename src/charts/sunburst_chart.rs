@@ -28,8 +28,11 @@ use crate::charts::measure_text_width_family;
 /// its children's values.
 #[derive(Clone, Debug, Default)]
 pub struct SunburstData {
+    /// Name of the node, shown as its label.
     pub name: String,
+    /// Value of the node when it is a leaf.
     pub value: f32,
+    /// Child nodes.
     pub children: Vec<SunburstData>,
     /// Optional explicit color; when `None` the color is derived from the
     /// top-level palette and lightened with depth.
@@ -109,6 +112,7 @@ struct RingLayout<'a> {
 
 // ── SunburstChart ──────────────────────────────────────────────────────────────
 
+/// A sunburst chart of hierarchical data as concentric rings.
 #[derive(Clone, Debug, Default)]
 pub struct SunburstChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -144,6 +148,7 @@ impl std::ops::DerefMut for SunburstChart {
 }
 
 impl SunburstChart {
+    /// Creates a sunburst chart with the given theme.
     pub fn new_with_theme(series_data: Vec<SunburstData>, theme: &str) -> SunburstChart {
         let mut c = SunburstChart {
             series_data,
@@ -153,10 +158,12 @@ impl SunburstChart {
         c
     }
 
+    /// Creates a sunburst chart with the default theme.
     pub fn new(series_data: Vec<SunburstData>) -> SunburstChart {
         SunburstChart::new_with_theme(series_data, &get_default_theme_name())
     }
 
+    /// Creates a sunburst chart from JSON options.
     pub fn from_json(json: &str) -> canvas::Result<SunburstChart> {
         let mut c = SunburstChart {
             ..Default::default()
@@ -366,6 +373,7 @@ impl SunburstChart {
         });
     }
 
+    /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 

@@ -22,25 +22,33 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 use core::f32;
 
+/// A pie / nightingale rose chart; each series contributes one value.
 #[derive(Clone, Debug, Default)]
 pub struct PieChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
     pub base: ChartBase,
+    /// Outer radius of the pie.
     pub radius: f32,
+    /// Inner radius; a value above zero renders a donut.
     pub inner_radius: f32,
+    /// Renders as a nightingale rose: the radius scales with the value.
     pub rose_type: Option<bool>,
+    /// Corner radius of the slices.
     pub border_radius: Option<f32>,
+    /// Start angle of the first slice, in degrees.
     pub start_angle: f32,
 
     // x axis
 
     // y axis
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
 
     // series
+    /// Position of the slice labels.
     pub series_label_position: Option<String>,
 }
 

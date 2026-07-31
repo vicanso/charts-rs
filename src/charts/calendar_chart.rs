@@ -122,6 +122,7 @@ static DOW_ABBR: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // ── CalendarChart ─────────────────────────────────────────────────────────────
 
+/// A calendar heatmap of daily values.
 #[derive(Clone, Debug, Default)]
 pub struct CalendarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed

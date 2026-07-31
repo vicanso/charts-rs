@@ -12,11 +12,17 @@
 
 use serde::{Deserialize, Serialize};
 
+/// An RGBA color. Parses from hex strings (`"#345"`, `"#ffcc00"`,
+/// `"#ffcc0080"`) and converts from `(r, g, b)` / `(r, g, b, a)` tuples.
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug, Default)]
 pub struct Color {
+    /// Red channel.
     pub r: u8,
+    /// Green channel.
     pub g: u8,
+    /// Blue channel.
     pub b: u8,
+    /// Alpha channel; 0 is transparent, 255 is opaque.
     pub a: u8,
 }
 
@@ -55,6 +61,7 @@ impl Color {
     pub fn black() -> Color {
         (0, 0, 0).into()
     }
+    /// Returns a fully transparent color.
     pub fn transparent() -> Color {
         (0, 0, 0, 0).into()
     }

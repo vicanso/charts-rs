@@ -23,39 +23,63 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 use std::sync::Arc;
 
+/// A style override for a single table cell, addressed by `indexes`.
 #[derive(Clone, Debug, Default)]
 pub struct TableCellStyle {
+    /// Font color override.
     pub font_color: Option<Color>,
+    /// Font weight override.
     pub font_weight: Option<String>,
+    /// Background color override.
     pub background_color: Option<Color>,
+    /// The cell address as `[row, column]`.
     pub indexes: Vec<usize>,
 }
 
+/// A table rendered as SVG, with optional per-cell style overrides.
 #[derive(Clone, Debug, Default)]
 pub struct TableChart {
     /// The shared chart options (size, title/sub-title, font); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
     pub base: ChartBase,
 
+    /// The table content as rows of cells; the first row is the header.
     pub data: Vec<Vec<String>>,
+    /// Column widths: values below 1.0 are fractions of the table width,
+    /// larger values are absolute; unspecified columns split the rest equally.
     pub spans: Vec<f32>,
+    /// Text alignment per column.
     pub text_aligns: Vec<Align>,
+    /// Color of the row separator lines.
     pub border_color: Color,
+    /// Draws the outer border.
     pub outlined: bool,
 
+    /// Padding of the header row.
     pub header_row_padding: Box,
+    /// Minimum height of the header row.
     pub header_row_height: f32,
+    /// Header font size.
     pub header_font_size: f32,
+    /// Header font weight, e.g. `"bold"`.
     pub header_font_weight: Option<String>,
+    /// Header font color.
     pub header_font_color: Color,
+    /// Header background color.
     pub header_background_color: Color,
 
+    /// Padding of body rows.
     pub body_row_padding: Box,
+    /// Minimum height of body rows.
     pub body_row_height: f32,
+    /// Body font size.
     pub body_font_size: f32,
+    /// Body font color.
     pub body_font_color: Color,
+    /// Body row background colors, cycled per row.
     pub body_background_colors: Vec<Color>,
 
+    /// Per-cell style overrides.
     pub cell_styles: Vec<TableCellStyle>,
 }
 

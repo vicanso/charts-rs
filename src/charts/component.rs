@@ -346,14 +346,22 @@ pub enum Component {
 }
 #[derive(Clone, PartialEq, Debug)]
 
+/// A straight line segment between two points.
 pub struct Line {
+    /// Stroke color.
     pub color: Option<Color>,
+    /// Stroke width.
     pub stroke_width: f32,
+    /// X coordinate of the start point.
     pub left: f32,
+    /// Y coordinate of the start point.
     pub top: f32,
+    /// X coordinate of the end point.
     pub right: f32,
+    /// Y coordinate of the end point.
     pub bottom: f32,
     // dash array
+    /// SVG stroke dash array.
     pub stroke_dash_array: Option<String>,
 }
 
@@ -372,6 +380,7 @@ impl Default for Line {
 }
 
 impl Line {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         let mut out = String::new();
         self.write_svg(&mut out);
@@ -408,21 +417,33 @@ impl Line {
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+/// A rectangle, optionally rounded and gradient-filled.
 pub struct Rect {
+    /// Stroke color.
     pub color: Option<Color>,
+    /// Fill (solid or gradient).
     pub fill: Option<Fill>,
+    /// Left (x) coordinate.
     pub left: f32,
+    /// Top (y) coordinate.
     pub top: f32,
+    /// Width.
     pub width: f32,
+    /// Height.
     pub height: f32,
+    /// Corner radius on the x axis.
     pub rx: Option<f32>,
+    /// Corner radius on the y axis.
     pub ry: Option<f32>,
+    /// CSS class attribute of the SVG element.
     pub class: Option<String>,
+    /// Inline style attribute of the SVG element.
     pub style: Option<String>,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
 }
 impl Rect {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         let mut out = String::new();
         self.write_svg(&mut out, None);
@@ -475,9 +496,13 @@ impl Rect {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// A polyline through a list of points.
 pub struct Polyline {
+    /// Stroke color.
     pub color: Option<Color>,
+    /// Stroke width.
     pub stroke_width: f32,
+    /// The points of the line.
     pub points: Vec<Point>,
 }
 
@@ -492,6 +517,7 @@ impl Default for Polyline {
 }
 
 impl Polyline {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         let mut out = String::new();
         self.write_svg(&mut out);
@@ -534,12 +560,19 @@ impl Polyline {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// A circle.
 pub struct Circle {
+    /// Stroke color.
     pub stroke_color: Option<Color>,
+    /// Fill color.
     pub fill: Option<Color>,
+    /// Stroke width.
     pub stroke_width: f32,
+    /// Center x coordinate.
     pub cx: f32,
+    /// Center y coordinate.
     pub cy: f32,
+    /// Radius.
     pub r: f32,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
@@ -563,6 +596,7 @@ impl Default for Circle {
 }
 
 impl Circle {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         let mut out = String::new();
         self.write_svg(&mut out);
@@ -651,19 +685,26 @@ impl Arrow {
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+/// A closed polygon through a list of points.
 pub struct Polygon {
+    /// Stroke color.
     pub color: Option<Color>,
+    /// Fill color.
     pub fill: Option<Color>,
     /// Optional gradient fill; when set it overrides `fill`.
     pub gradient: Option<Fill>,
+    /// The vertices of the polygon.
     pub points: Vec<Point>,
+    /// CSS class attribute of the SVG element.
     pub class: Option<String>,
+    /// Inline style attribute of the SVG element.
     pub style: Option<String>,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
 }
 
 impl Polygon {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         let mut out = String::new();
         self.write_svg(&mut out, None);
@@ -766,25 +807,42 @@ impl Bubble {
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+/// A text element.
 pub struct Text {
+    /// The text content.
     pub text: String,
+    /// Font family.
     pub font_family: Option<String>,
+    /// Font size.
     pub font_size: Option<f32>,
+    /// Font color.
     pub font_color: Option<Color>,
+    /// Line height.
     pub line_height: Option<f32>,
+    /// X coordinate.
     pub x: Option<f32>,
+    /// Y coordinate.
     pub y: Option<f32>,
+    /// X offset.
     pub dx: Option<f32>,
+    /// Y offset.
     pub dy: Option<f32>,
+    /// Font weight, e.g. `"bold"`.
     pub font_weight: Option<String>,
+    /// SVG transform attribute.
     pub transform: Option<String>,
+    /// SVG dominant-baseline attribute.
     pub dominant_baseline: Option<String>,
+    /// SVG text-anchor attribute.
     pub text_anchor: Option<String>,
+    /// SVG alignment-baseline attribute.
     pub alignment_baseline: Option<String>,
+    /// CSS class attribute of the SVG element.
     pub class: Option<String>,
 }
 
 impl Text {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         let mut out = String::new();
         self.write_svg(&mut out);
@@ -929,17 +987,29 @@ fn generate_diamond_symbol(
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// A pie / donut slice.
 pub struct Pie {
+    /// Fill (solid or gradient).
     pub fill: Fill,
+    /// Stroke color.
     pub stroke_color: Option<Color>,
+    /// Center x coordinate.
     pub cx: f32,
+    /// Center y coordinate.
     pub cy: f32,
+    /// Outer radius.
     pub r: f32,
+    /// Inner radius; a value above zero renders a donut slice.
     pub ir: f32,
+    /// Start angle in degrees.
     pub start_angle: f32,
+    /// Sweep angle in degrees.
     pub delta: f32,
+    /// Corner radius of the outer edge.
     pub border_radius: f32,
+    /// CSS class attribute of the SVG element.
     pub class: Option<String>,
+    /// Inline style attribute of the SVG element.
     pub style: Option<String>,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
@@ -965,6 +1035,7 @@ impl Default for Pie {
 }
 
 impl Pie {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         self.svg_with_grad_seen(None)
     }
@@ -1239,13 +1310,21 @@ impl<'a> BaseLine<'a> {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// A smooth curve through a list of points.
 pub struct SmoothLine {
+    /// Stroke color.
     pub color: Option<Color>,
+    /// The points the curve passes through.
     pub points: Vec<Point>,
+    /// Stroke width.
     pub stroke_width: f32,
+    /// Marker drawn on each point.
     pub symbol: Option<Symbol>,
+    /// SVG stroke dash array.
     pub stroke_dash_array: Option<String>,
+    /// CSS class attribute of the SVG element.
     pub class: Option<String>,
+    /// SVG pathLength attribute (used by animations).
     pub path_length: Option<f32>,
 }
 
@@ -1264,6 +1343,7 @@ impl Default for SmoothLine {
 }
 
 impl SmoothLine {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         BaseLine {
             color: self.color,
@@ -1282,9 +1362,13 @@ impl SmoothLine {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// The filled area under a smooth curve.
 pub struct SmoothLineFill {
+    /// Fill (solid or gradient).
     pub fill: Fill,
+    /// The points the curve passes through.
     pub points: Vec<Point>,
+    /// Y coordinate of the baseline the fill closes to.
     pub bottom: f32,
 }
 
@@ -1299,6 +1383,7 @@ impl Default for SmoothLineFill {
 }
 
 impl SmoothLineFill {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         self.svg_with_grad_seen(None)
     }
@@ -1345,15 +1430,25 @@ impl SmoothLineFill {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// A series line drawn with straight segments.
 pub struct StraightLine {
+    /// Stroke color.
     pub color: Option<Color>,
+    /// Fill color.
     pub fill: Option<Color>,
+    /// The points of the line.
     pub points: Vec<Point>,
+    /// Stroke width.
     pub stroke_width: f32,
+    /// Marker drawn on each point.
     pub symbol: Option<Symbol>,
+    /// Closes the path back to the first point.
     pub close: bool,
+    /// SVG stroke dash array.
     pub stroke_dash_array: Option<String>,
+    /// CSS class attribute of the SVG element.
     pub class: Option<String>,
+    /// SVG pathLength attribute (used by animations).
     pub path_length: Option<f32>,
 }
 
@@ -1374,6 +1469,7 @@ impl Default for StraightLine {
 }
 
 impl StraightLine {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         BaseLine {
             color: self.color,
@@ -1392,14 +1488,20 @@ impl StraightLine {
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+/// The filled area under a straight-segment line.
 pub struct StraightLineFill {
+    /// Fill (solid or gradient).
     pub fill: Fill,
+    /// The points of the line.
     pub points: Vec<Point>,
+    /// Y coordinate of the baseline the fill closes to.
     pub bottom: f32,
+    /// Closes the path back to the first point.
     pub close: bool,
 }
 
 impl StraightLineFill {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         self.svg_with_grad_seen(None)
     }
@@ -1452,20 +1554,32 @@ impl StraightLineFill {
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+/// The chart grid: evenly spaced vertical and horizontal lines.
 pub struct Grid {
+    /// Left (x) coordinate.
     pub left: f32,
+    /// Top (y) coordinate.
     pub top: f32,
+    /// Right (x) coordinate.
     pub right: f32,
+    /// Bottom (y) coordinate.
     pub bottom: f32,
+    /// Stroke color.
     pub color: Option<Color>,
+    /// Stroke width.
     pub stroke_width: f32,
+    /// Number of vertical grid lines.
     pub verticals: usize,
+    /// Indexes of vertical lines to hide.
     pub hidden_verticals: Vec<usize>,
+    /// Number of horizontal grid lines.
     pub horizontals: usize,
+    /// Indexes of horizontal lines to hide.
     pub hidden_horizontals: Vec<usize>,
 }
 
 impl Grid {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         if (self.verticals == 0 && self.horizontals == 0) || self.stroke_width <= 0.0 {
             return "".to_string();
@@ -1522,25 +1636,45 @@ impl Grid {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// An axis: its line, tick marks and labels.
 pub struct Axis {
+    /// Which side of the chart the axis sits on.
     pub position: Position,
+    /// Number of intervals the axis splits into.
     pub split_number: usize,
+    /// Label font size.
     pub font_size: f32,
+    /// Label font family.
     pub font_family: String,
+    /// Label font color.
     pub font_color: Option<Color>,
+    /// Label font weight, e.g. `"bold"`.
     pub font_weight: Option<String>,
+    /// The axis labels.
     pub data: Vec<String>,
+    /// Label format, supporting `{c}` value and `{t}` thousands.
     pub formatter: Option<String>,
+    /// Gap between the axis line and its labels.
     pub name_gap: f32,
+    /// Alignment of the labels.
     pub name_align: Align,
+    /// Rotation of the labels, in degrees.
     pub name_rotate: f32,
+    /// Stroke color of the axis line and ticks.
     pub stroke_color: Option<Color>,
+    /// Left (x) coordinate.
     pub left: f32,
+    /// Top (y) coordinate.
     pub top: f32,
+    /// Width.
     pub width: f32,
+    /// Height.
     pub height: f32,
+    /// Length of the tick marks.
     pub tick_length: f32,
+    /// Index of the first tick.
     pub tick_start: usize,
+    /// Interval between ticks.
     pub tick_interval: usize,
 }
 impl Default for Axis {
@@ -1570,6 +1704,7 @@ impl Default for Axis {
 }
 
 impl Axis {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> Result<String> {
         let left = self.left;
         let top = self.top;
@@ -1876,28 +2011,45 @@ pub(crate) fn wrap_legends_to_rows<'a>(
 // }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+/// The marker shape of a legend entry.
 pub enum LegendCategory {
     #[default]
+    /// The default marker: a line with a dot.
     Normal,
+    /// A rounded rectangle marker.
     RoundRect,
+    /// A circular marker.
     Circle,
+    /// A rectangular marker.
     Rect,
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+/// One legend entry: its marker plus label.
 pub struct Legend {
+    /// The label text.
     pub text: String,
+    /// Label font size.
     pub font_size: f32,
+    /// Label font family.
     pub font_family: String,
+    /// Label font color.
     pub font_color: Option<Color>,
+    /// Label font weight, e.g. `"bold"`.
     pub font_weight: Option<String>,
+    /// Stroke color of the marker.
     pub stroke_color: Option<Color>,
+    /// Fill color of the marker.
     pub fill: Option<Color>,
+    /// Left (x) coordinate.
     pub left: f32,
+    /// Top (y) coordinate.
     pub top: f32,
+    /// Marker shape of the entry.
     pub category: LegendCategory,
 }
 impl Legend {
+    /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
         let stroke_width = 2.0;
         let mut data: Vec<String> = vec![];

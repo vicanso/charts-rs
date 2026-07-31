@@ -19,6 +19,8 @@ use super::component::*;
 use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 
+/// A line chart. Supports smooth curves, area fill, stacking and mark
+/// points/lines.
 #[derive(Clone, Debug, Default)]
 pub struct LineChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -27,6 +29,7 @@ pub struct LineChart {
     // x axis
 
     // y axis
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
     // grid
 

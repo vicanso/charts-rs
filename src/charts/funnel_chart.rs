@@ -21,6 +21,7 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 
+/// A funnel chart for stage conversion data.
 #[derive(Clone, Debug, Default)]
 pub struct FunnelChart {
     /// The shared chart options (size, series, title/legend, axes); exposed

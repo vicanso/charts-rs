@@ -25,12 +25,20 @@ use std::rc::Rc;
 pub use super::error::{Error, Result};
 
 #[derive(Clone)]
+/// A drawing surface: components are appended at absolute coordinates and
+/// rendered into one SVG document.
 pub struct Canvas {
+    /// Canvas width.
     pub width: f32,
+    /// Canvas height.
     pub height: f32,
+    /// X offset applied to appended components.
     pub x: f32,
+    /// Y offset applied to appended components.
     pub y: f32,
+    /// The appended components; shared with child canvases.
     pub components: Rc<RefCell<Vec<Component>>>,
+    /// Margin applied on top of the offset.
     pub margin: Box,
 }
 
@@ -268,6 +276,7 @@ impl Canvas {
         b
     }
     // Appends grid widget to canvas.
+    /// Appends a grid, returning its bounding box.
     pub fn grid(&mut self, grip: Grid) -> Box {
         let mut c = grip;
         c.left += self.margin.left;
@@ -284,6 +293,7 @@ impl Canvas {
         b
     }
     // Appends axis widget to canvas.
+    /// Appends an axis, returning its bounding box.
     pub fn axis(&mut self, axis: Axis) -> Box {
         let mut c = axis;
         c.left += self.margin.left;
@@ -327,6 +337,7 @@ impl Canvas {
         self.append(Component::Bubble(c));
         b
     }
+    /// Appends a component to the canvas.
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
         components.push(component);

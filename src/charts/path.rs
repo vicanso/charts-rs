@@ -14,10 +14,16 @@ use super::util::*;
 use std::fmt;
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+/// A quadratic Bézier segment from `(x1, y1)` to `(x2, y2)` with a computed
+/// control point.
 pub struct QuadraticBezier {
+    /// Start x coordinate.
     pub x1: f32,
+    /// Start y coordinate.
     pub y1: f32,
+    /// End x coordinate.
     pub x2: f32,
+    /// End y coordinate.
     pub y2: f32,
 }
 impl fmt::Display for QuadraticBezier {
@@ -79,8 +85,11 @@ fn get_control_points(
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+/// Builds an SVG path of smooth segments through the given points.
 pub struct SmoothCurve {
+    /// The points the curve passes through.
     pub points: Vec<Point>,
+    /// Closes the curve back to the first point.
     pub close: bool,
 }
 impl fmt::Display for SmoothCurve {

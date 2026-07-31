@@ -21,6 +21,7 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use serde::{Deserialize, Serialize};
 
+/// A candlestick (OHLC) chart for financial data.
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct CandlestickChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -38,14 +39,19 @@ pub struct CandlestickChart {
     // x axis
 
     // y axis
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
 
     // series
+    /// Fill color of rising candles.
     pub candlestick_up_color: Color,
+    /// Border color of rising candles.
     pub candlestick_up_border_color: Color,
+    /// Fill color of falling candles.
     pub candlestick_down_color: Color,
+    /// Border color of falling candles.
     pub candlestick_down_border_color: Color,
 }
 

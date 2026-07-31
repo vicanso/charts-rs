@@ -58,39 +58,66 @@ pub struct ChartBase {
 
     /// Title text.
     pub title_text: String,
+    /// Title font size.
     pub title_font_size: f32,
+    /// Title font color.
     pub title_font_color: Color,
+    /// Title font weight, e.g. `"bold"`.
     pub title_font_weight: Option<String>,
+    /// Margin around the title block.
     pub title_margin: Option<Box>,
+    /// Horizontal alignment of the title.
     pub title_align: Align,
+    /// Height reserved for the title row.
     pub title_height: f32,
 
     /// Sub-title text.
     pub sub_title_text: String,
+    /// Sub-title font size.
     pub sub_title_font_size: f32,
+    /// Sub-title font color.
     pub sub_title_font_color: Color,
+    /// Sub-title font weight, e.g. `"bold"`.
     pub sub_title_font_weight: Option<String>,
+    /// Margin around the sub-title block.
     pub sub_title_margin: Option<Box>,
+    /// Horizontal alignment of the sub-title.
     pub sub_title_align: Align,
+    /// Height reserved for the sub-title row.
     pub sub_title_height: f32,
 
+    /// Legend font size.
     pub legend_font_size: f32,
+    /// Legend font color.
     pub legend_font_color: Color,
+    /// Legend font weight, e.g. `"bold"`.
     pub legend_font_weight: Option<String>,
+    /// Horizontal alignment of the legend.
     pub legend_align: Align,
+    /// Margin around the legend block.
     pub legend_margin: Option<Box>,
+    /// Legend marker shape (normal, rect or round rect).
     pub legend_category: LegendCategory,
+    /// Shows or hides the legend; `None` follows the chart's default.
     pub legend_show: Option<bool>,
 
     /// Labels of the x axis.
     pub x_axis_data: Vec<String>,
+    /// Height reserved for the x axis block.
     pub x_axis_height: f32,
+    /// Stroke color of the x axis line and ticks.
     pub x_axis_stroke_color: Color,
+    /// X axis label font size.
     pub x_axis_font_size: f32,
+    /// X axis label font color.
     pub x_axis_font_color: Color,
+    /// X axis label font weight, e.g. `"bold"`.
     pub x_axis_font_weight: Option<String>,
+    /// Gap between the axis line and its labels.
     pub x_axis_name_gap: f32,
+    /// Rotation of the x axis labels, in degrees.
     pub x_axis_name_rotate: f32,
+    /// Margin around the x axis block.
     pub x_axis_margin: Option<Box>,
     /// Whether a gap is left on both ends of the x axis (bar-style) or the
     /// first/last points sit on the edges (line-style).
@@ -100,18 +127,29 @@ pub struct ChartBase {
     /// Hides the y axis entirely (charts without a y axis ignore this).
     pub y_axis_hidden: bool,
 
+    /// Stroke color of the grid lines.
     pub grid_stroke_color: Color,
+    /// Stroke width of the grid lines.
     pub grid_stroke_width: f32,
 
+    /// Stroke width of series lines.
     pub series_stroke_width: f32,
+    /// Series label font color.
     pub series_label_font_color: Color,
+    /// Series label font size.
     pub series_label_font_size: f32,
+    /// Series label font weight, e.g. `"bold"`.
     pub series_label_font_weight: Option<String>,
+    /// Series label format, supporting `{c}` value, `{a}` series name,
+    /// `{b}` category, `{d}` percentage and `{t}` thousands.
     pub series_label_formatter: String,
     /// Color palette cycled through by the series.
     pub series_colors: Vec<Color>,
+    /// Marker drawn on data points (circle, dot or none).
     pub series_symbol: Option<Symbol>,
+    /// Draws line series as smooth curves.
     pub series_smooth: bool,
+    /// Fills the area under line series.
     pub series_fill: bool,
 
     /// SVG animation (duration/easing/stagger delay) for the chart types that

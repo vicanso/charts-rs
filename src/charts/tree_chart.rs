@@ -146,6 +146,7 @@ fn place(
 
 // ── TreeChart ────────────────────────────────────────────────────────────────
 
+/// A tree diagram of hierarchical data as linked nodes.
 #[derive(Clone, Debug, Default)]
 pub struct TreeChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -217,6 +218,7 @@ impl TreeChart {
         Ok(c)
     }
 
+    /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 

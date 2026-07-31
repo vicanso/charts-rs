@@ -26,6 +26,7 @@ use super::util::*;
 /// this name.
 #[derive(Clone, Debug, Default)]
 pub struct SankeyNode {
+    /// Name of the node, shown as its label.
     pub name: String,
     /// Optional explicit color; when `None` the color is taken from the theme
     /// palette by the node's position.
@@ -45,8 +46,11 @@ impl From<&str> for SankeyNode {
 /// node (both referenced by name).
 #[derive(Clone, Debug, Default)]
 pub struct SankeyLink {
+    /// Name of the source node.
     pub source: String,
+    /// Name of the target node.
     pub target: String,
+    /// Flow volume from source to target.
     pub value: f32,
 }
 
@@ -106,6 +110,7 @@ fn sample_link_edge(x0: f32, y0: f32, x1: f32, y1: f32, segments: usize, out: &m
 
 // ── SankeyChart ────────────────────────────────────────────────────────────────
 
+/// A sankey diagram of directed flows between nodes.
 #[derive(Clone, Debug, Default)]
 pub struct SankeyChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -458,6 +463,7 @@ impl SankeyChart {
         Some((nodes, links))
     }
 
+    /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 

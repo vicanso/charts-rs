@@ -20,6 +20,8 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use serde::{Deserialize, Serialize};
 
+/// A vertical bar chart. Series can be individually switched to lines
+/// (bar/line mix), stacked, and bound to one of two y axes.
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct BarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -27,8 +29,10 @@ pub struct BarChart {
     #[serde(flatten)]
     pub base: ChartBase,
 
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
 
+    /// Corner radius of the bars.
     pub radius: Option<f32>,
 }
 

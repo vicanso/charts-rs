@@ -20,94 +20,158 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::LazyLock;
 
+/// Default canvas width.
 pub static DEFAULT_WIDTH: f32 = 600.0;
+/// Default canvas height.
 pub static DEFAULT_HEIGHT: f32 = 400.0;
 
+/// Default height reserved for the title row.
 pub static DEFAULT_TITLE_HEIGHT: f32 = 30.0;
+/// Default height reserved for the sub-title row.
 pub static DEFAULT_SUB_TITLE_HEIGHT: f32 = 20.0;
 
+/// Default height reserved for the x axis block.
 pub static DEFAULT_X_AXIS_HEIGHT: f32 = 30.0;
+/// Default gap between the x axis line and its labels.
 pub static DEFAULT_X_AXIS_NAME_GAP: f32 = 5.0;
 
+/// Default width reserved for a y axis block.
 pub static DEFAULT_Y_AXIS_WIDTH: f32 = 40.0;
+/// Default gap between a y axis line and its labels.
 pub static DEFAULT_Y_AXIS_NAME_GAP: f32 = 8.0;
+/// Default number of intervals a y axis splits into.
 pub static DEFAULT_Y_AXIS_SPLIT_NUMBER: usize = 6;
+/// Default font size.
 pub static DEFAULT_FONT_SIZE: f32 = 14.0;
 
+/// Default stroke width of series lines.
 pub static DEFAULT_SERIES_STROKE_WIDTH: f32 = 2.0;
 
+/// The "light" theme name (the default theme).
 pub static THEME_LIGHT: &str = "light";
+/// The "dark" theme name.
 pub static THEME_DARK: &str = "dark";
+/// The "ant" theme name.
 pub static THEME_ANT: &str = "ant";
+/// The "vintage" theme name.
 pub static THEME_VINTAGE: &str = "vintage";
+/// The "shine" theme name.
 pub static THEME_SHINE: &str = "shine";
+/// The "walden" theme name.
 pub static THEME_WALDEN: &str = "walden";
+/// The "westeros" theme name.
 pub static THEME_WESTEROS: &str = "westeros";
+/// The "chalk" theme name.
 pub static THEME_CHALK: &str = "chalk";
+/// The "grafana" theme name.
 pub static THEME_GRAFANA: &str = "grafana";
+/// The "shadcn" theme name.
 pub static THEME_SHADCN: &str = "shadcn";
 
 // Internal alias for the default theme name.
 static LIGHT_THEME_NAME: &str = THEME_LIGHT;
 
+/// A named set of chart defaults (sizes, fonts, colors, palette). Charts copy
+/// these values in `fill_theme` before user options are applied; custom themes
+/// are registered with [`add_theme`] and referenced by name.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 
 pub struct Theme {
+    /// Whether this is a light theme.
     pub is_light: bool,
+    /// Default font family.
     pub font_family: String,
+    /// Default chart margin.
     pub margin: Box,
+    /// Default canvas width.
     pub width: f32,
+    /// Default canvas height.
     pub height: f32,
+    /// Default background color.
     pub background_color: Color,
 
     // title
+    /// Default title font size.
     pub title_font_size: f32,
+    /// Default title font color.
     pub title_font_color: Color,
+    /// Default title font weight.
     pub title_font_weight: Option<String>,
+    /// Default title margin.
     pub title_margin: Option<Box>,
+    /// Default title alignment.
     pub title_align: Align,
+    /// Default title row height.
     pub title_height: f32,
 
     // sub title
+    /// Default sub-title font size.
     pub sub_title_font_size: f32,
+    /// Default sub-title font color.
     pub sub_title_font_color: Color,
+    /// Default sub-title margin.
     pub sub_title_margin: Option<Box>,
+    /// Default sub-title alignment.
     pub sub_title_align: Align,
+    /// Default sub-title row height.
     pub sub_title_height: f32,
 
     // legend
+    /// Default legend font size.
     pub legend_font_size: f32,
+    /// Default legend font color.
     pub legend_font_color: Color,
+    /// Default legend alignment.
     pub legend_align: Align,
+    /// Default legend margin.
     pub legend_margin: Option<Box>,
 
     // x axis
+    /// Default x axis label font size.
     pub x_axis_font_size: f32,
+    /// Default x axis stroke color.
     pub x_axis_stroke_color: Color,
+    /// Default x axis label font color.
     pub x_axis_font_color: Color,
+    /// Default gap between the x axis line and its labels.
     pub x_axis_name_gap: f32,
+    /// Default x axis block height.
     pub x_axis_height: f32,
 
     // y axis
+    /// Default y axis label font size.
     pub y_axis_font_size: f32,
+    /// Default y axis label font color.
     pub y_axis_font_color: Color,
+    /// Default y axis stroke color.
     pub y_axis_stroke_color: Color,
+    /// Default number of y axis intervals.
     pub y_axis_split_number: usize,
+    /// Default gap between the y axis line and its labels.
     pub y_axis_name_gap: f32,
 
     // grid
+    /// Default grid stroke color.
     pub grid_stroke_color: Color,
+    /// Default grid stroke width.
     pub grid_stroke_width: f32,
 
     // series
+    /// Default stroke width of series lines.
     pub series_stroke_width: f32,
+    /// Default series label font size.
     pub series_label_font_size: f32,
+    /// Default series label font color.
     pub series_label_font_color: Color,
+    /// Default series color palette.
     pub series_colors: Vec<Color>,
 
     // table
+    /// Default table header background color.
     pub table_header_color: Color,
+    /// Default table body background colors.
     pub table_body_colors: Vec<Color>,
+    /// Default table border color.
     pub table_border_color: Color,
 }
 

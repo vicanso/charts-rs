@@ -55,6 +55,7 @@ impl From<(f32, bool)> for WaterfallData {
 
 // ── WaterfallChart ────────────────────────────────────────────────────────────
 
+/// A waterfall chart showing running totals of increases and decreases.
 #[derive(Clone, Debug, Default)]
 pub struct WaterfallChart {
     /// The shared chart options (size, series, title/legend, axes); exposed

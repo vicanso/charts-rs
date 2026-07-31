@@ -131,6 +131,7 @@ fn squarify(items: &[TmItem], x: f32, y: f32, w: f32, h: f32, out: &mut Vec<TmRe
 
 // ── TreemapChart ─────────────────────────────────────────────────────────────
 
+/// A treemap laying values out as rectangles sized proportionally.
 #[derive(Clone, Debug, Default)]
 pub struct TreemapChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -165,6 +166,7 @@ impl TreemapChart {
         }
     }
 
+    /// Creates a treemap chart with the given theme.
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> TreemapChart {
         let mut c = TreemapChart {
             ..Default::default()
@@ -175,10 +177,12 @@ impl TreemapChart {
         c
     }
 
+    /// Creates a treemap chart with the default theme.
     pub fn new(series_list: Vec<Series>) -> TreemapChart {
         TreemapChart::new_with_theme(series_list, &get_default_theme_name())
     }
 
+    /// Creates a treemap chart from JSON options.
     pub fn from_json(json: &str) -> canvas::Result<TreemapChart> {
         let mut c = TreemapChart {
             ..Default::default()
@@ -191,6 +195,7 @@ impl TreemapChart {
         Ok(c)
     }
 
+    /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
         self.render_background(c.child(Box::default()));

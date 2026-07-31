@@ -30,6 +30,7 @@ fn arc_points(cx: f32, cy: f32, r: f32, start: f32, end_deg: f32, n: usize) -> V
         .collect()
 }
 
+/// A gauge (dial) chart displaying values on a circular scale.
 #[derive(Clone, Debug, Default)]
 pub struct GaugeChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -109,10 +110,12 @@ impl GaugeChart {
         }
     }
 
+    /// Creates a gauge chart with the default theme.
     pub fn new(series_list: Vec<Series>) -> GaugeChart {
         GaugeChart::new_with_theme(series_list, &get_default_theme_name())
     }
 
+    /// Creates a gauge chart with the given theme.
     pub fn new_with_theme(series_list: Vec<Series>, theme: &str) -> GaugeChart {
         let mut c = GaugeChart {
             ..Default::default()
@@ -123,6 +126,7 @@ impl GaugeChart {
         c
     }
 
+    /// Creates a gauge chart from JSON options.
     pub fn from_json(json: &str) -> canvas::Result<GaugeChart> {
         let mut c = GaugeChart {
             ..Default::default()
@@ -168,6 +172,7 @@ impl GaugeChart {
         Ok(c)
     }
 
+    /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
         self.render_background(c.child(Box::default()));

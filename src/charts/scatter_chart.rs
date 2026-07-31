@@ -22,6 +22,7 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 use serde::{Deserialize, Serialize};
 
+/// A scatter chart of (x, y) point pairs.
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct ScatterChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -29,9 +30,11 @@ pub struct ScatterChart {
     #[serde(flatten)]
     pub base: ChartBase,
     // x axis
+    /// Configuration of the value x axis.
     pub x_axis_config: YAxisConfig,
 
     // y axis
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
@@ -39,6 +42,7 @@ pub struct ScatterChart {
     // series
 
     // symbol
+    /// Marker radius per series.
     pub series_symbol_sizes: Vec<f32>,
     /// Per-series symbol shapes. When empty the chart cycles through
     /// Circle → Triangle → Rect → Diamond by series index.

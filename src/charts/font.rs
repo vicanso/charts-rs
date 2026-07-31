@@ -22,7 +22,9 @@ use std::sync::{Arc, OnceLock};
 // Crate-level error/result (see `error.rs`); re-exported to keep `font::Error`.
 pub use super::error::{Error, Result};
 
+/// The default font family (the embedded Roboto).
 pub static DEFAULT_FONT_FAMILY: &str = "Roboto";
+/// Raw TTF data of the embedded default font.
 pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Roboto.ttf");
 
 struct FontRegistry {
@@ -112,16 +114,6 @@ pub fn add_fonts(fonts: &[&[u8]]) -> Result<()> {
     #[cfg(feature = "raster")]
     super::encoder::rebuild_fontdb(&cell.load().datas);
     Ok(())
-}
-
-/// Registers fonts once (legacy API).
-#[deprecated(note = "use `add_fonts`, which can register fonts at any time")]
-pub fn get_or_try_init_fonts(fonts: Option<Vec<&[u8]>>) -> Result<()> {
-    if let Some(value) = fonts {
-        add_fonts(&value)
-    } else {
-        global_fonts().map(|_| ())
-    }
 }
 
 #[cfg(feature = "raster")]

@@ -14,6 +14,11 @@ use super::common::AxisScale;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+/// The legacy sentinel for a missing data point in flat `Vec<f32>` input:
+/// `Series::new` maps it to `None`. The public data model itself uses
+/// `Option<f32>` (see `Series::data`), where missing points are skipped
+/// instead of drawn as zero; JSON `null` also becomes a missing point.
+/// This convention (= `f32::MIN`) is stable across 1.x.
 pub static NIL_VALUE: f32 = f32::MIN;
 
 pub(crate) static THOUSANDS_FORMAT_LABEL: &str = "{t}";
@@ -22,9 +27,13 @@ pub(crate) static CATEGORY_NAME_FORMAT_LABEL: &str = "{b}";
 pub(crate) static VALUE_FORMAT_LABEL: &str = "{c}";
 pub(crate) static PERCENTAGE_FORMAT_LABEL: &str = "{d}";
 
+/// A point on the canvas; the origin is the top-left corner, x grows right
+/// and y grows down.
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct Point {
+    /// X coordinate.
     pub x: f32,
+    /// Y coordinate.
     pub y: f32,
 }
 impl From<(f32, f32)> for Point {
@@ -38,23 +47,33 @@ impl fmt::Display for Point {
     }
 }
 
+/// A CSS-like `left, top, right, bottom` rectangle used for margins and
+/// layout boxes.
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct Box {
+    /// Left edge / margin.
     pub left: f32,
+    /// Top edge / margin.
     pub top: f32,
+    /// Right edge / margin.
     pub right: f32,
+    /// Bottom edge / margin.
     pub bottom: f32,
 }
 impl Box {
+    /// Width of the box (`right - left`).
     pub fn width(&self) -> f32 {
         self.right - self.left
     }
+    /// Height of the box (`bottom - top`).
     pub fn height(&self) -> f32 {
         self.bottom - self.top
     }
+    /// Right edge of the box, i.e. the width including the left offset.
     pub fn outer_width(&self) -> f32 {
         self.right
     }
+    /// Bottom edge of the box, i.e. the height including the top offset.
     pub fn outer_height(&self) -> f32 {
         self.bottom
     }
@@ -194,11 +213,16 @@ pub(crate) struct AxisValueParams {
     pub thousands_format: bool,
     pub scale: AxisScale,
 }
+/// The computed labels and value range of an axis.
 #[derive(Clone, Debug, Default)]
 pub struct AxisValues {
+    /// The formatted axis labels.
     pub data: Vec<String>,
+    /// Lower bound of the value range.
     pub min: f32,
+    /// Upper bound of the value range.
     pub max: f32,
+    /// Value scale of the axis.
     pub scale: AxisScale,
 }
 
@@ -426,10 +450,13 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         scale: AxisScale::Linear,
     }
 }
+/// Converts `(x, y)` tuples to [`Point`]s.
 pub fn convert_to_points(values: &[(f32, f32)]) -> Vec<Point> {
     values.iter().map(|item| item.to_owned().into()).collect()
 }
 
+/// Returns which quadrant (1–4, clockwise from top-right) `point` lies in,
+/// relative to the center `(cx, cy)`.
 pub fn get_quadrant(cx: f32, cy: f32, point: &Point) -> u8 {
     if point.x > cx {
         if point.y > cy { 4 } else { 1 }
@@ -476,6 +503,9 @@ impl LabelOption {
     }
 }
 
+/// Formats a value with a format label: `{c}` is replaced by the value and
+/// `{t}` by its thousands representation; an empty formatter returns the
+/// value unchanged.
 pub fn format_string(value: &str, formatter: &str) -> String {
     if formatter.is_empty() {
         value.to_string()

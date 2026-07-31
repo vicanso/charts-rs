@@ -22,9 +22,12 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 
+/// One heatmap cell: a flat grid `index` plus its value.
 #[derive(Clone, Debug, Default)]
 pub struct HeatmapData {
+    /// Flat index of the cell in the grid.
     pub index: usize,
+    /// Value of the cell.
     pub value: f32,
 }
 
@@ -37,14 +40,22 @@ impl From<(usize, f32)> for HeatmapData {
     }
 }
 
+/// The heatmap cells plus the value range and its color mapping.
 #[derive(Clone, Debug, Default)]
 pub struct HeatmapSeries {
+    /// The heatmap cells.
     pub data: Vec<HeatmapData>,
+    /// Lower bound of the value range.
     pub min: f32,
+    /// Upper bound of the value range.
     pub max: f32,
+    /// Color mapped to the lower bound.
     pub min_color: Color,
+    /// Color mapped to the upper bound.
     pub max_color: Color,
+    /// Label font color on low-value cells.
     pub min_font_color: Color,
+    /// Label font color on high-value cells.
     pub max_font_color: Color,
 }
 
@@ -75,12 +86,14 @@ impl HeatmapSeries {
     }
 }
 
+/// A heatmap over an x/y category grid, coloring cells by value.
 #[derive(Clone, Debug, Default)]
 pub struct HeatmapChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
     pub base: ChartBase,
     // no use, but for derive chart
+    /// The heatmap cell data and color mapping.
     pub series: HeatmapSeries,
 
     // title
@@ -92,6 +105,7 @@ pub struct HeatmapChart {
     // x axis
 
     // y axis
+    /// Labels of the y axis.
     pub y_axis_data: Vec<String>,
     y_axis_configs: Vec<YAxisConfig>,
     // grid

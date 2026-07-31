@@ -26,12 +26,15 @@ use crate::charts::measure_text_width_family;
 /// Each entry in `data` encodes one box as `[min, q1, median, q3, max]`.
 #[derive(Clone, Debug, Default)]
 pub struct BoxPlotSeries {
+    /// Name of the series, shown in the legend.
     pub name: String,
     /// `[min, q1, median, q3, max]` per x-axis category.
     pub data: Vec<[f32; 5]>,
+    /// Explicit palette index; `None` follows the series position.
     pub index: Option<usize>,
 }
 
+/// A box plot chart drawing `[min, q1, median, q3, max]` boxes per category.
 #[derive(Clone, Debug, Default)]
 pub struct BoxPlotChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
@@ -40,11 +43,13 @@ pub struct BoxPlotChart {
     // x axis
 
     // y axis
+    /// Y axis configurations; one per axis, up to two.
     pub y_axis_configs: Vec<YAxisConfig>,
 
     // grid
 
     // box plot specific
+    /// The box plot series.
     pub box_series: Vec<BoxPlotSeries>,
 }
 
@@ -77,6 +82,7 @@ impl BoxPlotChart {
         }
     }
 
+    /// Creates a box plot chart with the given theme.
     pub fn new_with_theme(
         box_series: Vec<BoxPlotSeries>,
         x_axis_data: Vec<String>,
@@ -92,10 +98,12 @@ impl BoxPlotChart {
         c
     }
 
+    /// Creates a box plot chart with the default theme.
     pub fn new(box_series: Vec<BoxPlotSeries>, x_axis_data: Vec<String>) -> BoxPlotChart {
         BoxPlotChart::new_with_theme(box_series, x_axis_data, &get_default_theme_name())
     }
 
+    /// Creates a box plot chart from JSON options.
     pub fn from_json(json: &str) -> canvas::Result<BoxPlotChart> {
         let mut c = BoxPlotChart {
             ..Default::default()
@@ -128,6 +136,7 @@ impl BoxPlotChart {
         Ok(c)
     }
 
+    /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
         self.render_background(c.child(Box::default()));

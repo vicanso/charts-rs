@@ -26,6 +26,7 @@ use super::util::*;
 /// by this name.
 #[derive(Clone, Debug, Default)]
 pub struct GraphNode {
+    /// Name of the node, shown as its label.
     pub name: String,
     /// Relative importance; scales the node's circle radius. Default 0 → all
     /// nodes share the base `symbol_size`.
@@ -50,8 +51,11 @@ impl From<&str> for GraphNode {
 /// and `target` nodes (both referenced by name).
 #[derive(Clone, Debug, Default)]
 pub struct GraphLink {
+    /// Name of the source node.
     pub source: String,
+    /// Name of the target node.
     pub target: String,
+    /// Link weight.
     pub value: f32,
 }
 
@@ -190,6 +194,7 @@ impl GraphChart {
         Ok(c)
     }
 
+    /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 

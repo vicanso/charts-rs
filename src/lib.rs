@@ -11,6 +11,7 @@
 // limitations under the License.
 
 #![forbid(unsafe_code)]
+#![warn(missing_docs)]
 
 //! Charts supports twenty-two chart types: bar, horizontal bar, line, pie,
 //! radar, scatter, candlestick, table, heatmap, funnel, waterfall, multi
@@ -416,11 +417,26 @@
 //! }]);
 //! println!("{}", tree_chart.svg().unwrap());
 //! ```
+//!
+//! # Compatibility
+//!
+//! Guarantees that hold across all 1.x releases:
+//!
+//! - Missing data points are `None` in `Series::data` (`Vec<Option<f32>>`)
+//!   and are skipped instead of drawn as zero. Flat `Vec<f32>` input and
+//!   JSON keep accepting the legacy [`NIL_VALUE`] sentinel (= `f32::MIN`),
+//!   which maps to a missing point; JSON `null` does too.
+//! - Chart structs keep their public fields, and new optional fields may be
+//!   added in minor releases. Construct charts via `new(…)`, `from_json`, or
+//!   functional update syntax (`..Default::default()`); exhaustive struct
+//!   literals are not covered by the compatibility guarantee.
+//! - [`Error`] is `#[non_exhaustive]`; keep a wildcard arm when matching.
 
 mod charts;
 pub use charts::*;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+/// Returns the crate version.
 pub fn version() -> &'static str {
     VERSION
 }

@@ -20,21 +20,37 @@ use super::{
 };
 use super::{Box, Color};
 
+/// A chart embedded in a [`MultiChart`], with an optional explicit `(x, y)`
+/// position; `None` stacks it below the previous chart.
 pub enum ChildChart {
+    /// A bar chart child.
     Bar(BarChart, Option<(f32, f32)>),
+    /// A candlestick chart child.
     Candlestick(CandlestickChart, Option<(f32, f32)>),
+    /// A horizontal bar chart child.
     HorizontalBar(HorizontalBarChart, Option<(f32, f32)>),
+    /// A line chart child.
     Line(LineChart, Option<(f32, f32)>),
+    /// A pie chart child.
     Pie(PieChart, Option<(f32, f32)>),
+    /// A radar chart child.
     Radar(RadarChart, Option<(f32, f32)>),
+    /// A scatter chart child.
     Scatter(ScatterChart, Option<(f32, f32)>),
+    /// A table chart child.
     Table(TableChart, Option<(f32, f32)>),
 }
+/// Several charts composed into one SVG: children are stacked vertically
+/// with `gap` between them, or placed at an explicit position.
 #[derive(Default)]
 pub struct MultiChart {
+    /// The child charts, rendered in order.
     pub charts: Vec<ChildChart>,
+    /// Vertical gap between auto-positioned children.
     pub gap: f32,
+    /// Margin around the composed chart.
     pub margin: Box,
+    /// Background color of the composed chart.
     pub background_color: Option<Color>,
 }
 struct ChildChartResult {

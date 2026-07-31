@@ -62,8 +62,6 @@ pub use error::{Error, Result};
 
 pub use calendar_chart::CalendarChart;
 pub use candlestick_chart::CandlestickChart;
-#[allow(deprecated)]
-pub use font::get_or_try_init_fonts;
 pub use font::{
     DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, add_fonts, get_font, get_font_families,
     measure_text_width_family,
