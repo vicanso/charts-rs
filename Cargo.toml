@@ -1,6 +1,6 @@
 [package]
 name = "charts-rs"
-version = "0.7.1"
+version = "1.0.0"
 authors = ["Tree Xie <tree.xie@outlook.com>"]
 edition = "2024"
 categories = ["multimedia::images"]
