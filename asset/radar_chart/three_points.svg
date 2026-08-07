@@ -14,10 +14,15 @@ Allocated Budget
 Actual Spending
 </text>
 </g>
+<path d="M 300 196.6 L 312.5 218.2 L 287.5 218.2 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <path d="M 300 182.2 L 324.9 225.4 L 275.1 225.4 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 300 167.8 L 337.4 232.6 L 262.6 232.6 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <path d="M 300 153.4 L 349.9 239.8 L 250.1 239.8 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 300 139 L 362.4 247 L 237.6 247 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <path d="M 300 124.6 L 374.8 254.2 L 225.2 254.2 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 300 110.2 L 387.3 261.4 L 212.7 261.4 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <path d="M 300 95.8 L 399.8 268.6 L 200.2 268.6 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 300 81.4 L 412.2 275.8 L 187.8 275.8 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <path d="M 300 67 L 424.7 283 L 175.3 283 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
 <text font-size="14" x="282" y="62" font-family="Roboto" fill="#464646">
 Sales
