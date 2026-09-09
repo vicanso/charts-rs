@@ -273,8 +273,17 @@ impl FunnelChart {
                     });
                 }
                 _ => {
-                    // "right" (default): to the right of the widest edge
+                    // "right" (default): to the right of the widest edge, pulled
+                    // back so the text ends inside the canvas. The widest stage
+                    // is as wide as the funnel, so the unclamped position always
+                    // falls outside it.
                     let x_edge = x_right_top.max(x_right_bot) + 5.0;
+                    let mut text_x = x_edge;
+                    if let Ok(b) =
+                        measure_text_width_family(&self.font_family, label_font_size, &label_text)
+                    {
+                        text_x = text_x.min(funnel_width - b.width());
+                    }
                     c.text(Text {
                         text: label_text,
                         font_family: Some(self.font_family.clone()),
@@ -282,7 +291,7 @@ impl FunnelChart {
                         font_size: Some(label_font_size),
                         font_weight: self.series_label_font_weight.clone(),
                         dominant_baseline: Some("central".to_string()),
-                        x: Some(x_edge),
+                        x: Some(text_x.max(0.0)),
                         y: Some(mid_y),
                         class: anim_class.clone(),
                         ..Default::default()
