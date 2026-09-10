@@ -47,3 +47,27 @@ fn funnel_chart_grafana_json() {
         chart.svg().unwrap()
     );
 }
+
+#[test]
+fn funnel_chart_right_label_json() {
+    let chart = FunnelChart::from_json(
+        r##"{
+            "width": 600,
+            "height": 400,
+            "title_text": "Funnel Chart",
+            "funnel_gap": 4,
+            "series_list": [
+                {"name": "Impression", "data": [60000]},
+                {"name": "Click",      "data": [40000]},
+                {"name": "Inquiry",    "data": [20000]},
+                {"name": "Order",      "data": [8000]},
+                {"name": "Re-order",   "data": [2000]}
+            ]
+        }"##,
+    )
+    .unwrap();
+    assert_eq!(
+        include_str!("../asset/funnel_chart/right_label.svg"),
+        chart.svg().unwrap()
+    );
+}
