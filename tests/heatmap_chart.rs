@@ -40,3 +40,27 @@ fn heatmap_chart() {
         heatmap_chart.svg().unwrap()
     );
 }
+
+#[test]
+fn heatmap_chart_cell_dataset() {
+    let chart = HeatmapChart::from_json(
+        r###"{
+            "width": 300,
+            "height": 200,
+            "x_axis_data": ["a", "b"],
+            "y_axis_data": ["r0", "r1"],
+            "series": {
+                "data": [[0, 1.0], [3, 4.0]]
+            }
+        }"###,
+    )
+    .unwrap();
+    let svg = chart.svg().unwrap();
+
+    // `data-index` is the flat index the series data is keyed by
+    assert_eq!(4, svg.matches("data-index=").count());
+    assert_eq!(2, svg.matches("data-value=").count());
+    assert!(svg.contains(r#"data-index="0" data-x="a" data-y="r0" data-value="1""#));
+    assert!(svg.contains(r#"data-index="3" data-x="b" data-y="r1" data-value="4""#));
+    assert!(svg.contains(r#"data-index="1" data-x="b" data-y="r0"/>"#));
+}

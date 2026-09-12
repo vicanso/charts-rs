@@ -55,3 +55,25 @@ fn calendar_chart_grafana_json() {
         chart.svg().unwrap()
     );
 }
+
+#[test]
+fn calendar_chart_cell_dataset() {
+    let chart = CalendarChart::from_json(
+        r##"{
+            "width": 300,
+            "height": 140,
+            "start_date": "2026-01-04",
+            "end_date": "2026-01-10",
+            "data": [["2026-01-05", 2], ["2026-01-07", 9]]
+        }"##,
+    )
+    .unwrap();
+    let svg = chart.svg().unwrap();
+
+    // every day carries its date; only days that have data carry a value
+    assert_eq!(7, svg.matches("data-date=").count());
+    assert_eq!(2, svg.matches("data-value=").count());
+    assert!(svg.contains(r#"data-date="2026-01-05" data-value="2""#));
+    assert!(svg.contains(r#"data-date="2026-01-07" data-value="9""#));
+    assert!(svg.contains(r#"data-date="2026-01-06"/>"#));
+}

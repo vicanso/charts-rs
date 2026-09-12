@@ -350,6 +350,17 @@ impl HeatmapChart {
                     }
                     color
                 };
+                // Cell identity for callers that make the rendered SVG
+                // interactive. `index` is the same flat index the series data
+                // is keyed by; only cells that have data carry a value.
+                let mut dataset = vec![
+                    ("index".to_string(), index.to_string()),
+                    ("x".to_string(), self.x_axis_data[j].clone()),
+                    ("y".to_string(), self.y_axis_data[i].clone()),
+                ];
+                if let Some(value) = data[index] {
+                    dataset.push(("value".to_string(), format_float(value)));
+                }
                 c1.rect(Rect {
                     color: Some(color),
                     fill: Some(color.into()),
@@ -357,6 +368,7 @@ impl HeatmapChart {
                     top: y,
                     width: x_unit,
                     height: y_unit,
+                    dataset,
                     ..Default::default()
                 });
                 if !text.is_empty() {

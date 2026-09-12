@@ -496,7 +496,8 @@ impl CalendarChart {
             let row = ((start_dow + day_idx) % 7) as usize;
 
             let date_str = format!("{cy:04}-{cm:02}-{cd:02}");
-            let color = if let Some(&val) = lookup.get(date_str.as_str()) {
+            let value = lookup.get(date_str.as_str()).copied();
+            let color = if let Some(val) = value {
                 self.cell_color(val)
             } else {
                 self.empty_color
@@ -504,6 +505,14 @@ impl CalendarChart {
 
             let x = wlw + col as f32 * step;
             let y = mlh + row as f32 * step;
+
+            // Cell identity for callers that make the rendered SVG interactive.
+            // Every day carries its date; only days that have data carry a
+            // value, since an empty day is not a zero.
+            let mut dataset = vec![("date".to_string(), date_str)];
+            if let Some(val) = value {
+                dataset.push(("value".to_string(), format_float(val)));
+            }
 
             grid_c.rect(Rect {
                 color: Some(color),
@@ -514,6 +523,7 @@ impl CalendarChart {
                 height: self.cell_size,
                 rx: Some(2.0),
                 ry: Some(2.0),
+                dataset,
                 ..Default::default()
             });
 

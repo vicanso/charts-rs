@@ -181,6 +181,8 @@ fn title_data(title: &Option<String>) -> Option<String> {
 struct SVGTag<'a> {
     tag: &'a str,
     attrs: Vec<(&'a str, String)>,
+    /// `data-*` attributes, written after the fixed ones.
+    dataset: &'a [(String, String)],
     data: Option<String>,
 }
 
@@ -245,6 +247,7 @@ impl<'a> SVGTag<'a> {
             tag,
             attrs,
             data: Some(data),
+            ..Default::default()
         }
     }
 }
@@ -289,6 +292,15 @@ fn push_escaped_attr<W: fmt::Write>(out: &mut W, raw: &str) -> fmt::Result {
     }
 }
 
+// A `data-*` key reaches the markup verbatim (only values are escaped), so a
+// key that would not form a valid attribute name is dropped instead.
+fn is_data_key(key: &str) -> bool {
+    !key.is_empty()
+        && key
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
+}
+
 impl fmt::Display for SVGTag<'_> {
     // Streams straight into the output (a chart-level shared buffer via
     // `write!`), instead of assembling an intermediate String per tag.
@@ -306,6 +318,16 @@ impl fmt::Display for SVGTag<'_> {
                 continue;
             }
             f.write_char(' ')?;
+            f.write_str(k)?;
+            f.write_str("=\"")?;
+            push_escaped_attr(f, v)?;
+            f.write_char('"')?;
+        }
+        for (k, v) in self.dataset.iter() {
+            if v.is_empty() || !is_data_key(k) {
+                continue;
+            }
+            f.write_str(" data-")?;
             f.write_str(k)?;
             f.write_str("=\"")?;
             push_escaped_attr(f, v)?;
@@ -410,7 +432,7 @@ impl Line {
             SVGTag {
                 tag: TAG_LINE,
                 attrs,
-                data: None,
+                ..Default::default()
             }
         );
     }
@@ -441,6 +463,11 @@ pub struct Rect {
     pub style: Option<String>,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
+    /// `data-*` attributes for the SVG element: `("date", "2026-01-05")` is
+    /// written as `data-date="2026-01-05"`. Keys are limited to ASCII letters,
+    /// digits, `-` and `_`; anything else is skipped, as are empty values.
+    /// Empty by default, so charts that set none render exactly as before.
+    pub dataset: Vec<(String, String)>,
 }
 impl Rect {
     /// Renders the component to an SVG fragment.
@@ -489,6 +516,7 @@ impl Rect {
             SVGTag {
                 tag: TAG_RECT,
                 attrs,
+                dataset: &self.dataset,
                 data: title_data(&self.title),
             }
         );
@@ -553,7 +581,7 @@ impl Polyline {
             SVGTag {
                 tag: TAG_POLYLINE,
                 attrs,
-                data: None,
+                ..Default::default()
             }
         );
     }
@@ -630,6 +658,7 @@ impl Circle {
                 tag: TAG_CIRCLE,
                 attrs,
                 data: title_data(&self.title),
+                ..Default::default()
             }
         );
     }
@@ -756,6 +785,7 @@ impl Polygon {
                 tag: TAG_POLYGON,
                 attrs,
                 data: title_data(&self.title),
+                ..Default::default()
             }
         );
     }
@@ -894,6 +924,7 @@ impl Text {
                 tag: TAG_TEXT,
                 attrs,
                 data: Some(encode_text(&self.text)),
+                ..Default::default()
             }
         );
     }
@@ -1185,6 +1216,7 @@ impl Pie {
             tag: TAG_PATH,
             attrs,
             data: title_data(&self.title),
+            ..Default::default()
         }
         .to_string();
         if defs.is_empty() {
@@ -1266,7 +1298,7 @@ impl<'a> BaseLine<'a> {
         let line_svg = SVGTag {
             tag: TAG_PATH,
             attrs,
-            data: None,
+            ..Default::default()
         }
         .to_string();
         let symbol_svg = if let Some(ref symbol) = self.symbol {
@@ -1418,7 +1450,7 @@ impl SmoothLineFill {
         let element = SVGTag {
             tag: TAG_PATH,
             attrs,
-            data: None,
+            ..Default::default()
         }
         .to_string();
         if defs.is_empty() {
@@ -1542,7 +1574,7 @@ impl StraightLineFill {
         let element = SVGTag {
             tag: TAG_PATH,
             attrs,
-            data: None,
+            ..Default::default()
         }
         .to_string();
         if defs.is_empty() {
@@ -1630,6 +1662,7 @@ impl Grid {
             tag: TAG_GROUP,
             attrs,
             data: Some(data.join("")),
+            ..Default::default()
         }
         .to_string()
     }
@@ -1931,6 +1964,7 @@ impl Axis {
                         tag: TAG_GROUP,
                         attrs,
                         data: Some(line_data.join("\n")),
+                        ..Default::default()
                     }
                     .to_string(),
                     text_data.join("\n"),
@@ -2216,6 +2250,32 @@ mod tests {
                 right: 300.0,
                 bottom: 10.0,
                 stroke_dash_array: Some("4,2".to_string()),
+            }
+            .svg()
+        );
+    }
+
+    #[test]
+    fn test_rect_dataset() {
+        assert_eq!(
+            r###"<rect x="0" y="0" width="10" height="10" data-date="2026-01-05" data-value="2" data-note="a&quot;b&amp;c"/>"###,
+            Rect {
+                left: 0.0,
+                top: 0.0,
+                width: 10.0,
+                height: 10.0,
+                dataset: vec![
+                    ("date".to_string(), "2026-01-05".to_string()),
+                    ("value".to_string(), "2".to_string()),
+                    // dropped: empty key, key that is not a valid attribute
+                    // name, and empty value
+                    ("".to_string(), "x".to_string()),
+                    ("bad key".to_string(), "x".to_string()),
+                    ("empty".to_string(), "".to_string()),
+                    // values are escaped like any other attribute
+                    ("note".to_string(), r#"a"b&c"#.to_string()),
+                ],
+                ..Default::default()
             }
             .svg()
         );
