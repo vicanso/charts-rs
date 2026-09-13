@@ -823,6 +823,10 @@ impl ChartBase {
         let unit_width = c1.width() / series_data_count as f32;
         let bar_chart_margin = 5.0_f32;
         let bar_chart_gap = 3.0_f32;
+        // Narrow bands (many categories in a small canvas) leave less room than
+        // the margins and gaps need; keep the bar a visible hairline instead of
+        // emitting a negative `width`, which no renderer draws.
+        let bar_chart_min_width = 1.0_f32;
         let bar_chart_margin_width = bar_chart_margin * 2.0;
 
         // Assign each series a visual slot index.
@@ -851,8 +855,9 @@ impl ChartBase {
         }
 
         let bar_chart_gap_width = bar_chart_gap * (slot_count - 1) as f32;
-        let bar_width =
-            (unit_width - bar_chart_margin_width - bar_chart_gap_width) / slot_count as f32;
+        let bar_width = ((unit_width - bar_chart_margin_width - bar_chart_gap_width)
+            / slot_count as f32)
+            .max(bar_chart_min_width);
         let half_bar_width = bar_width / 2.0;
 
         // Per-stack accumulator: maps slot key → per-x cumulative data values.
