@@ -1,6 +1,8 @@
 use charts_rs::BarChart;
 use pretty_assertions::assert_eq;
 
+mod common;
+
 #[test]
 fn bar_chart_stacked() {
     let bar_chart = BarChart::from_json(
@@ -256,5 +258,19 @@ fn bar_chart_narrow_bands() {
 
     let svg = bar_chart.svg().unwrap();
     assert!(!svg.contains(r#"width="-"#), "negative bar width");
+    common::assert_bars_in_x_bands(&svg, 24);
     assert_eq!(include_str!("../asset/bar_chart/narrow_bands.svg"), svg);
+}
+
+#[test]
+fn bar_chart_dense_single_series() {
+    // Bands of 4.7px and 2.1px: narrower than the margins alone, so the bars
+    // only stay on their own category if the margins shrink with the band.
+    for (width, categories) in [(600, 120), (800, 365)] {
+        let svg = BarChart::from_json(&common::dense_json(width, 300, categories, 1))
+            .unwrap()
+            .svg()
+            .unwrap();
+        common::assert_bars_in_x_bands(&svg, categories);
+    }
 }

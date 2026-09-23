@@ -823,9 +823,6 @@ impl ChartBase {
         let unit_width = c1.width() / series_data_count as f32;
         let bar_chart_margin = 5.0_f32;
         let bar_chart_gap = 3.0_f32;
-        // Narrow bands (many categories in a small canvas) leave less room than
-        // the margins and gaps need; keep the bar a visible hairline instead of
-        // emitting a negative `width`, which no renderer draws.
         let bar_chart_min_width = 1.0_f32;
         let bar_chart_margin_width = bar_chart_margin * 2.0;
 
@@ -855,9 +852,18 @@ impl ChartBase {
         }
 
         let bar_chart_gap_width = bar_chart_gap * (slot_count - 1) as f32;
-        let bar_width = ((unit_width - bar_chart_margin_width - bar_chart_gap_width)
-            / slot_count as f32)
-            .max(bar_chart_min_width);
+        // A narrow band (many categories in a small canvas) has less room than
+        // the fixed margins and gaps need, which would give a negative bar
+        // width. Shrink the margins and gaps together, just enough to keep each
+        // bar `bar_chart_min_width` wide, so the group stays inside its band
+        // and centred on its tick. With room to spare `scale` is 1 and the
+        // layout is unchanged.
+        let bar_chart_spacing = bar_chart_margin_width + bar_chart_gap_width;
+        let scale = ((unit_width - bar_chart_min_width * slot_count as f32) / bar_chart_spacing)
+            .clamp(0.0, 1.0);
+        let bar_chart_margin = bar_chart_margin * scale;
+        let bar_chart_gap = bar_chart_gap * scale;
+        let bar_width = (unit_width - bar_chart_spacing * scale) / slot_count as f32;
         let half_bar_width = bar_width / 2.0;
 
         // Per-stack accumulator: maps slot key → per-x cumulative data values.

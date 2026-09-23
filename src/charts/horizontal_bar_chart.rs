@@ -190,16 +190,24 @@ impl HorizontalBarChart {
             let unit_height = c1.height() / category_count as f32;
             let bar_chart_margin = 5.0_f32;
             let bar_chart_gap = 3.0_f32;
-            // Narrow bands (many categories in a small canvas) leave less room
-            // than the margins and gaps need; keep the bar a visible hairline
-            // instead of emitting a negative `height`, which no renderer draws.
             let bar_chart_min_height = 1.0_f32;
+            let slot_count = self.series_list.len();
 
             let bar_chart_margin_height = bar_chart_margin * 2.0;
-            let bar_chart_gap_height = bar_chart_gap * (self.series_list.len() - 1) as f32;
-            let bar_height = ((unit_height - bar_chart_margin_height - bar_chart_gap_height)
-                / self.series_list.len() as f32)
-                .max(bar_chart_min_height);
+            let bar_chart_gap_height = bar_chart_gap * (slot_count - 1) as f32;
+            // A narrow band (many categories in a small canvas) has less room
+            // than the fixed margins and gaps need, which would give a negative
+            // bar height. Shrink the margins and gaps together, just enough to
+            // keep each bar `bar_chart_min_height` tall, so the group stays
+            // inside its band. With room to spare `scale` is 1 and the layout
+            // is unchanged.
+            let bar_chart_spacing = bar_chart_margin_height + bar_chart_gap_height;
+            let scale = ((unit_height - bar_chart_min_height * slot_count as f32)
+                / bar_chart_spacing)
+                .clamp(0.0, 1.0);
+            let bar_chart_margin = bar_chart_margin * scale;
+            let bar_chart_gap = bar_chart_gap * scale;
+            let bar_height = (unit_height - bar_chart_spacing * scale) / slot_count as f32;
             let half_bar_height = bar_height / 2.0;
 
             let mut series_labels_list = vec![];

@@ -1,6 +1,8 @@
 use charts_rs::HorizontalBarChart;
 use pretty_assertions::assert_eq;
 
+mod common;
+
 #[test]
 fn horizontal_bar_chart() {
     let horizontal_bar_chart = HorizontalBarChart::from_json(
@@ -155,8 +157,19 @@ fn horizontal_bar_chart_narrow_bands() {
 
     let svg = horizontal_bar_chart.svg().unwrap();
     assert!(!svg.contains(r#"height="-"#), "negative bar height");
+    common::assert_bars_in_y_bands(&svg, 24);
     assert_eq!(
         include_str!("../asset/horizontal_bar_chart/narrow_bands.svg"),
         svg
     );
+}
+
+#[test]
+fn horizontal_bar_chart_dense_single_series() {
+    // Bands of about 1.9px: narrower than the margins alone.
+    let svg = HorizontalBarChart::from_json(&common::dense_json(300, 300, 120, 1))
+        .unwrap()
+        .svg()
+        .unwrap();
+    common::assert_bars_in_y_bands(&svg, 120);
 }
