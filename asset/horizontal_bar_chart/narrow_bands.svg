@@ -1,0 +1,194 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="300" height="200" fill="#FFFFFF"/>
+<g>
+<line stroke-width="2" x1="92" y1="15" x2="117" y2="15" stroke="#5470C6"/>
+<circle cx="104.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="120" y="19" font-family="Roboto" fill="#464646">
+Mon
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="153" y1="15" x2="178" y2="15" stroke="#91CC75"/>
+<circle cx="165.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="181" y="19" font-family="Roboto" fill="#464646">
+Tue
+</text>
+</g>
+<g>
+<g stroke="#6E7079">
+<line stroke-width="1" x1="26" y1="27" x2="26" y2="170"/>
+<line stroke-width="1" x1="26" y1="27" x2="21" y2="27"/>
+<line stroke-width="1" x1="26" y1="33" x2="21" y2="33"/>
+<line stroke-width="1" x1="26" y1="38.9" x2="21" y2="38.9"/>
+<line stroke-width="1" x1="26" y1="44.9" x2="21" y2="44.9"/>
+<line stroke-width="1" x1="26" y1="50.8" x2="21" y2="50.8"/>
+<line stroke-width="1" x1="26" y1="56.8" x2="21" y2="56.8"/>
+<line stroke-width="1" x1="26" y1="62.8" x2="21" y2="62.8"/>
+<line stroke-width="1" x1="26" y1="68.7" x2="21" y2="68.7"/>
+<line stroke-width="1" x1="26" y1="74.7" x2="21" y2="74.7"/>
+<line stroke-width="1" x1="26" y1="80.6" x2="21" y2="80.6"/>
+<line stroke-width="1" x1="26" y1="86.6" x2="21" y2="86.6"/>
+<line stroke-width="1" x1="26" y1="92.5" x2="21" y2="92.5"/>
+<line stroke-width="1" x1="26" y1="98.5" x2="21" y2="98.5"/>
+<line stroke-width="1" x1="26" y1="104.5" x2="21" y2="104.5"/>
+<line stroke-width="1" x1="26" y1="110.4" x2="21" y2="110.4"/>
+<line stroke-width="1" x1="26" y1="116.4" x2="21" y2="116.4"/>
+<line stroke-width="1" x1="26" y1="122.3" x2="21" y2="122.3"/>
+<line stroke-width="1" x1="26" y1="128.3" x2="21" y2="128.3"/>
+<line stroke-width="1" x1="26" y1="134.2" x2="21" y2="134.2"/>
+<line stroke-width="1" x1="26" y1="140.2" x2="21" y2="140.2"/>
+<line stroke-width="1" x1="26" y1="146.2" x2="21" y2="146.2"/>
+<line stroke-width="1" x1="26" y1="152.1" x2="21" y2="152.1"/>
+<line stroke-width="1" x1="26" y1="158.1" x2="21" y2="158.1"/>
+<line stroke-width="1" x1="26" y1="164" x2="21" y2="164"/>
+<line stroke-width="1" x1="26" y1="170" x2="21" y2="170"/>
+</g>
+<text font-size="14" x="6" y="35" font-family="Roboto" fill="#6E7079">
+23
+</text>
+<text font-size="14" x="5" y="40.9" font-family="Roboto" fill="#6E7079">
+22
+</text>
+<text font-size="14" x="8" y="46.9" font-family="Roboto" fill="#6E7079">
+21
+</text>
+<text font-size="14" x="5" y="52.9" font-family="Roboto" fill="#6E7079">
+20
+</text>
+<text font-size="14" x="6" y="58.8" font-family="Roboto" fill="#6E7079">
+19
+</text>
+<text font-size="14" x="5" y="64.8" font-family="Roboto" fill="#6E7079">
+18
+</text>
+<text font-size="14" x="5" y="70.7" font-family="Roboto" fill="#6E7079">
+17
+</text>
+<text font-size="14" x="5" y="76.7" font-family="Roboto" fill="#6E7079">
+16
+</text>
+<text font-size="14" x="5" y="82.6" font-family="Roboto" fill="#6E7079">
+15
+</text>
+<text font-size="14" x="5" y="88.6" font-family="Roboto" fill="#6E7079">
+14
+</text>
+<text font-size="14" x="6" y="94.6" font-family="Roboto" fill="#6E7079">
+13
+</text>
+<text font-size="14" x="5" y="100.5" font-family="Roboto" fill="#6E7079">
+12
+</text>
+<text font-size="14" x="8" y="106.5" font-family="Roboto" fill="#6E7079">
+11
+</text>
+<text font-size="14" x="5" y="112.4" font-family="Roboto" fill="#6E7079">
+10
+</text>
+<text font-size="14" x="6" y="118.4" font-family="Roboto" fill="#6E7079">
+09
+</text>
+<text font-size="14" x="5" y="124.4" font-family="Roboto" fill="#6E7079">
+08
+</text>
+<text font-size="14" x="5" y="130.3" font-family="Roboto" fill="#6E7079">
+07
+</text>
+<text font-size="14" x="5" y="136.3" font-family="Roboto" fill="#6E7079">
+06
+</text>
+<text font-size="14" x="5" y="142.2" font-family="Roboto" fill="#6E7079">
+05
+</text>
+<text font-size="14" x="5" y="148.2" font-family="Roboto" fill="#6E7079">
+04
+</text>
+<text font-size="14" x="6" y="154.1" font-family="Roboto" fill="#6E7079">
+03
+</text>
+<text font-size="14" x="5" y="160.1" font-family="Roboto" fill="#6E7079">
+02
+</text>
+<text font-size="14" x="8" y="166.1" font-family="Roboto" fill="#6E7079">
+01
+</text>
+<text font-size="14" x="5" y="172" font-family="Roboto" fill="#6E7079">
+00
+</text>
+</g>
+<g>
+
+<text font-size="14" x="22" y="192" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="66.8" y="192" font-family="Roboto" fill="#6E7079">
+8
+</text>
+<text font-size="14" x="107.7" y="192" font-family="Roboto" fill="#6E7079">
+16
+</text>
+<text font-size="14" x="152.5" y="192" font-family="Roboto" fill="#6E7079">
+24
+</text>
+<text font-size="14" x="197.3" y="192" font-family="Roboto" fill="#6E7079">
+32
+</text>
+<text font-size="14" x="242.2" y="192" font-family="Roboto" fill="#6E7079">
+40
+</text>
+<text font-size="14" x="287" y="192" font-family="Roboto" fill="#6E7079">
+48
+</text>
+</g>
+<g stroke="#E0E6F2">
+<line stroke-width="1" x1="70.8" y1="27" x2="70.8" y2="170"/><line stroke-width="1" x1="115.7" y1="27" x2="115.7" y2="170"/><line stroke-width="1" x1="160.5" y1="27" x2="160.5" y2="170"/><line stroke-width="1" x1="205.3" y1="27" x2="205.3" y2="170"/><line stroke-width="1" x1="250.2" y1="27" x2="250.2" y2="170"/><line stroke-width="1" x1="295" y1="27" x2="295" y2="170"/>
+</g>
+<rect x="26" y="169" width="67.2" height="1" fill="#5470C6"/>
+<rect x="26" y="163.1" width="100.9" height="1" fill="#5470C6"/>
+<rect x="26" y="157.1" width="50.4" height="1" fill="#5470C6"/>
+<rect x="26" y="151.2" width="78.5" height="1" fill="#5470C6"/>
+<rect x="26" y="145.2" width="123.3" height="1" fill="#5470C6"/>
+<rect x="26" y="139.2" width="173.7" height="1" fill="#5470C6"/>
+<rect x="26" y="133.3" width="151.3" height="1" fill="#5470C6"/>
+<rect x="26" y="127.3" width="106.5" height="1" fill="#5470C6"/>
+<rect x="26" y="121.4" width="134.5" height="1" fill="#5470C6"/>
+<rect x="26" y="115.4" width="184.9" height="1" fill="#5470C6"/>
+<rect x="26" y="109.5" width="156.9" height="1" fill="#5470C6"/>
+<rect x="26" y="103.5" width="117.7" height="1" fill="#5470C6"/>
+<rect x="26" y="97.5" width="95.3" height="1" fill="#5470C6"/>
+<rect x="26" y="91.6" width="140.1" height="1" fill="#5470C6"/>
+<rect x="26" y="85.6" width="168.1" height="1" fill="#5470C6"/>
+<rect x="26" y="79.7" width="145.7" height="1" fill="#5470C6"/>
+<rect x="26" y="73.7" width="112.1" height="1" fill="#5470C6"/>
+<rect x="26" y="67.8" width="84.1" height="1" fill="#5470C6"/>
+<rect x="26" y="61.8" width="128.9" height="1" fill="#5470C6"/>
+<rect x="26" y="55.8" width="162.5" height="1" fill="#5470C6"/>
+<rect x="26" y="49.9" width="190.5" height="1" fill="#5470C6"/>
+<rect x="26" y="43.9" width="123.3" height="1" fill="#5470C6"/>
+<rect x="26" y="38" width="89.7" height="1" fill="#5470C6"/>
+<rect x="26" y="32" width="61.6" height="1" fill="#5470C6"/>
+<rect x="26" y="173" width="78.5" height="1" fill="#91CC75"/>
+<rect x="26" y="167.1" width="112.1" height="1" fill="#91CC75"/>
+<rect x="26" y="161.1" width="61.6" height="1" fill="#91CC75"/>
+<rect x="26" y="155.2" width="89.7" height="1" fill="#91CC75"/>
+<rect x="26" y="149.2" width="140.1" height="1" fill="#91CC75"/>
+<rect x="26" y="143.2" width="190.5" height="1" fill="#91CC75"/>
+<rect x="26" y="137.3" width="168.1" height="1" fill="#91CC75"/>
+<rect x="26" y="131.3" width="123.3" height="1" fill="#91CC75"/>
+<rect x="26" y="125.4" width="151.3" height="1" fill="#91CC75"/>
+<rect x="26" y="119.4" width="201.8" height="1" fill="#91CC75"/>
+<rect x="26" y="113.5" width="173.7" height="1" fill="#91CC75"/>
+<rect x="26" y="107.5" width="134.5" height="1" fill="#91CC75"/>
+<rect x="26" y="101.5" width="106.5" height="1" fill="#91CC75"/>
+<rect x="26" y="95.6" width="156.9" height="1" fill="#91CC75"/>
+<rect x="26" y="89.6" width="184.9" height="1" fill="#91CC75"/>
+<rect x="26" y="83.7" width="162.5" height="1" fill="#91CC75"/>
+<rect x="26" y="77.7" width="128.9" height="1" fill="#91CC75"/>
+<rect x="26" y="71.8" width="95.3" height="1" fill="#91CC75"/>
+<rect x="26" y="65.8" width="145.7" height="1" fill="#91CC75"/>
+<rect x="26" y="59.8" width="179.3" height="1" fill="#91CC75"/>
+<rect x="26" y="53.9" width="207.4" height="1" fill="#91CC75"/>
+<rect x="26" y="47.9" width="140.1" height="1" fill="#91CC75"/>
+<rect x="26" y="42" width="100.9" height="1" fill="#91CC75"/>
+<rect x="26" y="36" width="72.9" height="1" fill="#91CC75"/>
+</svg>

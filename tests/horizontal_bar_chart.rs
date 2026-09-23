@@ -123,3 +123,40 @@ fn horizontal_bar_chart_nil_value() {
         horizontal_bar_chart.svg().unwrap()
     );
 }
+
+#[test]
+fn horizontal_bar_chart_narrow_bands() {
+    // 24 categories in a 200px canvas: each band is shorter than the
+    // per-band margins plus the inter-series gap.
+    let horizontal_bar_chart = HorizontalBarChart::from_json(
+        r###"{
+        "width": 300,
+        "height": 200,
+        "series_list": [
+            {
+                "name": "Mon",
+                "data": [12.0, 18.0, 9.0, 14.0, 22.0, 31.0, 27.0, 19.0, 24.0, 33.0, 28.0, 21.0,
+                         17.0, 25.0, 30.0, 26.0, 20.0, 15.0, 23.0, 29.0, 34.0, 22.0, 16.0, 11.0]
+            },
+            {
+                "name": "Tue",
+                "data": [14.0, 20.0, 11.0, 16.0, 25.0, 34.0, 30.0, 22.0, 27.0, 36.0, 31.0, 24.0,
+                         19.0, 28.0, 33.0, 29.0, 23.0, 17.0, 26.0, 32.0, 37.0, 25.0, 18.0, 13.0]
+            }
+        ],
+        "x_axis_data": [
+            "00", "01", "02", "03", "04", "05", "06", "07",
+            "08", "09", "10", "11", "12", "13", "14", "15",
+            "16", "17", "18", "19", "20", "21", "22", "23"
+        ]
+    }"###,
+    )
+    .unwrap();
+
+    let svg = horizontal_bar_chart.svg().unwrap();
+    assert!(!svg.contains(r#"height="-"#), "negative bar height");
+    assert_eq!(
+        include_str!("../asset/horizontal_bar_chart/narrow_bands.svg"),
+        svg
+    );
+}
