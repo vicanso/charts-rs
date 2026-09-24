@@ -65,6 +65,13 @@
   `{"category": "value", "value": 42}`); mark lines are drawn on bar and
   candlestick charts too.
 - `empty_text`: shown in the plot area when every series is empty.
+- `x_axis_label_overflow`: `thin` (default), `rotate` (45°, with the axis
+  growing to fit) or `ellipsis` for x axis labels that do not fit.
+- `mark_areas` on a series: shaded bands between two statistics or values
+  (`{"from": 10, "to": "max"}`), on line, bar, candlestick and horizontal
+  bar charts; horizontal bar charts also draw `mark_lines`.
+- Tooltips and `data-*` attributes on sunburst arcs, tree nodes and sankey
+  nodes and links.
 - Titles wider than the canvas are cut with an ellipsis.
 - Horizontal bar charts: stacking, per-bar `colors`, `x_axis_hidden` /
   `y_axis_hidden`, animation, and the value axis honours `axis_min`,
@@ -106,6 +113,11 @@
 
 ### Performance
 
+- Shapes stream their attributes straight into the output (no per-attribute
+  strings or vectors), and the paint shared by a line's symbols, a grid's
+  lines and an axis' ticks sits on their `<g>` instead of on every element;
+  a circle without a stroke no longer carries a `stroke-width`. The SVG is
+  smaller and the snapshots changed accordingly.
 - Font bytes are shared between the fontdue registry and the raster `fontdb`
   (`Arc`), so adding fonts no longer deep-copies every registered font, and
   the embedded default font is referenced in place.

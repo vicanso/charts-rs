@@ -21,8 +21,8 @@ Precipitation
 Temperature
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="60" y1="72" x2="540" y2="72"/><line stroke-width="1" x1="60" y1="120.8" x2="540" y2="120.8"/><line stroke-width="1" x1="60" y1="169.7" x2="540" y2="169.7"/><line stroke-width="1" x1="60" y1="218.5" x2="540" y2="218.5"/><line stroke-width="1" x1="60" y1="267.3" x2="540" y2="267.3"/><line stroke-width="1" x1="60" y1="316.2" x2="540" y2="316.2"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="60" y1="72" x2="540" y2="72"/><line x1="60" y1="120.8" x2="540" y2="120.8"/><line x1="60" y1="169.7" x2="540" y2="169.7"/><line x1="60" y1="218.5" x2="540" y2="218.5"/><line x1="60" y1="267.3" x2="540" y2="267.3"/><line x1="60" y1="316.2" x2="540" y2="316.2"/>
 </g>
 <g>
 
@@ -73,16 +73,16 @@ Temperature
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="60" y1="365" x2="540" y2="365"/>
-<line stroke-width="1" x1="60" y1="365" x2="60" y2="370"/>
-<line stroke-width="1" x1="128.6" y1="365" x2="128.6" y2="370"/>
-<line stroke-width="1" x1="197.1" y1="365" x2="197.1" y2="370"/>
-<line stroke-width="1" x1="265.7" y1="365" x2="265.7" y2="370"/>
-<line stroke-width="1" x1="334.3" y1="365" x2="334.3" y2="370"/>
-<line stroke-width="1" x1="402.9" y1="365" x2="402.9" y2="370"/>
-<line stroke-width="1" x1="471.4" y1="365" x2="471.4" y2="370"/>
-<line stroke-width="1" x1="540" y1="365" x2="540" y2="370"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="60" y1="365" x2="540" y2="365"/>
+<line x1="60" y1="365" x2="60" y2="370"/>
+<line x1="128.6" y1="365" x2="128.6" y2="370"/>
+<line x1="197.1" y1="365" x2="197.1" y2="370"/>
+<line x1="265.7" y1="365" x2="265.7" y2="370"/>
+<line x1="334.3" y1="365" x2="334.3" y2="370"/>
+<line x1="402.9" y1="365" x2="402.9" y2="370"/>
+<line x1="471.4" y1="365" x2="471.4" y2="370"/>
+<line x1="540" y1="365" x2="540" y2="370"/>
 </g>
 <text font-size="14" x="80.3" y="384" font-family="Roboto" fill="#6E7079">
 Mon
@@ -122,12 +122,14 @@ Sun
 <rect x="507.2" y="79.2" width="27.8" height="285.8" fill="#91CC75" data-series="Precipitation" data-category="Sun" data-value="175.6"/>
 <g>
 <path d="M 94.3 340.6 L 162.9 338.1 L 231.4 324.7 L 300 310.1 L 368.6 288.1 L 437.1 240.5 L 505.7 117.2" stroke-width="2" fill="none" stroke="#FAC858"/>
-<circle cx="94.3" cy="340.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="162.9" cy="338.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="231.4" cy="324.7" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="300" cy="310.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="368.6" cy="288.1" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="437.1" cy="240.5" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="505.7" cy="117.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<g stroke-width="2" stroke="#FAC858" fill="#FFFFFF">
+<circle cx="94.3" cy="340.6" r="2"/>
+<circle cx="162.9" cy="338.1" r="2"/>
+<circle cx="231.4" cy="324.7" r="2"/>
+<circle cx="300" cy="310.1" r="2"/>
+<circle cx="368.6" cy="288.1" r="2"/>
+<circle cx="437.1" cy="240.5" r="2"/>
+<circle cx="505.7" cy="117.2" r="2"/>
+</g>
 </g>
 </svg>

@@ -34,8 +34,8 @@ Direct
 Search Engine
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="34" y1="87" x2="562" y2="87"/><line stroke-width="1" x1="34" y1="133.3" x2="562" y2="133.3"/><line stroke-width="1" x1="34" y1="179.7" x2="562" y2="179.7"/><line stroke-width="1" x1="34" y1="226" x2="562" y2="226"/><line stroke-width="1" x1="34" y1="272.3" x2="562" y2="272.3"/><line stroke-width="1" x1="34" y1="318.7" x2="562" y2="318.7"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="34" y1="87" x2="562" y2="87"/><line x1="34" y1="133.3" x2="562" y2="133.3"/><line x1="34" y1="179.7" x2="562" y2="179.7"/><line x1="34" y1="226" x2="562" y2="226"/><line x1="34" y1="272.3" x2="562" y2="272.3"/><line x1="34" y1="318.7" x2="562" y2="318.7"/>
 </g>
 <g>
 
@@ -86,16 +86,16 @@ Search Engine
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="34" y1="365" x2="562" y2="365"/>
-<line stroke-width="1" x1="34" y1="365" x2="34" y2="370"/>
-<line stroke-width="1" x1="109.4" y1="365" x2="109.4" y2="370"/>
-<line stroke-width="1" x1="184.9" y1="365" x2="184.9" y2="370"/>
-<line stroke-width="1" x1="260.3" y1="365" x2="260.3" y2="370"/>
-<line stroke-width="1" x1="335.7" y1="365" x2="335.7" y2="370"/>
-<line stroke-width="1" x1="411.1" y1="365" x2="411.1" y2="370"/>
-<line stroke-width="1" x1="486.6" y1="365" x2="486.6" y2="370"/>
-<line stroke-width="1" x1="562" y1="365" x2="562" y2="370"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="34" y1="365" x2="562" y2="365"/>
+<line x1="34" y1="365" x2="34" y2="370"/>
+<line x1="109.4" y1="365" x2="109.4" y2="370"/>
+<line x1="184.9" y1="365" x2="184.9" y2="370"/>
+<line x1="260.3" y1="365" x2="260.3" y2="370"/>
+<line x1="335.7" y1="365" x2="335.7" y2="370"/>
+<line x1="411.1" y1="365" x2="411.1" y2="370"/>
+<line x1="486.6" y1="365" x2="486.6" y2="370"/>
+<line x1="562" y1="365" x2="562" y2="370"/>
 </g>
 <text font-size="14" x="57.7" y="384" font-family="Roboto" fill="#6E7079">
 Mon
@@ -121,42 +121,50 @@ Sun
 </g>
 <g>
 <path d="M 71.7 285.6 L 147.1 277.6 L 222.6 298.1 L 298 276.3 L 373.4 305.4 L 448.9 212.8 L 524.3 226" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="71.7" cy="285.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="147.1" cy="277.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="222.6" cy="298.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="298" cy="276.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="373.4" cy="305.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="448.9" cy="212.8" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="524.3" cy="226" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<g stroke-width="2" stroke="#5470C6" fill="#FFFFFF">
+<circle cx="71.7" cy="285.6" r="2"/>
+<circle cx="147.1" cy="277.6" r="2"/>
+<circle cx="222.6" cy="298.1" r="2"/>
+<circle cx="298" cy="276.3" r="2"/>
+<circle cx="373.4" cy="305.4" r="2"/>
+<circle cx="448.9" cy="212.8" r="2"/>
+<circle cx="524.3" cy="226" r="2"/>
+</g>
 </g>
 <g>
 <path d="M 71.7 219.4 L 147.1 244.5 L 222.6 238.6 L 298 210.1 L 373.4 173 L 448.9 146.6 L 524.3 159.8" stroke-width="2" fill="none" stroke="#91CC75"/>
-<circle cx="71.7" cy="219.4" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="147.1" cy="244.5" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="222.6" cy="238.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="298" cy="210.1" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="373.4" cy="173" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="448.9" cy="146.6" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<circle cx="524.3" cy="159.8" r="2" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<g stroke-width="2" stroke="#91CC75" fill="#FFFFFF">
+<circle cx="71.7" cy="219.4" r="2"/>
+<circle cx="147.1" cy="244.5" r="2"/>
+<circle cx="222.6" cy="238.6" r="2"/>
+<circle cx="298" cy="210.1" r="2"/>
+<circle cx="373.4" cy="173" r="2"/>
+<circle cx="448.9" cy="146.6" r="2"/>
+<circle cx="524.3" cy="159.8" r="2"/>
+</g>
 </g>
 <g>
 <path d="M 71.7 153.2 L 147.1 145.2 L 222.6 165.8 L 298 143.9 L 373.4 106.9 L 448.9 146.6 L 524.3 153.2" stroke-width="2" fill="none" stroke="#FAC858"/>
-<circle cx="71.7" cy="153.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="147.1" cy="145.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="222.6" cy="165.8" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="298" cy="143.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="373.4" cy="106.9" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="448.9" cy="146.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<circle cx="524.3" cy="153.2" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<g stroke-width="2" stroke="#FAC858" fill="#FFFFFF">
+<circle cx="71.7" cy="153.2" r="2"/>
+<circle cx="147.1" cy="145.2" r="2"/>
+<circle cx="222.6" cy="165.8" r="2"/>
+<circle cx="298" cy="143.9" r="2"/>
+<circle cx="373.4" cy="106.9" r="2"/>
+<circle cx="448.9" cy="146.6" r="2"/>
+<circle cx="524.3" cy="153.2" r="2"/>
+</g>
 </g>
 <g>
 <path d="M 71.7 199.8 L 147.1 177.2 L 222.6 183.5 L 298 176.8 L 373.4 105.1 L 448.9 97.1 L 524.3 99.1" stroke-width="2" fill="none" stroke="#EE6666"/>
-<circle cx="71.7" cy="199.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="147.1" cy="177.2" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="222.6" cy="183.5" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="298" cy="176.8" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="373.4" cy="105.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="448.9" cy="97.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<circle cx="524.3" cy="99.1" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<g stroke-width="2" stroke="#EE6666" fill="#FFFFFF">
+<circle cx="71.7" cy="199.8" r="2"/>
+<circle cx="147.1" cy="177.2" r="2"/>
+<circle cx="222.6" cy="183.5" r="2"/>
+<circle cx="298" cy="176.8" r="2"/>
+<circle cx="373.4" cy="105.1" r="2"/>
+<circle cx="448.9" cy="97.1" r="2"/>
+<circle cx="524.3" cy="99.1" r="2"/>
+</g>
 </g>
 </svg>

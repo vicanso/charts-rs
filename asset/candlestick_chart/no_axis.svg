@@ -1,7 +1,7 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="5" y1="27" x2="595" y2="27"/><line stroke-width="1" x1="5" y1="88.3" x2="595" y2="88.3"/><line stroke-width="1" x1="5" y1="149.7" x2="595" y2="149.7"/><line stroke-width="1" x1="5" y1="211" x2="595" y2="211"/><line stroke-width="1" x1="5" y1="272.3" x2="595" y2="272.3"/><line stroke-width="1" x1="5" y1="333.7" x2="595" y2="333.7"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="5" y1="27" x2="595" y2="27"/><line x1="5" y1="88.3" x2="595" y2="88.3"/><line x1="5" y1="149.7" x2="595" y2="149.7"/><line x1="5" y1="211" x2="595" y2="211"/><line x1="5" y1="272.3" x2="595" y2="272.3"/><line x1="5" y1="333.7" x2="595" y2="333.7"/>
 </g>
 <line stroke-width="1" x1="77.8" y1="161.9" x2="77.8" y2="333.7" stroke="#EC0000"/>
 <rect x="40.9" y="186.5" width="73.8" height="85.9" stroke="#8A0000" fill="#EC0000" data-category="2017-10-24" data-open="20" data-close="34" data-low="10" data-high="38"/>

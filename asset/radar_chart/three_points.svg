@@ -33,15 +33,19 @@ Information Technology
 <line stroke-width="1" x1="175.3" y1="283" x2="300" y2="211" stroke="#E0E6F2"/>
 <g>
 <path d="M 300 118 L 323.4 224.5 L 216.9 259 Z" stroke-width="2" fill="#5470C6" fill-opacity="0.2" stroke="#5470C6"/>
-<circle cx="300" cy="118" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="323.4" cy="224.5" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="216.9" cy="259" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
+<g stroke-width="2" stroke="#5470C6" fill="none">
+<circle cx="300" cy="118" r="2"/>
+<circle cx="323.4" cy="224.5" r="2"/>
+<circle cx="216.9" cy="259" r="2"/>
+</g>
 </g>
 <g>
 <path d="M 300 100.2 L 409.1 274 L 183.6 278.2 Z" stroke-width="2" fill="#91CC75" fill-opacity="0.2" stroke="#91CC75"/>
-<circle cx="300" cy="100.2" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="409.1" cy="274" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="183.6" cy="278.2" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
+<g stroke-width="2" stroke="#91CC75" fill="none">
+<circle cx="300" cy="100.2" r="2"/>
+<circle cx="409.1" cy="274" r="2"/>
+<circle cx="183.6" cy="278.2" r="2"/>
+</g>
 </g>
 <text font-size="14" x="300" y="118" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
 4200

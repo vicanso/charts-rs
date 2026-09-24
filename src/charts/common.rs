@@ -92,6 +92,29 @@ pub enum MarkLineCategory {
     Value(f32),
 }
 
+/// A shaded band across the plot between two series statistics or fixed
+/// values (e.g. from `Value(10.0)` to `Value(20.0)`, or `Min` to `Max`).
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub struct MarkArea {
+    /// One edge of the band.
+    pub from: MarkLineCategory,
+    /// The other edge of the band.
+    pub to: MarkLineCategory,
+}
+
+/// What to do with x axis labels that do not fit side by side.
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub enum AxisLabelOverflow {
+    /// Skip every n-th label so the remaining ones fit (the default).
+    #[default]
+    Thin,
+    /// Rotate the labels by 45° (when no rotation is set), then thin out
+    /// what still overlaps.
+    Rotate,
+    /// Cut every label to its slot with an ellipsis.
+    Ellipsis,
+}
+
 /// The statistic a mark point highlights.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub enum MarkPointCategory {
@@ -135,6 +158,9 @@ pub struct Series {
     pub mark_lines: Vec<MarkLine>,
     /// Mark points (min/max) drawn on the data points.
     pub mark_points: Vec<MarkPoint>,
+    /// Shaded bands between two statistics / values.
+    #[serde(default)]
+    pub mark_areas: Vec<MarkArea>,
     /// Per-data-point color overrides (bar charts).
     pub colors: Option<Vec<Option<Color>>>,
     /// Overrides how the series is drawn, e.g. a line inside a bar chart.

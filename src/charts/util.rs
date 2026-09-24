@@ -280,6 +280,20 @@ pub(crate) fn format_float(value: f32) -> String {
     str
 }
 
+/// Appends `value` formatted like [`format_float`] to `out`, without an
+/// intermediate string.
+pub(crate) fn write_float(out: &mut String, value: f32) {
+    use std::fmt::Write;
+    if !value.is_finite() {
+        out.push('0');
+        return;
+    }
+    let _ = write!(out, "{:.1}", value);
+    if out.ends_with(".0") {
+        out.truncate(out.len() - 2);
+    }
+}
+
 /// Formats an opacity in `0..=1` with two decimals (trailing zeros trimmed),
 /// matching the gradient stops. One decimal was too coarse: any alpha below
 /// 13/255 collapsed to `0` and became invisible.

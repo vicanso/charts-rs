@@ -10,8 +10,8 @@ Request Latency
 latency
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="30" y1="87" x2="595" y2="87"/><line stroke-width="1" x1="30" y1="133.3" x2="595" y2="133.3"/><line stroke-width="1" x1="30" y1="179.7" x2="595" y2="179.7"/><line stroke-width="1" x1="30" y1="226" x2="595" y2="226"/><line stroke-width="1" x1="30" y1="272.3" x2="595" y2="272.3"/><line stroke-width="1" x1="30" y1="318.7" x2="595" y2="318.7"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="30" y1="87" x2="595" y2="87"/><line x1="30" y1="133.3" x2="595" y2="133.3"/><line x1="30" y1="179.7" x2="595" y2="179.7"/><line x1="30" y1="226" x2="595" y2="226"/><line x1="30" y1="272.3" x2="595" y2="272.3"/><line x1="30" y1="318.7" x2="595" y2="318.7"/>
 </g>
 <g>
 
@@ -38,21 +38,21 @@ latency
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="30" y1="365" x2="595" y2="365"/>
-<line stroke-width="1" x1="30" y1="365" x2="30" y2="370"/>
-<line stroke-width="1" x1="77.1" y1="365" x2="77.1" y2="370"/>
-<line stroke-width="1" x1="124.2" y1="365" x2="124.2" y2="370"/>
-<line stroke-width="1" x1="171.2" y1="365" x2="171.2" y2="370"/>
-<line stroke-width="1" x1="218.3" y1="365" x2="218.3" y2="370"/>
-<line stroke-width="1" x1="265.4" y1="365" x2="265.4" y2="370"/>
-<line stroke-width="1" x1="312.5" y1="365" x2="312.5" y2="370"/>
-<line stroke-width="1" x1="359.6" y1="365" x2="359.6" y2="370"/>
-<line stroke-width="1" x1="406.7" y1="365" x2="406.7" y2="370"/>
-<line stroke-width="1" x1="453.8" y1="365" x2="453.8" y2="370"/>
-<line stroke-width="1" x1="500.8" y1="365" x2="500.8" y2="370"/>
-<line stroke-width="1" x1="547.9" y1="365" x2="547.9" y2="370"/>
-<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="30" y1="365" x2="595" y2="365"/>
+<line x1="30" y1="365" x2="30" y2="370"/>
+<line x1="77.1" y1="365" x2="77.1" y2="370"/>
+<line x1="124.2" y1="365" x2="124.2" y2="370"/>
+<line x1="171.2" y1="365" x2="171.2" y2="370"/>
+<line x1="218.3" y1="365" x2="218.3" y2="370"/>
+<line x1="265.4" y1="365" x2="265.4" y2="370"/>
+<line x1="312.5" y1="365" x2="312.5" y2="370"/>
+<line x1="359.6" y1="365" x2="359.6" y2="370"/>
+<line x1="406.7" y1="365" x2="406.7" y2="370"/>
+<line x1="453.8" y1="365" x2="453.8" y2="370"/>
+<line x1="500.8" y1="365" x2="500.8" y2="370"/>
+<line x1="547.9" y1="365" x2="547.9" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
 </g>
 <text font-size="14" x="47" y="384" font-family="Roboto" fill="#6E7079">
 01
@@ -93,17 +93,19 @@ latency
 </g>
 <g>
 <path d="M 53.5 235.3 L 100.6 228.3 L 147.7 173.9 L 194.8 148.4 L 241.9 142.6 L 289 199.4 L 336 173.9 L 383.1 268.9 L 430.2 289.7 L 477.3 351.1 L 524.4 237.6 L 571.5 264.2" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="53.5" cy="235.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="100.6" cy="228.3" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="147.7" cy="173.9" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="194.8" cy="148.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="241.9" cy="142.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="289" cy="199.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="336" cy="173.9" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="383.1" cy="268.9" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="430.2" cy="289.7" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="477.3" cy="351.1" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="524.4" cy="237.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="571.5" cy="264.2" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<g stroke-width="2" stroke="#5470C6" fill="#FFFFFF">
+<circle cx="53.5" cy="235.3" r="2"/>
+<circle cx="100.6" cy="228.3" r="2"/>
+<circle cx="147.7" cy="173.9" r="2"/>
+<circle cx="194.8" cy="148.4" r="2"/>
+<circle cx="241.9" cy="142.6" r="2"/>
+<circle cx="289" cy="199.4" r="2"/>
+<circle cx="336" cy="173.9" r="2"/>
+<circle cx="383.1" cy="268.9" r="2"/>
+<circle cx="430.2" cy="289.7" r="2"/>
+<circle cx="477.3" cy="351.1" r="2"/>
+<circle cx="524.4" cy="237.6" r="2"/>
+<circle cx="571.5" cy="264.2" r="2"/>
+</g>
 </g>
 </svg>

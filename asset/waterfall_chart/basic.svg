@@ -1,7 +1,7 @@
 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="38" y1="5" x2="595" y2="5"/><line stroke-width="1" x1="38" y1="65" x2="595" y2="65"/><line stroke-width="1" x1="38" y1="125" x2="595" y2="125"/><line stroke-width="1" x1="38" y1="185" x2="595" y2="185"/><line stroke-width="1" x1="38" y1="245" x2="595" y2="245"/><line stroke-width="1" x1="38" y1="305" x2="595" y2="305"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="38" y1="5" x2="595" y2="5"/><line x1="38" y1="65" x2="595" y2="65"/><line x1="38" y1="125" x2="595" y2="125"/><line x1="38" y1="185" x2="595" y2="185"/><line x1="38" y1="245" x2="595" y2="245"/><line x1="38" y1="305" x2="595" y2="305"/>
 </g>
 <g>
 
@@ -28,12 +28,12 @@
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
-<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
-<line stroke-width="1" x1="223.7" y1="365" x2="223.7" y2="370"/>
-<line stroke-width="1" x1="409.3" y1="365" x2="409.3" y2="370"/>
-<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="38" y1="365" x2="595" y2="365"/>
+<line x1="38" y1="365" x2="38" y2="370"/>
+<line x1="223.7" y1="365" x2="223.7" y2="370"/>
+<line x1="409.3" y1="365" x2="409.3" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
 </g>
 <text font-size="14" x="50.9" y="384" font-family="Roboto" fill="#6E7079">
 Initial

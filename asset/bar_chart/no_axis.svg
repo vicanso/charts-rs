@@ -31,8 +31,8 @@ Direct
 Search Engine
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="5" y1="72" x2="595" y2="72"/><line stroke-width="1" x1="5" y1="125.8" x2="595" y2="125.8"/><line stroke-width="1" x1="5" y1="179.7" x2="595" y2="179.7"/><line stroke-width="1" x1="5" y1="233.5" x2="595" y2="233.5"/><line stroke-width="1" x1="5" y1="287.3" x2="595" y2="287.3"/><line stroke-width="1" x1="5" y1="341.2" x2="595" y2="341.2"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="5" y1="72" x2="595" y2="72"/><line x1="5" y1="125.8" x2="595" y2="125.8"/><line x1="5" y1="179.7" x2="595" y2="179.7"/><line x1="5" y1="233.5" x2="595" y2="233.5"/><line x1="5" y1="287.3" x2="595" y2="287.3"/><line x1="5" y1="341.2" x2="595" y2="341.2"/>
 </g>
 <rect x="10" y="366.9" width="16.3" height="28.1" fill="#5470C6" data-series="Email" data-category="Mon" data-value="120"/>
 <rect x="94.3" y="364.1" width="16.3" height="30.9" fill="#5470C6" data-series="Email" data-category="Tue" data-value="132"/>

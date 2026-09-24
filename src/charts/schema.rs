@@ -64,6 +64,8 @@ pub(crate) enum Kind {
     Object(&'static [Field]),
     /// An array of objects with the given fields.
     ArrayOf(&'static [Field]),
+    /// A mark value: a number or `average` / `min` / `max`.
+    MarkValue,
     /// An array of objects with the same fields as the enclosing object
     /// (tree children).
     SelfArray,
@@ -105,6 +107,7 @@ static MARK_LINE_FIELDS: &[Field] = &[
     f("value", Kind::Number),
 ];
 static MARK_POINT_FIELDS: &[Field] = &[f("category", Kind::Enum(&["min", "max"]))];
+static MARK_AREA_FIELDS: &[Field] = &[f("from", Kind::MarkValue), f("to", Kind::MarkValue)];
 
 pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("name", Kind::String),
@@ -116,6 +119,7 @@ pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("start_index", Kind::Index),
     f("mark_lines", Kind::ArrayOf(MARK_LINE_FIELDS)),
     f("mark_points", Kind::ArrayOf(MARK_POINT_FIELDS)),
+    f("mark_areas", Kind::ArrayOf(MARK_AREA_FIELDS)),
     f("colors", Kind::ColorArray),
     f("stroke_dash_array", Kind::String),
     f("stack", Kind::String),
@@ -193,6 +197,10 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("x_axis_name_rotate", Kind::Number),
     f("x_axis_margin", Kind::Margin),
     f("x_boundary_gap", Kind::Bool),
+    f(
+        "x_axis_label_overflow",
+        Kind::Enum(&["thin", "rotate", "ellipsis"]),
+    ),
     f("x_axis_hidden", Kind::Bool),
     f("y_axis_hidden", Kind::Bool),
     f("y_axis_configs", Kind::ArrayOf(Y_AXIS_FIELDS)),
@@ -578,6 +586,17 @@ fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
                 _ => expect("\"linear\", \"log\", \"log2\", \"log10\" or {type, base}"),
             }
         }
+        Kind::MarkValue => match v {
+            serde_json::Value::Number(_) => Ok(()),
+            serde_json::Value::String(s)
+                if ["average", "min", "max"]
+                    .iter()
+                    .any(|x| x.eq_ignore_ascii_case(s)) =>
+            {
+                Ok(())
+            }
+            _ => expect("a number or one of average, min, max"),
+        },
         Kind::Array if v.is_array() => Ok(()),
         Kind::Array => expect("an array"),
         Kind::NumberArray => match v.as_array() {

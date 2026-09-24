@@ -21,8 +21,8 @@ Email
 Union Ads
 </text>
 </g>
-<g stroke="#444343">
-<line stroke-width="1" x1="34" y1="60" x2="595" y2="60"/><line stroke-width="1" x1="34" y1="110.8" x2="595" y2="110.8"/><line stroke-width="1" x1="34" y1="161.7" x2="595" y2="161.7"/><line stroke-width="1" x1="34" y1="212.5" x2="595" y2="212.5"/><line stroke-width="1" x1="34" y1="263.3" x2="595" y2="263.3"/><line stroke-width="1" x1="34" y1="314.2" x2="595" y2="314.2"/>
+<g stroke="#444343" stroke-width="1">
+<line x1="34" y1="60" x2="595" y2="60"/><line x1="34" y1="110.8" x2="595" y2="110.8"/><line x1="34" y1="161.7" x2="595" y2="161.7"/><line x1="34" y1="212.5" x2="595" y2="212.5"/><line x1="34" y1="263.3" x2="595" y2="263.3"/><line x1="34" y1="314.2" x2="595" y2="314.2"/>
 </g>
 <g>
 
@@ -49,16 +49,16 @@ Union Ads
 </text>
 </g>
 <g>
-<g stroke="#B9B8CE">
-<line stroke-width="1" x1="34" y1="365" x2="595" y2="365"/>
-<line stroke-width="1" x1="34" y1="365" x2="34" y2="370"/>
-<line stroke-width="1" x1="114.1" y1="365" x2="114.1" y2="370"/>
-<line stroke-width="1" x1="194.3" y1="365" x2="194.3" y2="370"/>
-<line stroke-width="1" x1="274.4" y1="365" x2="274.4" y2="370"/>
-<line stroke-width="1" x1="354.6" y1="365" x2="354.6" y2="370"/>
-<line stroke-width="1" x1="434.7" y1="365" x2="434.7" y2="370"/>
-<line stroke-width="1" x1="514.9" y1="365" x2="514.9" y2="370"/>
-<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+<g stroke="#B9B8CE" stroke-width="1">
+<line x1="34" y1="365" x2="595" y2="365"/>
+<line x1="34" y1="365" x2="34" y2="370"/>
+<line x1="114.1" y1="365" x2="114.1" y2="370"/>
+<line x1="194.3" y1="365" x2="194.3" y2="370"/>
+<line x1="274.4" y1="365" x2="274.4" y2="370"/>
+<line x1="354.6" y1="365" x2="354.6" y2="370"/>
+<line x1="434.7" y1="365" x2="434.7" y2="370"/>
+<line x1="514.9" y1="365" x2="514.9" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
 </g>
 <text font-size="14" x="60.1" y="384" font-family="Roboto" fill="#B9B8CE">
 Mon
@@ -159,8 +159,8 @@ Email
 Union Ads
 </text>
 </g>
-<g stroke="#444343">
-<line stroke-width="1" x1="44" y1="80" x2="585" y2="80"/><line stroke-width="1" x1="44" y1="125.8" x2="585" y2="125.8"/><line stroke-width="1" x1="44" y1="171.7" x2="585" y2="171.7"/><line stroke-width="1" x1="44" y1="217.5" x2="585" y2="217.5"/><line stroke-width="1" x1="44" y1="263.3" x2="585" y2="263.3"/><line stroke-width="1" x1="44" y1="309.2" x2="585" y2="309.2"/>
+<g stroke="#444343" stroke-width="1">
+<line x1="44" y1="80" x2="585" y2="80"/><line x1="44" y1="125.8" x2="585" y2="125.8"/><line x1="44" y1="171.7" x2="585" y2="171.7"/><line x1="44" y1="217.5" x2="585" y2="217.5"/><line x1="44" y1="263.3" x2="585" y2="263.3"/><line x1="44" y1="309.2" x2="585" y2="309.2"/>
 </g>
 <g>
 
@@ -187,15 +187,15 @@ Union Ads
 </text>
 </g>
 <g>
-<g stroke="#B9B8CE">
-<line stroke-width="1" x1="44" y1="355" x2="585" y2="355"/>
-<line stroke-width="1" x1="44" y1="355" x2="44" y2="360"/>
-<line stroke-width="1" x1="134.2" y1="355" x2="134.2" y2="360"/>
-<line stroke-width="1" x1="224.3" y1="355" x2="224.3" y2="360"/>
-<line stroke-width="1" x1="314.5" y1="355" x2="314.5" y2="360"/>
-<line stroke-width="1" x1="404.7" y1="355" x2="404.7" y2="360"/>
-<line stroke-width="1" x1="494.8" y1="355" x2="494.8" y2="360"/>
-<line stroke-width="1" x1="585" y1="355" x2="585" y2="360"/>
+<g stroke="#B9B8CE" stroke-width="1">
+<line x1="44" y1="355" x2="585" y2="355"/>
+<line x1="44" y1="355" x2="44" y2="360"/>
+<line x1="134.2" y1="355" x2="134.2" y2="360"/>
+<line x1="224.3" y1="355" x2="224.3" y2="360"/>
+<line x1="314.5" y1="355" x2="314.5" y2="360"/>
+<line x1="404.7" y1="355" x2="404.7" y2="360"/>
+<line x1="494.8" y1="355" x2="494.8" y2="360"/>
+<line x1="585" y1="355" x2="585" y2="360"/>
 </g>
 <text font-size="14" x="30" y="374" font-family="Roboto" fill="#B9B8CE">
 Mon
@@ -221,23 +221,27 @@ Sun
 </g>
 <g>
 <path d="M 44 263.3 L 134.2 254.2 L 224.3 277.8 L 314.5 252.6 L 404.7 286.2 L 494.8 179.3 L 585 194.6" stroke-width="2" fill="none" stroke="#7EB26D"/>
-<circle cx="44" cy="263.3" r="2" stroke-width="2" stroke="#7EB26D" fill="#1F1D1D"/>
-<circle cx="134.2" cy="254.2" r="2" stroke-width="2" stroke="#7EB26D" fill="#1F1D1D"/>
-<circle cx="224.3" cy="277.8" r="2" stroke-width="2" stroke="#7EB26D" fill="#1F1D1D"/>
-<circle cx="314.5" cy="252.6" r="2" stroke-width="2" stroke="#7EB26D" fill="#1F1D1D"/>
-<circle cx="404.7" cy="286.2" r="2" stroke-width="2" stroke="#7EB26D" fill="#1F1D1D"/>
-<circle cx="494.8" cy="179.3" r="2" stroke-width="2" stroke="#7EB26D" fill="#1F1D1D"/>
-<circle cx="585" cy="194.6" r="2" stroke-width="2" stroke="#7EB26D" fill="#1F1D1D"/>
+<g stroke-width="2" stroke="#7EB26D" fill="#1F1D1D">
+<circle cx="44" cy="263.3" r="2"/>
+<circle cx="134.2" cy="254.2" r="2"/>
+<circle cx="224.3" cy="277.8" r="2"/>
+<circle cx="314.5" cy="252.6" r="2"/>
+<circle cx="404.7" cy="286.2" r="2"/>
+<circle cx="494.8" cy="179.3" r="2"/>
+<circle cx="585" cy="194.6" r="2"/>
+</g>
 </g>
 <g>
 <path d="M 44 186.9 L 134.2 216 L 224.3 209.1 L 314.5 176.2 L 404.7 133.5 L 494.8 102.9 L 585 118.2" stroke-width="2" fill="none" stroke="#EAB839"/>
-<circle cx="44" cy="186.9" r="2" stroke-width="2" stroke="#EAB839" fill="#1F1D1D"/>
-<circle cx="134.2" cy="216" r="2" stroke-width="2" stroke="#EAB839" fill="#1F1D1D"/>
-<circle cx="224.3" cy="209.1" r="2" stroke-width="2" stroke="#EAB839" fill="#1F1D1D"/>
-<circle cx="314.5" cy="176.2" r="2" stroke-width="2" stroke="#EAB839" fill="#1F1D1D"/>
-<circle cx="404.7" cy="133.5" r="2" stroke-width="2" stroke="#EAB839" fill="#1F1D1D"/>
-<circle cx="494.8" cy="102.9" r="2" stroke-width="2" stroke="#EAB839" fill="#1F1D1D"/>
-<circle cx="585" cy="118.2" r="2" stroke-width="2" stroke="#EAB839" fill="#1F1D1D"/>
+<g stroke-width="2" stroke="#EAB839" fill="#1F1D1D">
+<circle cx="44" cy="186.9" r="2"/>
+<circle cx="134.2" cy="216" r="2"/>
+<circle cx="224.3" cy="209.1" r="2"/>
+<circle cx="314.5" cy="176.2" r="2"/>
+<circle cx="404.7" cy="133.5" r="2"/>
+<circle cx="494.8" cy="102.9" r="2"/>
+<circle cx="585" cy="118.2" r="2"/>
+</g>
 </g>
 <text font-size="14" x="44" y="263.3" dx="-12" dy="-8" font-family="Roboto" fill="#D8D9DA">
 120

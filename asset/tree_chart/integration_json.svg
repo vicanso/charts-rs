@@ -9,13 +9,13 @@ Org
 <polyline fill="none" stroke-width="2" points="347.8,70 348.2,80.1 349.2,89.2 350.7,97.5 352.8,105.1 355.3,112 358.2,118.4 361.3,124.4 364.7,130 368.2,135.4 371.8,140.8 375.3,146.1 378.8,151.5 382.2,157.1 385.3,163.1 388.2,169.5 390.7,176.4 392.8,184 394.3,192.3 395.3,201.4 395.7,211.5" stroke="#474753"/>
 <polyline fill="none" stroke-width="2" points="395.7,223.5 395.7,233.6 395.7,242.7 395.7,251 395.7,258.6 395.7,265.5 395.7,271.9 395.7,277.9 395.7,283.5 395.7,288.9 395.7,294.2 395.7,299.6 395.7,305 395.7,310.6 395.7,316.6 395.7,323 395.7,329.9 395.7,337.5 395.7,345.8 395.7,354.9 395.7,365" stroke="#474753"/>
 <polyline fill="none" stroke-width="2" points="347.8,70 349.6,80.1 354.5,89.2 362.4,97.5 372.7,105.1 385.2,112 399.5,118.4 415.2,124.4 432,130 449.5,135.4 467.4,140.8 485.3,146.1 502.8,151.5 519.6,157.1 535.3,163.1 549.6,169.5 562.1,176.4 572.5,184 580.3,192.3 585.3,201.4 587,211.5" stroke="#474753"/>
-<circle cx="347.8" cy="64" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6"/>
-<circle cx="108.7" cy="217.5" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6"/>
-<circle cx="13" cy="371" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6"/>
-<circle cx="204.3" cy="371" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6"/>
-<circle cx="395.7" cy="217.5" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6"/>
-<circle cx="395.7" cy="371" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6"/>
-<circle cx="587" cy="217.5" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6"/>
+<circle cx="347.8" cy="64" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6" data-name="CEO" data-value="20" data-depth="0"/>
+<circle cx="108.7" cy="217.5" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6" data-name="CTO" data-value="13" data-depth="1"/>
+<circle cx="13" cy="371" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6" data-name="Backend" data-value="8" data-depth="2"/>
+<circle cx="204.3" cy="371" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6" data-name="Frontend" data-value="5" data-depth="2"/>
+<circle cx="395.7" cy="217.5" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6" data-name="CFO" data-value="3" data-depth="1"/>
+<circle cx="395.7" cy="371" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6" data-name="Accounting" data-value="3" data-depth="2"/>
+<circle cx="587" cy="217.5" r="6" stroke-width="1" stroke="#100C2A" fill="#5470C6" data-name="COO" data-value="4" data-depth="1"/>
 <text font-size="14" x="347.8" y="54" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 CEO
 </text>

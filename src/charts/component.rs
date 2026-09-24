@@ -158,14 +158,6 @@ fn fill_svg_opacity(fill: &Fill) -> String {
     }
 }
 
-fn format_option_float(value: Option<f32>) -> String {
-    if let Some(f) = value {
-        format_float(f)
-    } else {
-        "".to_string()
-    }
-}
-
 /// Builds the `<title>` child element (escaped) for a shape's tooltip, or
 /// `None` when no title is set (keeping the shape a self-closing tag).
 fn title_data(title: &Option<String>) -> Option<String> {
@@ -304,6 +296,103 @@ fn is_data_key(key: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
 }
 
+/// Streams one element straight into the output buffer: attributes are
+/// written as they are set (numbers without an intermediate string), so the
+/// hot shapes of a chart cost no per-attribute allocation.
+struct TagWriter<'a> {
+    out: &'a mut String,
+    tag: &'static str,
+}
+
+impl<'a> TagWriter<'a> {
+    fn open(out: &'a mut String, tag: &'static str) -> Self {
+        out.push('<');
+        out.push_str(tag);
+        TagWriter { out, tag }
+    }
+    fn float(&mut self, key: &str, value: f32) -> &mut Self {
+        self.out.push(' ');
+        self.out.push_str(key);
+        self.out.push_str("=\"");
+        write_float(self.out, value);
+        self.out.push('"');
+        self
+    }
+    fn opt_float(&mut self, key: &str, value: Option<f32>) -> &mut Self {
+        if let Some(value) = value {
+            self.float(key, value);
+        }
+        self
+    }
+    /// A value that is known to be safe markup (hex colors, keywords).
+    fn raw(&mut self, key: &str, value: &str) -> &mut Self {
+        if !value.is_empty() {
+            self.out.push(' ');
+            self.out.push_str(key);
+            self.out.push_str("=\"");
+            self.out.push_str(value);
+            self.out.push('"');
+        }
+        self
+    }
+    /// A free-form value, escaped for the attribute.
+    fn text(&mut self, key: &str, value: &str) -> &mut Self {
+        if !value.is_empty() {
+            self.out.push(' ');
+            self.out.push_str(key);
+            self.out.push_str("=\"");
+            let _ = push_escaped_attr(self.out, value);
+            self.out.push('"');
+        }
+        self
+    }
+    fn opt_text(&mut self, key: &str, value: Option<&String>) -> &mut Self {
+        if let Some(value) = value {
+            self.text(key, value);
+        }
+        self
+    }
+    fn color(&mut self, key: &str, opacity_key: &str, color: Option<Color>) -> &mut Self {
+        if let Some(color) = color {
+            self.raw(key, &color.hex());
+            self.raw(opacity_key, &convert_opacity(&color));
+        }
+        self
+    }
+    fn dataset(&mut self, dataset: &[(String, String)]) -> &mut Self {
+        for (k, v) in dataset.iter() {
+            if v.is_empty() || !is_data_key(k) {
+                continue;
+            }
+            self.out.push_str(" data-");
+            self.out.push_str(k);
+            self.out.push_str("=\"");
+            let _ = push_escaped_attr(self.out, v);
+            self.out.push('"');
+        }
+        self
+    }
+    /// Closes a childless element.
+    fn close(self) {
+        self.out.push_str("/>");
+    }
+    /// Closes the element around `data` (already escaped markup / text).
+    fn close_with(self, data: &str) {
+        self.out.push_str(">\n");
+        self.out.push_str(data);
+        self.out.push_str("\n</");
+        self.out.push_str(self.tag);
+        self.out.push('>');
+    }
+    /// Closes the element with an optional `<title>` child.
+    fn close_with_title(self, title: &Option<String>) {
+        match title_data(title) {
+            Some(data) => self.close_with(&data),
+            None => self.close(),
+        }
+    }
+}
+
 impl fmt::Display for SVGTag<'_> {
     // Streams straight into the output (a chart-level shared buffer via
     // `write!`), instead of assembling an intermediate String per tag.
@@ -417,29 +506,25 @@ impl Line {
         if self.stroke_width <= 0.0 {
             return;
         }
-        let mut attrs = vec![
-            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
-            (ATTR_X1, format_float(self.left)),
-            (ATTR_Y1, format_float(self.top)),
-            (ATTR_X2, format_float(self.right)),
-            (ATTR_Y2, format_float(self.bottom)),
-        ];
-        if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
-        }
-        if let Some(ref stroke_dash_array) = self.stroke_dash_array {
-            attrs.push((ATTR_STROKE_DASH_ARRAY, stroke_dash_array.to_string()));
-        }
-        let _ = write!(
-            out,
-            "{}",
-            SVGTag {
-                tag: TAG_LINE,
-                attrs,
-                ..Default::default()
-            }
-        );
+        let mut w = TagWriter::open(out, TAG_LINE);
+        w.float(ATTR_STROKE_WIDTH, self.stroke_width);
+        self.write_coordinates(&mut w);
+        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color)
+            .opt_text(ATTR_STROKE_DASH_ARRAY, self.stroke_dash_array.as_ref());
+        w.close();
+    }
+    /// Writes only the end points, for lines inside a `<g>` that carries the
+    /// stroke attributes.
+    fn write_bare(&self, out: &mut String) {
+        let mut w = TagWriter::open(out, TAG_LINE);
+        self.write_coordinates(&mut w);
+        w.close();
+    }
+    fn write_coordinates(&self, w: &mut TagWriter<'_>) {
+        w.float(ATTR_X1, self.left)
+            .float(ATTR_Y1, self.top)
+            .float(ATTR_X2, self.right)
+            .float(ATTR_Y2, self.bottom);
     }
 }
 
@@ -482,49 +567,38 @@ impl Rect {
         out
     }
     pub(crate) fn write_svg(&self, out: &mut String, grad_seen: Option<&mut HashSet<String>>) {
-        let mut attrs = vec![
-            (ATTR_X, format_float(self.left)),
-            (ATTR_Y, format_float(self.top)),
-            (ATTR_WIDTH, format_float(self.width)),
-            (ATTR_HEIGHT, format_float(self.height)),
-            (ATTR_RX, format_option_float(self.rx)),
-            (ATTR_RY, format_option_float(self.ry)),
-        ];
-
-        if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        if let Some(fill) = &self.fill {
+            out.push_str(&fill_svg_defs(fill, grad_seen));
         }
-        let defs = if let Some(fill) = &self.fill {
+        let mut w = TagWriter::open(out, TAG_RECT);
+        self.write_geometry(&mut w);
+        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color);
+        if let Some(fill) = &self.fill {
             let fill_attr = fill_svg_attr(fill);
-            if fill_attr == "none" {
-                attrs.push((ATTR_FILL, "none".to_string()));
-            } else {
-                attrs.push((ATTR_FILL, fill_attr));
-                attrs.push((ATTR_FILL_OPACITY, fill_svg_opacity(fill)));
+            w.raw(ATTR_FILL, &fill_attr);
+            if fill_attr != "none" {
+                w.raw(ATTR_FILL_OPACITY, &fill_svg_opacity(fill));
             }
-            fill_svg_defs(fill, grad_seen)
-        } else {
-            String::new()
-        };
-        if let Some(ref class) = self.class {
-            attrs.push((ATTR_CLASS, class.clone()));
         }
-        if let Some(ref style) = self.style {
-            attrs.push((ATTR_STYLE, style.clone()));
-        }
-
-        out.push_str(&defs);
-        let _ = write!(
-            out,
-            "{}",
-            SVGTag {
-                tag: TAG_RECT,
-                attrs,
-                dataset: &self.dataset,
-                data: title_data(&self.title),
-            }
-        );
+        w.opt_text(ATTR_CLASS, self.class.as_ref())
+            .opt_text(ATTR_STYLE, self.style.as_ref())
+            .dataset(&self.dataset);
+        w.close_with_title(&self.title);
+    }
+    /// Writes only the geometry, for rects inside a `<g>` that carries the
+    /// paint attributes.
+    fn write_bare(&self, out: &mut String) {
+        let mut w = TagWriter::open(out, TAG_RECT);
+        self.write_geometry(&mut w);
+        w.close();
+    }
+    fn write_geometry(&self, w: &mut TagWriter<'_>) {
+        w.float(ATTR_X, self.left)
+            .float(ATTR_Y, self.top)
+            .float(ATTR_WIDTH, self.width)
+            .float(ATTR_HEIGHT, self.height)
+            .opt_float(ATTR_RX, self.rx)
+            .opt_float(ATTR_RY, self.ry);
     }
 }
 
@@ -569,26 +643,12 @@ impl Polyline {
             points.push(',');
             points.push_str(&format_float(p.y));
         }
-        let mut attrs = vec![
-            (ATTR_FILL, "none".to_string()),
-            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
-            (ATTR_POINTS, points),
-        ];
-
-        if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
-        }
-
-        let _ = write!(
-            out,
-            "{}",
-            SVGTag {
-                tag: TAG_POLYLINE,
-                attrs,
-                ..Default::default()
-            }
-        );
+        let mut w = TagWriter::open(out, TAG_POLYLINE);
+        w.raw(ATTR_FILL, "none")
+            .float(ATTR_STROKE_WIDTH, self.stroke_width)
+            .raw(ATTR_POINTS, &points)
+            .color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color);
+        w.close();
     }
 }
 
@@ -639,36 +699,37 @@ impl Circle {
         out
     }
     pub(crate) fn write_svg(&self, out: &mut String) {
-        let mut attrs = vec![
-            (ATTR_CX, format_float(self.cx)),
-            (ATTR_CY, format_float(self.cy)),
-            (ATTR_R, format_float(self.r)),
-            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
-        ];
-        if let Some(color) = self.stroke_color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        let mut w = TagWriter::open(out, TAG_CIRCLE);
+        self.write_geometry(&mut w);
+        // A stroke width without a stroke color would be dead weight.
+        if self.stroke_color.is_some() {
+            w.float(ATTR_STROKE_WIDTH, self.stroke_width);
         }
-        let mut fill = "none".to_string();
-        if let Some(color) = self.fill {
-            fill = color.hex();
-            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
-        }
-        attrs.push((ATTR_FILL, fill));
-        if let Some(ref class) = self.class {
-            attrs.push((ATTR_CLASS, class.clone()));
-        }
-
-        let _ = write!(
-            out,
-            "{}",
-            SVGTag {
-                tag: TAG_CIRCLE,
-                attrs,
-                dataset: &self.dataset,
-                data: title_data(&self.title),
+        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.stroke_color);
+        match self.fill {
+            Some(color) => {
+                w.raw(ATTR_FILL_OPACITY, &convert_opacity(&color));
+                w.raw(ATTR_FILL, &color.hex());
             }
-        );
+            None => {
+                w.raw(ATTR_FILL, "none");
+            }
+        }
+        w.opt_text(ATTR_CLASS, self.class.as_ref())
+            .dataset(&self.dataset);
+        w.close_with_title(&self.title);
+    }
+    /// Writes only the geometry, for circles inside a `<g>` that carries the
+    /// paint attributes.
+    fn write_bare(&self, out: &mut String) {
+        let mut w = TagWriter::open(out, TAG_CIRCLE);
+        self.write_geometry(&mut w);
+        w.close();
+    }
+    fn write_geometry(&self, w: &mut TagWriter<'_>) {
+        w.float(ATTR_CX, self.cx)
+            .float(ATTR_CY, self.cy)
+            .float(ATTR_R, self.r);
     }
 }
 
@@ -762,42 +823,38 @@ impl Polygon {
             points.push(',');
             points.push_str(&format_float(p.y));
         }
-        let mut attrs = vec![(ATTR_POINTS, points)];
-        if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+        if let Some(ref fill) = self.gradient {
+            out.push_str(&fill_svg_defs(fill, grad_seen));
         }
-        let defs = if let Some(ref fill) = self.gradient {
-            attrs.push((ATTR_FILL, fill_svg_attr(fill)));
-            let opacity = fill_svg_opacity(fill);
-            if !opacity.is_empty() {
-                attrs.push((ATTR_FILL_OPACITY, opacity));
-            }
-            fill_svg_defs(fill, grad_seen)
+        let mut w = TagWriter::open(out, TAG_POLYGON);
+        w.raw(ATTR_POINTS, &points)
+            .color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color);
+        if let Some(ref fill) = self.gradient {
+            w.raw(ATTR_FILL, &fill_svg_attr(fill));
+            w.raw(ATTR_FILL_OPACITY, &fill_svg_opacity(fill));
         } else {
-            if let Some(color) = self.fill {
-                attrs.push((ATTR_FILL, color.hex()));
-                attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
-            }
-            String::new()
-        };
-        if let Some(ref class) = self.class {
-            attrs.push((ATTR_CLASS, class.clone()));
+            w.color(ATTR_FILL, ATTR_FILL_OPACITY, self.fill);
         }
-        if let Some(ref style) = self.style {
-            attrs.push((ATTR_STYLE, style.clone()));
-        }
-        out.push_str(&defs);
-        let _ = write!(
-            out,
-            "{}",
-            SVGTag {
-                tag: TAG_POLYGON,
-                attrs,
-                dataset: &self.dataset,
-                data: title_data(&self.title),
+        w.opt_text(ATTR_CLASS, self.class.as_ref())
+            .opt_text(ATTR_STYLE, self.style.as_ref())
+            .dataset(&self.dataset);
+        w.close_with_title(&self.title);
+    }
+    /// Writes only the points, for polygons inside a `<g>` that carries the
+    /// paint attributes.
+    fn write_bare(&self, out: &mut String) {
+        let mut points = String::with_capacity(self.points.len() * 10);
+        for (i, p) in self.points.iter().enumerate() {
+            if i > 0 {
+                points.push(' ');
             }
-        );
+            write_float(&mut points, p.x);
+            points.push(',');
+            write_float(&mut points, p.y);
+        }
+        let mut w = TagWriter::open(out, TAG_POLYGON);
+        w.raw(ATTR_POINTS, &points);
+        w.close();
     }
 }
 
@@ -892,63 +949,74 @@ impl Text {
         if self.text.is_empty() {
             return;
         }
-        let mut attrs = vec![
-            (ATTR_FONT_SIZE, format_option_float(self.font_size)),
-            (ATTR_X, format_option_float(self.x)),
-            (ATTR_Y, format_option_float(self.y)),
-            (ATTR_DX, format_option_float(self.dx)),
-            (ATTR_DY, format_option_float(self.dy)),
-            (
-                ATTR_FONT_WEIGHT,
-                self.font_weight.clone().unwrap_or_default(),
-            ),
-            (ATTR_TRANSFORM, self.transform.clone().unwrap_or_default()),
-            (
-                ATTR_DOMINANT_BASELINE,
-                self.dominant_baseline.clone().unwrap_or_default(),
-            ),
-            (
-                ATTR_TEXT_ANCHOR,
-                self.text_anchor.clone().unwrap_or_default(),
-            ),
-            (
-                ATTR_ALIGNMENT_BASELINE,
-                self.alignment_baseline.clone().unwrap_or_default(),
-            ),
-        ];
-        if let Some(ref font_family) = self.font_family {
-            attrs.push((ATTR_FONT_FAMILY, font_family.clone()));
-        }
-        if let Some(color) = self.font_color {
-            attrs.push((ATTR_FILL, color.hex()));
-            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
-        }
-        if let Some(ref class) = self.class {
-            attrs.push((ATTR_CLASS, class.clone()));
-        }
-
-        let _ = write!(
-            out,
-            "{}",
-            SVGTag {
-                tag: TAG_TEXT,
-                attrs,
-                data: Some(encode_text(&self.text)),
-                ..Default::default()
-            }
-        );
+        let mut w = TagWriter::open(out, TAG_TEXT);
+        w.opt_float(ATTR_FONT_SIZE, self.font_size)
+            .opt_float(ATTR_X, self.x)
+            .opt_float(ATTR_Y, self.y)
+            .opt_float(ATTR_DX, self.dx)
+            .opt_float(ATTR_DY, self.dy)
+            .opt_text(ATTR_FONT_WEIGHT, self.font_weight.as_ref())
+            .opt_text(ATTR_TRANSFORM, self.transform.as_ref())
+            .opt_text(ATTR_DOMINANT_BASELINE, self.dominant_baseline.as_ref())
+            .opt_text(ATTR_TEXT_ANCHOR, self.text_anchor.as_ref())
+            .opt_text(ATTR_ALIGNMENT_BASELINE, self.alignment_baseline.as_ref())
+            .opt_text(ATTR_FONT_FAMILY, self.font_family.as_ref())
+            .color(ATTR_FILL, ATTR_FILL_OPACITY, self.font_color)
+            .opt_text(ATTR_CLASS, self.class.as_ref());
+        w.close_with(&encode_text(&self.text));
     }
 }
 
-fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
-    let mut arr = vec![];
-    for p in points.iter() {
-        let mut tmp = c.clone();
-        tmp.cx = p.x;
-        tmp.cy = p.y;
-        arr.push(tmp.svg());
+/// Opens the `<g>` that carries the paint shared by every symbol of a line,
+/// so the per-point shapes only carry their geometry.
+fn open_symbol_group(
+    out: &mut String,
+    stroke_width: Option<f32>,
+    stroke: Option<Color>,
+    fill: Option<Color>,
+) {
+    let mut w = TagWriter::open(out, TAG_GROUP);
+    if let Some(stroke_width) = stroke_width {
+        w.float(ATTR_STROKE_WIDTH, stroke_width);
     }
-    arr.join("\n")
+    w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, stroke);
+    match fill {
+        Some(color) => {
+            w.raw(ATTR_FILL, &color.hex());
+            w.raw(ATTR_FILL_OPACITY, &convert_opacity(&color));
+        }
+        None => {
+            w.raw(ATTR_FILL, "none");
+        }
+    }
+    w.out.push_str(">\n");
+}
+
+fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
+    if points.is_empty() {
+        return String::new();
+    }
+    let mut out = String::with_capacity(points.len() * 40);
+    open_symbol_group(
+        &mut out,
+        c.stroke_color.map(|_| c.stroke_width),
+        c.stroke_color,
+        c.fill,
+    );
+    for (i, p) in points.iter().enumerate() {
+        if i > 0 {
+            out.push('\n');
+        }
+        Circle {
+            cx: p.x,
+            cy: p.y,
+            r: c.r,
+            ..Default::default()
+        }
+        .write_bare(&mut out);
+    }
+    out.push_str("\n</g>");
+    out
 }
 
 fn generate_rect_symbol(
@@ -957,22 +1025,51 @@ fn generate_rect_symbol(
     fill: Option<Color>,
     stroke: Option<Color>,
 ) -> String {
-    let mut arr = vec![];
-    for p in points.iter() {
-        arr.push(
-            Rect {
-                fill: fill.map(|c| c.into()),
-                color: stroke,
-                left: p.x - r,
-                top: p.y - r,
-                width: r * 2.0,
-                height: r * 2.0,
-                ..Default::default()
-            }
-            .svg(),
-        );
+    if points.is_empty() {
+        return String::new();
     }
-    arr.join("\n")
+    let mut out = String::with_capacity(points.len() * 50);
+    open_symbol_group(&mut out, None, stroke, fill);
+    for (i, p) in points.iter().enumerate() {
+        if i > 0 {
+            out.push('\n');
+        }
+        Rect {
+            left: p.x - r,
+            top: p.y - r,
+            width: r * 2.0,
+            height: r * 2.0,
+            ..Default::default()
+        }
+        .write_bare(&mut out);
+    }
+    out.push_str("\n</g>");
+    out
+}
+
+fn generate_polygon_symbols(
+    points: &[Point],
+    fill: Option<Color>,
+    stroke: Option<Color>,
+    shape: impl Fn(&Point) -> Vec<Point>,
+) -> String {
+    if points.is_empty() {
+        return String::new();
+    }
+    let mut out = String::with_capacity(points.len() * 50);
+    open_symbol_group(&mut out, None, stroke, fill);
+    for (i, p) in points.iter().enumerate() {
+        if i > 0 {
+            out.push('\n');
+        }
+        Polygon {
+            points: shape(p),
+            ..Default::default()
+        }
+        .write_bare(&mut out);
+    }
+    out.push_str("\n</g>");
+    out
 }
 
 fn generate_triangle_symbol(
@@ -982,23 +1079,13 @@ fn generate_triangle_symbol(
     stroke: Option<Color>,
 ) -> String {
     // Equilateral triangle pointing upward; r = circumradius.
-    let mut arr = vec![];
-    for p in points.iter() {
-        arr.push(
-            Polygon {
-                fill,
-                color: stroke,
-                points: vec![
-                    (p.x, p.y - r).into(),
-                    (p.x + r * 0.866, p.y + r * 0.5).into(),
-                    (p.x - r * 0.866, p.y + r * 0.5).into(),
-                ],
-                ..Default::default()
-            }
-            .svg(),
-        );
-    }
-    arr.join("\n")
+    generate_polygon_symbols(points, fill, stroke, |p| {
+        vec![
+            (p.x, p.y - r).into(),
+            (p.x + r * 0.866, p.y + r * 0.5).into(),
+            (p.x - r * 0.866, p.y + r * 0.5).into(),
+        ]
+    })
 }
 
 fn generate_diamond_symbol(
@@ -1007,24 +1094,14 @@ fn generate_diamond_symbol(
     fill: Option<Color>,
     stroke: Option<Color>,
 ) -> String {
-    let mut arr = vec![];
-    for p in points.iter() {
-        arr.push(
-            Polygon {
-                fill,
-                color: stroke,
-                points: vec![
-                    (p.x, p.y - r).into(),
-                    (p.x + r, p.y).into(),
-                    (p.x, p.y + r).into(),
-                    (p.x - r, p.y).into(),
-                ],
-                ..Default::default()
-            }
-            .svg(),
-        );
-    }
-    arr.join("\n")
+    generate_polygon_symbols(points, fill, stroke, |p| {
+        vec![
+            (p.x, p.y - r).into(),
+            (p.x + r, p.y).into(),
+            (p.x, p.y + r).into(),
+            (p.x - r, p.y).into(),
+        ]
+    })
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -1713,34 +1790,24 @@ impl Grid {
                 points.push((self.left, y, self.right, y));
             }
         }
-        let mut data = vec![];
+        // The stroke lives on the group; each line only carries its ends.
+        let mut out = String::with_capacity(points.len() * 40 + 64);
+        let mut w = TagWriter::open(&mut out, TAG_GROUP);
+        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color)
+            .float(ATTR_STROKE_WIDTH, self.stroke_width);
+        let mut lines = String::with_capacity(points.len() * 40);
         for (left, top, right, bottom) in points.iter() {
-            let svg = Line {
-                color: None,
-                stroke_width: self.stroke_width,
-                left: left.to_owned(),
-                top: top.to_owned(),
-                right: right.to_owned(),
-                bottom: bottom.to_owned(),
+            Line {
+                left: *left,
+                top: *top,
+                right: *right,
+                bottom: *bottom,
                 ..Default::default()
             }
-            .svg();
-            data.push(svg);
+            .write_bare(&mut lines);
         }
-
-        let mut attrs = vec![];
-        if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
-        }
-
-        SVGTag {
-            tag: TAG_GROUP,
-            attrs,
-            data: Some(data.join("")),
-            ..Default::default()
-        }
-        .to_string()
+        w.close_with(&lines);
+        out
     }
 }
 
@@ -1785,6 +1852,9 @@ pub struct Axis {
     pub tick_start: usize,
     /// Interval between ticks.
     pub tick_interval: usize,
+    /// What to do with labels that do not fit side by side (horizontal
+    /// axes only).
+    pub label_overflow: AxisLabelOverflow,
 }
 impl Default for Axis {
     fn default() -> Self {
@@ -1808,8 +1878,23 @@ impl Default for Axis {
             tick_length: 5.0,
             tick_start: 0,
             tick_interval: 0,
+            label_overflow: AxisLabelOverflow::Thin,
         }
     }
+}
+
+/// A `<line>` with only its end points, for use inside a stroked `<g>`.
+fn bare_line((left, top, right, bottom): (f32, f32, f32, f32)) -> String {
+    let mut out = String::with_capacity(48);
+    Line {
+        left,
+        top,
+        right,
+        bottom,
+        ..Default::default()
+    }
+    .write_bare(&mut out);
+    out
 }
 
 impl Axis {
@@ -1829,8 +1914,9 @@ impl Axis {
 
             is_transparent = color.is_transparent();
         }
-
-        let stroke_width = 1.0;
+        // The stroke width lives on the group; the axis line and ticks only
+        // carry their ends.
+        attrs.push((ATTR_STROKE_WIDTH, format_float(1.0)));
 
         let mut line_data = vec![];
         if !is_transparent {
@@ -1850,17 +1936,7 @@ impl Axis {
                 }
             };
 
-            line_data.push(
-                Line {
-                    stroke_width,
-                    left: values.0,
-                    top: values.1,
-                    right: values.2,
-                    bottom: values.3,
-                    ..Default::default()
-                }
-                .svg(),
-            )
+            line_data.push(bare_line(values));
         }
 
         let is_horizontal = self.position == Position::Bottom || self.position == Position::Top;
@@ -1875,6 +1951,7 @@ impl Axis {
 
         let mut text_list = vec![];
         let mut text_unit_count: usize = 1;
+        let mut name_rotate_rad = self.name_rotate;
         if font_size > 0.0 && !self.data.is_empty() {
             text_list = self
                 .data
@@ -1887,8 +1964,33 @@ impl Axis {
                 let total_measure =
                     measure_text_width_family(&self.font_family, font_size, &text_list.join(" "))?;
                 let mut total_measure_width = total_measure.width();
-                if self.name_rotate != 0.0 {
-                    total_measure_width *= self.name_rotate.sin().abs();
+                let overflowing = total_measure_width > axis_length;
+                match self.label_overflow {
+                    // Rotate first; whatever still overlaps is thinned below.
+                    AxisLabelOverflow::Rotate if overflowing && name_rotate_rad == 0.0 => {
+                        name_rotate_rad = std::f32::consts::FRAC_PI_4;
+                    }
+                    // Every label is cut to its own slot instead of skipped.
+                    AxisLabelOverflow::Ellipsis if overflowing => {
+                        let slots = if self.name_align == Align::Left {
+                            self.data.len().saturating_sub(1)
+                        } else {
+                            self.data.len()
+                        }
+                        .max(1);
+                        let slot_width = (axis_length / slots as f32 - 4.0).max(font_size);
+                        text_list = text_list
+                            .iter()
+                            .map(|text| {
+                                font::text_ellipsis(&self.font_family, font_size, text, slot_width)
+                            })
+                            .collect();
+                        total_measure_width = 0.0;
+                    }
+                    _ => {}
+                }
+                if name_rotate_rad != 0.0 {
+                    total_measure_width *= name_rotate_rad.sin().abs();
                 }
                 // 位置不够
                 if total_measure_width > axis_length {
@@ -1945,21 +2047,11 @@ impl Axis {
                     }
                 };
 
-                line_data.push(
-                    Line {
-                        stroke_width,
-                        left: values.0,
-                        top: values.1,
-                        right: values.2,
-                        bottom: values.3,
-                        ..Default::default()
-                    }
-                    .svg(),
-                );
+                line_data.push(bare_line(values));
             }
         }
         let mut text_data = vec![];
-        let name_rotate = self.name_rotate / std::f32::consts::PI * 180.0;
+        let name_rotate = name_rotate_rad / std::f32::consts::PI * 180.0;
         if !text_list.is_empty() {
             let name_gap = self.name_gap;
             let mut data_len = self.data.len();
@@ -2010,7 +2102,7 @@ impl Axis {
                 let mut y = Some(values.1);
                 let mut text_anchor = None;
                 if name_rotate != 0.0 {
-                    let w = self.name_rotate.sin().abs() * b.width();
+                    let w = name_rotate_rad.sin().abs() * b.width();
                     let translate_x = (values.0 + b.width() / 2.0) as i32;
                     let translate_y = (values.1 + w / 2.0) as i32;
                     text_anchor = Some("middle".to_string());
@@ -2534,7 +2626,7 @@ mod tests {
         );
 
         assert_eq!(
-            r###"<circle cx="10" cy="10" r="3" stroke-width="1" fill="none"/>"###,
+            r###"<circle cx="10" cy="10" r="3" fill="none"/>"###,
             Circle {
                 stroke_color: None,
                 fill: None,
@@ -2723,11 +2815,13 @@ Hello World!
         assert_eq!(
             r###"<g>
 <path d="M0,0 C2.5 7.5, 8.1 22.3, 10 30 C13.1 42.3, 17.7 81.1, 20 80 C22.7 78.6, 26.7 24.9, 30 20 C31.7 17.4, 37.5 42.5, 40 50" stroke-width="1" fill="none" stroke="#000000"/>
-<circle cx="0" cy="0" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
-<circle cx="10" cy="30" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
-<circle cx="20" cy="80" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
-<circle cx="30" cy="20" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
-<circle cx="40" cy="50" r="3" stroke-width="1" stroke="#000000" fill="#FFFFFF"/>
+<g stroke-width="1" stroke="#000000" fill="#FFFFFF">
+<circle cx="0" cy="0" r="3"/>
+<circle cx="10" cy="30" r="3"/>
+<circle cx="20" cy="80" r="3"/>
+<circle cx="30" cy="20" r="3"/>
+<circle cx="40" cy="50" r="3"/>
+</g>
 </g>"###,
             SmoothLine {
                 color: Some((0, 0, 0).into()),
@@ -2774,11 +2868,13 @@ Hello World!
         assert_eq!(
             r###"<g>
 <path d="M 0 0 L 10 30 L 20 80 L 30 20 L 40 50" stroke-width="1" fill="none" stroke="#000000"/>
-<circle cx="0" cy="0" r="3" stroke-width="1" stroke="#000000" fill="none"/>
-<circle cx="10" cy="30" r="3" stroke-width="1" stroke="#000000" fill="none"/>
-<circle cx="20" cy="80" r="3" stroke-width="1" stroke="#000000" fill="none"/>
-<circle cx="30" cy="20" r="3" stroke-width="1" stroke="#000000" fill="none"/>
-<circle cx="40" cy="50" r="3" stroke-width="1" stroke="#000000" fill="none"/>
+<g stroke-width="1" stroke="#000000" fill="none">
+<circle cx="0" cy="0" r="3"/>
+<circle cx="10" cy="30" r="3"/>
+<circle cx="20" cy="80" r="3"/>
+<circle cx="30" cy="20" r="3"/>
+<circle cx="40" cy="50" r="3"/>
+</g>
 </g>"###,
             StraightLine {
                 color: Some((0, 0, 0).into()),
@@ -2864,8 +2960,8 @@ Hello World!
     #[test]
     fn test_grid() {
         assert_eq!(
-            r###"<g stroke="#000000">
-<line stroke-width="1" x1="58.3" y1="10" x2="58.3" y2="300"/><line stroke-width="1" x1="106.7" y1="10" x2="106.7" y2="300"/><line stroke-width="1" x1="155" y1="10" x2="155" y2="300"/><line stroke-width="1" x1="203.3" y1="10" x2="203.3" y2="300"/><line stroke-width="1" x1="251.7" y1="10" x2="251.7" y2="300"/><line stroke-width="1" x1="10" y1="68" x2="300" y2="68"/><line stroke-width="1" x1="10" y1="126" x2="300" y2="126"/><line stroke-width="1" x1="10" y1="184" x2="300" y2="184"/><line stroke-width="1" x1="10" y1="242" x2="300" y2="242"/>
+            r###"<g stroke="#000000" stroke-width="1">
+<line x1="58.3" y1="10" x2="58.3" y2="300"/><line x1="106.7" y1="10" x2="106.7" y2="300"/><line x1="155" y1="10" x2="155" y2="300"/><line x1="203.3" y1="10" x2="203.3" y2="300"/><line x1="251.7" y1="10" x2="251.7" y2="300"/><line x1="10" y1="68" x2="300" y2="68"/><line x1="10" y1="126" x2="300" y2="126"/><line x1="10" y1="184" x2="300" y2="184"/><line x1="10" y1="242" x2="300" y2="242"/>
 </g>"###,
             Grid {
                 left: 10.0,
@@ -2896,16 +2992,16 @@ Hello World!
 
         assert_eq!(
             r###"<g>
-<g stroke="#000000">
-<line stroke-width="1" x1="0" y1="50" x2="300" y2="50"/>
-<line stroke-width="1" x1="0" y1="50" x2="0" y2="55"/>
-<line stroke-width="1" x1="42.9" y1="50" x2="42.9" y2="55"/>
-<line stroke-width="1" x1="85.7" y1="50" x2="85.7" y2="55"/>
-<line stroke-width="1" x1="128.6" y1="50" x2="128.6" y2="55"/>
-<line stroke-width="1" x1="171.4" y1="50" x2="171.4" y2="55"/>
-<line stroke-width="1" x1="214.3" y1="50" x2="214.3" y2="55"/>
-<line stroke-width="1" x1="257.1" y1="50" x2="257.1" y2="55"/>
-<line stroke-width="1" x1="300" y1="50" x2="300" y2="55"/>
+<g stroke="#000000" stroke-width="1">
+<line x1="0" y1="50" x2="300" y2="50"/>
+<line x1="0" y1="50" x2="0" y2="55"/>
+<line x1="42.9" y1="50" x2="42.9" y2="55"/>
+<line x1="85.7" y1="50" x2="85.7" y2="55"/>
+<line x1="128.6" y1="50" x2="128.6" y2="55"/>
+<line x1="171.4" y1="50" x2="171.4" y2="55"/>
+<line x1="214.3" y1="50" x2="214.3" y2="55"/>
+<line x1="257.1" y1="50" x2="257.1" y2="55"/>
+<line x1="300" y1="50" x2="300" y2="55"/>
 </g>
 <text font-size="14" x="7.4" y="69" font-family="Roboto" fill="#000000">
 Mon

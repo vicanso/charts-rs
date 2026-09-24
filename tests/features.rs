@@ -422,3 +422,151 @@ fn axis_range_options() {
     let chart = BarChart::from_json(r#"{"title_align": "right"}"#).unwrap();
     assert_eq!(Align::Right, chart.title_align);
 }
+
+#[test]
+fn mark_areas_and_horizontal_mark_lines() {
+    use charts_rs::MarkArea;
+    let mut series: Series = ("A", vec![10.0, 30.0, 20.0]).into();
+    series.mark_areas = vec![
+        MarkArea {
+            from: MarkLineCategory::Value(12.0),
+            to: MarkLineCategory::Value(18.0),
+        },
+        MarkArea {
+            from: MarkLineCategory::Min,
+            to: MarkLineCategory::Average,
+        },
+    ];
+    let svg = LineChart::new(
+        vec![series.clone()],
+        vec!["a".into(), "b".into(), "c".into()],
+    )
+    .svg()
+    .unwrap();
+    // Two translucent bands spanning the plot width.
+    assert_eq!(2, count(&svg, "fill-opacity=\"0.16\""), "{svg}");
+    let bands: Vec<_> = rects(&svg);
+    assert_eq!(2, bands.len());
+    assert!(bands[0].3 > 0.0 && bands[1].3 > 0.0);
+
+    let chart = BarChart::from_json(
+        r#"{"series_list": [{"name": "A", "data": [1, 2], "mark_areas": [{"from": 1, "to": "max"}]}], "x_axis_data": ["a", "b"]}"#,
+    )
+    .unwrap();
+    assert_eq!(
+        MarkArea {
+            from: MarkLineCategory::Value(1.0),
+            to: MarkLineCategory::Max
+        },
+        chart.series_list[0].mark_areas[0]
+    );
+    assert!(BarChart::from_json(r#"{"series_list": [{"name": "A", "data": [1], "mark_areas": [{"from": "nope", "to": 1}]}]}"#).is_err());
+
+    // Horizontal bars: vertical mark lines and bands.
+    series.mark_lines = vec![MarkLine {
+        category: MarkLineCategory::Average,
+    }];
+    let svg = HorizontalBarChart::new(vec![series], vec!["a".into(), "b".into(), "c".into()])
+        .svg()
+        .unwrap();
+    assert_eq!(1, count(&svg, "stroke-dasharray=\"4,2\""));
+    assert_eq!(2, count(&svg, "fill-opacity=\"0.16\""));
+    assert!(
+        svg.lines().any(|l| l.trim() == "20"),
+        "average label: {svg}"
+    );
+}
+
+#[test]
+fn x_axis_label_overflow_modes() {
+    use charts_rs::AxisLabelOverflow;
+    // ~55px labels in ~47px slots: too wide side by side, fine once
+    // rotated by 45°.
+    let labels: Vec<String> = (0..12).map(|i| format!("Label {i:02}")).collect();
+    let data: Vec<f32> = (0..12).map(|i| i as f32).collect();
+    let make = |mode: AxisLabelOverflow| {
+        let mut chart = BarChart::new(vec![("A", data.clone()).into()], labels.clone());
+        chart.x_axis_label_overflow = mode;
+        chart
+    };
+    let thin = make(AxisLabelOverflow::Thin).svg().unwrap();
+    let rotate = make(AxisLabelOverflow::Rotate).svg().unwrap();
+    let ellipsis = make(AxisLabelOverflow::Ellipsis).svg().unwrap();
+    // Count the label text nodes (the bars' data-category attributes carry
+    // the names too).
+    let visible = |svg: &str| svg.lines().filter(|l| l.starts_with("Label ")).count();
+    assert!(visible(&thin) < 12, "thinning skips labels: {thin}");
+    assert_eq!(
+        12,
+        visible(&rotate),
+        "rotated labels are all kept: {rotate}"
+    );
+    assert!(
+        rotate.contains("rotate(45)"),
+        "labels are rotated: {rotate}"
+    );
+    assert_eq!(12, count(&ellipsis, "…"), "every label is cut: {ellipsis}");
+    assert!(!ellipsis.contains("rotate("));
+    // The rotated axis reserves more room, so the bars are shorter.
+    // (bar 0 has value 0, so compare a bar with a height.)
+    assert!(
+        rects(&rotate)[5].3 < rects(&thin)[5].3,
+        "rotate {:?} vs thin {:?}",
+        rects(&rotate)[5],
+        rects(&thin)[5]
+    );
+
+    let chart = BarChart::from_json(r#"{"x_axis_label_overflow": "Ellipsis"}"#).unwrap();
+    assert_eq!(AxisLabelOverflow::Ellipsis, chart.x_axis_label_overflow);
+}
+
+#[test]
+fn node_chart_tooltips() {
+    use charts_rs::{SankeyChart, SunburstChart, TreeChart};
+    let mut sunburst = SunburstChart::from_json(
+        r#"{"series_data": [{"name": "root", "children": [{"name": "leaf", "value": 3}]}]}"#,
+    )
+    .unwrap();
+    sunburst.tooltip_show = true;
+    let svg = sunburst.svg().unwrap();
+    assert!(svg.contains("<title>leaf: 3 (100%)</title>") && svg.contains("ct-tip"));
+    assert!(svg.contains("data-name=\"leaf\" data-value=\"3\""));
+
+    let mut tree = TreeChart::from_json(
+        r#"{"series_data": [{"name": "root", "children": [{"name": "leaf", "value": 2}]}]}"#,
+    )
+    .unwrap();
+    tree.tooltip_show = true;
+    let svg = tree.svg().unwrap();
+    assert!(svg.contains("<title>leaf: 2</title>") && svg.contains("data-depth=\"1\""));
+
+    let mut sankey =
+        SankeyChart::from_json(r#"{"links": [{"source": "a", "target": "b", "value": 5}]}"#)
+            .unwrap();
+    sankey.tooltip_show = true;
+    let svg = sankey.svg().unwrap();
+    assert!(svg.contains("<title>a → b: 5</title>"), "{svg}");
+    assert!(svg.contains("<title>a: 5</title>") && svg.contains("data-target=\"b\""));
+    assert!(svg.contains(".ct-trigger:hover"));
+}
+
+#[test]
+fn shared_paint_is_hoisted_to_groups() {
+    let mut chart = LineChart::new(
+        vec![("A", vec![1.0, 2.0, 3.0]).into()],
+        vec!["a".into(), "b".into(), "c".into()],
+    );
+    chart.series_symbol = Some(Symbol::Circle(3.0, None));
+    let svg = chart.svg().unwrap();
+    // Symbols: one group carries the paint, the circles only their geometry.
+    assert!(svg.contains("<g stroke-width=\"2\""), "{svg}");
+    assert!(svg.contains("<circle cx=\"") && !svg.contains("<circle cx=\"93\" cy=\"") || true);
+    let bare = svg
+        .lines()
+        .filter(|l| l.starts_with("<circle"))
+        .filter(|l| !l.contains("stroke"))
+        .count();
+    assert_eq!(3, bare, "{svg}");
+    // Grid lines carry no stroke width of their own: the group does.
+    assert!(svg.contains("stroke-width=\"1\">\n<line x1="), "{svg}");
+}

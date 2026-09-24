@@ -27,8 +27,8 @@ Direct
 Search Engine
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="60" y1="72" x2="595" y2="72"/><line stroke-width="1" x1="60" y1="120.8" x2="595" y2="120.8"/><line stroke-width="1" x1="60" y1="169.7" x2="595" y2="169.7"/><line stroke-width="1" x1="60" y1="218.5" x2="595" y2="218.5"/><line stroke-width="1" x1="60" y1="267.3" x2="595" y2="267.3"/><line stroke-width="1" x1="60" y1="316.2" x2="595" y2="316.2"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="60" y1="72" x2="595" y2="72"/><line x1="60" y1="120.8" x2="595" y2="120.8"/><line x1="60" y1="169.7" x2="595" y2="169.7"/><line x1="60" y1="218.5" x2="595" y2="218.5"/><line x1="60" y1="267.3" x2="595" y2="267.3"/><line x1="60" y1="316.2" x2="595" y2="316.2"/>
 </g>
 <g>
 
@@ -55,16 +55,16 @@ Search Engine
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="60" y1="365" x2="595" y2="365"/>
-<line stroke-width="1" x1="60" y1="365" x2="60" y2="370"/>
-<line stroke-width="1" x1="136.4" y1="365" x2="136.4" y2="370"/>
-<line stroke-width="1" x1="212.9" y1="365" x2="212.9" y2="370"/>
-<line stroke-width="1" x1="289.3" y1="365" x2="289.3" y2="370"/>
-<line stroke-width="1" x1="365.7" y1="365" x2="365.7" y2="370"/>
-<line stroke-width="1" x1="442.1" y1="365" x2="442.1" y2="370"/>
-<line stroke-width="1" x1="518.6" y1="365" x2="518.6" y2="370"/>
-<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="60" y1="365" x2="595" y2="365"/>
+<line x1="60" y1="365" x2="60" y2="370"/>
+<line x1="136.4" y1="365" x2="136.4" y2="370"/>
+<line x1="212.9" y1="365" x2="212.9" y2="370"/>
+<line x1="289.3" y1="365" x2="289.3" y2="370"/>
+<line x1="365.7" y1="365" x2="365.7" y2="370"/>
+<line x1="442.1" y1="365" x2="442.1" y2="370"/>
+<line x1="518.6" y1="365" x2="518.6" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
 </g>
 <text font-size="14" x="84.2" y="384" font-family="Roboto" fill="#6E7079">
 Mon
@@ -111,13 +111,15 @@ Sun
 <rect x="569.9" y="84.7" width="20.1" height="280.3" fill="#EE6666" data-series="Search Engine" data-category="Sun" data-value="1320"/>
 <g>
 <path d="M 98.2 339.5 L 174.6 337 L 251.1 343.6 L 327.5 336.5 L 403.9 345.9 L 480.4 316.2 L 556.8 320.4" stroke-width="2" fill="none" stroke="#5470C6"/>
-<circle cx="98.2" cy="339.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="174.6" cy="337" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="251.1" cy="343.6" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="327.5" cy="336.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="403.9" cy="345.9" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="480.4" cy="316.2" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<circle cx="556.8" cy="320.4" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<g stroke-width="2" stroke="#5470C6" fill="#FFFFFF">
+<circle cx="98.2" cy="339.5" r="2"/>
+<circle cx="174.6" cy="337" r="2"/>
+<circle cx="251.1" cy="343.6" r="2"/>
+<circle cx="327.5" cy="336.5" r="2"/>
+<circle cx="403.9" cy="345.9" r="2"/>
+<circle cx="480.4" cy="316.2" r="2"/>
+<circle cx="556.8" cy="320.4" r="2"/>
+</g>
 </g>
 <text font-size="14" x="121.4" y="190.9" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
 820

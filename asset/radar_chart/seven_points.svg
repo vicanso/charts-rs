@@ -49,22 +49,26 @@ Online
 <line stroke-width="1" x1="187.4" y1="121.2" x2="300" y2="211" stroke="#E0E6F2"/>
 <g>
 <path d="M 300 118 L 321.1 194.2 L 393.6 232.4 L 357.5 330.5 L 239.9 335.7 L 198.9 234.1 L 198.7 130.2 Z" stroke-width="2" fill="#5470C6" fill-opacity="0.2" stroke="#5470C6"/>
-<circle cx="300" cy="118" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="321.1" cy="194.2" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="393.6" cy="232.4" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="357.5" cy="330.5" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="239.9" cy="335.7" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="198.9" cy="234.1" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
-<circle cx="198.7" cy="130.2" r="2" stroke-width="2" stroke="#5470C6" fill="none"/>
+<g stroke-width="2" stroke="#5470C6" fill="none">
+<circle cx="300" cy="118" r="2"/>
+<circle cx="321.1" cy="194.2" r="2"/>
+<circle cx="393.6" cy="232.4" r="2"/>
+<circle cx="357.5" cy="330.5" r="2"/>
+<circle cx="239.9" cy="335.7" r="2"/>
+<circle cx="198.9" cy="234.1" r="2"/>
+<circle cx="198.7" cy="130.2" r="2"/>
+</g>
 </g>
 <g>
 <path d="M 300 100.2 L 398.5 132.4 L 431 240.9 L 342.7 299.8 L 249.5 315.8 L 182.1 237.9 L 221.2 148.2 Z" stroke-width="2" fill="#91CC75" fill-opacity="0.2" stroke="#91CC75"/>
-<circle cx="300" cy="100.2" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="398.5" cy="132.4" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="431" cy="240.9" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="342.7" cy="299.8" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="249.5" cy="315.8" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="182.1" cy="237.9" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
-<circle cx="221.2" cy="148.2" r="2" stroke-width="2" stroke="#91CC75" fill="none"/>
+<g stroke-width="2" stroke="#91CC75" fill="none">
+<circle cx="300" cy="100.2" r="2"/>
+<circle cx="398.5" cy="132.4" r="2"/>
+<circle cx="431" cy="240.9" r="2"/>
+<circle cx="342.7" cy="299.8" r="2"/>
+<circle cx="249.5" cy="315.8" r="2"/>
+<circle cx="182.1" cy="237.9" r="2"/>
+<circle cx="221.2" cy="148.2" r="2"/>
+</g>
 </g>
 </svg>

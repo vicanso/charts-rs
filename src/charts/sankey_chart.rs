@@ -531,18 +531,52 @@ impl SankeyChart {
             } else {
                 (Some(source.color.with_alpha(alpha)), None)
             };
+            let tooltip_text = self.tooltip_show.then(|| {
+                format!(
+                    "{} → {}: {}",
+                    source.name,
+                    target.name,
+                    format_float(link.value)
+                )
+            });
+            let mut class = self.animation.as_ref().map(|_| "sankey-anim".to_string());
+            if tooltip_text.is_some() {
+                class = Some(match class {
+                    Some(c) => format!("{c} ct-trigger"),
+                    None => "ct-trigger".to_string(),
+                });
+            }
             content.polygon(Polygon {
                 color: None,
                 fill,
                 gradient,
                 points,
-                class: self.animation.as_ref().map(|_| "sankey-anim".to_string()),
+                class,
                 style: self
                     .animation
                     .as_ref()
                     .map(|a| format!("animation-delay:{}ms", source.layer as u32 * a.delay)),
-                ..Default::default()
+                title: tooltip_text.clone(),
+                dataset: vec![
+                    ("source".to_string(), source.name.clone()),
+                    ("target".to_string(), target.name.clone()),
+                    ("value".to_string(), format_float(link.value)),
+                ],
             });
+            if let Some(text) = tooltip_text {
+                content.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(self.series_label_font_size),
+                    x: Some((x0 + x1) / 2.0),
+                    y: Some((top_s + top_t + link.width) / 2.0),
+                    text_anchor: Some("middle".to_string()),
+                    dominant_baseline: Some("central".to_string()),
+                    ..Default::default()
+                });
+            }
         }
 
         // ── Node rectangles ───────────────────────────────────────────────────
@@ -550,19 +584,49 @@ impl SankeyChart {
             if node.dy <= 0.0 {
                 continue;
             }
+            let tooltip_text = self
+                .tooltip_show
+                .then(|| format!("{}: {}", node.name, format_float(node.value)));
+            let mut class = self.animation.as_ref().map(|_| "sankey-anim".to_string());
+            if tooltip_text.is_some() {
+                class = Some(match class {
+                    Some(c) => format!("{c} ct-trigger"),
+                    None => "ct-trigger".to_string(),
+                });
+            }
             content.rect(Rect {
                 fill: Some(node.color.into()),
                 left: node.x,
                 top: node.y,
                 width: self.node_width,
                 height: node.dy,
-                class: self.animation.as_ref().map(|_| "sankey-anim".to_string()),
+                class,
                 style: self
                     .animation
                     .as_ref()
                     .map(|a| format!("animation-delay:{}ms", node.layer as u32 * a.delay)),
+                title: tooltip_text.clone(),
+                dataset: vec![
+                    ("name".to_string(), node.name.clone()),
+                    ("value".to_string(), format_float(node.value)),
+                    ("layer".to_string(), node.layer.to_string()),
+                ],
                 ..Default::default()
             });
+            if let Some(text) = tooltip_text {
+                content.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(self.series_label_font_size),
+                    x: Some(node.x + self.node_width / 2.0),
+                    y: Some(node.y),
+                    dy: Some(-4.0),
+                    text_anchor: Some("middle".to_string()),
+                    ..Default::default()
+                });
+            }
         }
 
         // ── Node labels ───────────────────────────────────────────────────────
@@ -614,21 +678,27 @@ impl SankeyChart {
             });
         }
 
+        let mut css = String::new();
         if let Some(ref anim) = self.animation {
-            let css = format!(
+            css.push_str(&format!(
                 "@keyframes sankey-grow{{from{{transform:scaleX(0)}}to{{transform:scaleX(1)}}}} \
                  @keyframes sankey-fade{{from{{opacity:0}}to{{opacity:1}}}} \
                  .sankey-anim{{transform-box:fill-box;transform-origin:left center;\
                  animation:sankey-grow {}ms {} both}} \
-                 .sankey-fade{{animation:sankey-fade {}ms {} both}}",
+                 .sankey-fade{{animation:sankey-fade {}ms {} both}} ",
                 anim.duration,
                 anim.safe_easing(),
                 anim.duration,
                 anim.safe_easing()
-            );
-            c.svg_with_style(&css)
-        } else {
+            ));
+        }
+        if self.tooltip_show {
+            css.push_str(TOOLTIP_STYLE);
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }

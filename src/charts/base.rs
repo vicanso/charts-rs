@@ -136,6 +136,10 @@ pub struct ChartBase {
     /// Whether a gap is left on both ends of the x axis (bar-style) or the
     /// first/last points sit on the edges (line-style).
     pub x_boundary_gap: Option<bool>,
+    /// What to do with x axis labels that do not fit side by side: thin
+    /// them out (default), rotate them, or cut them with an ellipsis.
+    #[serde(default)]
+    pub x_axis_label_overflow: AxisLabelOverflow,
     /// Hides the x axis entirely (charts without an x axis ignore this).
     pub x_axis_hidden: bool,
     /// Hides the y axis entirely (charts without a y axis ignore this).
@@ -177,6 +181,24 @@ pub struct ChartBase {
 }
 
 /// Gets y axis config by index.
+/// Resolves a mark line / area edge to a value of the series: fixed values
+/// as given, statistics from `values` (`None` when there are no points).
+pub(crate) fn mark_statistics(values: &[f32]) -> impl Fn(&MarkLineCategory) -> Option<f32> + '_ {
+    let (mut sum, mut min, mut max) = (0.0_f32, f32::MAX, f32::MIN);
+    for &v in values.iter() {
+        sum += v;
+        max = max.max(v);
+        min = min.min(v);
+    }
+    move |category| match category {
+        MarkLineCategory::Value(v) => Some(*v),
+        _ if values.is_empty() => None,
+        MarkLineCategory::Average => Some(sum / values.len() as f32),
+        MarkLineCategory::Max => Some(max),
+        MarkLineCategory::Min => Some(min),
+    }
+}
+
 /// Rejects a theme name that is not registered: a typo would otherwise
 /// silently render with the light theme.
 pub(crate) fn check_theme_name(theme: &str) -> canvas::Result<()> {
@@ -459,6 +481,13 @@ impl ChartBase {
         }
         if let Some(x_boundary_gap) = get_bool_from_value(&data, "x_boundary_gap") {
             self.x_boundary_gap = Some(x_boundary_gap);
+        }
+        if let Some(overflow) = get_string_from_value(&data, "x_axis_label_overflow") {
+            self.x_axis_label_overflow = match overflow.to_lowercase().as_str() {
+                "rotate" => AxisLabelOverflow::Rotate,
+                "ellipsis" => AxisLabelOverflow::Ellipsis,
+                _ => AxisLabelOverflow::Thin,
+            };
         }
         if let Some(x_axis_hidden) = get_bool_from_value(&data, "x_axis_hidden") {
             self.x_axis_hidden = x_axis_hidden;
@@ -926,11 +955,6 @@ impl ChartBase {
         right: Option<(AxisValues, f32)>,
     ) -> CartesianLayout {
         let mut c = c;
-        let x_axis_height = if self.x_axis_hidden {
-            0.0
-        } else {
-            self.x_axis_height
-        };
         let (left_values, mut left_width) = left;
         let (right_values, mut right_width) = right.unwrap_or_default();
         // The value ranges are still needed to place the series when the
@@ -939,6 +963,7 @@ impl ChartBase {
             left_width = 0.0;
             right_width = 0.0;
         }
+        let x_axis_height = self.x_axis_height_for(c.width() - left_width - right_width);
         // A canvas too small for the header and the x axis has no plot
         // area left; clamp instead of emitting negative sizes.
         let axis_height = (c.height() - x_axis_height - axis_top).max(0.0);
@@ -989,7 +1014,7 @@ impl ChartBase {
             );
         }
         if !self.x_axis_hidden {
-            self.render_x_axis(
+            self.render_x_axis_with_height(
                 c.child(Box {
                     top: c.height() - x_axis_height,
                     left: left_width,
@@ -998,6 +1023,7 @@ impl ChartBase {
                 }),
                 self.x_axis_data.clone(),
                 axis_width,
+                x_axis_height,
             );
         }
         let max_height = c.height() - x_axis_height;
@@ -1065,7 +1091,7 @@ impl ChartBase {
     ) {
         let mut c = c;
         for (index, series) in series_list.iter().enumerate() {
-            if series.mark_lines.is_empty() {
+            if series.mark_lines.is_empty() && series.mark_areas.is_empty() {
                 continue;
             }
             let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
@@ -1079,20 +1105,26 @@ impl ChartBase {
                 .into_iter()
                 .filter(|v| *v != NIL_VALUE)
                 .collect();
-            let (mut sum, mut min, mut max) = (0.0_f32, f32::MAX, f32::MIN);
-            for &v in values.iter() {
-                sum += v;
-                max = max.max(v);
-                min = min.min(v);
+            let stat = mark_statistics(&values);
+            // Bands first, so the lines stay visible on top of them.
+            for mark_area in series.mark_areas.iter() {
+                let (Some(from), Some(to)) = (stat(&mark_area.from), stat(&mark_area.to)) else {
+                    continue;
+                };
+                let y_from = y_axis_values.get_offset_height(from, max_height);
+                let y_to = y_axis_values.get_offset_height(to, max_height);
+                c.rect(Rect {
+                    fill: Some(color.with_alpha(40).into()),
+                    left: 0.0,
+                    top: y_from.min(y_to),
+                    width: c.width(),
+                    height: (y_from - y_to).abs(),
+                    ..Default::default()
+                });
             }
             for mark_line in series.mark_lines.iter() {
-                let value = match mark_line.category {
-                    MarkLineCategory::Value(v) => v,
-                    // No valid points: average/min/max are undefined.
-                    _ if values.is_empty() => continue,
-                    MarkLineCategory::Average => sum / values.len() as f32,
-                    MarkLineCategory::Max => max,
-                    MarkLineCategory::Min => min,
+                let Some(value) = stat(&mark_line.category) else {
+                    continue;
                 };
                 let y = y_axis_values.get_offset_height(value, max_height);
                 let arrow_width = 10.0;
@@ -1208,6 +1240,44 @@ impl ChartBase {
     /// Renders x axis widget for canvas, the x_boundary_gap parameter set to false,
     /// the align will be left.
     pub(crate) fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32) {
+        self.render_x_axis_with_height(c, data, axis_width, self.x_axis_height)
+    }
+    /// The height the x axis needs for its labels: `x_axis_height`, or more
+    /// when the labels are rotated to fit (`x_axis_label_overflow`).
+    pub(crate) fn x_axis_height_for(&self, axis_width: f32) -> f32 {
+        if self.x_axis_hidden {
+            return 0.0;
+        }
+        if self.x_axis_label_overflow != AxisLabelOverflow::Rotate
+            || self.x_axis_name_rotate != 0.0
+            || self.x_axis_data.is_empty()
+        {
+            return self.x_axis_height;
+        }
+        let mut total = 0.0;
+        let mut widest = 0.0_f32;
+        for text in self.x_axis_data.iter() {
+            if let Ok(b) = measure_text_width_family(&self.font_family, self.x_axis_font_size, text)
+            {
+                total += b.width();
+                widest = widest.max(b.width());
+            }
+        }
+        if total <= axis_width {
+            return self.x_axis_height;
+        }
+        // Rotated 45°: the label's projection plus the tick and gap.
+        let rotated = (widest + self.x_axis_font_size) * std::f32::consts::FRAC_1_SQRT_2;
+        self.x_axis_height.max(rotated + self.x_axis_name_gap + 8.0)
+    }
+    /// [`Self::render_x_axis`] with an explicit axis height.
+    pub(crate) fn render_x_axis_with_height(
+        &self,
+        c: Canvas,
+        data: Vec<String>,
+        axis_width: f32,
+        x_axis_height: f32,
+    ) {
         let c1 = c;
 
         let mut split_number = data.len();
@@ -1219,7 +1289,7 @@ impl ChartBase {
         };
         let margin = self.x_axis_margin.unwrap_or_default();
         c1.child(margin).axis(Axis {
-            height: self.x_axis_height,
+            height: x_axis_height,
             width: axis_width,
             split_number,
             font_family: self.font_family.clone(),
@@ -1231,6 +1301,7 @@ impl ChartBase {
             name_gap: self.x_axis_name_gap,
             name_rotate: self.x_axis_name_rotate,
             name_align,
+            label_overflow: self.x_axis_label_overflow.clone(),
             ..Default::default()
         });
     }

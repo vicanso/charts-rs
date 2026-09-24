@@ -10,6 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::common::MarkArea;
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 use crate::{
     AxisScale, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, NIL_VALUE, Position,
@@ -446,6 +447,37 @@ fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {
     mark_lines
 }
 
+/// One edge of a mark area: a number, or `"average"` / `"min"` / `"max"`.
+fn get_mark_value(value: Option<&serde_json::Value>) -> Option<MarkLineCategory> {
+    let value = value?;
+    if let Some(v) = value.as_f64() {
+        return Some(MarkLineCategory::Value(v as f32));
+    }
+    match value.as_str()?.to_lowercase().as_str() {
+        "max" => Some(MarkLineCategory::Max),
+        "min" => Some(MarkLineCategory::Min),
+        "average" => Some(MarkLineCategory::Average),
+        _ => None,
+    }
+}
+
+fn get_mark_areas(value: &serde_json::Value, key: &str) -> Vec<MarkArea> {
+    let mut mark_areas = vec![];
+    if let Some(data) = value.get(key)
+        && let Some(arr) = data.as_array()
+    {
+        for item in arr.iter() {
+            if let (Some(from), Some(to)) = (
+                get_mark_value(item.get("from")),
+                get_mark_value(item.get("to")),
+            ) {
+                mark_areas.push(MarkArea { from, to });
+            }
+        }
+    }
+    mark_areas
+}
+
 fn get_mark_points(value: &serde_json::Value, key: &str) -> Vec<MarkPoint> {
     let mut mark_points = vec![];
     if let Some(data) = value.get(key)
@@ -497,6 +529,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         start_index: get_usize_from_value(value, "start_index").unwrap_or_default(),
         mark_lines: get_mark_lines(value, "mark_lines"),
         mark_points: get_mark_points(value, "mark_points"),
+        mark_areas: get_mark_areas(value, "mark_areas"),
         colors: get_series_colors_from_value(value, "colors"),
         stroke_dash_array: get_string_from_value(value, "stroke_dash_array"),
         stack: get_string_from_value(value, "stack"),

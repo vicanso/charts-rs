@@ -15,15 +15,15 @@ Tue
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="26" y1="27" x2="26" y2="165"/>
-<line stroke-width="1" x1="26" y1="27" x2="21" y2="27"/>
-<line stroke-width="1" x1="26" y1="50" x2="21" y2="50"/>
-<line stroke-width="1" x1="26" y1="73" x2="21" y2="73"/>
-<line stroke-width="1" x1="26" y1="96" x2="21" y2="96"/>
-<line stroke-width="1" x1="26" y1="119" x2="21" y2="119"/>
-<line stroke-width="1" x1="26" y1="142" x2="21" y2="142"/>
-<line stroke-width="1" x1="26" y1="165" x2="21" y2="165"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="26" y1="27" x2="26" y2="165"/>
+<line x1="26" y1="27" x2="21" y2="27"/>
+<line x1="26" y1="50" x2="21" y2="50"/>
+<line x1="26" y1="73" x2="21" y2="73"/>
+<line x1="26" y1="96" x2="21" y2="96"/>
+<line x1="26" y1="119" x2="21" y2="119"/>
+<line x1="26" y1="142" x2="21" y2="142"/>
+<line x1="26" y1="165" x2="21" y2="165"/>
 </g>
 <text font-size="14" x="6" y="34.9" font-family="Roboto" fill="#6E7079">
 23
@@ -68,8 +68,8 @@ Tue
 48
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="70.8" y1="27" x2="70.8" y2="165"/><line stroke-width="1" x1="115.7" y1="27" x2="115.7" y2="165"/><line stroke-width="1" x1="160.5" y1="27" x2="160.5" y2="165"/><line stroke-width="1" x1="205.3" y1="27" x2="205.3" y2="165"/><line stroke-width="1" x1="250.2" y1="27" x2="250.2" y2="165"/><line stroke-width="1" x1="295" y1="27" x2="295" y2="165"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="70.8" y1="27" x2="70.8" y2="165"/><line x1="115.7" y1="27" x2="115.7" y2="165"/><line x1="160.5" y1="27" x2="160.5" y2="165"/><line x1="205.3" y1="27" x2="205.3" y2="165"/><line x1="250.2" y1="27" x2="250.2" y2="165"/><line x1="295" y1="27" x2="295" y2="165"/>
 </g>
 <rect x="26" y="160.7" width="67.2" height="1" fill="#5470C6" data-series="Mon" data-category="00" data-value="12"/>
 <rect x="26" y="154.9" width="100.9" height="1" fill="#5470C6" data-series="Mon" data-category="01" data-value="18"/>

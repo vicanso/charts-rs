@@ -11,7 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
-use super::base::{ChartBase, axis_value_params, get_y_axis_config};
+use super::base::{ChartBase, axis_value_params, get_y_axis_config, mark_statistics};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -448,6 +448,79 @@ impl HorizontalBarChart {
                         font_weight: self.series_label_font_weight.clone(),
                         x,
                         y: Some(series_label.point.y),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
+
+        // Mark lines and areas run vertically at their value.
+        if slot_count > 0 {
+            let mut c1 = c.child(Box {
+                left: y_axis_width,
+                bottom: x_axis_height,
+                ..Default::default()
+            });
+            let max_width = c1.width();
+            let max_height = c1.height();
+            for (index, series) in self.series_list.iter().enumerate() {
+                if series.mark_lines.is_empty() && series.mark_areas.is_empty() {
+                    continue;
+                }
+                let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+                let values: Vec<f32> = series
+                    .data_values()
+                    .into_iter()
+                    .filter(|v| *v != NIL_VALUE)
+                    .collect();
+                let stat = mark_statistics(&values);
+                let value_x =
+                    |value: f32| max_width - x_axis_values.get_offset_height(value, max_width);
+                for mark_area in series.mark_areas.iter() {
+                    let (Some(from), Some(to)) = (stat(&mark_area.from), stat(&mark_area.to))
+                    else {
+                        continue;
+                    };
+                    let (x_from, x_to) = (value_x(from), value_x(to));
+                    c1.rect(Rect {
+                        fill: Some(color.with_alpha(40).into()),
+                        left: x_from.min(x_to),
+                        top: 0.0,
+                        width: (x_from - x_to).abs(),
+                        height: max_height,
+                        ..Default::default()
+                    });
+                }
+                for mark_line in series.mark_lines.iter() {
+                    let Some(value) = stat(&mark_line.category) else {
+                        continue;
+                    };
+                    let x = value_x(value);
+                    c1.circle(Circle {
+                        stroke_color: Some(color),
+                        fill: Some(color),
+                        cx: x,
+                        cy: max_height - 3.0,
+                        r: 3.5,
+                        ..Default::default()
+                    });
+                    c1.line(Line {
+                        color: Some(color),
+                        left: x,
+                        top: 4.0,
+                        right: x,
+                        bottom: max_height - 8.0,
+                        stroke_dash_array: Some("4,2".to_string()),
+                        ..Default::default()
+                    });
+                    c1.text(Text {
+                        text: format_float(value),
+                        font_family: Some(self.font_family.clone()),
+                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.series_label_font_color),
+                        x: Some(x),
+                        y: Some(self.series_label_font_size),
+                        dx: Some(4.0),
                         ..Default::default()
                     });
                 }

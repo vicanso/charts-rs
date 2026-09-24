@@ -42,7 +42,7 @@ pub struct SunburstData {
 impl SunburstData {
     /// Total value of the node: its own value when a leaf, otherwise the sum
     /// of all descendant leaf values.
-    fn total(&self) -> f32 {
+    pub(crate) fn total(&self) -> f32 {
         if self.children.is_empty() {
             self.value.max(0.0)
         } else {
@@ -237,6 +237,24 @@ impl SunburstChart {
                 } else {
                     (None, None)
                 };
+                let percentage = node_total / l.grand_total;
+                let tooltip_text = self.tooltip_show.then(|| {
+                    LabelOption {
+                        series_name: node.name.clone(),
+                        category_name: node.name.clone(),
+                        value: node_total,
+                        percentage,
+                        formatter: "{a}: {c} ({d})".to_string(),
+                    }
+                    .format()
+                });
+                let mut class = anim_class;
+                if tooltip_text.is_some() {
+                    class = Some(match class {
+                        Some(c) => format!("{c} ct-trigger"),
+                        None => "ct-trigger".to_string(),
+                    });
+                }
                 c.pie(Pie {
                     fill: color.into(),
                     stroke_color: Some(self.background_color),
@@ -247,10 +265,34 @@ impl SunburstChart {
                     start_angle: angle,
                     delta,
                     border_radius: 0.0,
-                    class: anim_class,
+                    class,
                     style: anim_style,
-                    ..Default::default()
+                    title: tooltip_text.clone(),
+                    dataset: vec![
+                        ("name".to_string(), node.name.clone()),
+                        ("value".to_string(), format_float(node_total)),
+                        ("percentage".to_string(), format_float(percentage * 100.0)),
+                        ("depth".to_string(), depth.to_string()),
+                    ],
                 });
+                // Hidden hover label right after the arc (adjacent-sibling
+                // reveal), at the middle of the ring segment.
+                if let Some(text) = tooltip_text {
+                    let p =
+                        get_pie_point(l.cx, l.cy, (inner_r + outer_r) / 2.0, angle + delta / 2.0);
+                    c.text(Text {
+                        text,
+                        class: Some("ct-tip".to_string()),
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(self.series_label_font_size),
+                        x: Some(p.x),
+                        y: Some(p.y),
+                        text_anchor: Some("middle".to_string()),
+                        dominant_baseline: Some("central".to_string()),
+                        ..Default::default()
+                    });
+                }
                 self.draw_label(
                     c, node, angle, delta, inner_r, thickness, color, node_total, l,
                 );
@@ -440,22 +482,28 @@ impl SunburstChart {
             },
         );
 
+        let mut css = String::new();
         if let Some(ref anim) = self.animation {
-            let css = format!(
+            css.push_str(&format!(
                 "@keyframes sunburst-grow{{from{{transform:scale(0)}}to{{transform:scale(1)}}}} \
                  @keyframes sunburst-fade{{from{{opacity:0}}to{{opacity:1}}}} \
                  .sunburst-anim{{transform-origin:{}px {}px;animation:sunburst-grow {}ms {} both}} \
-                 .sunburst-fade{{animation:sunburst-fade {}ms {} both}}",
+                 .sunburst-fade{{animation:sunburst-fade {}ms {} both}} ",
                 format_float(cx + content.margin.left),
                 format_float(cy + content.margin.top),
                 anim.duration,
                 anim.safe_easing(),
                 anim.duration,
                 anim.safe_easing()
-            );
-            c.svg_with_style(&css)
-        } else {
+            ));
+        }
+        if self.tooltip_show {
+            css.push_str(TOOLTIP_STYLE);
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }

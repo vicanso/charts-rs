@@ -3,8 +3,8 @@
 <text font-size="18" x="237" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
 Waterfall Chart
 </text>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="38" y1="40" x2="595" y2="40"/><line stroke-width="1" x1="38" y1="94.2" x2="595" y2="94.2"/><line stroke-width="1" x1="38" y1="148.3" x2="595" y2="148.3"/><line stroke-width="1" x1="38" y1="202.5" x2="595" y2="202.5"/><line stroke-width="1" x1="38" y1="256.7" x2="595" y2="256.7"/><line stroke-width="1" x1="38" y1="310.8" x2="595" y2="310.8"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="38" y1="40" x2="595" y2="40"/><line x1="38" y1="94.2" x2="595" y2="94.2"/><line x1="38" y1="148.3" x2="595" y2="148.3"/><line x1="38" y1="202.5" x2="595" y2="202.5"/><line x1="38" y1="256.7" x2="595" y2="256.7"/><line x1="38" y1="310.8" x2="595" y2="310.8"/>
 </g>
 <g>
 
@@ -31,15 +31,15 @@ Waterfall Chart
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="38" y1="365" x2="595" y2="365"/>
-<line stroke-width="1" x1="38" y1="365" x2="38" y2="370"/>
-<line stroke-width="1" x1="130.8" y1="365" x2="130.8" y2="370"/>
-<line stroke-width="1" x1="223.7" y1="365" x2="223.7" y2="370"/>
-<line stroke-width="1" x1="316.5" y1="365" x2="316.5" y2="370"/>
-<line stroke-width="1" x1="409.3" y1="365" x2="409.3" y2="370"/>
-<line stroke-width="1" x1="502.2" y1="365" x2="502.2" y2="370"/>
-<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="38" y1="365" x2="595" y2="365"/>
+<line x1="38" y1="365" x2="38" y2="370"/>
+<line x1="130.8" y1="365" x2="130.8" y2="370"/>
+<line x1="223.7" y1="365" x2="223.7" y2="370"/>
+<line x1="316.5" y1="365" x2="316.5" y2="370"/>
+<line x1="409.3" y1="365" x2="409.3" y2="370"/>
+<line x1="502.2" y1="365" x2="502.2" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
 </g>
 <text font-size="14" x="66.4" y="384" font-family="Roboto" fill="#6E7079">
 Initial

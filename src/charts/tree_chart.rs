@@ -32,6 +32,8 @@ struct TNode {
     label: String,
     color: Color,
     depth: usize,
+    /// Total value of the node (own value, or the sum of its leaves).
+    value: f32,
     /// Position along the cross axis (leaf order); parents sit at the midpoint
     /// of their children.
     cross: f32,
@@ -115,6 +117,7 @@ fn place(
         label,
         color,
         depth,
+        value: node.total(),
         cross: 0.0,
         parent,
         is_leaf: node.children.is_empty(),
@@ -338,6 +341,13 @@ impl TreeChart {
         // ── Nodes ─────────────────────────────────────────────────────────────
         for (i, n) in nodes.iter().enumerate() {
             let (x, y) = positions[i];
+            let tooltip_text = self.tooltip_show.then(|| {
+                if n.value > 0.0 {
+                    format!("{}: {}", n.label, format_float(n.value))
+                } else {
+                    n.label.clone()
+                }
+            });
             content.circle(Circle {
                 fill: Some(n.color),
                 stroke_color: Some(self.background_color),
@@ -345,8 +355,28 @@ impl TreeChart {
                 cx: x,
                 cy: y,
                 r,
-                ..Default::default()
+                title: tooltip_text.clone(),
+                class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
+                dataset: vec![
+                    ("name".to_string(), n.label.clone()),
+                    ("value".to_string(), format_float(n.value)),
+                    ("depth".to_string(), n.depth.to_string()),
+                ],
             });
+            if let Some(text) = tooltip_text {
+                content.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(font_size),
+                    x: Some(x),
+                    y: Some(y - r),
+                    dy: Some(-4.0),
+                    text_anchor: Some("middle".to_string()),
+                    ..Default::default()
+                });
+            }
         }
 
         // ── Labels ────────────────────────────────────────────────────────────
@@ -380,7 +410,11 @@ impl TreeChart {
             });
         }
 
-        c.svg()
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 

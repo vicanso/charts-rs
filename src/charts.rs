@@ -84,8 +84,9 @@ pub use box_plot_chart::{BoxPlotChart, BoxPlotSeries};
 pub use canvas::Canvas;
 pub use color::Color;
 pub use common::{
-    Align, AnimationConfig, AxisScale, Fill, MarkLine, MarkLineCategory, MarkPoint,
-    MarkPointCategory, Position, Series, SeriesCategory, SeriesLabel, Symbol, YAxisConfig,
+    Align, AnimationConfig, AxisLabelOverflow, AxisScale, Fill, MarkArea, MarkLine,
+    MarkLineCategory, MarkPoint, MarkPointCategory, Position, Series, SeriesCategory, SeriesLabel,
+    Symbol, YAxisConfig,
 };
 pub use component::{
     Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothBand,

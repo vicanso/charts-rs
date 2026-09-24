@@ -28,8 +28,8 @@ M2 - End of Elaboration
 M3 - End of Construction
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="26" y1="49" x2="595" y2="49"/><line stroke-width="1" x1="26" y1="101.7" x2="595" y2="101.7"/><line stroke-width="1" x1="26" y1="154.3" x2="595" y2="154.3"/><line stroke-width="1" x1="26" y1="207" x2="595" y2="207"/><line stroke-width="1" x1="26" y1="259.7" x2="595" y2="259.7"/><line stroke-width="1" x1="26" y1="312.3" x2="595" y2="312.3"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="26" y1="49" x2="595" y2="49"/><line x1="26" y1="101.7" x2="595" y2="101.7"/><line x1="26" y1="154.3" x2="595" y2="154.3"/><line x1="26" y1="207" x2="595" y2="207"/><line x1="26" y1="259.7" x2="595" y2="259.7"/><line x1="26" y1="312.3" x2="595" y2="312.3"/>
 </g>
 <g>
 
@@ -56,10 +56,10 @@ M3 - End of Construction
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="26" y1="365" x2="595" y2="365"/>
-<line stroke-width="1" x1="26" y1="365" x2="26" y2="370"/>
-<line stroke-width="1" x1="595" y1="365" x2="595" y2="370"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="26" y1="365" x2="595" y2="365"/>
+<line x1="26" y1="365" x2="26" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
 </g>
 <text font-size="14" x="274" y="384" font-family="Roboto" fill="#6E7079">
 Milestones

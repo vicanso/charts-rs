@@ -18,15 +18,15 @@ World Population
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="73" y1="40" x2="73" y2="365"/>
-<line stroke-width="1" x1="73" y1="40" x2="68" y2="40"/>
-<line stroke-width="1" x1="73" y1="94.2" x2="68" y2="94.2"/>
-<line stroke-width="1" x1="73" y1="148.3" x2="68" y2="148.3"/>
-<line stroke-width="1" x1="73" y1="202.5" x2="68" y2="202.5"/>
-<line stroke-width="1" x1="73" y1="256.7" x2="68" y2="256.7"/>
-<line stroke-width="1" x1="73" y1="310.8" x2="68" y2="310.8"/>
-<line stroke-width="1" x1="73" y1="365" x2="68" y2="365"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="73" y1="40" x2="73" y2="365"/>
+<line x1="73" y1="40" x2="68" y2="40"/>
+<line x1="73" y1="94.2" x2="68" y2="94.2"/>
+<line x1="73" y1="148.3" x2="68" y2="148.3"/>
+<line x1="73" y1="202.5" x2="68" y2="202.5"/>
+<line x1="73" y1="256.7" x2="68" y2="256.7"/>
+<line x1="73" y1="310.8" x2="68" y2="310.8"/>
+<line x1="73" y1="365" x2="68" y2="365"/>
 </g>
 <text font-size="14" x="31" y="72.1" font-family="Roboto" fill="#6E7079">
 World
@@ -71,8 +71,8 @@ Brazil
 816k
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="158.3" y1="40" x2="158.3" y2="365"/><line stroke-width="1" x1="243.7" y1="40" x2="243.7" y2="365"/><line stroke-width="1" x1="329" y1="40" x2="329" y2="365"/><line stroke-width="1" x1="414.3" y1="40" x2="414.3" y2="365"/><line stroke-width="1" x1="499.7" y1="40" x2="499.7" y2="365"/><line stroke-width="1" x1="585" y1="40" x2="585" y2="365"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="158.3" y1="40" x2="158.3" y2="365"/><line x1="243.7" y1="40" x2="243.7" y2="365"/><line x1="329" y1="40" x2="329" y2="365"/><line x1="414.3" y1="40" x2="414.3" y2="365"/><line x1="499.7" y1="40" x2="499.7" y2="365"/><line x1="585" y1="40" x2="585" y2="365"/>
 </g>
 <rect x="73" y="315.8" width="11.4" height="20.6" fill="#5470C6" data-series="2011" data-category="Brazil" data-value="18203"/>
 <rect x="73" y="261.7" width="14.7" height="20.6" fill="#5470C6" data-series="2011" data-category="Indonesia" data-value="23489"/>

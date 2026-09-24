@@ -38,8 +38,8 @@ Video Ad
 Search Engine
 </text>
 </g>
-<g stroke="#E0E6F2">
-<line stroke-width="1" x1="43" y1="40" x2="620" y2="40"/><line stroke-width="1" x1="43" y1="96.7" x2="620" y2="96.7"/><line stroke-width="1" x1="43" y1="153.3" x2="620" y2="153.3"/><line stroke-width="1" x1="43" y1="210" x2="620" y2="210"/><line stroke-width="1" x1="43" y1="266.7" x2="620" y2="266.7"/><line stroke-width="1" x1="43" y1="323.3" x2="620" y2="323.3"/>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="43" y1="40" x2="620" y2="40"/><line x1="43" y1="96.7" x2="620" y2="96.7"/><line x1="43" y1="153.3" x2="620" y2="153.3"/><line x1="43" y1="210" x2="620" y2="210"/><line x1="43" y1="266.7" x2="620" y2="266.7"/><line x1="43" y1="323.3" x2="620" y2="323.3"/>
 </g>
 <g>
 
@@ -66,16 +66,16 @@ Search Engine
 </text>
 </g>
 <g>
-<g stroke="#6E7079">
-<line stroke-width="1" x1="43" y1="380" x2="620" y2="380"/>
-<line stroke-width="1" x1="43" y1="380" x2="43" y2="385"/>
-<line stroke-width="1" x1="125.4" y1="380" x2="125.4" y2="385"/>
-<line stroke-width="1" x1="207.9" y1="380" x2="207.9" y2="385"/>
-<line stroke-width="1" x1="290.3" y1="380" x2="290.3" y2="385"/>
-<line stroke-width="1" x1="372.7" y1="380" x2="372.7" y2="385"/>
-<line stroke-width="1" x1="455.1" y1="380" x2="455.1" y2="385"/>
-<line stroke-width="1" x1="537.6" y1="380" x2="537.6" y2="385"/>
-<line stroke-width="1" x1="620" y1="380" x2="620" y2="385"/>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="43" y1="380" x2="620" y2="380"/>
+<line x1="43" y1="380" x2="43" y2="385"/>
+<line x1="125.4" y1="380" x2="125.4" y2="385"/>
+<line x1="207.9" y1="380" x2="207.9" y2="385"/>
+<line x1="290.3" y1="380" x2="290.3" y2="385"/>
+<line x1="372.7" y1="380" x2="372.7" y2="385"/>
+<line x1="455.1" y1="380" x2="455.1" y2="385"/>
+<line x1="537.6" y1="380" x2="537.6" y2="385"/>
+<line x1="620" y1="380" x2="620" y2="385"/>
 </g>
 <text font-size="14" x="70.2" y="399" font-family="Roboto" fill="#6E7079">
 Mon
