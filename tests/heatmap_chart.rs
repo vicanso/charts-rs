@@ -1,3 +1,5 @@
+mod common;
+
 use charts_rs::HeatmapChart;
 use pretty_assertions::assert_eq;
 
@@ -35,8 +37,8 @@ fn heatmap_chart() {
     }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/heatmap_chart/basic_grafana_json.svg"),
+    common::assert_snapshot!(
+        "heatmap_chart/basic_grafana_json.svg",
         heatmap_chart.svg().unwrap()
     );
 }

@@ -12,7 +12,8 @@
 
 use super::component::{
     Arrow, Axis, Bubble, Circle, Component, Grid, LEGEND_WIDTH, Legend, Line, Pie, Polygon,
-    Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, generate_svg,
+    Polyline, Rect, SmoothBand, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+    write_svg_close, write_svg_open,
 };
 
 use super::{measure_text_width_family, util::*};
@@ -102,7 +103,7 @@ impl Canvas {
         c.x += self.margin.left;
         c.y += self.margin.top;
         self.append(Component::Arrow(c));
-        let mut b = self.margin.clone();
+        let mut b = self.margin;
         b.right = b.left + 10.0;
         b.bottom = b.top;
         b
@@ -161,6 +162,19 @@ impl Canvas {
             bottom: c.cy + c.r,
         };
         self.append(Component::Circle(c));
+        b
+    }
+    /// Appends a filled band between two smooth curves.
+    pub fn smooth_band(&mut self, band: SmoothBand) -> Box {
+        let mut c = band;
+        for p in c.top.iter_mut().chain(c.bottom.iter_mut()) {
+            p.x += self.margin.left;
+            p.y += self.margin.top
+        }
+        let mut points = c.top.clone();
+        points.extend(c.bottom.iter().copied());
+        let b = get_box_of_points(&points);
+        self.append(Component::SmoothBand(c));
         b
     }
     /// Appends polygon widget to canvas.
@@ -344,30 +358,28 @@ impl Canvas {
     }
     /// Generates the svg of canvas.
     pub fn svg(&self) -> Result<String> {
+        self.svg_with_prefix("")
+    }
+    /// Writes the document once: the `<svg>` header, `prefix`, every
+    /// component, and the closing tag, without a final copy of the body.
+    fn svg_with_prefix(&self, prefix: &str) -> Result<String> {
         let components = self.components.borrow();
-        let mut data = String::with_capacity(components.len() * 128);
+        let mut out = String::with_capacity(components.len() * 128 + prefix.len() + 160);
+        write_svg_open(&mut out, self.width, self.height, self.x, self.y);
+        out.push_str(prefix);
         let mut grad_seen = HashSet::new();
         for (i, c) in components.iter().enumerate() {
-            if i > 0 {
-                data.push('\n');
+            if i > 0 || !prefix.is_empty() {
+                out.push('\n');
             }
-            write_component(c, &mut data, &mut grad_seen)?;
+            write_component(c, &mut out, &mut grad_seen)?;
         }
-        Ok(generate_svg(self.width, self.height, self.x, self.y, data))
+        write_svg_close(&mut out);
+        Ok(out)
     }
     /// Generates the svg of canvas with an embedded CSS style block prepended.
     pub fn svg_with_style(&self, style: &str) -> Result<String> {
-        let components = self.components.borrow();
-        let mut data = String::with_capacity(components.len() * 128 + style.len() + 30);
-        data.push_str("<style>");
-        data.push_str(style);
-        data.push_str("</style>");
-        let mut grad_seen = HashSet::new();
-        for c in components.iter() {
-            data.push('\n');
-            write_component(c, &mut data, &mut grad_seen)?;
-        }
-        Ok(generate_svg(self.width, self.height, self.x, self.y, data))
+        self.svg_with_prefix(&format!("<style>{style}</style>"))
     }
 }
 
@@ -388,6 +400,7 @@ fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<Stri
         Component::SmoothLine(c) => out.push_str(&c.svg()),
         Component::StraightLine(c) => out.push_str(&c.svg()),
         Component::SmoothLineFill(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+        Component::SmoothBand(c) => out.push_str(&c.svg()),
         Component::StraightLineFill(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
         Component::Grid(c) => out.push_str(&c.svg()),
         Component::Axis(c) => out.push_str(&c.svg()?),

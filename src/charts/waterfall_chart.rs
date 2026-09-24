@@ -24,7 +24,7 @@ use crate::charts::measure_text_width_family;
 // ── Data types ────────────────────────────────────────────────────────────────
 
 /// A single bar in the waterfall chart.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct WaterfallData {
     /// The numeric value for this bar (positive = increase, negative = decrease).
     /// For `is_total = true` bars this is the cumulative value to display (usually
@@ -56,7 +56,7 @@ impl From<(f32, bool)> for WaterfallData {
 // ── WaterfallChart ────────────────────────────────────────────────────────────
 
 /// A waterfall chart showing running totals of increases and decreases.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct WaterfallChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -160,7 +160,9 @@ impl WaterfallChart {
             connector_line_show: true,
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value =
+            c.base
+                .fill_option(json, &mut c.y_axis_configs, super::schema::WATERFALL_FIELDS)?;
 
         if let Some(b) = get_bool_from_value(&value, "label_show") {
             c.label_show = b;
@@ -248,17 +250,12 @@ impl WaterfallChart {
         }
 
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
-        self.render_background(c.child(Box::default()));
 
         let mut x_axis_height = self.x_axis_height;
         if self.x_axis_hidden {
             x_axis_height = 0.0;
         }
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-        let legend_height = self.render_legend(c.child(Box::default()));
-        let axis_top = title_height.max(legend_height);
+        let axis_top = self.render_header(&mut c);
 
         // ── Compute axis values ───────────────────────────────────────────────
         let cum = self.compute_cumulative();
@@ -387,6 +384,15 @@ impl WaterfallChart {
                 self.decrease_color
             };
 
+            let category = self.x_axis_data.get(i).cloned().unwrap_or_default();
+            let shown_value = if item.is_total {
+                bar_top_val
+            } else {
+                item.value
+            };
+            let tooltip_text = self
+                .tooltip_show
+                .then(|| format!("{}: {}", category, format_float(shown_value)));
             draw_c.rect(Rect {
                 color: Some(color),
                 fill: Some(color.into()),
@@ -396,13 +402,41 @@ impl WaterfallChart {
                 height: bar_h,
                 rx: Some(2.0),
                 ry: Some(2.0),
+                title: tooltip_text.clone(),
+                class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
+                dataset: vec![
+                    ("category".to_string(), category),
+                    ("value".to_string(), format_float(shown_value)),
+                    ("total".to_string(), item.is_total.to_string()),
+                ],
                 ..Default::default()
             });
+            if let Some(text) = tooltip_text {
+                draw_c.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(self.series_label_font_size),
+                    x: Some(x_left + bar_w / 2.0),
+                    y: Some(y_high),
+                    dy: Some(-6.0),
+                    text_anchor: Some("middle".to_string()),
+                    ..Default::default()
+                });
+            }
 
             // ── Value label ───────────────────────────────────────────────────
             if self.label_show {
+                // A total bar shows the running sum it spans to (its own
+                // `value` is 0 when auto-computed), a delta bar its magnitude.
+                let label_value = if item.is_total {
+                    bar_top_val
+                } else {
+                    item.value.abs()
+                };
                 let label_opt = LabelOption {
-                    value: item.value.abs(),
+                    value: label_value,
                     formatter: formatter.clone(),
                     ..Default::default()
                 };
@@ -465,14 +499,17 @@ impl WaterfallChart {
             });
         }
 
-        c.svg()
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::{WaterfallChart, WaterfallData};
-    use pretty_assertions::assert_eq;
 
     fn make_data() -> (Vec<WaterfallData>, Vec<String>) {
         let data = vec![
@@ -504,10 +541,7 @@ mod tests {
     fn waterfall_chart_basic() {
         let (data, labels) = make_data();
         let chart = WaterfallChart::new(data, labels);
-        assert_eq!(
-            include_str!("../../asset/waterfall_chart/basic.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("waterfall_chart/basic.svg", chart.svg().unwrap());
     }
 
     #[test]
@@ -527,9 +561,6 @@ mod tests {
             }"#,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/waterfall_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("waterfall_chart/basic_json.svg", chart.svg().unwrap());
     }
 }

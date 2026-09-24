@@ -11,7 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
-use super::base::{ChartBase, get_y_axis_config};
+use super::base::{ChartBase, axis_value_params, get_y_axis_config};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -22,7 +22,7 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 
 /// A horizontal bar chart: categories on the y axis, values on the x axis.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct HorizontalBarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -58,7 +58,11 @@ impl HorizontalBarChart {
         let mut h = HorizontalBarChart {
             ..Default::default()
         };
-        let value = h.base.fill_option(data, &mut h.y_axis_configs)?;
+        let value = h.base.fill_option(
+            data,
+            &mut h.y_axis_configs,
+            super::schema::HORIZONTAL_BAR_FIELDS,
+        )?;
         if let Some(series_label_position) =
             get_position_from_value(&value, "series_label_position")
         {
@@ -91,7 +95,14 @@ impl HorizontalBarChart {
 
         let axis_top = self.render_header(&mut c);
 
-        let x_axis_height = 25.0_f32;
+        // The value axis is the base's "x axis" (bottom) and the category
+        // axis its "y axis" (left), so `x_axis_*` / `y_axis_*` options keep
+        // their meaning of "the axis at the bottom / on the left".
+        let x_axis_height = if self.x_axis_hidden {
+            0.0
+        } else {
+            self.x_axis_height
+        };
         let axis_height = c.height() - axis_top - x_axis_height;
         // minus the height of top text area
         if axis_top > 0.0 {
@@ -101,65 +112,132 @@ impl HorizontalBarChart {
             });
         }
 
-        let mut data = self.x_axis_data.clone();
-        data.reverse();
-        let mut max_width = 0.0;
-        for text in data.iter() {
-            if let Ok(b) = measure_text_width_family(&self.font_family, self.x_axis_font_size, text)
-                && b.width() > max_width
-            {
-                max_width = b.width();
+        let mut y_axis_width = 0.0;
+        if !self.y_axis_hidden {
+            let mut data = self.x_axis_data.clone();
+            data.reverse();
+            let mut max_width = 0.0;
+            for text in data.iter() {
+                if let Ok(b) =
+                    measure_text_width_family(&self.font_family, self.x_axis_font_size, text)
+                    && b.width() > max_width
+                {
+                    max_width = b.width();
+                }
+            }
+            y_axis_width = max_width + 5.0;
+            c.axis(Axis {
+                position: Position::Left,
+                height: axis_height,
+                width: y_axis_width,
+                split_number: self.x_axis_data.len(),
+                font_family: self.font_family.clone(),
+                stroke_color: Some(self.x_axis_stroke_color),
+                name_align: Align::Center,
+                name_gap: self.x_axis_name_gap,
+                font_color: Some(self.x_axis_font_color),
+                font_size: self.x_axis_font_size,
+                font_weight: self.x_axis_font_weight.clone(),
+                data,
+                ..Default::default()
+            });
+        }
+
+        let category_count = self.x_axis_data.len().max(1);
+        // Assign each series a slot: stacked series share one. Positive and
+        // negative values stack separately, away from the 0 line.
+        let mut stack_slot_keys: Vec<String> = vec![];
+        let mut series_slot_indices: Vec<usize> = Vec::with_capacity(self.series_list.len());
+        let mut series_stack_indices: Vec<Option<usize>> =
+            Vec::with_capacity(self.series_list.len());
+        let mut slot_count = 0_usize;
+        for series in self.series_list.iter() {
+            if let Some(ref stack) = series.stack {
+                let key = format!("{}_{}", stack, series.y_axis_index);
+                let pos = stack_slot_keys.iter().position(|k| k == &key);
+                let stack_index = pos.unwrap_or(stack_slot_keys.len());
+                if pos.is_none() {
+                    stack_slot_keys.push(key);
+                }
+                series_slot_indices.push(stack_index);
+                series_stack_indices.push(Some(stack_index));
+            } else {
+                series_slot_indices.push(slot_count);
+                series_stack_indices.push(None);
+            }
+            slot_count += usize::from(series.stack.is_none());
+        }
+        // Stacked slots are numbered first, plain series after them.
+        let stack_count = stack_slot_keys.len();
+        for (slot, stack) in series_slot_indices
+            .iter_mut()
+            .zip(series_stack_indices.iter())
+        {
+            if stack.is_none() {
+                *slot += stack_count;
             }
         }
+        slot_count += stack_count;
 
-        let y_axis_width = max_width + 5.0;
-
-        c.axis(Axis {
-            position: Position::Left,
-            height: axis_height,
-            width: y_axis_width,
-            split_number: self.x_axis_data.len(),
-            font_family: self.font_family.clone(),
-            stroke_color: Some(self.x_axis_stroke_color),
-            name_align: Align::Center,
-            name_gap: self.x_axis_name_gap,
-            font_color: Some(self.x_axis_font_color),
-            font_size: self.x_axis_font_size,
-            data,
-            ..Default::default()
-        });
-
+        // The value axis has to cover the stacked totals on both sides of 0.
         let mut data_list = vec![];
-        for series in self.series_list.iter() {
-            data_list.append(&mut series.data_values());
+        let mut stack_sums: Vec<Vec<(f32, f32)>> =
+            vec![vec![(0.0_f32, 0.0_f32); category_count]; stack_count];
+        for (index, series) in self.series_list.iter().enumerate() {
+            let values = series.data_values();
+            match series_stack_indices[index] {
+                Some(stack_index) => {
+                    for (i, &v) in values.iter().enumerate() {
+                        let actual_i = i.saturating_add(series.start_index);
+                        if v == NIL_VALUE || actual_i >= category_count {
+                            continue;
+                        }
+                        let entry = &mut stack_sums[stack_index][actual_i];
+                        if v >= 0.0 {
+                            entry.0 += v;
+                        } else {
+                            entry.1 += v;
+                        }
+                    }
+                }
+                None => data_list.extend(values),
+            }
+        }
+        for sums in stack_sums.iter() {
+            for &(pos, neg) in sums.iter() {
+                data_list.push(pos);
+                if neg < 0.0 {
+                    data_list.push(neg);
+                }
+            }
         }
         let x_axis_config = get_y_axis_config(&self.y_axis_configs, 0);
-        let x_axis_values = get_axis_values(AxisValueParams {
-            data_list,
-            split_number: x_axis_config.axis_split_number,
-            ..Default::default()
-        });
+        let x_axis_values = get_axis_values(axis_value_params(&x_axis_config, data_list, false));
 
         let x_axis_width = c.width() - y_axis_width;
-        c.child(Box {
-            left: y_axis_width,
-            top: axis_height,
-            ..Default::default()
-        })
-        .axis(Axis {
-            position: Position::Bottom,
-            height: x_axis_height,
-            width: x_axis_width,
-            split_number: x_axis_config.axis_split_number,
-            font_family: self.font_family.clone(),
-            stroke_color: Some(x_axis_config.axis_stroke_color),
-            name_align: Align::Left,
-            name_gap: x_axis_config.axis_name_gap,
-            font_color: Some(x_axis_config.axis_font_color),
-            font_size: x_axis_config.axis_font_size,
-            data: x_axis_values.data.clone(),
-            ..Default::default()
-        });
+        if !self.x_axis_hidden {
+            c.child(Box {
+                left: y_axis_width,
+                top: axis_height,
+                ..Default::default()
+            })
+            .axis(Axis {
+                position: Position::Bottom,
+                height: x_axis_height,
+                width: x_axis_width,
+                split_number: x_axis_config.axis_split_number,
+                font_family: self.font_family.clone(),
+                stroke_color: Some(x_axis_config.axis_stroke_color),
+                name_align: Align::Left,
+                name_gap: x_axis_config.axis_name_gap,
+                font_color: Some(x_axis_config.axis_font_color),
+                font_size: x_axis_config.axis_font_size,
+                font_weight: x_axis_config.axis_font_weight.clone(),
+                data: x_axis_values.data.clone(),
+                formatter: x_axis_config.axis_formatter.clone(),
+                ..Default::default()
+            });
+        }
 
         c.child(Box {
             left: y_axis_width,
@@ -176,7 +254,7 @@ impl HorizontalBarChart {
         });
 
         // horizontal bar
-        if !self.series_list.is_empty() {
+        if slot_count > 0 {
             let mut c1 = c.child(Box {
                 left: y_axis_width,
                 bottom: x_axis_height,
@@ -186,12 +264,10 @@ impl HorizontalBarChart {
             // Row count is the number of categories (the y-axis ticks use
             // `x_axis_data.len()`), not the first series' length: a short/empty
             // first series must not divide by zero or misplace every bar.
-            let category_count = self.x_axis_data.len().max(1);
             let unit_height = c1.height() / category_count as f32;
             let bar_chart_margin = 5.0_f32;
             let bar_chart_gap = 3.0_f32;
             let bar_chart_min_height = 1.0_f32;
-            let slot_count = self.series_list.len();
 
             let bar_chart_margin_height = bar_chart_margin * 2.0;
             let bar_chart_gap_height = bar_chart_gap * (slot_count - 1) as f32;
@@ -210,38 +286,104 @@ impl HorizontalBarChart {
             let bar_height = (unit_height - bar_chart_spacing * scale) / slot_count as f32;
             let half_bar_height = bar_height / 2.0;
 
+            // Bars grow from the 0 line so negative values extend to the left
+            // of it; with a positive `axis_min` there is no 0 and the axis
+            // start is used, as before.
+            let zero_x =
+                (max_width - x_axis_values.get_offset_height(0.0, max_width)).clamp(0.0, max_width);
+            let zero_x = if zero_x.is_finite() { zero_x } else { 0.0 };
+            let value_x = |value: f32| -> f32 {
+                if value == 0.0 {
+                    zero_x
+                } else {
+                    max_width - x_axis_values.get_offset_height(value, max_width)
+                }
+            };
+            // Running (positive, negative) sums per stack and row.
+            let mut stack_acc: Vec<Vec<(f32, f32)>> =
+                vec![vec![(0.0_f32, 0.0_f32); category_count]; stack_count];
+
             let mut series_labels_list = vec![];
             for (index, series) in self.series_list.iter().enumerate() {
+                let slot_index = series_slot_indices[index];
+                let stack_index = series_stack_indices[index];
                 let color = get_color(&self.series_colors, series.index.unwrap_or(index));
 
                 let mut series_labels = vec![];
-                let series_data_count = series.data.len();
                 for (i, p) in series.data_values().iter().enumerate() {
                     let value = p.to_owned();
                     if value == NIL_VALUE {
                         continue;
                     }
+                    // Rows are categories (bottom-up), shared by every series;
+                    // a shorter series must not shift its bars onto other rows.
+                    let actual_i = i.saturating_add(series.start_index);
+                    if actual_i >= category_count {
+                        continue;
+                    }
                     let mut top =
-                        unit_height * (series_data_count - i - 1) as f32 + bar_chart_margin;
-                    top += (bar_height + bar_chart_gap) * index as f32;
+                        unit_height * (category_count - actual_i - 1) as f32 + bar_chart_margin;
+                    top += (bar_height + bar_chart_gap) * slot_index as f32;
 
-                    let x = max_width - x_axis_values.get_offset_height(value, max_width);
+                    let base = match stack_index {
+                        Some(si) => {
+                            let (pos, neg) = stack_acc[si][actual_i];
+                            if value >= 0.0 { pos } else { neg }
+                        }
+                        None => 0.0,
+                    };
+                    let x_base = value_x(base);
+                    let x = value_x(base + value);
+                    if let Some(si) = stack_index {
+                        let acc = &mut stack_acc[si][actual_i];
+                        if value >= 0.0 {
+                            acc.0 += value;
+                        } else {
+                            acc.1 += value;
+                        }
+                    }
+
+                    let fill_color = series
+                        .colors
+                        .as_ref()
+                        .and_then(|colors| colors.get(i).copied().flatten())
+                        .unwrap_or(color);
+                    let label = self.format_series_label(series, actual_i, value);
                     let tip = if self.tooltip_show {
-                        Some(format!(
-                            "{}: {}",
-                            series.name,
-                            format_series_value(value, &self.series_label_formatter)
-                        ))
+                        Some(format!("{}: {}", series.name, label))
                     } else {
                         None
                     };
+                    let mut classes: Vec<&str> = vec![];
+                    if self.animation.is_some() {
+                        classes.push("bar-anim");
+                    }
+                    if tip.is_some() {
+                        classes.push("ct-trigger");
+                    }
+                    let class = if classes.is_empty() {
+                        None
+                    } else {
+                        Some(classes.join(" "))
+                    };
+                    // Negative bars grow leftwards from the 0 line.
+                    let style = self.animation.as_ref().map(|a| {
+                        let origin = if value < 0.0 { "right" } else { "left" };
+                        format!(
+                            "transform-origin:{origin} center;animation-delay:{}ms",
+                            actual_i as u32 * a.delay
+                        )
+                    });
                     c1.rect(Rect {
-                        fill: Some(color.into()),
+                        fill: Some(fill_color.into()),
+                        left: x.min(x_base),
                         top,
-                        width: x,
+                        width: (x - x_base).abs(),
                         height: bar_height,
                         title: tip.clone(),
-                        class: tip.as_ref().map(|_| "ct-trigger".to_string()),
+                        class,
+                        style,
+                        dataset: self.point_dataset(series, actual_i, value),
                         ..Default::default()
                     });
                     if let Some(text) = tip {
@@ -260,7 +402,7 @@ impl HorizontalBarChart {
                     }
                     series_labels.push(SeriesLabel {
                         point: (x, top + half_bar_height).into(),
-                        text: format_series_value(value, &self.series_label_formatter),
+                        text: label,
                     })
                 }
                 if series.label_show {
@@ -303,6 +445,7 @@ impl HorizontalBarChart {
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(self.series_label_font_color),
                         font_size: Some(self.series_label_font_size),
+                        font_weight: self.series_label_font_weight.clone(),
                         x,
                         y: Some(series_label.point.y),
                         ..Default::default()
@@ -311,10 +454,22 @@ impl HorizontalBarChart {
             }
         }
 
+        let mut css = String::new();
+        if let Some(ref anim) = self.animation {
+            css.push_str(&format!(
+                "@keyframes hbar-grow{{from{{transform:scaleX(0)}}to{{transform:scaleX(1)}}}} \
+                 .bar-anim{{transform-box:fill-box;animation:hbar-grow {}ms {} both}} ",
+                anim.duration,
+                anim.safe_easing()
+            ));
+        }
         if self.tooltip_show {
-            c.svg_with_style(TOOLTIP_STYLE)
-        } else {
+            css.push_str(TOOLTIP_STYLE);
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }
@@ -323,7 +478,6 @@ impl HorizontalBarChart {
 mod tests {
     use super::HorizontalBarChart;
     use crate::{Align, NIL_VALUE, Position};
-    use pretty_assertions::assert_eq;
     #[test]
     fn horizontal_bar_chart_basic() {
         let mut horizontal_bar_chart = HorizontalBarChart::new(
@@ -353,8 +507,8 @@ mod tests {
         horizontal_bar_chart.margin.right = 15.0;
         horizontal_bar_chart.series_list[0].label_show = true;
         horizontal_bar_chart.title_align = Align::Left;
-        assert_eq!(
-            include_str!("../../asset/horizontal_bar_chart/basic.svg"),
+        assert_snapshot!(
+            "horizontal_bar_chart/basic.svg",
             horizontal_bar_chart.svg().unwrap()
         );
     }
@@ -389,8 +543,8 @@ mod tests {
         horizontal_bar_chart.series_list[0].label_show = true;
         horizontal_bar_chart.title_align = Align::Left;
         horizontal_bar_chart.series_label_position = Some(Position::Inside);
-        assert_eq!(
-            include_str!("../../asset/horizontal_bar_chart/basic_label_inside.svg"),
+        assert_snapshot!(
+            "horizontal_bar_chart/basic_label_inside.svg",
             horizontal_bar_chart.svg().unwrap()
         );
     }
@@ -423,8 +577,8 @@ mod tests {
         horizontal_bar_chart.margin.right = 15.0;
         horizontal_bar_chart.series_list[0].label_show = true;
         horizontal_bar_chart.title_align = Align::Left;
-        assert_eq!(
-            include_str!("../../asset/horizontal_bar_chart/nil_value.svg"),
+        assert_snapshot!(
+            "horizontal_bar_chart/nil_value.svg",
             horizontal_bar_chart.svg().unwrap()
         );
     }

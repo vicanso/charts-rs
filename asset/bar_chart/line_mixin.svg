@@ -88,27 +88,27 @@ Sat
 Sun
 </text>
 </g>
-<rect x="65" y="318.3" width="20.1" height="46.7" fill="#91CC75"/>
-<rect x="141.4" y="326.4" width="20.1" height="38.6" fill="#91CC75"/>
-<rect x="217.9" y="324.4" width="20.1" height="40.6" fill="#91CC75"/>
-<rect x="294.3" y="315.3" width="20.1" height="49.7" fill="#91CC75"/>
-<rect x="370.7" y="303.4" width="20.1" height="61.6" fill="#91CC75"/>
-<rect x="447.1" y="294.9" width="20.1" height="70.1" fill="#91CC75"/>
-<rect x="523.6" y="299.2" width="20.1" height="65.8" fill="#91CC75"/>
-<rect x="88.1" y="297.1" width="20.1" height="67.9" fill="#FAC858"/>
-<rect x="164.6" y="294.5" width="20.1" height="70.5" fill="#FAC858"/>
-<rect x="241" y="301.1" width="20.1" height="63.9" fill="#FAC858"/>
-<rect x="317.4" y="294.1" width="20.1" height="70.9" fill="#FAC858"/>
-<rect x="393.9" y="282.2" width="20.1" height="82.8" fill="#FAC858"/>
-<rect x="470.3" y="294.9" width="20.1" height="70.1" fill="#FAC858"/>
-<rect x="546.7" y="297.1" width="20.1" height="67.9" fill="#FAC858"/>
-<rect x="111.3" y="190.9" width="20.1" height="174.1" fill="#EE6666"/>
-<rect x="187.7" y="167.1" width="20.1" height="197.9" fill="#EE6666"/>
-<rect x="264.1" y="173.7" width="20.1" height="191.3" fill="#EE6666"/>
-<rect x="340.6" y="166.7" width="20.1" height="198.3" fill="#EE6666"/>
-<rect x="417" y="91.1" width="20.1" height="273.9" fill="#EE6666"/>
-<rect x="493.4" y="82.6" width="20.1" height="282.4" fill="#EE6666"/>
-<rect x="569.9" y="84.7" width="20.1" height="280.3" fill="#EE6666"/>
+<rect x="65" y="318.3" width="20.1" height="46.7" fill="#91CC75" data-series="Union Ads" data-category="Mon" data-value="220"/>
+<rect x="141.4" y="326.4" width="20.1" height="38.6" fill="#91CC75" data-series="Union Ads" data-category="Tue" data-value="182"/>
+<rect x="217.9" y="324.4" width="20.1" height="40.6" fill="#91CC75" data-series="Union Ads" data-category="Wed" data-value="191"/>
+<rect x="294.3" y="315.3" width="20.1" height="49.7" fill="#91CC75" data-series="Union Ads" data-category="Thu" data-value="234"/>
+<rect x="370.7" y="303.4" width="20.1" height="61.6" fill="#91CC75" data-series="Union Ads" data-category="Fri" data-value="290"/>
+<rect x="447.1" y="294.9" width="20.1" height="70.1" fill="#91CC75" data-series="Union Ads" data-category="Sat" data-value="330"/>
+<rect x="523.6" y="299.2" width="20.1" height="65.8" fill="#91CC75" data-series="Union Ads" data-category="Sun" data-value="310"/>
+<rect x="88.1" y="297.1" width="20.1" height="67.9" fill="#FAC858" data-series="Direct" data-category="Mon" data-value="320"/>
+<rect x="164.6" y="294.5" width="20.1" height="70.5" fill="#FAC858" data-series="Direct" data-category="Tue" data-value="332"/>
+<rect x="241" y="301.1" width="20.1" height="63.9" fill="#FAC858" data-series="Direct" data-category="Wed" data-value="301"/>
+<rect x="317.4" y="294.1" width="20.1" height="70.9" fill="#FAC858" data-series="Direct" data-category="Thu" data-value="334"/>
+<rect x="393.9" y="282.2" width="20.1" height="82.8" fill="#FAC858" data-series="Direct" data-category="Fri" data-value="390"/>
+<rect x="470.3" y="294.9" width="20.1" height="70.1" fill="#FAC858" data-series="Direct" data-category="Sat" data-value="330"/>
+<rect x="546.7" y="297.1" width="20.1" height="67.9" fill="#FAC858" data-series="Direct" data-category="Sun" data-value="320"/>
+<rect x="111.3" y="190.9" width="20.1" height="174.1" fill="#EE6666" data-series="Search Engine" data-category="Mon" data-value="820"/>
+<rect x="187.7" y="167.1" width="20.1" height="197.9" fill="#EE6666" data-series="Search Engine" data-category="Tue" data-value="932"/>
+<rect x="264.1" y="173.7" width="20.1" height="191.3" fill="#EE6666" data-series="Search Engine" data-category="Wed" data-value="901"/>
+<rect x="340.6" y="166.7" width="20.1" height="198.3" fill="#EE6666" data-series="Search Engine" data-category="Thu" data-value="934"/>
+<rect x="417" y="91.1" width="20.1" height="273.9" fill="#EE6666" data-series="Search Engine" data-category="Fri" data-value="1290"/>
+<rect x="493.4" y="82.6" width="20.1" height="282.4" fill="#EE6666" data-series="Search Engine" data-category="Sat" data-value="1330"/>
+<rect x="569.9" y="84.7" width="20.1" height="280.3" fill="#EE6666" data-series="Search Engine" data-category="Sun" data-value="1320"/>
 <g>
 <path d="M 98.2 339.5 L 174.6 337 L 251.1 343.6 L 327.5 336.5 L 403.9 345.9 L 480.4 316.2 L 556.8 320.4" stroke-width="2" fill="none" stroke="#5470C6"/>
 <circle cx="98.2" cy="339.5" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>

@@ -22,7 +22,7 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 
 /// One radar axis: its name and maximum value.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct RadarIndicator {
     /// Name of the indicator axis.
     pub name: String,
@@ -56,7 +56,7 @@ fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<
 }
 
 /// A radar chart plotting each series against a ring of indicators.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct RadarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -74,6 +74,8 @@ pub struct RadarChart {
     // indicators
     /// The indicator axes of the radar.
     pub indicators: Vec<RadarIndicator>,
+    /// Number of concentric rings of the web; 0 means the default of 5.
+    pub split_number: usize,
 }
 
 impl std::ops::Deref for RadarChart {
@@ -94,9 +96,14 @@ impl RadarChart {
         let mut r = RadarChart {
             ..Default::default()
         };
-        let data = r.base.fill_option(data, &mut r.y_axis_configs)?;
+        let data = r
+            .base
+            .fill_option(data, &mut r.y_axis_configs, super::schema::RADAR_FIELDS)?;
         if let Some(indicators) = get_radar_indicator_list_from_value(&data) {
             r.indicators = indicators;
+        }
+        if let Some(split_number) = get_usize_from_value(&data, "split_number") {
+            r.split_number = split_number;
         }
         if data.get("series_fill").is_none() {
             r.series_fill = true;
@@ -157,11 +164,17 @@ impl RadarChart {
         }
 
         let offset = 40.0;
-        let r = c.height() / 2.0 - offset;
+        // The web fits the shorter side so its labels stay inside a canvas
+        // that is taller than wide.
+        let r = (c.width().min(c.height()) / 2.0 - offset).max(1.0);
         let angle = 360.0 / indicators.len() as f32;
         let cx = c.width() / 2.0;
         let cy = c.height() / 2.0;
-        let round_count = 5;
+        let round_count = if self.split_number == 0 {
+            5
+        } else {
+            self.split_number
+        };
         for i in 1..=round_count {
             let ir = r / round_count as f32 * i as f32;
             let mut points = vec![];
@@ -249,8 +262,12 @@ impl RadarChart {
                     ir = ir.clamp(0.0, r);
                     let p = get_pie_point(cx, cy, ir, angle * i as f32);
                     if series.label_show {
-                        let label =
-                            format_series_value(value.to_owned(), &self.series_label_formatter);
+                        let label = format_series_label(
+                            &self.series_label_formatter,
+                            *value,
+                            &series.name,
+                            &item.name,
+                        );
                         label_positions.push((p, label));
                     }
                     points.push(p);
@@ -301,7 +318,6 @@ impl RadarChart {
 mod tests {
     use super::RadarChart;
     use crate::Series;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn radar_basic() {
@@ -327,10 +343,7 @@ mod tests {
                 ("Marketing", 25000.0).into(),
             ],
         );
-        assert_eq!(
-            include_str!("../../asset/radar_chart/basic.svg"),
-            radar_chart.svg().unwrap()
-        );
+        assert_snapshot!("radar_chart/basic.svg", radar_chart.svg().unwrap());
     }
 
     #[test]
@@ -357,10 +370,7 @@ mod tests {
             ],
         );
 
-        assert_eq!(
-            include_str!("../../asset/radar_chart/seven_points.svg"),
-            radar_chart.svg().unwrap()
-        );
+        assert_snapshot!("radar_chart/seven_points.svg", radar_chart.svg().unwrap());
     }
 
     #[test]
@@ -385,10 +395,7 @@ mod tests {
             ],
         );
 
-        assert_eq!(
-            include_str!("../../asset/radar_chart/five_points.svg"),
-            radar_chart.svg().unwrap()
-        );
+        assert_snapshot!("radar_chart/five_points.svg", radar_chart.svg().unwrap());
     }
 
     #[test]
@@ -412,10 +419,7 @@ mod tests {
             ],
         );
 
-        assert_eq!(
-            include_str!("../../asset/radar_chart/four_points.svg"),
-            radar_chart.svg().unwrap()
-        );
+        assert_snapshot!("radar_chart/four_points.svg", radar_chart.svg().unwrap());
     }
 
     #[test]
@@ -439,10 +443,7 @@ mod tests {
         );
         radar_chart.series_list[0].label_show = true;
 
-        assert_eq!(
-            include_str!("../../asset/radar_chart/three_points.svg"),
-            radar_chart.svg().unwrap()
-        );
+        assert_snapshot!("radar_chart/three_points.svg", radar_chart.svg().unwrap());
     }
 
     // A missing point (`f32::MIN` / `NIL_VALUE`) must collapse to the center

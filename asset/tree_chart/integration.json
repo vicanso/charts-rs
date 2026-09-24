@@ -1,0 +1,13 @@
+{
+    "theme": "dark",
+    "title_text": "Org",
+    "orient": "TB",
+    "series_data": [{
+        "name": "CEO",
+        "children": [
+            {"name": "CTO", "children": [{"name": "Backend", "value": 8}, {"name": "Frontend", "value": 5}]},
+            {"name": "CFO", "children": [{"name": "Accounting", "value": 3}]},
+            {"name": "COO", "value": 4}
+        ]
+    }]
+}

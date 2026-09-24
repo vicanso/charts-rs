@@ -92,34 +92,34 @@ Sat
 Sun
 </text>
 </g>
-<rect x="65" y="341.6" width="14.4" height="23.4" fill="#7EB26D"/>
-<rect x="141.4" y="339.2" width="14.4" height="25.8" fill="#7EB26D"/>
-<rect x="217.9" y="345.3" width="14.4" height="19.7" fill="#7EB26D"/>
-<rect x="294.3" y="338.8" width="14.4" height="26.2" fill="#7EB26D"/>
-<rect x="370.7" y="347.4" width="14.4" height="17.6" fill="#7EB26D"/>
-<rect x="447.1" y="320.1" width="14.4" height="44.9" fill="#7EB26D"/>
-<rect x="523.6" y="324" width="14.4" height="41" fill="#7EB26D"/>
-<rect x="82.4" y="322" width="14.4" height="43" fill="#EAB839"/>
-<rect x="158.8" y="329.4" width="14.4" height="35.6" fill="#EAB839"/>
-<rect x="235.2" y="327.7" width="14.4" height="37.3" fill="#EAB839"/>
-<rect x="311.6" y="319.3" width="14.4" height="45.7" fill="#EAB839"/>
-<rect x="388.1" y="308.4" width="14.4" height="56.6" fill="#EAB839"/>
-<rect x="464.5" y="300.5" width="14.4" height="64.5" fill="#EAB839"/>
-<rect x="540.9" y="304.4" width="14.4" height="60.6" fill="#EAB839"/>
-<rect x="99.7" y="302.5" width="14.4" height="62.5" fill="#6ED0E0"/>
-<rect x="176.1" y="300.1" width="14.4" height="64.9" fill="#6ED0E0"/>
-<rect x="252.6" y="306.2" width="14.4" height="58.8" fill="#6ED0E0"/>
-<rect x="329" y="299.8" width="14.4" height="65.2" fill="#6ED0E0"/>
-<rect x="405.4" y="288.8" width="14.4" height="76.2" fill="#6ED0E0"/>
-<rect x="481.9" y="300.5" width="14.4" height="64.5" fill="#6ED0E0"/>
-<rect x="558.3" y="302.5" width="14.4" height="62.5" fill="#6ED0E0"/>
-<rect x="117.1" y="204.8" width="14.4" height="160.2" fill="#EF843C"/>
-<rect x="193.5" y="182.9" width="14.4" height="182.1" fill="#EF843C"/>
-<rect x="269.9" y="189" width="14.4" height="176" fill="#EF843C"/>
-<rect x="346.4" y="182.6" width="14.4" height="182.4" fill="#EF843C"/>
-<rect x="422.8" y="113" width="14.4" height="252" fill="#EF843C"/>
-<rect x="499.2" y="105.2" width="14.4" height="259.8" fill="#EF843C"/>
-<rect x="575.6" y="107.2" width="14.4" height="257.8" fill="#EF843C"/>
+<rect x="65" y="341.6" width="14.4" height="23.4" fill="#7EB26D" data-series="Email" data-category="Mon" data-value="120"/>
+<rect x="141.4" y="339.2" width="14.4" height="25.8" fill="#7EB26D" data-series="Email" data-category="Tue" data-value="132"/>
+<rect x="217.9" y="345.3" width="14.4" height="19.7" fill="#7EB26D" data-series="Email" data-category="Wed" data-value="101"/>
+<rect x="294.3" y="338.8" width="14.4" height="26.2" fill="#7EB26D" data-series="Email" data-category="Thu" data-value="134"/>
+<rect x="370.7" y="347.4" width="14.4" height="17.6" fill="#7EB26D" data-series="Email" data-category="Fri" data-value="90"/>
+<rect x="447.1" y="320.1" width="14.4" height="44.9" fill="#7EB26D" data-series="Email" data-category="Sat" data-value="230"/>
+<rect x="523.6" y="324" width="14.4" height="41" fill="#7EB26D" data-series="Email" data-category="Sun" data-value="210"/>
+<rect x="82.4" y="322" width="14.4" height="43" fill="#EAB839" data-series="Union Ads" data-category="Mon" data-value="220"/>
+<rect x="158.8" y="329.4" width="14.4" height="35.6" fill="#EAB839" data-series="Union Ads" data-category="Tue" data-value="182"/>
+<rect x="235.2" y="327.7" width="14.4" height="37.3" fill="#EAB839" data-series="Union Ads" data-category="Wed" data-value="191"/>
+<rect x="311.6" y="319.3" width="14.4" height="45.7" fill="#EAB839" data-series="Union Ads" data-category="Thu" data-value="234"/>
+<rect x="388.1" y="308.4" width="14.4" height="56.6" fill="#EAB839" data-series="Union Ads" data-category="Fri" data-value="290"/>
+<rect x="464.5" y="300.5" width="14.4" height="64.5" fill="#EAB839" data-series="Union Ads" data-category="Sat" data-value="330"/>
+<rect x="540.9" y="304.4" width="14.4" height="60.6" fill="#EAB839" data-series="Union Ads" data-category="Sun" data-value="310"/>
+<rect x="99.7" y="302.5" width="14.4" height="62.5" fill="#6ED0E0" data-series="Direct" data-category="Mon" data-value="320"/>
+<rect x="176.1" y="300.1" width="14.4" height="64.9" fill="#6ED0E0" data-series="Direct" data-category="Tue" data-value="332"/>
+<rect x="252.6" y="306.2" width="14.4" height="58.8" fill="#6ED0E0" data-series="Direct" data-category="Wed" data-value="301"/>
+<rect x="329" y="299.8" width="14.4" height="65.2" fill="#6ED0E0" data-series="Direct" data-category="Thu" data-value="334"/>
+<rect x="405.4" y="288.8" width="14.4" height="76.2" fill="#6ED0E0" data-series="Direct" data-category="Fri" data-value="390"/>
+<rect x="481.9" y="300.5" width="14.4" height="64.5" fill="#6ED0E0" data-series="Direct" data-category="Sat" data-value="330"/>
+<rect x="558.3" y="302.5" width="14.4" height="62.5" fill="#6ED0E0" data-series="Direct" data-category="Sun" data-value="320"/>
+<rect x="117.1" y="204.8" width="14.4" height="160.2" fill="#EF843C" data-series="Search Engine" data-category="Mon" data-value="820"/>
+<rect x="193.5" y="182.9" width="14.4" height="182.1" fill="#EF843C" data-series="Search Engine" data-category="Tue" data-value="932"/>
+<rect x="269.9" y="189" width="14.4" height="176" fill="#EF843C" data-series="Search Engine" data-category="Wed" data-value="901"/>
+<rect x="346.4" y="182.6" width="14.4" height="182.4" fill="#EF843C" data-series="Search Engine" data-category="Thu" data-value="934"/>
+<rect x="422.8" y="113" width="14.4" height="252" fill="#EF843C" data-series="Search Engine" data-category="Fri" data-value="1290"/>
+<rect x="499.2" y="105.2" width="14.4" height="259.8" fill="#EF843C" data-series="Search Engine" data-category="Sat" data-value="1330"/>
+<rect x="575.6" y="107.2" width="14.4" height="257.8" fill="#EF843C" data-series="Search Engine" data-category="Sun" data-value="1320"/>
 <text font-size="14" x="72.2" y="341.6" dx="-12" dy="-8" font-family="Roboto" fill="#D8D9DA">
 120
 </text>

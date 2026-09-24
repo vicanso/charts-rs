@@ -109,7 +109,7 @@ Search Engine
 <circle cx="8" cy="155" r="3.5" stroke-width="1" stroke="#EE6666" fill="#EE6666"/>
 <line stroke-width="1" x1="13" y1="155" x2="540" y2="155" stroke="#EE6666" stroke-dasharray="4,2"/>
 <path d="M 540 155 L 535 150 L 550 155 L 535 160 Z" stroke-width="1" fill="#EE6666" stroke="#EE6666"/>
-<text font-size="14" x="552" y="146" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="536" y="155" dy="-6" text-anchor="end" font-family="Roboto" fill="#464646">
 1075.3
 </text>
 </svg>

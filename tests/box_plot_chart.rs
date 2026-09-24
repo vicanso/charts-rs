@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::BoxPlotChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn box_plot_chart_basic_json() {
@@ -14,10 +15,7 @@ fn box_plot_chart_basic_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/box_plot_chart/basic_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("box_plot_chart/basic_json.svg", chart.svg().unwrap());
 }
 
 #[test]
@@ -34,8 +32,5 @@ fn box_plot_chart_grafana_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/box_plot_chart/grafana_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("box_plot_chart/grafana_json.svg", chart.svg().unwrap());
 }

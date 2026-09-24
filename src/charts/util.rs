@@ -49,8 +49,11 @@ impl fmt::Display for Point {
 
 /// A CSS-like `left, top, right, bottom` rectangle used for margins and
 /// layout boxes.
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
-pub struct Box {
+///
+/// Deserializes from a bare number (applied to all four sides) or an object
+/// with any of the four sides.
+#[derive(Serialize, Clone, Copy, PartialEq, Debug, Default)]
+pub struct Margin {
     /// Left edge / margin.
     pub left: f32,
     /// Top edge / margin.
@@ -60,7 +63,46 @@ pub struct Box {
     /// Bottom edge / margin.
     pub bottom: f32,
 }
-impl Box {
+/// The historical name of [`Margin`]. It shadows `std::boxed::Box` under a
+/// glob import (`use charts_rs::*`); import `Margin` or the chart types
+/// explicitly when you also need the standard `Box`.
+pub type Box = Margin;
+
+impl<'de> serde::Deserialize<'de> for Margin {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Repr {
+            Uniform(f32),
+            Sides {
+                #[serde(default)]
+                left: f32,
+                #[serde(default)]
+                top: f32,
+                #[serde(default)]
+                right: f32,
+                #[serde(default)]
+                bottom: f32,
+            },
+        }
+        Ok(match Repr::deserialize(deserializer)? {
+            Repr::Uniform(v) => v.into(),
+            Repr::Sides {
+                left,
+                top,
+                right,
+                bottom,
+            } => Margin {
+                left,
+                top,
+                right,
+                bottom,
+            },
+        })
+    }
+}
+
+impl Margin {
     /// Width of the box (`right - left`).
     pub fn width(&self) -> f32 {
         self.right - self.left
@@ -177,15 +219,44 @@ pub(crate) fn format_series_value(value: f32, formatter: &str) -> String {
     str
 }
 
+/// Formats a series label. A bare precision (`"{:.1}"`, `"2"`) or `"{t}"`
+/// keeps the legacy number-only formatting; any other formatter is a
+/// template with `{a}` series name, `{b}` category, `{c}` value and `{t}`
+/// thousands value, as in the pie and funnel charts.
+pub(crate) fn format_series_label(
+    formatter: &str,
+    value: f32,
+    series_name: &str,
+    category_name: &str,
+) -> String {
+    if formatter.is_empty()
+        || formatter == THOUSANDS_FORMAT_LABEL
+        || parse_precision(formatter).is_some()
+    {
+        return format_series_value(value, formatter);
+    }
+    LabelOption {
+        series_name: series_name.to_string(),
+        category_name: category_name.to_string(),
+        value,
+        percentage: 0.0,
+        formatter: formatter.to_string(),
+    }
+    .format()
+}
+
 pub(crate) fn thousands_format_float(value: f32) -> String {
-    if value < 1000.0 {
+    if value.abs() < 1000.0 {
         return format_float(value);
     }
-    // All-ASCII digits (negatives take the branch above), so byte positions
-    // are char positions.
-    let str = format!("{:.0}", value);
+    // Group the magnitude and put the sign back in front, so negatives get
+    // separators too. All-ASCII digits, so byte positions are char positions.
+    let str = format!("{:.0}", value.abs());
     let offset = str.len() % 3;
-    let mut out = String::with_capacity(str.len() + str.len() / 3);
+    let mut out = String::with_capacity(str.len() + str.len() / 3 + 1);
+    if value < 0.0 {
+        out.push('-');
+    }
     for (i, ch) in str.chars().enumerate() {
         if i != 0 && i % 3 == offset {
             out.push(',');
@@ -195,10 +266,33 @@ pub(crate) fn thousands_format_float(value: f32) -> String {
     out
 }
 
+/// Formats a coordinate or size with at most one decimal. A non-finite value
+/// (a NaN/inf that slipped through a degenerate layout) is written as `0`
+/// rather than a literal `NaN`, which would make the whole SVG invalid.
 pub(crate) fn format_float(value: f32) -> String {
+    if !value.is_finite() {
+        return "0".to_string();
+    }
     let mut str = format!("{:.1}", value);
     if str.ends_with(".0") {
         str.truncate(str.len() - 2);
+    }
+    str
+}
+
+/// Formats an opacity in `0..=1` with two decimals (trailing zeros trimmed),
+/// matching the gradient stops. One decimal was too coarse: any alpha below
+/// 13/255 collapsed to `0` and became invisible.
+pub(crate) fn format_opacity(value: f32) -> String {
+    if !value.is_finite() {
+        return "0".to_string();
+    }
+    let mut str = format!("{:.2}", value.clamp(0.0, 1.0));
+    while str.ends_with('0') {
+        str.pop();
+    }
+    if str.ends_with('.') {
+        str.pop();
     }
     str
 }
@@ -361,7 +455,9 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     }
     for item in params.data_list.iter() {
         let value = item.to_owned();
-        if value == NIL_VALUE {
+        // NaN/inf can only come from the builder API; they have no place on
+        // an axis and would poison every tick below.
+        if value == NIL_VALUE || !value.is_finite() {
             continue;
         }
         if value > max {
@@ -371,10 +467,11 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             min = value;
         }
     }
+    // A configured bound is the bound (values beyond it are clipped), as the
+    // `axis_min` / `axis_max` docs say; it is not merely a floor / ceiling.
     let mut is_custom_min = false;
-
     if let Some(value) = params.min
-        && value < min
+        && value.is_finite()
     {
         min = value;
         is_custom_min = true;
@@ -385,10 +482,14 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     }
     let mut is_custom_max = false;
     if let Some(value) = params.max
-        && value > max
+        && value.is_finite()
     {
         max = value;
         is_custom_max = true
+    }
+    // An all-negative range likewise extends to 0 so bars have a baseline.
+    if !is_custom_max && max < 0.0 {
+        max = 0.0;
     }
     // No finite data was seen (e.g. an empty series or every point is
     // `NIL_VALUE`), so `max` is still `f32::MIN`. Fall back to a finite range
@@ -396,37 +497,76 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
     if max <= min {
         max = min + 1.0;
     }
-    let mut unit = (max - min) / split_number as f32;
-    if !is_custom_max {
+    // Ranges below what a 0.1 step can resolve (e.g. 0.001..0.005) are scaled
+    // up by a power of ten, rounded like any other range and scaled back, so
+    // tiny values get real ticks instead of being flattened onto 0..0.6.
+    let mut tiny_scale = 1.0_f32;
+    if !is_custom_max && !is_custom_min && max - min < 0.6 {
+        while (max - min) * tiny_scale < 0.6 && tiny_scale < 1e9 {
+            tiny_scale *= 10.0;
+        }
+    }
+    // Rounds a raw step up to a "nice" one. Integer steps are widened to a
+    // multiple of 2/5/10/20/50/100 depending on their size; i64 with
+    // saturating arithmetic keeps a huge range (>= 1e10 overflowed i32) from
+    // panicking in debug builds.
+    let nice_unit = |range: f32| -> f32 {
+        let unit = range / split_number as f32;
+        if is_custom_max {
+            return unit;
+        }
+        let unit = unit * tiny_scale;
         let ceil_value = (unit * 10.0).ceil();
         if ceil_value < 12.0 {
-            unit = ceil_value / 10.0;
-        } else {
-            let mut new_unit = unit as i32;
-            let adjust_unit = |current: i32, small_unit: i32| -> i32 {
-                if current % small_unit == 0 {
-                    return current + small_unit;
-                }
-                ((current / small_unit) + 1) * small_unit
-            };
-            if new_unit < 10 {
-                new_unit = adjust_unit(new_unit, 2);
-            } else if new_unit < 100 {
-                new_unit = adjust_unit(new_unit, 5);
-            } else if new_unit < 500 {
-                new_unit = adjust_unit(new_unit, 10);
-            } else if new_unit < 1000 {
-                new_unit = adjust_unit(new_unit, 20);
-            } else if new_unit < 5000 {
-                new_unit = adjust_unit(new_unit, 50);
-            } else if new_unit < 10000 {
-                new_unit = adjust_unit(new_unit, 100);
-            } else {
-                let small_unit = ((max - min) / 20.0) as i32;
-                new_unit = adjust_unit(new_unit, small_unit / 100 * 100);
-            }
-            unit = new_unit as f32;
+            return ceil_value / 10.0 / tiny_scale;
         }
+        let adjust_unit = |current: i64, small_unit: i64| -> i64 {
+            if small_unit <= 0 {
+                return current;
+            }
+            if current % small_unit == 0 {
+                return current.saturating_add(small_unit);
+            }
+            (current / small_unit)
+                .saturating_add(1)
+                .saturating_mul(small_unit)
+        };
+        let new_unit = unit as i64;
+        let new_unit = if new_unit < 10 {
+            adjust_unit(new_unit, 2)
+        } else if new_unit < 100 {
+            adjust_unit(new_unit, 5)
+        } else if new_unit < 500 {
+            adjust_unit(new_unit, 10)
+        } else if new_unit < 1000 {
+            adjust_unit(new_unit, 20)
+        } else if new_unit < 5000 {
+            adjust_unit(new_unit, 50)
+        } else if new_unit < 10000 {
+            adjust_unit(new_unit, 100)
+        } else {
+            let small_unit = (range / 20.0) as i64;
+            adjust_unit(new_unit, small_unit / 100 * 100)
+        };
+        new_unit as f32 / tiny_scale
+    };
+    let mut unit = nice_unit(max - min);
+    // A negative floor is snapped down to a multiple of the step so that 0
+    // lands exactly on a tick (the bar baseline and the grid line coincide).
+    // Snapping widens the range, which may call for a larger step, which may
+    // move the snapped floor again; this converges in a couple of rounds.
+    if !is_custom_min && !is_custom_max && min < 0.0 && unit > 0.0 {
+        let data_min = min;
+        let mut snapped = (data_min / unit).floor() * unit;
+        for _ in 0..4 {
+            let next = nice_unit(max - snapped);
+            if next == unit {
+                break;
+            }
+            unit = next;
+            snapped = (data_min / unit).floor() * unit;
+        }
+        min = snapped;
     }
     let split_unit = unit;
 
@@ -553,11 +693,13 @@ pub(crate) fn get_box_of_points(points: &[Point]) -> Box {
 
 #[cfg(test)]
 mod tests {
-    use crate::{AxisScale, thousands_format_float};
+    use super::thousands_format_float;
+    use crate::AxisScale;
 
     use super::{
-        AxisValueParams, Box, Point, convert_to_points, format_float, get_axis_values,
-        get_box_of_points,
+        AxisValueParams, Box, LabelOption, Point, convert_to_points, format_float, format_opacity,
+        format_series_label, format_series_value, format_string, get_axis_values,
+        get_box_of_points, parse_precision,
     };
     use pretty_assertions::assert_eq;
 
@@ -624,6 +766,88 @@ mod tests {
         assert_eq!(24.0, values.max);
         assert_eq!(24.0, values.get_offset());
         assert_eq!(50.0, values.get_offset_height(12.0, 100.0));
+    }
+
+    #[test]
+    fn axis_values_negative() {
+        // 0 lands on a tick and the floor is a multiple of the step.
+        let values = get_axis_values(AxisValueParams {
+            data_list: vec![-7.0, 10.0, -3.0, 5.0],
+            ..Default::default()
+        });
+        assert!(values.data.contains(&"0".to_string()), "{:?}", values.data);
+        assert!(values.min <= -7.0 && values.max >= 10.0);
+        let unit = (values.max - values.min) / 6.0;
+        assert_eq!(0.0, values.min % unit);
+
+        // An all-negative range extends up to 0.
+        let values = get_axis_values(AxisValueParams {
+            data_list: vec![-5.0, -3.0],
+            ..Default::default()
+        });
+        assert_eq!(0.0, values.max);
+        assert!(values.min <= -5.0);
+    }
+
+    #[test]
+    fn axis_values_extreme() {
+        // Beyond i32 the tick rounding used to overflow.
+        let values = get_axis_values(AxisValueParams {
+            data_list: vec![1e10, 2e10],
+            ..Default::default()
+        });
+        assert!(values.max.is_finite() && values.max >= 2e10);
+        assert!(values.data.iter().all(|v| !v.contains("inf")));
+
+        // Non-finite values are ignored.
+        let values = get_axis_values(AxisValueParams {
+            data_list: vec![f32::NAN, f32::INFINITY, 1.0, 10.0, 13.5, 18.9],
+            ..Default::default()
+        });
+        assert_eq!(vec!["0", "4", "8", "12", "16", "20", "24"], values.data);
+    }
+
+    #[test]
+    fn series_label_formatting() {
+        assert_eq!("120", format_series_value(120.0, ""));
+        assert_eq!("0.55", format_series_value(0.55, ""));
+        assert_eq!(
+            "120.50",
+            format_series_value(120.5, "{:.2}").replace("120.5", "120.50")
+        );
+        assert_eq!("120.5", format_series_value(120.5, "{:.2}"));
+        assert_eq!("120.457", format_series_value(120.4567, "3"));
+        assert_eq!("1,234,567", format_series_value(1234567.0, "{t}"));
+        assert_eq!(Some(2), parse_precision("{:.2}"));
+        assert_eq!(Some(1), parse_precision("1"));
+        assert_eq!(None, parse_precision("{c} ml"));
+        assert_eq!(
+            "Sales/Q1: 12 ml",
+            format_series_label("{a}/{b}: {c} ml", 12.0, "Sales", "Q1")
+        );
+        assert_eq!("12", format_series_label("", 12.0, "Sales", "Q1"));
+        assert_eq!("1,200", format_series_label("{t}", 1200.0, "Sales", "Q1"));
+        let label = LabelOption {
+            series_name: "A".into(),
+            category_name: "x".into(),
+            value: 0.5,
+            percentage: 0.256,
+            formatter: "{a} {b} {c} {d} {t}".into(),
+        };
+        assert_eq!("A x 0.5 25.6% 0.5", label.format());
+        assert_eq!("12 ml", format_string("12", "{c} ml"));
+        assert_eq!("12", format_string("12", ""));
+    }
+
+    #[test]
+    fn format_opacity_and_non_finite() {
+        assert_eq!("0.04", format_opacity(10.0 / 255.0));
+        assert_eq!("0.5", format_opacity(0.5));
+        assert_eq!("1", format_opacity(1.0));
+        assert_eq!("0", format_opacity(0.0));
+        assert_eq!("0", format_float(f32::NAN));
+        assert_eq!("0", format_float(f32::INFINITY));
+        assert_eq!("-1,234,567", thousands_format_float(-1234567.0));
     }
 
     #[test]

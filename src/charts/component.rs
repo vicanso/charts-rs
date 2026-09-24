@@ -23,7 +23,6 @@ use super::measure_text_width_family;
 use super::path::*;
 use super::util::*;
 
-static TAG_SVG: &str = "svg";
 static TAG_LINE: &str = "line";
 static TAG_RECT: &str = "rect";
 static TAG_POLYLINE: &str = "polyline";
@@ -33,8 +32,6 @@ static TAG_TEXT: &str = "text";
 static TAG_PATH: &str = "path";
 static TAG_GROUP: &str = "g";
 
-static ATTR_VIEW_BOX: &str = "viewBox";
-static ATTR_XMLNS: &str = "xmlns";
 static ATTR_HEIGHT: &str = "height";
 static ATTR_WIDTH: &str = "width";
 static ATTR_FONT_FAMILY: &str = "font-family";
@@ -74,7 +71,7 @@ fn convert_opacity(color: &Color) -> String {
     if color.is_nontransparent() {
         "".to_string()
     } else {
-        format_float(color.opacity())
+        format_opacity(color.opacity())
     }
 }
 
@@ -194,19 +191,36 @@ pub(crate) const TOOLTIP_STYLE: &str =
     ".ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}";
 
 pub fn generate_svg(width: f32, height: f32, x: f32, y: f32, data: String) -> String {
-    let mut attrs = vec![
-        (ATTR_WIDTH, format!("{}", width)),
-        (ATTR_HEIGHT, format!("{}", height)),
-        (ATTR_VIEW_BOX, format!("0 0 {} {}", width, height)),
-        (ATTR_XMLNS, "http://www.w3.org/2000/svg".to_string()),
-    ];
+    let mut out = String::with_capacity(data.len() + 160);
+    write_svg_open(&mut out, width, height, x, y);
+    out.push_str(&data);
+    write_svg_close(&mut out);
+    out
+}
+
+/// Writes the opening `<svg …>` tag (and the newline after it) so a chart
+/// can stream its components right behind it.
+pub(crate) fn write_svg_open(out: &mut String, width: f32, height: f32, x: f32, y: f32) {
+    let _ = write!(
+        out,
+        "<svg width=\"{}\" height=\"{}\" viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\"",
+        format_float(width),
+        format_float(height),
+        format_float(width),
+        format_float(height)
+    );
     if x != 0.0 {
-        attrs.push((ATTR_X, format!("{}", x)))
+        let _ = write!(out, " x=\"{}\"", format_float(x));
     }
     if y != 0.0 {
-        attrs.push((ATTR_Y, format!("{}", y)))
+        let _ = write!(out, " y=\"{}\"", format_float(y));
     }
-    SVGTag::new(TAG_SVG, data, attrs).to_string()
+    out.push_str(">\n");
+}
+
+/// Writes the closing `</svg>` tag.
+pub(crate) fn write_svg_close(out: &mut String) {
+    out.push_str("\n</svg>");
 }
 
 /// Adds accessibility metadata to an SVG produced by a chart's `svg()`: sets
@@ -239,17 +253,6 @@ pub fn svg_with_accessibility(svg: &str, title: &str, desc: &str) -> String {
         children.push_str(&format!("\n<desc>{}</desc>", encode_text(desc)));
     }
     format!("{open}{children}{rest}")
-}
-
-impl<'a> SVGTag<'a> {
-    pub fn new(tag: &'a str, data: String, attrs: Vec<(&'a str, String)>) -> Self {
-        Self {
-            tag,
-            attrs,
-            data: Some(data),
-            ..Default::default()
-        }
-    }
 }
 
 /// Writes an SVG/XML attribute value into `out`, escaping the characters that
@@ -365,6 +368,8 @@ pub enum Component {
     Axis(Axis),
     Legend(Legend),
     Pie(Pie),
+    /// A filled band between two smooth curves.
+    SmoothBand(SmoothBand),
 }
 #[derive(Clone, PartialEq, Debug)]
 
@@ -606,6 +611,8 @@ pub struct Circle {
     pub title: Option<String>,
     /// Optional CSS class (used for the hover-tooltip trigger).
     pub class: Option<String>,
+    /// `data-*` attributes, see [`Rect::dataset`].
+    pub dataset: Vec<(String, String)>,
 }
 
 impl Default for Circle {
@@ -619,6 +626,7 @@ impl Default for Circle {
             r: 3.0,
             title: None,
             class: None,
+            dataset: vec![],
         }
     }
 }
@@ -657,8 +665,8 @@ impl Circle {
             SVGTag {
                 tag: TAG_CIRCLE,
                 attrs,
+                dataset: &self.dataset,
                 data: title_data(&self.title),
-                ..Default::default()
             }
         );
     }
@@ -730,6 +738,8 @@ pub struct Polygon {
     pub style: Option<String>,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
+    /// `data-*` attributes, see [`Rect::dataset`].
+    pub dataset: Vec<(String, String)>,
 }
 
 impl Polygon {
@@ -784,8 +794,8 @@ impl Polygon {
             SVGTag {
                 tag: TAG_POLYGON,
                 attrs,
+                dataset: &self.dataset,
                 data: title_data(&self.title),
-                ..Default::default()
             }
         );
     }
@@ -1044,6 +1054,8 @@ pub struct Pie {
     pub style: Option<String>,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
+    /// `data-*` attributes, see [`Rect::dataset`].
+    pub dataset: Vec<(String, String)>,
 }
 
 impl Default for Pie {
@@ -1061,6 +1073,7 @@ impl Default for Pie {
             class: None,
             style: None,
             title: None,
+            dataset: vec![],
         }
     }
 }
@@ -1215,8 +1228,8 @@ impl Pie {
         let element = SVGTag {
             tag: TAG_PATH,
             attrs,
+            dataset: &self.dataset,
             data: title_data(&self.title),
-            ..Default::default()
         }
         .to_string();
         if defs.is_empty() {
@@ -1461,6 +1474,69 @@ impl SmoothLineFill {
     }
 }
 
+/// A filled band between two smooth curves, e.g. one stream of a theme
+/// river: the top edge runs left to right, the bottom edge back.
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct SmoothBand {
+    /// Points of the upper edge, left to right.
+    pub top: Vec<Point>,
+    /// Points of the lower edge, left to right (same x positions).
+    pub bottom: Vec<Point>,
+    /// Fill color.
+    pub fill: Option<Color>,
+    /// CSS class attribute of the SVG element.
+    pub class: Option<String>,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
+    /// `data-*` attributes, see [`Rect::dataset`].
+    pub dataset: Vec<(String, String)>,
+}
+
+impl SmoothBand {
+    /// Renders the component to an SVG fragment.
+    pub fn svg(&self) -> String {
+        if self.top.len() < 2 || self.bottom.len() < 2 {
+            return String::new();
+        }
+        let mut d = SmoothCurve {
+            points: self.top.clone(),
+            ..Default::default()
+        }
+        .to_string();
+        let mut bottom = self.bottom.clone();
+        bottom.reverse();
+        let bottom_d = SmoothCurve {
+            points: bottom,
+            ..Default::default()
+        }
+        .to_string();
+        // The lower curve starts with a move; join it with a line instead.
+        let (start, rest) = bottom_d.split_once(' ').unwrap_or((&bottom_d, ""));
+        d.push_str(" L");
+        d.push_str(&start.trim_start_matches('M').replace(',', " "));
+        if !rest.is_empty() {
+            d.push(' ');
+            d.push_str(rest);
+        }
+        d.push_str(" Z");
+        let mut attrs = vec![(ATTR_D, d)];
+        if let Some(color) = self.fill {
+            attrs.push((ATTR_FILL, color.hex()));
+            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&color)));
+        }
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
+        SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            dataset: &self.dataset,
+            data: title_data(&self.title),
+        }
+        .to_string()
+    }
+}
+
 #[derive(Clone, PartialEq, Debug)]
 /// A series line drawn with straight segments.
 pub struct StraightLine {
@@ -1691,7 +1767,7 @@ pub struct Axis {
     pub name_gap: f32,
     /// Alignment of the labels.
     pub name_align: Align,
-    /// Rotation of the labels, in degrees.
+    /// Rotation of the labels, in radians.
     pub name_rotate: f32,
     /// Stroke color of the axis line and ticks.
     pub stroke_color: Option<Color>,
@@ -1806,8 +1882,10 @@ impl Axis {
                 .map(|item| format_string(item, formatter))
                 .collect();
             if self.position == Position::Top || self.position == Position::Bottom {
-                let f = font::get_font(&self.font_family)?;
-                let total_measure = font::measure_text(&f, font_size, &text_list.join(" "));
+                // Measured as one string (kerning included) through the
+                // per-thread cache, so a re-render of the same axis is free.
+                let total_measure =
+                    measure_text_width_family(&self.font_family, font_size, &text_list.join(" "))?;
                 let mut total_measure_width = total_measure.width();
                 if self.name_rotate != 0.0 {
                     total_measure_width *= self.name_rotate.sin().abs();
@@ -1815,6 +1893,13 @@ impl Axis {
                 // 位置不够
                 if total_measure_width > axis_length {
                     text_unit_count += (total_measure_width / axis_length).ceil() as usize;
+                }
+            } else {
+                // Vertical axes: labels stack by their line height, so skip
+                // every n-th one when there are more than fit.
+                let total_height = text_list.len() as f32 * font_size * 1.2;
+                if total_height > axis_length {
+                    text_unit_count += (total_height / axis_length).ceil() as usize;
                 }
             }
         }
@@ -1877,7 +1962,6 @@ impl Axis {
         let name_rotate = self.name_rotate / std::f32::consts::PI * 180.0;
         if !text_list.is_empty() {
             let name_gap = self.name_gap;
-            let f = font::get_font(&self.font_family)?;
             let mut data_len = self.data.len();
             let is_name_align_start = self.name_align == Align::Left;
             // Only shrink when there is more than one tick — otherwise this
@@ -1892,7 +1976,7 @@ impl Axis {
                 if index % text_unit_count != 0 {
                     continue;
                 }
-                let b = font::measure_text(&f, font_size, text);
+                let b = measure_text_width_family(&self.font_family, font_size, text)?;
                 let mut unit_offset = unit * index as f32 + unit / 2.0;
                 if is_name_align_start {
                     unit_offset -= unit / 2.0;
@@ -2436,7 +2520,7 @@ mod tests {
         );
 
         assert_eq!(
-            r###"<circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" stroke-opacity="0.5" fill-opacity="0.1" fill="#FFFFFF"/>"###,
+            r###"<circle cx="10" cy="10" r="3" stroke-width="1" stroke="#000000" stroke-opacity="0.5" fill-opacity="0.08" fill="#FFFFFF"/>"###,
             Circle {
                 stroke_color: Some((0, 0, 0, 128).into()),
                 fill: Some((255, 255, 255, 20).into()),
@@ -2496,7 +2580,7 @@ mod tests {
             .svg()
         );
         assert_eq!(
-            r###"<polygon points="0,0 10,30 20,60 30,20" stroke="#000000" stroke-opacity="0.5" fill="#FFFFFF" fill-opacity="0.1"/>"###,
+            r###"<polygon points="0,0 10,30 20,60 30,20" stroke="#000000" stroke-opacity="0.5" fill="#FFFFFF" fill-opacity="0.08"/>"###,
             Polygon {
                 color: Some((0, 0, 0, 128).into()),
                 fill: Some((255, 255, 255, 20).into()),

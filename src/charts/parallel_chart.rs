@@ -11,7 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
-use super::base::ChartBase;
+use super::base::{ChartBase, get_y_axis_config};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -28,12 +28,15 @@ use super::util::*;
 /// Data reuses the shared model: `series_list` holds one [`Series`] per record
 /// (its `data` are the values, one per dimension) and `x_axis_data` holds the
 /// dimension names. Each axis is scaled independently to its own min..max.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct ParallelChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
     pub base: ChartBase,
-    y_axis_configs: Vec<YAxisConfig>,
+    /// One config per dimension (falling back to the first): `axis_min` /
+    /// `axis_max` pin the range of that axis and `axis_formatter` formats
+    /// its min/max labels.
+    pub y_axis_configs: Vec<YAxisConfig>,
 }
 
 impl std::ops::Deref for ParallelChart {
@@ -75,7 +78,7 @@ impl ParallelChart {
             ..Default::default()
         };
         // `series_list` and `x_axis_data` are parsed by the derived fill_option.
-        c.base.fill_option(json, &mut c.y_axis_configs)?;
+        c.base.fill_option(json, &mut c.y_axis_configs, &[])?;
         Ok(c)
     }
 
@@ -144,7 +147,15 @@ impl ParallelChart {
                 }
             }
         }
+        let axis_config = |j: usize| get_y_axis_config(&self.y_axis_configs, j);
         for j in 0..n {
+            let config = axis_config(j);
+            if let Some(min) = config.axis_min.filter(|v| v.is_finite()) {
+                mins[j] = min;
+            }
+            if let Some(max) = config.axis_max.filter(|v| v.is_finite()) {
+                maxs[j] = max;
+            }
             // Empty or flat dimension: fall back to a unit range so the mapping
             // stays finite.
             if !mins[j].is_finite() || !maxs[j].is_finite() {
@@ -195,12 +206,13 @@ impl ParallelChart {
             } else {
                 (x + 3.0, "start")
             };
+            let formatter = axis_config(j).axis_formatter.unwrap_or_default();
             for (value, y) in [
                 (maxs[j], plot_top + font_size * 0.6),
                 (mins[j], plot_bottom - font_size * 0.6),
             ] {
                 content.text(Text {
-                    text: format_float(value),
+                    text: format_string(&format_float(value), &formatter),
                     font_family: Some(self.font_family.clone()),
                     font_color: Some(self.series_label_font_color),
                     font_size: Some(font_size * 0.85),
@@ -240,7 +252,6 @@ impl ParallelChart {
 mod tests {
     use super::ParallelChart;
     use crate::Series;
-    use pretty_assertions::assert_eq;
 
     fn make() -> ParallelChart {
         ParallelChart::new(
@@ -265,10 +276,7 @@ mod tests {
 
     #[test]
     fn parallel_basic() {
-        assert_eq!(
-            include_str!("../../asset/parallel_chart/basic.svg"),
-            make().svg().unwrap()
-        );
+        assert_snapshot!("parallel_chart/basic.svg", make().svg().unwrap());
     }
 
     #[test]
@@ -287,10 +295,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/parallel_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("parallel_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     #[test]

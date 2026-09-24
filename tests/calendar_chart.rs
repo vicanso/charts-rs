@@ -1,3 +1,5 @@
+mod common;
+
 use charts_rs::CalendarChart;
 use pretty_assertions::assert_eq;
 
@@ -22,10 +24,7 @@ fn calendar_chart_basic_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/calendar_chart/basic_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("calendar_chart/basic_json.svg", chart.svg().unwrap());
 }
 
 #[test]
@@ -50,10 +49,7 @@ fn calendar_chart_grafana_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/calendar_chart/grafana_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("calendar_chart/grafana_json.svg", chart.svg().unwrap());
 }
 
 #[test]

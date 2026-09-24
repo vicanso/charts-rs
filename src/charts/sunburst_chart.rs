@@ -26,7 +26,7 @@ use crate::charts::measure_text_width_family;
 /// A node in the sunburst hierarchy. A node is a leaf when `children` is empty,
 /// in which case `value` is used directly; otherwise its value is the sum of
 /// its children's values.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct SunburstData {
     /// Name of the node, shown as its label.
     pub name: String,
@@ -67,7 +67,7 @@ fn max_depth(nodes: &[SunburstData]) -> usize {
 
 /// Mixes a color toward white by `factor` (0.0 = unchanged, 1.0 = white),
 /// used to fade deeper rings while keeping the parent hue.
-fn lighten(c: Color, factor: f32) -> Color {
+pub(crate) fn lighten(c: Color, factor: f32) -> Color {
     let f = factor.clamp(0.0, 0.85);
     let mix = |v: u8| (v as f32 + (255.0 - v as f32) * f) as u8;
     Color {
@@ -113,7 +113,7 @@ struct RingLayout<'a> {
 // ── SunburstChart ──────────────────────────────────────────────────────────────
 
 /// A sunburst chart of hierarchical data as concentric rings.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct SunburstChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -168,7 +168,9 @@ impl SunburstChart {
         let mut c = SunburstChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value =
+            c.base
+                .fill_option(json, &mut c.y_axis_configs, super::schema::SUNBURST_FIELDS)?;
         if let Some(arr) = value.get("series_data").and_then(|v| v.as_array()) {
             c.series_data = arr.iter().filter_map(parse_node).collect();
         }
@@ -447,9 +449,9 @@ impl SunburstChart {
                 format_float(cx + content.margin.left),
                 format_float(cy + content.margin.top),
                 anim.duration,
-                anim.easing,
+                anim.safe_easing(),
                 anim.duration,
-                anim.easing
+                anim.safe_easing()
             );
             c.svg_with_style(&css)
         } else {
@@ -461,7 +463,6 @@ impl SunburstChart {
 #[cfg(test)]
 mod tests {
     use super::{SunburstChart, SunburstData};
-    use pretty_assertions::assert_eq;
 
     fn leaf(name: &str, value: f32) -> SunburstData {
         SunburstData {
@@ -503,10 +504,7 @@ mod tests {
 
     #[test]
     fn sunburst_chart_basic() {
-        assert_eq!(
-            include_str!("../../asset/sunburst_chart/basic.svg"),
-            make_sunburst().svg().unwrap()
-        );
+        assert_snapshot!("sunburst_chart/basic.svg", make_sunburst().svg().unwrap());
     }
 
     #[test]
@@ -609,9 +607,6 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/sunburst_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("sunburst_chart/basic_json.svg", chart.svg().unwrap());
     }
 }

@@ -1,0 +1,12 @@
+{
+    "title_text": "Languages",
+    "series_smooth": true,
+    "legend_show": false,
+    "x_axis_data": ["2019", "2020", "2021", "2022", "2023", "2024"],
+    "series_list": [
+        {"name": "Rust", "data": [10, 14, 20, 28, 35, 40]},
+        {"name": "Go", "data": [18, 22, 24, 26, 27, 30]},
+        {"name": "Zig", "data": [2, 4, 7, 12, 20, 26]},
+        {"name": "C++", "data": [30, 28, 26, 25, 24, 22]}
+    ]
+}

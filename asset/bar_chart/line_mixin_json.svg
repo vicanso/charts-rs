@@ -95,27 +95,27 @@ Sat
 Sun
 </text>
 </g>
-<rect x="48" y="352.2" width="22.1" height="27.8" fill="#5470C6"/>
-<rect x="130.4" y="349.4" width="22.1" height="30.6" fill="#5470C6"/>
-<rect x="212.9" y="356.6" width="22.1" height="23.4" fill="#5470C6"/>
-<rect x="295.3" y="348.9" width="22.1" height="31.1" fill="#5470C6"/>
-<rect x="377.7" y="359.1" width="22.1" height="20.9" fill="#5470C6"/>
-<rect x="460.1" y="326.7" width="22.1" height="53.3" fill="#5470C6"/>
-<rect x="542.6" y="331.3" width="22.1" height="48.7" fill="#5470C6"/>
-<rect x="73.1" y="329" width="22.1" height="51" fill="#91CC75"/>
-<rect x="155.6" y="337.8" width="22.1" height="42.2" fill="#91CC75"/>
-<rect x="238" y="335.7" width="22.1" height="44.3" fill="#91CC75"/>
-<rect x="320.4" y="325.7" width="22.1" height="54.3" fill="#91CC75"/>
-<rect x="402.9" y="312.8" width="22.1" height="67.2" fill="#91CC75"/>
-<rect x="485.3" y="303.5" width="22.1" height="76.5" fill="#91CC75"/>
-<rect x="567.7" y="308.1" width="22.1" height="71.9" fill="#91CC75"/>
-<rect x="98.3" y="305.8" width="22.1" height="74.2" fill="#FAC858"/>
-<rect x="180.7" y="303" width="22.1" height="77" fill="#FAC858"/>
-<rect x="263.1" y="310.2" width="22.1" height="69.8" fill="#FAC858"/>
-<rect x="345.6" y="302.6" width="22.1" height="77.4" fill="#FAC858"/>
-<rect x="428" y="289.6" width="22.1" height="90.4" fill="#FAC858"/>
-<rect x="510.4" y="303.5" width="22.1" height="76.5" fill="#FAC858"/>
-<rect x="592.9" y="305.8" width="22.1" height="74.2" fill="#FAC858"/>
+<rect x="48" y="352.2" width="22.1" height="27.8" fill="#5470C6" data-series="Email" data-category="Mon" data-value="120"/>
+<rect x="130.4" y="349.4" width="22.1" height="30.6" fill="#5470C6" data-series="Email" data-category="Tue" data-value="132"/>
+<rect x="212.9" y="356.6" width="22.1" height="23.4" fill="#5470C6" data-series="Email" data-category="Wed" data-value="101"/>
+<rect x="295.3" y="348.9" width="22.1" height="31.1" fill="#5470C6" data-series="Email" data-category="Thu" data-value="134"/>
+<rect x="377.7" y="359.1" width="22.1" height="20.9" fill="#5470C6" data-series="Email" data-category="Fri" data-value="90"/>
+<rect x="460.1" y="326.7" width="22.1" height="53.3" fill="#5470C6" data-series="Email" data-category="Sat" data-value="230"/>
+<rect x="542.6" y="331.3" width="22.1" height="48.7" fill="#5470C6" data-series="Email" data-category="Sun" data-value="210"/>
+<rect x="73.1" y="329" width="22.1" height="51" fill="#91CC75" data-series="Union Ads" data-category="Mon" data-value="220"/>
+<rect x="155.6" y="337.8" width="22.1" height="42.2" fill="#91CC75" data-series="Union Ads" data-category="Tue" data-value="182"/>
+<rect x="238" y="335.7" width="22.1" height="44.3" fill="#91CC75" data-series="Union Ads" data-category="Wed" data-value="191"/>
+<rect x="320.4" y="325.7" width="22.1" height="54.3" fill="#91CC75" data-series="Union Ads" data-category="Thu" data-value="234"/>
+<rect x="402.9" y="312.8" width="22.1" height="67.2" fill="#91CC75" data-series="Union Ads" data-category="Fri" data-value="290"/>
+<rect x="485.3" y="303.5" width="22.1" height="76.5" fill="#91CC75" data-series="Union Ads" data-category="Sat" data-value="330"/>
+<rect x="567.7" y="308.1" width="22.1" height="71.9" fill="#91CC75" data-series="Union Ads" data-category="Sun" data-value="310"/>
+<rect x="98.3" y="305.8" width="22.1" height="74.2" fill="#FAC858" data-series="Direct" data-category="Mon" data-value="320"/>
+<rect x="180.7" y="303" width="22.1" height="77" fill="#FAC858" data-series="Direct" data-category="Tue" data-value="332"/>
+<rect x="263.1" y="310.2" width="22.1" height="69.8" fill="#FAC858" data-series="Direct" data-category="Wed" data-value="301"/>
+<rect x="345.6" y="302.6" width="22.1" height="77.4" fill="#FAC858" data-series="Direct" data-category="Thu" data-value="334"/>
+<rect x="428" y="289.6" width="22.1" height="90.4" fill="#FAC858" data-series="Direct" data-category="Fri" data-value="390"/>
+<rect x="510.4" y="303.5" width="22.1" height="76.5" fill="#FAC858" data-series="Direct" data-category="Sat" data-value="330"/>
+<rect x="592.9" y="305.8" width="22.1" height="74.2" fill="#FAC858" data-series="Direct" data-category="Sun" data-value="320"/>
 <g>
 <path d="M 84.2 189.9 L 166.6 163.9 L 249.1 171.1 L 331.5 163.4 L 413.9 80.9 L 496.4 71.6 L 578.8 73.9" stroke-width="2" fill="none" stroke="#EE6666"/>
 <circle cx="84.2" cy="189.9" r="2" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>

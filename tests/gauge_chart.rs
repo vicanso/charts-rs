@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::GaugeChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn gauge_chart_basic_json() {
@@ -12,10 +13,7 @@ fn gauge_chart_basic_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/gauge_chart/basic_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("gauge_chart/basic_json.svg", chart.svg().unwrap());
 }
 
 #[test]
@@ -30,8 +28,5 @@ fn gauge_chart_grafana_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/gauge_chart/grafana_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("gauge_chart/grafana_json.svg", chart.svg().unwrap());
 }

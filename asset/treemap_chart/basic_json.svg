@@ -45,46 +45,46 @@ nodeWord
 nodeOther
 </text>
 </g>
-<rect x="6.5" y="41.5" width="306" height="190.6" fill="#5470C6"/>
+<rect x="6.5" y="41.5" width="306" height="190.6" fill="#5470C6" data-series="nodeExcel" data-value="600"/>
 <text font-size="14" x="159.5" y="128.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#FFFFFF" fill-opacity="0.9">
 nodeExcel
 </text>
-<text font-size="11.9" x="159.5" y="146.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#FFFFFF" fill-opacity="0.7">
+<text font-size="11.9" x="159.5" y="146.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#FFFFFF" fill-opacity="0.71">
 600
 </text>
-<rect x="6.5" y="235.1" width="306" height="158.4" fill="#91CC75"/>
+<rect x="6.5" y="235.1" width="306" height="158.4" fill="#91CC75" data-series="nodePPT" data-value="500"/>
 <text font-size="14" x="159.5" y="305.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
 nodePPT
 </text>
-<text font-size="11.9" x="159.5" y="324.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.7">
+<text font-size="11.9" x="159.5" y="324.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
 500
 </text>
-<rect x="315.5" y="41.5" width="278" height="139" fill="#FAC858"/>
+<rect x="315.5" y="41.5" width="278" height="139" fill="#FAC858" data-series="nodeDoc" data-value="400"/>
 <text font-size="14" x="454.5" y="102.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
 nodeDoc
 </text>
-<text font-size="11.9" x="454.5" y="120.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.7">
+<text font-size="11.9" x="454.5" y="120.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
 400
 </text>
-<rect x="315.5" y="183.5" width="137.5" height="210" fill="#EE6666"/>
+<rect x="315.5" y="183.5" width="137.5" height="210" fill="#EE6666" data-series="nodeWeb" data-value="300"/>
 <text font-size="14" x="384.3" y="280.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
 nodeWeb
 </text>
-<text font-size="11.9" x="384.3" y="298.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.7">
+<text font-size="11.9" x="384.3" y="298.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
 300
 </text>
-<rect x="456" y="183.5" width="137.5" height="139" fill="#73C0DE"/>
+<rect x="456" y="183.5" width="137.5" height="139" fill="#73C0DE" data-series="nodeWord" data-value="200"/>
 <text font-size="14" x="524.8" y="244.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
 nodeWord
 </text>
-<text font-size="11.9" x="524.8" y="262.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.7">
+<text font-size="11.9" x="524.8" y="262.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
 200
 </text>
-<rect x="456" y="325.5" width="137.5" height="68" fill="#3BA272"/>
+<rect x="456" y="325.5" width="137.5" height="68" fill="#3BA272" data-series="nodeOther" data-value="100"/>
 <text font-size="14" x="524.8" y="351.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
 nodeOther
 </text>
-<text font-size="11.9" x="524.8" y="369.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.7">
+<text font-size="11.9" x="524.8" y="369.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
 100
 </text>
 </svg>

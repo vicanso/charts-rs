@@ -19,89 +19,89 @@ World Population
 </g>
 <g>
 <g stroke="#6E7079">
-<line stroke-width="1" x1="73" y1="40" x2="73" y2="370"/>
+<line stroke-width="1" x1="73" y1="40" x2="73" y2="365"/>
 <line stroke-width="1" x1="73" y1="40" x2="68" y2="40"/>
-<line stroke-width="1" x1="73" y1="95" x2="68" y2="95"/>
-<line stroke-width="1" x1="73" y1="150" x2="68" y2="150"/>
-<line stroke-width="1" x1="73" y1="205" x2="68" y2="205"/>
-<line stroke-width="1" x1="73" y1="260" x2="68" y2="260"/>
-<line stroke-width="1" x1="73" y1="315" x2="68" y2="315"/>
-<line stroke-width="1" x1="73" y1="370" x2="68" y2="370"/>
+<line stroke-width="1" x1="73" y1="94.2" x2="68" y2="94.2"/>
+<line stroke-width="1" x1="73" y1="148.3" x2="68" y2="148.3"/>
+<line stroke-width="1" x1="73" y1="202.5" x2="68" y2="202.5"/>
+<line stroke-width="1" x1="73" y1="256.7" x2="68" y2="256.7"/>
+<line stroke-width="1" x1="73" y1="310.8" x2="68" y2="310.8"/>
+<line stroke-width="1" x1="73" y1="365" x2="68" y2="365"/>
 </g>
-<text font-size="14" x="31" y="72.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="31" y="72.1" font-family="Roboto" fill="#6E7079">
 World
 </text>
-<text font-size="14" x="31" y="127.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="31" y="126.2" font-family="Roboto" fill="#6E7079">
 China
 </text>
-<text font-size="14" x="37" y="182.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="37" y="180.4" font-family="Roboto" fill="#6E7079">
 India
 </text>
-<text font-size="14" x="40" y="237.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="40" y="234.6" font-family="Roboto" fill="#6E7079">
 USA
 </text>
-<text font-size="14" x="5" y="292.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="5" y="288.8" font-family="Roboto" fill="#6E7079">
 Indonesia
 </text>
-<text font-size="14" x="32" y="347.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="32" y="342.9" font-family="Roboto" fill="#6E7079">
 Brazil
 </text>
 </g>
 <g>
 
-<text font-size="14" x="69" y="392" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="69" y="387" font-family="Roboto" fill="#6E7079">
 0
 </text>
-<text font-size="14" x="142.3" y="392" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="142.3" y="387" font-family="Roboto" fill="#6E7079">
 136k
 </text>
-<text font-size="14" x="227.7" y="392" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="227.7" y="387" font-family="Roboto" fill="#6E7079">
 272k
 </text>
-<text font-size="14" x="313" y="392" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="313" y="387" font-family="Roboto" fill="#6E7079">
 408k
 </text>
-<text font-size="14" x="398.3" y="392" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="398.3" y="387" font-family="Roboto" fill="#6E7079">
 544k
 </text>
-<text font-size="14" x="483.7" y="392" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="483.7" y="387" font-family="Roboto" fill="#6E7079">
 680k
 </text>
-<text font-size="14" x="569" y="392" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="569" y="387" font-family="Roboto" fill="#6E7079">
 816k
 </text>
 </g>
 <g stroke="#E0E6F2">
-<line stroke-width="1" x1="158.3" y1="40" x2="158.3" y2="370"/><line stroke-width="1" x1="243.7" y1="40" x2="243.7" y2="370"/><line stroke-width="1" x1="329" y1="40" x2="329" y2="370"/><line stroke-width="1" x1="414.3" y1="40" x2="414.3" y2="370"/><line stroke-width="1" x1="499.7" y1="40" x2="499.7" y2="370"/><line stroke-width="1" x1="585" y1="40" x2="585" y2="370"/>
+<line stroke-width="1" x1="158.3" y1="40" x2="158.3" y2="365"/><line stroke-width="1" x1="243.7" y1="40" x2="243.7" y2="365"/><line stroke-width="1" x1="329" y1="40" x2="329" y2="365"/><line stroke-width="1" x1="414.3" y1="40" x2="414.3" y2="365"/><line stroke-width="1" x1="499.7" y1="40" x2="499.7" y2="365"/><line stroke-width="1" x1="585" y1="40" x2="585" y2="365"/>
 </g>
-<rect x="73" y="320" width="11.4" height="21" fill="#5470C6"/>
-<rect x="73" y="265" width="14.7" height="21" fill="#5470C6"/>
-<rect x="73" y="210" width="18.2" height="21" fill="#5470C6"/>
-<rect x="73" y="155" width="65.9" height="21" fill="#5470C6"/>
-<rect x="73" y="100" width="82.7" height="21" fill="#5470C6"/>
-<rect x="73" y="45" width="395.4" height="21" fill="#5470C6"/>
-<rect x="73" y="344" width="12.1" height="21" fill="#91CC75"/>
-<rect x="73" y="289" width="14.7" height="21" fill="#91CC75"/>
-<rect x="73" y="234" width="19.5" height="21" fill="#91CC75"/>
-<rect x="73" y="179" width="76.3" height="21" fill="#91CC75"/>
-<rect x="73" y="124" width="84.2" height="21" fill="#91CC75"/>
-<rect x="73" y="69" width="427.8" height="21" fill="#91CC75"/>
-<text font-size="14" x="84.4" y="330.5" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
+<rect x="73" y="315.8" width="11.4" height="20.6" fill="#5470C6" data-series="2011" data-category="Brazil" data-value="18203"/>
+<rect x="73" y="261.7" width="14.7" height="20.6" fill="#5470C6" data-series="2011" data-category="Indonesia" data-value="23489"/>
+<rect x="73" y="207.5" width="18.2" height="20.6" fill="#5470C6" data-series="2011" data-category="USA" data-value="29034"/>
+<rect x="73" y="153.3" width="65.9" height="20.6" fill="#5470C6" data-series="2011" data-category="India" data-value="104970"/>
+<rect x="73" y="99.2" width="82.7" height="20.6" fill="#5470C6" data-series="2011" data-category="China" data-value="131744"/>
+<rect x="73" y="45" width="395.4" height="20.6" fill="#5470C6" data-series="2011" data-category="World" data-value="630230"/>
+<rect x="73" y="339.4" width="12.1" height="20.6" fill="#91CC75" data-series="2012" data-category="Brazil" data-value="19325"/>
+<rect x="73" y="285.2" width="14.7" height="20.6" fill="#91CC75" data-series="2012" data-category="Indonesia" data-value="23438"/>
+<rect x="73" y="231.1" width="19.5" height="20.6" fill="#91CC75" data-series="2012" data-category="USA" data-value="31000"/>
+<rect x="73" y="176.9" width="76.3" height="20.6" fill="#91CC75" data-series="2012" data-category="India" data-value="121594"/>
+<rect x="73" y="122.8" width="84.2" height="20.6" fill="#91CC75" data-series="2012" data-category="China" data-value="134141"/>
+<rect x="73" y="68.6" width="427.8" height="20.6" fill="#91CC75" data-series="2012" data-category="World" data-value="681807"/>
+<text font-size="14" x="84.4" y="326.1" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
 18,203
 </text>
-<text font-size="14" x="87.7" y="275.5" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="87.7" y="272" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
 23,489
 </text>
-<text font-size="14" x="91.2" y="220.5" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="91.2" y="217.8" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
 29,034
 </text>
-<text font-size="14" x="138.9" y="165.5" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="138.9" y="163.6" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
 104,970
 </text>
-<text font-size="14" x="155.7" y="110.5" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="155.7" y="109.5" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
 131,744
 </text>
-<text font-size="14" x="468.4" y="55.5" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
+<text font-size="14" x="468.4" y="55.3" dx="3" dy="5.5" font-family="Roboto" fill="#464646">
 630,230
 </text>
 </svg>

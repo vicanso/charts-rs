@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::TableChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn table_chart() {
@@ -42,8 +43,5 @@ fn table_chart() {
     }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/table_chart/basic_json.svg"),
-        table_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("table_chart/basic_json.svg", table_chart.svg().unwrap());
 }

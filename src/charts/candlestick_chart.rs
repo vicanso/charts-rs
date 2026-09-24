@@ -22,7 +22,7 @@ use super::util::*;
 use serde::{Deserialize, Serialize};
 
 /// A candlestick (OHLC) chart for financial data.
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct CandlestickChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -87,7 +87,11 @@ impl CandlestickChart {
         let mut c = CandlestickChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(data, &mut c.y_axis_configs)?;
+        let value = c.base.fill_option(
+            data,
+            &mut c.y_axis_configs,
+            super::schema::CANDLESTICK_FIELDS,
+        )?;
         if let Some(value) = get_color_from_value(&value, "candlestick_up_color") {
             c.candlestick_up_color = value;
         }
@@ -132,64 +136,18 @@ impl CandlestickChart {
     }
     /// Converts candlestick chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
-
-        let mut x_axis_height = self.x_axis_height;
-        if self.x_axis_hidden {
-            x_axis_height = 0.0;
-        }
-        let axis_top = self.render_header(&mut c);
-
-        let (left_y_axis_values, mut left_y_axis_width) =
-            self.get_y_axis_values(&self.y_axis_configs, 0);
-        if self.y_axis_hidden {
-            left_y_axis_width = 0.0;
-        }
-
-        let axis_height = c.height() - x_axis_height - axis_top;
-        let axis_width = c.width() - left_y_axis_width;
-        // minus the height of top text area
-        if axis_top > 0.0 {
-            c = c.child(Box {
-                top: axis_top,
-                ..Default::default()
-            });
-        }
-
-        self.render_grid(
-            c.child(Box {
-                left: left_y_axis_width,
-                ..Default::default()
-            }),
-            &self.y_axis_configs,
-            axis_width,
-            axis_height,
-        );
-
-        // y axis
-        if !self.y_axis_hidden {
-            self.render_y_axis(
-                c.child(Box::default()),
-                &self.y_axis_configs,
-                left_y_axis_values.data.clone(),
-                axis_height,
-                left_y_axis_width,
-                0,
-            );
-        }
-
-        // x axis
-        if !self.x_axis_hidden {
-            self.render_x_axis(
-                c.child(Box {
-                    top: c.height() - x_axis_height,
-                    left: left_y_axis_width,
-                    ..Default::default()
-                }),
-                self.x_axis_data.clone(),
-                axis_width,
-            );
-        }
+        let c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let layout = self.layout_cartesian(c, &self.y_axis_configs);
+        let c = layout.canvas.clone();
+        let left_y_axis_width = layout.left_width;
+        let left_y_axis_values = &layout.left;
+        let axis_width = layout.axis_width;
+        let axis_height = layout.axis_height;
+        let x_axis_height = if self.x_axis_hidden {
+            0.0
+        } else {
+            self.x_axis_height
+        };
         // `.max(1)` guards against an empty `x_axis_data` producing `inf`/`NaN`
         // coordinates (division by zero).
         let chunk_width = axis_width / self.x_axis_data.len().max(1) as f32;
@@ -204,7 +162,9 @@ impl CandlestickChart {
             let chunks = data.chunks(4);
 
             for (index, chunk) in chunks.enumerate() {
-                if chunk.len() != 4 {
+                // A candle with a missing component has no shape; skip it
+                // rather than projecting the sentinel to infinity.
+                if chunk.len() != 4 || chunk.contains(&NIL_VALUE) {
                     continue;
                 }
 
@@ -237,19 +197,56 @@ impl CandlestickChart {
                     ..Default::default()
                 });
 
-                c.child(Box {
+                let category = self.x_axis_data.get(index).cloned().unwrap_or_default();
+                let tooltip_text = self.tooltip_show.then(|| {
+                    format!(
+                        "{}: {} / {} / {} / {}",
+                        category,
+                        format_float(chunk[0]),
+                        format_float(chunk[1]),
+                        format_float(chunk[2]),
+                        format_float(chunk[3])
+                    )
+                });
+                let mut candle_c = c.child(Box {
                     left: left_y_axis_width,
                     ..Default::default()
-                })
-                .rect(Rect {
+                });
+                let rect_left = half_chunk_width / 2.0 + chunk_width * index as f32 - 1.0;
+                let rect_top = open.min(close);
+                candle_c.rect(Rect {
                     color: Some(border_color),
                     fill: Some(fill.into()),
-                    left: half_chunk_width / 2.0 + chunk_width * index as f32 - 1.0,
-                    top: open.min(close),
+                    left: rect_left,
+                    top: rect_top,
                     width: half_chunk_width,
                     height: (open.max(close) - open.min(close)).max(1.0),
+                    title: tooltip_text.clone(),
+                    class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
+                    dataset: vec![
+                        ("series".to_string(), series.name.clone()),
+                        ("category".to_string(), category),
+                        ("open".to_string(), format_float(chunk[0])),
+                        ("close".to_string(), format_float(chunk[1])),
+                        ("low".to_string(), format_float(chunk[2])),
+                        ("high".to_string(), format_float(chunk[3])),
+                    ],
                     ..Default::default()
                 });
+                if let Some(text) = tooltip_text {
+                    candle_c.text(Text {
+                        text,
+                        class: Some("ct-tip".to_string()),
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(self.series_label_font_size),
+                        x: Some(rect_left + half_chunk_width / 2.0),
+                        y: Some(highest.min(lowest)),
+                        dy: Some(-6.0),
+                        text_anchor: Some("middle".to_string()),
+                        ..Default::default()
+                    });
+                }
             }
         }
         let mut line_series_list = vec![];
@@ -261,7 +258,7 @@ impl CandlestickChart {
             }
         });
 
-        let y_axis_values_list = vec![&left_y_axis_values];
+        let y_axis_values_list = vec![left_y_axis_values];
         let max_height = c.height() - x_axis_height;
         let line_series_labels_list = self.render_line(
             c.child(Box {
@@ -285,7 +282,22 @@ impl CandlestickChart {
             line_series_labels_list,
         );
 
-        c.svg()
+        let all_series: Vec<&Series> = self.series_list.iter().collect();
+        self.render_mark_line(
+            c.child(Box {
+                left: left_y_axis_width,
+                ..Default::default()
+            }),
+            &all_series,
+            &y_axis_values_list,
+            max_height,
+        );
+
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -293,7 +305,6 @@ impl CandlestickChart {
 mod tests {
     use super::CandlestickChart;
     use crate::SeriesCategory;
-    use pretty_assertions::assert_eq;
     #[test]
     fn candlestick_chart_basic() {
         let candlestick_chart = CandlestickChart::new(
@@ -314,8 +325,8 @@ mod tests {
                 "2017-10-27".to_string(),
             ],
         );
-        assert_eq!(
-            include_str!("../../asset/candlestick_chart/basic.svg"),
+        assert_snapshot!(
+            "candlestick_chart/basic.svg",
             candlestick_chart.svg().unwrap()
         );
     }
@@ -342,8 +353,8 @@ mod tests {
         );
         candlestick_chart.x_axis_hidden = true;
         candlestick_chart.y_axis_hidden = true;
-        assert_eq!(
-            include_str!("../../asset/candlestick_chart/no_axis.svg"),
+        assert_snapshot!(
+            "candlestick_chart/no_axis.svg",
             candlestick_chart.svg().unwrap()
         );
     }
@@ -471,10 +482,7 @@ mod tests {
         candlestick_chart.y_axis_configs[0].axis_min = Some(2100.0);
         candlestick_chart.y_axis_configs[0].axis_max = Some(2460.0);
         candlestick_chart.y_axis_configs[0].axis_formatter = Some("{t}".to_string());
-        assert_eq!(
-            include_str!("../../asset/candlestick_chart/sh.svg"),
-            candlestick_chart.svg().unwrap()
-        );
+        assert_snapshot!("candlestick_chart/sh.svg", candlestick_chart.svg().unwrap());
     }
 
     // An empty `x_axis_data` previously divided by zero (`chunk_width`),

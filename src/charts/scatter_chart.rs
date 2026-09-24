@@ -11,7 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
-use super::base::{ChartBase, get_y_axis_config};
+use super::base::{ChartBase, axis_value_params, get_y_axis_config};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -23,7 +23,7 @@ use crate::charts::measure_text_width_family;
 use serde::{Deserialize, Serialize};
 
 /// A scatter chart of (x, y) point pairs.
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct ScatterChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -62,6 +62,7 @@ impl std::ops::DerefMut for ScatterChart {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn render_scatter_symbol(
     canvas: &mut Canvas,
     symbol: &Symbol,
@@ -70,6 +71,7 @@ fn render_scatter_symbol(
     r: f32,
     color: Color,
     title: Option<String>,
+    dataset: Vec<(String, String)>,
 ) {
     // When a tooltip is present the symbol is the hover trigger; a hidden
     // `.ct-tip` label is drawn right after it (adjacent-sibling reveal).
@@ -82,6 +84,7 @@ fn render_scatter_symbol(
                 cy,
                 r,
                 title: title.clone(),
+                dataset: dataset.clone(),
                 class,
                 ..Default::default()
             });
@@ -94,6 +97,7 @@ fn render_scatter_symbol(
                 width: r * 2.0,
                 height: r * 2.0,
                 title: title.clone(),
+                dataset: dataset.clone(),
                 class,
                 ..Default::default()
             });
@@ -107,6 +111,7 @@ fn render_scatter_symbol(
                     (cx - r * 0.866, cy + r * 0.5).into(),
                 ],
                 title: title.clone(),
+                dataset: dataset.clone(),
                 class,
                 ..Default::default()
             });
@@ -121,6 +126,7 @@ fn render_scatter_symbol(
                     (cx - r, cy).into(),
                 ],
                 title: title.clone(),
+                dataset: dataset.clone(),
                 class,
                 ..Default::default()
             });
@@ -146,7 +152,9 @@ impl ScatterChart {
         let mut s = ScatterChart {
             ..Default::default()
         };
-        let value = s.base.fill_option(data, &mut s.y_axis_configs)?;
+        let value =
+            s.base
+                .fill_option(data, &mut s.y_axis_configs, super::schema::SCATTER_FIELDS)?;
         s.fill_default();
 
         if let Some(series_symbol_sizes) = get_f32_slice_from_value(&value, "series_symbol_sizes") {
@@ -222,15 +230,8 @@ impl ScatterChart {
                 }
             }
         }
-        let y_axis_values = get_axis_values(AxisValueParams {
-            data_list: y_axis_data_list,
-            split_number: y_axis_config.axis_split_number,
-            reverse: Some(true),
-            min: y_axis_config.axis_min,
-            max: y_axis_config.axis_max,
-            thousands_format: false,
-            ..Default::default()
-        });
+        let y_axis_values =
+            get_axis_values(axis_value_params(&y_axis_config, y_axis_data_list, true));
         let y_axis_width = if self.y_axis_hidden {
             0.0
         } else if let Some(value) = y_axis_config.axis_width {
@@ -295,13 +296,11 @@ impl ScatterChart {
         }
 
         // x axis
-        let x_axis_values = get_axis_values(AxisValueParams {
-            data_list: x_axis_data_list,
-            split_number: self.x_axis_config.axis_split_number,
-            min: self.x_axis_config.axis_min,
-            max: self.x_axis_config.axis_max,
-            ..Default::default()
-        });
+        let x_axis_values = get_axis_values(axis_value_params(
+            &self.x_axis_config,
+            x_axis_data_list,
+            false,
+        ));
         let x_axis_formatter = &self
             .x_axis_config
             .axis_formatter
@@ -374,7 +373,21 @@ impl ScatterChart {
                 } else {
                     None
                 };
-                render_scatter_symbol(&mut content_canvas, &symbol, cx, cy, size, color, title);
+                let dataset = vec![
+                    ("series".to_string(), series.name.clone()),
+                    ("x".to_string(), format_float(chunk[0])),
+                    ("y".to_string(), format_float(chunk[1])),
+                ];
+                render_scatter_symbol(
+                    &mut content_canvas,
+                    &symbol,
+                    cx,
+                    cy,
+                    size,
+                    color,
+                    title,
+                    dataset,
+                );
             }
         }
 
@@ -390,7 +403,6 @@ impl ScatterChart {
 mod tests {
     use super::ScatterChart;
     use crate::Align;
-    use pretty_assertions::assert_eq;
 
     fn make_scatter() -> ScatterChart {
         let mut scatter_chart = ScatterChart::new(vec![
@@ -435,10 +447,7 @@ mod tests {
 
     #[test]
     fn scatter_chart_basic() {
-        assert_eq!(
-            include_str!("../../asset/scatter_chart/basic.svg"),
-            make_scatter().svg().unwrap()
-        );
+        assert_snapshot!("scatter_chart/basic.svg", make_scatter().svg().unwrap());
     }
 
     #[test]
@@ -446,10 +455,7 @@ mod tests {
         let mut scatter_chart = make_scatter();
         scatter_chart.x_axis_hidden = true;
         scatter_chart.y_axis_hidden = true;
-        assert_eq!(
-            include_str!("../../asset/scatter_chart/no_axis.svg"),
-            scatter_chart.svg().unwrap()
-        );
+        assert_snapshot!("scatter_chart/no_axis.svg", scatter_chart.svg().unwrap());
     }
 
     #[test]

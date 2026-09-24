@@ -23,7 +23,7 @@ use crate::charts::measure_text_width_family;
 use core::f32;
 
 /// A pie / nightingale rose chart; each series contributes one value.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct PieChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -50,6 +50,9 @@ pub struct PieChart {
     // series
     /// Position of the slice labels.
     pub series_label_position: Option<String>,
+    /// Slices spanning less than this many degrees get no label or leader
+    /// line (default 0: only zero-value slices are skipped).
+    pub min_show_label_angle: f32,
 }
 
 impl std::ops::Deref for PieChart {
@@ -77,7 +80,9 @@ impl PieChart {
             ..Default::default()
         };
         p.fill_default();
-        let value = p.base.fill_option(data, &mut p.y_axis_configs)?;
+        let value = p
+            .base
+            .fill_option(data, &mut p.y_axis_configs, super::schema::PIE_FIELDS)?;
         if let Some(radius) = get_f32_from_value(&value, "radius") {
             p.radius = radius;
         }
@@ -89,6 +94,15 @@ impl PieChart {
         }
         if let Some(border_radius) = get_f32_from_value(&value, "border_radius") {
             p.border_radius = Some(border_radius);
+        }
+        if let Some(start_angle) = get_f32_from_value(&value, "start_angle") {
+            p.start_angle = start_angle;
+        }
+        if let Some(position) = get_string_from_value(&value, "series_label_position") {
+            p.series_label_position = Some(position.to_lowercase());
+        }
+        if let Some(angle) = get_f32_from_value(&value, "min_show_label_angle") {
+            p.min_show_label_angle = angle;
         }
         Ok(p)
     }
@@ -118,10 +132,12 @@ impl PieChart {
             });
         }
 
+        // Missing points contribute nothing; summing the `NIL_VALUE` sentinel
+        // would push the total to -inf and every angle to NaN.
         let values: Vec<f32> = self
             .series_list
             .iter()
-            .map(|item| item.data_values().iter().sum())
+            .map(|item| item.data.iter().flatten().sum())
             .collect();
         let mut max = 0.0;
         let mut sum = 0.0;
@@ -198,6 +214,11 @@ impl PieChart {
                 delta,
                 class: anim_class,
                 style: anim_style,
+                dataset: vec![
+                    ("series".to_string(), series.name.clone()),
+                    ("value".to_string(), format_float(value)),
+                    ("percentage".to_string(), format_float(value / sum * 100.0)),
+                ],
                 ..Default::default()
             };
             if let Some(border_radius) = self.border_radius {
@@ -247,6 +268,11 @@ impl PieChart {
                     dominant_baseline: Some("central".to_string()),
                     ..Default::default()
                 });
+            }
+            // A zero-value (or too thin) slice has nothing to point at.
+            if value <= 0.0 || delta <= 0.0 || delta < self.min_show_label_angle {
+                start_angle += delta;
+                continue;
             }
             let label_option = LabelOption {
                 series_name: series.name.clone(),
@@ -376,7 +402,6 @@ impl PieChart {
 #[cfg(test)]
 mod tests {
     use super::PieChart;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn pie_basic() {
@@ -392,10 +417,7 @@ mod tests {
         ]);
         pie_chart.title_text = "Nightingale Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
-        assert_eq!(
-            include_str!("../../asset/pie_chart/basic.svg"),
-            pie_chart.svg().unwrap()
-        );
+        assert_snapshot!("pie_chart/basic.svg", pie_chart.svg().unwrap());
     }
 
     #[test]
@@ -414,10 +436,7 @@ mod tests {
         pie_chart.height = 300.0;
         pie_chart.title_text = "Nightingale Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
-        assert_eq!(
-            include_str!("../../asset/pie_chart/small_basic.svg"),
-            pie_chart.svg().unwrap()
-        );
+        assert_snapshot!("pie_chart/small_basic.svg", pie_chart.svg().unwrap());
     }
 
     #[test]
@@ -435,10 +454,7 @@ mod tests {
         pie_chart.rose_type = Some(false);
         pie_chart.title_text = "Pie Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
-        assert_eq!(
-            include_str!("../../asset/pie_chart/not_rose.svg").trim(),
-            pie_chart.svg().unwrap()
-        );
+        assert_snapshot!("pie_chart/not_rose.svg", pie_chart.svg().unwrap());
     }
 
     #[test]
@@ -456,10 +472,7 @@ mod tests {
         pie_chart.border_radius = Some(0.0);
         pie_chart.title_text = "Pie Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
-        assert_eq!(
-            include_str!("../../asset/pie_chart/not_rose_radius.svg").trim(),
-            pie_chart.svg().unwrap()
-        );
+        assert_snapshot!("pie_chart/not_rose_radius.svg", pie_chart.svg().unwrap());
     }
 
     #[test]
@@ -512,10 +525,7 @@ mod tests {
         ]);
         pie_chart.title_text = "Nightingale Chart".to_string();
         pie_chart.sub_title_text = "Fake Data".to_string();
-        assert_eq!(
-            include_str!("../../asset/pie_chart/rose_small_piece.svg"),
-            pie_chart.svg().unwrap()
-        );
+        assert_snapshot!("pie_chart/rose_small_piece.svg", pie_chart.svg().unwrap());
     }
 
     #[test]

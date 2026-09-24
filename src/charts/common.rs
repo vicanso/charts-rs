@@ -77,8 +77,9 @@ pub enum SeriesCategory {
     Bar,
 }
 
-/// The statistic a mark line is drawn at.
+/// The statistic (or fixed value) a mark line is drawn at.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+#[non_exhaustive]
 pub enum MarkLineCategory {
     #[default]
     /// The series average.
@@ -87,6 +88,8 @@ pub enum MarkLineCategory {
     Min,
     /// The series maximum.
     Max,
+    /// A fixed value, e.g. a target or threshold.
+    Value(f32),
 }
 
 /// The statistic a mark point highlights.
@@ -140,6 +143,16 @@ pub struct Series {
     pub stroke_dash_array: Option<String>,
     /// Stack group name; series with the same name and `y_axis_index` are stacked.
     pub stack: Option<String>,
+    /// Overrides the chart-wide `series_smooth` for this series.
+    #[serde(default)]
+    pub smooth: Option<bool>,
+    /// Overrides the chart-wide `series_fill` for this series.
+    #[serde(default)]
+    pub fill: Option<bool>,
+    /// Overrides the chart-wide `series_symbol` for this series
+    /// (`Some(Symbol::None)` draws no marker).
+    #[serde(default)]
+    pub symbol: Option<Symbol>,
 }
 
 /// Animation configuration for SVG chart animations.
@@ -221,7 +234,12 @@ impl Series {
     /// missing points. Lets the renderers keep their existing sentinel-based
     /// arithmetic while the public data model uses `Option<f32>`.
     pub(crate) fn data_values(&self) -> Vec<f32> {
-        self.data.iter().map(|v| v.unwrap_or(NIL_VALUE)).collect()
+        // NaN/inf can only arrive through the builder API; treat them as
+        // missing so they never reach the axis math or the SVG.
+        self.data
+            .iter()
+            .map(|v| v.filter(|f| f.is_finite()).unwrap_or(NIL_VALUE))
+            .collect()
     }
 }
 impl From<(&str, Vec<f32>)> for Series {
@@ -237,7 +255,7 @@ impl From<(&str, Vec<Option<f32>>)> for Series {
 
 /// Configuration of one y axis; charts hold one entry per axis in
 /// `y_axis_configs` (up to two).
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct YAxisConfig {
     /// Y axis label font size.
     pub axis_font_size: f32,
@@ -268,7 +286,7 @@ pub struct YAxisConfig {
 }
 
 /// A fill that can be either a solid color or a linear gradient.
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug)]
 pub enum Fill {
     /// A solid color fill.
     Solid(Color),

@@ -23,13 +23,14 @@ pub use super::error::{Error, Result};
 
 static GLOBAL_FONT_DB: OnceLock<arc_swap::ArcSwap<fontdb::Database>> = OnceLock::new();
 
-fn build_fontdb(datas: &[Vec<u8>]) -> Arc<fontdb::Database> {
+fn build_fontdb(datas: &[super::font::FontData]) -> Arc<fontdb::Database> {
     let mut fontdb = fontdb::Database::new();
     if datas.is_empty() {
         fontdb.load_system_fonts();
     } else {
         for item in datas.iter() {
-            fontdb.load_font_data(item.clone());
+            // Shares the registry's bytes instead of copying them.
+            fontdb.load_font_source(fontdb::Source::Binary(item.clone()));
         }
     }
     Arc::new(fontdb)
@@ -38,7 +39,7 @@ fn build_fontdb(datas: &[Vec<u8>]) -> Arc<fontdb::Database> {
 /// Rebuilds the raster fontdb from the given font datas; called by the font
 /// registry whenever fonts are added, so late registrations still reach the
 /// rasterizer (the previous OnceLock design silently ignored them).
-pub(crate) fn rebuild_fontdb(datas: &[Vec<u8>]) {
+pub(crate) fn rebuild_fontdb(datas: &[super::font::FontData]) {
     let db = build_fontdb(datas);
     let cell = GLOBAL_FONT_DB.get_or_init(|| arc_swap::ArcSwap::new(db.clone()));
     cell.store(db);
@@ -141,6 +142,7 @@ fn save_image_with_size(
 
 /// Converts svg to png.
 #[cfg(feature = "png")]
+#[cfg_attr(docsrs, doc(cfg(feature = "png")))]
 pub fn svg_to_png(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::Png)
 }
@@ -148,18 +150,21 @@ pub fn svg_to_png(svg: &str) -> Result<Vec<u8>> {
 /// Converts svg to png, scaling to the given width and/or height.
 /// If only one dimension is provided the other is computed to preserve aspect ratio.
 #[cfg(feature = "png")]
+#[cfg_attr(docsrs, doc(cfg(feature = "png")))]
 pub fn svg_to_png_with_size(svg: &str, width: Option<u32>, height: Option<u32>) -> Result<Vec<u8>> {
     save_image_with_size(svg, image::ImageFormat::Png, width, height)
 }
 
 /// Converts svg to jpeg.
 #[cfg(feature = "jpeg")]
+#[cfg_attr(docsrs, doc(cfg(feature = "jpeg")))]
 pub fn svg_to_jpeg(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::Jpeg)
 }
 
 /// Converts svg to jpeg, scaling to the given width and/or height.
 #[cfg(feature = "jpeg")]
+#[cfg_attr(docsrs, doc(cfg(feature = "jpeg")))]
 pub fn svg_to_jpeg_with_size(
     svg: &str,
     width: Option<u32>,
@@ -170,12 +175,14 @@ pub fn svg_to_jpeg_with_size(
 
 /// Converts svg to webp.
 #[cfg(feature = "webp")]
+#[cfg_attr(docsrs, doc(cfg(feature = "webp")))]
 pub fn svg_to_webp(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::WebP)
 }
 
 /// Converts svg to webp, scaling to the given width and/or height.
 #[cfg(feature = "webp")]
+#[cfg_attr(docsrs, doc(cfg(feature = "webp")))]
 pub fn svg_to_webp_with_size(
     svg: &str,
     width: Option<u32>,
@@ -186,12 +193,14 @@ pub fn svg_to_webp_with_size(
 
 /// Converts svg to avif.
 #[cfg(feature = "avif")]
+#[cfg_attr(docsrs, doc(cfg(feature = "avif")))]
 pub fn svg_to_avif(svg: &str) -> Result<Vec<u8>> {
     save_image(svg, image::ImageFormat::Avif)
 }
 
 /// Converts svg to avif, scaling to the given width and/or height.
 #[cfg(feature = "avif")]
+#[cfg_attr(docsrs, doc(cfg(feature = "avif")))]
 pub fn svg_to_avif_with_size(
     svg: &str,
     width: Option<u32>,

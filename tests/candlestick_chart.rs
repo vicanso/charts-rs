@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::CandlestickChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn candlestick_chart() {
@@ -397,8 +398,8 @@ fn candlestick_chart() {
     }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/candlestick_chart/basic_json.svg"),
+    common::assert_snapshot!(
+        "candlestick_chart/basic_json.svg",
         candlestick_chart.svg().unwrap()
     );
 }

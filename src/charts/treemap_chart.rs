@@ -17,6 +17,7 @@ use super::color::*;
 use super::common::*;
 use super::component::*;
 use super::params::*;
+use super::sunburst_chart::{SunburstData, lighten, parse_node};
 use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
@@ -24,6 +25,8 @@ use crate::charts::measure_text_width_family;
 // ── Squarify algorithm ───────────────────────────────────────────────────────
 
 struct TmItem {
+    /// Index of the node this item came from, to find its children.
+    index: usize,
     name: String,
     value_str: String, // pre-formatted original value for label
     color: Color,
@@ -31,6 +34,7 @@ struct TmItem {
 }
 
 struct TmRect {
+    index: usize,
     name: String,
     value_str: String,
     color: Color,
@@ -38,6 +42,44 @@ struct TmRect {
     y: f32,
     w: f32,
     h: f32,
+}
+
+/// A node of the (possibly nested) treemap data, with the value of a
+/// branch being the sum of its leaves.
+struct TmNode {
+    name: String,
+    value: f32,
+    color: Color,
+    children: Vec<TmNode>,
+}
+
+impl TmNode {
+    /// Builds the tree from nested data; a branch takes the sum of its
+    /// children as value, colors fade with depth like the sunburst rings.
+    fn from_data(data: &SunburstData, color: Color, depth: usize) -> Option<TmNode> {
+        let color = data.color.unwrap_or(color);
+        let children: Vec<TmNode> = data
+            .children
+            .iter()
+            .filter_map(|child| {
+                TmNode::from_data(child, lighten(color, 0.15 * (depth + 1) as f32), depth + 1)
+            })
+            .collect();
+        let value = if children.is_empty() {
+            data.value
+        } else {
+            children.iter().map(|c| c.value).sum()
+        };
+        if value <= 0.0 {
+            return None;
+        }
+        Some(TmNode {
+            name: data.name.clone(),
+            value,
+            color,
+            children,
+        })
+    }
 }
 
 /// Worst aspect ratio of a row of normalised areas given the available short side.
@@ -62,6 +104,7 @@ fn squarify(items: &[TmItem], x: f32, y: f32, w: f32, h: f32, out: &mut Vec<TmRe
     }
     if items.len() == 1 {
         out.push(TmRect {
+            index: items[0].index,
             name: items[0].name.clone(),
             value_str: items[0].value_str.clone(),
             color: items[0].color,
@@ -97,6 +140,7 @@ fn squarify(items: &[TmItem], x: f32, y: f32, w: f32, h: f32, out: &mut Vec<TmRe
         for item in row {
             let ih = item.area / row_w;
             out.push(TmRect {
+                index: item.index,
                 name: item.name.clone(),
                 value_str: item.value_str.clone(),
                 color: item.color,
@@ -115,6 +159,7 @@ fn squarify(items: &[TmItem], x: f32, y: f32, w: f32, h: f32, out: &mut Vec<TmRe
         for item in row {
             let iw = item.area / row_h;
             out.push(TmRect {
+                index: item.index,
                 name: item.name.clone(),
                 value_str: item.value_str.clone(),
                 color: item.color,
@@ -132,7 +177,7 @@ fn squarify(items: &[TmItem], x: f32, y: f32, w: f32, h: f32, out: &mut Vec<TmRe
 // ── TreemapChart ─────────────────────────────────────────────────────────────
 
 /// A treemap laying values out as rectangles sized proportionally.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct TreemapChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -142,6 +187,10 @@ pub struct TreemapChart {
     // treemap-specific
     /// Pixel gap between adjacent cells. Default: 2.0.
     pub item_gap: f32,
+    /// Nested data (name / value / children, as for the sunburst and tree
+    /// charts); when set it takes precedence over `series_list`, and every
+    /// branch is subdivided into its children.
+    pub series_data: Vec<SunburstData>,
 }
 
 impl std::ops::Deref for TreemapChart {
@@ -187,9 +236,14 @@ impl TreemapChart {
         let mut c = TreemapChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value =
+            c.base
+                .fill_option(json, &mut c.y_axis_configs, super::schema::TREEMAP_FIELDS)?;
         if let Some(v) = get_f32_from_value(&value, "item_gap") {
             c.item_gap = v;
+        }
+        if let Some(arr) = value.get("series_data").and_then(|v| v.as_array()) {
+            c.series_data = arr.iter().filter_map(parse_node).collect();
         }
         c.fill_default();
         Ok(c)
@@ -198,12 +252,7 @@ impl TreemapChart {
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
-        self.render_background(c.child(Box::default()));
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-        let legend_height = self.render_legend(c.child(Box::default()));
-        let top = title_height.max(legend_height);
+        let top = self.render_header(&mut c);
 
         let mut content_c = c.child(Box {
             top,
@@ -216,46 +265,125 @@ impl TreemapChart {
             return c.svg();
         }
 
-        // Collect items with positive values, sort descending
-        let mut items: Vec<TmItem> = self
-            .series_list
-            .iter()
-            .enumerate()
-            .filter_map(|(i, s)| {
-                let v = *s.data_values().first()?;
-                if v <= 0.0 {
-                    return None;
-                }
-                let color = get_color(&self.series_colors, s.index.unwrap_or(i));
-                let value_str = format_float(v);
-                Some(TmItem {
-                    name: s.name.clone(),
-                    value_str,
-                    color,
-                    area: v,
+        // The tree to lay out: nested data, or one leaf per series.
+        let nodes: Vec<TmNode> = if !self.series_data.is_empty() {
+            self.series_data
+                .iter()
+                .enumerate()
+                .filter_map(|(i, data)| {
+                    TmNode::from_data(data, get_color(&self.series_colors, i), 0)
                 })
-            })
-            .collect();
-
-        if items.is_empty() {
+                .collect()
+        } else {
+            self.series_list
+                .iter()
+                .enumerate()
+                .filter_map(|(i, s)| {
+                    let v = *s.data_values().first()?;
+                    if v <= 0.0 {
+                        return None;
+                    }
+                    Some(TmNode {
+                        name: s.name.clone(),
+                        value: v,
+                        color: get_color(&self.series_colors, s.index.unwrap_or(i)),
+                        children: vec![],
+                    })
+                })
+                .collect()
+        };
+        if nodes.is_empty() {
             return c.svg();
         }
+        let grand_total: f32 = nodes.iter().map(|n| n.value).sum();
+        let formatter = &self.series_label_formatter;
+        let value_label = |name: &str, value: f32| -> String {
+            if formatter.is_empty() {
+                format_float(value)
+            } else {
+                LabelOption {
+                    series_name: name.to_string(),
+                    category_name: name.to_string(),
+                    value,
+                    percentage: value / grand_total,
+                    formatter: formatter.clone(),
+                }
+                .format()
+            }
+        };
 
-        items.sort_by(|a, b| {
-            b.area
-                .partial_cmp(&a.area)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
-
-        // Normalise to canvas area
-        let total: f32 = items.iter().map(|it| it.area).sum();
-        let canvas_area = cw * ch;
-        for it in &mut items {
-            it.area = it.area / total * canvas_area;
+        // Lays out one level: the nodes fill `(x, y, w, h)` by value, and a
+        // branch is subdivided into its children inside its own cell.
+        #[allow(clippy::too_many_arguments)]
+        fn layout(
+            nodes: &[TmNode],
+            x: f32,
+            y: f32,
+            w: f32,
+            h: f32,
+            gap: f32,
+            label: &dyn Fn(&str, f32) -> String,
+            out: &mut Vec<TmRect>,
+        ) {
+            let mut items: Vec<TmItem> = nodes
+                .iter()
+                .enumerate()
+                .map(|(index, n)| TmItem {
+                    index,
+                    name: n.name.clone(),
+                    value_str: label(&n.name, n.value),
+                    color: n.color,
+                    area: n.value,
+                })
+                .collect();
+            items.sort_by(|a, b| {
+                b.area
+                    .partial_cmp(&a.area)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            });
+            let total: f32 = items.iter().map(|it| it.area).sum();
+            if total <= 0.0 {
+                return;
+            }
+            let area = w * h;
+            for it in &mut items {
+                it.area = it.area / total * area;
+            }
+            let mut rects: Vec<TmRect> = vec![];
+            squarify(&items, x, y, w, h, &mut rects);
+            for r in rects {
+                let node = &nodes[r.index];
+                if node.children.is_empty() {
+                    out.push(r);
+                } else {
+                    // Inset by the gap so sibling branches stay separated.
+                    let inner_w = (r.w - gap).max(0.0);
+                    let inner_h = (r.h - gap).max(0.0);
+                    layout(
+                        &node.children,
+                        r.x + gap / 2.0,
+                        r.y + gap / 2.0,
+                        inner_w,
+                        inner_h,
+                        gap,
+                        label,
+                        out,
+                    );
+                }
+            }
         }
 
         let mut rects: Vec<TmRect> = vec![];
-        squarify(&items, 0.0, 0.0, cw, ch, &mut rects);
+        layout(
+            &nodes,
+            0.0,
+            0.0,
+            cw,
+            ch,
+            self.item_gap,
+            &value_label,
+            &mut rects,
+        );
 
         let half_gap = self.item_gap / 2.0;
         let font_size = self.series_label_font_size.max(10.0);
@@ -271,15 +399,44 @@ impl TreemapChart {
                 continue;
             }
 
+            let tooltip_text = self
+                .tooltip_show
+                .then(|| format!("{}: {}", r.name, r.value_str));
+            let mut class = anim_class.clone();
+            if tooltip_text.is_some() {
+                class = Some(match class {
+                    Some(c) => format!("{c} ct-trigger"),
+                    None => "ct-trigger".to_string(),
+                });
+            }
             content_c.rect(Rect {
                 fill: Some(r.color.into()),
                 left: rx,
                 top: ry,
                 width: rw,
                 height: rh,
-                class: anim_class.clone(),
+                class,
+                title: tooltip_text.clone(),
+                dataset: vec![
+                    ("series".to_string(), r.name.clone()),
+                    ("value".to_string(), r.value_str.clone()),
+                ],
                 ..Default::default()
             });
+            if let Some(text) = tooltip_text {
+                content_c.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(font_color),
+                    font_size: Some(font_size),
+                    x: Some(rx + rw / 2.0),
+                    y: Some(ry + rh / 2.0),
+                    text_anchor: Some("middle".to_string()),
+                    dominant_baseline: Some("central".to_string()),
+                    ..Default::default()
+                });
+            }
 
             // Label: show name when cell is large enough
             if rw < font_size * 2.0 || rh < font_size + 4.0 {
@@ -315,7 +472,6 @@ impl TreemapChart {
                     a: 230,
                 }
             };
-            let _ = font_color; // use auto-contrast instead
 
             content_c.text(Text {
                 text: r.name.clone(),
@@ -347,15 +503,22 @@ impl TreemapChart {
             }
         }
 
+        let mut css = String::new();
         if let Some(ref anim) = self.animation {
-            let css = format!(
+            css.push_str(&format!(
                 "@keyframes treemap-fade{{from{{opacity:0}}to{{opacity:1}}}} \
-                 .treemap-anim{{animation:treemap-fade {}ms {} both}}",
-                anim.duration, anim.easing
-            );
-            c.svg_with_style(&css)
-        } else {
+                 .treemap-anim{{animation:treemap-fade {}ms {} both}} ",
+                anim.duration,
+                anim.safe_easing()
+            ));
+        }
+        if self.tooltip_show {
+            css.push_str(TOOLTIP_STYLE);
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }
@@ -363,7 +526,6 @@ impl TreemapChart {
 #[cfg(test)]
 mod tests {
     use super::TreemapChart;
-    use pretty_assertions::assert_eq;
 
     fn make_treemap() -> TreemapChart {
         TreemapChart::new(vec![
@@ -379,10 +541,7 @@ mod tests {
     #[test]
     fn treemap_chart_basic() {
         let chart = make_treemap();
-        assert_eq!(
-            include_str!("../../asset/treemap_chart/basic.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("treemap_chart/basic.svg", chart.svg().unwrap());
     }
 
     #[test]
@@ -402,10 +561,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/treemap_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("treemap_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     #[test]

@@ -60,11 +60,11 @@ values
 5
 </text>
 </g>
-<rect x="35" y="365" width="103" height="0" fill="#5470C6"/>
-<rect x="148" y="294.6" width="103" height="70.4" fill="#5470C6"/>
-<rect x="261" y="224.2" width="103" height="140.8" fill="#5470C6"/>
-<rect x="374" y="153.8" width="103" height="211.2" fill="#5470C6"/>
-<rect x="487" y="83.3" width="103" height="281.7" fill="#5470C6"/>
+<rect x="35" y="365" width="103" height="0" fill="#5470C6" data-series="values" data-category="1" data-value="0"/>
+<rect x="148" y="294.6" width="103" height="70.4" fill="#5470C6" data-series="values" data-category="2" data-value="0.2"/>
+<rect x="261" y="224.2" width="103" height="140.8" fill="#5470C6" data-series="values" data-category="3" data-value="0.5"/>
+<rect x="374" y="153.8" width="103" height="211.2" fill="#5470C6" data-series="values" data-category="4" data-value="0.8"/>
+<rect x="487" y="83.3" width="103" height="281.7" fill="#5470C6" data-series="values" data-category="5" data-value="1"/>
 <text font-size="14" x="86.5" y="365" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
 0
 </text>

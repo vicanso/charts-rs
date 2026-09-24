@@ -12,6 +12,7 @@
 
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 //! Charts supports twenty-two chart types: bar, horizontal bar, line, pie,
 //! radar, scatter, candlestick, table, heatmap, funnel, waterfall, multi
@@ -440,3 +441,9 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub fn version() -> &'static str {
     VERSION
 }
+
+// Compiles the README's Rust snippets as doctests (with the raster feature
+// they use), so the examples cannot drift from the API.
+#[cfg(all(doctest, feature = "png"))]
+#[doc = include_str!("../README.md")]
+pub struct ReadmeDoctests;

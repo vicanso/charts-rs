@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::FunnelChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn funnel_chart_basic_json() {
@@ -18,10 +19,7 @@ fn funnel_chart_basic_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/funnel_chart/basic_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("funnel_chart/basic_json.svg", chart.svg().unwrap());
 }
 
 #[test]
@@ -42,10 +40,7 @@ fn funnel_chart_grafana_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/funnel_chart/grafana_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("funnel_chart/grafana_json.svg", chart.svg().unwrap());
 }
 
 #[test]
@@ -66,8 +61,5 @@ fn funnel_chart_right_label_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/funnel_chart/right_label.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("funnel_chart/right_label.svg", chart.svg().unwrap());
 }

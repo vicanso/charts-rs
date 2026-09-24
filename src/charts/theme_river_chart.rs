@@ -28,7 +28,7 @@ use super::util::*;
 ///
 /// Data reuses the shared model: `series_list` holds one [`Series`] per stream
 /// and `x_axis_data` holds the time-axis labels.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct ThemeRiverChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -87,7 +87,11 @@ impl ThemeRiverChart {
             ..Default::default()
         };
         // `series_list` and `x_axis_data` are parsed by the derived fill_option.
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value = c.base.fill_option(
+            json,
+            &mut c.y_axis_configs,
+            super::schema::THEME_RIVER_FIELDS,
+        )?;
         if let Some(v) = get_f32_from_value(&value, "stream_opacity") {
             c.stream_opacity = v;
         }
@@ -188,14 +192,25 @@ impl ThemeRiverChart {
                 top_pts.push((x, y_top).into());
                 bottom_pts.push((x, y_bottom).into());
             }
-            // Close the band: top edge left→right, bottom edge right→left.
-            bottom_pts.reverse();
-            top_pts.extend(bottom_pts);
-            content.polygon(Polygon {
-                fill: Some(color),
-                points: top_pts,
-                ..Default::default()
-            });
+            if self.series_smooth {
+                content.smooth_band(SmoothBand {
+                    top: top_pts,
+                    bottom: bottom_pts,
+                    fill: Some(color),
+                    dataset: vec![("series".to_string(), s.name.clone())],
+                    ..Default::default()
+                });
+            } else {
+                // Close the band: top edge left→right, bottom edge right→left.
+                bottom_pts.reverse();
+                top_pts.extend(bottom_pts);
+                content.polygon(Polygon {
+                    fill: Some(color),
+                    points: top_pts,
+                    dataset: vec![("series".to_string(), s.name.clone())],
+                    ..Default::default()
+                });
+            }
         }
 
         // ── Stream labels (name at each stream's widest time step) ─────────────
@@ -283,7 +298,6 @@ impl ThemeRiverChart {
 mod tests {
     use super::ThemeRiverChart;
     use crate::Series;
-    use pretty_assertions::assert_eq;
 
     fn make() -> ThemeRiverChart {
         // Streams are labeled inline, so the legend is turned off.
@@ -309,10 +323,7 @@ mod tests {
 
     #[test]
     fn theme_river_basic() {
-        assert_eq!(
-            include_str!("../../asset/theme_river_chart/basic.svg"),
-            make().svg().unwrap()
-        );
+        assert_snapshot!("theme_river_chart/basic.svg", make().svg().unwrap());
     }
 
     #[test]
@@ -331,10 +342,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/theme_river_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("theme_river_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     #[test]

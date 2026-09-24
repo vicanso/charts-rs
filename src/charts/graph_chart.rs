@@ -24,7 +24,7 @@ use super::util::*;
 
 /// A node in the relationship graph, identified by `name`. Links reference nodes
 /// by this name.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct GraphNode {
     /// Name of the node, shown as its label.
     pub name: String,
@@ -49,7 +49,7 @@ impl From<&str> for GraphNode {
 
 /// An undirected relationship of optional `value` weight between the `source`
 /// and `target` nodes (both referenced by name).
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct GraphLink {
     /// Name of the source node.
     pub source: String,
@@ -85,7 +85,7 @@ impl From<(&str, &str, f32)> for GraphLink {
 /// on a circle (`"circular"`). Unlike [`TreeChart`](super::TreeChart) (strictly
 /// hierarchical) or [`SankeyChart`](super::SankeyChart) (directed flow), the
 /// edges here may form any topology.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct GraphChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -102,6 +102,9 @@ pub struct GraphChart {
     pub symbol_size: f32,
     /// Layout: `"force"` (default, force-directed) or `"circular"`.
     pub layout: Option<String>,
+    /// Names of the node categories (`GraphNode::category` indexes them);
+    /// when set they are shown as the legend, colored like the nodes.
+    pub categories: Vec<String>,
 }
 
 impl std::ops::Deref for GraphChart {
@@ -149,7 +152,9 @@ impl GraphChart {
         let mut c = GraphChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value = c
+            .base
+            .fill_option(json, &mut c.y_axis_configs, super::schema::GRAPH_FIELDS)?;
         if let Some(arr) = value.get("nodes").and_then(|v| v.as_array()) {
             c.nodes = arr
                 .iter()
@@ -190,6 +195,9 @@ impl GraphChart {
         if let Some(s) = get_string_from_value(&value, "layout") {
             c.layout = Some(s);
         }
+        if let Some(categories) = get_string_slice_from_value(&value, "categories") {
+            c.categories = categories;
+        }
         c.fill_default();
         Ok(c)
     }
@@ -198,7 +206,23 @@ impl GraphChart {
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
 
-        let axis_top = self.render_header(&mut c);
+        let mut axis_top = self.render_header(&mut c);
+        // The categories are the legend of a graph (its series list is empty).
+        if !self.categories.is_empty() && self.legend_show.unwrap_or(true) {
+            let entries: Vec<(&str, Color)> = self
+                .categories
+                .iter()
+                .enumerate()
+                .map(|(i, name)| (name.as_str(), get_color(&self.series_colors, i)))
+                .collect();
+            axis_top += self.render_legend_entries(
+                c.child(Box {
+                    top: axis_top,
+                    ..Default::default()
+                }),
+                &entries,
+            );
+        }
 
         let mut content = c.child(Box {
             top: axis_top,
@@ -230,6 +254,7 @@ impl GraphChart {
         let index_of = |names: &[String], name: &str| names.iter().position(|n| n == name);
 
         let mut edges: Vec<(usize, usize)> = vec![];
+        let mut edge_values: Vec<f32> = vec![];
         for link in &self.links {
             for name in [&link.source, &link.target] {
                 if index_of(&names, name).is_none() {
@@ -247,8 +272,23 @@ impl GraphChart {
             };
             if a != b {
                 edges.push((a, b));
+                edge_values.push(link.value.max(0.0));
             }
         }
+        // Edge widths: the base stroke, scaled up to 4x by the link value
+        // when values are provided.
+        let max_edge_value = edge_values.iter().copied().fold(0.0_f32, f32::max);
+        let base_edge_width = self.grid_stroke_width.max(1.0);
+        let edge_widths: Vec<f32> = edge_values
+            .iter()
+            .map(|&v| {
+                if max_edge_value > 0.0 && v > 0.0 {
+                    base_edge_width * (1.0 + 3.0 * v / max_edge_value)
+                } else {
+                    base_edge_width
+                }
+            })
+            .collect();
 
         let n = names.len();
         if n == 0 {
@@ -356,10 +396,10 @@ impl GraphChart {
         }
 
         // ── Edges (drawn first, under the nodes) ──────────────────────────────
-        for &(a, b) in &edges {
+        for (&(a, b), &stroke_width) in edges.iter().zip(edge_widths.iter()) {
             content.line(Line {
                 color: Some(self.grid_stroke_color),
-                stroke_width: self.grid_stroke_width.max(1.0),
+                stroke_width,
                 left: xs[a],
                 top: ys[a],
                 right: xs[b],
@@ -370,6 +410,7 @@ impl GraphChart {
 
         // ── Nodes ─────────────────────────────────────────────────────────────
         for i in 0..n {
+            let tooltip_text = self.tooltip_show.then(|| names[i].clone());
             content.circle(Circle {
                 fill: Some(colors[i]),
                 stroke_color: Some(self.background_color),
@@ -377,8 +418,24 @@ impl GraphChart {
                 cx: xs[i],
                 cy: ys[i],
                 r: radii[i],
-                ..Default::default()
+                title: tooltip_text.clone(),
+                class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
+                dataset: vec![("name".to_string(), names[i].clone())],
             });
+            if let Some(text) = tooltip_text {
+                content.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(font_size),
+                    x: Some(xs[i]),
+                    y: Some(ys[i] - radii[i]),
+                    dy: Some(-4.0),
+                    text_anchor: Some("middle".to_string()),
+                    ..Default::default()
+                });
+            }
         }
 
         // ── Labels ────────────────────────────────────────────────────────────
@@ -400,7 +457,11 @@ impl GraphChart {
             });
         }
 
-        c.svg()
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -423,8 +484,8 @@ mod tests {
     #[test]
     fn graph_basic() {
         // Nodes auto-derived from the links; deterministic force layout.
-        assert_eq!(
-            include_str!("../../asset/graph_chart/basic.svg"),
+        assert_snapshot!(
+            "graph_chart/basic.svg",
             GraphChart::new(vec![], make_links()).svg().unwrap()
         );
     }
@@ -476,10 +537,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/graph_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("graph_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     #[test]

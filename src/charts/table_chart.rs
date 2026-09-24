@@ -24,7 +24,7 @@ use crate::charts::measure_text_width_family;
 use std::sync::Arc;
 
 /// A style override for a single table cell, addressed by `indexes`.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct TableCellStyle {
     /// Font color override.
     pub font_color: Option<Color>,
@@ -37,7 +37,7 @@ pub struct TableCellStyle {
 }
 
 /// A table rendered as SVG, with optional per-cell style overrides.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct TableChart {
     /// The shared chart options (size, title/sub-title, font); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -98,7 +98,9 @@ impl std::ops::DerefMut for TableChart {
 impl TableChart {
     fn fill_option(&mut self, data: &str) -> canvas::Result<serde_json::Value> {
         let data: serde_json::Value = serde_json::from_str(data)?;
+        super::schema::validate(&data, &[super::schema::TABLE_FIELDS])?;
         let theme = get_string_from_value(&data, "theme").unwrap_or_default();
+        super::base::check_theme_name(&theme)?;
         self.fill_theme(get_theme(&theme));
 
         if let Some(width) = get_f32_from_value(&data, "width") {
@@ -306,7 +308,7 @@ impl TableChart {
         let mut title_height = 0.0;
 
         if !self.title_text.is_empty() {
-            let title_margin = self.title_margin.clone().unwrap_or_default();
+            let title_margin = self.title_margin.unwrap_or_default();
             let mut x = 0.0;
             if let Ok(title_box) =
                 measure_text_width_family(&self.font_family, self.title_font_size, &self.title_text)
@@ -331,14 +333,14 @@ impl TableChart {
             title_height = b.height() + title_margin_bottom;
         }
         if !self.sub_title_text.is_empty() {
-            let mut sub_title_margin = self.sub_title_margin.clone().unwrap_or_default();
+            let mut sub_title_margin = self.sub_title_margin.unwrap_or_default();
             let mut x = 0.0;
             if let Ok(sub_title_box) = measure_text_width_family(
                 &self.font_family,
                 self.sub_title_font_size,
                 &self.sub_title_text,
             ) {
-                x = match self.title_align {
+                x = match self.sub_title_align {
                     Align::Center => (c.width() - sub_title_box.width()) / 2.0,
                     Align::Right => c.width() - sub_title_box.width(),
                     _ => 0.0,
@@ -391,7 +393,7 @@ impl TableChart {
 
         if !self.title_text.is_empty() {
             let mut title_height = self.title_height;
-            if let Some(value) = self.title_margin.clone() {
+            if let Some(value) = self.title_margin {
                 title_height += value.top + value.bottom;
             }
             if !self.sub_title_text.is_empty() {
@@ -499,14 +501,18 @@ impl TableChart {
                 font_color = self.header_font_color;
                 font_weight.clone_from(&self.header_font_weight);
                 self.header_background_color
+            } else if body_background_color_count == 0 {
+                // An empty palette (`"body_background_colors": []`) means no
+                // row striping rather than a division by zero.
+                Color::transparent()
             } else {
                 self.body_background_colors[(i - 1) % body_background_color_count]
             };
 
             let row_padding = if is_header {
-                self.header_row_padding.clone()
+                self.header_row_padding
             } else {
-                self.body_row_padding.clone()
+                self.body_row_padding
             };
             let mut count = 0;
             for content_list in items.iter() {
@@ -577,7 +583,7 @@ impl TableChart {
                             Align::Left => None,
                         };
                     }
-                    c.child(row_padding.clone()).text(Text {
+                    c.child(row_padding).text(Text {
                         text: item.to_string(),
                         font_weight: cell_font_weight.clone(),
                         font_family: Some(self.font_family.clone()),
@@ -618,7 +624,6 @@ impl TableChart {
 mod tests {
     use super::{TableCellStyle, TableChart};
     use crate::{Align, THEME_ANT, THEME_DARK, THEME_GRAFANA};
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn table_basic() {
@@ -652,10 +657,7 @@ mod tests {
             font_color: Some(("#fff").into()),
         }];
         table_chart.outlined = true;
-        assert_eq!(
-            include_str!("../../asset/table_chart/basic.svg"),
-            table_chart.svg().unwrap()
-        );
+        assert_snapshot!("table_chart/basic.svg", table_chart.svg().unwrap());
     }
 
     #[test]
@@ -698,10 +700,7 @@ mod tests {
                 ..Default::default()
             },
         ];
-        assert_eq!(
-            include_str!("../../asset/table_chart/multi_lines.svg"),
-            table_chart.svg().unwrap()
-        );
+        assert_snapshot!("table_chart/multi_lines.svg", table_chart.svg().unwrap());
     }
 
     #[test]
@@ -733,10 +732,7 @@ mod tests {
         );
         table_chart.title_text = "NASDAQ".to_string();
         table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
-        assert_eq!(
-            include_str!("../../asset/table_chart/basic_dark.svg"),
-            table_chart.svg().unwrap()
-        );
+        assert_snapshot!("table_chart/basic_dark.svg", table_chart.svg().unwrap());
     }
 
     #[test]
@@ -768,10 +764,7 @@ mod tests {
         );
         table_chart.title_text = "NASDAQ".to_string();
         table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
-        assert_eq!(
-            include_str!("../../asset/table_chart/basic_ant.svg"),
-            table_chart.svg().unwrap()
-        );
+        assert_snapshot!("table_chart/basic_ant.svg", table_chart.svg().unwrap());
     }
 
     #[test]
@@ -828,9 +821,6 @@ mod tests {
         ];
         table_chart.spans = vec![150.0, 0.4];
         table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Center];
-        assert_eq!(
-            include_str!("../../asset/table_chart/basic_grafana.svg"),
-            table_chart.svg().unwrap()
-        );
+        assert_snapshot!("table_chart/basic_grafana.svg", table_chart.svg().unwrap());
     }
 }

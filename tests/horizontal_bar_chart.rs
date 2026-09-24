@@ -1,5 +1,4 @@
 use charts_rs::HorizontalBarChart;
-use pretty_assertions::assert_eq;
 
 mod common;
 
@@ -37,8 +36,8 @@ fn horizontal_bar_chart() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/horizontal_bar_chart/basic_json.svg"),
+    common::assert_snapshot!(
+        "horizontal_bar_chart/basic_json.svg",
         horizontal_bar_chart.svg().unwrap()
     );
 }
@@ -80,8 +79,8 @@ fn horizontal_bar_chart_label_inside() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/horizontal_bar_chart/basic_json_label_left.svg"),
+    common::assert_snapshot!(
+        "horizontal_bar_chart/basic_json_label_left.svg",
         horizontal_bar_chart.svg().unwrap()
     );
 }
@@ -120,8 +119,8 @@ fn horizontal_bar_chart_nil_value() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/horizontal_bar_chart/nil_value_json.svg"),
+    common::assert_snapshot!(
+        "horizontal_bar_chart/nil_value_json.svg",
         horizontal_bar_chart.svg().unwrap()
     );
 }
@@ -158,10 +157,7 @@ fn horizontal_bar_chart_narrow_bands() {
     let svg = horizontal_bar_chart.svg().unwrap();
     assert!(!svg.contains(r#"height="-"#), "negative bar height");
     common::assert_bars_in_y_bands(&svg, 24);
-    assert_eq!(
-        include_str!("../asset/horizontal_bar_chart/narrow_bands.svg"),
-        svg
-    );
+    common::assert_snapshot!("horizontal_bar_chart/narrow_bands.svg", svg);
 }
 
 #[test]

@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::SunburstChart;
-use pretty_assertions::assert_eq;
 
 const DATA: &str = r##"
     "inner_radius": 20,
@@ -33,10 +34,7 @@ const DATA: &str = r##"
 fn sunburst_chart_basic_json() {
     let chart =
         SunburstChart::from_json(&format!(r##"{{"title_text": "Sunburst",{DATA}}}"##)).unwrap();
-    assert_eq!(
-        include_str!("../asset/sunburst_chart/basic_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("sunburst_chart/basic_json.svg", chart.svg().unwrap());
 }
 
 #[test]
@@ -45,8 +43,5 @@ fn sunburst_chart_grafana_json() {
         r##"{{"theme": "grafana", "title_text": "Sunburst",{DATA}}}"##
     ))
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/sunburst_chart/grafana_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("sunburst_chart/grafana_json.svg", chart.svg().unwrap());
 }

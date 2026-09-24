@@ -23,7 +23,7 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 
 /// One heatmap cell: a flat grid `index` plus its value.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct HeatmapData {
     /// Flat index of the cell in the grid.
     pub index: usize,
@@ -41,7 +41,7 @@ impl From<(usize, f32)> for HeatmapData {
 }
 
 /// The heatmap cells plus the value range and its color mapping.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct HeatmapSeries {
     /// The heatmap cells.
     pub data: Vec<HeatmapData>,
@@ -87,7 +87,7 @@ impl HeatmapSeries {
 }
 
 /// A heatmap over an x/y category grid, coloring cells by value.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct HeatmapChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -159,7 +159,9 @@ impl HeatmapChart {
         let mut h = HeatmapChart {
             ..Default::default()
         };
-        let value = h.base.fill_option(data, &mut h.y_axis_configs)?;
+        let value =
+            h.base
+                .fill_option(data, &mut h.y_axis_configs, super::schema::HEATMAP_FIELDS)?;
         if let Some(y_axis_data) = get_string_slice_from_value(&value, "y_axis_data") {
             h.y_axis_data = y_axis_data;
         }
@@ -327,7 +329,12 @@ impl HeatmapChart {
                         font_color = self.series.max_font_color;
                     }
 
-                    text = format_series_value(value, &self.series_label_formatter);
+                    text = format_series_label(
+                        &self.series_label_formatter,
+                        value,
+                        &self.y_axis_data[i],
+                        &self.x_axis_data[j],
+                    );
                     self.series.get_color(value)
                 } else {
                     let mut color_index = j;
@@ -361,6 +368,15 @@ impl HeatmapChart {
                 if let Some(value) = data[index] {
                     dataset.push(("value".to_string(), format_float(value)));
                 }
+                let tooltip_text = match (self.tooltip_show, data[index]) {
+                    (true, Some(value)) => Some(format!(
+                        "{}, {}: {}",
+                        self.x_axis_data[j],
+                        self.y_axis_data[i],
+                        format_float(value)
+                    )),
+                    _ => None,
+                };
                 c1.rect(Rect {
                     color: Some(color),
                     fill: Some(color.into()),
@@ -368,9 +384,25 @@ impl HeatmapChart {
                     top: y,
                     width: x_unit,
                     height: y_unit,
+                    title: tooltip_text.clone(),
+                    class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
                     dataset,
                     ..Default::default()
                 });
+                if let Some(tip) = tooltip_text {
+                    c1.text(Text {
+                        text: tip,
+                        class: Some("ct-tip".to_string()),
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(self.series_label_font_size),
+                        x: Some(x + x_unit / 2.0),
+                        y: Some(y),
+                        dy: Some(-4.0),
+                        text_anchor: Some("middle".to_string()),
+                        ..Default::default()
+                    });
+                }
                 if !text.is_empty() {
                     let mut x1 = x + x_unit / 2.0;
                     let y1 = y + y_unit / 2.0;
@@ -396,7 +428,11 @@ impl HeatmapChart {
             }
         }
 
-        c.svg()
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 
@@ -405,7 +441,6 @@ mod tests {
     use crate::THEME_DARK;
 
     use super::HeatmapChart;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn heatmap_chart_basic() {
@@ -446,10 +481,7 @@ mod tests {
         heatmap_chart.width = 800.0;
         heatmap_chart.series.max = 10.0;
 
-        assert_eq!(
-            include_str!("../../asset/heatmap_chart/basic.svg"),
-            heatmap_chart.svg().unwrap()
-        );
+        assert_snapshot!("heatmap_chart/basic.svg", heatmap_chart.svg().unwrap());
     }
 
     #[test]
@@ -492,10 +524,7 @@ mod tests {
         heatmap_chart.width = 800.0;
         heatmap_chart.series.max = 10.0;
 
-        assert_eq!(
-            include_str!("../../asset/heatmap_chart/basic_dark.svg"),
-            heatmap_chart.svg().unwrap()
-        );
+        assert_snapshot!("heatmap_chart/basic_dark.svg", heatmap_chart.svg().unwrap());
     }
 
     #[test]
@@ -539,9 +568,6 @@ mod tests {
         heatmap_chart.x_axis_hidden = true;
         heatmap_chart.y_axis_hidden = true;
 
-        assert_eq!(
-            include_str!("../../asset/heatmap_chart/no_axis.svg"),
-            heatmap_chart.svg().unwrap()
-        );
+        assert_snapshot!("heatmap_chart/no_axis.svg", heatmap_chart.svg().unwrap());
     }
 }

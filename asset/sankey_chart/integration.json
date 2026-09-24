@@ -1,0 +1,18 @@
+{
+    "theme": "grafana",
+    "title_text": "Energy Flow",
+    "tooltip_show": true,
+    "nodes": [{"name": "Coal"}, {"name": "Gas"}, {"name": "Solar"}, {"name": "Electricity"}, {"name": "Heat"}, {"name": "Residential"}, {"name": "Industrial"}],
+    "links": [
+        {"source": "Coal", "target": "Electricity", "value": 25},
+        {"source": "Coal", "target": "Heat", "value": 10},
+        {"source": "Gas", "target": "Electricity", "value": 15},
+        {"source": "Gas", "target": "Heat", "value": 20},
+        {"source": "Solar", "target": "Electricity", "value": 10},
+        {"source": "Electricity", "target": "Residential", "value": 28},
+        {"source": "Electricity", "target": "Industrial", "value": 22},
+        {"source": "Heat", "target": "Residential", "value": 12},
+        {"source": "Heat", "target": "Industrial", "value": 18}
+    ],
+    "node_align": "justify"
+}

@@ -117,14 +117,11 @@ impl fmt::Display for SmoothCurve {
             control_points.push(get_control_points(point, left, right, tension));
         }
 
-        let mut arr = vec![];
+        // Written straight into the formatter: this path is the largest
+        // piece of a line chart, so no per-point strings or joins.
         for (index, point) in self.points.iter().enumerate() {
             if index == 0 {
-                arr.push(format!(
-                    "M{},{}",
-                    format_float(point.x),
-                    format_float(point.y)
-                ));
+                write!(f, "M{},{}", format_float(point.x), format_float(point.y))?;
             }
             let cp1 = control_points[index].right;
             let mut cp2 = None;
@@ -141,34 +138,33 @@ impl fmt::Display for SmoothCurve {
                 next_point = self.points.first();
             }
             if let Some(next_point_value) = next_point {
-                let next_point = format!(
-                    "{} {}",
-                    format_float(next_point_value.x),
-                    format_float(next_point_value.y)
-                );
                 if let Some(cp1_value) = cp1
                     && let Some(cp2_value) = cp2
                 {
-                    let c1 = format!(
-                        "{} {}",
+                    write!(
+                        f,
+                        " C{} {}, {} {}, {} {}",
                         format_float(cp1_value.x),
-                        format_float(cp1_value.y)
-                    );
-                    let c2 = format!(
-                        "{} {}",
+                        format_float(cp1_value.y),
                         format_float(cp2_value.x),
-                        format_float(cp2_value.y)
-                    );
-                    arr.push(format!("C{}, {}, {}", c1, c2, next_point));
+                        format_float(cp2_value.y),
+                        format_float(next_point_value.x),
+                        format_float(next_point_value.y)
+                    )?;
                     continue;
                 }
                 let p = cp1.unwrap_or(cp2.unwrap_or_default());
-
-                let q = format!("{} {}", format_float(p.x), format_float(p.y));
-                arr.push(format!("Q{}, {}", q, next_point));
+                write!(
+                    f,
+                    " Q{} {}, {} {}",
+                    format_float(p.x),
+                    format_float(p.y),
+                    format_float(next_point_value.x),
+                    format_float(next_point_value.y)
+                )?;
             }
         }
-        write!(f, "{}", arr.join(" "))
+        Ok(())
     }
 }
 

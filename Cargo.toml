@@ -49,3 +49,5 @@ harness = false
 [package.metadata.docs.rs]
 # Whether to pass `--all-features` to Cargo (default: false)
 all-features = true
+# Lets docs.rs mark the raster export functions with the feature they need.
+rustdoc-args = ["--cfg", "docsrs"]

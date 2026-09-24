@@ -22,7 +22,7 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 
 /// A funnel chart for stage conversion data.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct FunnelChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -94,7 +94,9 @@ impl FunnelChart {
         let mut c = FunnelChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value =
+            c.base
+                .fill_option(json, &mut c.y_axis_configs, super::schema::FUNNEL_FIELDS)?;
         if let Some(v) = get_f32_from_value(&value, "funnel_gap") {
             c.funnel_gap = v;
         }
@@ -123,12 +125,7 @@ impl FunnelChart {
         }
 
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
-        self.render_background(c.child(Box::default()));
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-        let legend_height = self.render_legend(c.child(Box::default()));
-        let axis_top = title_height.max(legend_height);
+        let axis_top = self.render_header(&mut c);
 
         if axis_top > 0.0 {
             c = c.child(Box {
@@ -203,7 +200,25 @@ impl FunnelChart {
             let x_right_bot = x_left_bot + bot_w;
 
             let color = get_color(&self.series_colors, *color_idx);
+            let percentage = if total > 0.0 { val / total } else { 0.0 };
 
+            let tooltip_text = self.tooltip_show.then(|| {
+                LabelOption {
+                    series_name: name.clone(),
+                    value: *val,
+                    percentage,
+                    formatter: "{a}: {c} ({d})".to_string(),
+                    ..Default::default()
+                }
+                .format()
+            });
+            let mut class = anim_class.clone();
+            if tooltip_text.is_some() {
+                class = Some(match class {
+                    Some(c) => format!("{c} ct-trigger"),
+                    None => "ct-trigger".to_string(),
+                });
+            }
             c.polygon(Polygon {
                 color: Some(color),
                 fill: Some(color),
@@ -213,20 +228,41 @@ impl FunnelChart {
                     (x_right_bot, y_bot).into(),
                     (x_left_bot, y_bot).into(),
                 ],
-                class: anim_class.clone(),
+                class,
+                title: tooltip_text.clone(),
+                dataset: vec![
+                    ("series".to_string(), name.clone()),
+                    ("value".to_string(), format_float(*val)),
+                    ("percentage".to_string(), format_float(percentage * 100.0)),
+                ],
                 ..Default::default()
             });
+
+            let mid_y = (y_top + y_bot) / 2.0;
+            // Hidden hover label right after the shape (adjacent-sibling reveal).
+            if let Some(text) = tooltip_text {
+                c.text(Text {
+                    text,
+                    class: Some("ct-tip".to_string()),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(label_color),
+                    font_size: Some(label_font_size),
+                    x: Some((x_left_top + x_right_top) / 2.0),
+                    y: Some(mid_y),
+                    text_anchor: Some("middle".to_string()),
+                    dominant_baseline: Some("central".to_string()),
+                    ..Default::default()
+                });
+            }
 
             let label_option = LabelOption {
                 series_name: name.clone(),
                 value: *val,
-                percentage: if total > 0.0 { val / total } else { 0.0 },
+                percentage,
                 formatter: formatter.clone(),
                 ..Default::default()
             };
             let label_text = label_option.format();
-
-            let mid_y = (y_top + y_bot) / 2.0;
 
             match label_pos {
                 "inside" => {
@@ -300,16 +336,22 @@ impl FunnelChart {
             }
         }
 
+        let mut css = String::new();
         if let Some(ref anim) = self.animation {
-            let css = format!(
+            css.push_str(&format!(
                 "@keyframes funnel-fade{{from{{opacity:0}}to{{opacity:1}}}} \
-                 .funnel-anim{{animation:funnel-fade {}ms {} both}}",
+                 .funnel-anim{{animation:funnel-fade {}ms {} both}} ",
                 anim.duration,
                 anim.safe_easing()
-            );
-            c.svg_with_style(&css)
-        } else {
+            ));
+        }
+        if self.tooltip_show {
+            css.push_str(TOOLTIP_STYLE);
+        }
+        if css.is_empty() {
             c.svg()
+        } else {
+            c.svg_with_style(&css)
         }
     }
 }
@@ -318,7 +360,6 @@ impl FunnelChart {
 mod tests {
     use super::FunnelChart;
     use crate::Series;
-    use pretty_assertions::assert_eq;
 
     fn make_series() -> Vec<Series> {
         vec![
@@ -333,10 +374,7 @@ mod tests {
     #[test]
     fn funnel_chart_basic() {
         let chart = FunnelChart::new(make_series());
-        assert_eq!(
-            include_str!("../../asset/funnel_chart/basic.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("funnel_chart/basic.svg", chart.svg().unwrap());
     }
 
     #[test]
@@ -344,10 +382,7 @@ mod tests {
         let mut chart = FunnelChart::new(make_series());
         chart.title_text = "Conversion Funnel".to_string();
         chart.series_label_position = Some("inside".to_string());
-        assert_eq!(
-            include_str!("../../asset/funnel_chart/inside_label.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("funnel_chart/inside_label.svg", chart.svg().unwrap());
     }
 
     #[test]
@@ -367,10 +402,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/funnel_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("funnel_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     #[test]

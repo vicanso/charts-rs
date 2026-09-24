@@ -147,7 +147,7 @@ fn place(
 // ── TreeChart ────────────────────────────────────────────────────────────────
 
 /// A tree diagram of hierarchical data as linked nodes.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct TreeChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -204,7 +204,9 @@ impl TreeChart {
         let mut c = TreeChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value = c
+            .base
+            .fill_option(json, &mut c.y_axis_configs, super::schema::TREE_FIELDS)?;
         if let Some(arr) = value.get("series_data").and_then(|v| v.as_array()) {
             c.series_data = arr.iter().filter_map(parse_node).collect();
         }
@@ -385,7 +387,6 @@ impl TreeChart {
 #[cfg(test)]
 mod tests {
     use super::{TreeChart, TreeData};
-    use pretty_assertions::assert_eq;
 
     fn leaf(name: &str, value: f32) -> TreeData {
         TreeData {
@@ -412,10 +413,7 @@ mod tests {
 
     #[test]
     fn tree_chart_basic() {
-        assert_eq!(
-            include_str!("../../asset/tree_chart/basic.svg"),
-            make_tree().svg().unwrap()
-        );
+        assert_snapshot!("tree_chart/basic.svg", make_tree().svg().unwrap());
     }
 
     #[test]
@@ -439,10 +437,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/tree_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("tree_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     #[test]

@@ -40,6 +40,12 @@ The library supports twenty-two chart types: `Bar`, `HorizontalBar`, `Line`, `Pi
 - Multiple output formats: svg, png, jpeg, webp, avif
 - Scaled image export via `svg_to_png_with_size` and equivalent functions
 - Web-based JSON editor for interactive chart configuration and testing
+- Validated JSON input: typos, wrong types and out-of-range values are errors
+  with a hint, not silently ignored
+- Legend placement (`legend_position`: top, bottom, left, right), per-series
+  `smooth` / `fill` / `symbol` overrides, fixed-value mark lines
+- Hover tooltips (`tooltip_show`) and `data-*` attributes on the data shapes
+  of every chart, for interactive consumers
 
 ## Installation
 
@@ -47,17 +53,25 @@ Add `charts-rs` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-charts-rs = "0.7"
+charts-rs = "1"
 ```
 
-SVG output works with the default build. Raster export (`png`, `jpeg`, `webp`,
-`avif`) — the `svg_to_png`, `svg_to_png_with_size`, and related functions used
-below — requires the `image-encoder` feature:
+SVG output works with the default build. Raster export is opt-in, one
+feature per format: `png`, `jpeg`, `webp` and `avif` enable `svg_to_png`,
+`svg_to_jpeg`, … (and their `_with_size` variants). Pick only what you need —
+`avif` in particular pulls in the heavyweight `rav1e` encoder:
 
 ```toml
 [dependencies]
-charts-rs = { version = "0.7", features = ["image-encoder"] }
+charts-rs = { version = "1", features = ["png"] }
 ```
+
+`image-encoder` is the umbrella feature that turns on all four formats.
+
+### Minimum supported Rust version
+
+charts-rs 1.x builds with Rust 1.88 or newer (edition 2024). The MSRV may
+rise in a minor release; the change is noted in the changelog.
 
 ## Demo
 
@@ -68,109 +82,139 @@ Charts Web Demo Page: [https://charts.npmtrend.com/](https://charts.npmtrend.com
 Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com/vicanso/charts-rs-web)
 
 <p align="center">
-    <img src="./asset/image/charts-demo.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/charts-demo.png" alt="charts-rs">
 </p>
 
 ## Mix line bar
 
 <p align="center">
-    <img src="./asset/image/mix-line-bar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mix-line-bar.png" alt="charts-rs">
 </p>
 
 ## Horizontal bar
 
 <p align="center">
-    <img src="./asset/image/horizontal-bar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/horizontal-bar.png" alt="charts-rs">
 </p>
 
 ## Line
 
 <p align="center">
-    <img src="./asset/image/line.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line.png" alt="charts-rs">
 </p>
 
 ## Pie
 
 <p align="center">
-    <img src="./asset/image/pie.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie.png" alt="charts-rs">
 </p>
 
 ## Radar
 
 <p align="center">
-    <img src="./asset/image/radar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/radar.png" alt="charts-rs">
 </p>
 
 ## Scatter
 
 <p align="center">
-    <img src="./asset/image/scatter.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/scatter.png" alt="charts-rs">
 </p>
 
 ## Candlestick
 
 <p align="center">
-    <img src="./asset/image/candlestick.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/candlestick.png" alt="charts-rs">
 </p>
 
 ## Table
 
 <p align="center">
-    <img src="./asset/image/table.avif" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/table.avif" alt="charts-rs">
 </p>
 
 ## Heatmap
 
 <p align="center">
-    <img src="./asset/image/heatmap.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/heatmap.png" alt="charts-rs">
 </p>
 
 ## Funnel
 
 <p align="center">
-    <img src="./asset/image/funnel.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/funnel.png" alt="charts-rs">
 </p>
 
 ## Waterfall
 
 <p align="center">
-    <img src="./asset/image/waterfall.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/waterfall.png" alt="charts-rs">
 </p>
 
 ## Calendar
 
 <p align="center">
-    <img src="./asset/image/calendar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/calendar.png" alt="charts-rs">
 </p>
 
 ## Gauge
 
 <p align="center">
-    <img src="./asset/image/gauge.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gauge.png" alt="charts-rs">
 </p>
 
 ## Treemap
 
 <p align="center">
-    <img src="./asset/image/treemap.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/treemap.png" alt="charts-rs">
 </p>
 
 ## Box Plot
 
 <p align="center">
-    <img src="./asset/image/box-plot.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/box-plot.png" alt="charts-rs">
 </p>
 
 ## Sunburst
 
 <p align="center">
-    <img src="./asset/image/sunburst.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sunburst.png" alt="charts-rs">
 </p>
 
 ## Multi Chart
 
 <p align="center">
-    <img src="./asset/image/multi-chart.webp" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/multi-chart.webp" alt="charts-rs">
+</p>
+
+## Sankey
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sankey.png" alt="charts-rs">
+</p>
+
+## Tree
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/tree.png" alt="charts-rs">
+</p>
+
+## Graph
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/graph.png" alt="charts-rs">
+</p>
+
+## Parallel
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/parallel.png" alt="charts-rs">
+</p>
+
+## Theme River
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/theme-river.png" alt="charts-rs">
 </p>
 
 ## Example
@@ -188,9 +232,9 @@ cargo run --example tree       # node-link tree with curved links (LR layout)
 
 ### New from option
 
-```rust
+```rust,no_run
 use charts_rs::{
-    BarChart, Box, SeriesCategory, THEME_GRAFANA
+    BarChart, Box, SeriesCategory, THEME_GRAFANA, svg_to_png
 };
 let mut bar_chart = BarChart::new_with_theme(
     vec![
@@ -279,9 +323,11 @@ svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 
 ### Scaled image export
 
-```rust
+```rust,no_run
 use charts_rs::{BarChart, svg_to_png_with_size};
-let chart = BarChart::from_json(r###"{ ... }"###).unwrap();
+let chart = BarChart::from_json(
+    r###"{"series_list": [{"name": "Email", "data": [120, 132, 101]}], "x_axis_data": ["Mon", "Tue", "Wed"]}"###,
+).unwrap();
 let svg = chart.svg().unwrap();
 
 // Scale to exactly 800×400
@@ -332,9 +378,23 @@ Formatters are supported in `series_label_formatter`, `axis_formatter`, and `val
 
 ## Load more fonts
 
-```rust
-let buf = fs::read(file).unwrap();
+```rust,no_run
+use charts_rs::add_fonts;
+let buf = std::fs::read("path/to/font.ttf").unwrap();
 add_fonts(&[&buf]).unwrap();
+```
+
+A `font_family` that is not registered is still written to the SVG (the
+viewer resolves it), but text is measured with the default font.
+
+## Snapshot tests
+
+The SVG output is covered by snapshot tests under `asset/`. After an
+intentional rendering change, regenerate them and review the diff:
+
+```bash
+UPDATE_SNAPSHOTS=1 cargo test --features image-encoder
+git diff --stat asset/
 ```
 
 ## License

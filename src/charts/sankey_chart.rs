@@ -24,7 +24,7 @@ use super::util::*;
 
 /// A node in the flow diagram, identified by `name`. Links reference nodes by
 /// this name.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct SankeyNode {
     /// Name of the node, shown as its label.
     pub name: String,
@@ -44,7 +44,7 @@ impl From<&str> for SankeyNode {
 
 /// A directed flow of `value` units from the `source` node to the `target`
 /// node (both referenced by name).
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct SankeyLink {
     /// Name of the source node.
     pub source: String,
@@ -111,7 +111,7 @@ fn sample_link_edge(x0: f32, y0: f32, x1: f32, y1: f32, segments: usize, out: &m
 // ── SankeyChart ────────────────────────────────────────────────────────────────
 
 /// A sankey diagram of directed flows between nodes.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct SankeyChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -197,7 +197,9 @@ impl SankeyChart {
         let mut c = SankeyChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value =
+            c.base
+                .fill_option(json, &mut c.y_axis_configs, super::schema::SANKEY_FIELDS)?;
         if let Some(arr) = value.get("nodes").and_then(|v| v.as_array()) {
             c.nodes = arr
                 .iter()
@@ -619,7 +621,10 @@ impl SankeyChart {
                  .sankey-anim{{transform-box:fill-box;transform-origin:left center;\
                  animation:sankey-grow {}ms {} both}} \
                  .sankey-fade{{animation:sankey-fade {}ms {} both}}",
-                anim.duration, anim.easing, anim.duration, anim.easing
+                anim.duration,
+                anim.safe_easing(),
+                anim.duration,
+                anim.safe_easing()
             );
             c.svg_with_style(&css)
         } else {
@@ -736,7 +741,6 @@ fn resolve_collisions(
 #[cfg(test)]
 mod tests {
     use super::{SankeyChart, SankeyLink, SankeyNode};
-    use pretty_assertions::assert_eq;
 
     fn make_links() -> Vec<SankeyLink> {
         // Fuels fan out through two carriers and back into three sectors, so the
@@ -759,10 +763,7 @@ mod tests {
     fn sankey_chart_basic() {
         // Nodes auto-derived from the links.
         let chart = SankeyChart::new(vec![], make_links());
-        assert_eq!(
-            include_str!("../../asset/sankey_chart/basic.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("sankey_chart/basic.svg", chart.svg().unwrap());
     }
 
     #[test]
@@ -795,10 +796,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/sankey_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("sankey_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     #[test]

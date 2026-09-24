@@ -10,6 +10,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// Compares `$actual` with the snapshot file `asset/$path`.
+///
+/// Run the suite with `UPDATE_SNAPSHOTS=1` to rewrite the snapshots from the
+/// current output instead of comparing, then review `git diff asset/`.
+#[cfg(test)]
+macro_rules! assert_snapshot {
+    ($path:literal, $actual:expr $(,)?) => {{
+        let actual: &str = &$actual;
+        let file = concat!(env!("CARGO_MANIFEST_DIR"), "/asset/", $path);
+        if std::env::var_os("UPDATE_SNAPSHOTS").is_some() {
+            std::fs::write(file, actual).expect("write snapshot");
+        } else {
+            pretty_assertions::assert_eq!(
+                include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/asset/", $path)),
+                actual
+            );
+        }
+    }};
+}
+
+/// Writes a generated file under `asset/` only when `UPDATE_SNAPSHOTS=1` is
+/// set, so a plain test run never dirties the checked-in preview images.
+#[cfg(test)]
+#[allow(dead_code)]
+pub(crate) fn save_test_asset(path: &str, data: &[u8]) {
+    if std::env::var_os("UPDATE_SNAPSHOTS").is_some() {
+        let file = format!("{}/asset/{}", env!("CARGO_MANIFEST_DIR"), path);
+        std::fs::write(file, data).expect("write asset");
+    }
+}
+
 mod bar_chart;
 mod base;
 mod box_plot_chart;
@@ -37,6 +68,7 @@ mod pie_chart;
 mod radar_chart;
 mod sankey_chart;
 mod scatter_chart;
+mod schema;
 mod sunburst_chart;
 mod table_chart;
 mod theme;
@@ -50,11 +82,14 @@ pub use bar_chart::BarChart;
 pub use base::ChartBase;
 pub use box_plot_chart::{BoxPlotChart, BoxPlotSeries};
 pub use canvas::Canvas;
-pub use color::*;
-pub use common::*;
+pub use color::Color;
+pub use common::{
+    Align, AnimationConfig, AxisScale, Fill, MarkLine, MarkLineCategory, MarkPoint,
+    MarkPointCategory, Position, Series, SeriesCategory, SeriesLabel, Symbol, YAxisConfig,
+};
 pub use component::{
-    Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothLine,
-    SmoothLineFill, StraightLine, StraightLineFill, Text, svg_with_accessibility,
+    Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothBand,
+    SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, svg_with_accessibility,
 };
 #[cfg(feature = "raster")]
 pub use encoder::*;
@@ -74,7 +109,10 @@ pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use multi_chart::{ChildChart, MultiChart};
 pub use parallel_chart::ParallelChart;
-pub use path::*;
+// Drawing helpers: public for compatibility, but not part of the documented
+// chart API.
+#[doc(hidden)]
+pub use path::{QuadraticBezier, SmoothCurve};
 pub use pie_chart::PieChart;
 pub use radar_chart::{RadarChart, RadarIndicator};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
@@ -89,7 +127,9 @@ pub use theme::{
 pub use theme_river_chart::ThemeRiverChart;
 pub use tree_chart::{TreeChart, TreeData};
 pub use treemap_chart::TreemapChart;
-pub use util::*;
+#[doc(hidden)]
+pub use util::{AxisValues, convert_to_points, get_quadrant};
+pub use util::{Box, Margin, NIL_VALUE, Point, format_string};
 pub use waterfall_chart::{WaterfallChart, WaterfallData};
 
 /// Behavior shared by every chart type, so mixed charts can be held and

@@ -1,0 +1,45 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="241" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Dependencies
+</text>
+<g>
+<line stroke-width="2" x1="233" y1="50" x2="258" y2="50" stroke="#5470C6"/>
+<circle cx="245.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="261" y="54" font-family="Roboto" fill="#464646">
+Core
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="296" y1="50" x2="321" y2="50" stroke="#91CC75"/>
+<circle cx="308.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="324" y="54" font-family="Roboto" fill="#464646">
+Plugin
+</text>
+</g>
+<line stroke-width="4" x1="436.5" y1="221.5" x2="163.5" y2="310.2" stroke="#E0E6F2"/>
+<line stroke-width="2" x1="436.5" y1="221.5" x2="332.2" y2="365" stroke="#E0E6F2"/>
+<line stroke-width="3" x1="332.2" y1="78" x2="436.5" y2="221.5" stroke="#E0E6F2"/>
+<line stroke-width="2" x1="332.2" y1="78" x2="163.5" y2="132.8" stroke="#E0E6F2"/>
+<line stroke-width="2" x1="332.2" y1="365" x2="163.5" y2="310.2" stroke="#E0E6F2"/>
+<circle cx="436.5" cy="221.5" r="14" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" data-name="core"/>
+<circle cx="332.2" cy="365" r="11.1" stroke-width="1" stroke="#FFFFFF" fill="#91CC75" data-name="auth"/>
+<circle cx="163.5" cy="310.2" r="12.2" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" data-name="db"/>
+<circle cx="163.5" cy="132.8" r="10.4" stroke-width="1" stroke="#FFFFFF" fill="#91CC75" data-name="cache"/>
+<circle cx="332.2" cy="78" r="11.7" stroke-width="1" stroke="#FFFFFF" fill="#91CC75" data-name="api"/>
+<text font-size="14" x="436.5" y="245.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+core
+</text>
+<text font-size="14" x="332.2" y="385.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+auth
+</text>
+<text font-size="14" x="163.5" y="332.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+db
+</text>
+<text font-size="14" x="163.5" y="153" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+cache
+</text>
+<text font-size="14" x="332.2" y="99.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+api
+</text>
+</svg>

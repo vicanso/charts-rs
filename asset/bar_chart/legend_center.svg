@@ -65,10 +65,10 @@ M3 - End of Construction
 Milestones
 </text>
 </g>
-<rect x="31" y="210.5" width="137.5" height="154.5" fill="#5470C6"/>
-<rect x="171.5" y="91.1" width="137.5" height="273.9" fill="#91CC75"/>
-<rect x="312" y="273.7" width="137.5" height="91.3" fill="#FAC858"/>
-<rect x="452.5" y="354.5" width="137.5" height="10.5" fill="#EE6666"/>
+<rect x="31" y="210.5" width="137.5" height="154.5" fill="#5470C6" data-series="None" data-category="Milestones" data-value="44"/>
+<rect x="171.5" y="91.1" width="137.5" height="273.9" fill="#91CC75" data-series="M1 - End of Inception" data-category="Milestones" data-value="78"/>
+<rect x="312" y="273.7" width="137.5" height="91.3" fill="#FAC858" data-series="M2 - End of Elaboration" data-category="Milestones" data-value="26"/>
+<rect x="452.5" y="354.5" width="137.5" height="10.5" fill="#EE6666" data-series="M3 - End of Construction" data-category="Milestones" data-value="3"/>
 <text font-size="14" x="99.8" y="210.5" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
 44
 </text>

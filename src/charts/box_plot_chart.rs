@@ -11,7 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
-use super::base::{ChartBase, get_y_axis_config};
+use super::base::{ChartBase, axis_value_params, get_y_axis_config};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -24,7 +24,7 @@ use crate::charts::measure_text_width_family;
 /// One data series for a box plot.
 ///
 /// Each entry in `data` encodes one box as `[min, q1, median, q3, max]`.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct BoxPlotSeries {
     /// Name of the series, shown in the legend.
     pub name: String,
@@ -35,7 +35,7 @@ pub struct BoxPlotSeries {
 }
 
 /// A box plot chart drawing `[min, q1, median, q3, max]` boxes per category.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct BoxPlotChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -108,7 +108,9 @@ impl BoxPlotChart {
         let mut c = BoxPlotChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value =
+            c.base
+                .fill_option(json, &mut c.y_axis_configs, super::schema::BOX_PLOT_FIELDS)?;
         // Parse box_series array
         if let Some(arr) = value.get("box_series").and_then(|v| v.as_array()) {
             for (i, item) in arr.iter().enumerate() {
@@ -139,16 +141,11 @@ impl BoxPlotChart {
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
-        self.render_background(c.child(Box::default()));
         let mut x_axis_height = self.x_axis_height;
         if self.x_axis_hidden {
             x_axis_height = 0.0;
         }
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-        let legend_height = self.render_legend(c.child(Box::default()));
-        let axis_top = title_height.max(legend_height);
+        let axis_top = self.render_header(&mut c);
 
         // Collect all values to build y-axis range
         let mut all_values: Vec<f32> = vec![];
@@ -163,14 +160,7 @@ impl BoxPlotChart {
         }
 
         let y_axis_config = get_y_axis_config(&self.y_axis_configs, 0);
-        let y_axis_values = get_axis_values(AxisValueParams {
-            data_list: all_values,
-            split_number: y_axis_config.axis_split_number,
-            reverse: Some(true),
-            min: y_axis_config.axis_min,
-            max: y_axis_config.axis_max,
-            ..Default::default()
-        });
+        let y_axis_values = get_axis_values(axis_value_params(&y_axis_config, all_values, true));
 
         let y_axis_width = if self.y_axis_hidden {
             0.0
@@ -286,6 +276,17 @@ impl BoxPlotChart {
                 let box_height = (y_q1 - y_q3).abs();
 
                 // IQR box (Q1..Q3)
+                let tooltip_text = self.tooltip_show.then(|| {
+                    format!(
+                        "{}: {} / {} / {} / {} / {}",
+                        bs.name,
+                        format_float(v_min),
+                        format_float(v_q1),
+                        format_float(v_med),
+                        format_float(v_q3),
+                        format_float(v_max)
+                    )
+                });
                 data_c.rect(Rect {
                     fill: Some(Fill::Solid(fill_color)),
                     color: Some(color),
@@ -293,8 +294,36 @@ impl BoxPlotChart {
                     top: box_top,
                     width: box_w,
                     height: box_height,
+                    title: tooltip_text.clone(),
+                    class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
+                    dataset: vec![
+                        ("series".to_string(), bs.name.clone()),
+                        (
+                            "category".to_string(),
+                            self.x_axis_data.get(ci).cloned().unwrap_or_default(),
+                        ),
+                        ("min".to_string(), format_float(v_min)),
+                        ("q1".to_string(), format_float(v_q1)),
+                        ("median".to_string(), format_float(v_med)),
+                        ("q3".to_string(), format_float(v_q3)),
+                        ("max".to_string(), format_float(v_max)),
+                    ],
                     ..Default::default()
                 });
+                if let Some(text) = tooltip_text {
+                    data_c.text(Text {
+                        text,
+                        class: Some("ct-tip".to_string()),
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(self.series_label_font_size),
+                        x: Some(cx),
+                        y: Some(y_max),
+                        dy: Some(-6.0),
+                        text_anchor: Some("middle".to_string()),
+                        ..Default::default()
+                    });
+                }
 
                 // Median line
                 data_c.line(Line {
@@ -353,14 +382,17 @@ impl BoxPlotChart {
             }
         }
 
-        c.svg()
+        if self.tooltip_show {
+            c.svg_with_style(TOOLTIP_STYLE)
+        } else {
+            c.svg()
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::{BoxPlotChart, BoxPlotSeries};
-    use pretty_assertions::assert_eq;
 
     fn make_box_plot() -> BoxPlotChart {
         BoxPlotChart::new(
@@ -397,10 +429,7 @@ mod tests {
 
     #[test]
     fn box_plot_chart_basic() {
-        assert_eq!(
-            include_str!("../../asset/box_plot_chart/basic.svg"),
-            make_box_plot().svg().unwrap()
-        );
+        assert_snapshot!("box_plot_chart/basic.svg", make_box_plot().svg().unwrap());
     }
 
     #[test]
@@ -430,10 +459,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/box_plot_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("box_plot_chart/basic_json.svg", chart.svg().unwrap());
     }
 
     // `x_axis_hidden` / `y_axis_hidden` must be honored from JSON (previously

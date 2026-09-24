@@ -27,11 +27,15 @@ pub static DEFAULT_FONT_FAMILY: &str = "Roboto";
 /// Raw TTF data of the embedded default font.
 pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Roboto.ttf");
 
+/// Raw font bytes shared between the fontdue registry and the raster
+/// `fontdb` (image-encoder), so each font is held in memory once.
+pub(crate) type FontData = Arc<dyn AsRef<[u8]> + Send + Sync>;
+
 struct FontRegistry {
     fonts: HashMap<String, Arc<Font>>,
     // Raw bytes of every registered font; the raster fontdb (image-encoder)
     // needs the original data to rebuild itself when fonts change.
-    datas: Vec<Vec<u8>>,
+    datas: Vec<FontData>,
 }
 
 // Bumped whenever the registry changes so the per-thread measurement caches
@@ -76,7 +80,8 @@ fn global_fonts() -> Result<&'static ArcSwap<FontRegistry>> {
     fonts.insert(DEFAULT_FONT_FAMILY.to_string(), Arc::new(font));
     let registry = FontRegistry {
         fonts,
-        datas: vec![DEFAULT_FONT_DATA.to_vec()],
+        // The embedded font is referenced in place, not copied.
+        datas: vec![Arc::new(DEFAULT_FONT_DATA)],
     };
     // A concurrent caller may have initialized first; keep whichever won.
     Ok(GLOBAL_FONTS.get_or_init(|| ArcSwap::from_pointee(registry)))
@@ -94,7 +99,8 @@ pub fn add_fonts(fonts: &[&[u8]]) -> Result<()> {
             Font::from_bytes(*data, fontdue::FontSettings::default()).map_err(parse_font_error)?;
         let family = get_family_from_font(&font);
         if !family.is_empty() {
-            parsed.push((family, Arc::new(font), data.to_vec()));
+            let data: FontData = Arc::new(data.to_vec());
+            parsed.push((family, Arc::new(font), data));
         }
     }
     let cell = global_fonts()?;
@@ -117,7 +123,7 @@ pub fn add_fonts(fonts: &[&[u8]]) -> Result<()> {
 }
 
 #[cfg(feature = "raster")]
-pub(crate) fn registered_font_datas() -> Vec<Vec<u8>> {
+pub(crate) fn registered_font_datas() -> Vec<FontData> {
     global_fonts()
         .map(|cell| cell.load().datas.clone())
         .unwrap_or_default()
@@ -249,6 +255,44 @@ pub fn measure_max_text_width_family(
         }
     }
     Ok(result)
+}
+
+/// Shortens `text` with an ellipsis so it is at most `max_width` wide at
+/// `font_size`; text that already fits comes back unchanged.
+pub(crate) fn text_ellipsis(
+    font_family: &str,
+    font_size: f32,
+    text: &str,
+    max_width: f32,
+) -> String {
+    let Ok(font) = get_font(font_family) else {
+        return text.to_string();
+    };
+    if measure_text(&font, font_size, text).width() <= max_width {
+        return text.to_string();
+    }
+    const ELLIPSIS: &str = "…";
+    let chars: Vec<char> = text.chars().collect();
+    // Binary search the longest prefix that fits together with the ellipsis.
+    let (mut lo, mut hi) = (0_usize, chars.len());
+    while lo < hi {
+        let mid = (lo + hi).div_ceil(2);
+        let candidate: String = chars[..mid]
+            .iter()
+            .copied()
+            .chain(ELLIPSIS.chars())
+            .collect();
+        if measure_text(&font, font_size, &candidate).width() <= max_width {
+            lo = mid;
+        } else {
+            hi = mid - 1;
+        }
+    }
+    chars[..lo]
+        .iter()
+        .copied()
+        .chain(ELLIPSIS.chars())
+        .collect()
 }
 
 /// Cuts the text wrap fix size to muli text list.

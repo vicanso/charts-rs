@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::LineChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn line_chart_animation() {
@@ -18,10 +19,7 @@ fn line_chart_animation() {
         }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/line_chart/animation_json.svg"),
-        line_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("line_chart/animation_json.svg", line_chart.svg().unwrap());
 }
 
 #[test]
@@ -41,8 +39,8 @@ fn line_chart_stacked_area() {
         }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/line_chart/stacked_area_json.svg"),
+    common::assert_snapshot!(
+        "line_chart/stacked_area_json.svg",
         line_chart.svg().unwrap()
     );
 }
@@ -109,10 +107,7 @@ fn line_chart() {
     }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/line_chart/basic_json.svg"),
-        line_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("line_chart/basic_json.svg", line_chart.svg().unwrap());
 }
 
 #[test]
@@ -157,8 +152,5 @@ fn line_chart_nil_value() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/line_chart/nil_value_json.svg"),
-        line_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("line_chart/nil_value_json.svg", line_chart.svg().unwrap());
 }

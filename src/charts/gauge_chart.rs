@@ -31,7 +31,7 @@ fn arc_points(cx: f32, cy: f32, r: f32, start: f32, end_deg: f32, n: usize) -> V
 }
 
 /// A gauge (dial) chart displaying values on a circular scale.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct GaugeChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -131,7 +131,9 @@ impl GaugeChart {
         let mut c = GaugeChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value = c
+            .base
+            .fill_option(json, &mut c.y_axis_configs, super::schema::GAUGE_FIELDS)?;
         if let Some(v) = get_f32_from_value(&value, "min") {
             c.min = v;
         }
@@ -175,12 +177,7 @@ impl GaugeChart {
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
-        self.render_background(c.child(Box::default()));
-        c.margin = self.margin.clone();
-
-        let title_height = self.render_title(c.child(Box::default()));
-        let legend_height = self.render_legend(c.child(Box::default()));
-        let axis_top = title_height.max(legend_height);
+        let axis_top = self.render_header(&mut c);
 
         let mut body = if axis_top > 0.0 {
             c.child(Box {
@@ -209,15 +206,18 @@ impl GaugeChart {
         let end = start + sweep;
 
         // ── Value extraction ──────────────────────────────────────────────────
+        // The label shows the value as given; only the needle is clamped to
+        // the dial so an out-of-range reading is still legible as such.
         let raw_value = self
             .series_list
             .first()
             .and_then(|s| s.data_values().first().copied())
-            .unwrap_or(self.min)
-            .clamp(self.min, self.max);
+            .filter(|v| *v != NIL_VALUE)
+            .unwrap_or(self.min);
+        let needle_value = raw_value.clamp(self.min, self.max);
 
         let ratio = if self.max > self.min {
-            (raw_value - self.min) / (self.max - self.min)
+            (needle_value - self.min) / (self.max - self.min)
         } else {
             0.0
         };
@@ -415,15 +415,11 @@ impl GaugeChart {
 #[cfg(test)]
 mod tests {
     use super::GaugeChart;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn gauge_chart_basic() {
         let chart = GaugeChart::new(vec![("Speed", vec![75.0]).into()]);
-        assert_eq!(
-            include_str!("../../asset/gauge_chart/basic.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("gauge_chart/basic.svg", chart.svg().unwrap());
     }
 
     #[test]
@@ -437,9 +433,6 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/gauge_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("gauge_chart/basic_json.svg", chart.svg().unwrap());
     }
 }

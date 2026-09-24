@@ -1,6 +1,37 @@
 //! Geometry checks shared by the bar chart tests.
 #![allow(dead_code)]
 
+/// Compares `$actual` with the snapshot file `asset/$path`.
+///
+/// Run the suite with `UPDATE_SNAPSHOTS=1` to rewrite the snapshots from the
+/// current output instead of comparing, then review `git diff asset/`.
+#[allow(unused_macros)]
+macro_rules! assert_snapshot {
+    ($path:literal, $actual:expr $(,)?) => {{
+        let actual: &str = &$actual;
+        let file = concat!(env!("CARGO_MANIFEST_DIR"), "/asset/", $path);
+        if std::env::var_os("UPDATE_SNAPSHOTS").is_some() {
+            std::fs::write(file, actual).expect("write snapshot");
+        } else {
+            pretty_assertions::assert_eq!(
+                include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/asset/", $path)),
+                actual
+            );
+        }
+    }};
+}
+#[allow(unused_imports)]
+pub(crate) use assert_snapshot;
+
+/// Writes a generated file under `asset/` only when `UPDATE_SNAPSHOTS=1` is
+/// set, so a plain test run never dirties the checked-in preview images.
+pub fn save_asset(path: &str, data: &[u8]) {
+    if std::env::var_os("UPDATE_SNAPSHOTS").is_some() {
+        let file = format!("{}/asset/{}", env!("CARGO_MANIFEST_DIR"), path);
+        std::fs::write(file, data).expect("write asset");
+    }
+}
+
 fn attr(tag: &str, name: &str) -> f32 {
     let key = format!(" {name}=\"");
     let start = tag.find(&key).map(|i| i + key.len()).unwrap();

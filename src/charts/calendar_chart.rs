@@ -123,7 +123,7 @@ static DOW_ABBR: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // ── CalendarChart ─────────────────────────────────────────────────────────────
 
 /// A calendar heatmap of daily values.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct CalendarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -294,7 +294,9 @@ impl CalendarChart {
         let mut c = CalendarChart {
             ..Default::default()
         };
-        let value = c.base.fill_option(json, &mut c.y_axis_configs)?;
+        let value =
+            c.base
+                .fill_option(json, &mut c.y_axis_configs, super::schema::CALENDAR_FIELDS)?;
         if let Some(start) = get_string_from_value(&value, "start_date") {
             c.start_date = start;
         }
@@ -422,7 +424,7 @@ impl CalendarChart {
 
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
         self.render_background(c.child(Box::default()));
-        c.margin = self.margin.clone();
+        c.margin = self.margin;
 
         let top_offset = self.render_title(c.child(Box::default()));
 
@@ -540,7 +542,6 @@ impl CalendarChart {
 #[cfg(test)]
 mod tests {
     use super::CalendarChart;
-    use pretty_assertions::assert_eq;
 
     fn make_data() -> Vec<(String, f32)> {
         vec![
@@ -559,10 +560,7 @@ mod tests {
     #[test]
     fn calendar_chart_basic() {
         let chart = CalendarChart::new(make_data(), 2024);
-        assert_eq!(
-            include_str!("../../asset/calendar_chart/basic.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("calendar_chart/basic.svg", chart.svg().unwrap());
     }
 
     #[test]
@@ -586,9 +584,6 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/calendar_chart/basic_json.svg"),
-            chart.svg().unwrap()
-        );
+        assert_snapshot!("calendar_chart/basic_json.svg", chart.svg().unwrap());
     }
 }

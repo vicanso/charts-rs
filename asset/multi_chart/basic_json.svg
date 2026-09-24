@@ -82,20 +82,20 @@ Sat
 Sun
 </text>
 </g>
-<rect x="39" y="263.3" width="33.6" height="101.7" fill="#7EB26D"/>
-<rect x="119.1" y="253.2" width="33.6" height="111.8" fill="#7EB26D"/>
-<rect x="199.3" y="279.4" width="33.6" height="85.6" fill="#7EB26D"/>
-<rect x="279.4" y="251.5" width="33.6" height="113.5" fill="#7EB26D"/>
-<rect x="359.6" y="288.8" width="33.6" height="76.2" fill="#7EB26D"/>
-<rect x="439.7" y="170.1" width="33.6" height="194.9" fill="#7EB26D"/>
-<rect x="519.9" y="187.1" width="33.6" height="177.9" fill="#7EB26D"/>
-<rect x="75.6" y="178.6" width="33.6" height="186.4" fill="#EAB839"/>
-<rect x="155.7" y="210.8" width="33.6" height="154.2" fill="#EAB839"/>
-<rect x="235.9" y="203.2" width="33.6" height="161.8" fill="#EAB839"/>
-<rect x="316" y="166.8" width="33.6" height="198.2" fill="#EAB839"/>
-<rect x="396.1" y="119.3" width="33.6" height="245.7" fill="#EAB839"/>
-<rect x="476.3" y="85.4" width="33.6" height="279.6" fill="#EAB839"/>
-<rect x="556.4" y="102.4" width="33.6" height="262.6" fill="#EAB839"/>
+<rect x="39" y="263.3" width="33.6" height="101.7" fill="#7EB26D" data-series="Email" data-category="Mon" data-value="120"/>
+<rect x="119.1" y="253.2" width="33.6" height="111.8" fill="#7EB26D" data-series="Email" data-category="Tue" data-value="132"/>
+<rect x="199.3" y="279.4" width="33.6" height="85.6" fill="#7EB26D" data-series="Email" data-category="Wed" data-value="101"/>
+<rect x="279.4" y="251.5" width="33.6" height="113.5" fill="#7EB26D" data-series="Email" data-category="Thu" data-value="134"/>
+<rect x="359.6" y="288.8" width="33.6" height="76.2" fill="#7EB26D" data-series="Email" data-category="Fri" data-value="90"/>
+<rect x="439.7" y="170.1" width="33.6" height="194.9" fill="#7EB26D" data-series="Email" data-category="Sat" data-value="230"/>
+<rect x="519.9" y="187.1" width="33.6" height="177.9" fill="#7EB26D" data-series="Email" data-category="Sun" data-value="210"/>
+<rect x="75.6" y="178.6" width="33.6" height="186.4" fill="#EAB839" data-series="Union Ads" data-category="Mon" data-value="220"/>
+<rect x="155.7" y="210.8" width="33.6" height="154.2" fill="#EAB839" data-series="Union Ads" data-category="Tue" data-value="182"/>
+<rect x="235.9" y="203.2" width="33.6" height="161.8" fill="#EAB839" data-series="Union Ads" data-category="Wed" data-value="191"/>
+<rect x="316" y="166.8" width="33.6" height="198.2" fill="#EAB839" data-series="Union Ads" data-category="Thu" data-value="234"/>
+<rect x="396.1" y="119.3" width="33.6" height="245.7" fill="#EAB839" data-series="Union Ads" data-category="Fri" data-value="290"/>
+<rect x="476.3" y="85.4" width="33.6" height="279.6" fill="#EAB839" data-series="Union Ads" data-category="Sat" data-value="330"/>
+<rect x="556.4" y="102.4" width="33.6" height="262.6" fill="#EAB839" data-series="Union Ads" data-category="Sun" data-value="310"/>
 <text font-size="14" x="55.8" y="263.3" dx="-12" dy="-8" font-family="Roboto" fill="#D8D9DA">
 120
 </text>
@@ -346,42 +346,42 @@ rose 7
 rose 8
 </text>
 </g>
-<path d="M300,199 L300,136.6 A8 8 0 0 1 304.1,128.7 A118.4 118.4 0 0 1 380.7,160.4 A8 8 0 0 1 378.1,168.9 L333.9,213.1 A8 8 0 0 1 327.3,217.7 A40 40 0 0 0 301.4,207 A8 8 0 0 1 300,199 Z" fill="#7EB26D"/>
+<path d="M300,199 L300,136.6 A8 8 0 0 1 304.1,128.7 A118.4 118.4 0 0 1 380.7,160.4 A8 8 0 0 1 378.1,168.9 L333.9,213.1 A8 8 0 0 1 327.3,217.7 A40 40 0 0 0 301.4,207 A8 8 0 0 1 300,199 Z" fill="#7EB26D" data-series="rose 1" data-value="40" data-percentage="17.1"/>
 <path d="M345.3,137.6 C347.2 133, 349.5 121.4, 353 119.1 C356.4 116.8, 368 119.1, 373 119.1" stroke-width="1" fill="none" stroke="#7EB26D"/>
 <text font-size="14" x="376" y="124.1" font-family="Roboto" fill="#D8D9DA">
 rose 1: 17.1%
 </text>
-<path d="M333.9,213.1 L375.3,171.7 A8 8 0 0 1 383.7,168.9 A114.5 114.5 0 0 1 414.4,243 A8 8 0 0 1 406.5,247 L348,247 A8 8 0 0 1 340,245.6 A40 40 0 0 0 329.3,219.7 A8 8 0 0 1 333.9,213.1 Z" fill="#EAB839"/>
+<path d="M333.9,213.1 L375.3,171.7 A8 8 0 0 1 383.7,168.9 A114.5 114.5 0 0 1 414.4,243 A8 8 0 0 1 406.5,247 L348,247 A8 8 0 0 1 340,245.6 A40 40 0 0 0 329.3,219.7 A8 8 0 0 1 333.9,213.1 Z" fill="#EAB839" data-series="rose 2" data-value="38" data-percentage="16.2"/>
 <path d="M405.8,203.2 C411.3 200.9, 422.1 195.3, 427.9 194 C432.7 193, 442.9 194, 447.9 194" stroke-width="1" fill="none" stroke="#EAB839"/>
 <text font-size="14" x="450.9" y="199" font-family="Roboto" fill="#D8D9DA">
 rose 2: 16.2%
 </text>
-<path d="M348,247 L394.7,247 A8 8 0 0 1 402.7,250.6 A102.7 102.7 0 0 1 375.1,317.1 A8 8 0 0 1 367,314 L333.9,280.9 A8 8 0 0 1 329.3,274.3 A40 40 0 0 0 340,248.4 A8 8 0 0 1 348,247 Z" fill="#6ED0E0"/>
+<path d="M348,247 L394.7,247 A8 8 0 0 1 402.7,250.6 A102.7 102.7 0 0 1 375.1,317.1 A8 8 0 0 1 367,314 L333.9,280.9 A8 8 0 0 1 329.3,274.3 A40 40 0 0 0 340,248.4 A8 8 0 0 1 348,247 Z" fill="#6ED0E0" data-series="rose 3" data-value="32" data-percentage="13.7"/>
 <path d="M394.9,286.3 C403.1 289.7, 419.4 297.8, 427.9 300 C432.6 301.2, 442.9 300, 447.9 300" stroke-width="1" fill="none" stroke="#6ED0E0"/>
 <text font-size="14" x="450.9" y="305" font-family="Roboto" fill="#D8D9DA">
 rose 3: 13.7%
 </text>
-<path d="M333.9,280.9 L364.2,311.2 A8 8 0 0 1 367.4,319.3 A98.8 98.8 0 0 1 303.4,345.7 A8 8 0 0 1 300,337.8 L300,295 A8 8 0 0 1 301.4,287 A40 40 0 0 0 327.3,276.3 A8 8 0 0 1 333.9,280.9 Z" fill="#EF843C"/>
+<path d="M333.9,280.9 L364.2,311.2 A8 8 0 0 1 367.4,319.3 A98.8 98.8 0 0 1 303.4,345.7 A8 8 0 0 1 300,337.8 L300,295 A8 8 0 0 1 301.4,287 A40 40 0 0 0 327.3,276.3 A8 8 0 0 1 333.9,280.9 Z" fill="#EF843C" data-series="rose 4" data-value="30" data-percentage="12.8"/>
 <path d="M337.8,338.3 C341.6 347.4, 347.1 368.8, 353 374.9 C355.9 377.9, 368 374.9, 373 374.9" stroke-width="1" fill="none" stroke="#EF843C"/>
 <text font-size="14" x="376" y="379.9" font-family="Roboto" fill="#D8D9DA">
 rose 4: 12.8%
 </text>
-<path d="M300,295 L300,333.9 A8 8 0 0 1 296.7,341.8 A94.9 94.9 0 0 1 235.3,316.4 A8 8 0 0 1 238.6,308.4 L266.1,280.9 A8 8 0 0 1 272.7,276.3 A40 40 0 0 0 298.6,287 A8 8 0 0 1 300,295 Z" fill="#E24D42"/>
+<path d="M300,295 L300,333.9 A8 8 0 0 1 296.7,341.8 A94.9 94.9 0 0 1 235.3,316.4 A8 8 0 0 1 238.6,308.4 L266.1,280.9 A8 8 0 0 1 272.7,276.3 A40 40 0 0 0 298.6,287 A8 8 0 0 1 300,295 Z" fill="#E24D42" data-series="rose 5" data-value="28" data-percentage="12"/>
 <path d="M263.7,334.7 C259.5 344.7, 253.3 368, 247 374.9 C244.2 378, 232 374.9, 227 374.9" stroke-width="1" fill="none" stroke="#E24D42"/>
 <text font-size="14" x="152" y="379.9" font-family="Roboto" fill="#D8D9DA">
 rose 5: 12%
 </text>
-<path d="M266.1,280.9 L241.3,305.7 A8 8 0 0 1 233.5,309 A91 91 0 0 1 209.1,250.2 A8 8 0 0 1 217,247 L252,247 A8 8 0 0 1 260,248.4 A40 40 0 0 0 270.7,274.3 A8 8 0 0 1 266.1,280.9 Z" fill="#1F78C1"/>
+<path d="M266.1,280.9 L241.3,305.7 A8 8 0 0 1 233.5,309 A91 91 0 0 1 209.1,250.2 A8 8 0 0 1 217,247 L252,247 A8 8 0 0 1 260,248.4 A40 40 0 0 0 270.7,274.3 A8 8 0 0 1 266.1,280.9 Z" fill="#1F78C1" data-series="rose 6" data-value="26" data-percentage="11.1"/>
 <path d="M216,281.8 C205 286.3, 183.4 296.8, 172.1 300 C167.4 301.3, 157.1 300, 152.1 300" stroke-width="1" fill="none" stroke="#1F78C1"/>
 <text font-size="14" x="65.1" y="305" font-family="Roboto" fill="#D8D9DA">
 rose 6: 11.1%
 </text>
-<path d="M252,247 L224.9,247 A8 8 0 0 1 216.9,244.1 A83.1 83.1 0 0 1 239.2,190.3 A8 8 0 0 1 246.9,193.9 L266.1,213.1 A8 8 0 0 1 270.7,219.7 A40 40 0 0 0 260,245.6 A8 8 0 0 1 252,247 Z" fill="#705DA0"/>
+<path d="M252,247 L224.9,247 A8 8 0 0 1 216.9,244.1 A83.1 83.1 0 0 1 239.2,190.3 A8 8 0 0 1 246.9,193.9 L266.1,213.1 A8 8 0 0 1 270.7,219.7 A40 40 0 0 0 260,245.6 A8 8 0 0 1 252,247 Z" fill="#705DA0" data-series="rose 7" data-value="22" data-percentage="9.4"/>
 <path d="M223.2,215.2 C210.4 209.9, 185.2 197.9, 172.1 194 C167.4 192.6, 157.1 194, 152.1 194" stroke-width="1" fill="none" stroke="#705DA0"/>
 <text font-size="14" x="73.1" y="199" font-family="Roboto" fill="#D8D9DA">
 rose 7: 9.4%
 </text>
-<path d="M266.1,213.1 L252.4,199.4 A8 8 0 0 1 248.7,191.9 A75.3 75.3 0 0 1 297.4,171.8 A8 8 0 0 1 300,179.7 L300,199 A8 8 0 0 1 298.6,207 A40 40 0 0 0 272.7,217.7 A8 8 0 0 1 266.1,213.1 Z" fill="#508642"/>
+<path d="M266.1,213.1 L252.4,199.4 A8 8 0 0 1 248.7,191.9 A75.3 75.3 0 0 1 297.4,171.8 A8 8 0 0 1 300,179.7 L300,199 A8 8 0 0 1 298.6,207 A40 40 0 0 0 272.7,217.7 A8 8 0 0 1 266.1,213.1 Z" fill="#508642" data-series="rose 8" data-value="18" data-percentage="7.7"/>
 <path d="M271.2,177.5 C265.2 162.9, 255.4 130.2, 247 119.1 C244.4 115.6, 232 119.1, 227 119.1" stroke-width="1" fill="none" stroke="#508642"/>
 <text font-size="14" x="148" y="124.1" font-family="Roboto" fill="#D8D9DA">
 rose 8: 7.7%

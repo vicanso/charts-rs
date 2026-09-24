@@ -1,0 +1,19 @@
+{
+    "title_text": "Dependencies",
+    "layout": "circular",
+    "categories": ["Core", "Plugin"],
+    "nodes": [
+        {"name": "core", "value": 10, "category": 0},
+        {"name": "auth", "value": 4, "category": 1},
+        {"name": "db", "value": 6, "category": 0},
+        {"name": "cache", "value": 3, "category": 1},
+        {"name": "api", "value": 5, "category": 1}
+    ],
+    "links": [
+        {"source": "core", "target": "db", "value": 3},
+        {"source": "core", "target": "auth", "value": 1},
+        {"source": "api", "target": "core", "value": 2},
+        {"source": "api", "target": "cache", "value": 1},
+        {"source": "auth", "target": "db", "value": 1}
+    ]
+}

@@ -17,12 +17,11 @@ use super::common::*;
 use super::component::*;
 use super::params::*;
 use super::theme::{get_default_theme_name, get_theme};
-use super::util::*;
 use serde::{Deserialize, Serialize};
 
 /// A vertical bar chart. Series can be individually switched to lines
 /// (bar/line mix), stacked, and bound to one of two y axes.
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct BarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title_text`.
@@ -54,7 +53,9 @@ impl BarChart {
         let mut b = BarChart {
             ..Default::default()
         };
-        let value = b.base.fill_option(data, &mut b.y_axis_configs)?;
+        let value = b
+            .base
+            .fill_option(data, &mut b.y_axis_configs, super::schema::BAR_FIELDS)?;
         if let Some(radius) = get_f32_from_value(&value, "radius") {
             b.radius = Some(radius);
         }
@@ -92,95 +93,14 @@ impl BarChart {
     }
     /// Converts bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
-
-        let mut x_axis_height = self.x_axis_height;
-        if self.x_axis_hidden {
-            x_axis_height = 0.0;
-        }
-        let axis_top = self.render_header(&mut c);
-
-        let (left_y_axis_values, mut left_y_axis_width) =
-            self.get_y_axis_values(&self.y_axis_configs, 0);
-        if self.y_axis_hidden {
-            left_y_axis_width = 0.0;
-        }
-        let mut exist_right_y_axis = false;
-        // check the right y axis
-        for series in self.series_list.iter() {
-            if series.y_axis_index != 0 {
-                exist_right_y_axis = true;
-            }
-        }
-        let mut right_y_axis_values = AxisValues::default();
-        let mut right_y_axis_width = 0.0_f32;
-        if !self.y_axis_hidden && exist_right_y_axis {
-            (right_y_axis_values, right_y_axis_width) =
-                self.get_y_axis_values(&self.y_axis_configs, 1);
-        }
-
-        let axis_height = c.height() - x_axis_height - axis_top;
-        let axis_width = c.width() - left_y_axis_width - right_y_axis_width;
-        // minus the height of top text area
-        if axis_top > 0.0 {
-            c = c.child(Box {
-                top: axis_top,
-                ..Default::default()
-            });
-        }
-
-        self.render_grid(
-            c.child(Box {
-                left: left_y_axis_width,
-                ..Default::default()
-            }),
-            &self.y_axis_configs,
-            axis_width,
-            axis_height,
-        );
-
-        // y axis
-        if left_y_axis_width > 0.0 {
-            self.render_y_axis(
-                c.child(Box::default()),
-                &self.y_axis_configs,
-                left_y_axis_values.data.clone(),
-                axis_height,
-                left_y_axis_width,
-                0,
-            );
-        }
-        // render right y axis
-        if right_y_axis_width > 0.0 {
-            self.render_y_axis(
-                c.child(Box {
-                    left: c.width() - right_y_axis_width,
-                    ..Default::default()
-                }),
-                &self.y_axis_configs,
-                right_y_axis_values.data.clone(),
-                axis_height,
-                right_y_axis_width,
-                1,
-            );
-        }
-
-        // x axis
-        if !self.x_axis_hidden {
-            self.render_x_axis(
-                c.child(Box {
-                    top: c.height() - x_axis_height,
-                    left: left_y_axis_width,
-                    right: right_y_axis_width,
-                    ..Default::default()
-                }),
-                self.x_axis_data.clone(),
-                axis_width,
-            );
-        }
+        let c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let layout = self.layout_cartesian(c, &self.y_axis_configs);
+        let c = layout.canvas.clone();
+        let (left_y_axis_values, right_y_axis_values) = (&layout.left, &layout.right);
+        let axis_height = layout.axis_height;
 
         // bar point
-        let max_height = c.height() - x_axis_height;
+        let max_height = layout.max_height;
         let mut bar_series_list = vec![];
         let mut line_series_list = vec![];
         // filter line and bar series points
@@ -194,13 +114,9 @@ impl BarChart {
             bar_series_list.push(item);
         });
 
-        let y_axis_values_list = vec![&left_y_axis_values, &right_y_axis_values];
+        let y_axis_values_list = vec![left_y_axis_values, right_y_axis_values];
         let mut bar_series_labels_list = self.render_bar(
-            c.child(Box {
-                left: left_y_axis_width,
-                right: right_y_axis_width,
-                ..Default::default()
-            }),
+            layout.plot(),
             &bar_series_list,
             &y_axis_values_list,
             max_height,
@@ -211,11 +127,7 @@ impl BarChart {
         );
 
         let mut line_series_labels_list = self.render_line(
-            c.child(Box {
-                left: left_y_axis_width,
-                right: right_y_axis_width,
-                ..Default::default()
-            }),
+            layout.plot(),
             &line_series_list,
             &y_axis_values_list,
             max_height,
@@ -227,14 +139,10 @@ impl BarChart {
 
         bar_series_labels_list.append(&mut line_series_labels_list);
 
-        self.render_series_label(
-            c.child(Box {
-                left: left_y_axis_width,
-                right: right_y_axis_width,
-                ..Default::default()
-            }),
-            bar_series_labels_list,
-        );
+        self.render_series_label(layout.plot(), bar_series_labels_list);
+
+        let all_series: Vec<&Series> = self.series_list.iter().collect();
+        self.render_mark_line(layout.plot(), &all_series, &y_axis_values_list, max_height);
 
         let mut css = String::new();
         if let Some(ref anim) = self.animation {
@@ -264,7 +172,6 @@ mod tests {
         Box, LegendCategory, NIL_VALUE, Series, SeriesCategory, THEME_ANT, THEME_DARK,
         THEME_GRAFANA,
     };
-    use pretty_assertions::assert_eq;
     #[test]
     fn bar_chart_basic() {
         let mut bar_chart = BarChart::new(
@@ -311,10 +218,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_list[0].colors = Some(vec![None, Some("#a90000".into())]);
-        assert_eq!(
-            include_str!("../../asset/bar_chart/basic.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/basic.svg", bar_chart.svg().unwrap());
     }
     #[test]
     fn bar_chart_basic_dark() {
@@ -363,10 +267,7 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.legend_category = LegendCategory::Circle;
-        assert_eq!(
-            include_str!("../../asset/bar_chart/basic_dark.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/basic_dark.svg", bar_chart.svg().unwrap());
     }
 
     #[test]
@@ -414,10 +315,7 @@ mod tests {
         });
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
-        assert_eq!(
-            include_str!("../../asset/bar_chart/basic_ant.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/basic_ant.svg", bar_chart.svg().unwrap());
     }
 
     #[test]
@@ -465,10 +363,7 @@ mod tests {
         });
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
-        assert_eq!(
-            include_str!("../../asset/bar_chart/basic_grafana.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/basic_grafana.svg", bar_chart.svg().unwrap());
     }
 
     #[test]
@@ -517,10 +412,7 @@ mod tests {
         });
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
-        assert_eq!(
-            include_str!("../../asset/bar_chart/y_axis_min_max.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/y_axis_min_max.svg", bar_chart.svg().unwrap());
     }
 
     #[test]
@@ -571,16 +463,13 @@ mod tests {
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_list[3].label_show = true;
 
-        assert_eq!(
-            include_str!("../../asset/bar_chart/line_mixin.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/line_mixin.svg", bar_chart.svg().unwrap());
 
         #[cfg(feature = "jpeg")]
         {
             use crate::svg_to_jpeg;
             let buf = svg_to_jpeg(&bar_chart.svg().unwrap()).unwrap();
-            std::fs::write("./asset/image/line_mixin.jpeg", buf).unwrap();
+            crate::charts::save_test_asset("image/line_mixin.jpeg", &buf);
         }
     }
 
@@ -622,10 +511,7 @@ mod tests {
             .y_axis_configs
             .push(bar_chart.y_axis_configs[0].clone());
         bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
-        assert_eq!(
-            include_str!("../../asset/bar_chart/two_y_axis.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/two_y_axis.svg", bar_chart.svg().unwrap());
     }
 
     #[test]
@@ -669,8 +555,8 @@ mod tests {
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_list[0].start_index = 1;
-        assert_eq!(
-            include_str!("../../asset/bar_chart/value_count_unequal.svg"),
+        assert_snapshot!(
+            "bar_chart/value_count_unequal.svg",
             bar_chart.svg().unwrap()
         );
     }
@@ -719,10 +605,7 @@ mod tests {
         });
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
-        assert_eq!(
-            include_str!("../../asset/bar_chart/nil_value.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/nil_value.svg", bar_chart.svg().unwrap());
     }
 
     // The nullable `Option<f32>` API must render identically to the legacy
@@ -803,10 +686,7 @@ mod tests {
         });
         bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
-        assert_eq!(
-            include_str!("../../asset/bar_chart/nil_value.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/nil_value.svg", bar_chart.svg().unwrap());
     }
 
     #[test]
@@ -853,10 +733,7 @@ mod tests {
             ..Default::default()
         });
 
-        assert_eq!(
-            include_str!("../../asset/bar_chart/no_axis.svg"),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/no_axis.svg", bar_chart.svg().unwrap());
     }
 
     #[test]
@@ -869,8 +746,8 @@ mod tests {
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_label_formatter = "{:.1}".to_string();
 
-        assert_eq!(
-            include_str!("../../asset/bar_chart/custom_label_formatter.svg").trim(),
+        assert_snapshot!(
+            "bar_chart/custom_label_formatter.svg",
             bar_chart.svg().unwrap()
         );
     }
@@ -917,10 +794,7 @@ mod tests {
 }"###,
         )
         .unwrap();
-        assert_eq!(
-            include_str!("../../asset/bar_chart/legend_center.svg").trim(),
-            bar_chart.svg().unwrap()
-        );
+        assert_snapshot!("bar_chart/legend_center.svg", bar_chart.svg().unwrap());
     }
 
     #[test]

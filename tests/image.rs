@@ -1,3 +1,5 @@
+mod common;
+
 #[test]
 #[cfg(feature = "image-encoder")]
 fn generate_image() {
@@ -48,7 +50,7 @@ fn generate_image() {
     bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
 
     let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/mix-line-bar.png", buf).unwrap();
+    common::save_asset("image/mix-line-bar.png", &buf);
 
     // horizontal bar chart
     let mut horizontal_bar_chart = HorizontalBarChart::new_with_theme(
@@ -81,7 +83,7 @@ fn generate_image() {
     horizontal_bar_chart.title_text = "World Population".to_string();
     horizontal_bar_chart.title_align = Align::Left;
     let buf = svg_to_png(&horizontal_bar_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/horizontal-bar.png", buf).unwrap();
+    common::save_asset("image/horizontal-bar.png", &buf);
 
     // line chart
     let mut line_chart = LineChart::new_with_theme(
@@ -131,7 +133,7 @@ fn generate_image() {
         category: MarkLineCategory::Average,
     }];
     let buf = svg_to_png(&line_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/line.png", buf).unwrap();
+    common::save_asset("image/line.png", &buf);
 
     // pie chart
     let mut pie_chart = PieChart::new_with_theme(
@@ -150,7 +152,7 @@ fn generate_image() {
     pie_chart.title_text = "Nightingale Chart".to_string();
     pie_chart.sub_title_text = "Fake Data".to_string();
     let buf = svg_to_png(&pie_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/pie.png", buf).unwrap();
+    common::save_asset("image/pie.png", &buf);
 
     // radar chart
     let radar_chart = RadarChart::new_with_theme(
@@ -177,7 +179,7 @@ fn generate_image() {
         THEME_GRAFANA,
     );
     let buf = svg_to_png(&radar_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/radar.png", buf).unwrap();
+    common::save_asset("image/radar.png", &buf);
 
     // scatter chart
     let mut scatter_chart = ScatterChart::new_with_theme(
@@ -224,7 +226,7 @@ fn generate_image() {
 
     scatter_chart.series_symbol_sizes = vec![6.0, 6.0];
     let buf = svg_to_png(&scatter_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/scatter.png", buf).unwrap();
+    common::save_asset("image/scatter.png", &buf);
 
     let mut candlestick_chart = CandlestickChart::new_with_theme(
         vec![
@@ -348,7 +350,7 @@ fn generate_image() {
     candlestick_chart.y_axis_configs[0].axis_max = Some(2460.0);
     candlestick_chart.y_axis_configs[0].axis_formatter = Some("{t}".to_string());
     let buf = svg_to_png(&candlestick_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/candlestick.png", buf).unwrap();
+    common::save_asset("image/candlestick.png", &buf);
 
     // table chart
     let mut table_chart = TableChart::new_with_theme(
@@ -400,7 +402,7 @@ fn generate_image() {
     ];
     table_chart.title_text = "NASDAQ".to_string();
     let buf = svg_to_avif(&table_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/table.avif", buf).unwrap();
+    common::save_asset("image/table.avif", &buf);
 
     let multi_chart_json = r###"{
             "type": "multi_chart",
@@ -892,7 +894,7 @@ fn generate_image() {
           }"###;
     let multi_chart = MultiChart::from_json(multi_chart_json).unwrap();
     let buf = svg_to_webp(&multi_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/multi-chart.webp", buf).unwrap();
+    common::save_asset("image/multi-chart.webp", &buf);
 
     // theme preview image for shadcn
     let shadcn_chart = MultiChart::from_json(
@@ -900,7 +902,7 @@ fn generate_image() {
     )
     .unwrap();
     let buf = svg_to_png(&shadcn_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/theme-shadcn.png", buf).unwrap();
+    common::save_asset("image/theme-shadcn.png", &buf);
 
     let heatmap_chart = HeatmapChart::from_json(
       r###"{
@@ -935,7 +937,7 @@ fn generate_image() {
   )
   .unwrap();
     let buf = svg_to_png(&heatmap_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/heatmap.png", buf).unwrap();
+    common::save_asset("image/heatmap.png", &buf);
 
     // treemap chart
     let treemap_chart = TreemapChart::new_with_theme(
@@ -950,7 +952,7 @@ fn generate_image() {
         THEME_GRAFANA,
     );
     let buf = svg_to_png(&treemap_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/treemap.png", buf).unwrap();
+    common::save_asset("image/treemap.png", &buf);
 
     // box plot chart
     let box_plot_chart = BoxPlotChart::new_with_theme(
@@ -985,7 +987,7 @@ fn generate_image() {
         THEME_GRAFANA,
     );
     let buf = svg_to_png(&box_plot_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/box-plot.png", buf).unwrap();
+    common::save_asset("image/box-plot.png", &buf);
 
     // funnel chart
     let funnel_chart = FunnelChart::from_json(
@@ -1006,7 +1008,7 @@ fn generate_image() {
     )
     .unwrap();
     let buf = svg_to_png(&funnel_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/funnel.png", buf).unwrap();
+    common::save_asset("image/funnel.png", &buf);
 
     // waterfall chart
     let waterfall_chart = WaterfallChart::from_json(
@@ -1026,7 +1028,7 @@ fn generate_image() {
     )
     .unwrap();
     let buf = svg_to_png(&waterfall_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/waterfall.png", buf).unwrap();
+    common::save_asset("image/waterfall.png", &buf);
 
     // calendar chart
     let calendar_chart = CalendarChart::from_json(
@@ -1048,7 +1050,7 @@ fn generate_image() {
     )
     .unwrap();
     let buf = svg_to_png(&calendar_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/calendar.png", buf).unwrap();
+    common::save_asset("image/calendar.png", &buf);
 
     // gauge chart
     let gauge_chart = GaugeChart::from_json(
@@ -1063,7 +1065,7 @@ fn generate_image() {
     )
     .unwrap();
     let buf = svg_to_png(&gauge_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/gauge.png", buf).unwrap();
+    common::save_asset("image/gauge.png", &buf);
 
     // sunburst chart
     let sunburst_chart = SunburstChart::from_json(
@@ -1099,5 +1101,52 @@ fn generate_image() {
     )
     .unwrap();
     let buf = svg_to_png(&sunburst_chart.svg().unwrap()).unwrap();
-    std::fs::write("./asset/image/sunburst.png", buf).unwrap();
+    common::save_asset("image/sunburst.png", &buf);
+    // node charts
+    for (name, chart) in [
+        (
+            "sankey",
+            charts_rs::SankeyChart::from_json(include_str!(
+                "../asset/sankey_chart/integration.json"
+            ))
+            .unwrap()
+            .svg()
+            .unwrap(),
+        ),
+        (
+            "tree",
+            charts_rs::TreeChart::from_json(include_str!("../asset/tree_chart/integration.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "graph",
+            charts_rs::GraphChart::from_json(include_str!("../asset/graph_chart/integration.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "parallel",
+            charts_rs::ParallelChart::from_json(include_str!(
+                "../asset/parallel_chart/integration.json"
+            ))
+            .unwrap()
+            .svg()
+            .unwrap(),
+        ),
+        (
+            "theme-river",
+            charts_rs::ThemeRiverChart::from_json(include_str!(
+                "../asset/theme_river_chart/integration.json"
+            ))
+            .unwrap()
+            .svg()
+            .unwrap(),
+        ),
+    ] {
+        let buf = svg_to_png(&chart).unwrap();
+        common::save_asset(&format!("image/{name}.png"), &buf);
+    }
 }

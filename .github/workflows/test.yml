@@ -42,6 +42,14 @@ jobs:
     - name: Clippy (default features)
       if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
       run: cargo clippy --no-default-features --all-targets --all -- --deny=warnings
+    - name: Clippy (png only)
+      if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
+      run: cargo clippy --features=png --all-targets --all -- --deny=warnings
+    - name: Docs
+      if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
+      run: cargo doc --no-deps --all-features
+      env:
+        RUSTDOCFLAGS: -D warnings
     - name: Build
       run: cargo build --verbose
     # Raster export renders with resvg + system fonts, which are platform
@@ -49,6 +57,11 @@ jobs:
     - name: Run tests (image-encoder)
       if: matrix.os == 'ubuntu-latest'
       run: cargo test --verbose --features "image-encoder"
+    # The lightweight raster feature must work on its own (README doctests
+    # run under it).
+    - name: Run tests (png only)
+      if: matrix.os == 'ubuntu-latest'
+      run: cargo test --verbose --features png
     # The SVG output is deterministic, so run it on every platform.
     - name: Run tests (default features)
       run: cargo test --verbose --no-default-features

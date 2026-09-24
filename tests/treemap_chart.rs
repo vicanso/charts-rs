@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::TreemapChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn treemap_chart_basic_json() {
@@ -18,10 +19,7 @@ fn treemap_chart_basic_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/treemap_chart/basic_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("treemap_chart/basic_json.svg", chart.svg().unwrap());
 }
 
 #[test]
@@ -42,8 +40,5 @@ fn treemap_chart_grafana_json() {
         }"##,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/treemap_chart/grafana_json.svg"),
-        chart.svg().unwrap()
-    );
+    common::assert_snapshot!("treemap_chart/grafana_json.svg", chart.svg().unwrap());
 }

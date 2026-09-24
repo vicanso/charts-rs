@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::ScatterChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn scatter_chart() {
@@ -54,8 +55,5 @@ fn scatter_chart() {
             "series_symbol_sizes": [6, 6]
         }"###).unwrap();
 
-    assert_eq!(
-        include_str!("../asset/scatter_chart/basic_json.svg"),
-        scatter_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("scatter_chart/basic_json.svg", scatter_chart.svg().unwrap());
 }

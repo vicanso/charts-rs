@@ -1,5 +1,4 @@
 use charts_rs::BarChart;
-use pretty_assertions::assert_eq;
 
 mod common;
 
@@ -25,10 +24,7 @@ fn bar_chart_stacked() {
         }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/bar_chart/stacked_json.svg"),
-        bar_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("bar_chart/stacked_json.svg", bar_chart.svg().unwrap());
 }
 
 #[test]
@@ -96,10 +92,7 @@ fn bar_chart() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/bar_chart/basic_json.svg"),
-        bar_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("bar_chart/basic_json.svg", bar_chart.svg().unwrap());
 }
 
 #[test]
@@ -165,10 +158,7 @@ fn bar_chart_nil_value() {
         }"###,
     )
     .unwrap();
-    assert_eq!(
-        include_str!("../asset/bar_chart/nil_value_json.svg"),
-        bar_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("bar_chart/nil_value_json.svg", bar_chart.svg().unwrap());
 }
 
 #[test]
@@ -221,10 +211,7 @@ fn bar_chart_mixin() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/bar_chart/line_mixin_json.svg"),
-        bar_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("bar_chart/line_mixin_json.svg", bar_chart.svg().unwrap());
 }
 
 #[test]
@@ -259,7 +246,7 @@ fn bar_chart_narrow_bands() {
     let svg = bar_chart.svg().unwrap();
     assert!(!svg.contains(r#"width="-"#), "negative bar width");
     common::assert_bars_in_x_bands(&svg, 24);
-    assert_eq!(include_str!("../asset/bar_chart/narrow_bands.svg"), svg);
+    common::assert_snapshot!("bar_chart/narrow_bands.svg", svg);
 }
 
 #[test]

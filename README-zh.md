@@ -45,15 +45,15 @@
 
 ```toml
 [dependencies]
-charts-rs = "0.7"
+charts-rs = "1"
 ```
 
 默认构建即可生成 SVG。若需导出位图格式（`png`、`jpeg`、`webp`、`avif`），即下文用到的
-`svg_to_png`、`svg_to_png_with_size` 等函数，需开启 `image-encoder` feature：
+`svg_to_png`、`svg_to_png_with_size` 等函数，需按格式开启 `png` / `jpeg` / `webp` / `avif` feature（`image-encoder` 为全部开启的总开关，`avif` 会引入较重的 `rav1e` 编码器）：
 
 ```toml
 [dependencies]
-charts-rs = { version = "0.7", features = ["image-encoder"] }
+charts-rs = { version = "1", features = ["png"] }
 ```
 
 ## 示例
@@ -65,110 +65,144 @@ charts-rs = { version = "0.7", features = ["image-encoder"] }
 示例项目代码：[https://github.com/vicanso/charts-rs-web](https://github.com/vicanso/charts-rs-web)
 
 <p align="center">
-    <img src="./asset/image/charts-demo.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/charts-demo.png" alt="charts-rs">
 </p>
 
 ## Mix line bar
 
 <p align="center">
-    <img src="./asset/image/mix-line-bar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mix-line-bar.png" alt="charts-rs">
 </p>
 
 ## Horizontal bar
 
 <p align="center">
-    <img src="./asset/image/horizontal-bar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/horizontal-bar.png" alt="charts-rs">
 </p>
 
 ## Line
 
 <p align="center">
-    <img src="./asset/image/line.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line.png" alt="charts-rs">
 </p>
 
 ## Pie
 
 <p align="center">
-    <img src="./asset/image/pie.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie.png" alt="charts-rs">
 </p>
 
 ## Radar
 
 <p align="center">
-    <img src="./asset/image/radar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/radar.png" alt="charts-rs">
 </p>
 
 ## Scatter
 
 <p align="center">
-    <img src="./asset/image/scatter.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/scatter.png" alt="charts-rs">
 </p>
 
 ## Candlestick
 
 <p align="center">
-    <img src="./asset/image/candlestick.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/candlestick.png" alt="charts-rs">
 </p>
 
 ## Table
 
 <p align="center">
-    <img src="./asset/image/table.avif" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/table.avif" alt="charts-rs">
 </p>
 
 ## Heatmap
 
 <p align="center">
-    <img src="./asset/image/heatmap.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/heatmap.png" alt="charts-rs">
 </p>
 
 ## Funnel
 
 <p align="center">
-    <img src="./asset/image/funnel.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/funnel.png" alt="charts-rs">
 </p>
 
 ## Waterfall
 
 <p align="center">
-    <img src="./asset/image/waterfall.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/waterfall.png" alt="charts-rs">
 </p>
 
 ## Calendar
 
 <p align="center">
-    <img src="./asset/image/calendar.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/calendar.png" alt="charts-rs">
 </p>
 
 ## Gauge
 
 <p align="center">
-    <img src="./asset/image/gauge.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gauge.png" alt="charts-rs">
 </p>
 
 ## Treemap
 
 <p align="center">
-    <img src="./asset/image/treemap.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/treemap.png" alt="charts-rs">
 </p>
 
 ## Box Plot
 
 <p align="center">
-    <img src="./asset/image/box-plot.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/box-plot.png" alt="charts-rs">
 </p>
 
 ## Sunburst
 
 <p align="center">
-    <img src="./asset/image/sunburst.png" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sunburst.png" alt="charts-rs">
 </p>
 
 ## Multi Chart
 
 <p align="center">
-    <img src="./asset/image/multi-chart.webp" alt="charts-rs">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/multi-chart.webp" alt="charts-rs">
 </p>
+
+## Sankey
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sankey.png" alt="charts-rs">
+</p>
+
+## Tree
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/tree.png" alt="charts-rs">
+</p>
+
+## Graph
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/graph.png" alt="charts-rs">
+</p>
+
+## Parallel
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/parallel.png" alt="charts-rs">
+</p>
+
+## Theme River
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/theme-river.png" alt="charts-rs">
+</p>
+
+## 最低 Rust 版本
+
+charts-rs 1.x 需要 Rust 1.88 及以上（edition 2024）。
 
 ## Rust 示例
 

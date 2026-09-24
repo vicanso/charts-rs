@@ -1,0 +1,11 @@
+{
+    "title_text": "Laptops",
+    "x_axis_data": ["Price", "Weight", "Cores", "Storage", "Score"],
+    "y_axis_configs": [{"axis_min": 0, "axis_max": 2000, "axis_formatter": "${c}"}],
+    "series_list": [
+        {"name": "A", "data": [1200, 1.4, 8, 512, 92]},
+        {"name": "B", "data": [950, 1.8, 6, 256, 78]},
+        {"name": "C", "data": [1800, 1.2, 12, 1024, 96]},
+        {"name": "D", "data": [700, 2.1, 4, 256, 65]}
+    ]
+}

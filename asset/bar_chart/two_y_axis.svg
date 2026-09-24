@@ -106,20 +106,20 @@ Sat
 Sun
 </text>
 </g>
-<rect x="65" y="361.7" width="27.8" height="3.3" fill="#5470C6"/>
-<rect x="133.6" y="357" width="27.8" height="8" fill="#5470C6"/>
-<rect x="202.1" y="353.6" width="27.8" height="11.4" fill="#5470C6"/>
-<rect x="270.7" y="327.2" width="27.8" height="37.8" fill="#5470C6"/>
-<rect x="339.3" y="323.3" width="27.8" height="41.7" fill="#5470C6"/>
-<rect x="407.9" y="240.1" width="27.8" height="124.9" fill="#5470C6"/>
-<rect x="476.4" y="144.3" width="27.8" height="220.7" fill="#5470C6"/>
-<rect x="95.8" y="360.8" width="27.8" height="4.2" fill="#91CC75"/>
-<rect x="164.4" y="355.4" width="27.8" height="9.6" fill="#91CC75"/>
-<rect x="232.9" y="350.4" width="27.8" height="14.6" fill="#91CC75"/>
-<rect x="301.5" y="322" width="27.8" height="43" fill="#91CC75"/>
-<rect x="370.1" y="318.3" width="27.8" height="46.7" fill="#91CC75"/>
-<rect x="438.6" y="249.9" width="27.8" height="115.1" fill="#91CC75"/>
-<rect x="507.2" y="79.2" width="27.8" height="285.8" fill="#91CC75"/>
+<rect x="65" y="361.7" width="27.8" height="3.3" fill="#5470C6" data-series="Evaporation" data-category="Mon" data-value="2"/>
+<rect x="133.6" y="357" width="27.8" height="8" fill="#5470C6" data-series="Evaporation" data-category="Tue" data-value="4.9"/>
+<rect x="202.1" y="353.6" width="27.8" height="11.4" fill="#5470C6" data-series="Evaporation" data-category="Wed" data-value="7"/>
+<rect x="270.7" y="327.2" width="27.8" height="37.8" fill="#5470C6" data-series="Evaporation" data-category="Thu" data-value="23.2"/>
+<rect x="339.3" y="323.3" width="27.8" height="41.7" fill="#5470C6" data-series="Evaporation" data-category="Fri" data-value="25.6"/>
+<rect x="407.9" y="240.1" width="27.8" height="124.9" fill="#5470C6" data-series="Evaporation" data-category="Sat" data-value="76.7"/>
+<rect x="476.4" y="144.3" width="27.8" height="220.7" fill="#5470C6" data-series="Evaporation" data-category="Sun" data-value="135.6"/>
+<rect x="95.8" y="360.8" width="27.8" height="4.2" fill="#91CC75" data-series="Precipitation" data-category="Mon" data-value="2.6"/>
+<rect x="164.4" y="355.4" width="27.8" height="9.6" fill="#91CC75" data-series="Precipitation" data-category="Tue" data-value="5.9"/>
+<rect x="232.9" y="350.4" width="27.8" height="14.6" fill="#91CC75" data-series="Precipitation" data-category="Wed" data-value="9"/>
+<rect x="301.5" y="322" width="27.8" height="43" fill="#91CC75" data-series="Precipitation" data-category="Thu" data-value="26.4"/>
+<rect x="370.1" y="318.3" width="27.8" height="46.7" fill="#91CC75" data-series="Precipitation" data-category="Fri" data-value="28.7"/>
+<rect x="438.6" y="249.9" width="27.8" height="115.1" fill="#91CC75" data-series="Precipitation" data-category="Sat" data-value="70.7"/>
+<rect x="507.2" y="79.2" width="27.8" height="285.8" fill="#91CC75" data-series="Precipitation" data-category="Sun" data-value="175.6"/>
 <g>
 <path d="M 94.3 340.6 L 162.9 338.1 L 231.4 324.7 L 300 310.1 L 368.6 288.1 L 437.1 240.5 L 505.7 117.2" stroke-width="2" fill="none" stroke="#FAC858"/>
 <circle cx="94.3" cy="340.6" r="2" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>

@@ -200,6 +200,10 @@ pub(crate) fn get_margin_from_value(value: &serde_json::Value, key: &str) -> Opt
 }
 
 fn get_box_from_value(value: &serde_json::Value) -> Box {
+    // A bare number applies to all four sides, like `Box::from(f32)`.
+    if let Some(v) = value.as_f64() {
+        return (v as f32).into();
+    }
     Box {
         left: get_f32_from_value(value, "left").unwrap_or_default(),
         top: get_f32_from_value(value, "top").unwrap_or_default(),
@@ -330,10 +334,12 @@ pub(crate) fn get_color_slice_from_value(
     if let Some(arr) = value.get(key)
         && let Some(values) = arr.as_array()
     {
+        // Keep positions: a bad entry becomes the transparent default rather
+        // than shifting every later color up by one.
         return Some(
             values
                 .iter()
-                .map(|item| item.as_str().unwrap_or_default().into())
+                .map(|item| Color::parse(item.as_str().unwrap_or_default()).unwrap_or_default())
                 .collect(),
         );
     }
@@ -356,7 +362,7 @@ pub(crate) fn get_string_from_value(value: &serde_json::Value, key: &str) -> Opt
 /// Gets position value from serde json.
 pub(crate) fn get_position_from_value(value: &serde_json::Value, key: &str) -> Option<Position> {
     if let Some(value) = get_string_from_value(value, key) {
-        let p = match value.as_str() {
+        let p = match value.to_lowercase().as_str() {
             "inside" => Position::Inside,
             "top" => Position::Top,
             "right" => Position::Right,
@@ -368,10 +374,11 @@ pub(crate) fn get_position_from_value(value: &serde_json::Value, key: &str) -> O
     None
 }
 
-/// Gets color value from serde json.
+/// Gets color value from serde json. An unparsable color string is ignored
+/// (the theme default stays in effect) instead of becoming transparent.
 pub(crate) fn get_color_from_value(value: &serde_json::Value, key: &str) -> Option<Color> {
     if let Some(s) = get_string_from_value(value, key) {
-        return Some(s.as_str().into());
+        return Color::parse(&s);
     }
     None
 }
@@ -424,9 +431,12 @@ fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {
     {
         for item in arr.iter() {
             if let Some(value) = item.get("category") {
-                let category = match value.as_str().unwrap_or_default() {
+                let category = match value.as_str().unwrap_or_default().to_lowercase().as_str() {
                     "max" => MarkLineCategory::Max,
                     "min" => MarkLineCategory::Min,
+                    "value" => MarkLineCategory::Value(
+                        get_f32_from_value(item, "value").unwrap_or_default(),
+                    ),
                     _ => MarkLineCategory::Average,
                 };
                 mark_lines.push(MarkLine { category })
@@ -443,7 +453,7 @@ fn get_mark_points(value: &serde_json::Value, key: &str) -> Vec<MarkPoint> {
     {
         for item in arr.iter() {
             if let Some(value) = item.get("category") {
-                let category = match value.as_str().unwrap_or_default() {
+                let category = match value.as_str().unwrap_or_default().to_lowercase().as_str() {
                     "max" => MarkPointCategory::Max,
                     _ => MarkPointCategory::Min,
                 };
@@ -461,14 +471,12 @@ fn get_series_colors_from_value(
     if let Some(data) = value.get(key)
         && let Some(arr) = data.as_array()
     {
-        let mut colors = vec![];
-        for item in arr.iter() {
-            if item.is_null() {
-                colors.push(None);
-            } else if let Some(str) = item.as_str() {
-                colors.push(Some(str.into()))
-            }
-        }
+        // One slot per entry, so a null or bad value leaves the series
+        // color in place instead of shifting the later overrides.
+        let colors = arr
+            .iter()
+            .map(|item| item.as_str().and_then(Color::parse))
+            .collect();
         return Some(colors);
     }
     None
@@ -476,10 +484,9 @@ fn get_series_colors_from_value(
 
 fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
     let name = get_string_from_value(value, "name").unwrap_or_default();
+    // An empty series is kept (it still has a legend entry) rather than
+    // silently dropped, which shifted the palette of every later series.
     let data = get_f32_slice_from_value_support_nil(value, "data").unwrap_or_default();
-    if data.is_empty() {
-        return None;
-    }
     Some(Series {
         name,
         data,
@@ -493,6 +500,9 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         colors: get_series_colors_from_value(value, "colors"),
         stroke_dash_array: get_string_from_value(value, "stroke_dash_array"),
         stack: get_string_from_value(value, "stack"),
+        smooth: get_bool_from_value(value, "smooth"),
+        fill: get_bool_from_value(value, "fill"),
+        symbol: get_series_symbol_from_value(value, "symbol"),
     })
 }
 

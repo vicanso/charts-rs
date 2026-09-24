@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::PieChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn pie_chart() {
@@ -48,10 +49,7 @@ fn pie_chart() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/pie_chart/basic_json.svg"),
-        pie_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("pie_chart/basic_json.svg", pie_chart.svg().unwrap());
 }
 
 #[test]
@@ -103,8 +101,8 @@ fn not_rose_radius_pie_chart() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/pie_chart/not_rose_radius_json.svg"),
+    common::assert_snapshot!(
+        "pie_chart/not_rose_radius_json.svg",
         pie_chart.svg().unwrap()
     );
 }

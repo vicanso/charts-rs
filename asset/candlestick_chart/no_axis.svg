@@ -4,11 +4,11 @@
 <line stroke-width="1" x1="5" y1="27" x2="595" y2="27"/><line stroke-width="1" x1="5" y1="88.3" x2="595" y2="88.3"/><line stroke-width="1" x1="5" y1="149.7" x2="595" y2="149.7"/><line stroke-width="1" x1="5" y1="211" x2="595" y2="211"/><line stroke-width="1" x1="5" y1="272.3" x2="595" y2="272.3"/><line stroke-width="1" x1="5" y1="333.7" x2="595" y2="333.7"/>
 </g>
 <line stroke-width="1" x1="77.8" y1="161.9" x2="77.8" y2="333.7" stroke="#EC0000"/>
-<rect x="40.9" y="186.5" width="73.8" height="85.9" stroke="#8A0000" fill="#EC0000"/>
+<rect x="40.9" y="186.5" width="73.8" height="85.9" stroke="#8A0000" fill="#EC0000" data-category="2017-10-24" data-open="20" data-close="34" data-low="10" data-high="38"/>
 <line stroke-width="1" x1="225.2" y1="88.3" x2="225.2" y2="211" stroke="#00DA3C"/>
-<rect x="188.4" y="149.7" width="73.8" height="30.7" stroke="#008F28" fill="#00DA3C"/>
+<rect x="188.4" y="149.7" width="73.8" height="30.7" stroke="#008F28" fill="#00DA3C" data-category="2017-10-25" data-open="40" data-close="35" data-low="30" data-high="50"/>
 <line stroke-width="1" x1="372.8" y1="125.1" x2="372.8" y2="192.6" stroke="#EC0000"/>
-<rect x="335.9" y="161.9" width="73.8" height="42.9" stroke="#8A0000" fill="#EC0000"/>
+<rect x="335.9" y="161.9" width="73.8" height="42.9" stroke="#8A0000" fill="#EC0000" data-category="2017-10-26" data-open="31" data-close="38" data-low="33" data-high="44"/>
 <line stroke-width="1" x1="520.2" y1="137.4" x2="520.2" y2="364.3" stroke="#00DA3C"/>
-<rect x="483.4" y="161.9" width="73.8" height="141.1" stroke="#008F28" fill="#00DA3C"/>
+<rect x="483.4" y="161.9" width="73.8" height="141.1" stroke="#008F28" fill="#00DA3C" data-category="2017-10-27" data-open="38" data-close="15" data-low="5" data-high="42"/>
 </svg>

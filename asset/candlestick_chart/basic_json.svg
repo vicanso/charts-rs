@@ -75,125 +75,125 @@ MA5
 </text>
 </g>
 <line stroke-width="1" x1="53.5" y1="119.5" x2="53.5" y2="191.5" stroke="#EC0000"/>
-<rect x="51.2" y="160.1" width="4.5" height="1" stroke="#000000" stroke-opacity="0" fill="#EC0000"/>
+<rect x="51.2" y="160.1" width="4.5" height="1" stroke="#000000" stroke-opacity="0" fill="#EC0000" data-series="日K" data-category="2013/1/24" data-open="2320.3" data-close="2320.3" data-low="2287.3" data-high="2362.9"/>
 <line stroke-width="1" x1="62.5" y1="171.5" x2="62.5" y2="190.6" stroke="#00DA3C"/>
-<rect x="60.2" y="179.4" width="4.5" height="8.3" stroke="#008F28" fill="#00DA3C"/>
+<rect x="60.2" y="179.4" width="4.5" height="8.3" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/1/25" data-open="2300" data-close="2291.3" data-low="2288.3" data-high="2308.4"/>
 <line stroke-width="1" x1="71.5" y1="134.7" x2="71.5" y2="183.9" stroke="#EC0000"/>
-<rect x="69.2" y="135.1" width="4.5" height="48.7" stroke="#8A0000" fill="#EC0000"/>
+<rect x="69.2" y="135.1" width="4.5" height="48.7" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/1/28" data-open="2295.4" data-close="2346.5" data-low="2295.4" data-high="2346.9"/>
 <line stroke-width="1" x1="80.5" y1="118.7" x2="80.5" y2="143.9" stroke="#EC0000"/>
-<rect x="78.2" y="123.2" width="4.5" height="11.2" stroke="#8A0000" fill="#EC0000"/>
+<rect x="78.2" y="123.2" width="4.5" height="11.2" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/1/29" data-open="2347.2" data-close="2359" data-low="2337.4" data-high="2363.8"/>
 <line stroke-width="1" x1="89.5" y1="99.6" x2="89.5" y2="133.8" stroke="#EC0000"/>
-<rect x="87.2" y="100.9" width="4.5" height="20.7" stroke="#8A0000" fill="#EC0000"/>
+<rect x="87.2" y="100.9" width="4.5" height="20.7" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/1/30" data-open="2360.8" data-close="2382.5" data-low="2347.9" data-high="2383.8"/>
 <line stroke-width="1" x1="98.5" y1="92" x2="98.5" y2="111.6" stroke="#EC0000"/>
-<rect x="96.2" y="98.1" width="4.5" height="1.9" stroke="#8A0000" fill="#EC0000"/>
+<rect x="96.2" y="98.1" width="4.5" height="1.9" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/1/31" data-open="2383.4" data-close="2385.4" data-low="2371.2" data-high="2391.8"/>
 <line stroke-width="1" x1="107.5" y1="64" x2="107.5" y2="113.2" stroke="#EC0000"/>
-<rect x="105.2" y="66" width="4.5" height="39.6" stroke="#8A0000" fill="#EC0000"/>
+<rect x="105.2" y="66" width="4.5" height="39.6" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/1" data-open="2377.4" data-close="2419" data-low="2369.6" data-high="2421.1"/>
 <line stroke-width="1" x1="116.5" y1="45.7" x2="116.5" y2="67.4" stroke="#EC0000"/>
-<rect x="114.2" y="57.3" width="4.5" height="2.1" stroke="#8A0000" fill="#EC0000"/>
+<rect x="114.2" y="57.3" width="4.5" height="2.1" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/4" data-open="2425.9" data-close="2428.1" data-low="2417.6" data-high="2440.4"/>
 <line stroke-width="1" x1="125.5" y1="48.5" x2="125.5" y2="81" stroke="#EC0000"/>
-<rect x="123.2" y="52.6" width="4.5" height="21.1" stroke="#8A0000" fill="#EC0000"/>
+<rect x="123.2" y="52.6" width="4.5" height="21.1" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/5" data-open="2411" data-close="2433.1" data-low="2403.3" data-high="2437.4"/>
 <line stroke-width="1" x1="134.5" y1="44.4" x2="134.5" y2="57.8" stroke="#EC0000"/>
-<rect x="132.2" y="51.3" width="4.5" height="1.7" stroke="#8A0000" fill="#EC0000"/>
+<rect x="132.2" y="51.3" width="4.5" height="1.7" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/6" data-open="2432.7" data-close="2434.5" data-low="2427.7" data-high="2441.7"/>
 <line stroke-width="1" x1="143.5" y1="51.9" x2="143.5" y2="89.7" stroke="#00DA3C"/>
-<rect x="141.2" y="54.9" width="4.5" height="11.6" stroke="#008F28" fill="#00DA3C"/>
+<rect x="141.2" y="54.9" width="4.5" height="11.6" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/2/7" data-open="2430.7" data-close="2418.5" data-low="2394.2" data-high="2433.9"/>
 <line stroke-width="1" x1="152.5" y1="43.2" x2="152.5" y2="70.4" stroke="#EC0000"/>
-<rect x="150.2" y="53.3" width="4.5" height="15" stroke="#8A0000" fill="#EC0000"/>
+<rect x="150.2" y="53.3" width="4.5" height="15" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/8" data-open="2416.6" data-close="2432.4" data-low="2414.4" data-high="2443"/>
 <line stroke-width="1" x1="161.5" y1="41.5" x2="161.5" y2="69.5" stroke="#00DA3C"/>
-<rect x="159.2" y="44.2" width="4.5" height="19.4" stroke="#008F28" fill="#00DA3C"/>
+<rect x="159.2" y="44.2" width="4.5" height="19.4" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/2/18" data-open="2441.9" data-close="2421.6" data-low="2415.4" data-high="2444.8"/>
 <line stroke-width="1" x1="170.5" y1="58.4" x2="170.5" y2="109.4" stroke="#00DA3C"/>
-<rect x="168.2" y="64.9" width="4.5" height="35.6" stroke="#008F28" fill="#00DA3C"/>
+<rect x="168.2" y="64.9" width="4.5" height="35.6" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/2/19" data-open="2420.3" data-close="2382.9" data-low="2373.5" data-high="2427.1"/>
 <line stroke-width="1" x1="179.5" y1="86.1" x2="179.5" y2="112.2" stroke="#EC0000"/>
-<rect x="177.2" y="86.9" width="4.5" height="13" stroke="#8A0000" fill="#EC0000"/>
+<rect x="177.2" y="86.9" width="4.5" height="13" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/20" data-open="2383.5" data-close="2397.2" data-low="2370.6" data-high="2397.9"/>
 <line stroke-width="1" x1="188.5" y1="104.3" x2="188.5" y2="170.7" stroke="#00DA3C"/>
-<rect x="186.2" y="104.3" width="4.5" height="50.4" stroke="#008F28" fill="#00DA3C"/>
+<rect x="186.2" y="104.3" width="4.5" height="50.4" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/2/21" data-open="2378.8" data-close="2325.9" data-low="2309.2" data-high="2378.8"/>
 <line stroke-width="1" x1="197.5" y1="150" x2="197.5" y2="171.1" stroke="#00DA3C"/>
-<rect x="195.2" y="157.6" width="4.5" height="8.4" stroke="#008F28" fill="#00DA3C"/>
+<rect x="195.2" y="157.6" width="4.5" height="8.4" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/2/22" data-open="2322.9" data-close="2314.2" data-low="2308.8" data-high="2330.9"/>
 <line stroke-width="1" x1="206.5" y1="142.5" x2="206.5" y2="165.1" stroke="#EC0000"/>
-<rect x="204.2" y="154.8" width="4.5" height="5" stroke="#8A0000" fill="#EC0000"/>
+<rect x="204.2" y="154.8" width="4.5" height="5" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/25" data-open="2320.6" data-close="2325.8" data-low="2315" data-high="2338.8"/>
 <line stroke-width="1" x1="215.5" y1="140.7" x2="215.5" y2="189.1" stroke="#00DA3C"/>
-<rect x="213.2" y="166.4" width="4.5" height="19.4" stroke="#008F28" fill="#00DA3C"/>
+<rect x="213.2" y="166.4" width="4.5" height="19.4" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/2/26" data-open="2313.7" data-close="2293.3" data-low="2289.9" data-high="2340.7"/>
 <line stroke-width="1" x1="224.5" y1="156" x2="224.5" y2="187" stroke="#EC0000"/>
-<rect x="222.2" y="166.8" width="4.5" height="14.7" stroke="#8A0000" fill="#EC0000"/>
+<rect x="222.2" y="166.8" width="4.5" height="14.7" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/27" data-open="2297.8" data-close="2313.2" data-low="2292" data-high="2324.6"/>
 <line stroke-width="1" x1="233.5" y1="116.4" x2="233.5" y2="170.9" stroke="#EC0000"/>
-<rect x="231.2" y="117" width="4.5" height="41.2" stroke="#8A0000" fill="#EC0000"/>
+<rect x="231.2" y="117" width="4.5" height="41.2" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/2/28" data-open="2322.3" data-close="2365.6" data-low="2308.9" data-high="2366.2"/>
 <line stroke-width="1" x1="242.5" y1="113.1" x2="242.5" y2="150" stroke="#00DA3C"/>
-<rect x="240.2" y="118" width="4.5" height="4.8" stroke="#008F28" fill="#00DA3C"/>
+<rect x="240.2" y="118" width="4.5" height="4.8" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/1" data-open="2364.5" data-close="2359.5" data-low="2330.9" data-high="2369.6"/>
 <line stroke-width="1" x1="251.5" y1="147.5" x2="251.5" y2="218.3" stroke="#00DA3C"/>
-<rect x="249.2" y="148.9" width="4.5" height="55.9" stroke="#008F28" fill="#00DA3C"/>
+<rect x="249.2" y="148.9" width="4.5" height="55.9" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/4" data-open="2332.1" data-close="2273.4" data-low="2259.2" data-high="2333.5"/>
 <line stroke-width="1" x1="260.5" y1="152.6" x2="260.5" y2="207.9" stroke="#EC0000"/>
-<rect x="258.2" y="154.4" width="4.5" height="49.1" stroke="#8A0000" fill="#EC0000"/>
+<rect x="258.2" y="154.4" width="4.5" height="49.1" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/5" data-open="2274.8" data-close="2326.3" data-low="2270.1" data-high="2328.1"/>
 <line stroke-width="1" x1="269.5" y1="130.4" x2="269.5" y2="158.9" stroke="#EC0000"/>
-<rect x="267.2" y="134.5" width="4.5" height="12.9" stroke="#8A0000" fill="#EC0000"/>
+<rect x="267.2" y="134.5" width="4.5" height="12.9" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/6" data-open="2333.6" data-close="2347.2" data-low="2321.6" data-high="2351.4"/>
 <line stroke-width="1" x1="278.5" y1="129.9" x2="278.5" y2="175.4" stroke="#00DA3C"/>
-<rect x="276.2" y="140.9" width="4.5" height="15.4" stroke="#008F28" fill="#00DA3C"/>
+<rect x="276.2" y="140.9" width="4.5" height="15.4" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/7" data-open="2340.4" data-close="2324.3" data-low="2304.3" data-high="2352"/>
 <line stroke-width="1" x1="287.5" y1="147.4" x2="287.5" y2="165.5" stroke="#00DA3C"/>
-<rect x="285.2" y="154.3" width="4.5" height="7.4" stroke="#008F28" fill="#00DA3C"/>
+<rect x="285.2" y="154.3" width="4.5" height="7.4" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/8" data-open="2326.4" data-close="2318.6" data-low="2314.6" data-high="2333.7"/>
 <line stroke-width="1" x1="296.5" y1="159.5" x2="296.5" y2="182.7" stroke="#00DA3C"/>
-<rect x="294.2" y="165.5" width="4.5" height="3.9" stroke="#008F28" fill="#00DA3C"/>
+<rect x="294.2" y="165.5" width="4.5" height="3.9" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/11" data-open="2314.7" data-close="2310.6" data-low="2296.6" data-high="2321"/>
 <line stroke-width="1" x1="305.5" y1="147.7" x2="305.5" y2="213" stroke="#00DA3C"/>
-<rect x="303.2" y="170.7" width="4.5" height="21.5" stroke="#008F28" fill="#00DA3C"/>
+<rect x="303.2" y="170.7" width="4.5" height="21.5" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/12" data-open="2309.2" data-close="2286.6" data-low="2264.8" data-high="2333.3"/>
 <line stroke-width="1" x1="314.5" y1="192.5" x2="314.5" y2="224" stroke="#00DA3C"/>
-<rect x="312.2" y="196.4" width="4.5" height="17.3" stroke="#008F28" fill="#00DA3C"/>
+<rect x="312.2" y="196.4" width="4.5" height="17.3" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/13" data-open="2282.2" data-close="2264" data-low="2253.2" data-high="2286.3"/>
 <line stroke-width="1" x1="323.5" y1="202.1" x2="323.5" y2="223.9" stroke="#EC0000"/>
-<rect x="321.2" y="207.8" width="4.5" height="13.8" stroke="#8A0000" fill="#EC0000"/>
+<rect x="321.2" y="207.8" width="4.5" height="13.8" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/14" data-open="2255.8" data-close="2270.3" data-low="2253.3" data-high="2276.2"/>
 <line stroke-width="1" x1="332.5" y1="167.9" x2="332.5" y2="227.1" stroke="#EC0000"/>
-<rect x="330.2" y="200" width="4.5" height="8.7" stroke="#8A0000" fill="#EC0000"/>
+<rect x="330.2" y="200" width="4.5" height="8.7" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/15" data-open="2269.3" data-close="2278.4" data-low="2250" data-high="2312.1"/>
 <line stroke-width="1" x1="341.5" y1="202.3" x2="341.5" y2="237.4" stroke="#00DA3C"/>
-<rect x="339.2" y="210.6" width="4.5" height="26" stroke="#008F28" fill="#00DA3C"/>
+<rect x="339.2" y="210.6" width="4.5" height="26" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/18" data-open="2267.3" data-close="2240" data-low="2239.2" data-high="2276.1"/>
 <line stroke-width="1" x1="350.5" y1="216.3" x2="350.5" y2="244.2" stroke="#EC0000"/>
-<rect x="348.2" y="220" width="4.5" height="12.5" stroke="#8A0000" fill="#EC0000"/>
+<rect x="348.2" y="220" width="4.5" height="12.5" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/18" data-open="2244.3" data-close="2257.4" data-low="2232" data-high="2261.3"/>
 <line stroke-width="1" x1="359.5" y1="162.4" x2="359.5" y2="220" stroke="#EC0000"/>
-<rect x="357.2" y="162.9" width="4.5" height="56.8" stroke="#8A0000" fill="#EC0000"/>
+<rect x="357.2" y="162.9" width="4.5" height="56.8" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/20" data-open="2257.7" data-close="2317.4" data-low="2257.4" data-high="2317.9"/>
 <line stroke-width="1" x1="368.5" y1="150.1" x2="368.5" y2="168.4" stroke="#EC0000"/>
-<rect x="366.2" y="156.3" width="4.5" height="5.7" stroke="#8A0000" fill="#EC0000"/>
+<rect x="366.2" y="156.3" width="4.5" height="5.7" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/21" data-open="2318.2" data-close="2324.2" data-low="2311.6" data-high="2330.8"/>
 <line stroke-width="1" x1="377.5" y1="149" x2="377.5" y2="165.2" stroke="#EC0000"/>
-<rect x="375.2" y="152.5" width="4.5" height="6.6" stroke="#8A0000" fill="#EC0000"/>
+<rect x="375.2" y="152.5" width="4.5" height="6.6" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/22" data-open="2321.4" data-close="2328.3" data-low="2315" data-high="2332"/>
 <line stroke-width="1" x1="386.5" y1="136.7" x2="386.5" y2="160.5" stroke="#00DA3C"/>
-<rect x="384.2" y="146.3" width="4.5" height="7.6" stroke="#008F28" fill="#00DA3C"/>
+<rect x="384.2" y="146.3" width="4.5" height="7.6" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/25" data-open="2334.7" data-close="2326.7" data-low="2319.9" data-high="2344.9"/>
 <line stroke-width="1" x1="395.5" y1="160.4" x2="395.5" y2="197.4" stroke="#00DA3C"/>
-<rect x="393.2" y="161.7" width="4.5" height="19.9" stroke="#008F28" fill="#00DA3C"/>
+<rect x="393.2" y="161.7" width="4.5" height="19.9" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/26" data-open="2318.6" data-close="2297.7" data-low="2281.1" data-high="2320"/>
 <line stroke-width="1" x1="404.5" y1="157.1" x2="404.5" y2="189.9" stroke="#EC0000"/>
-<rect x="402.2" y="178.2" width="4.5" height="1.8" stroke="#8A0000" fill="#EC0000"/>
+<rect x="402.2" y="178.2" width="4.5" height="1.8" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/3/27" data-open="2299.4" data-close="2301.3" data-low="2289" data-high="2323.5"/>
 <line stroke-width="1" x1="413.5" y1="204.6" x2="413.5" y2="243.4" stroke="#00DA3C"/>
-<rect x="411.2" y="204.6" width="4.5" height="35.5" stroke="#008F28" fill="#00DA3C"/>
+<rect x="411.2" y="204.6" width="4.5" height="35.5" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/28" data-open="2273.6" data-close="2236.3" data-low="2232.9" data-high="2273.6"/>
 <line stroke-width="1" x1="422.5" y1="230.1" x2="422.5" y2="247.3" stroke="#00DA3C"/>
-<rect x="420.2" y="238" width="4.5" height="1.8" stroke="#008F28" fill="#00DA3C"/>
+<rect x="420.2" y="238" width="4.5" height="1.8" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/3/29" data-open="2238.5" data-close="2236.6" data-low="2228.8" data-high="2246.9"/>
 <line stroke-width="1" x1="431.5" y1="232.8" x2="431.5" y2="248.7" stroke="#EC0000"/>
-<rect x="429.2" y="241.9" width="4.5" height="4.7" stroke="#8A0000" fill="#EC0000"/>
+<rect x="429.2" y="241.9" width="4.5" height="4.7" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/1" data-open="2229.5" data-close="2234.4" data-low="2227.3" data-high="2243.9"/>
 <line stroke-width="1" x1="440.5" y1="223.8" x2="440.5" y2="255.2" stroke="#00DA3C"/>
-<rect x="438.2" y="241.5" width="4.5" height="6.8" stroke="#008F28" fill="#00DA3C"/>
+<rect x="438.2" y="241.5" width="4.5" height="6.8" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/2" data-open="2234.9" data-close="2227.7" data-low="2220.4" data-high="2253.4"/>
 <line stroke-width="1" x1="449.5" y1="235.3" x2="449.5" y2="258.3" stroke="#00DA3C"/>
-<rect x="447.2" y="243.6" width="4.5" height="7.1" stroke="#008F28" fill="#00DA3C"/>
+<rect x="447.2" y="243.6" width="4.5" height="7.1" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/3" data-open="2232.7" data-close="2225.3" data-low="2217.2" data-high="2241.3"/>
 <line stroke-width="1" x1="458.5" y1="262.7" x2="458.5" y2="293.1" stroke="#EC0000"/>
-<rect x="456.2" y="263.7" width="4.5" height="14.6" stroke="#8A0000" fill="#EC0000"/>
+<rect x="456.2" y="263.7" width="4.5" height="14.6" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/8" data-open="2196.2" data-close="2211.6" data-low="2180.7" data-high="2212.6"/>
 <line stroke-width="1" x1="467.5" y1="241.6" x2="467.5" y2="260" stroke="#EC0000"/>
-<rect x="465.2" y="250.2" width="4.5" height="9.8" stroke="#8A0000" fill="#EC0000"/>
+<rect x="465.2" y="250.2" width="4.5" height="9.8" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/9" data-open="2215.5" data-close="2225.8" data-low="2215.5" data-high="2234.7"/>
 <line stroke-width="1" x1="476.5" y1="243.2" x2="476.5" y2="262.8" stroke="#EC0000"/>
-<rect x="474.2" y="249.8" width="4.5" height="1.1" stroke="#8A0000" fill="#EC0000"/>
+<rect x="474.2" y="249.8" width="4.5" height="1.1" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/10" data-open="2224.9" data-close="2226.1" data-low="2212.6" data-high="2233"/>
 <line stroke-width="1" x1="485.5" y1="234.2" x2="485.5" y2="258.3" stroke="#00DA3C"/>
-<rect x="483.2" y="239.5" width="4.5" height="16.6" stroke="#008F28" fill="#00DA3C"/>
+<rect x="483.2" y="239.5" width="4.5" height="16.6" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/11" data-open="2237" data-close="2219.6" data-low="2217.3" data-high="2242.5"/>
 <line stroke-width="1" x1="494.5" y1="249.7" x2="494.5" y2="270.5" stroke="#00DA3C"/>
-<rect x="492.2" y="257.5" width="4.5" height="10.8" stroke="#008F28" fill="#00DA3C"/>
+<rect x="492.2" y="257.5" width="4.5" height="10.8" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/12" data-open="2218.1" data-close="2206.8" data-low="2204.4" data-high="2226.3"/>
 <line stroke-width="1" x1="503.5" y1="270" x2="503.5" y2="296.3" stroke="#00DA3C"/>
-<rect x="501.2" y="274.8" width="4.5" height="17.1" stroke="#008F28" fill="#00DA3C"/>
+<rect x="501.2" y="274.8" width="4.5" height="17.1" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/15" data-open="2199.9" data-close="2181.9" data-low="2177.4" data-high="2205"/>
 <line stroke-width="1" x1="512.5" y1="278.1" x2="512.5" y2="307.3" stroke="#EC0000"/>
-<rect x="510.2" y="279.6" width="4.5" height="24" stroke="#8A0000" fill="#EC0000"/>
+<rect x="510.2" y="279.6" width="4.5" height="24" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/16" data-open="2169.6" data-close="2194.9" data-low="2165.8" data-high="2196.4"/>
 <line stroke-width="1" x1="521.5" y1="277.1" x2="521.5" y2="295.2" stroke="#00DA3C"/>
-<rect x="519.2" y="279.5" width="4.5" height="1.2" stroke="#008F28" fill="#00DA3C"/>
+<rect x="519.2" y="279.5" width="4.5" height="1.2" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/17" data-open="2195" data-close="2193.8" data-low="2178.5" data-high="2197.5"/>
 <line stroke-width="1" x1="530.5" y1="269" x2="530.5" y2="298.1" stroke="#EC0000"/>
-<rect x="528.2" y="277" width="4.5" height="15" stroke="#8A0000" fill="#EC0000"/>
+<rect x="528.2" y="277" width="4.5" height="15" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/18" data-open="2181.8" data-close="2197.6" data-low="2175.4" data-high="2206"/>
 <line stroke-width="1" x1="539.5" y1="227" x2="539.5" y2="274.2" stroke="#EC0000"/>
-<rect x="537.2" y="232.2" width="4.5" height="41.5" stroke="#8A0000" fill="#EC0000"/>
+<rect x="537.2" y="232.2" width="4.5" height="41.5" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/19" data-open="2201.1" data-close="2244.6" data-low="2200.6" data-high="2250.1"/>
 <line stroke-width="1" x1="548.5" y1="231.7" x2="548.5" y2="244" stroke="#EC0000"/>
-<rect x="546.2" y="234.5" width="4.5" height="5.5" stroke="#8A0000" fill="#EC0000"/>
+<rect x="546.2" y="234.5" width="4.5" height="5.5" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/22" data-open="2236.4" data-close="2242.2" data-low="2232.3" data-high="2245.1"/>
 <line stroke-width="1" x1="557.5" y1="234.1" x2="557.5" y2="291.1" stroke="#00DA3C"/>
-<rect x="555.2" y="234.1" width="4.5" height="55.3" stroke="#008F28" fill="#00DA3C"/>
+<rect x="555.2" y="234.1" width="4.5" height="55.3" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/23" data-open="2242.6" data-close="2184.5" data-low="2182.8" data-high="2242.6"/>
 <line stroke-width="1" x1="566.5" y1="249.8" x2="566.5" y2="289.9" stroke="#EC0000"/>
-<rect x="564.2" y="257.3" width="4.5" height="29.5" stroke="#8A0000" fill="#EC0000"/>
+<rect x="564.2" y="257.3" width="4.5" height="29.5" stroke="#8A0000" fill="#EC0000" data-series="日K" data-category="2013/4/24" data-open="2187.4" data-close="2218.3" data-low="2184.1" data-high="2226.1"/>
 <line stroke-width="1" x1="575.5" y1="251.3" x2="575.5" y2="282.5" stroke="#00DA3C"/>
-<rect x="573.2" y="262.2" width="4.5" height="13.2" stroke="#008F28" fill="#00DA3C"/>
+<rect x="573.2" y="262.2" width="4.5" height="13.2" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/25" data-open="2213.2" data-close="2199.3" data-low="2191.9" data-high="2224.6"/>
 <line stroke-width="1" x1="584.5" y1="264.6" x2="584.5" y2="299.6" stroke="#00DA3C"/>
-<rect x="582.2" y="271" width="4.5" height="24.8" stroke="#008F28" fill="#00DA3C"/>
+<rect x="582.2" y="271" width="4.5" height="24.8" stroke="#008F28" fill="#00DA3C" data-series="日K" data-category="2013/4/26" data-open="2203.9" data-close="2177.9" data-low="2173.9" data-high="2210.6"/>
 <g>
 <path d="M 99.5 129 L 108.5 104.7 L 117.5 89.1 L 126.5 75 L 135.5 65.1 L 144.5 58.8 L 153.5 56.2 L 162.5 57.5 L 171.5 67 L 180.5 74.2 L 189.5 91.8 L 198.5 114.3 L 207.5 132.6 L 216.5 149.6 L 225.5 165.6 L 234.5 158.1 L 243.5 149.4 L 252.5 159.4 L 261.5 153.1 L 270.5 146.7 L 279.5 154.5 L 288.5 162.3 L 297.5 155.3 L 306.5 162.8 L 315.5 178.7 L 324.5 189 L 333.5 196.6 L 342.5 210.1 L 351.5 215.6 L 360.5 205.5 L 369.5 195.2 L 378.5 185.7 L 387.5 169.2 L 396.5 161.5 L 405.5 164.6 L 414.5 181.3 L 423.5 198.8 L 432.5 216.4 L 441.5 229.7 L 450.5 244.2 L 459.5 248.9 L 468.5 251 L 477.5 252.5 L 486.5 254.1 L 495.5 257.6 L 504.5 263.3 L 513.5 269.1 L 522.5 275.3 L 531.5 279.5 L 540.5 272.3 L 549.5 260.8 L 558.5 262.8 L 567.5 258.1 L 576.5 257.8 L 585.5 270.5" stroke-width="2" fill="none" stroke="#5470C6"/>
 <circle cx="99.5" cy="129" r="2" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>

@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::MultiChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn multi_chart() {
@@ -298,8 +299,5 @@ fn multi_chart() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/multi_chart/basic_json.svg").trim(),
-        multi_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("multi_chart/basic_json.svg", multi_chart.svg().unwrap());
 }

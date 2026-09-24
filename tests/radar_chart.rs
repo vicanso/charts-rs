@@ -1,5 +1,6 @@
+mod common;
+
 use charts_rs::RadarChart;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn radar_chart() {
@@ -45,8 +46,5 @@ fn radar_chart() {
     )
     .unwrap();
 
-    assert_eq!(
-        include_str!("../asset/radar_chart/basic_json.svg"),
-        radar_chart.svg().unwrap()
-    );
+    common::assert_snapshot!("radar_chart/basic_json.svg", radar_chart.svg().unwrap());
 }

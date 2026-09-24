@@ -60,34 +60,34 @@ Marketing
 Profit
 </text>
 </g>
-<rect x="56.6" y="190.9" width="55.7" height="174.1" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<rect x="56.6" y="190.9" width="55.7" height="174.1" rx="2" ry="2" stroke="#5470C6" fill="#5470C6" data-category="Initial" data-value="900" data-total="false"/>
 <text font-size="14" x="72.4" y="186.9" font-family="Roboto" fill="#464646">
 900
 </text>
 <line stroke-width="1" x1="112.3" y1="190.9" x2="149.4" y2="190.9" stroke="#E0E6F2" stroke-dasharray="4,4"/>
-<rect x="149.4" y="124.2" width="55.7" height="66.7" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<rect x="149.4" y="124.2" width="55.7" height="66.7" rx="2" ry="2" stroke="#5470C6" fill="#5470C6" data-category="Revenue" data-value="345" data-total="false"/>
 <text font-size="14" x="165.2" y="120.2" font-family="Roboto" fill="#464646">
 345
 </text>
 <line stroke-width="1" x1="205.1" y1="124.2" x2="242.2" y2="124.2" stroke="#E0E6F2" stroke-dasharray="4,4"/>
-<rect x="242.2" y="48.1" width="55.7" height="76" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<rect x="242.2" y="48.1" width="55.7" height="76" rx="2" ry="2" stroke="#5470C6" fill="#5470C6" data-category="Services" data-value="393" data-total="false"/>
 <text font-size="14" x="258.6" y="44.1" font-family="Roboto" fill="#464646">
 393
 </text>
 <line stroke-width="1" x1="297.9" y1="48.1" x2="335.1" y2="48.1" stroke="#E0E6F2" stroke-dasharray="4,4"/>
-<rect x="335.1" y="48.1" width="55.7" height="20.9" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<rect x="335.1" y="48.1" width="55.7" height="20.9" rx="2" ry="2" stroke="#EE6666" fill="#EE6666" data-category="Purchases" data-value="-108" data-total="false"/>
 <text font-size="14" x="350.9" y="85" font-family="Roboto" fill="#464646">
 108
 </text>
 <line stroke-width="1" x1="390.8" y1="69" x2="427.9" y2="69" stroke="#E0E6F2" stroke-dasharray="4,4"/>
-<rect x="427.9" y="69" width="55.7" height="29.8" rx="2" ry="2" stroke="#EE6666" fill="#EE6666"/>
+<rect x="427.9" y="69" width="55.7" height="29.8" rx="2" ry="2" stroke="#EE6666" fill="#EE6666" data-category="Marketing" data-value="-154" data-total="false"/>
 <text font-size="14" x="443.8" y="114.8" font-family="Roboto" fill="#464646">
 154
 </text>
 <line stroke-width="1" x1="483.6" y1="98.8" x2="520.7" y2="98.8" stroke="#E0E6F2" stroke-dasharray="4,4"/>
-<rect x="520.7" y="98.8" width="55.7" height="266.2" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
-<text font-size="14" x="544.6" y="94.8" font-family="Roboto" fill="#464646">
-0
+<rect x="520.7" y="98.8" width="55.7" height="266.2" rx="2" ry="2" stroke="#91CC75" fill="#91CC75" data-category="Profit" data-value="1376" data-total="true"/>
+<text font-size="14" x="532.6" y="94.8" font-family="Roboto" fill="#464646">
+1376
 </text>
 <line stroke-width="1" x1="38" y1="365" x2="595" y2="365" stroke="#6E7079"/>
 </svg>
