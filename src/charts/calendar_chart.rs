@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Canvas;
 use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
@@ -422,7 +421,7 @@ impl CalendarChart {
             lookup.insert(date_str.as_str(), *val);
         }
 
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
         self.render_background(c.child(Box::default()));
         c.margin = self.margin;
 

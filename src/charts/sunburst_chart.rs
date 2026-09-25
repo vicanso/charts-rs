@@ -419,7 +419,7 @@ impl SunburstChart {
 
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
 
         let axis_top = self.render_header(&mut c);
 

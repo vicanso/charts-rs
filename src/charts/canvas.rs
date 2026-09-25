@@ -41,6 +41,8 @@ pub struct Canvas {
     pub components: Rc<RefCell<Vec<Component>>>,
     /// Margin applied on top of the offset.
     pub margin: Box,
+    /// Emit compact SVG (see [`compact_svg`](crate::compact_svg)).
+    pub compact: bool,
 }
 
 impl Canvas {
@@ -57,6 +59,7 @@ impl Canvas {
             y,
             components: Rc::new(RefCell::new(vec![])),
             margin: Box::default(),
+            compact: false,
         }
     }
     /// Gets the width of canvas.
@@ -79,6 +82,7 @@ impl Canvas {
             margin: m,
             x: self.x,
             y: self.y,
+            compact: self.compact,
         }
     }
     /// Creates a child canvas.
@@ -95,6 +99,7 @@ impl Canvas {
             margin: m,
             x: self.x,
             y: self.y,
+            compact: self.compact,
         }
     }
     /// Appends arrow widget to canvas.
@@ -375,6 +380,9 @@ impl Canvas {
             write_component(c, &mut out, &mut grad_seen)?;
         }
         write_svg_close(&mut out);
+        if self.compact {
+            return Ok(super::compact::compact_svg(&out));
+        }
         Ok(out)
     }
     /// Generates the svg of canvas with an embedded CSS style block prepended.

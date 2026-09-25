@@ -387,6 +387,15 @@ add_fonts(&[&buf]).unwrap();
 A `font_family` that is not registered is still written to the SVG (the
 viewer resolves it), but text is measured with the default font.
 
+## Compact output
+
+`chart.compact = true` (JSON `"compact": true`) writes the SVG the way an
+optimizer would: no whitespace, relative path data with `h`/`v` shorthands,
+grid lines and ticks merged into single paths, shared attributes hoisted onto
+groups, defaults and long hex colors dropped. The picture is the same and the
+file is typically 20–30% smaller. The same rewrite is available as
+`charts_rs::compact_svg(&svg)` for output you already have.
+
 ## Snapshot tests
 
 The SVG output is covered by snapshot tests under `asset/`. After an

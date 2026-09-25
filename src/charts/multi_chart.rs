@@ -13,7 +13,9 @@
 use super::canvas;
 use super::component::Rect;
 use super::component::generate_svg;
-use super::params::{get_color_from_value, get_f32_from_value, get_margin_from_value};
+use super::params::{
+    get_bool_from_value, get_color_from_value, get_f32_from_value, get_margin_from_value,
+};
 use super::{
     BarChart, BoxPlotChart, CalendarChart, CandlestickChart, FunnelChart, GaugeChart, GraphChart,
     HeatmapChart, HorizontalBarChart, LineChart, ParallelChart, PieChart, RadarChart, SankeyChart,
@@ -82,6 +84,9 @@ pub struct MultiChart {
     pub margin: Box,
     /// Background color of the composed chart.
     pub background_color: Option<Color>,
+    /// Emit compact SVG for the composition and every child; see
+    /// [`compact_svg`](crate::compact_svg).
+    pub compact: bool,
 }
 struct ChildChartResult {
     svg: String,
@@ -106,6 +111,9 @@ impl MultiChart {
         }
         if let Some(background_color) = get_color_from_value(&value, "background_color") {
             multi_chart.background_color = Some(background_color);
+        }
+        if let Some(compact) = get_bool_from_value(&value, "compact") {
+            multi_chart.compact = compact;
         }
         if let Some(child_charts) = value.get("child_charts")
             && let Some(values) = child_charts.as_array()
@@ -301,7 +309,11 @@ impl MultiChart {
             );
         }
 
-        Ok(generate_svg(x, y, 0.0, 0.0, arr.join("\n")))
+        let svg = generate_svg(x, y, 0.0, 0.0, arr.join("\n"));
+        if self.compact {
+            return Ok(super::compact::compact_svg(&svg));
+        }
+        Ok(svg)
     }
 }
 

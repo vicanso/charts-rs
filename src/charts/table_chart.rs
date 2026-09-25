@@ -101,6 +101,9 @@ impl TableChart {
         super::schema::validate(&data, &[super::schema::TABLE_FIELDS])?;
         let theme = get_string_from_value(&data, "theme").unwrap_or_default();
         super::base::check_theme_name(&theme)?;
+        if let Some(compact) = get_bool_from_value(&data, "compact") {
+            self.compact = compact;
+        }
         self.fill_theme(get_theme(&theme));
 
         if let Some(width) = get_f32_from_value(&data, "width") {
@@ -389,7 +392,7 @@ impl TableChart {
             }
         }
 
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
 
         if !self.title_text.is_empty() {
             let mut title_height = self.title_height;

@@ -114,6 +114,11 @@ pub struct ChartBase {
     /// (every series is empty); nothing is shown when unset.
     #[serde(default)]
     pub empty_text: Option<String>,
+    /// Emit compact SVG: no whitespace, relative path data, merged grid
+    /// lines, shared attributes hoisted, defaults dropped. Renders the same
+    /// and is typically 20–30% smaller; see [`compact_svg`](crate::compact_svg).
+    #[serde(default)]
+    pub compact: bool,
 
     /// Labels of the x axis.
     pub x_axis_data: Vec<String>,
@@ -450,6 +455,9 @@ impl ChartBase {
         }
         if let Some(empty_text) = get_string_from_value(&data, "empty_text") {
             self.empty_text = Some(empty_text);
+        }
+        if let Some(compact) = get_bool_from_value(&data, "compact") {
+            self.compact = compact;
         }
 
         if let Some(x_axis_data) = get_string_slice_from_value(&data, "x_axis_data") {
@@ -1037,6 +1045,13 @@ impl ChartBase {
             axis_width,
             max_height,
         }
+    }
+    /// The canvas a chart draws on: its size and position, with the
+    /// output options (`compact`) applied.
+    pub(crate) fn new_canvas(&self) -> Canvas {
+        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        c.compact = self.compact;
+        c
     }
     /// True when there is nothing to draw: no series, or only empty ones.
     pub(crate) fn has_no_data(&self) -> bool {

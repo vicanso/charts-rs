@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Canvas;
 use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
@@ -249,7 +248,7 @@ impl WaterfallChart {
             });
         }
 
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
 
         let mut x_axis_height = self.x_axis_height;
         if self.x_axis_hidden {

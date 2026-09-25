@@ -361,6 +361,10 @@ let series: Series = ("销售额", vec![Some(120.0), None, Some(101.0)]).into();
 | `{d}` | 百分比（饼图 / 漏斗图） |
 | `{t}` | 千位格式（1.2K、5.6M） |
 
+## 精简输出
+
+`chart.compact = true`（JSON `"compact": true`）会按优化器的方式输出 SVG：去掉空白、路径用相对坐标和 `h`/`v` 简写、网格线与刻度合并为单个 path、公共属性提升到分组、去掉默认值与长十六进制颜色。渲染结果不变，体积通常小 20–30%。对已有的输出可直接调用 `charts_rs::compact_svg(&svg)`。
+
 ## 加载更多字体
 
 ```rust

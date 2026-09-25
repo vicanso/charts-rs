@@ -72,6 +72,11 @@
   bar charts; horizontal bar charts also draw `mark_lines`.
 - Tooltips and `data-*` attributes on sunburst arcs, tree nodes and sankey
   nodes and links.
+- Compact output: `compact: true` on every chart (and `MultiChart`) or
+  `charts_rs::compact_svg()` rewrites the SVG like an optimizer would —
+  no whitespace, relative path data, merged grid lines, hoisted shared
+  attributes, dropped defaults — for the same picture in ~20–30% fewer
+  bytes.
 - Titles wider than the canvas are cut with an ellipsis.
 - Horizontal bar charts: stacking, per-bar `colors`, `x_axis_hidden` /
   `y_axis_hidden`, animation, and the value axis honours `axis_min`,

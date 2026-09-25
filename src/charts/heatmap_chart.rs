@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Canvas;
 use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
@@ -246,7 +245,7 @@ impl HeatmapChart {
     }
     /// Converts heatmap chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
 
         if self.x_axis_data.is_empty() || self.y_axis_data.is_empty() {
             return Err(canvas::Error::Params {

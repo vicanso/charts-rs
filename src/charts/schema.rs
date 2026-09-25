@@ -183,6 +183,7 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     ),
     f("legend_show", Kind::Bool),
     f("empty_text", Kind::String),
+    f("compact", Kind::Bool),
     f(
         "legend_position",
         Kind::Enum(&["top", "bottom", "left", "right"]),
@@ -413,6 +414,7 @@ pub(crate) static TABLE_FIELDS: &[Field] = &[
     f("font_color", Kind::Color),
     f("font_weight", Kind::String),
     f("indexes", Kind::Array),
+    f("compact", Kind::Bool),
 ];
 
 pub(crate) static THEME_RIVER_FIELDS: &[Field] = &[f("stream_opacity", Kind::Number)];
@@ -444,6 +446,7 @@ pub(crate) static MULTI_FIELDS: &[Field] = &[
     f("gap", Kind::Number),
     f("background_color", Kind::Color),
     f("child_charts", Kind::Array),
+    f("compact", Kind::Bool),
 ];
 
 /// Fields a multi chart child carries on top of its own chart's fields.

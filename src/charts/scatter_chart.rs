@@ -209,7 +209,7 @@ impl ScatterChart {
     }
     /// Converts scatter chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
 
         let mut x_axis_height = self.x_axis_height;
         if self.x_axis_hidden {

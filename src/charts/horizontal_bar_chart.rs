@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Canvas;
 use super::base::{ChartBase, axis_value_params, get_y_axis_config, mark_statistics};
 use super::canvas;
 use super::color::*;
@@ -91,7 +90,7 @@ impl HorizontalBarChart {
     }
     /// Converts horizontal bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
 
         let axis_top = self.render_header(&mut c);
 

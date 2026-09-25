@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Canvas;
 use super::base::ChartBase;
 use super::canvas;
 use super::common::*;
@@ -93,7 +92,7 @@ impl BarChart {
     }
     /// Converts bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
-        let c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let c = self.new_canvas();
         let layout = self.layout_cartesian(c, &self.y_axis_configs);
         let c = layout.canvas.clone();
         let (left_y_axis_values, right_y_axis_values) = (&layout.left, &layout.right);

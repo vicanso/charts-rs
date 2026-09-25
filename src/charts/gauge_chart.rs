@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Canvas;
 use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
@@ -176,7 +175,7 @@ impl GaugeChart {
 
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
         let axis_top = self.render_header(&mut c);
 
         let mut body = if axis_top > 0.0 {

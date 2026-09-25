@@ -49,6 +49,7 @@ mod candlestick_chart;
 mod canvas;
 mod color;
 mod common;
+mod compact;
 mod component;
 #[cfg(feature = "raster")]
 mod encoder;
@@ -88,6 +89,7 @@ pub use common::{
     MarkLineCategory, MarkPoint, MarkPointCategory, Position, Series, SeriesCategory, SeriesLabel,
     Symbol, YAxisConfig,
 };
+pub use compact::compact_svg;
 pub use component::{
     Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothBand,
     SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, svg_with_accessibility,

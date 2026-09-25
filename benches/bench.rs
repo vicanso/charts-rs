@@ -169,6 +169,11 @@ fn svg_benchmarks(c: &mut Criterion) {
     c.bench_function("pie chart svg (paths)", |b| {
         b.iter(|| black_box(&pie).svg().unwrap())
     });
+    let mut line_compact = make_line_chart(1_000, true);
+    line_compact.compact = true;
+    c.bench_function("line chart svg (1k points, compact)", |b| {
+        b.iter(|| black_box(&line_compact).svg().unwrap())
+    });
     c.bench_function("bar chart from_json", |b| {
         b.iter(|| BarChart::from_json(black_box(BAR_JSON)).unwrap())
     });

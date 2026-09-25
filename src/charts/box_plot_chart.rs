@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Canvas;
 use super::base::{ChartBase, axis_value_params, get_y_axis_config};
 use super::canvas;
 use super::color::*;
@@ -140,7 +139,7 @@ impl BoxPlotChart {
 
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
-        let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
+        let mut c = self.new_canvas();
         let mut x_axis_height = self.x_axis_height;
         if self.x_axis_hidden {
             x_axis_height = 0.0;
