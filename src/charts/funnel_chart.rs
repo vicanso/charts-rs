@@ -143,7 +143,7 @@ impl FunnelChart {
             .iter()
             .enumerate()
             .map(|(i, s)| {
-                let val: f32 = s.data_values().iter().copied().sum();
+                let val: f32 = s.iter_values().sum();
                 (s.index.unwrap_or(i), val, s.name.clone())
             })
             .collect();

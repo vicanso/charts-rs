@@ -92,36 +92,43 @@ pub struct SmoothCurve {
     /// Closes the curve back to the first point.
     pub close: bool,
 }
-impl fmt::Display for SmoothCurve {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl SmoothCurve {
+    /// Writes the path data for `points`. Coordinates are formatted into a
+    /// stack buffer, so a long series does not allocate a string per number.
+    pub(crate) fn write_points(
+        points: &[Point],
+        close: bool,
+        out: &mut impl fmt::Write,
+    ) -> fmt::Result {
         let tension = 0.25;
-
-        let close = self.close;
-        let count = self.points.len();
-        let mut control_points = vec![];
-        for (index, point) in self.points.iter().enumerate() {
-            let mut left = None;
-            let mut right = None;
-            if index >= 1 {
-                left = Some(&self.points[index - 1]);
+        let count = points.len();
+        let mut control_points = Vec::with_capacity(count);
+        for (index, point) in points.iter().enumerate() {
+            let left = if index >= 1 {
+                Some(&points[index - 1])
             } else if close {
                 // 对于第一个点的上一节点则为last
-                left = self.points.last();
-            }
-            if index + 1 < count {
-                right = Some(&self.points[index + 1]);
+                points.last()
+            } else {
+                None
+            };
+            let right = if index + 1 < count {
+                Some(&points[index + 1])
             } else if close {
                 // 最后一个点的下一节点则为first
-                right = self.points.first()
-            }
+                points.first()
+            } else {
+                None
+            };
             control_points.push(get_control_points(point, left, right, tension));
         }
 
-        // Written straight into the formatter: this path is the largest
-        // piece of a line chart, so no per-point strings or joins.
-        for (index, point) in self.points.iter().enumerate() {
+        for (index, point) in points.iter().enumerate() {
             if index == 0 {
-                write!(f, "M{},{}", format_float(point.x), format_float(point.y))?;
+                out.write_str("M")?;
+                write_float_to(out, point.x)?;
+                out.write_str(",")?;
+                write_float_to(out, point.y)?;
             }
             let cp1 = control_points[index].right;
             let mut cp2 = None;
@@ -131,40 +138,48 @@ impl fmt::Display for SmoothCurve {
                 // 最的一个点
                 cp2 = control_points[0].left;
             }
-            let mut next_point = self.points.get(index + 1);
+            let mut next_point = points.get(index + 1);
             // 如果是close的才需要处理最后一个点
             // 如果非最后一个点
             if close && index == count - 1 {
-                next_point = self.points.first();
+                next_point = points.first();
             }
             if let Some(next_point_value) = next_point {
                 if let Some(cp1_value) = cp1
                     && let Some(cp2_value) = cp2
                 {
-                    write!(
-                        f,
-                        " C{} {}, {} {}, {} {}",
-                        format_float(cp1_value.x),
-                        format_float(cp1_value.y),
-                        format_float(cp2_value.x),
-                        format_float(cp2_value.y),
-                        format_float(next_point_value.x),
-                        format_float(next_point_value.y)
-                    )?;
+                    out.write_str(" C")?;
+                    write_float_to(out, cp1_value.x)?;
+                    out.write_str(" ")?;
+                    write_float_to(out, cp1_value.y)?;
+                    out.write_str(", ")?;
+                    write_float_to(out, cp2_value.x)?;
+                    out.write_str(" ")?;
+                    write_float_to(out, cp2_value.y)?;
+                    out.write_str(", ")?;
+                    write_float_to(out, next_point_value.x)?;
+                    out.write_str(" ")?;
+                    write_float_to(out, next_point_value.y)?;
                     continue;
                 }
                 let p = cp1.unwrap_or(cp2.unwrap_or_default());
-                write!(
-                    f,
-                    " Q{} {}, {} {}",
-                    format_float(p.x),
-                    format_float(p.y),
-                    format_float(next_point_value.x),
-                    format_float(next_point_value.y)
-                )?;
+                out.write_str(" Q")?;
+                write_float_to(out, p.x)?;
+                out.write_str(" ")?;
+                write_float_to(out, p.y)?;
+                out.write_str(", ")?;
+                write_float_to(out, next_point_value.x)?;
+                out.write_str(" ")?;
+                write_float_to(out, next_point_value.y)?;
             }
         }
         Ok(())
+    }
+}
+
+impl fmt::Display for SmoothCurve {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        SmoothCurve::write_points(&self.points, self.close, f)
     }
 }
 

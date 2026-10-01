@@ -210,7 +210,7 @@ impl GaugeChart {
         let raw_value = self
             .series_list
             .first()
-            .and_then(|s| s.data_values().first().copied())
+            .and_then(|s| s.iter_values().next())
             .filter(|v| *v != NIL_VALUE)
             .unwrap_or(self.min);
         let needle_value = raw_value.clamp(self.min, self.max);

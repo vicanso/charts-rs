@@ -581,7 +581,7 @@ impl ChartBase {
         // Non-stacked series: include individual values directly.
         for series in self.series_list.iter() {
             if series.y_axis_index == y_axis_index && series.stack.is_none() {
-                data_list.append(&mut series.data_values());
+                data_list.extend(series.iter_values());
             }
         }
         // Stacked series: the effective max at each x-position is the sum of all
@@ -605,7 +605,7 @@ impl ChartBase {
                 if series.y_axis_index == y_axis_index
                     && series.stack.as_deref() == Some(stack_key.as_str())
                 {
-                    for (i, &v) in series.data_values().iter().enumerate() {
+                    for (i, v) in series.iter_values().enumerate() {
                         if v == NIL_VALUE {
                             continue;
                         }
@@ -1115,11 +1115,7 @@ impl ChartBase {
                 y_axis_values_list[series.y_axis_index]
             };
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-            let values: Vec<f32> = series
-                .data_values()
-                .into_iter()
-                .filter(|v| *v != NIL_VALUE)
-                .collect();
+            let values: Vec<f32> = series.iter_values().filter(|v| *v != NIL_VALUE).collect();
             let stat = mark_statistics(&values);
             // Bands first, so the lines stay visible on top of them.
             for mark_area in series.mark_areas.iter() {
@@ -1336,7 +1332,7 @@ impl ChartBase {
                 ) {
                     dx = Some(-value.width() / 2.0);
                 }
-                c1.text(Text {
+                c1.text_unmeasured(Text {
                     text: series_label.text.clone(),
                     dy: Some(-8.0),
                     dx,
@@ -1467,8 +1463,7 @@ impl ChartBase {
                 .and_then(|k| stack_acc.iter().position(|(ak, _)| ak == k));
 
             let mut series_labels = vec![];
-            for (i, p) in series.data_values().iter().enumerate() {
-                let value = p.to_owned();
+            for (i, value) in series.iter_values().enumerate() {
                 if value == NIL_VALUE {
                     continue;
                 }
@@ -1556,7 +1551,7 @@ impl ChartBase {
                 // after the bar, revealed via the adjacent-sibling rule
                 // `.ct-trigger:hover + .ct-tip`. Works in any browser.
                 if tooltip {
-                    c1.text(Text {
+                    c1.text_unmeasured(Text {
                         text: tooltip_text,
                         class: Some("ct-tip".to_string()),
                         font_family: Some(self.font_family.clone()),
@@ -1634,42 +1629,45 @@ impl ChartBase {
                 .map(|s| format!("{}_{}", s, series.y_axis_index));
             let is_stacked = stack_key.is_some();
 
-            // Retrieve the current accumulated data values for this stack group.
-            let acc_data: Vec<f32> = if let Some(ref key) = stack_key {
-                stack_acc
-                    .iter()
-                    .find(|(k, _)| k == key)
-                    .map(|(_, v)| v.clone())
-                    .unwrap_or_else(|| vec![0.0_f32; series_data_count])
+            // Previous stack totals, updated in place. A non-stacked series
+            // reads a base of 0 and allocates nothing.
+            let acc_idx = if let Some(ref key) = stack_key {
+                if let Some(pos) = stack_acc.iter().position(|(k, _)| k == key) {
+                    Some(pos)
+                } else {
+                    stack_acc.push((key.clone(), vec![0.0_f32; series_data_count]));
+                    Some(stack_acc.len() - 1)
+                }
             } else {
-                vec![0.0_f32; series_data_count]
+                None
             };
 
-            let mut points: Vec<Point> = vec![];
+            let mut points: Vec<Point> = Vec::with_capacity(series.data.len());
             // For stacked fills: the "floor" points of the previous stack level.
-            let mut floor_points: Vec<Point> = vec![];
+            let mut floor_points: Vec<Point> = Vec::new();
             let mut points_list: Vec<Vec<Point>> = vec![];
             let mut floor_points_list: Vec<Vec<Point>> = vec![];
-            let mut series_labels = vec![];
-            let mut point_datasets = vec![];
+            // Labels and hit targets are only built when something displays them.
+            let track_points = series.label_show || tooltip || !series.mark_points.is_empty();
+            let format_every_label = series.label_show || tooltip;
+            let mut series_labels = Vec::new();
+            let mut point_datasets = Vec::new();
 
             let mut max_value = f32::MIN;
             let mut min_value = f32::MAX;
             let mut max_index = 0;
             let mut min_index = 0;
+            let mut max_actual_i = 0;
+            let mut min_actual_i = 0;
+            let mut max_raw = 0.0_f32;
+            let mut min_raw = 0.0_f32;
 
-            // Build updated accumulator for this series.
-            let mut new_acc = acc_data.clone();
-
-            for (i, p) in series.data_values().iter().enumerate() {
-                let value = p.to_owned();
+            for (i, value) in series.iter_values().enumerate() {
                 let actual_i = i + series.start_index;
                 if value == NIL_VALUE {
                     if !points.is_empty() {
-                        points_list.push(points);
-                        floor_points_list.push(floor_points);
-                        points = vec![];
-                        floor_points = vec![];
+                        points_list.push(std::mem::take(&mut points));
+                        floor_points_list.push(std::mem::take(&mut floor_points));
                     }
                     continue;
                 }
@@ -1677,18 +1675,27 @@ impl ChartBase {
                     continue;
                 }
 
-                let base_acc = acc_data[actual_i];
+                let base_acc = match acc_idx {
+                    Some(idx) => stack_acc[idx].1[actual_i],
+                    None => 0.0,
+                };
                 let effective_value = base_acc + value;
 
                 // Index into `series_labels` (which skips missing points), not
                 // the raw data index, so a mark point lands on the right label.
-                if effective_value > max_value {
-                    max_value = effective_value;
-                    max_index = series_labels.len();
-                }
-                if effective_value < min_value {
-                    min_value = effective_value;
-                    min_index = series_labels.len();
+                if track_points {
+                    if effective_value > max_value {
+                        max_value = effective_value;
+                        max_index = series_labels.len();
+                        max_actual_i = actual_i;
+                        max_raw = value;
+                    }
+                    if effective_value < min_value {
+                        min_value = effective_value;
+                        min_index = series_labels.len();
+                        min_actual_i = actual_i;
+                        min_raw = value;
+                    }
                 }
 
                 let mut x = unit_width * actual_i as f32;
@@ -1704,13 +1711,24 @@ impl ChartBase {
                     floor_points.push((x, floor_y).into());
                 }
 
-                new_acc[actual_i] += value;
+                if let Some(idx) = acc_idx {
+                    stack_acc[idx].1[actual_i] = effective_value;
+                }
 
-                series_labels.push(SeriesLabel {
-                    point: (x, y).into(),
-                    text: self.format_series_label(series, actual_i, value),
-                });
-                point_datasets.push(self.point_dataset(series, actual_i, value));
+                if track_points {
+                    let text = if format_every_label {
+                        self.format_series_label(series, actual_i, value)
+                    } else {
+                        String::new()
+                    };
+                    series_labels.push(SeriesLabel {
+                        point: (x, y).into(),
+                        text,
+                    });
+                    if tooltip {
+                        point_datasets.push(self.point_dataset(series, actual_i, value));
+                    }
+                }
             }
 
             if !points.is_empty() {
@@ -1718,17 +1736,24 @@ impl ChartBase {
                 floor_points_list.push(floor_points);
             }
 
-            // Update stack accumulator for subsequent series in the same group.
-            if let Some(ref key) = stack_key {
-                if let Some(entry) = stack_acc.iter_mut().find(|(k, _)| k == key) {
-                    entry.1 = new_acc;
-                } else {
-                    stack_acc.push((key.clone(), new_acc));
+            // Mark points only need the min and max labels, not one per point.
+            if track_points && !format_every_label {
+                if let Some(label) = series_labels.get_mut(max_index) {
+                    label.text = self.format_series_label(series, max_actual_i, max_raw);
+                }
+                if min_index != max_index
+                    && let Some(label) = series_labels.get_mut(min_index)
+                {
+                    label.text = self.format_series_label(series, min_actual_i, min_raw);
                 }
             }
 
             if series.label_show {
-                series_labels_list.push(series_labels.clone());
+                if tooltip || !series.mark_points.is_empty() {
+                    series_labels_list.push(series_labels.clone());
+                } else {
+                    series_labels_list.push(std::mem::take(&mut series_labels));
+                }
             }
 
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
@@ -1738,31 +1763,28 @@ impl ChartBase {
             let series_smooth = series.smooth.unwrap_or(self.series_smooth);
             let symbol = series.symbol.clone().or_else(|| self.series_symbol.clone());
 
-            for (seg_idx, points) in points_list.iter().enumerate() {
-                let floor = floor_points_list.get(seg_idx);
-
+            for (points, floor) in points_list.into_iter().zip(floor_points_list) {
                 let line_class = animation.map(|_| format!("line-anim-{}", index));
                 let line_path_length = animation.map(|_| 1.0_f32);
 
                 // Fill first, then stroke. The stacked-area polygon is
                 // identical for smooth and straight lines, so it lives in
                 // one place; only the non-stacked fill and the stroke
-                // itself differ by `series_smooth`.
+                // itself differ by `series_smooth`. The stroke takes ownership
+                // of `points`; the fill clones only when it is also drawn.
                 if series_fill {
                     if is_stacked {
-                        if let Some(fp) = floor {
-                            // Area between the current and previous stack
-                            // level: top points forward + floor reversed.
-                            let mut poly = points.clone();
-                            let mut rev_floor = fp.clone();
-                            rev_floor.reverse();
-                            poly.extend(rev_floor);
-                            c1.polygon(Polygon {
-                                fill: Some(fill_color),
-                                points: poly,
-                                ..Default::default()
-                            });
-                        }
+                        // Area between the current and previous stack
+                        // level: top points forward + floor reversed.
+                        let mut poly = points.clone();
+                        let mut rev_floor = floor;
+                        rev_floor.reverse();
+                        poly.extend(rev_floor);
+                        c1.polygon(Polygon {
+                            fill: Some(fill_color),
+                            points: poly,
+                            ..Default::default()
+                        });
                     } else if series_smooth {
                         c1.smooth_line_fill(SmoothLineFill {
                             fill,
@@ -1780,22 +1802,22 @@ impl ChartBase {
                 }
                 if series_smooth {
                     c1.smooth_line(SmoothLine {
-                        points: points.clone(),
+                        points,
                         color: Some(color),
                         stroke_width: self.series_stroke_width,
                         symbol: symbol.clone(),
                         stroke_dash_array: series.stroke_dash_array.clone(),
-                        class: line_class.clone(),
+                        class: line_class,
                         path_length: line_path_length,
                     });
                 } else {
                     c1.straight_line(StraightLine {
-                        points: points.clone(),
+                        points,
                         color: Some(color),
                         stroke_width: self.series_stroke_width,
                         symbol: symbol.clone(),
                         stroke_dash_array: series.stroke_dash_array.clone(),
-                        class: line_class.clone(),
+                        class: line_class,
                         path_length: line_path_length,
                         ..Default::default()
                     });
@@ -1819,7 +1841,7 @@ impl ChartBase {
                         dataset,
                         ..Default::default()
                     });
-                    c1.text(Text {
+                    c1.text_unmeasured(Text {
                         text,
                         class: Some("ct-tip".to_string()),
                         font_family: Some(self.font_family.clone()),

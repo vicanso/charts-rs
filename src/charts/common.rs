@@ -257,15 +257,20 @@ impl Series {
         }
     }
     /// Effective values with the legacy `NIL_VALUE` sentinel substituted for
+    /// missing points, without allocating a `Vec`. NaN/inf can only arrive
+    /// through the builder API; they are missing so they never reach the axis
+    /// math or the SVG.
+    pub(crate) fn iter_values(&self) -> impl Iterator<Item = f32> + '_ {
+        self.data.iter().map(|v| match v {
+            Some(value) if value.is_finite() => *value,
+            _ => NIL_VALUE,
+        })
+    }
+    /// Effective values with the legacy `NIL_VALUE` sentinel substituted for
     /// missing points. Lets the renderers keep their existing sentinel-based
     /// arithmetic while the public data model uses `Option<f32>`.
     pub(crate) fn data_values(&self) -> Vec<f32> {
-        // NaN/inf can only arrive through the builder API; treat them as
-        // missing so they never reach the axis math or the SVG.
-        self.data
-            .iter()
-            .map(|v| v.filter(|f| f.is_finite()).unwrap_or(NIL_VALUE))
-            .collect()
+        self.iter_values().collect()
     }
 }
 impl From<(&str, Vec<f32>)> for Series {

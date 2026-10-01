@@ -148,9 +148,9 @@ impl RadarChart {
 
         let mut max_values: Vec<f32> = vec![0.0; self.indicators.len()];
         for series in self.series_list.iter() {
-            for (index, item) in series.data_values().iter().enumerate() {
-                if index < max_values.len() && *item > max_values[index] {
-                    max_values[index] = *item
+            for (index, item) in series.iter_values().enumerate() {
+                if index < max_values.len() && item > max_values[index] {
+                    max_values[index] = item
                 }
             }
         }
@@ -246,31 +246,28 @@ impl RadarChart {
         for (index, series) in self.series_list.iter().enumerate() {
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
             let mut points = vec![];
-            let values = series.data_values();
-            for (i, item) in indicators.iter().enumerate() {
-                if let Some(value) = values.get(i) {
-                    // Treat a missing point (`NIL_VALUE`) or a non-positive
-                    // indicator max as the center, so the sentinel `f32::MIN`
-                    // cannot leak into the polygon as a huge coordinate.
-                    let mut ir = if item.max <= 0.0 || *value == NIL_VALUE {
-                        0.0
-                    } else {
-                        *value / item.max * r
-                    };
+            for (i, (item, value)) in indicators.iter().zip(series.iter_values()).enumerate() {
+                // Treat a missing point (`NIL_VALUE`) or a non-positive
+                // indicator max as the center, so the sentinel `f32::MIN`
+                // cannot leak into the polygon as a huge coordinate.
+                let mut ir = if item.max <= 0.0 || value == NIL_VALUE {
+                    0.0
+                } else {
+                    value / item.max * r
+                };
 
-                    ir = ir.clamp(0.0, r);
-                    let p = get_pie_point(cx, cy, ir, angle * i as f32);
-                    if series.label_show {
-                        let label = format_series_label(
-                            &self.series_label_formatter,
-                            *value,
-                            &series.name,
-                            &item.name,
-                        );
-                        label_positions.push((p, label));
-                    }
-                    points.push(p);
+                ir = ir.clamp(0.0, r);
+                let p = get_pie_point(cx, cy, ir, angle * i as f32);
+                if series.label_show {
+                    let label = format_series_label(
+                        &self.series_label_formatter,
+                        value,
+                        &series.name,
+                        &item.name,
+                    );
+                    label_positions.push((p, label));
                 }
+                points.push(p);
             }
             let fill = if self.series_fill {
                 Some(color.with_alpha(50))
@@ -280,7 +277,7 @@ impl RadarChart {
             c.straight_line(StraightLine {
                 color: Some(color),
                 fill,
-                points: points.clone(),
+                points,
                 stroke_width: self.series_stroke_width,
                 close: true,
                 ..Default::default()

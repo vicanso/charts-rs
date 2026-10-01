@@ -134,7 +134,7 @@ fn render_scatter_symbol(
         Symbol::None => return,
     }
     if let Some(text) = title {
-        canvas.text(Text {
+        canvas.text_unmeasured(Text {
             text,
             class: Some("ct-tip".to_string()),
             x: Some(cx),
@@ -222,11 +222,11 @@ impl ScatterChart {
         let mut y_axis_data_list = vec![];
         let mut x_axis_data_list = vec![];
         for series in self.series_list.iter() {
-            for (index, data) in series.data_values().iter().enumerate() {
+            for (index, data) in series.iter_values().enumerate() {
                 if index % 2 == 0 {
-                    x_axis_data_list.push(*data);
+                    x_axis_data_list.push(data);
                 } else {
-                    y_axis_data_list.push(*data);
+                    y_axis_data_list.push(data);
                 }
             }
         }
@@ -357,26 +357,24 @@ impl ScatterChart {
                 DEFAULT_SYMBOLS[index % DEFAULT_SYMBOLS.len()].clone()
             };
 
-            for chunk in series.data_values().chunks(2) {
-                if chunk.len() != 2 {
-                    continue;
-                }
-                let cx = content_width - x_axis_values.get_offset_height(chunk[0], content_width);
-                let cy = y_axis_values.get_offset_height(chunk[1], content_height);
+            let mut coords = series.iter_values();
+            while let (Some(x_value), Some(y_value)) = (coords.next(), coords.next()) {
+                let cx = content_width - x_axis_values.get_offset_height(x_value, content_width);
+                let cy = y_axis_values.get_offset_height(y_value, content_height);
                 let title = if self.tooltip_show {
                     Some(format!(
                         "{}: ({}, {})",
                         series.name,
-                        format_float(chunk[0]),
-                        format_float(chunk[1])
+                        format_float(x_value),
+                        format_float(y_value)
                     ))
                 } else {
                     None
                 };
                 let dataset = vec![
                     ("series".to_string(), series.name.clone()),
-                    ("x".to_string(), format_float(chunk[0])),
-                    ("y".to_string(), format_float(chunk[1])),
+                    ("x".to_string(), format_float(x_value)),
+                    ("y".to_string(), format_float(y_value)),
                 ];
                 render_scatter_symbol(
                     &mut content_canvas,

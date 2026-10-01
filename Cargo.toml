@@ -18,7 +18,7 @@ rust-version = "1.88"
 arc-swap = "1.9.2"
 fontdue = "0.9.4"
 image = { version = "0.25.10", default-features = false, optional = true }
-resvg = { version = "0.47.0", default-features = false, features = [
+resvg = { version = "0.48.1", default-features = false, features = [
     "text",
     "system-fonts",
 ], optional = true }

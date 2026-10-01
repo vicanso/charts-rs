@@ -132,6 +132,12 @@
   into the output without per-point strings.
 - Axis labels are measured through the per-thread cache; bar labels and
   tooltips are only formatted when they are shown.
+- Path coordinates are written from a stack buffer straight into the SVG.
+  A line series formats labels and `data-*` attributes only when they are
+  shown, and a non-stacked line no longer allocates a zero-filled
+  accumulator. Glyph-measurement hits no longer allocate a cache key, a
+  horizontal axis remembers the width of its joined labels, and graph node
+  names are indexed in a `HashMap`. The rendered SVG is unchanged.
 
 ### Documentation
 

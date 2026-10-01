@@ -193,43 +193,51 @@ impl Canvas {
         self.append(Component::Polygon(c));
         b
     }
+    fn offset_text(&self, text: &mut Text) {
+        if let Some(x) = text.x {
+            text.x = Some(x + self.margin.left);
+        } else {
+            text.x = Some(self.margin.left);
+        }
+        if let Some(y) = text.y {
+            text.y = Some(y + self.margin.top);
+        } else {
+            text.y = Some(self.margin.top);
+        }
+    }
     /// Appends text widget to canvas.
-    pub fn text(&mut self, text: Text) -> Box {
+    pub fn text(&mut self, mut text: Text) -> Box {
         let font_family = text.font_family.clone().unwrap_or_default();
         let font_size = text.font_size.unwrap_or_default();
-        let mut c = text;
-
-        if let Some(x) = c.x {
-            c.x = Some(x + self.margin.left);
-        } else {
-            c.x = Some(self.margin.left);
-        }
-        if let Some(y) = c.y {
-            c.y = Some(y + self.margin.top);
-        } else {
-            c.y = Some(self.margin.top);
-        }
+        self.offset_text(&mut text);
         let mut b = Box {
-            left: c.x.unwrap_or_default(),
-            top: c.y.unwrap_or_default(),
+            left: text.x.unwrap_or_default(),
+            top: text.y.unwrap_or_default(),
             ..Default::default()
         };
         if !font_family.is_empty() && font_size > 0.0 {
-            if let Ok(result) = measure_text_width_family(&font_family, font_size, &c.text) {
+            if let Ok(result) = measure_text_width_family(&font_family, font_size, &text.text) {
                 b.right = b.left + result.width();
                 b.bottom = b.top + result.height();
             }
-            let line_height = c.line_height.unwrap_or_default();
+            let line_height = text.line_height.unwrap_or_default();
             // 设置了行高
             if line_height > font_size {
-                c.dy = Some(c.dy.unwrap_or_default() + line_height / 2.0);
-                c.dominant_baseline = Some("middle".to_string());
+                text.dy = Some(text.dy.unwrap_or_default() + line_height / 2.0);
+                text.dominant_baseline = Some("middle".to_string());
                 b.bottom = b.top + line_height;
             }
         }
 
-        self.append(Component::Text(c));
+        self.append(Component::Text(text));
         b
+    }
+    /// Appends text that is not part of layout (a hover tooltip, or a label
+    /// the caller already measured). Skips glyph measurement; `line_height`
+    /// is not applied.
+    pub(crate) fn text_unmeasured(&mut self, mut text: Text) {
+        self.offset_text(&mut text);
+        self.append(Component::Text(text));
     }
     /// Appends pie widget to canvas.
     pub fn pie(&mut self, pie: Pie) -> Box {
@@ -405,11 +413,11 @@ fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<Stri
         Component::Circle(c) => c.write_svg(out),
         Component::Polygon(c) => c.write_svg(out, Some(grad_seen)),
         Component::Text(c) => c.write_svg(out),
-        Component::SmoothLine(c) => out.push_str(&c.svg()),
-        Component::StraightLine(c) => out.push_str(&c.svg()),
-        Component::SmoothLineFill(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+        Component::SmoothLine(c) => c.write_svg(out),
+        Component::StraightLine(c) => c.write_svg(out),
+        Component::SmoothLineFill(c) => c.write_svg(out, Some(grad_seen)),
         Component::SmoothBand(c) => out.push_str(&c.svg()),
-        Component::StraightLineFill(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+        Component::StraightLineFill(c) => c.write_svg(out, Some(grad_seen)),
         Component::Grid(c) => out.push_str(&c.svg()),
         Component::Axis(c) => out.push_str(&c.svg()?),
         Component::Legend(c) => out.push_str(&c.svg()),

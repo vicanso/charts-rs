@@ -18,6 +18,7 @@ use super::component::*;
 use super::params::*;
 use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
+use std::collections::HashMap;
 
 // ── Public data model ──────────────────────────────────────────────────────────
 
@@ -235,37 +236,41 @@ impl GraphChart {
         }
 
         // Collect node names (explicit first, then link-referenced), with color
-        // and value bookkeeping in parallel.
+        // and value bookkeeping in parallel. The map preserves that first-seen
+        // order: its value is the index in `names`.
         let mut names: Vec<String> = vec![];
+        let mut name_index: HashMap<String, usize> = HashMap::new();
         let mut colors: Vec<Color> = vec![];
         let mut values: Vec<f32> = vec![];
         for (i, n) in self.nodes.iter().enumerate() {
-            if names.contains(&n.name) {
+            if name_index.contains_key(n.name.as_str()) {
                 continue;
             }
             let color = n
                 .color
                 .unwrap_or_else(|| get_color(&self.series_colors, n.category.unwrap_or(i)));
+            name_index.insert(n.name.clone(), names.len());
             names.push(n.name.clone());
             colors.push(color);
             values.push(n.value.max(0.0));
         }
-        let index_of = |names: &[String], name: &str| names.iter().position(|n| n == name);
 
         let mut edges: Vec<(usize, usize)> = vec![];
         let mut edge_values: Vec<f32> = vec![];
         for link in &self.links {
             for name in [&link.source, &link.target] {
-                if index_of(&names, name).is_none() {
-                    let color = get_color(&self.series_colors, names.len());
-                    names.push(name.clone());
-                    colors.push(color);
-                    values.push(0.0);
+                if name_index.contains_key(name.as_str()) {
+                    continue;
                 }
+                let color = get_color(&self.series_colors, names.len());
+                name_index.insert(name.clone(), names.len());
+                names.push(name.clone());
+                colors.push(color);
+                values.push(0.0);
             }
-            let (Some(a), Some(b)) = (
-                index_of(&names, &link.source),
-                index_of(&names, &link.target),
+            let (Some(&a), Some(&b)) = (
+                name_index.get(link.source.as_str()),
+                name_index.get(link.target.as_str()),
             ) else {
                 continue;
             };

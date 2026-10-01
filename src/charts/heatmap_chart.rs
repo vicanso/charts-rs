@@ -389,7 +389,7 @@ impl HeatmapChart {
                     ..Default::default()
                 });
                 if let Some(tip) = tooltip_text {
-                    c1.text(Text {
+                    c1.text_unmeasured(Text {
                         text: tip,
                         class: Some("ct-tip".to_string()),
                         font_family: Some(self.font_family.clone()),
@@ -412,7 +412,7 @@ impl HeatmapChart {
                     ) {
                         x1 -= b.width() / 2.0;
                     }
-                    c1.text(Text {
+                    c1.text_unmeasured(Text {
                         text,
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(font_color),

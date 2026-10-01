@@ -278,7 +278,7 @@ impl TreemapChart {
                 .iter()
                 .enumerate()
                 .filter_map(|(i, s)| {
-                    let v = *s.data_values().first()?;
+                    let v = s.iter_values().next()?;
                     if v <= 0.0 {
                         return None;
                     }

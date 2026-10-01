@@ -16,6 +16,7 @@ use super::util::*;
 use fontdue::Font;
 use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
 use std::collections::HashMap;
+use std::hash::{Hash, Hasher};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, OnceLock};
 
@@ -195,30 +196,54 @@ pub fn measure_text(font: &Font, font_size: f32, text: &str) -> Box {
 // stay bounded for long-running processes with ever-changing texts.
 const MEASURE_CACHE_LIMIT: usize = 4096;
 
-// (family, font-size bits, text) → (right, bottom)
-type MeasureCacheMap = HashMap<(String, u32, String), (f32, f32)>;
+struct CachedMeasure {
+    family: String,
+    size_bits: u32,
+    text: String,
+    right: f32,
+    bottom: f32,
+}
+
+// generation, entry count, hash → entries (compared on hit, so a lookup
+// borrows the caller's strings and allocates only on a miss).
+type MeasureCache = (u64, usize, HashMap<u64, Vec<CachedMeasure>>);
+
+fn hash_measure(family: &str, size_bits: u32, text: &str) -> u64 {
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    family.hash(&mut hasher);
+    size_bits.hash(&mut hasher);
+    text.hash(&mut hasher);
+    hasher.finish()
+}
 
 /// Measures the display area of text of a specified font size and font family.
 pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) -> Result<Box> {
     thread_local! {
-        // (font generation, measurements) — the generation detects font
-        // registry changes that would invalidate cached widths.
-        static MEASURE_CACHE: std::cell::RefCell<(u64, MeasureCacheMap)> =
-            std::cell::RefCell::new((0, HashMap::new()));
+        // The generation detects font registry changes that would invalidate
+        // cached widths.
+        static MEASURE_CACHE: std::cell::RefCell<MeasureCache> =
+            std::cell::RefCell::new((0, 0, HashMap::new()));
     }
     let generation = FONT_GENERATION.load(Ordering::Relaxed);
-    let key = (
-        font_family.to_string(),
-        font_size.to_bits(),
-        text.to_string(),
-    );
+    let size_bits = font_size.to_bits();
+    let hash = hash_measure(font_family, size_bits, text);
     if let Some(b) = MEASURE_CACHE.with(|c| {
         let mut cache = c.borrow_mut();
         if cache.0 != generation {
-            cache.1.clear();
+            cache.1 = 0;
+            cache.2.clear();
             cache.0 = generation;
         }
-        cache.1.get(&key).copied()
+        cache.2.get(&hash).and_then(|entries| {
+            entries
+                .iter()
+                .find(|entry| {
+                    entry.size_bits == size_bits
+                        && entry.family == font_family
+                        && entry.text == text
+                })
+                .map(|entry| (entry.right, entry.bottom))
+        })
     }) {
         return Ok(Box {
             right: b.0,
@@ -231,13 +256,121 @@ pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) 
     MEASURE_CACHE.with(|c| {
         let mut cache = c.borrow_mut();
         if cache.0 == generation {
-            if cache.1.len() >= MEASURE_CACHE_LIMIT {
-                cache.1.clear();
+            if cache.1 >= MEASURE_CACHE_LIMIT {
+                cache.1 = 0;
+                cache.2.clear();
             }
-            cache.1.insert(key, (b.right, b.bottom));
+            cache.2.entry(hash).or_default().push(CachedMeasure {
+                family: font_family.to_string(),
+                size_bits,
+                text: text.to_string(),
+                right: b.right,
+                bottom: b.bottom,
+            });
+            cache.1 += 1;
         }
     });
     Ok(b)
+}
+
+/// One cached width of a joined axis-label row.
+struct LabelRowHit {
+    check: u64,
+    count: usize,
+    bytes: usize,
+    width: f32,
+}
+
+/// Width of `labels` joined by single spaces, after `formatter` (empty leaves
+/// them unchanged). Memoized per thread as the width alone, so an axis with
+/// thousands of categories does not rebuild or remeasure that string on every
+/// render. The width matches measuring the joined string directly.
+pub(crate) fn measure_label_row_width(
+    font_family: &str,
+    font_size: f32,
+    formatter: &str,
+    labels: &[String],
+) -> Result<f32> {
+    if labels.is_empty() {
+        return Ok(0.0);
+    }
+    thread_local! {
+        static ROW_CACHE: std::cell::RefCell<(u64, HashMap<u64, Vec<LabelRowHit>>)> =
+            std::cell::RefCell::new((0, HashMap::new()));
+    }
+    let generation = FONT_GENERATION.load(Ordering::Relaxed);
+    let (primary, check, count, bytes) =
+        label_row_fingerprint(font_family, font_size.to_bits(), formatter, labels);
+    if let Some(width) = ROW_CACHE.with(|c| {
+        let mut cache = c.borrow_mut();
+        if cache.0 != generation {
+            cache.1.clear();
+            cache.0 = generation;
+        }
+        cache.1.get(&primary).and_then(|hits| {
+            hits.iter()
+                .find(|hit| hit.check == check && hit.count == count && hit.bytes == bytes)
+                .map(|hit| hit.width)
+        })
+    }) {
+        return Ok(width);
+    }
+    let mut joined = String::with_capacity(bytes + count);
+    for (i, label) in labels.iter().enumerate() {
+        if i > 0 {
+            joined.push(' ');
+        }
+        if formatter.is_empty() {
+            joined.push_str(label);
+        } else {
+            joined.push_str(&format_string(label, formatter));
+        }
+    }
+    let font = get_font(font_family)?;
+    let width = measure_text(&font, font_size, &joined).width();
+    ROW_CACHE.with(|c| {
+        let mut cache = c.borrow_mut();
+        if cache.0 != generation {
+            return;
+        }
+        if cache.1.len() >= MEASURE_CACHE_LIMIT {
+            cache.1.clear();
+        }
+        cache.1.entry(primary).or_default().push(LabelRowHit {
+            check,
+            count,
+            bytes,
+            width,
+        });
+    });
+    Ok(width)
+}
+
+fn label_row_fingerprint(
+    family: &str,
+    size_bits: u32,
+    formatter: &str,
+    labels: &[String],
+) -> (u64, u64, usize, usize) {
+    let mut primary = std::collections::hash_map::DefaultHasher::new();
+    family.hash(&mut primary);
+    size_bits.hash(&mut primary);
+    formatter.hash(&mut primary);
+    let mut bytes = 0usize;
+    for (i, label) in labels.iter().enumerate() {
+        i.hash(&mut primary);
+        label.hash(&mut primary);
+        bytes += label.len();
+    }
+    let mut check = std::collections::hash_map::DefaultHasher::new();
+    0xA5A5_u64.hash(&mut check);
+    bytes.hash(&mut check);
+    labels.len().hash(&mut check);
+    formatter.hash(&mut check);
+    for label in labels.iter().rev() {
+        label.hash(&mut check);
+    }
+    (primary.finish(), check.finish(), labels.len(), bytes)
 }
 
 /// Gets the max width of multi text.
@@ -246,10 +379,9 @@ pub fn measure_max_text_width_family(
     font_size: f32,
     texts: Vec<&str>,
 ) -> Result<Box> {
-    let font = get_font(font_family)?;
     let mut result = Box::default();
     for item in texts.iter() {
-        let b = measure_text(&font, font_size, item);
+        let b = measure_text_width_family(font_family, font_size, item)?;
         if b.width() > result.width() {
             result = b;
         }
@@ -342,7 +474,11 @@ pub fn text_wrap_fit(
 
 #[cfg(test)]
 mod tests {
-    use super::{get_font, get_font_families, measure_text_width_family, text_wrap_fit};
+    use super::{
+        get_font, get_font_families, measure_label_row_width, measure_text_width_family,
+        text_wrap_fit,
+    };
+    use crate::format_string;
     use pretty_assertions::assert_eq;
     #[test]
     fn measure_text() {
@@ -372,6 +508,38 @@ mod tests {
                 "ons",
             ],
             result
+        );
+    }
+    #[test]
+    fn label_row_width_matches_joined_string() {
+        let name = "Roboto";
+        let labels: Vec<String> = ["Mon", "Tue", "Wednesday", "t10000"]
+            .into_iter()
+            .map(str::to_string)
+            .collect();
+        let joined = labels.join(" ");
+        let expected = measure_text_width_family(name, 14.0, &joined)
+            .unwrap()
+            .width();
+        let width = measure_label_row_width(name, 14.0, "", &labels).unwrap();
+        assert_eq!(expected, width);
+        assert_eq!(
+            width,
+            measure_label_row_width(name, 14.0, "", &labels).unwrap()
+        );
+
+        let formatter = "[{c}]";
+        let formatted = labels
+            .iter()
+            .map(|label| format_string(label, formatter))
+            .collect::<Vec<_>>()
+            .join(" ");
+        let expected = measure_text_width_family(name, 14.0, &formatted)
+            .unwrap()
+            .width();
+        assert_eq!(
+            expected,
+            measure_label_row_width(name, 14.0, formatter, &labels).unwrap()
         );
     }
 }

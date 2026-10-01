@@ -12,7 +12,7 @@
 
 use super::common::AxisScale;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::fmt::{self, Write as _};
 
 /// The legacy sentinel for a missing data point in flat `Vec<f32>` input:
 /// `Series::new` maps it to `None`. The public data model itself uses
@@ -266,32 +266,76 @@ pub(crate) fn thousands_format_float(value: f32) -> String {
     out
 }
 
+/// `{:.1}` of an `f32` fits here, including the longest decimal form
+/// (`f32::MAX` is about 40 digits). Overflow falls back to the heap.
+const FLOAT_BUF: usize = 64;
+
+struct FloatBuf {
+    data: [u8; FLOAT_BUF],
+    len: usize,
+}
+
+impl FloatBuf {
+    fn new() -> Self {
+        FloatBuf {
+            data: [0; FLOAT_BUF],
+            len: 0,
+        }
+    }
+    fn as_bytes(&self) -> &[u8] {
+        &self.data[..self.len]
+    }
+}
+
+impl fmt::Write for FloatBuf {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        let bytes = s.as_bytes();
+        if self.len + bytes.len() > FLOAT_BUF {
+            return Err(fmt::Error);
+        }
+        self.data[self.len..self.len + bytes.len()].copy_from_slice(bytes);
+        self.len += bytes.len();
+        Ok(())
+    }
+}
+
+/// Appends `value` formatted like [`format_float`] to any writer. The number
+/// is staged in a stack buffer, so a path of thousands of coordinates does not
+/// allocate a `String` per coordinate.
+pub(crate) fn write_float_to(out: &mut impl fmt::Write, value: f32) -> fmt::Result {
+    if !value.is_finite() {
+        return out.write_str("0");
+    }
+    let mut buf = FloatBuf::new();
+    if write!(buf, "{:.1}", value).is_err() {
+        let mut fallback = format!("{:.1}", value);
+        if fallback.ends_with(".0") {
+            fallback.truncate(fallback.len() - 2);
+        }
+        return out.write_str(&fallback);
+    }
+    let bytes = buf.as_bytes();
+    let mut len = bytes.len();
+    if len >= 2 && bytes[len - 2] == b'.' && bytes[len - 1] == b'0' {
+        len -= 2;
+    }
+    let rendered = std::str::from_utf8(&bytes[..len]).map_err(|_| fmt::Error)?;
+    out.write_str(rendered)
+}
+
 /// Formats a coordinate or size with at most one decimal. A non-finite value
 /// (a NaN/inf that slipped through a degenerate layout) is written as `0`
 /// rather than a literal `NaN`, which would make the whole SVG invalid.
 pub(crate) fn format_float(value: f32) -> String {
-    if !value.is_finite() {
-        return "0".to_string();
-    }
-    let mut str = format!("{:.1}", value);
-    if str.ends_with(".0") {
-        str.truncate(str.len() - 2);
-    }
-    str
+    let mut out = String::new();
+    let _ = write_float_to(&mut out, value);
+    out
 }
 
 /// Appends `value` formatted like [`format_float`] to `out`, without an
 /// intermediate string.
 pub(crate) fn write_float(out: &mut String, value: f32) {
-    use std::fmt::Write;
-    if !value.is_finite() {
-        out.push('0');
-        return;
-    }
-    let _ = write!(out, "{:.1}", value);
-    if out.ends_with(".0") {
-        out.truncate(out.len() - 2);
-    }
+    let _ = write_float_to(out, value);
 }
 
 /// Formats an opacity in `0..=1` with two decimals (trailing zeros trimmed),

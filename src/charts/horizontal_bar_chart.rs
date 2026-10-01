@@ -183,10 +183,9 @@ impl HorizontalBarChart {
         let mut stack_sums: Vec<Vec<(f32, f32)>> =
             vec![vec![(0.0_f32, 0.0_f32); category_count]; stack_count];
         for (index, series) in self.series_list.iter().enumerate() {
-            let values = series.data_values();
             match series_stack_indices[index] {
                 Some(stack_index) => {
-                    for (i, &v) in values.iter().enumerate() {
+                    for (i, v) in series.iter_values().enumerate() {
                         let actual_i = i.saturating_add(series.start_index);
                         if v == NIL_VALUE || actual_i >= category_count {
                             continue;
@@ -199,7 +198,7 @@ impl HorizontalBarChart {
                         }
                     }
                 }
-                None => data_list.extend(values),
+                None => data_list.extend(series.iter_values()),
             }
         }
         for sums in stack_sums.iter() {
@@ -309,8 +308,7 @@ impl HorizontalBarChart {
                 let color = get_color(&self.series_colors, series.index.unwrap_or(index));
 
                 let mut series_labels = vec![];
-                for (i, p) in series.data_values().iter().enumerate() {
-                    let value = p.to_owned();
+                for (i, value) in series.iter_values().enumerate() {
                     if value == NIL_VALUE {
                         continue;
                     }
@@ -386,7 +384,7 @@ impl HorizontalBarChart {
                         ..Default::default()
                     });
                     if let Some(text) = tip {
-                        c1.text(Text {
+                        c1.text_unmeasured(Text {
                             text,
                             class: Some("ct-tip".to_string()),
                             font_family: Some(self.font_family.clone()),
@@ -437,7 +435,7 @@ impl HorizontalBarChart {
                             dx = Some(-value.width());
                         }
                     }
-                    c1.text(Text {
+                    c1.text_unmeasured(Text {
                         text: series_label.text.clone(),
                         dx,
                         dy,
@@ -467,11 +465,7 @@ impl HorizontalBarChart {
                     continue;
                 }
                 let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-                let values: Vec<f32> = series
-                    .data_values()
-                    .into_iter()
-                    .filter(|v| *v != NIL_VALUE)
-                    .collect();
+                let values: Vec<f32> = series.iter_values().filter(|v| *v != NIL_VALUE).collect();
                 let stat = mark_statistics(&values);
                 let value_x =
                     |value: f32| max_width - x_axis_values.get_offset_height(value, max_width);

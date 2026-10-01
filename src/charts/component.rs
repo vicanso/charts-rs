@@ -635,14 +635,7 @@ impl Polyline {
             return;
         }
         let mut points = String::with_capacity(self.points.len() * 10);
-        for (i, p) in self.points.iter().enumerate() {
-            if i > 0 {
-                points.push(' ');
-            }
-            points.push_str(&format_float(p.x));
-            points.push(',');
-            points.push_str(&format_float(p.y));
-        }
+        write_point_list(&mut points, &self.points);
         let mut w = TagWriter::open(out, TAG_POLYLINE);
         w.raw(ATTR_FILL, "none")
             .float(ATTR_STROKE_WIDTH, self.stroke_width)
@@ -815,14 +808,7 @@ impl Polygon {
             return;
         }
         let mut points = String::with_capacity(self.points.len() * 10);
-        for (i, p) in self.points.iter().enumerate() {
-            if i > 0 {
-                points.push(' ');
-            }
-            points.push_str(&format_float(p.x));
-            points.push(',');
-            points.push_str(&format_float(p.y));
-        }
+        write_point_list(&mut points, &self.points);
         if let Some(ref fill) = self.gradient {
             out.push_str(&fill_svg_defs(fill, grad_seen));
         }
@@ -844,14 +830,7 @@ impl Polygon {
     /// paint attributes.
     fn write_bare(&self, out: &mut String) {
         let mut points = String::with_capacity(self.points.len() * 10);
-        for (i, p) in self.points.iter().enumerate() {
-            if i > 0 {
-                points.push(' ');
-            }
-            write_float(&mut points, p.x);
-            points.push(',');
-            write_float(&mut points, p.y);
-        }
+        write_point_list(&mut points, &self.points);
         let mut w = TagWriter::open(out, TAG_POLYGON);
         w.raw(ATTR_POINTS, &points);
         w.close();
@@ -992,13 +971,12 @@ fn open_symbol_group(
     w.out.push_str(">\n");
 }
 
-fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
+fn write_circle_symbols(out: &mut String, points: &[Point], c: &Circle) {
     if points.is_empty() {
-        return String::new();
+        return;
     }
-    let mut out = String::with_capacity(points.len() * 40);
     open_symbol_group(
-        &mut out,
+        out,
         c.stroke_color.map(|_| c.stroke_width),
         c.stroke_color,
         c.fill,
@@ -1013,23 +991,22 @@ fn generate_circle_symbol(points: &[Point], c: Circle) -> String {
             r: c.r,
             ..Default::default()
         }
-        .write_bare(&mut out);
+        .write_bare(out);
     }
     out.push_str("\n</g>");
-    out
 }
 
-fn generate_rect_symbol(
+fn write_rect_symbols(
+    out: &mut String,
     points: &[Point],
     r: f32,
     fill: Option<Color>,
     stroke: Option<Color>,
-) -> String {
+) {
     if points.is_empty() {
-        return String::new();
+        return;
     }
-    let mut out = String::with_capacity(points.len() * 50);
-    open_symbol_group(&mut out, None, stroke, fill);
+    open_symbol_group(out, None, stroke, fill);
     for (i, p) in points.iter().enumerate() {
         if i > 0 {
             out.push('\n');
@@ -1041,23 +1018,22 @@ fn generate_rect_symbol(
             height: r * 2.0,
             ..Default::default()
         }
-        .write_bare(&mut out);
+        .write_bare(out);
     }
     out.push_str("\n</g>");
-    out
 }
 
-fn generate_polygon_symbols(
+fn write_polygon_symbols(
+    out: &mut String,
     points: &[Point],
     fill: Option<Color>,
     stroke: Option<Color>,
     shape: impl Fn(&Point) -> Vec<Point>,
-) -> String {
+) {
     if points.is_empty() {
-        return String::new();
+        return;
     }
-    let mut out = String::with_capacity(points.len() * 50);
-    open_symbol_group(&mut out, None, stroke, fill);
+    open_symbol_group(out, None, stroke, fill);
     for (i, p) in points.iter().enumerate() {
         if i > 0 {
             out.push('\n');
@@ -1066,20 +1042,20 @@ fn generate_polygon_symbols(
             points: shape(p),
             ..Default::default()
         }
-        .write_bare(&mut out);
+        .write_bare(out);
     }
     out.push_str("\n</g>");
-    out
 }
 
-fn generate_triangle_symbol(
+fn write_triangle_symbols(
+    out: &mut String,
     points: &[Point],
     r: f32,
     fill: Option<Color>,
     stroke: Option<Color>,
-) -> String {
+) {
     // Equilateral triangle pointing upward; r = circumradius.
-    generate_polygon_symbols(points, fill, stroke, |p| {
+    write_polygon_symbols(out, points, fill, stroke, |p| {
         vec![
             (p.x, p.y - r).into(),
             (p.x + r * 0.866, p.y + r * 0.5).into(),
@@ -1088,13 +1064,14 @@ fn generate_triangle_symbol(
     })
 }
 
-fn generate_diamond_symbol(
+fn write_diamond_symbols(
+    out: &mut String,
     points: &[Point],
     r: f32,
     fill: Option<Color>,
     stroke: Option<Color>,
-) -> String {
-    generate_polygon_symbols(points, fill, stroke, |p| {
+) {
+    write_polygon_symbols(out, points, fill, stroke, |p| {
         vec![
             (p.x, p.y - r).into(),
             (p.x + r, p.y).into(),
@@ -1330,103 +1307,130 @@ struct BaseLine<'a> {
     pub path_length: Option<f32>,
 }
 
+/// `x,y x,y` point list used by `<polyline>` and `<polygon>`.
+fn write_point_list(out: &mut String, points: &[Point]) {
+    for (i, p) in points.iter().enumerate() {
+        if i > 0 {
+            out.push(' ');
+        }
+        write_float(out, p.x);
+        out.push(',');
+        write_float(out, p.y);
+    }
+}
+
+/// Straight `M x y L x y` path data. `close` appends ` Z`.
+fn write_straight_path(out: &mut String, points: &[Point], close: bool) {
+    for (index, p) in points.iter().enumerate() {
+        if index > 0 {
+            out.push(' ');
+        }
+        out.push(if index == 0 { 'M' } else { 'L' });
+        out.push(' ');
+        write_float(out, p.x);
+        out.push(' ');
+        write_float(out, p.y);
+    }
+    if close {
+        out.push_str(" Z");
+    }
+}
+
+/// One attribute, skipped when `value` is empty (same rule as `SVGTag`).
+fn push_attr(out: &mut String, key: &str, value: &str) {
+    if key.is_empty() || value.is_empty() {
+        return;
+    }
+    out.push(' ');
+    out.push_str(key);
+    out.push_str("=\"");
+    let _ = push_escaped_attr(out, value);
+    out.push('"');
+}
+
 impl<'a> BaseLine<'a> {
-    pub fn svg(&self) -> String {
+    /// Streams the line (and its symbols) into `out`. The path `d` is written
+    /// straight into the buffer: it is the largest piece of a line chart.
+    pub(crate) fn write_svg(&self, out: &mut String) {
         if self.points.is_empty() || self.stroke_width <= 0.0 {
-            return "".to_string();
+            return;
         }
-        let path = if self.is_smooth {
-            SmoothCurve {
-                points: self.points.to_vec(),
-                ..Default::default()
-            }
-            .to_string()
+        let draw_symbol = matches!(
+            self.symbol,
+            Some(
+                Symbol::Circle(_, _)
+                    | Symbol::Rect(_, _)
+                    | Symbol::Triangle(_, _)
+                    | Symbol::Diamond(_, _)
+            )
+        );
+        if draw_symbol {
+            out.push_str("<g>\n");
+        }
+        out.push_str("<path");
+        out.push_str(" d=\"");
+        if self.is_smooth {
+            // Smooth curves ignore `close`; only straight lines honour it.
+            let _ = SmoothCurve::write_points(self.points, false, out);
         } else {
-            let mut arr = vec![];
-            for (index, p) in self.points.iter().enumerate() {
-                let mut action = "L";
-                if index == 0 {
-                    action = "M"
-                }
-                arr.push(format!(
-                    "{} {} {}",
-                    action,
-                    format_float(p.x),
-                    format_float(p.y)
-                ));
-            }
-            if self.close {
-                arr.push('Z'.to_string());
-            }
-            arr.join(" ")
-        };
-
-        let mut attrs = vec![
-            (ATTR_D, path),
-            (ATTR_STROKE_WIDTH, format_float(self.stroke_width)),
-        ];
+            write_straight_path(out, self.points, self.close);
+        }
+        out.push('"');
+        out.push(' ');
+        out.push_str(ATTR_STROKE_WIDTH);
+        out.push_str("=\"");
+        write_float(out, self.stroke_width);
+        out.push('"');
         if let Some(fill) = self.fill {
-            attrs.push((ATTR_FILL, fill.hex()));
-            attrs.push((ATTR_FILL_OPACITY, convert_opacity(&fill)));
+            push_attr(out, ATTR_FILL, &fill.hex());
+            push_attr(out, ATTR_FILL_OPACITY, &convert_opacity(&fill));
         } else {
-            attrs.push((ATTR_FILL, "none".to_string()));
+            out.push_str(" fill=\"none\"");
         }
-
         if let Some(color) = self.color {
-            attrs.push((ATTR_STROKE, color.hex()));
-            attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
+            push_attr(out, ATTR_STROKE, &color.hex());
+            push_attr(out, ATTR_STROKE_OPACITY, &convert_opacity(&color));
         }
-        if let Some(stroke_dash_array) = &self.stroke_dash_array {
-            attrs.push((ATTR_STROKE_DASH_ARRAY, stroke_dash_array.to_string()));
+        if let Some(dash) = &self.stroke_dash_array {
+            push_attr(out, ATTR_STROKE_DASH_ARRAY, dash);
         }
         if let Some(pl) = self.path_length {
-            attrs.push((ATTR_PATH_LENGTH, format_float(pl)));
+            out.push(' ');
+            out.push_str(ATTR_PATH_LENGTH);
+            out.push_str("=\"");
+            write_float(out, pl);
+            out.push('"');
         }
-        if let Some(ref class) = self.class {
-            attrs.push((ATTR_CLASS, class.clone()));
+        if let Some(class) = &self.class {
+            push_attr(out, ATTR_CLASS, class);
         }
-        let line_svg = SVGTag {
-            tag: TAG_PATH,
-            attrs,
-            ..Default::default()
-        }
-        .to_string();
-        let symbol_svg = if let Some(ref symbol) = self.symbol {
-            match symbol {
-                Symbol::Circle(r, fill) => generate_circle_symbol(
+        out.push_str("/>");
+        if draw_symbol {
+            out.push('\n');
+            match &self.symbol {
+                Some(Symbol::Circle(r, fill)) => write_circle_symbols(
+                    out,
                     self.points,
-                    Circle {
+                    &Circle {
                         stroke_color: self.color,
-                        fill: fill.to_owned(),
+                        fill: *fill,
                         stroke_width: self.stroke_width,
-                        r: r.to_owned(),
+                        r: *r,
                         ..Default::default()
                     },
                 ),
-                Symbol::Rect(r, fill) => {
-                    generate_rect_symbol(self.points, *r, fill.to_owned(), self.color)
+                Some(Symbol::Rect(r, fill)) => {
+                    write_rect_symbols(out, self.points, *r, *fill, self.color)
                 }
-                Symbol::Triangle(r, fill) => {
-                    generate_triangle_symbol(self.points, *r, fill.to_owned(), self.color)
+                Some(Symbol::Triangle(r, fill)) => {
+                    write_triangle_symbols(out, self.points, *r, *fill, self.color)
                 }
-                Symbol::Diamond(r, fill) => {
-                    generate_diamond_symbol(self.points, *r, fill.to_owned(), self.color)
+                Some(Symbol::Diamond(r, fill)) => {
+                    write_diamond_symbols(out, self.points, *r, *fill, self.color)
                 }
-                Symbol::None => "".to_string(),
+                _ => {}
             }
-        } else {
-            "".to_string()
-        };
-
-        if symbol_svg.is_empty() {
-            line_svg
-        } else {
-            SVGTag {
-                tag: TAG_GROUP,
-                data: Some([line_svg, symbol_svg].join("\n")),
-                ..Default::default()
-            }
-            .to_string()
+            out.push_str("\n</g>");
         }
     }
 }
@@ -1467,6 +1471,11 @@ impl Default for SmoothLine {
 impl SmoothLine {
     /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String) {
         BaseLine {
             color: self.color,
             fill: None,
@@ -1479,7 +1488,7 @@ impl SmoothLine {
             class: self.class.clone(),
             path_length: self.path_length,
         }
-        .svg()
+        .write_svg(out);
     }
 }
 
@@ -1504,50 +1513,56 @@ impl Default for SmoothLineFill {
     }
 }
 
+/// A filled `<path>`, with gradient defs (if any) written just before it.
+fn write_fill_path(
+    out: &mut String,
+    fill: &Fill,
+    grad_seen: Option<&mut HashSet<String>>,
+    write_d: impl FnOnce(&mut String),
+) {
+    out.push_str(&fill_svg_defs(fill, grad_seen));
+    out.push_str("<path d=\"");
+    write_d(out);
+    out.push('"');
+    push_attr(out, ATTR_FILL, &fill_svg_attr(fill));
+    push_attr(out, ATTR_FILL_OPACITY, &fill_svg_opacity(fill));
+    out.push_str("/>");
+}
+
 impl SmoothLineFill {
     /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
-        self.svg_with_grad_seen(None)
+        let mut out = String::new();
+        self.write_svg(&mut out, None);
+        out
     }
-    pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
+    pub(crate) fn write_svg(&self, out: &mut String, grad_seen: Option<&mut HashSet<String>>) {
         if self.points.is_empty() || self.fill.is_transparent() {
-            return "".to_string();
+            return;
         }
-        let mut path = SmoothCurve {
-            points: self.points.clone(),
-            ..Default::default()
-        }
-        .to_string();
-
         let last = self.points[self.points.len() - 1];
         let first = self.points[0];
-        let fill_path = [
-            format!("M {} {}", format_float(last.x), format_float(last.y)),
-            format!("L {} {}", format_float(last.x), format_float(self.bottom)),
-            format!("L {} {}", format_float(first.x), format_float(self.bottom)),
-            format!("L {} {}", format_float(first.x), format_float(first.y)),
-        ]
-        .join(" ");
-        path.push_str(&fill_path);
-
-        let defs = fill_svg_defs(&self.fill, grad_seen);
-        let attrs = vec![
-            (ATTR_D, path),
-            (ATTR_FILL, fill_svg_attr(&self.fill)),
-            (ATTR_FILL_OPACITY, fill_svg_opacity(&self.fill)),
-        ];
-
-        let element = SVGTag {
-            tag: TAG_PATH,
-            attrs,
-            ..Default::default()
-        }
-        .to_string();
-        if defs.is_empty() {
-            element
-        } else {
-            format!("{defs}{element}")
-        }
+        write_fill_path(out, &self.fill, grad_seen, |out| {
+            let _ = SmoothCurve::write_points(&self.points, false, out);
+            // The curve does not end with a space; the closing move is
+            // concatenated the same way (`…99.1M 555.2`).
+            out.push_str("M ");
+            write_float(out, last.x);
+            out.push(' ');
+            write_float(out, last.y);
+            out.push_str(" L ");
+            write_float(out, last.x);
+            out.push(' ');
+            write_float(out, self.bottom);
+            out.push_str(" L ");
+            write_float(out, first.x);
+            out.push(' ');
+            write_float(out, self.bottom);
+            out.push_str(" L ");
+            write_float(out, first.x);
+            out.push(' ');
+            write_float(out, first.y);
+        });
     }
 }
 
@@ -1575,18 +1590,12 @@ impl SmoothBand {
         if self.top.len() < 2 || self.bottom.len() < 2 {
             return String::new();
         }
-        let mut d = SmoothCurve {
-            points: self.top.clone(),
-            ..Default::default()
-        }
-        .to_string();
+        let mut d = String::new();
+        let _ = SmoothCurve::write_points(&self.top, false, &mut d);
         let mut bottom = self.bottom.clone();
         bottom.reverse();
-        let bottom_d = SmoothCurve {
-            points: bottom,
-            ..Default::default()
-        }
-        .to_string();
+        let mut bottom_d = String::new();
+        let _ = SmoothCurve::write_points(&bottom, false, &mut bottom_d);
         // The lower curve starts with a move; join it with a line instead.
         let (start, rest) = bottom_d.split_once(' ').unwrap_or((&bottom_d, ""));
         d.push_str(" L");
@@ -1656,6 +1665,11 @@ impl Default for StraightLine {
 impl StraightLine {
     /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String) {
         BaseLine {
             color: self.color,
             fill: self.fill,
@@ -1668,7 +1682,7 @@ impl StraightLine {
             class: self.class.clone(),
             path_length: self.path_length,
         }
-        .svg()
+        .write_svg(out);
     }
 }
 
@@ -1688,11 +1702,13 @@ pub struct StraightLineFill {
 impl StraightLineFill {
     /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
-        self.svg_with_grad_seen(None)
+        let mut out = String::new();
+        self.write_svg(&mut out, None);
+        out
     }
-    pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
+    pub(crate) fn write_svg(&self, out: &mut String, grad_seen: Option<&mut HashSet<String>>) {
         if self.points.is_empty() || self.fill.is_transparent() {
-            return "".to_string();
+            return;
         }
         let mut points = Vec::with_capacity(self.points.len() + 3);
         points.extend_from_slice(&self.points);
@@ -1701,40 +1717,10 @@ impl StraightLineFill {
         points.push((last.x, self.bottom).into());
         points.push((first.x, self.bottom).into());
         points.push(first);
-        let mut arr = vec![];
-        for (index, p) in points.iter().enumerate() {
-            let mut action = "L";
-            if index == 0 {
-                action = "M"
-            }
-            arr.push(format!(
-                "{} {} {}",
-                action,
-                format_float(p.x),
-                format_float(p.y)
-            ));
-        }
-        if self.close {
-            arr.push('Z'.to_string());
-        }
-        let defs = fill_svg_defs(&self.fill, grad_seen);
-        let attrs = vec![
-            (ATTR_D, arr.join(" ")),
-            (ATTR_FILL, fill_svg_attr(&self.fill)),
-            (ATTR_FILL_OPACITY, fill_svg_opacity(&self.fill)),
-        ];
-
-        let element = SVGTag {
-            tag: TAG_PATH,
-            attrs,
-            ..Default::default()
-        }
-        .to_string();
-        if defs.is_empty() {
-            element
-        } else {
-            format!("{defs}{element}")
-        }
+        let close = self.close;
+        write_fill_path(out, &self.fill, grad_seen, |out| {
+            write_straight_path(out, &points, close);
+        });
     }
 }
 
@@ -1897,6 +1883,25 @@ fn bare_line((left, top, right, bottom): (f32, f32, f32, f32)) -> String {
     out
 }
 
+/// The label actually drawn at `index`: an ellipsized string when overflow
+/// asked for that, otherwise the raw category or its formatted form.
+fn axis_visible_label<'a>(
+    data: &'a [String],
+    ellipsized: &'a Option<Vec<String>>,
+    formatter: &str,
+    index: usize,
+    buf: &'a mut String,
+) -> &'a str {
+    if let Some(list) = ellipsized {
+        return list[index].as_str();
+    }
+    if formatter.is_empty() {
+        return data[index].as_str();
+    }
+    *buf = format_string(&data[index], formatter);
+    buf
+}
+
 impl Axis {
     /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> Result<String> {
@@ -1947,23 +1952,22 @@ impl Axis {
             self.height
         };
         let font_size = self.font_size;
-        let formatter = &self.formatter.clone().unwrap_or_default();
+        let formatter = self.formatter.as_deref().unwrap_or("");
 
-        let mut text_list = vec![];
+        let mut ellipsized: Option<Vec<String>> = None;
         let mut text_unit_count: usize = 1;
         let mut name_rotate_rad = self.name_rotate;
-        if font_size > 0.0 && !self.data.is_empty() {
-            text_list = self
-                .data
-                .iter()
-                .map(|item| format_string(item, formatter))
-                .collect();
+        let has_labels = font_size > 0.0 && !self.data.is_empty();
+        if has_labels {
             if self.position == Position::Top || self.position == Position::Bottom {
-                // Measured as one string (kerning included) through the
-                // per-thread cache, so a re-render of the same axis is free.
-                let total_measure =
-                    measure_text_width_family(&self.font_family, font_size, &text_list.join(" "))?;
-                let mut total_measure_width = total_measure.width();
+                // Same width as measuring the labels joined by spaces. Cached,
+                // so a long category axis does not rebuild that string per render.
+                let mut total_measure_width = font::measure_label_row_width(
+                    &self.font_family,
+                    font_size,
+                    formatter,
+                    &self.data,
+                )?;
                 let overflowing = total_measure_width > axis_length;
                 match self.label_overflow {
                     // Rotate first; whatever still overlaps is thinned below.
@@ -1979,12 +1983,24 @@ impl Axis {
                         }
                         .max(1);
                         let slot_width = (axis_length / slots as f32 - 4.0).max(font_size);
-                        text_list = text_list
-                            .iter()
-                            .map(|text| {
-                                font::text_ellipsis(&self.font_family, font_size, text, slot_width)
-                            })
-                            .collect();
+                        ellipsized = Some(
+                            self.data
+                                .iter()
+                                .map(|text| {
+                                    let shown = if formatter.is_empty() {
+                                        text.clone()
+                                    } else {
+                                        format_string(text, formatter)
+                                    };
+                                    font::text_ellipsis(
+                                        &self.font_family,
+                                        font_size,
+                                        &shown,
+                                        slot_width,
+                                    )
+                                })
+                                .collect(),
+                        );
                         total_measure_width = 0.0;
                     }
                     _ => {}
@@ -1999,7 +2015,7 @@ impl Axis {
             } else {
                 // Vertical axes: labels stack by their line height, so skip
                 // every n-th one when there are more than fit.
-                let total_height = text_list.len() as f32 * font_size * 1.2;
+                let total_height = self.data.len() as f32 * font_size * 1.2;
                 if total_height > axis_length {
                     text_unit_count += (total_height / axis_length).ceil() as usize;
                 }
@@ -2052,7 +2068,7 @@ impl Axis {
         }
         let mut text_data = vec![];
         let name_rotate = name_rotate_rad / std::f32::consts::PI * 180.0;
-        if !text_list.is_empty() {
+        if has_labels {
             let name_gap = self.name_gap;
             let mut data_len = self.data.len();
             let is_name_align_start = self.name_align == Align::Left;
@@ -2064,10 +2080,13 @@ impl Axis {
             }
             let unit = axis_length / data_len.max(1) as f32;
 
-            for (index, text) in text_list.iter().enumerate() {
+            for index in 0..self.data.len() {
                 if index % text_unit_count != 0 {
                     continue;
                 }
+                let mut label_buf = String::new();
+                let text =
+                    axis_visible_label(&self.data, &ellipsized, formatter, index, &mut label_buf);
                 let b = measure_text_width_family(&self.font_family, font_size, text)?;
                 let mut unit_offset = unit * index as f32 + unit / 2.0;
                 if is_name_align_start {
