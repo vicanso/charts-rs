@@ -4,6 +4,12 @@
 
 ### Fixed
 
+- A data label on a point at the edge of the plot is moved inside the canvas
+  instead of being cut off.
+- A scatter point with a missing coordinate is skipped instead of being drawn
+  at a bogus position.
+- Builds cleanly with Rust 1.99 (`pie_chart.rs` no longer resolves `f32::MAX`
+  to the deprecated module constant).
 - Bar and horizontal bar charts draw negative values from the 0 line instead
   of the axis bottom; stacked negatives no longer produce negative `height`
   attributes, and an axis that crosses 0 now puts 0 on a tick (an all-negative
@@ -56,6 +62,25 @@
 
 ### Added
 
+- Continuous x axes on line and bar charts: `x_axis_values` (shared) or a
+  series' `x_values` place every point at its x value instead of in evenly
+  spaced category slots, so unevenly sampled data keeps its real spacing.
+  `x_axis_type` is `value` (numbers) or `time` (unix seconds; JSON also
+  takes date strings such as `"2024-01-05 08:30"`, which select the time
+  axis by themselves). Ticks land on round values or round times (seconds
+  up to years, months and years on real calendar boundaries);
+  `x_axis_min` / `x_axis_max` fix the range, `x_axis_formatter` formats the
+  labels (`{c}`, or a `%Y-%m-%d %H:%M`-style pattern on a time axis) and
+  `x_axis_time_offset` shows timestamps in a zone other than UTC. Bars are as
+  wide as the smallest gap between two x values.
+- Axis titles: `x_axis_title` below the x axis and `axis_title` in a y axis
+  config, written along its axis (rotated), on line, bar, horizontal bar,
+  candlestick, scatter, waterfall, box plot and heatmap charts.
+- Bubble charts: `ScatterChart::bubble` reads the series data as
+  `[x, y, size]` triples and scales each circle's area by its size, between
+  `bubble_min_size` and `bubble_max_size`.
+- `series_label_hide_overlap` drops a data label that would overlap one
+  already drawn (line, bar and horizontal bar charts).
 - `series_label_formatter` templates (`{a}` series, `{b}` category, `{c}`
   value, `{t}` thousands) work on bar, line, horizontal bar, radar and heatmap
   charts; precision-only formatters keep their meaning.

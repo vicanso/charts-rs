@@ -1,0 +1,12 @@
+{
+    "title_text": "Countries",
+    "title_align": "left",
+    "legend_align": "right",
+    "bubble": true,
+    "x_axis_title": "GDP per capita (k$)",
+    "y_axis_configs": [{"axis_title": "Life expectancy"}],
+    "series_list": [
+        {"name": "Asia", "data": [12, 77, 1400, 40, 84, 125, 2.4, 70, 1380, 33, 83, 52]},
+        {"name": "Europe", "data": [48, 81, 83, 43, 82, 67, 35, 83, 60, 15, 76, 38]}
+    ]
+}

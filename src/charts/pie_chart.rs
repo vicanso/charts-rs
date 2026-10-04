@@ -19,7 +19,6 @@ use super::params::*;
 use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
-use core::f32;
 
 /// A pie / nightingale rose chart; each series contributes one value.
 #[derive(Clone, Debug, Default, PartialEq)]

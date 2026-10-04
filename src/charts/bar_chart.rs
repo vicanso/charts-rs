@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::base::ChartBase;
+use super::base::{ChartBase, XAxisMode};
 use super::canvas;
 use super::common::*;
 use super::component::*;
@@ -93,7 +93,18 @@ impl BarChart {
     /// Converts bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let c = self.new_canvas();
-        let layout = self.layout_cartesian(c, &self.y_axis_configs);
+        // Bars take a band around their x; a chart of lines only does not
+        // need that room at the ends of a continuous axis.
+        let has_bars = self
+            .series_list
+            .iter()
+            .any(|s| s.category != Some(SeriesCategory::Line));
+        let x_mode = if has_bars {
+            XAxisMode::Bands
+        } else {
+            XAxisMode::Points
+        };
+        let layout = self.layout_cartesian(c, &self.y_axis_configs, x_mode);
         let c = layout.canvas.clone();
         let (left_y_axis_values, right_y_axis_values) = (&layout.left, &layout.right);
         let axis_height = layout.axis_height;
@@ -119,7 +130,8 @@ impl BarChart {
             &bar_series_list,
             &y_axis_values_list,
             max_height,
-            self.x_axis_data.len(),
+            layout.x_count,
+            layout.x.as_ref(),
             self.radius,
             self.animation.as_ref(),
             self.tooltip_show,
@@ -131,7 +143,8 @@ impl BarChart {
             &y_axis_values_list,
             max_height,
             axis_height,
-            self.x_axis_data.len(),
+            layout.x_count,
+            layout.x.as_ref(),
             None,
             self.tooltip_show,
         );

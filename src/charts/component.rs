@@ -1841,6 +1841,10 @@ pub struct Axis {
     /// What to do with labels that do not fit side by side (horizontal
     /// axes only).
     pub label_overflow: AxisLabelOverflow,
+    /// Explicit tick positions, as offsets from the start of the axis, one
+    /// per label in `data` (a continuous axis). When set the ticks and
+    /// labels sit at these positions instead of being evenly spaced.
+    pub tick_positions: Option<Vec<f32>>,
 }
 impl Default for Axis {
     fn default() -> Self {
@@ -1865,6 +1869,7 @@ impl Default for Axis {
             tick_start: 0,
             tick_interval: 0,
             label_overflow: AxisLabelOverflow::Thin,
+            tick_positions: None,
         }
     }
 }
@@ -2029,7 +2034,35 @@ impl Axis {
         // Floor at 1 so an empty axis cannot divide `axis_length` by zero
         // (which would emit `NaN` tick coordinates).
         let split_number = split_number.max(1);
-        if !is_transparent {
+        if !is_transparent && let Some(positions) = &self.tick_positions {
+            // One tick per (shown) label, where the label is.
+            for (index, offset) in positions.iter().enumerate() {
+                if index % text_unit_count != 0 {
+                    continue;
+                }
+                let values = match self.position {
+                    Position::Top => {
+                        let x = left + offset;
+                        let y = top + height;
+                        (x, y - tick_length, x, y)
+                    }
+                    Position::Right => {
+                        let y = top + offset;
+                        (left, y, left + tick_length, y)
+                    }
+                    Position::Bottom => {
+                        let x = left + offset;
+                        (x, top, x, top + tick_length)
+                    }
+                    _ => {
+                        let y = top + offset;
+                        let x = left + width;
+                        (x, y, x - tick_length, y)
+                    }
+                };
+                line_data.push(bare_line(values));
+            }
+        } else if !is_transparent {
             let unit = axis_length / split_number as f32;
             let tick_interval = self.tick_interval.max(text_unit_count);
             let tick_start = self.tick_start;
@@ -2093,8 +2126,15 @@ impl Axis {
                     unit_offset -= unit / 2.0;
                 }
                 let text_width = b.width();
+                let explicit = self
+                    .tick_positions
+                    .as_ref()
+                    .and_then(|positions| positions.get(index).copied());
+                if let Some(offset) = explicit {
+                    unit_offset = offset;
+                }
 
-                let values = match self.position {
+                let mut values = match self.position {
                     Position::Top => {
                         let y = top + height - name_gap;
                         let x = left + unit_offset - text_width / 2.0;
@@ -2116,6 +2156,11 @@ impl Axis {
                         (x, y)
                     }
                 };
+                // A label centred on a tick near either end would stick out
+                // of the axis; keep it inside.
+                if explicit.is_some() && is_horizontal {
+                    values.0 = values.0.min(left + width - text_width).max(left);
+                }
                 let mut transform = None;
                 let mut x = Some(values.0);
                 let mut y = Some(values.1);

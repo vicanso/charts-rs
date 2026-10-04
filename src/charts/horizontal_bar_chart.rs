@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::base::{ChartBase, axis_value_params, get_y_axis_config, mark_statistics};
+use super::base::{ChartBase, LabelBoxes, axis_value_params, get_y_axis_config, mark_statistics};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -93,6 +93,10 @@ impl HorizontalBarChart {
         let mut c = self.new_canvas();
 
         let axis_top = self.render_header(&mut c);
+        // Titles follow position too: `x_axis_title` below the value axis,
+        // the first y config's `axis_title` beside the categories.
+        let titles =
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
 
         // The value axis is the base's "x axis" (bottom) and the category
         // axis its "y axis" (left), so `x_axis_*` / `y_axis_*` options keep
@@ -213,6 +217,15 @@ impl HorizontalBarChart {
         let x_axis_values = get_axis_values(axis_value_params(&x_axis_config, data_list, false));
 
         let x_axis_width = c.width() - y_axis_width;
+        self.render_axis_titles(
+            &titles,
+            &self.y_axis_configs,
+            &self.x_axis_title,
+            y_axis_width,
+            axis_top,
+            x_axis_width,
+            axis_height,
+        );
         if !self.x_axis_hidden {
             c.child(Box {
                 left: y_axis_width,
@@ -411,17 +424,20 @@ impl HorizontalBarChart {
                 .series_label_position
                 .clone()
                 .unwrap_or(Position::Right);
+            let mut placed = LabelBoxes::new(self.series_label_hide_overlap);
             for series_labels in series_labels_list.iter() {
                 for series_label in series_labels.iter() {
                     let mut dy = None;
                     let mut dx = Some(3.0);
                     let mut x = Some(series_label.point.x);
+                    let mut label_width = 0.0;
                     if let Ok(value) = measure_text_width_family(
                         &self.font_family,
                         self.series_label_font_size,
                         &series_label.text,
                     ) {
                         dy = Some(value.height() / 2.0 - 2.0);
+                        label_width = value.width();
                         if series_label_position == Position::Inside {
                             dx = None;
                             let offset = series_label.point.x - value.width();
@@ -434,6 +450,16 @@ impl HorizontalBarChart {
                             x = Some(0.0);
                             dx = Some(-value.width());
                         }
+                    }
+                    // The label is vertically centred on its bar.
+                    let font_size = self.series_label_font_size;
+                    if !placed.try_place(
+                        x.unwrap_or_default() + dx.unwrap_or_default(),
+                        series_label.point.y - font_size / 2.0,
+                        label_width,
+                        font_size,
+                    ) {
+                        continue;
                     }
                     c1.text_unmeasured(Text {
                         text: series_label.text.clone(),

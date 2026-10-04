@@ -361,6 +361,40 @@ let series: Series = ("销售额", vec![Some(120.0), None, Some(101.0)]).into();
 | `{d}` | 百分比（饼图 / 漏斗图） |
 | `{t}` | 千位格式（1.2K、5.6M） |
 
+### 数值轴与时间轴
+
+折线图、柱状图的 x 轴默认是类目轴（各点等距）。给出 x 值后，x 轴变为连续轴：每个点按其 x 值定位，不等间隔的采样保持真实间距。
+
+```json
+{
+  "x_axis_title": "时间 (UTC)",
+  "y_axis_configs": [{ "axis_title": "温度 (°C)" }],
+  "x_axis_values": ["2024-03-01 00:00", "2024-03-01 00:20", "2024-03-01 04:00", "2024-03-01 12:00"],
+  "series_list": [
+    { "name": "室内", "data": [21.5, 21.8, 20.1, 24.6] },
+    { "name": "室外", "x_values": ["2024-03-01 02:00", "2024-03-01 11:00"], "data": [8.2, 14.9] }
+  ]
+}
+```
+
+- `x_axis_values` 由所有系列共享；采样时刻不同的系列可以自带 `x_values`。
+- 日期字符串（`2024-03-01`、`2024-03-01 08:30`、`2024-03-01T08:30:00+08:00`）会自动使用时间轴；数字是普通数值，配合 `"x_axis_type": "time"` 时表示 unix 秒。
+- 刻度落在整数值或整点时间上。`x_axis_min` / `x_axis_max` 固定范围，`x_axis_formatter` 设置标签格式（`"{c} km"`，时间轴可用 `"%m-%d %H:%M"` 这类模式），`x_axis_time_offset`（相对 UTC 的分钟数，东八区为 480）用于按本地时间显示时间戳。
+
+Rust 中设置 `chart.x_axis_values`（`Vec<f64>`），时间戳再加上 `chart.x_axis_type = AxisType::Time`。
+
+### 坐标轴标题
+
+`x_axis_title` 显示在 x 轴下方；y 轴配置中的 `axis_title` 沿该轴竖向显示。
+
+### 气泡图
+
+散点图设置 `"bubble": true` 后，系列数据按 `[x, y, size]` 三元组读取，圆的面积随 size 变化（`bubble_min_size` / `bubble_max_size` 设置半径范围）。
+
+### 数据标签防重叠
+
+`"series_label_hide_overlap": true` 会隐藏与已绘制标签重叠的数据标签。
+
 ## 精简输出
 
 `chart.compact = true`（JSON `"compact": true`）会按优化器的方式输出 SVG：去掉空白、路径用相对坐标和 `h`/`v` 简写、网格线与刻度合并为单个 path、公共属性提升到分组、去掉默认值与长十六进制颜色。渲染结果不变，体积通常小 20–30%。对已有的输出可直接调用 `charts_rs::compact_svg(&svg)`。

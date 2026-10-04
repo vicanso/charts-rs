@@ -1,0 +1,121 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Sensor readings
+</text>
+<g>
+<line stroke-width="2" x1="438" y1="15" x2="463" y2="15" stroke="#5470C6"/>
+<circle cx="450.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="466" y="19" font-family="Roboto" fill="#464646">
+Indoor
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="512" y1="15" x2="537" y2="15" stroke="#91CC75"/>
+<circle cx="524.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="540" y="19" font-family="Roboto" fill="#464646">
+Outdoor
+</text>
+</g>
+<text font-size="14" x="320.5" y="391.5" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Time (UTC)
+</text>
+<text font-size="14" transform="translate(16.9,192.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Temperature (°C)
+</text>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="46" y1="40" x2="595" y2="40"/><line x1="46" y1="90.8" x2="595" y2="90.8"/><line x1="46" y1="141.7" x2="595" y2="141.7"/><line x1="46" y1="192.5" x2="595" y2="192.5"/><line x1="46" y1="243.3" x2="595" y2="243.3"/><line x1="46" y1="294.2" x2="595" y2="294.2"/>
+</g>
+<g>
+
+<text font-size="14" x="22" y="45" font-family="Roboto" fill="#6E7079">
+36
+</text>
+<text font-size="14" x="22" y="95.8" font-family="Roboto" fill="#6E7079">
+30
+</text>
+<text font-size="14" x="22" y="146.7" font-family="Roboto" fill="#6E7079">
+24
+</text>
+<text font-size="14" x="22" y="197.5" font-family="Roboto" fill="#6E7079">
+18
+</text>
+<text font-size="14" x="22" y="248.3" font-family="Roboto" fill="#6E7079">
+12
+</text>
+<text font-size="14" x="30" y="299.2" font-family="Roboto" fill="#6E7079">
+6
+</text>
+<text font-size="14" x="30" y="350" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="46" y1="345" x2="595" y2="345"/>
+<line x1="46" y1="345" x2="46" y2="350"/>
+<line x1="137.5" y1="345" x2="137.5" y2="350"/>
+<line x1="229" y1="345" x2="229" y2="350"/>
+<line x1="320.5" y1="345" x2="320.5" y2="350"/>
+<line x1="412" y1="345" x2="412" y2="350"/>
+<line x1="503.5" y1="345" x2="503.5" y2="350"/>
+<line x1="595" y1="345" x2="595" y2="350"/>
+</g>
+<text font-size="14" x="46" y="364" font-family="Roboto" fill="#6E7079">
+03-01
+</text>
+<text font-size="14" x="119.5" y="364" font-family="Roboto" fill="#6E7079">
+02:00
+</text>
+<text font-size="14" x="211" y="364" font-family="Roboto" fill="#6E7079">
+04:00
+</text>
+<text font-size="14" x="302.5" y="364" font-family="Roboto" fill="#6E7079">
+06:00
+</text>
+<text font-size="14" x="394" y="364" font-family="Roboto" fill="#6E7079">
+08:00
+</text>
+<text font-size="14" x="485.5" y="364" font-family="Roboto" fill="#6E7079">
+10:00
+</text>
+<text font-size="14" x="559" y="364" font-family="Roboto" fill="#6E7079">
+12:00
+</text>
+</g>
+<g>
+<path d="M 46 162.8 L 61.2 160.3 L 91.8 155.2 L 229 174.7 L 251.9 173 L 457.8 142.5 L 595 136.6" stroke-width="2" fill="none" stroke="#5470C6"/>
+<g stroke-width="2" stroke="#5470C6" fill="#FFFFFF">
+<circle cx="46" cy="162.8" r="2"/>
+<circle cx="61.2" cy="160.3" r="2"/>
+<circle cx="91.8" cy="155.2" r="2"/>
+<circle cx="229" cy="174.7" r="2"/>
+<circle cx="251.9" cy="173" r="2"/>
+<circle cx="457.8" cy="142.5" r="2"/>
+<circle cx="595" cy="136.6" r="2"/>
+</g>
+</g>
+<g>
+<path d="M 137.5 275.5 L 320.5 290.8 L 549.2 218.8" stroke-width="2" fill="none" stroke="#91CC75"/>
+<g stroke-width="2" stroke="#91CC75" fill="#FFFFFF">
+<circle cx="137.5" cy="275.5" r="2"/>
+<circle cx="320.5" cy="290.8" r="2"/>
+<circle cx="549.2" cy="218.8" r="2"/>
+</g>
+</g>
+<text font-size="14" x="46" y="162.8" dx="-14" dy="-8" font-family="Roboto" fill="#464646">
+21.5
+</text>
+<text font-size="14" x="91.8" y="155.2" dx="-14" dy="-8" font-family="Roboto" fill="#464646">
+22.4
+</text>
+<text font-size="14" x="229" y="174.7" dx="-12.5" dy="-8" font-family="Roboto" fill="#464646">
+20.1
+</text>
+<text font-size="14" x="457.8" y="142.5" dx="-13.5" dy="-8" font-family="Roboto" fill="#464646">
+23.9
+</text>
+<text font-size="14" x="595" y="136.6" dx="-23" dy="-8" font-family="Roboto" fill="#464646">
+24.6
+</text>
+</svg>

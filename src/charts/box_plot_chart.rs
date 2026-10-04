@@ -145,6 +145,8 @@ impl BoxPlotChart {
             x_axis_height = 0.0;
         }
         let axis_top = self.render_header(&mut c);
+        let titles =
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
 
         // Collect all values to build y-axis range
         let mut all_values: Vec<f32> = vec![];
@@ -175,6 +177,15 @@ impl BoxPlotChart {
 
         let axis_height = c.height() - x_axis_height - axis_top;
         let axis_width = c.width() - y_axis_width;
+        self.render_axis_titles(
+            &titles,
+            &self.y_axis_configs,
+            &self.x_axis_title,
+            y_axis_width,
+            axis_top,
+            axis_width,
+            axis_height,
+        );
 
         if axis_top > 0.0 {
             c = c.child(Box {

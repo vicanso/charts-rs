@@ -1,0 +1,12 @@
+{
+    "title_text": "Orders",
+    "title_align": "left",
+    "legend_align": "right",
+    "x_axis_title": "Day",
+    "x_axis_values": ["2024-03-01", "2024-03-02", "2024-03-03", "2024-03-06", "2024-03-07", "2024-03-10"],
+    "y_axis_configs": [{"axis_title": "Orders"}, {"axis_title": "Conversion (%)"}],
+    "series_list": [
+        {"name": "Orders", "data": [120, 132, 101, 134, 90, 230]},
+        {"name": "Conversion", "data": [2.1, 2.4, 1.9, 2.8, 1.7, 3.3], "category": "line", "y_axis_index": 1}
+    ]
+}

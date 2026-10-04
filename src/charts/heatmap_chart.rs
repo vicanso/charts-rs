@@ -258,6 +258,8 @@ impl HeatmapChart {
             x_axis_height = 0.0;
         }
         let axis_top = self.render_header(&mut c);
+        let titles =
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
         let axis_height = c.height() - x_axis_height - axis_top;
 
         // minus the height of top text area
@@ -288,6 +290,15 @@ impl HeatmapChart {
             );
         }
         let axis_width = c.width() - y_axis_width;
+        self.render_axis_titles(
+            &titles,
+            &self.y_axis_configs,
+            &self.x_axis_title,
+            y_axis_width,
+            axis_top,
+            axis_width,
+            axis_height,
+        );
         // x axis
         if !self.x_axis_hidden {
             self.render_x_axis(

@@ -1,0 +1,20 @@
+{
+    "title_text": "Sensor readings",
+    "title_align": "left",
+    "legend_align": "right",
+    "x_axis_title": "Time (UTC)",
+    "y_axis_configs": [{"axis_title": "Temperature (°C)"}],
+    "series_label_hide_overlap": true,
+    "x_axis_values": [
+        "2024-03-01 00:00", "2024-03-01 00:20", "2024-03-01 01:00", "2024-03-01 04:00",
+        "2024-03-01 04:30", "2024-03-01 09:00", "2024-03-01 12:00"
+    ],
+    "series_list": [
+        {"name": "Indoor", "label_show": true, "data": [21.5, 21.8, 22.4, 20.1, 20.3, 23.9, 24.6]},
+        {
+            "name": "Outdoor",
+            "x_values": ["2024-03-01 02:00", "2024-03-01 06:00", "2024-03-01 11:00"],
+            "data": [8.2, 6.4, 14.9]
+        }
+    ]
+}

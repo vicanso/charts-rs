@@ -33,6 +33,7 @@ use super::params::*;
 use super::schema;
 use super::theme::{DEFAULT_Y_AXIS_WIDTH, Theme, get_theme, list_theme_name};
 use super::util::*;
+use super::x_axis::ContinuousX;
 
 /// The options shared by every chart type: canvas size and position, the data
 /// series, font/background, the title, sub-title and legend blocks, the x/y
@@ -145,6 +146,37 @@ pub struct ChartBase {
     /// them out (default), rotate them, or cut them with an ellipsis.
     #[serde(default)]
     pub x_axis_label_overflow: AxisLabelOverflow,
+    /// How continuous x values read: plain numbers, or timestamps (`Time`).
+    /// The axis is continuous whenever x values are given; see
+    /// `x_axis_values`.
+    #[serde(default)]
+    pub x_axis_type: AxisType,
+    /// The x value of each data point, shared by every series (a series may
+    /// carry its own in `Series::x_values`). Setting them turns the x axis
+    /// of line and bar charts from evenly spaced categories into a
+    /// continuous scale, so unevenly sampled data keeps its real spacing.
+    /// Timestamps are seconds since the unix epoch; JSON also takes date
+    /// strings such as `"2024-01-05"` or `"2024-01-05 08:30"`.
+    #[serde(default)]
+    pub x_axis_values: Vec<f64>,
+    /// Fixed start of a continuous x axis; `None` starts at the first value.
+    #[serde(default)]
+    pub x_axis_min: Option<f64>,
+    /// Fixed end of a continuous x axis; `None` ends at the last value.
+    #[serde(default)]
+    pub x_axis_max: Option<f64>,
+    /// Format of the x axis labels: `{c}` is the label; on a time axis a
+    /// `strftime`-like pattern (`%Y %y %m %d %H %M %S %b`) replaces the
+    /// automatic one.
+    #[serde(default)]
+    pub x_axis_formatter: Option<String>,
+    /// Minutes east of UTC that a time axis is displayed in (480 for
+    /// UTC+8). Timestamps are shown in UTC by default.
+    #[serde(default)]
+    pub x_axis_time_offset: i32,
+    /// Title of the x axis, written below its labels.
+    #[serde(default)]
+    pub x_axis_title: String,
     /// Hides the x axis entirely (charts without an x axis ignore this).
     pub x_axis_hidden: bool,
     /// Hides the y axis entirely (charts without a y axis ignore this).
@@ -166,6 +198,10 @@ pub struct ChartBase {
     /// Series label format, supporting `{c}` value, `{a}` series name,
     /// `{b}` category, `{d}` percentage and `{t}` thousands.
     pub series_label_formatter: String,
+    /// Drops a data label that would overlap one already drawn, instead of
+    /// printing them on top of each other.
+    #[serde(default)]
+    pub series_label_hide_overlap: bool,
     /// Color palette cycled through by the series.
     pub series_colors: Vec<Color>,
     /// Marker drawn on data points (circle, dot or none).
@@ -271,7 +307,69 @@ pub(crate) struct CartesianLayout {
     pub axis_width: f32,
     /// Height available to the series: the canvas minus the x axis.
     pub max_height: f32,
+    /// The scale of a continuous x axis; `None` on a category axis.
+    pub x: Option<ContinuousX>,
+    /// Number of slots along the x axis (categories, or x values).
+    pub x_count: usize,
 }
+
+/// How a chart's series sit on the x axis.
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub(crate) enum XAxisMode {
+    /// Always evenly spaced categories.
+    Category,
+    /// Points: a continuous axis (when x values are given) spans exactly
+    /// the values.
+    Points,
+    /// Bars: a continuous axis leaves half a band at both ends.
+    Bands,
+}
+
+/// Space taken along the edges of a chart by its axis titles.
+pub(crate) struct AxisTitles {
+    /// The canvas before the space was taken; the titles are drawn on it.
+    outer: Canvas,
+    bottom: f32,
+    left: f32,
+    right: f32,
+}
+
+/// The boxes of the data labels drawn so far, to drop a label that would
+/// overlap one of them (`series_label_hide_overlap`). When disabled every
+/// label is accepted and nothing is recorded.
+pub(crate) struct LabelBoxes {
+    enabled: bool,
+    boxes: Vec<(f32, f32, f32, f32)>,
+}
+
+impl LabelBoxes {
+    pub fn new(enabled: bool) -> Self {
+        LabelBoxes {
+            enabled,
+            boxes: vec![],
+        }
+    }
+    /// Records the box and returns true, unless it overlaps a recorded one.
+    pub fn try_place(&mut self, left: f32, top: f32, width: f32, height: f32) -> bool {
+        if !self.enabled {
+            return true;
+        }
+        let (right, bottom) = (left + width, top + height);
+        // Labels that merely touch read as one number; keep a small gap.
+        const GAP: f32 = 2.0;
+        let overlaps = self
+            .boxes
+            .iter()
+            .any(|&(l, t, r, b)| left - GAP < r && l < right + GAP && top < b && t < bottom);
+        if !overlaps {
+            self.boxes.push((left, top, right, bottom));
+        }
+        !overlaps
+    }
+}
+
+/// Gap between an axis title and the axis labels.
+const AXIS_TITLE_GAP: f32 = 6.0;
 
 impl CartesianLayout {
     /// Canvas of the plot area between the y axes.
@@ -497,6 +595,44 @@ impl ChartBase {
                 _ => AxisLabelOverflow::Thin,
             };
         }
+        if let Some(kind) = get_string_from_value(&data, "x_axis_type") {
+            self.x_axis_type = match kind.to_lowercase().as_str() {
+                "value" => AxisType::Value,
+                "time" => AxisType::Time,
+                _ => AxisType::Category,
+            };
+        }
+        // Date strings make the axis a time axis unless it says otherwise.
+        let mut has_time_strings = false;
+        if let Some((values, has_time)) = get_x_values_from_value(&data, "x_axis_values") {
+            self.x_axis_values = values;
+            has_time_strings |= has_time;
+        }
+        if let Some(list) = data.get("series_list").and_then(|v| v.as_array()) {
+            has_time_strings |= list.iter().any(|item| {
+                get_x_values_from_value(item, "x_values").is_some_and(|(_, has_time)| has_time)
+            });
+        }
+        if let Some((value, has_time)) = data.get("x_axis_min").and_then(get_x_value) {
+            self.x_axis_min = Some(value);
+            has_time_strings |= has_time;
+        }
+        if let Some((value, has_time)) = data.get("x_axis_max").and_then(get_x_value) {
+            self.x_axis_max = Some(value);
+            has_time_strings |= has_time;
+        }
+        if has_time_strings && self.x_axis_type == AxisType::Category {
+            self.x_axis_type = AxisType::Time;
+        }
+        if let Some(formatter) = get_string_from_value(&data, "x_axis_formatter") {
+            self.x_axis_formatter = Some(formatter);
+        }
+        if let Some(offset) = get_f32_from_value(&data, "x_axis_time_offset") {
+            self.x_axis_time_offset = offset as i32;
+        }
+        if let Some(title) = get_string_from_value(&data, "x_axis_title") {
+            self.x_axis_title = title;
+        }
         if let Some(x_axis_hidden) = get_bool_from_value(&data, "x_axis_hidden") {
             self.x_axis_hidden = x_axis_hidden;
         }
@@ -534,6 +670,9 @@ impl ChartBase {
         if let Some(series_label_formatter) = get_string_from_value(&data, "series_label_formatter")
         {
             self.series_label_formatter = series_label_formatter;
+        }
+        if let Some(hide) = get_bool_from_value(&data, "series_label_hide_overlap") {
+            self.series_label_hide_overlap = hide;
         }
 
         if let Some(series_colors) = get_color_slice_from_value(&data, "series_colors") {
@@ -940,6 +1079,7 @@ impl ChartBase {
         &self,
         c: Canvas,
         y_axis_configs: &[YAxisConfig],
+        x_mode: XAxisMode,
     ) -> CartesianLayout {
         let mut c = c;
         let axis_top = self.render_header(&mut c);
@@ -949,7 +1089,116 @@ impl ChartBase {
         } else {
             None
         };
-        self.layout_cartesian_with(c, y_axis_configs, axis_top, left, right)
+        self.layout_cartesian_with(c, y_axis_configs, axis_top, left, right, x_mode)
+    }
+    /// Takes the space the axis titles need off the edges of `c`: the x
+    /// title below the x axis, the y titles beside the y axes. Call it once
+    /// the header is drawn and before sizing the plot, then draw the titles
+    /// with [`Self::render_axis_titles`] when the plot is known.
+    pub(crate) fn reserve_axis_titles(
+        &self,
+        c: &mut Canvas,
+        y_axis_configs: &[YAxisConfig],
+        x_title: &str,
+        right_axis: bool,
+    ) -> AxisTitles {
+        let outer = c.clone();
+        let strip = |title: Option<&str>, font_size: f32| -> f32 {
+            match title {
+                Some(text) if !text.is_empty() => font_size + AXIS_TITLE_GAP,
+                _ => 0.0,
+            }
+        };
+        let bottom = if self.x_axis_hidden {
+            0.0
+        } else {
+            strip(Some(x_title), self.x_axis_font_size)
+        };
+        let side = |index: usize| -> f32 {
+            match y_axis_configs.get(index) {
+                Some(config) if !self.y_axis_hidden => {
+                    strip(config.axis_title.as_deref(), config.axis_font_size)
+                }
+                _ => 0.0,
+            }
+        };
+        let left = side(0);
+        let right = if right_axis { side(1) } else { 0.0 };
+        c.margin.bottom += bottom;
+        c.margin.left += left;
+        c.margin.right += right;
+        AxisTitles {
+            outer,
+            bottom,
+            left,
+            right,
+        }
+    }
+    /// Draws the axis titles reserved by [`Self::reserve_axis_titles`],
+    /// centred on the plot: `plot_left` / `plot_top` are its offset in the
+    /// canvas the space was taken from, `plot_width` / `plot_height` its
+    /// size.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn render_axis_titles(
+        &self,
+        titles: &AxisTitles,
+        y_axis_configs: &[YAxisConfig],
+        x_title: &str,
+        plot_left: f32,
+        plot_top: f32,
+        plot_width: f32,
+        plot_height: f32,
+    ) {
+        let mut outer = titles.outer.clone();
+        if titles.bottom > 0.0 {
+            outer.text_unmeasured(Text {
+                text: x_title.to_string(),
+                font_family: Some(self.font_family.clone()),
+                font_size: Some(self.x_axis_font_size),
+                font_color: Some(self.x_axis_font_color),
+                font_weight: self.x_axis_font_weight.clone(),
+                x: Some(titles.left + plot_left + plot_width / 2.0),
+                // The baseline sits a descender above the bottom edge.
+                y: Some(outer.height() - self.x_axis_font_size * 0.25),
+                text_anchor: Some("middle".to_string()),
+                ..Default::default()
+            });
+        }
+        // The y titles read bottom-to-top on the left and top-to-bottom on
+        // the right, centred on the plot's height. A rotated text is placed
+        // by its transform alone, in absolute coordinates.
+        let center_y = outer.margin.top + plot_top + plot_height / 2.0;
+        for (index, strip, angle) in [(0, titles.left, -90), (1, titles.right, 90)] {
+            let Some(config) = y_axis_configs.get(index) else {
+                continue;
+            };
+            let Some(title) = config.axis_title.as_deref() else {
+                continue;
+            };
+            if strip <= 0.0 {
+                continue;
+            }
+            let inset = config.axis_font_size * 0.85;
+            let x = if index == 0 {
+                outer.margin.left + inset
+            } else {
+                outer.margin.left + outer.width() - inset
+            };
+            outer.append(Component::Text(Text {
+                text: title.to_string(),
+                font_family: Some(self.font_family.clone()),
+                font_size: Some(config.axis_font_size),
+                font_color: Some(config.axis_font_color),
+                font_weight: config.axis_font_weight.clone(),
+                transform: Some(format!(
+                    "translate({},{}) rotate({angle})",
+                    format_float(x),
+                    format_float(center_y)
+                )),
+                text_anchor: Some("middle".to_string()),
+                ..Default::default()
+            }));
+        }
     }
     /// [`Self::layout_cartesian`] with precomputed value ranges (and their
     /// axis widths), for charts whose data does not live in `series_list`.
@@ -961,8 +1210,11 @@ impl ChartBase {
         axis_top: f32,
         left: (AxisValues, f32),
         right: Option<(AxisValues, f32)>,
+        x_mode: XAxisMode,
     ) -> CartesianLayout {
         let mut c = c;
+        let titles =
+            self.reserve_axis_titles(&mut c, y_axis_configs, &self.x_axis_title, right.is_some());
         let (left_values, mut left_width) = left;
         let (right_values, mut right_width) = right.unwrap_or_default();
         // The value ranges are still needed to place the series when the
@@ -971,11 +1223,31 @@ impl ChartBase {
             left_width = 0.0;
             right_width = 0.0;
         }
-        let x_axis_height = self.x_axis_height_for(c.width() - left_width - right_width);
         // A canvas too small for the header and the x axis has no plot
         // area left; clamp instead of emitting negative sizes.
-        let axis_height = (c.height() - x_axis_height - axis_top).max(0.0);
         let axis_width = (c.width() - left_width - right_width).max(0.0);
+        let x = match x_mode {
+            XAxisMode::Category => None,
+            XAxisMode::Points => self.continuous_x(axis_width, false),
+            XAxisMode::Bands => self.continuous_x(axis_width, true),
+        };
+        // The ticks of a continuous axis are chosen to fit, so its labels
+        // never need the extra height rotated categories do.
+        let x_axis_height = match x {
+            Some(_) if self.x_axis_hidden => 0.0,
+            Some(_) => self.x_axis_height,
+            None => self.x_axis_height_for(c.width() - left_width - right_width),
+        };
+        let axis_height = (c.height() - x_axis_height - axis_top).max(0.0);
+        self.render_axis_titles(
+            &titles,
+            y_axis_configs,
+            &self.x_axis_title,
+            left_width,
+            axis_top,
+            axis_width,
+            axis_height,
+        );
         // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
@@ -1022,19 +1294,30 @@ impl ChartBase {
             );
         }
         if !self.x_axis_hidden {
-            self.render_x_axis_with_height(
-                c.child(Box {
-                    top: c.height() - x_axis_height,
-                    left: left_width,
-                    right: right_width,
-                    ..Default::default()
-                }),
-                self.x_axis_data.clone(),
-                axis_width,
-                x_axis_height,
-            );
+            let axis_canvas = c.child(Box {
+                top: c.height() - x_axis_height,
+                left: left_width,
+                right: right_width,
+                ..Default::default()
+            });
+            match &x {
+                Some(scale) => {
+                    self.render_continuous_x_axis(axis_canvas, scale, axis_width, x_axis_height)
+                }
+                None => self.render_x_axis_with_height(
+                    axis_canvas,
+                    self.x_axis_data.clone(),
+                    axis_width,
+                    x_axis_height,
+                ),
+            }
         }
         let max_height = c.height() - x_axis_height;
+        let x_count = if x.is_some() {
+            self.x_count()
+        } else {
+            self.x_axis_data.len()
+        };
         CartesianLayout {
             canvas: c,
             left: left_values,
@@ -1044,6 +1327,8 @@ impl ChartBase {
             axis_height,
             axis_width,
             max_height,
+            x,
+            x_count,
         }
     }
     /// The canvas a chart draws on: its size and position, with the
@@ -1089,8 +1374,8 @@ impl ChartBase {
         value: f32,
     ) -> Vec<(String, String)> {
         let mut dataset = vec![("series".to_string(), series.name.clone())];
-        if let Some(category) = self.x_axis_data.get(index) {
-            dataset.push(("category".to_string(), category.clone()));
+        if let Some(category) = self.x_label(series, index) {
+            dataset.push(("category".to_string(), category.into_owned()));
         }
         dataset.push(("value".to_string(), format_float(value)));
         dataset
@@ -1180,12 +1465,13 @@ impl ChartBase {
     /// Formats the label of one data point with `series_label_formatter`;
     /// `{b}` is the x axis category at `index`.
     pub(crate) fn format_series_label(&self, series: &Series, index: usize, value: f32) -> String {
-        let category = self
-            .x_axis_data
-            .get(index)
-            .map(String::as_str)
-            .unwrap_or("");
-        format_series_label(&self.series_label_formatter, value, &series.name, category)
+        let category = self.x_label(series, index);
+        format_series_label(
+            &self.series_label_formatter,
+            value,
+            &series.name,
+            category.as_deref().unwrap_or(""),
+        )
     }
     /// Renders grid for canvas, the axis width is the right padding of grid canvas,
     /// and the axis height is the bottom padding of grid canvas.
@@ -1322,15 +1608,38 @@ impl ChartBase {
             return;
         }
         let mut c1 = c;
+        // Boxes of the labels drawn so far, when overlapping ones are hidden.
+        let mut placed = LabelBoxes::new(self.series_label_hide_overlap);
         for series_labels in series_labels_list.iter() {
             for series_label in series_labels.iter() {
                 let mut dx = None;
+                let mut width = 0.0;
                 if let Ok(value) = measure_text_width_family(
                     &self.font_family,
                     self.series_label_font_size,
                     &series_label.text,
                 ) {
+                    width = value.width();
                     dx = Some(-value.width() / 2.0);
+                }
+                // The label sits centred above its point (see `dy`), unless
+                // that would push it off the canvas: a point on the edge of
+                // the plot keeps its whole label.
+                let centred = series_label.point.x - width / 2.0;
+                let left = centred
+                    .min(c1.width() + c1.margin.right - width)
+                    .max(-c1.margin.left);
+                if left != centred {
+                    dx = Some(left - series_label.point.x);
+                }
+                let bottom = series_label.point.y - 8.0;
+                if !placed.try_place(
+                    left,
+                    bottom - self.series_label_font_size,
+                    width,
+                    self.series_label_font_size,
+                ) {
+                    continue;
                 }
                 c1.text_unmeasured(Text {
                     text: series_label.text.clone(),
@@ -1356,6 +1665,7 @@ impl ChartBase {
         y_axis_values_list: &[&AxisValues],
         max_height: f32,
         series_data_count: usize,
+        x_scale: Option<&ContinuousX>,
         radius: Option<f32>,
         animation: Option<&AnimationConfig>,
         tooltip: bool,
@@ -1365,7 +1675,12 @@ impl ChartBase {
         }
         let mut c1 = c;
 
-        let unit_width = c1.width() / series_data_count as f32;
+        // A band per category, or on a continuous axis as wide as the
+        // smallest gap between two x values.
+        let unit_width = match x_scale {
+            Some(scale) => scale.band_width,
+            None => c1.width() / series_data_count as f32,
+        };
         let bar_chart_margin = 5.0_f32;
         let bar_chart_gap = 3.0_f32;
         let bar_chart_min_width = 1.0_f32;
@@ -1467,12 +1782,24 @@ impl ChartBase {
                 if value == NIL_VALUE {
                     continue;
                 }
-                let actual_i = i + series.start_index;
+                let actual_i = match x_scale {
+                    Some(_) => self.x_slot(series, i),
+                    None => i + series.start_index,
+                };
                 if actual_i >= series_data_count {
                     continue;
                 }
+                // The band starts at its category, or is centred on the x
+                // value (a point without one cannot be placed).
+                let band_left = match x_scale {
+                    Some(scale) => match self.x_value(series, actual_i) {
+                        Some(x) => scale.px(x) - unit_width / 2.0,
+                        None => continue,
+                    },
+                    None => unit_width * actual_i as f32,
+                };
 
-                let mut left = unit_width * actual_i as f32 + bar_chart_margin;
+                let mut left = band_left + bar_chart_margin;
                 left += (bar_width + bar_chart_gap) * slot_index as f32;
 
                 // `y_end` is the value end of the bar (where a label goes);
@@ -1598,6 +1925,7 @@ impl ChartBase {
         max_height: f32,
         axis_height: f32,
         series_data_count: usize,
+        x_scale: Option<&ContinuousX>,
         animation: Option<&AnimationConfig>,
         tooltip: bool,
     ) -> Vec<Vec<SeriesLabel>> {
@@ -1663,8 +1991,17 @@ impl ChartBase {
             let mut min_raw = 0.0_f32;
 
             for (i, value) in series.iter_values().enumerate() {
-                let actual_i = i + series.start_index;
-                if value == NIL_VALUE {
+                let actual_i = match x_scale {
+                    Some(_) => self.x_slot(series, i),
+                    None => i + series.start_index,
+                };
+                // On a continuous axis the point sits at its x value; one
+                // without an x value breaks the line like a missing point.
+                let continuous_x = x_scale.map(|scale| {
+                    self.x_value(series, actual_i)
+                        .map(|x_value| scale.px(x_value))
+                });
+                if value == NIL_VALUE || continuous_x == Some(None) {
                     if !points.is_empty() {
                         points_list.push(std::mem::take(&mut points));
                         floor_points_list.push(std::mem::take(&mut floor_points));
@@ -1698,10 +2035,16 @@ impl ChartBase {
                     }
                 }
 
-                let mut x = unit_width * actual_i as f32;
-                if x_boundary_gap {
-                    x += unit_width / 2.0;
-                }
+                let x = match continuous_x.flatten() {
+                    Some(x) => x,
+                    None => {
+                        let mut x = unit_width * actual_i as f32;
+                        if x_boundary_gap {
+                            x += unit_width / 2.0;
+                        }
+                        x
+                    }
+                };
                 let y = y_axis_values.get_offset_height(effective_value, max_height);
                 points.push((x, y).into());
 

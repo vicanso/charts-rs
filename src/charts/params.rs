@@ -214,6 +214,40 @@ fn get_box_from_value(value: &serde_json::Value) -> Box {
 }
 
 /// Gets string slice value from serde json.
+/// One x value: a number, or a date / date-time string (unix seconds).
+/// The flag tells whether it was a time string.
+pub(crate) fn get_x_value(value: &serde_json::Value) -> Option<(f64, bool)> {
+    if let Some(v) = value.as_f64() {
+        return Some((v, false));
+    }
+    value
+        .as_str()
+        .and_then(super::x_axis::parse_time)
+        .map(|v| (v, true))
+}
+
+/// Gets the x values of a continuous axis: numbers, or date / date-time
+/// strings (converted to unix seconds). `null` is a missing value. The flag
+/// tells whether any value was a time string.
+pub(crate) fn get_x_values_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<(Vec<f64>, bool)> {
+    let values = value.get(key)?.as_array()?;
+    let mut has_time = false;
+    let xs = values
+        .iter()
+        .map(|item| match get_x_value(item) {
+            Some((v, is_time)) => {
+                has_time |= is_time;
+                v
+            }
+            None => f64::NAN,
+        })
+        .collect();
+    Some((xs, has_time))
+}
+
 pub(crate) fn get_string_slice_from_value(
     value: &serde_json::Value,
     key: &str,
@@ -276,6 +310,9 @@ pub(crate) fn get_y_axis_config_from_value(t: Arc<Theme>, item: &serde_json::Val
     }
     if let Some(scale) = get_axis_scale_from_value(item, "axis_scale") {
         y_config.axis_scale = scale;
+    }
+    if let Some(axis_title) = get_string_from_value(item, "axis_title") {
+        y_config.axis_title = Some(axis_title);
     }
     y_config
 }
@@ -536,6 +573,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         smooth: get_bool_from_value(value, "smooth"),
         fill: get_bool_from_value(value, "fill"),
         symbol: get_series_symbol_from_value(value, "symbol"),
+        x_values: get_x_values_from_value(value, "x_values").map(|(values, _)| values),
     })
 }
 

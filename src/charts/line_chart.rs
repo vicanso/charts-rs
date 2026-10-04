@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::base::ChartBase;
+use super::base::{ChartBase, XAxisMode};
 use super::canvas;
 use super::common::*;
 use super::component::*;
@@ -76,7 +76,7 @@ impl LineChart {
     /// Converts line chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
         let c = self.new_canvas();
-        let layout = self.layout_cartesian(c, &self.y_axis_configs);
+        let layout = self.layout_cartesian(c, &self.y_axis_configs, XAxisMode::Points);
         let c = layout.canvas.clone();
         let axis_height = layout.axis_height;
 
@@ -90,7 +90,8 @@ impl LineChart {
             &y_axis_values_list,
             max_height,
             axis_height,
-            self.x_axis_data.len(),
+            layout.x_count,
+            layout.x.as_ref(),
             self.animation.as_ref(),
             self.tooltip_show,
         );

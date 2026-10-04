@@ -102,6 +102,23 @@ pub struct MarkArea {
     pub to: MarkLineCategory,
 }
 
+/// What the x axis of a line or bar chart measures.
+///
+/// A chart has a category axis until x values are given (`x_axis_values`,
+/// or `x_values` on a series); then the axis is continuous and this says
+/// how its values read.
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug, Default)]
+pub enum AxisType {
+    /// Evenly spaced categories (`x_axis_data`); with x values, plain
+    /// numbers.
+    #[default]
+    Category,
+    /// Plain numbers.
+    Value,
+    /// Timestamps in seconds since the unix epoch.
+    Time,
+}
+
 /// What to do with x axis labels that do not fit side by side.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub enum AxisLabelOverflow {
@@ -179,6 +196,12 @@ pub struct Series {
     /// (`Some(Symbol::None)` draws no marker).
     #[serde(default)]
     pub symbol: Option<Symbol>,
+    /// The x value of each data point, on a continuous x axis, for a series
+    /// that is not sampled at the chart's `x_axis_values`. Timestamps are
+    /// unix seconds. `start_index` does not apply to a series with its own
+    /// x values.
+    #[serde(default)]
+    pub x_values: Option<Vec<f64>>,
 }
 
 /// Animation configuration for SVG chart animations.
@@ -314,6 +337,9 @@ pub struct YAxisConfig {
     pub axis_max: Option<f32>,
     /// Value scale of the axis (linear or logarithmic).
     pub axis_scale: AxisScale,
+    /// Title of the axis (e.g. `"Temperature (°C)"`), written along it.
+    #[serde(default)]
+    pub axis_title: Option<String>,
 }
 
 /// A fill that can be either a solid color or a linear gradient.

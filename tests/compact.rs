@@ -43,6 +43,17 @@ fn cases() -> Vec<(&'static str, String, String)> {
         case!("calendar", CalendarChart, calendar),
         case!("table", TableChart, table),
         case!("multi", MultiChart, multi),
+        // A time axis with rotated axis titles, and a bubble chart.
+        case!(
+            "time_axis",
+            LineChart,
+            include_str!("../asset/line_chart/time_axis.json")
+        ),
+        case!(
+            "bubble",
+            ScatterChart,
+            include_str!("../asset/scatter_chart/bubble.json")
+        ),
     ]
 }
 

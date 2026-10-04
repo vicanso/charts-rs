@@ -48,6 +48,19 @@ pub struct ScatterChart {
     /// Circle → Triangle → Rect → Diamond by series index.
     /// `series_symbol` (if Some) overrides all per-series symbols.
     pub series_symbols: Vec<Symbol>,
+
+    // bubble
+    /// Bubble chart: the series data are `[x, y, size]` triples instead of
+    /// `[x, y]` pairs, and each symbol's radius follows its size (by area),
+    /// between `bubble_min_size` and `bubble_max_size`.
+    #[serde(default)]
+    pub bubble: bool,
+    /// Radius of the smallest bubble. Default: 4.
+    #[serde(default)]
+    pub bubble_min_size: f32,
+    /// Radius of the largest bubble. Default: 30.
+    #[serde(default)]
+    pub bubble_max_size: f32,
 }
 
 impl std::ops::Deref for ScatterChart {
@@ -176,6 +189,16 @@ impl ScatterChart {
                 })
                 .collect();
         }
+        if let Some(bubble) = get_bool_from_value(&value, "bubble") {
+            s.bubble = bubble;
+        }
+        if let Some(size) = get_f32_from_value(&value, "bubble_min_size") {
+            s.bubble_min_size = size;
+        }
+        if let Some(size) = get_f32_from_value(&value, "bubble_max_size") {
+            s.bubble_max_size = size;
+        }
+        s.fill_default();
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
             s.x_axis_config = get_y_axis_config_from_value(get_theme(&theme), x_axis_config);
@@ -200,8 +223,16 @@ impl ScatterChart {
         }
         if self.x_axis_config.axis_split_number == 0 {
             self.x_axis_config = self.y_axis_configs[0].clone();
+            // The y axis' title is not the x axis' (that is `x_axis_title`).
+            self.x_axis_config.axis_title = None;
         }
         self.x_boundary_gap = Some(false);
+        if self.bubble_min_size <= 0.0 {
+            self.bubble_min_size = 4.0;
+        }
+        if self.bubble_max_size < self.bubble_min_size {
+            self.bubble_max_size = self.bubble_min_size.max(30.0);
+        }
     }
     /// Creates a scatter chart with default theme.
     pub fn new(series_list: Vec<Series>) -> ScatterChart {
@@ -216,20 +247,38 @@ impl ScatterChart {
             x_axis_height = 0.0;
         }
         let axis_top = self.render_header(&mut c);
+        let titles =
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
 
         let y_axis_config = get_y_axis_config(&self.y_axis_configs, 0);
 
+        // Points are `[x, y]` pairs, or `[x, y, size]` triples for bubbles.
+        let dimension = if self.bubble { 3 } else { 2 };
         let mut y_axis_data_list = vec![];
         let mut x_axis_data_list = vec![];
+        let (mut size_min, mut size_max) = (f32::MAX, f32::MIN);
         for series in self.series_list.iter() {
             for (index, data) in series.iter_values().enumerate() {
-                if index % 2 == 0 {
-                    x_axis_data_list.push(data);
-                } else {
-                    y_axis_data_list.push(data);
+                match index % dimension {
+                    0 => x_axis_data_list.push(data),
+                    1 => y_axis_data_list.push(data),
+                    _ if data != NIL_VALUE => {
+                        size_min = size_min.min(data);
+                        size_max = size_max.max(data);
+                    }
+                    _ => {}
                 }
             }
         }
+        // A bubble's area follows its size, so the radius follows the root.
+        let bubble_radius = |size: f32| -> f32 {
+            if size_max > size_min {
+                let ratio = ((size - size_min) / (size_max - size_min)).clamp(0.0, 1.0);
+                self.bubble_min_size + (self.bubble_max_size - self.bubble_min_size) * ratio.sqrt()
+            } else {
+                (self.bubble_min_size + self.bubble_max_size) / 2.0
+            }
+        };
         let y_axis_values =
             get_axis_values(axis_value_params(&y_axis_config, y_axis_data_list, true));
         let y_axis_width = if self.y_axis_hidden {
@@ -250,6 +299,15 @@ impl ScatterChart {
 
         let axis_height = c.height() - x_axis_height - axis_top;
         let axis_width = c.width() - y_axis_width;
+        self.render_axis_titles(
+            &titles,
+            &self.y_axis_configs,
+            &self.x_axis_title,
+            y_axis_width,
+            axis_top,
+            axis_width,
+            axis_height,
+        );
         // minus the height of top text area
         if axis_top > 0.0 {
             c = c.child(Box {
@@ -353,35 +411,67 @@ impl ScatterChart {
             //  for line-chart node colors and is not meaningful for scatter dots.)
             let symbol = if let Some(s) = self.series_symbols.get(series_idx) {
                 s.clone()
+            } else if self.bubble {
+                // A bubble's size reads as the area of a circle.
+                Symbol::Circle(0.0, None)
             } else {
                 DEFAULT_SYMBOLS[index % DEFAULT_SYMBOLS.len()].clone()
             };
 
+            // (x, y, bubble size) of every complete point.
+            let mut points: Vec<(f32, f32, Option<f32>)> = vec![];
             let mut coords = series.iter_values();
             while let (Some(x_value), Some(y_value)) = (coords.next(), coords.next()) {
-                let cx = content_width - x_axis_values.get_offset_height(x_value, content_width);
-                let cy = y_axis_values.get_offset_height(y_value, content_height);
-                let title = if self.tooltip_show {
-                    Some(format!(
-                        "{}: ({}, {})",
-                        series.name,
-                        format_float(x_value),
-                        format_float(y_value)
-                    ))
+                let bubble_size = if self.bubble {
+                    coords.next().filter(|v| *v != NIL_VALUE)
                 } else {
                     None
                 };
-                let dataset = vec![
+                if x_value != NIL_VALUE && y_value != NIL_VALUE {
+                    points.push((x_value, y_value, bubble_size));
+                }
+            }
+            // Large bubbles first, so small ones are not buried under them.
+            if self.bubble {
+                points.sort_by(|a, b| b.2.unwrap_or(0.0).total_cmp(&a.2.unwrap_or(0.0)));
+            }
+            for (x_value, y_value, bubble_size) in points {
+                let cx = content_width - x_axis_values.get_offset_height(x_value, content_width);
+                let cy = y_axis_values.get_offset_height(y_value, content_height);
+                let radius = bubble_size.map(bubble_radius).unwrap_or(size);
+                let title = if self.tooltip_show {
+                    Some(match bubble_size {
+                        Some(v) => format!(
+                            "{}: ({}, {}, {})",
+                            series.name,
+                            format_float(x_value),
+                            format_float(y_value),
+                            format_float(v)
+                        ),
+                        None => format!(
+                            "{}: ({}, {})",
+                            series.name,
+                            format_float(x_value),
+                            format_float(y_value)
+                        ),
+                    })
+                } else {
+                    None
+                };
+                let mut dataset = vec![
                     ("series".to_string(), series.name.clone()),
                     ("x".to_string(), format_float(x_value)),
                     ("y".to_string(), format_float(y_value)),
                 ];
+                if let Some(v) = bubble_size {
+                    dataset.push(("size".to_string(), format_float(v)));
+                }
                 render_scatter_symbol(
                     &mut content_canvas,
                     &symbol,
                     cx,
                     cy,
-                    size,
+                    radius,
                     color,
                     title,
                     dataset,

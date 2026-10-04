@@ -66,6 +66,10 @@ pub(crate) enum Kind {
     ArrayOf(&'static [Field]),
     /// A mark value: a number or `average` / `min` / `max`.
     MarkValue,
+    /// An x value: a number or a date / date-time string.
+    XValue,
+    /// An array of x values; `null` marks a missing one.
+    XValues,
     /// An array of objects with the same fields as the enclosing object
     /// (tree children).
     SelfArray,
@@ -126,6 +130,7 @@ pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("smooth", Kind::Bool),
     f("fill", Kind::Bool),
     f("symbol", Kind::Object(SYMBOL_FIELDS)),
+    f("x_values", Kind::XValues),
 ];
 
 pub(crate) static Y_AXIS_FIELDS: &[Field] = &[
@@ -141,6 +146,7 @@ pub(crate) static Y_AXIS_FIELDS: &[Field] = &[
     f("axis_min", Kind::Number),
     f("axis_max", Kind::Number),
     f("axis_scale", Kind::Scale),
+    f("axis_title", Kind::String),
 ];
 
 static ANIMATION_FIELDS: &[Field] = &[
@@ -212,6 +218,14 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("series_label_font_size", Kind::Number),
     f("series_label_font_weight", Kind::String),
     f("series_label_formatter", Kind::String),
+    f("series_label_hide_overlap", Kind::Bool),
+    f("x_axis_type", Kind::Enum(&["category", "value", "time"])),
+    f("x_axis_values", Kind::XValues),
+    f("x_axis_min", Kind::XValue),
+    f("x_axis_max", Kind::XValue),
+    f("x_axis_formatter", Kind::String),
+    f("x_axis_time_offset", Kind::Number),
+    f("x_axis_title", Kind::String),
     f("series_colors", Kind::ColorArray),
     f("series_symbol", Kind::Object(SYMBOL_FIELDS)),
     f("series_smooth", Kind::Bool),
@@ -346,6 +360,9 @@ pub(crate) static SANKEY_FIELDS: &[Field] = &[
 
 pub(crate) static SCATTER_FIELDS: &[Field] = &[
     f("series_symbol_sizes", Kind::NumberArray),
+    f("bubble", Kind::Bool),
+    f("bubble_min_size", Kind::Number),
+    f("bubble_max_size", Kind::Number),
     f("series_symbols", Kind::Array),
     f("x_axis_config", Kind::Object(Y_AXIS_FIELDS)),
 ];
@@ -589,6 +606,22 @@ fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
                 _ => expect("\"linear\", \"log\", \"log2\", \"log10\" or {type, base}"),
             }
         }
+        Kind::XValue => match super::params::get_x_value(v) {
+            Some(_) => Ok(()),
+            None => expect("a number or a date such as \"2024-01-05\" or \"2024-01-05 08:30\""),
+        },
+        Kind::XValues => match v.as_array() {
+            Some(items)
+                if items
+                    .iter()
+                    .all(|i| i.is_null() || super::params::get_x_value(i).is_some()) =>
+            {
+                Ok(())
+            }
+            _ => expect(
+                "an array of numbers or dates such as \"2024-01-05\" (null for a missing value)",
+            ),
+        },
         Kind::MarkValue => match v {
             serde_json::Value::Number(_) => Ok(()),
             serde_json::Value::String(s)

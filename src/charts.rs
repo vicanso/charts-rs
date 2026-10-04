@@ -78,6 +78,7 @@ mod tree_chart;
 mod treemap_chart;
 mod util;
 mod waterfall_chart;
+mod x_axis;
 
 pub use bar_chart::BarChart;
 pub use base::ChartBase;
@@ -85,7 +86,7 @@ pub use box_plot_chart::{BoxPlotChart, BoxPlotSeries};
 pub use canvas::Canvas;
 pub use color::Color;
 pub use common::{
-    Align, AnimationConfig, AxisLabelOverflow, AxisScale, Fill, MarkArea, MarkLine,
+    Align, AnimationConfig, AxisLabelOverflow, AxisScale, AxisType, Fill, MarkArea, MarkLine,
     MarkLineCategory, MarkPoint, MarkPointCategory, Position, Series, SeriesCategory, SeriesLabel,
     Symbol, YAxisConfig,
 };

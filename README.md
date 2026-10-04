@@ -46,6 +46,9 @@ The library supports twenty-two chart types: `Bar`, `HorizontalBar`, `Line`, `Pi
   `smooth` / `fill` / `symbol` overrides, fixed-value mark lines
 - Hover tooltips (`tooltip_show`) and `data-*` attributes on the data shapes
   of every chart, for interactive consumers
+- Value and time x axes for line and bar charts (unevenly sampled data keeps
+  its real spacing), axis titles, bubble charts, and data labels that hide
+  instead of overlapping
 
 ## Installation
 
@@ -375,6 +378,60 @@ Formatters are supported in `series_label_formatter`, `axis_formatter`, and `val
 | `{b}` | Category (x-axis label) |
 | `{d}` | Percentage (pie / funnel) |
 | `{t}` | Thousands notation (1.2K, 5.6M) |
+
+### Value and time x axes
+
+A line or bar chart spaces its points evenly by default (a category axis).
+Give the points x values and the axis becomes continuous: every point sits at
+its value, so irregular samples keep their real spacing.
+
+```json
+{
+  "x_axis_title": "Time (UTC)",
+  "y_axis_configs": [{ "axis_title": "Temperature (°C)" }],
+  "x_axis_values": ["2024-03-01 00:00", "2024-03-01 00:20", "2024-03-01 04:00", "2024-03-01 12:00"],
+  "series_list": [
+    { "name": "Indoor", "data": [21.5, 21.8, 20.1, 24.6] },
+    { "name": "Outdoor", "x_values": ["2024-03-01 02:00", "2024-03-01 11:00"], "data": [8.2, 14.9] }
+  ]
+}
+```
+
+- `x_axis_values` are shared by every series; a series sampled at other
+  moments carries its own `x_values`.
+- Date strings (`2024-03-01`, `2024-03-01 08:30`, `2024-03-01T08:30:00+08:00`)
+  make it a time axis. Numbers are plain values, or unix seconds with
+  `"x_axis_type": "time"`.
+- Ticks fall on round values and round times. `x_axis_min` / `x_axis_max` fix
+  the range, `x_axis_formatter` formats the labels (`"{c} km"`, or a pattern
+  such as `"%m-%d %H:%M"` on a time axis) and `x_axis_time_offset` (minutes
+  east of UTC) shows timestamps in local time.
+
+In Rust, set `chart.x_axis_values` (`Vec<f64>`) and, for timestamps,
+`chart.x_axis_type = AxisType::Time`.
+
+### Axis titles
+
+`x_axis_title` is written below the x axis; `axis_title` in a y axis config
+is written along that axis.
+
+### Bubble chart
+
+A scatter chart with `"bubble": true` reads its series data as `[x, y, size]`
+triples and scales each circle by its size (`bubble_min_size` /
+`bubble_max_size` set the radius range):
+
+```json
+{
+  "bubble": true,
+  "series_list": [{ "name": "Asia", "data": [12, 77, 1400, 40, 84, 125] }]
+}
+```
+
+### Overlapping data labels
+
+`"series_label_hide_overlap": true` drops a data label that would be printed
+over another one.
 
 ## Load more fonts
 
