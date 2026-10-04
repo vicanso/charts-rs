@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports twenty-four chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, `ThemeRiver`, `Histogram`, and `PolarBar`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports twenty-five chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, `ThemeRiver`, `Histogram`, `PolarBar`, and `Chord`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -244,6 +244,12 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar-radial.png" alt="charts-rs">
 </p>
 
+## Chord
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/chord.png" alt="charts-rs">
+</p>
+
 ## Example
 
 Runnable examples live in [`examples/`](./examples); each writes an `svg` file:
@@ -257,6 +263,7 @@ cargo run --example sankey     # sankey flow diagram (nodes auto-derived from li
 cargo run --example tree       # node-link tree with curved links (LR layout)
 cargo run --example histogram  # distribution of a sample over equal-width bins
 cargo run --example polar_bar  # polar bars: stacked around the circle, and rings with round caps
+cargo run --example chord      # chord diagram of the flows between nodes (gradient ribbons)
 ```
 
 ### New from option
@@ -506,6 +513,38 @@ they share a `stack` name.
 
 In Rust: `PolarBarChart::new(series_list, x_axis_data)`, then
 `chart.category_axis = PolarAxis::Radius`.
+
+### Chord chart
+
+A `ChordChart` shows who exchanges how much with whom: the nodes are arcs of
+a circle, as long as the flows through them, and every link is a ribbon
+across the circle, as wide at both ends as its value.
+
+```json
+{
+  "link_gradient": true,
+  "links": [
+    { "source": "Asia", "target": "Europe", "value": 60 },
+    { "source": "Asia", "target": "Americas", "value": 45 },
+    { "source": "Europe", "target": "Americas", "value": 50 }
+  ]
+}
+```
+
+- The nodes are derived from the names in `links`, in first-seen order;
+  list them in `nodes` (`{"name": ..., "color": ...}`) to fix their order or
+  their colors. A link from a node to itself is allowed.
+- A ribbon takes the color of its source node, or fades to the color of its
+  target with `"link_gradient": true`; `link_opacity` (default 0.5) lets the
+  ribbons show through each other.
+- `node_width` (default 12) is the thickness of the ring, `node_gap`
+  (default 3) the gap between nodes in degrees, `start_angle` turns the
+  chart and `radius` limits its size.
+- The labels are the node names; `series_label_formatter` can add the flow
+  (`{c}`) or the share (`{d}`), e.g. `"{b} ({d})"`. `tooltip_show` and
+  `animation` work as in the other charts.
+
+In Rust: `ChordChart::new(vec![], vec![("Asia", "Europe", 60.0).into()])`.
 
 ### Band around a line
 

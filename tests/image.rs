@@ -1171,6 +1171,13 @@ fn generate_image() {
             .unwrap(),
         ),
         (
+            "chord",
+            charts_rs::ChordChart::from_json(include_str!("../asset/chord_chart/gradient.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
             "polar-bar-radial",
             charts_rs::PolarBarChart::from_json(include_str!(
                 "../asset/polar_bar_chart/radial.json"

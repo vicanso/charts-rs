@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持二十四种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel`、`ThemeRiver`、`Histogram` 以及 `PolarBar`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持二十五种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel`、`ThemeRiver`、`Histogram`、`PolarBar` 以及 `Chord`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -223,6 +223,12 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar-radial.png" alt="charts-rs">
 </p>
 
+## Chord
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/chord.png" alt="charts-rs">
+</p>
+
 ## 最低 Rust 版本
 
 charts-rs 1.x 需要 Rust 1.88 及以上（edition 2024）。
@@ -240,6 +246,7 @@ cargo run --example sankey     # 桑基流向图（节点由 links 自动推导�
 cargo run --example tree       # 节点-连线树图（曲线连线，LR 布局）
 cargo run --example histogram  # 直方图：样本在等宽分箱上的分布
 cargo run --example polar_bar  # 极坐标柱状图：环绕堆叠的柱，以及圆头环形柱
+cargo run --example chord      # 和弦图：节点之间的流量（渐变色带）
 ```
 
 ### 使用 Builder API 创建图表
@@ -452,6 +459,28 @@ Rust 中设置 `chart.x_axis_values`（`Vec<f64>`），时间戳再加上 `chart
 - `label_show`、`colors`（每根柱单独的颜色）、`tooltip_show`、`animation` 与柱状图用法一致。
 
 Rust 中使用 `PolarBarChart::new(series_list, x_axis_data)`，再设置 `chart.category_axis = PolarAxis::Radius`。
+
+### 和弦图
+
+`ChordChart` 展示节点之间相互的流量：每个节点是圆周上的一段弧，弧长对应经过它的流量；每条连接是一条横跨圆内的色带，两端的宽度对应它的数值。
+
+```json
+{
+  "link_gradient": true,
+  "links": [
+    { "source": "亚洲", "target": "欧洲", "value": 60 },
+    { "source": "亚洲", "target": "美洲", "value": 45 },
+    { "source": "欧洲", "target": "美洲", "value": 50 }
+  ]
+}
+```
+
+- 节点默认由 `links` 中出现的名称按首次出现的顺序生成；在 `nodes`（`{"name": ..., "color": ...}`）中列出可以固定顺序或颜色。允许节点连接到自身。
+- 色带默认使用源节点的颜色；`"link_gradient": true` 时从源节点颜色渐变到目标节点颜色。`link_opacity`（默认 0.5）让重叠的色带互相透出。
+- `node_width`（默认 12）是节点环的厚度，`node_gap`（默认 3）是节点之间的间隔角度，`start_angle` 旋转图表，`radius` 限制大小。
+- 标签默认是节点名称；`series_label_formatter` 可以加上流量（`{c}`）或占比（`{d}`），例如 `"{b} ({d})"`。`tooltip_show`、`animation` 与其它图表用法一致。
+
+Rust 中使用 `ChordChart::new(vec![], vec![("亚洲", "欧洲", 60.0).into()])`。
 
 ### 折线区间带
 

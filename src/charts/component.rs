@@ -461,6 +461,8 @@ pub enum Component {
     SmoothBand(SmoothBand),
     /// An annular sector with exact arcs.
     Sector(Sector),
+    /// A band between two arcs of a circle.
+    Ribbon(Ribbon),
 }
 #[derive(Clone, PartialEq, Debug)]
 
@@ -1413,6 +1415,121 @@ impl Sector {
         }
         d.push_str(" Z");
         d
+    }
+    pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
+        let defs = fill_svg_defs(&self.fill, grad_seen);
+        let mut attrs = vec![
+            (ATTR_D, self.path()),
+            (ATTR_FILL, fill_svg_attr(&self.fill)),
+            (ATTR_FILL_OPACITY, fill_svg_opacity(&self.fill)),
+        ];
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
+        if let Some(ref style) = self.style {
+            attrs.push((ATTR_STYLE, style.clone()));
+        }
+        let element = SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            dataset: &self.dataset,
+            data: title_data(&self.title),
+        }
+        .to_string();
+        if defs.is_empty() {
+            element
+        } else {
+            format!("{defs}{element}")
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
+/// The band between two arcs of a circle, drawn in towards its center on
+/// the way from one to the other: the link of a chord diagram.
+pub struct Ribbon {
+    /// Fill (solid or gradient).
+    pub fill: Fill,
+    /// Center x coordinate.
+    pub cx: f32,
+    /// Center y coordinate.
+    pub cy: f32,
+    /// Radius of the circle both arcs lie on.
+    pub r: f32,
+    /// Start and end angle of the first arc, in degrees clockwise from
+    /// 12 o'clock.
+    pub source: (f32, f32),
+    /// Start and end angle of the second arc. The same angles as `source`
+    /// draw a band that leaves its arc and comes back to it.
+    pub target: (f32, f32),
+    /// CSS class attribute of the SVG element.
+    pub class: Option<String>,
+    /// Inline style attribute of the SVG element.
+    pub style: Option<String>,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
+    /// `data-*` attributes, see [`Rect::dataset`].
+    pub dataset: Vec<(String, String)>,
+}
+
+impl Default for Ribbon {
+    fn default() -> Self {
+        Ribbon {
+            fill: Fill::Solid((0, 0, 0).into()),
+            cx: 0.0,
+            cy: 0.0,
+            r: 0.0,
+            source: (0.0, 0.0),
+            target: (0.0, 0.0),
+            class: None,
+            style: None,
+            title: None,
+            dataset: vec![],
+        }
+    }
+}
+
+impl Ribbon {
+    /// Renders the component to an SVG fragment.
+    pub fn svg(&self) -> String {
+        self.svg_with_grad_seen(None)
+    }
+    /// The outline of the ribbon as path data: along the first arc, across
+    /// to the second one, along it, and back.
+    fn path(&self) -> String {
+        let r = self.r.max(0.0);
+        let r_str = format_float(r);
+        let at = |angle: f32| {
+            let point = get_pie_point(self.cx, self.cy, r, angle);
+            format!("{},{}", format_float(point.x), format_float(point.y))
+        };
+        // An arc cannot end where it starts: a full turn stops just short.
+        let ordered = |(a, b): (f32, f32)| {
+            let (from, to) = if a <= b { (a, b) } else { (b, a) };
+            (from, to.min(from + 359.9))
+        };
+        let arc = |(from, to): (f32, f32)| {
+            let large = if to - from > 180.0 { 1 } else { 0 };
+            format!("A{r_str} {r_str} 0 {large} 1 {}", at(to))
+        };
+        let center = format!("Q{},{}", format_float(self.cx), format_float(self.cy));
+        let (source, target) = (ordered(self.source), ordered(self.target));
+        if source == target {
+            return format!(
+                "M{} {} {center} {} Z",
+                at(source.0),
+                arc(source),
+                at(source.0)
+            );
+        }
+        format!(
+            "M{} {} {center} {} {} {center} {} Z",
+            at(source.0),
+            arc(source),
+            at(target.0),
+            arc(target),
+            at(source.0)
+        )
     }
     pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
         let defs = fill_svg_defs(&self.fill, grad_seen);
@@ -2575,11 +2692,70 @@ impl Legend {
 mod tests {
     use super::{
         Arrow, Axis, Bubble, Circle, Fill, Grid, Legend, LegendCategory, Line, Pie, Polygon,
-        Polyline, Rect, Sector, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
-        wrap_legends_to_rows,
+        Polyline, Rect, Ribbon, Sector, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill,
+        Text, wrap_legends_to_rows,
     };
     use crate::{Align, Color, DEFAULT_FONT_FAMILY, Position, Symbol};
     use pretty_assertions::assert_eq;
+    #[test]
+    fn test_ribbon() {
+        let ribbon = |source: (f32, f32), target: (f32, f32)| Ribbon {
+            fill: Fill::Solid((0, 0, 0).into()),
+            cx: 100.0,
+            cy: 100.0,
+            r: 50.0,
+            source,
+            target,
+            ..Default::default()
+        };
+        // Along the first arc, through the center to the second one, along
+        // it, and back through the center.
+        let band = "M100,50 A50 50 0 0 1 150,100 Q100,100 100,150 \
+                    A50 50 0 0 1 50,100 Q100,100 100,50 Z";
+        assert_eq!(band, ribbon((0.0, 90.0), (180.0, 270.0)).path());
+        assert_eq!(
+            format!(r###"<path d="{band}" fill="#000000"/>"###),
+            ribbon((0.0, 90.0), (180.0, 270.0)).svg()
+        );
+        // The angles of an arc may come in either order.
+        assert_eq!(band, ribbon((90.0, 0.0), (270.0, 180.0)).path());
+        // An arc of more than half a turn takes the long way round.
+        assert_eq!(
+            "M100,50 A50 50 0 1 1 50,100 Q100,100 50,100 \
+             A50 50 0 0 1 100,50 Q100,100 100,50 Z",
+            ribbon((0.0, 270.0), (270.0, 360.0)).path()
+        );
+        // From an arc back to itself.
+        assert_eq!(
+            "M100,50 A50 50 0 0 1 150,100 Q100,100 100,50 Z",
+            ribbon((0.0, 90.0), (0.0, 90.0)).path()
+        );
+        // A full turn stops just short of its start, to stay an arc.
+        let whole = ribbon((0.0, 360.0), (0.0, 360.0)).path();
+        assert!(
+            whole.starts_with("M100,50 A50 50 0 1 1 99.9,50 Q"),
+            "{whole}"
+        );
+
+        // Class, style, title and data attributes; a gradient brings its
+        // definition along.
+        let mut titled = ribbon((0.0, 90.0), (180.0, 270.0));
+        titled.class = Some("ct-trigger".to_string());
+        titled.style = Some("animation-delay:10ms".to_string());
+        titled.title = Some("A → B: 1".to_string());
+        titled.dataset = vec![("source".to_string(), "A".to_string())];
+        titled.fill = Fill::LinearGradient {
+            start_color: (255, 0, 0).into(),
+            end_color: (0, 0, 255).into(),
+            angle: 90.0,
+        };
+        let svg = titled.svg();
+        assert!(svg.starts_with("<defs><linearGradient id=\"grad_FF0000FF_0000FFFF_90\""));
+        assert!(svg.contains(r#"fill="url(#grad_FF0000FF_0000FFFF_90)""#));
+        assert!(svg.contains(r#"class="ct-trigger" style="animation-delay:10ms" data-source="A""#));
+        assert!(svg.contains("<title>A → B: 1</title>"));
+    }
+
     #[test]
     fn test_sector() {
         let sector = |start_angle: f32, delta: f32| Sector {

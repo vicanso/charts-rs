@@ -47,6 +47,7 @@ mod box_plot_chart;
 mod calendar_chart;
 mod candlestick_chart;
 mod canvas;
+mod chord_chart;
 mod color;
 mod common;
 mod compact;
@@ -94,7 +95,7 @@ pub use common::{
 };
 pub use compact::compact_svg;
 pub use component::{
-    Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, Sector,
+    Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, Ribbon, Sector,
     SmoothBand, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
     svg_with_accessibility,
 };
@@ -104,6 +105,7 @@ pub use error::{Error, Result};
 
 pub use calendar_chart::CalendarChart;
 pub use candlestick_chart::CandlestickChart;
+pub use chord_chart::{ChordChart, ChordLink, ChordNode};
 pub use font::{
     DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, add_fonts, get_font, get_font_families,
     measure_text_width_family,
@@ -171,6 +173,7 @@ impl_chart!(
     BoxPlotChart,
     CalendarChart,
     CandlestickChart,
+    ChordChart,
     FunnelChart,
     GaugeChart,
     GraphChart,

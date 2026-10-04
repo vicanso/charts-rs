@@ -65,6 +65,18 @@
 
 ### Added
 
+- `ChordChart`: a chord diagram of the flows between nodes. The nodes
+  (`nodes`, or derived from the names in `links`) are arcs of a circle as
+  long as the flows through them; every link is a ribbon across the circle,
+  as wide at both ends as its `value`, in the color of its source or as a
+  source→target gradient (`link_gradient`, `link_opacity`). The ends of the
+  links are ordered along their node so that the ribbons do not cross next
+  to it. `node_width`, `node_gap`, `start_angle` and `radius` shape the
+  diagram; labels take `series_label_formatter`. Supports tooltips with
+  `data-*` attributes and animation. Available in `MultiChart` as
+  `"type": "chord"`.
+- `Ribbon` component: the band between two arcs of a circle, which the
+  links of a chord diagram are made of.
 - `PolarBarChart`: a bar chart on polar axes. The categories (`x_axis_data`)
   go around the circle and the bars grow outwards, or — with
   `category_axis: "radius"` — every category is a ring and the bars run

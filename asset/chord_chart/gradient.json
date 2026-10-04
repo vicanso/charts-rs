@@ -1,0 +1,34 @@
+{
+    "theme": "dark",
+    "title_text": "Who messages whom",
+    "title_align": "left",
+    "link_gradient": true,
+    "link_opacity": 0.6,
+    "node_width": 16,
+    "node_gap": 4,
+    "tooltip_show": true,
+    "series_label_formatter": "{b} ({d})",
+    "nodes": [
+        {"name": "Design"},
+        {"name": "Frontend"},
+        {"name": "Backend"},
+        {"name": "Data"},
+        {"name": "QA"},
+        {"name": "Product", "color": "#9A60B4"},
+        {"name": "Support"}
+    ],
+    "links": [
+        {"source": "Design", "target": "Frontend", "value": 120},
+        {"source": "Design", "target": "Product", "value": 90},
+        {"source": "Frontend", "target": "Backend", "value": 150},
+        {"source": "Frontend", "target": "QA", "value": 70},
+        {"source": "Backend", "target": "Data", "value": 110},
+        {"source": "Backend", "target": "QA", "value": 80},
+        {"source": "Data", "target": "Product", "value": 60},
+        {"source": "Product", "target": "Support", "value": 75},
+        {"source": "Support", "target": "QA", "value": 40},
+        {"source": "Support", "target": "Backend", "value": 35},
+        {"source": "Product", "target": "Frontend", "value": 55},
+        {"source": "Backend", "target": "Backend", "value": 30}
+    ]
+}

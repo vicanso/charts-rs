@@ -1,0 +1,142 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#100C2A"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#EEEEEE">
+Who messages whom
+</text>
+<defs><linearGradient id="grad_5470C699_91CC7599_47" x1="0.13" y1="0.16" x2="0.87" y2="0.84" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#5470C6" stop-opacity="0.60"/><stop offset="100%" stop-color="#91CC75" stop-opacity="0.60"/></linearGradient></defs><path d="M342.9,90 A134.5 134.5 0 0 1 387.8,115.6 Q300,217.5 394.7,122 A134.5 134.5 0 0 1 423.7,164.7 Q300,217.5 342.9,90 Z" fill="url(#grad_5470C699_91CC7599_47)" class="ct-trigger" data-source="Design" data-target="Frontend" data-value="120">
+<title>Design → Frontend: 120</title>
+</path>
+<text font-size="14" x="344.5" y="169.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Design → Frontend: 120
+</text>
+<defs><linearGradient id="grad_5470C699_9A60B499_293" x1="0.96" y1="0.30" x2="0.04" y2="0.70" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#5470C6" stop-opacity="0.60"/><stop offset="100%" stop-color="#9A60B4" stop-opacity="0.60"/></linearGradient></defs><path d="M304.7,83.1 A134.5 134.5 0 0 1 342.9,90 Q300,217.5 179,158.8 A134.5 134.5 0 0 1 200.8,126.6 Q300,217.5 304.7,83.1 Z" fill="url(#grad_5470C699_9A60B499_293)" class="ct-trigger" data-source="Design" data-target="Product" data-value="90">
+<title>Design → Product: 90</title>
+</path>
+<text font-size="14" x="278.2" y="165.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Design → Product: 90
+</text>
+<defs><linearGradient id="grad_91CC7599_FAC85899_330" x1="0.75" y1="0.07" x2="0.25" y2="0.93" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#91CC75" stop-opacity="0.60"/><stop offset="100%" stop-color="#FAC858" stop-opacity="0.60"/></linearGradient></defs><path d="M434.5,217.3 A134.5 134.5 0 0 1 419.2,279.8 Q300,217.5 414.6,288 A134.5 134.5 0 0 1 368.8,333.1 Q300,217.5 434.5,217.3 Z" fill="url(#grad_91CC7599_FAC85899_330)" class="ct-trigger" data-source="Frontend" data-target="Backend" data-value="150">
+<title>Frontend → Backend: 150</title>
+</path>
+<text font-size="14" x="356.3" y="249.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Frontend → Backend: 150
+</text>
+<defs><linearGradient id="grad_91CC7599_73C0DE99_280" x1="0.99" y1="0.41" x2="0.01" y2="0.59" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#91CC75" stop-opacity="0.60"/><stop offset="100%" stop-color="#73C0DE" stop-opacity="0.60"/></linearGradient></defs><path d="M431.1,187.3 A134.5 134.5 0 0 1 434.5,217.3 Q300,217.5 173.3,262.6 A134.5 134.5 0 0 1 166.4,233.2 Q300,217.5 431.1,187.3 Z" fill="url(#grad_91CC7599_73C0DE99_280)" class="ct-trigger" data-source="Frontend" data-target="QA" data-value="70">
+<title>Frontend → QA: 70</title>
+</path>
+<text font-size="14" x="300.7" y="221.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Frontend → QA: 70
+</text>
+<defs><linearGradient id="grad_FAC85899_EE666699_254" x1="0.98" y1="0.64" x2="0.02" y2="0.36" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#FAC858" stop-opacity="0.60"/><stop offset="100%" stop-color="#EE6666" stop-opacity="0.60"/></linearGradient></defs><path d="M322.3,350.1 A134.5 134.5 0 0 1 274.9,349.6 Q300,217.5 253.4,343.7 A134.5 134.5 0 0 1 212.5,319.7 Q300,217.5 322.3,350.1 Z" fill="url(#grad_FAC85899_EE666699_254)" class="ct-trigger" data-source="Backend" data-target="Data" data-value="110">
+<title>Backend → Data: 110</title>
+</path>
+<text font-size="14" x="282.6" y="280.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Backend → Data: 110
+</text>
+<defs><linearGradient id="grad_FAC85899_73C0DE99_247" x1="0.96" y1="0.70" x2="0.04" y2="0.30" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#FAC858" stop-opacity="0.60"/><stop offset="100%" stop-color="#73C0DE" stop-opacity="0.60"/></linearGradient></defs><path d="M355.3,340.1 A134.5 134.5 0 0 1 322.3,350.1 Q300,217.5 189,293.4 A134.5 134.5 0 0 1 173.3,262.6 Q300,217.5 355.3,340.1 Z" fill="url(#grad_FAC85899_73C0DE99_247)" class="ct-trigger" data-source="Backend" data-target="QA" data-value="80">
+<title>Backend → QA: 80</title>
+</path>
+<text font-size="14" x="279.8" y="264.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Backend → QA: 80
+</text>
+<defs><linearGradient id="grad_EE666699_9A60B499_197" x1="0.65" y1="0.98" x2="0.35" y2="0.02" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#EE6666" stop-opacity="0.60"/><stop offset="100%" stop-color="#9A60B4" stop-opacity="0.60"/></linearGradient></defs><path d="M212.5,319.7 A134.5 134.5 0 0 1 194.5,301 Q300,217.5 166,206.5 A134.5 134.5 0 0 1 170.6,181 Q300,217.5 212.5,319.7 Z" fill="url(#grad_EE666699_9A60B499_197)" class="ct-trigger" data-source="Data" data-target="Product" data-value="60">
+<title>Data → Product: 60</title>
+</path>
+<text font-size="14" x="242.7" y="234.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Data → Product: 60
+</text>
+<defs><linearGradient id="grad_9A60B499_FC845299_122" x1="0.08" y1="0.76" x2="0.92" y2="0.24" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#9A60B4" stop-opacity="0.60"/><stop offset="100%" stop-color="#FC8452" stop-opacity="0.60"/></linearGradient></defs><path d="M200.8,126.6 A134.5 134.5 0 0 1 225.4,105.6 Q300,217.5 233.4,100.6 A134.5 134.5 0 0 1 263.3,88.1 Q300,217.5 200.8,126.6 Z" fill="url(#grad_9A60B499_FC845299_122)" class="ct-trigger" data-source="Product" data-target="Support" data-value="75">
+<title>Product → Support: 75</title>
+</path>
+<text font-size="14" x="265.1" y="161" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Product → Support: 75
+</text>
+<defs><linearGradient id="grad_FC845299_73C0DE99_323" x1="0.80" y1="0.10" x2="0.20" y2="0.90" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#FC8452" stop-opacity="0.60"/><stop offset="100%" stop-color="#73C0DE" stop-opacity="0.60"/></linearGradient></defs><path d="M263.3,88.1 A134.5 134.5 0 0 1 280.2,84.5 Q300,217.5 166.4,233.2 A134.5 134.5 0 0 1 165.5,215.9 Q300,217.5 263.3,88.1 Z" fill="url(#grad_FC845299_73C0DE99_323)" class="ct-trigger" data-source="Support" data-target="QA" data-value="40">
+<title>Support → QA: 40</title>
+</path>
+<text font-size="14" x="259.3" y="186.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Support → QA: 40
+</text>
+<defs><linearGradient id="grad_FC845299_FAC85899_16" x1="0.36" y1="0.02" x2="0.64" y2="0.98" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#FC8452" stop-opacity="0.60"/><stop offset="100%" stop-color="#FAC858" stop-opacity="0.60"/></linearGradient></defs><path d="M280.2,84.5 A134.5 134.5 0 0 1 295.3,83.1 Q300,217.5 368.8,333.1 A134.5 134.5 0 0 1 355.3,340.1 Q300,217.5 280.2,84.5 Z" fill="url(#grad_FC845299_FAC85899_16)" class="ct-trigger" data-source="Support" data-target="Backend" data-value="35">
+<title>Support → Backend: 35</title>
+</path>
+<text font-size="14" x="312.5" y="213.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Support → Backend: 35
+</text>
+<defs><linearGradient id="grad_9A60B499_91CC7599_89" x1="0.00" y1="0.49" x2="1.00" y2="0.51" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#9A60B4" stop-opacity="0.60"/><stop offset="100%" stop-color="#91CC75" stop-opacity="0.60"/></linearGradient></defs><path d="M170.6,181 A134.5 134.5 0 0 1 179,158.8 Q300,217.5 423.7,164.7 A134.5 134.5 0 0 1 431.1,187.3 Q300,217.5 170.6,181 Z" fill="url(#grad_9A60B499_91CC7599_89)" class="ct-trigger" data-source="Product" data-target="Frontend" data-value="55">
+<title>Product → Frontend: 55</title>
+</path>
+<text font-size="14" x="300.5" y="195.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Product → Frontend: 55
+</text>
+<path d="M274.9,349.6 A134.5 134.5 0 0 1 262.3,346.6 Q300,217.5 274.9,349.6 Z" fill="#FAC858" fill-opacity="0.6" class="ct-trigger" data-source="Backend" data-target="Backend" data-value="30">
+<title>Backend → Backend: 30</title>
+</path>
+<text font-size="14" x="284.3" y="282.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Backend → Backend: 30
+</text>
+<path d="M305.3,65.1 A152.5 152.5 0 0 1 399.5,101.9 L389.1,114.1 A136.5 136.5 0 0 0 304.8,81.1 Z" fill="#5470C6" class="ct-trigger" data-name="Design" data-value="210">
+<title>Design: 210</title>
+</path>
+<text font-size="14" x="352.6" y="82.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Design: 210
+</text>
+<path d="M407.3,109.2 A152.5 152.5 0 0 1 435.2,288.1 L421,280.7 A136.5 136.5 0 0 0 396.1,120.5 Z" fill="#91CC75" class="ct-trigger" data-name="Frontend" data-value="395">
+<title>Frontend: 395</title>
+</path>
+<text font-size="14" x="442.8" y="195.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Frontend: 395
+</text>
+<path d="M429.9,297.4 A152.5 152.5 0 0 1 257.2,363.9 L261.7,348.5 A136.5 136.5 0 0 0 416.3,289 Z" fill="#FAC858" class="ct-trigger" data-name="Backend" data-value="405">
+<title>Backend: 405</title>
+</path>
+<text font-size="14" x="351.9" y="352.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Backend: 405
+</text>
+<path d="M247.1,360.5 A152.5 152.5 0 0 1 180.4,312.1 L193,302.2 A136.5 136.5 0 0 0 252.7,345.5 Z" fill="#EE6666" class="ct-trigger" data-name="Data" data-value="170">
+<title>Data: 170</title>
+</path>
+<text font-size="14" x="215.1" y="334.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Data: 170
+</text>
+<path d="M174.1,303.6 A152.5 152.5 0 0 1 147.5,215.7 L163.5,215.9 A136.5 136.5 0 0 0 187.3,294.5 Z" fill="#73C0DE" class="ct-trigger" data-name="QA" data-value="190">
+<title>QA: 190</title>
+</path>
+<text font-size="14" x="161.7" y="259.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+QA: 190
+</text>
+<path d="M148,205 A152.5 152.5 0 0 1 215.5,90.6 L224.3,103.9 A136.5 136.5 0 0 0 164,206.3 Z" fill="#9A60B4" class="ct-trigger" data-name="Product" data-value="280">
+<title>Product: 280</title>
+</path>
+<text font-size="14" x="175.5" y="144.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Product: 280
+</text>
+<path d="M224.5,85 A152.5 152.5 0 0 1 294.7,65.1 L295.2,81.1 A136.5 136.5 0 0 0 232.4,98.9 Z" fill="#FC8452" class="ct-trigger" data-name="Support" data-value="150">
+<title>Support: 150</title>
+</path>
+<text font-size="14" x="260.6" y="78.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Support: 150
+</text>
+<text font-size="14" x="357.7" y="69.9" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+Design (11.7%)
+</text>
+<text font-size="14" x="456.6" y="193.1" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+Frontend (21.9%)
+</text>
+<text font-size="14" x="357" y="365.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+Backend (22.5%)
+</text>
+<text font-size="14" x="206.9" y="345.8" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#EEEEEE">
+Data (9.4%)
+</text>
+<text font-size="14" x="148.3" y="263.4" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#EEEEEE">
+QA (10.6%)
+</text>
+<text font-size="14" x="163.4" y="137" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#EEEEEE">
+Product (15.6%)
+</text>
+<text font-size="14" x="256.8" y="56.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+Support (8.3%)
+</text>
+</svg>

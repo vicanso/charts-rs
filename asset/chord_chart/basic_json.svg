@@ -1,0 +1,33 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Trade between regions
+</text>
+<path d="M408.9,130.3 A139.5 139.5 0 0 1 438.4,235.3 Q300,217.5 437.2,242.5 A139.5 139.5 0 0 1 377.3,333.6 Q300,217.5 408.9,130.3 Z" fill="#5470C6" fill-opacity="0.5" data-source="Asia" data-target="Europe" data-value="60"/>
+<path d="M340.4,84 A139.5 139.5 0 0 1 408.9,130.3 Q300,217.5 173.4,276.1 A139.5 139.5 0 0 1 162.5,194.1 Q300,217.5 340.4,84 Z" fill="#5470C6" fill-opacity="0.5" data-source="Asia" data-target="Americas" data-value="45"/>
+<path d="M334.9,352.6 A139.5 139.5 0 0 1 243.6,345.1 Q300,217.5 237,342 A139.5 139.5 0 0 1 173.4,276.1 Q300,217.5 334.9,352.6 Z" fill="#91CC75" fill-opacity="0.5" data-source="Europe" data-target="Americas" data-value="50"/>
+<path d="M377.3,333.6 A139.5 139.5 0 0 1 334.9,352.6 Q300,217.5 198.5,121.8 A139.5 139.5 0 0 1 235.6,93.8 Q300,217.5 377.3,333.6 Z" fill="#91CC75" fill-opacity="0.5" data-source="Europe" data-target="Africa" data-value="25"/>
+<path d="M166.8,175.9 A139.5 139.5 0 0 1 177.8,150.2 Q300,217.5 181.5,143.9 A139.5 139.5 0 0 1 198.5,121.8 Q300,217.5 166.8,175.9 Z" fill="#FAC858" fill-opacity="0.5" data-source="Americas" data-target="Africa" data-value="15"/>
+<path d="M303.7,78 A139.5 139.5 0 0 1 340.4,84 Q300,217.5 259.6,84 A139.5 139.5 0 0 1 296.3,78 Q300,217.5 303.7,78 Z" fill="#5470C6" fill-opacity="0.5" data-source="Asia" data-target="Oceania" data-value="20"/>
+<path d="M242.2,90.6 A139.5 139.5 0 0 1 259.6,84 Q300,217.5 162.5,194.1 A139.5 139.5 0 0 1 166.8,175.9 Q300,217.5 242.2,90.6 Z" fill="#73C0DE" fill-opacity="0.5" data-source="Oceania" data-target="Americas" data-value="10"/>
+<path d="M304,64.1 A153.5 153.5 0 0 1 452.2,237.1 L440.3,235.6 A141.5 141.5 0 0 0 303.7,76 Z" fill="#5470C6" data-name="Asia" data-value="125"/>
+<path d="M451,245 A153.5 153.5 0 0 1 238,357.9 L242.8,346.9 A141.5 141.5 0 0 0 439.2,242.9 Z" fill="#91CC75" data-name="Europe" data-value="135"/>
+<path d="M230.7,354.5 A153.5 153.5 0 0 1 165.5,143.5 L176,149.3 A141.5 141.5 0 0 0 236.1,343.8 Z" fill="#FAC858" data-name="Americas" data-value="120"/>
+<path d="M169.6,136.5 A153.5 153.5 0 0 1 229.1,81.3 L234.7,92 A141.5 141.5 0 0 0 179.8,142.9 Z" fill="#EE6666" data-name="Africa" data-value="40"/>
+<path d="M236.3,77.8 A153.5 153.5 0 0 1 296,64.1 L296.3,76 A141.5 141.5 0 0 0 241.3,88.7 Z" fill="#73C0DE" data-name="Oceania" data-value="30"/>
+<text font-size="14" x="421.1" y="113.7" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Asia
+</text>
+<text font-size="14" x="374.7" y="358.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Europe
+</text>
+<text font-size="14" x="147.6" y="264.6" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Americas
+</text>
+<text font-size="14" x="191.6" y="100.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Africa
+</text>
+<text font-size="14" x="264.1" y="55.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Oceania
+</text>
+</svg>

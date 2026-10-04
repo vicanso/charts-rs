@@ -12,8 +12,8 @@
 
 use super::component::{
     Arrow, Axis, Bubble, Circle, Component, Grid, LEGEND_WIDTH, Legend, Line, Pie, Polygon,
-    Polyline, Rect, Sector, SmoothBand, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill,
-    Text, write_svg_close, write_svg_open,
+    Polyline, Rect, Ribbon, Sector, SmoothBand, SmoothLine, SmoothLineFill, StraightLine,
+    StraightLineFill, Text, write_svg_close, write_svg_open,
 };
 
 use super::{measure_text_width_family, util::*};
@@ -269,6 +269,21 @@ impl Canvas {
         self.append(Component::Sector(c));
         b
     }
+    /// Appends ribbon widget to canvas.
+    pub fn ribbon(&mut self, ribbon: Ribbon) -> Box {
+        let mut c = ribbon;
+        c.cx += self.margin.left;
+        c.cy += self.margin.top;
+        let b = Box {
+            left: c.cx - c.r,
+            top: c.cy - c.r,
+            right: c.cx + c.r,
+            bottom: c.cy + c.r,
+        };
+
+        self.append(Component::Ribbon(c));
+        b
+    }
     /// Appends smooth line points widget to canvas.
     pub fn smooth_line(&mut self, line: SmoothLine) -> Box {
         let mut c = line;
@@ -438,6 +453,7 @@ fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<Stri
         Component::Legend(c) => out.push_str(&c.svg()),
         Component::Pie(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
         Component::Sector(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+        Component::Ribbon(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
     }
     Ok(())
 }

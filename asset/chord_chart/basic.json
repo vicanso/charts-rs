@@ -1,0 +1,13 @@
+{
+    "title_text": "Trade between regions",
+    "title_align": "left",
+    "links": [
+        {"source": "Asia", "target": "Europe", "value": 60},
+        {"source": "Asia", "target": "Americas", "value": 45},
+        {"source": "Europe", "target": "Americas", "value": 50},
+        {"source": "Europe", "target": "Africa", "value": 25},
+        {"source": "Americas", "target": "Africa", "value": 15},
+        {"source": "Asia", "target": "Oceania", "value": 20},
+        {"source": "Oceania", "target": "Americas", "value": 10}
+    ]
+}

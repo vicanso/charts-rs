@@ -58,17 +58,17 @@ struct Bar {
 }
 
 /// A label next to a point: where it goes and how it is anchored.
-struct Beside {
-    x: f32,
-    y: f32,
-    anchor: &'static str,
+pub(crate) struct Beside {
+    pub x: f32,
+    pub y: f32,
+    pub anchor: &'static str,
 }
 
 impl Beside {
     /// The label beside `point`, `gap` pixels away in the direction of the
     /// unit vector `(dx, dy)`. Sideways it starts or ends at that spot;
     /// straight up or down it is centered on it, half its height further.
-    fn new(point: Point, (dx, dy): (f32, f32), gap: f32, height: f32) -> Beside {
+    pub(crate) fn new(point: Point, (dx, dy): (f32, f32), gap: f32, height: f32) -> Beside {
         let anchor = if dx > 0.3 {
             "start"
         } else if dx < -0.3 {
@@ -88,7 +88,7 @@ impl Beside {
         }
     }
     /// Left edge of a label `width` wide.
-    fn left(&self, width: f32) -> f32 {
+    pub(crate) fn left(&self, width: f32) -> f32 {
         match self.anchor {
             "start" => self.x,
             "end" => self.x - width,
@@ -104,7 +104,7 @@ fn tangent(angle: f32) -> (f32, f32) {
 }
 
 /// The direction away from the center at `angle`, as a unit vector.
-fn outward(angle: f32) -> (f32, f32) {
+pub(crate) fn outward(angle: f32) -> (f32, f32) {
     let a = angle.to_radians();
     (a.sin(), -a.cos())
 }

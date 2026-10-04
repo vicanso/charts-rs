@@ -378,6 +378,17 @@ pub(crate) static SANKEY_FIELDS: &[Field] = &[
     f("link_gradient", Kind::Bool),
 ];
 
+pub(crate) static CHORD_FIELDS: &[Field] = &[
+    f("nodes", Kind::ArrayOf(SANKEY_NODE_FIELDS)),
+    f("links", Kind::ArrayOf(LINK_FIELDS)),
+    f("radius", Kind::Size),
+    f("node_width", Kind::Number),
+    f("node_gap", Kind::Number),
+    f("start_angle", Kind::Number),
+    f("link_opacity", Kind::Number),
+    f("link_gradient", Kind::Bool),
+];
+
 pub(crate) static SCATTER_FIELDS: &[Field] = &[
     f("series_symbol_sizes", Kind::NumberArray),
     f("bubble", Kind::Bool),
