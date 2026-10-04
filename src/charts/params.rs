@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::common::MarkArea;
+use super::common::{MarkArea, SeriesBand};
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 use crate::{
     AxisScale, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, NIL_VALUE, Position,
@@ -551,6 +551,18 @@ fn get_series_colors_from_value(
     None
 }
 
+/// Gets the band of a series: `{"lower": [...], "upper": [...]}`.
+fn get_series_band_from_value(value: &serde_json::Value, key: &str) -> Option<SeriesBand> {
+    let band = value.get(key)?;
+    if band.is_null() {
+        return None;
+    }
+    Some(SeriesBand {
+        lower: get_f32_slice_from_value_support_nil(band, "lower").unwrap_or_default(),
+        upper: get_f32_slice_from_value_support_nil(band, "upper").unwrap_or_default(),
+    })
+}
+
 fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
     let name = get_string_from_value(value, "name").unwrap_or_default();
     // An empty series is kept (it still has a legend entry) rather than
@@ -574,6 +586,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         fill: get_bool_from_value(value, "fill"),
         symbol: get_series_symbol_from_value(value, "symbol"),
         x_values: get_x_values_from_value(value, "x_values").map(|(values, _)| values),
+        band: get_series_band_from_value(value, "band"),
     })
 }
 

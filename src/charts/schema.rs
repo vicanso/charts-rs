@@ -113,6 +113,8 @@ static MARK_LINE_FIELDS: &[Field] = &[
 static MARK_POINT_FIELDS: &[Field] = &[f("category", Kind::Enum(&["min", "max"]))];
 static MARK_AREA_FIELDS: &[Field] = &[f("from", Kind::MarkValue), f("to", Kind::MarkValue)];
 
+static BAND_FIELDS: &[Field] = &[f("lower", Kind::NumberArray), f("upper", Kind::NumberArray)];
+
 pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("name", Kind::String),
     f("data", Kind::NumberArray),
@@ -131,6 +133,7 @@ pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("fill", Kind::Bool),
     f("symbol", Kind::Object(SYMBOL_FIELDS)),
     f("x_values", Kind::XValues),
+    f("band", Kind::Object(BAND_FIELDS)),
 ];
 
 pub(crate) static Y_AXIS_FIELDS: &[Field] = &[

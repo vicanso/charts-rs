@@ -88,8 +88,8 @@ pub use canvas::Canvas;
 pub use color::Color;
 pub use common::{
     Align, AnimationConfig, AxisLabelOverflow, AxisScale, AxisType, Fill, MarkArea, MarkLine,
-    MarkLineCategory, MarkPoint, MarkPointCategory, Position, Series, SeriesCategory, SeriesLabel,
-    Symbol, YAxisConfig,
+    MarkLineCategory, MarkPoint, MarkPointCategory, Position, Series, SeriesBand, SeriesCategory,
+    SeriesLabel, Symbol, YAxisConfig,
 };
 pub use compact::compact_svg;
 pub use component::{

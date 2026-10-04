@@ -38,6 +38,7 @@
 - 多种输出格式：svg、png、jpeg、webp、avif
 - 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
 - 基于 Web 的 JSON 编辑器，支持交互式图表配置和测试
+- 折线区间带（`series.band`）：置信区间、预测范围、最低–最高范围
 
 ## 安装
 
@@ -84,6 +85,12 @@ charts-rs = { version = "1", features = ["png"] }
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line.png" alt="charts-rs">
+</p>
+
+## Line band
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line-band.png" alt="charts-rs">
 </p>
 
 ## Pie
@@ -412,6 +419,36 @@ Rust 中设置 `chart.x_axis_values`（`Vec<f64>`），时间戳再加上 `chart
 - 默认根据样本自动选择分箱（边界取整数）；可用 `bin_width` 或 `bin_count` 指定，`x_axis_min` / `x_axis_max` 固定范围。
 - `"percent": true` 显示各样本内的占比而不是数量。
 - 多个系列共用分箱并叠加显示（半透明）；设置相同的 `stack` 名称则改为堆叠。
+
+### 折线区间带
+
+折线系列可以附带 `band`：每个点一个下界和一个上界，两者之间的区域用系列颜色半透明填充，用于置信区间、预测范围、每日最低/最高值等场景。
+
+```json
+{
+  "x_axis_data": ["周一", "周二", "周三", "周四"],
+  "series_list": [{
+    "name": "预测",
+    "data": [120, 132, 128, 141],
+    "band": { "lower": [116, 126, 119, 129], "upper": [124, 138, 137, 153] }
+  }]
+}
+```
+
+```rust
+use charts_rs::{Series, SeriesBand};
+let mut series: Series = ("预测", vec![120.0, 132.0, 128.0, 141.0]).into();
+series.band = Some(SeriesBand::new(
+    vec![116.0, 126.0, 119.0, 129.0],
+    vec![124.0, 138.0, 137.0, 153.0],
+));
+```
+
+- 区间带跟随折线：系列平滑时区间带也平滑；类目轴、数值轴、时间轴均可用，柱状图中的折线系列同样支持。y 轴范围会自动包含上下界。
+- 上界或下界为 `null` 的位置，区间带会断开。
+- 只有 `band`、没有 `data` 的系列只绘制区间带（如最低–最高范围）。
+- 开启 `tooltip_show` 后，数据点的提示会带上区间，并输出 `data-lower` / `data-upper` 属性。
+- 上下界是绝对值：区间带不参与系列堆叠。
 
 ### 数据标签防重叠
 

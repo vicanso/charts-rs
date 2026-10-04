@@ -1,0 +1,21 @@
+{
+    "theme": "grafana",
+    "title_text": "Temperature range",
+    "title_align": "left",
+    "legend_align": "right",
+    "y_axis_configs": [{"axis_formatter": "{c} °C"}],
+    "x_axis_values": ["2024-03-01", "2024-03-02", "2024-03-03", "2024-03-04", "2024-03-06", "2024-03-07", "2024-03-08"],
+    "tooltip_show": true,
+    "series_list": [
+        {
+            "name": "Daily range",
+            "data": [],
+            "band": {"lower": [2, 3, 1, null, 5, 6, 4], "upper": [11, 13, 9, null, 15, 17, 12]}
+        },
+        {
+            "name": "Average",
+            "data": [6.5, 8, 5, 7, 10, 11.5, 8],
+            "band": {"lower": [5.5, 7, 4, 6, 9, 10.5, 7], "upper": [7.5, 9, 6, 8, 11, 12.5, 9]}
+        }
+    ]
+}

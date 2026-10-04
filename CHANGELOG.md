@@ -55,6 +55,9 @@
 - Vertical axes skip labels when there are more than fit, like the x axis.
 - An empty series in JSON is kept (with its legend entry) instead of being
   dropped.
+- Compact output no longer merges adjacent paths that carry `data-*`
+  attributes, so every shape that stands for a piece of data stays an element
+  of its own (no output of the existing charts changes).
 - Bars, line points (with tooltips), pie slices, scatter symbols, funnel
   stages, treemap cells, candles, waterfall bars, box plots, graph nodes and
   theme river streams carry `data-*` attributes (`data-series`,
@@ -62,6 +65,14 @@
 
 ### Added
 
+- Bands around lines: a series' `band` (`{"lower": [...], "upper": [...]}`,
+  `SeriesBand` in Rust) fills the area between a lower and an upper bound of
+  each point in the color of the series — confidence intervals, forecast
+  ranges, min–max envelopes. The band is smooth when its line is, works on
+  category, value and time x axes and for the line series of a bar chart,
+  widens the y axis to fit, breaks at a `null` bound, and is drawn alone for
+  a series without `data`. Tooltips tell the bounds, and the hover targets
+  carry `data-lower` / `data-upper`.
 - `HistogramChart`: the distribution of a sample over equal-width bins. The
   series data is the raw sample; the bins are chosen from it (Sturges' rule,
   edges rounded to 1 / 2 / 5 × 10ⁿ) or set with `bin_width` / `bin_count`,

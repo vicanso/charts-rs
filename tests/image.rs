@@ -1154,6 +1154,13 @@ fn generate_image() {
             .svg()
             .unwrap(),
         ),
+        (
+            "line-band",
+            charts_rs::LineChart::from_json(include_str!("../asset/line_chart/band.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
     ] {
         let buf = svg_to_png(&chart).unwrap();
         common::save_asset(&format!("image/{name}.png"), &buf);

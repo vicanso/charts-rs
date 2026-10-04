@@ -156,6 +156,55 @@ pub struct MarkPoint {
     pub category: MarkPointCategory,
 }
 
+/// A band around a line series: a lower and an upper bound for each data
+/// point, with the area between them filled — a confidence interval, a
+/// forecast range, a daily minimum and maximum.
+///
+/// Bound `i` belongs to data point `i` of the series. A series may carry a
+/// band without any `data`, which draws the band alone.
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+pub struct SeriesBand {
+    /// Lower bound of each point; `None` leaves a gap in the band.
+    pub lower: Vec<Option<f32>>,
+    /// Upper bound of each point; `None` leaves a gap in the band.
+    pub upper: Vec<Option<f32>>,
+}
+
+impl SeriesBand {
+    /// Creates a band from its bounds. The legacy `NIL_VALUE` sentinel marks
+    /// a missing bound, as in [`Series::new`].
+    pub fn new(lower: Vec<f32>, upper: Vec<f32>) -> Self {
+        let nullable = |values: Vec<f32>| -> Vec<Option<f32>> {
+            values
+                .into_iter()
+                .map(|v| if v == NIL_VALUE { None } else { Some(v) })
+                .collect()
+        };
+        SeriesBand {
+            lower: nullable(lower),
+            upper: nullable(upper),
+        }
+    }
+    /// Number of points the band spans.
+    pub(crate) fn len(&self) -> usize {
+        self.lower.len().max(self.upper.len())
+    }
+    /// The bounds of point `i`, lower first, when both are present.
+    pub(crate) fn bounds(&self, i: usize) -> Option<(f32, f32)> {
+        let bound =
+            |values: &[Option<f32>]| values.get(i).copied().flatten().filter(|v| v.is_finite());
+        let (a, b) = (bound(&self.lower)?, bound(&self.upper)?);
+        Some((a.min(b), a.max(b)))
+    }
+    /// Every bound that is present, for sizing the axis.
+    pub(crate) fn values(&self) -> impl Iterator<Item = f32> + '_ {
+        self.lower
+            .iter()
+            .chain(self.upper.iter())
+            .filter_map(|v| v.filter(|v| v.is_finite()))
+    }
+}
+
 /// One data series: a name plus its values, with per-series display options.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct Series {
@@ -202,6 +251,10 @@ pub struct Series {
     /// x values.
     #[serde(default)]
     pub x_values: Option<Vec<f64>>,
+    /// A filled band around the line (line series only): a lower and an
+    /// upper bound per data point.
+    #[serde(default)]
+    pub band: Option<SeriesBand>,
 }
 
 /// Animation configuration for SVG chart animations.
@@ -283,6 +336,13 @@ impl Series {
     /// missing points, without allocating a `Vec`. NaN/inf can only arrive
     /// through the builder API; they are missing so they never reach the axis
     /// math or the SVG.
+    /// Number of slots the series spans: its data points, or the points of
+    /// its band when that is longer (a band without a line).
+    pub(crate) fn slot_len(&self) -> usize {
+        self.data
+            .len()
+            .max(self.band.as_ref().map(SeriesBand::len).unwrap_or(0))
+    }
     pub(crate) fn iter_values(&self) -> impl Iterator<Item = f32> + '_ {
         self.data.iter().map(|v| match v {
             Some(value) if value.is_finite() => *value,
@@ -374,5 +434,39 @@ impl Fill {
     /// Returns true if the fill is fully transparent (only for solid fills).
     pub fn is_transparent(&self) -> bool {
         matches!(self, Fill::Solid(c) if c.is_transparent())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{NIL_VALUE, SeriesBand};
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn series_band_bounds() {
+        let band = SeriesBand::new(vec![1.0, NIL_VALUE, 9.0, 4.0], vec![3.0, 5.0, 6.0]);
+        assert_eq!(vec![Some(1.0), None, Some(9.0), Some(4.0)], band.lower);
+        // The band spans the longer bound, but a point needs both.
+        assert_eq!(4, band.len());
+        assert_eq!(Some((1.0, 3.0)), band.bounds(0));
+        assert_eq!(None, band.bounds(1));
+        // Swapped bounds are put in order.
+        assert_eq!(Some((6.0, 9.0)), band.bounds(2));
+        assert_eq!(None, band.bounds(3));
+        assert_eq!(None, band.bounds(4));
+        assert_eq!(
+            vec![1.0, 9.0, 4.0, 3.0, 5.0, 6.0],
+            band.values().collect::<Vec<_>>()
+        );
+
+        // A bound that is not a number is no bound.
+        let band = SeriesBand {
+            lower: vec![Some(f32::NAN), Some(1.0)],
+            upper: vec![Some(2.0), Some(f32::INFINITY)],
+        };
+        assert_eq!(None, band.bounds(0));
+        assert_eq!(None, band.bounds(1));
+        assert_eq!(vec![1.0, 2.0], band.values().collect::<Vec<_>>());
+        assert_eq!(0, SeriesBand::default().len());
     }
 }

@@ -49,6 +49,8 @@ The library supports twenty-three chart types: `Bar`, `HorizontalBar`, `Line`, `
 - Value and time x axes for line and bar charts (unevenly sampled data keeps
   its real spacing), axis titles, bubble charts, and data labels that hide
   instead of overlapping
+- Bands around lines (`series.band`): confidence intervals, forecast ranges
+  and min–max envelopes
 
 ## Installation
 
@@ -104,6 +106,12 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line.png" alt="charts-rs">
+</p>
+
+## Line band
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line-band.png" alt="charts-rs">
 </p>
 
 ## Pie
@@ -453,6 +461,41 @@ into equal-width bins:
 - `"percent": true` shows the share of each sample instead of a count.
 - Several series share the bins and are drawn over each other; give them
   the same `stack` name to pile them up instead.
+
+### Band around a line
+
+A line series can carry a `band`: a lower and an upper bound for each point,
+with the area between them filled in the color of the series — a confidence
+interval, a forecast range, a daily minimum and maximum.
+
+```json
+{
+  "x_axis_data": ["Mon", "Tue", "Wed", "Thu"],
+  "series_list": [{
+    "name": "Forecast",
+    "data": [120, 132, 128, 141],
+    "band": { "lower": [116, 126, 119, 129], "upper": [124, 138, 137, 153] }
+  }]
+}
+```
+
+```rust
+use charts_rs::{Series, SeriesBand};
+let mut series: Series = ("Forecast", vec![120.0, 132.0, 128.0, 141.0]).into();
+series.band = Some(SeriesBand::new(
+    vec![116.0, 126.0, 119.0, 129.0],
+    vec![124.0, 138.0, 137.0, 153.0],
+));
+```
+
+- The band follows its line: smooth when the series is smooth, on a category,
+  value or time x axis, also for the line series of a bar chart. The y axis
+  makes room for the bounds.
+- A `null` bound leaves a gap in the band.
+- A series with a band and no `data` draws the band alone (a min–max range).
+- With `tooltip_show` the tooltip of a point tells its bounds, and the points
+  carry `data-lower` / `data-upper`.
+- The bounds are absolute values: a band is not stacked with its series.
 
 ### Overlapping data labels
 

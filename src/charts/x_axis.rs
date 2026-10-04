@@ -91,7 +91,7 @@ impl ChartBase {
         }
         self.series_list
             .iter()
-            .filter_map(|s| s.x_values.as_ref().map(|x| x.len().min(s.data.len())))
+            .filter_map(|s| s.x_values.as_ref().map(|x| x.len().min(s.slot_len())))
             .chain(std::iter::once(self.x_axis_values.len()))
             .max()
             .unwrap_or(0)

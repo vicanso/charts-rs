@@ -59,6 +59,17 @@ fn cases() -> Vec<(&'static str, String, String)> {
             HistogramChart,
             include_str!("../asset/histogram_chart/overlay.json")
         ),
+        // Bands around lines: a smooth one, and one with hover strips.
+        case!(
+            "band",
+            LineChart,
+            include_str!("../asset/line_chart/band.json")
+        ),
+        case!(
+            "band_range",
+            LineChart,
+            include_str!("../asset/line_chart/band_range.json")
+        ),
     ]
 }
 

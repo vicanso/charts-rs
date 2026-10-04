@@ -1,0 +1,178 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#1F1D1D"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+Temperature range
+</text>
+<g>
+<line stroke-width="2" x1="405" y1="15" x2="430" y2="15" stroke="#7EB26D"/>
+<circle cx="417.5" cy="15" r="5.5" stroke-width="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="433" y="19" font-family="Roboto" fill="#D8D9DA">
+Daily range
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="511" y1="15" x2="536" y2="15" stroke="#EAB839"/>
+<circle cx="523.5" cy="15" r="5.5" stroke-width="2" stroke="#EAB839" fill="#EAB839"/>
+<text font-size="14" x="539" y="19" font-family="Roboto" fill="#D8D9DA">
+Average
+</text>
+</g>
+<g stroke="#444343" stroke-width="1">
+<line x1="45" y1="40" x2="595" y2="40"/><line x1="45" y1="94.2" x2="595" y2="94.2"/><line x1="45" y1="148.3" x2="595" y2="148.3"/><line x1="45" y1="202.5" x2="595" y2="202.5"/><line x1="45" y1="256.7" x2="595" y2="256.7"/><line x1="45" y1="310.8" x2="595" y2="310.8"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="45" font-family="Roboto" fill="#B9B8CE">
+24 °C
+</text>
+<text font-size="14" x="2" y="99.2" font-family="Roboto" fill="#B9B8CE">
+20 °C
+</text>
+<text font-size="14" x="2" y="153.3" font-family="Roboto" fill="#B9B8CE">
+16 °C
+</text>
+<text font-size="14" x="2" y="207.5" font-family="Roboto" fill="#B9B8CE">
+12 °C
+</text>
+<text font-size="14" x="10" y="261.7" font-family="Roboto" fill="#B9B8CE">
+8 °C
+</text>
+<text font-size="14" x="10" y="315.8" font-family="Roboto" fill="#B9B8CE">
+4 °C
+</text>
+<text font-size="14" x="10" y="370" font-family="Roboto" fill="#B9B8CE">
+0 °C
+</text>
+</g>
+<g>
+<g stroke="#B9B8CE" stroke-width="1">
+<line x1="45" y1="365" x2="595" y2="365"/>
+<line x1="45" y1="365" x2="45" y2="370"/>
+<line x1="123.6" y1="365" x2="123.6" y2="370"/>
+<line x1="202.1" y1="365" x2="202.1" y2="370"/>
+<line x1="280.7" y1="365" x2="280.7" y2="370"/>
+<line x1="359.3" y1="365" x2="359.3" y2="370"/>
+<line x1="437.9" y1="365" x2="437.9" y2="370"/>
+<line x1="516.4" y1="365" x2="516.4" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="45" y="384" font-family="Roboto" fill="#B9B8CE">
+03-01
+</text>
+<text font-size="14" x="105.6" y="384" font-family="Roboto" fill="#B9B8CE">
+03-02
+</text>
+<text font-size="14" x="184.6" y="384" font-family="Roboto" fill="#B9B8CE">
+03-03
+</text>
+<text font-size="14" x="262.7" y="384" font-family="Roboto" fill="#B9B8CE">
+03-04
+</text>
+<text font-size="14" x="341.3" y="384" font-family="Roboto" fill="#B9B8CE">
+03-05
+</text>
+<text font-size="14" x="419.9" y="384" font-family="Roboto" fill="#B9B8CE">
+03-06
+</text>
+<text font-size="14" x="498.4" y="384" font-family="Roboto" fill="#B9B8CE">
+03-07
+</text>
+<text font-size="14" x="559" y="384" font-family="Roboto" fill="#B9B8CE">
+03-08
+</text>
+</g>
+<polygon points="45,216 123.6,189 202.1,243.1 202.1,351.5 123.6,324.4 45,337.9" fill="#7EB26D" fill-opacity="0.24" class="ct-band" data-series="Daily range"/>
+<polygon points="437.9,161.9 516.4,134.8 595,202.5 595,310.8 516.4,283.8 437.9,297.3" fill="#7EB26D" fill-opacity="0.24" class="ct-band" data-series="Daily range"/>
+<polygon points="45,263.4 123.6,243.1 202.1,283.8 280.7,256.7 437.9,216 516.4,195.7 595,243.1 595,270.2 516.4,222.8 437.9,243.1 280.7,283.8 202.1,310.8 123.6,270.2 45,290.5" fill="#EAB839" fill-opacity="0.24" class="ct-band" data-series="Average"/>
+<rect x="41" y="216" width="8" height="121.9" fill="none" class="ct-trigger" style="pointer-events:all" data-series="Daily range" data-category="2024-03-01" data-lower="2" data-upper="11">
+<title>Daily range: 2 – 11</title>
+</rect>
+<text font-size="14" x="45" y="216" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Daily range: 2 – 11
+</text>
+<rect x="119.6" y="189" width="8" height="135.4" fill="none" class="ct-trigger" style="pointer-events:all" data-series="Daily range" data-category="2024-03-02" data-lower="3" data-upper="13">
+<title>Daily range: 3 – 13</title>
+</rect>
+<text font-size="14" x="123.6" y="189" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Daily range: 3 – 13
+</text>
+<rect x="198.1" y="243.1" width="8" height="108.3" fill="none" class="ct-trigger" style="pointer-events:all" data-series="Daily range" data-category="2024-03-03" data-lower="1" data-upper="9">
+<title>Daily range: 1 – 9</title>
+</rect>
+<text font-size="14" x="202.1" y="243.1" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Daily range: 1 – 9
+</text>
+<rect x="433.9" y="161.9" width="8" height="135.4" fill="none" class="ct-trigger" style="pointer-events:all" data-series="Daily range" data-category="2024-03-06" data-lower="5" data-upper="15">
+<title>Daily range: 5 – 15</title>
+</rect>
+<text font-size="14" x="437.9" y="161.9" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Daily range: 5 – 15
+</text>
+<rect x="512.4" y="134.8" width="8" height="149" fill="none" class="ct-trigger" style="pointer-events:all" data-series="Daily range" data-category="2024-03-07" data-lower="6" data-upper="17">
+<title>Daily range: 6 – 17</title>
+</rect>
+<text font-size="14" x="516.4" y="134.8" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Daily range: 6 – 17
+</text>
+<rect x="591" y="202.5" width="8" height="108.3" fill="none" class="ct-trigger" style="pointer-events:all" data-series="Daily range" data-category="2024-03-08" data-lower="4" data-upper="12">
+<title>Daily range: 4 – 12</title>
+</rect>
+<text font-size="14" x="595" y="202.5" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Daily range: 4 – 12
+</text>
+<g>
+<path d="M 45 277 L 123.6 256.7 L 202.1 297.3 L 280.7 270.2 L 437.9 229.6 L 516.4 209.3 L 595 256.7" stroke-width="2" fill="none" stroke="#EAB839"/>
+<g stroke-width="2" stroke="#EAB839" fill="#1F1D1D">
+<circle cx="45" cy="277" r="2"/>
+<circle cx="123.6" cy="256.7" r="2"/>
+<circle cx="202.1" cy="297.3" r="2"/>
+<circle cx="280.7" cy="270.2" r="2"/>
+<circle cx="437.9" cy="229.6" r="2"/>
+<circle cx="516.4" cy="209.3" r="2"/>
+<circle cx="595" cy="256.7" r="2"/>
+</g>
+</g>
+<circle cx="45" cy="277" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Average" data-category="2024-03-01" data-value="6.5" data-lower="5.5" data-upper="7.5">
+<title>Average: 6.5 (5.5 – 7.5)</title>
+</circle>
+<text font-size="14" x="45" y="277" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Average: 6.5 (5.5 – 7.5)
+</text>
+<circle cx="123.6" cy="256.7" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Average" data-category="2024-03-02" data-value="8" data-lower="7" data-upper="9">
+<title>Average: 8 (7 – 9)</title>
+</circle>
+<text font-size="14" x="123.6" y="256.7" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Average: 8 (7 – 9)
+</text>
+<circle cx="202.1" cy="297.3" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Average" data-category="2024-03-03" data-value="5" data-lower="4" data-upper="6">
+<title>Average: 5 (4 – 6)</title>
+</circle>
+<text font-size="14" x="202.1" y="297.3" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Average: 5 (4 – 6)
+</text>
+<circle cx="280.7" cy="270.2" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Average" data-category="2024-03-04" data-value="7" data-lower="6" data-upper="8">
+<title>Average: 7 (6 – 8)</title>
+</circle>
+<text font-size="14" x="280.7" y="270.2" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Average: 7 (6 – 8)
+</text>
+<circle cx="437.9" cy="229.6" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Average" data-category="2024-03-06" data-value="10" data-lower="9" data-upper="11">
+<title>Average: 10 (9 – 11)</title>
+</circle>
+<text font-size="14" x="437.9" y="229.6" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Average: 10 (9 – 11)
+</text>
+<circle cx="516.4" cy="209.3" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Average" data-category="2024-03-07" data-value="11.5" data-lower="10.5" data-upper="12.5">
+<title>Average: 11.5 (10.5 – 12.5)</title>
+</circle>
+<text font-size="14" x="516.4" y="209.3" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Average: 11.5 (10.5 – 12.5)
+</text>
+<circle cx="595" cy="256.7" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Average" data-category="2024-03-08" data-value="8" data-lower="7" data-upper="9">
+<title>Average: 8 (7 – 9)</title>
+</circle>
+<text font-size="14" x="595" y="256.7" dy="-8" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+Average: 8 (7 – 9)
+</text>
+</svg>

@@ -379,6 +379,21 @@ impl LabelBoxes {
     }
 }
 
+/// Alpha of the band around a line (`Series::band`): light enough for the
+/// line, the grid and other bands to show through.
+const BAND_ALPHA: u8 = 60;
+
+/// Hover target of a band point that has no line point of its own.
+struct BandTip {
+    series: usize,
+    slot: usize,
+    x: f32,
+    top: f32,
+    bottom: f32,
+    lower: f32,
+    upper: f32,
+}
+
 /// Gap between an axis title and the axis labels.
 const AXIS_TITLE_GAP: f32 = 6.0;
 
@@ -732,6 +747,14 @@ impl ChartBase {
         for series in self.series_list.iter() {
             if series.y_axis_index == y_axis_index && series.stack.is_none() {
                 data_list.extend(series.iter_values());
+            }
+        }
+        // The bounds of a band have to fit on the axis as well as the line.
+        for series in self.series_list.iter() {
+            if series.y_axis_index == y_axis_index
+                && let Some(band) = &series.band
+            {
+                data_list.extend(band.values());
             }
         }
         // Stacked series: the effective max at each x-position is the sum of all
@@ -1361,9 +1384,12 @@ impl ChartBase {
     }
     /// True when there is nothing to draw: no series, or only empty ones.
     pub(crate) fn has_no_data(&self) -> bool {
-        self.series_list
-            .iter()
-            .all(|s| s.data.iter().all(Option::is_none))
+        self.series_list.iter().all(|s| {
+            s.data.iter().all(Option::is_none)
+                && s.band
+                    .as_ref()
+                    .is_none_or(|band| band.values().next().is_none())
+        })
     }
     /// Draws `empty_text` centered in `c` when the chart has no data.
     pub(crate) fn render_empty_text(&self, c: Canvas) {
@@ -1961,6 +1987,89 @@ impl ChartBase {
         let unit_width = c1.width() / split_unit_count;
         let mut series_labels_list = vec![];
 
+        // Bands first, so every line is drawn over every band. A point with
+        // a missing bound (or no place on the x axis) ends a stretch of band.
+        let mut band_tips: Vec<BandTip> = vec![];
+        for (index, series) in series_list.iter().enumerate() {
+            let Some(band) = &series.band else {
+                continue;
+            };
+            let y_axis_values = if series.y_axis_index >= y_axis_values_list.len() {
+                y_axis_values_list[0]
+            } else {
+                y_axis_values_list[series.y_axis_index]
+            };
+            let color = get_color(&self.series_colors, series.index.unwrap_or(index))
+                .with_alpha(BAND_ALPHA);
+            let smooth = series.smooth.unwrap_or(self.series_smooth);
+            let (mut top, mut bottom): (Vec<Point>, Vec<Point>) = (vec![], vec![]);
+            for i in 0..=band.len() {
+                let slot = match x_scale {
+                    Some(_) => self.x_slot(series, i),
+                    None => i.saturating_add(series.start_index),
+                };
+                let x = if slot >= series_data_count {
+                    None
+                } else {
+                    match x_scale {
+                        Some(scale) => self.x_value(series, slot).map(|v| scale.px(v)),
+                        None if x_boundary_gap => Some(unit_width * slot as f32 + unit_width / 2.0),
+                        None => Some(unit_width * slot as f32),
+                    }
+                };
+                if let (Some((lower, upper)), Some(x)) = (band.bounds(i), x) {
+                    let top_y = y_axis_values.get_offset_height(upper, max_height);
+                    let bottom_y = y_axis_values.get_offset_height(lower, max_height);
+                    top.push((x, top_y).into());
+                    bottom.push((x, bottom_y).into());
+                    // Where the line has a point its tooltip tells the bounds;
+                    // elsewhere the band needs a hover target of its own.
+                    let has_point = matches!(
+                        series.data.get(i),
+                        Some(Some(v)) if v.is_finite() && *v != NIL_VALUE
+                    );
+                    if tooltip && !has_point {
+                        band_tips.push(BandTip {
+                            series: index,
+                            slot,
+                            x,
+                            top: top_y,
+                            bottom: bottom_y,
+                            lower,
+                            upper,
+                        });
+                    }
+                    continue;
+                }
+                // End of a stretch (the index past the last point always is).
+                let (top, bottom) = (std::mem::take(&mut top), std::mem::take(&mut bottom));
+                if top.len() < 2 {
+                    continue;
+                }
+                let dataset = vec![("series".to_string(), series.name.clone())];
+                if smooth {
+                    c1.smooth_band(SmoothBand {
+                        top,
+                        bottom,
+                        fill: Some(color),
+                        class: Some("ct-band".to_string()),
+                        dataset,
+                        ..Default::default()
+                    });
+                } else {
+                    let mut points = top;
+                    points.extend(bottom.into_iter().rev());
+                    c1.polygon(Polygon {
+                        fill: Some(color),
+                        points,
+                        class: Some("ct-band".to_string()),
+                        dataset,
+                        ..Default::default()
+                    });
+                }
+            }
+        }
+
         // Stack accumulators for line series: stack_key -> Vec<f32> of cumulative
         // data values per x-position (data space, not pixel space).
         let mut stack_acc: Vec<(String, Vec<f32>)> = vec![];
@@ -2090,7 +2199,17 @@ impl ChartBase {
                         text,
                     });
                     if tooltip {
-                        point_datasets.push(self.point_dataset(series, actual_i, value));
+                        let mut dataset = self.point_dataset(series, actual_i, value);
+                        // A point inside a band also tells its bounds.
+                        let range = series.band.as_ref().and_then(|band| band.bounds(i)).map(
+                            |(lower, upper)| {
+                                let (lower, upper) = (format_float(lower), format_float(upper));
+                                dataset.push(("lower".to_string(), lower.clone()));
+                                dataset.push(("upper".to_string(), upper.clone()));
+                                format!(" ({lower} – {upper})")
+                            },
+                        );
+                        point_datasets.push((dataset, range));
                     }
                 }
             }
@@ -2193,8 +2312,13 @@ impl ChartBase {
             // (accessibility) and the `ct-trigger` class, immediately
             // followed by a hidden `.ct-tip` label revealed on hover.
             if tooltip {
-                for (label, dataset) in series_labels.iter().zip(point_datasets) {
-                    let text = format!("{}: {}", series.name, label.text);
+                for (label, (dataset, range)) in series_labels.iter().zip(point_datasets) {
+                    let text = format!(
+                        "{}: {}{}",
+                        series.name,
+                        label.text,
+                        range.as_deref().unwrap_or("")
+                    );
                     c1.circle(Circle {
                         cx: label.point.x,
                         cy: label.point.y,
@@ -2213,6 +2337,44 @@ impl ChartBase {
                         font_size: Some(self.series_label_font_size),
                         x: Some(label.point.x),
                         y: Some(label.point.y),
+                        dy: Some(-8.0),
+                        text_anchor: Some("middle".to_string()),
+                        ..Default::default()
+                    });
+                }
+                // The band points without a line point: a transparent strip
+                // across the band, as wide as the hit-circles above.
+                let half_width = self.series_stroke_width.max(2.0) + 2.0;
+                for tip in band_tips.iter().filter(|tip| tip.series == index) {
+                    let (lower, upper) = (format_float(tip.lower), format_float(tip.upper));
+                    let text = format!("{}: {lower} – {upper}", series.name);
+                    let mut dataset = vec![("series".to_string(), series.name.clone())];
+                    if let Some(category) = self.x_label(series, tip.slot) {
+                        dataset.push(("category".to_string(), category.into_owned()));
+                    }
+                    dataset.push(("lower".to_string(), lower));
+                    dataset.push(("upper".to_string(), upper));
+                    c1.rect(Rect {
+                        fill: Some(Color::transparent().into()),
+                        left: tip.x - half_width,
+                        top: tip.top,
+                        width: half_width * 2.0,
+                        height: (tip.bottom - tip.top).max(1.0),
+                        title: Some(text.clone()),
+                        class: Some("ct-trigger".to_string()),
+                        // Nothing is painted, so ask for the hover anyway.
+                        style: Some("pointer-events:all".to_string()),
+                        dataset,
+                        ..Default::default()
+                    });
+                    c1.text_unmeasured(Text {
+                        text,
+                        class: Some("ct-tip".to_string()),
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(self.series_label_font_size),
+                        x: Some(tip.x),
+                        y: Some(tip.top),
                         dy: Some(-8.0),
                         text_anchor: Some("middle".to_string()),
                         ..Default::default()

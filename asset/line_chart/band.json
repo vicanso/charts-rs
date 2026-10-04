@@ -1,0 +1,23 @@
+{
+    "title_text": "Forecast",
+    "title_align": "left",
+    "legend_align": "right",
+    "x_axis_title": "Day",
+    "y_axis_configs": [{"axis_title": "Demand"}],
+    "series_smooth": true,
+    "x_axis_data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue", "Wed"],
+    "series_list": [
+        {
+            "name": "Forecast",
+            "data": [120, 132, 128, 141, 150, 163, 158, 170, 176, 185],
+            "band": {
+                "lower": [116, 126, 119, 129, 134, 143, 133, 140, 141, 144],
+                "upper": [124, 138, 137, 153, 166, 183, 183, 200, 211, 226]
+            }
+        },
+        {
+            "name": "Actual",
+            "data": [118, 135, 131, 138, 155, null, null, null, null, null]
+        }
+    ]
+}

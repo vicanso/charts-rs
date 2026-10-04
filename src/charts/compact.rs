@@ -19,7 +19,8 @@
 //! - `line`, `rect` (without corner radius), `polygon` and `polyline` become
 //!   paths, path data is written with relative coordinates, `h`/`v`
 //!   shorthands and minimal separators, and adjacent paths that share their
-//!   attributes are merged (grid lines, axis ticks);
+//!   attributes are merged (grid lines, axis ticks), unless they carry
+//!   `data-*` attributes;
 //! - attributes shared by every child of a group move onto the group, and a
 //!   font family shared by every text moves onto the root;
 //! - default values (`stroke-width="1"`, `x="0"`), leading zeros (`.45`) and
@@ -405,7 +406,8 @@ fn hoist_font_family(root: &mut Element) {
 }
 
 /// Merges runs of adjacent childless `<path>` siblings that share every
-/// attribute but `d`.
+/// attribute but `d`. A path that carries `data-*` attributes stands for a
+/// piece of data and stays an element of its own.
 fn merge_paths(element: &mut Element) {
     let mut merged: Vec<Node> = Vec::with_capacity(element.children.len());
     for child in element.children.drain(..) {
@@ -414,6 +416,7 @@ fn merge_paths(element: &mut Element) {
             && prev.name == "path"
             && cur.children.is_empty()
             && prev.children.is_empty()
+            && !cur.attrs.iter().any(|(k, _)| k.starts_with("data-"))
             && same_attrs_but_d(&cur.attrs, &prev.attrs)
             && let (Some(d_cur), Some(d_prev)) = (cur.attr("d"), prev.attr("d"))
         {
@@ -919,6 +922,27 @@ mod tests {
             ),
             out
         );
+    }
+
+    #[test]
+    fn paths_with_data_are_not_merged() {
+        let svg = |data: &str| {
+            format!(
+                concat!(
+                    "<svg width=\"10\" height=\"10\" xmlns=\"http://www.w3.org/2000/svg\">\n",
+                    "<polygon points=\"1,1 3,1 3,3\" fill=\"#5470C6\"{0}/>\n",
+                    "<polygon points=\"5,1 7,1 7,3\" fill=\"#5470C6\"{0}/>\n",
+                    "</svg>"
+                ),
+                data
+            )
+        };
+        // Two shapes that differ in nothing but their outline become one...
+        assert_eq!(1, compact_svg(&svg("")).matches("<path").count());
+        // ...unless each stands for a piece of data.
+        let out = compact_svg(&svg(" data-series=\"x\""));
+        assert_eq!(2, out.matches("<path").count());
+        assert_eq!(2, out.matches("data-series=\"x\"").count());
     }
 
     #[test]
