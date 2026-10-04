@@ -445,6 +445,12 @@ pub(crate) fn get_series_symbol_from_value(value: &serde_json::Value, key: &str)
     if v.is_null() {
         return Some(Symbol::None);
     }
+    Some(get_symbol_from_object(v))
+}
+
+/// The symbol a JSON object describes: its `type`, `size` / `radius` and
+/// `color`.
+pub(crate) fn get_symbol_from_object(v: &serde_json::Value) -> Symbol {
     let color = get_color_from_value(v, "color");
     let size = get_f32_from_value(v, "size")
         .or_else(|| get_f32_from_value(v, "radius"))
@@ -454,12 +460,12 @@ pub(crate) fn get_series_symbol_from_value(value: &serde_json::Value, key: &str)
         .and_then(|t| t.as_str())
         .unwrap_or("circle")
         .to_lowercase();
-    Some(match symbol_type.as_str() {
+    match symbol_type.as_str() {
         "rect" | "square" => Symbol::Rect(size, color),
         "triangle" => Symbol::Triangle(size, color),
         "diamond" => Symbol::Diamond(size, color),
         _ => Symbol::Circle(size, color),
-    })
+    }
 }
 
 fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {

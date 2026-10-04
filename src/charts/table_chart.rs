@@ -76,6 +76,8 @@ pub struct TableChart {
     pub body_font_size: f32,
     /// Body font color.
     pub body_font_color: Color,
+    /// Body font weight, e.g. `"bold"`.
+    pub body_font_weight: Option<String>,
     /// Body row background colors, cycled per row.
     pub body_background_colors: Vec<Color>,
 
@@ -120,6 +122,9 @@ impl TableChart {
         }
         if let Some(font_family) = get_string_from_value(&data, "font_family") {
             self.font_family = font_family;
+        }
+        if let Some(background_color) = get_color_from_value(&data, "background_color") {
+            self.background_color = background_color;
         }
         if let Some(title_text) = get_string_from_value(&data, "title_text") {
             self.title_text = title_text;
@@ -243,6 +248,9 @@ impl TableChart {
         }
         if let Some(body_font_color) = get_color_from_value(&data, "body_font_color") {
             self.body_font_color = body_font_color;
+        }
+        if let Some(body_font_weight) = get_string_from_value(&data, "body_font_weight") {
+            self.body_font_weight = Some(body_font_weight);
         }
         if let Some(body_background_colors) =
             get_color_slice_from_value(&data, "body_background_colors")
@@ -496,7 +504,7 @@ impl TableChart {
             let mut font_color = self.body_font_color;
 
             let is_header = i == 0;
-            let mut font_weight = None;
+            let mut font_weight = self.body_font_weight.clone();
             let bg_color = if is_header {
                 line_height = self.header_row_height;
                 padding = self.header_row_padding.top + self.header_row_padding.bottom;

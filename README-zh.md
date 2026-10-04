@@ -34,7 +34,7 @@
 - 系列堆叠、自定义虚线样式、按柱自定义颜色
 - 柱状图、折线图、饼图、旭日图、漏斗图、矩形树图与桑基图的 SVG 动画支持（时长、缓动函数、错开延迟）
 - 通过 `Option<f32>` 支持空值 / 缺失数据点（JSON 中使用 `null`；旧的 `NIL_VALUE` 仍兼容）
-- 所有图表类型均支持基于 JSON 的配置方式
+- 所有图表类型均支持基于 JSON 的配置方式，并提供[完整的参数参考](./docs/json-zh.md)
 - 多种输出格式：svg、png、jpeg、webp、avif
 - 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
 - 基于 Web 的 JSON 编辑器，支持交互式图表配置和测试
@@ -297,6 +297,8 @@ svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 ```
 
 ### 通过 JSON 字符串配置创建图表
+
+各图表的 JSON 文档可以使用的全部键（类型、默认值和作用）见 [JSON 参数参考](./docs/json-zh.md)。
 
 ```rust,no_run
 use charts_rs::{BarChart, svg_to_png};

@@ -459,9 +459,6 @@ pub(crate) static TABLE_FIELDS: &[Field] = &[
     f("body_background_colors", Kind::ColorArray),
     f("outlined", Kind::Bool),
     f("cell_styles", Kind::ArrayOf(CELL_STYLE_FIELDS)),
-    f("font_color", Kind::Color),
-    f("font_weight", Kind::String),
-    f("indexes", Kind::Array),
     f("compact", Kind::Bool),
 ];
 
@@ -828,5 +825,353 @@ mod tests {
         assert_eq!(0, edit_distance("abc", "abc"));
         assert_eq!(1, edit_distance("title_text", "tittle_text"));
         assert_eq!(3, edit_distance("kitten", "sitting"));
+    }
+
+    // ── Every key does something ────────────────────────────────────────────
+
+    use serde_json::{Value, json};
+
+    type Parse = fn(&str) -> Option<String>;
+
+    fn parsed<C: std::fmt::Debug>(chart: std::result::Result<C, Error>) -> Option<String> {
+        chart.ok().map(|c| format!("{c:?}"))
+    }
+
+    /// Every chart with the tables of its options and its `from_json`; the
+    /// multi chart, whose options are its children, is not one of them.
+    fn charts() -> Vec<(&'static str, Vec<&'static [Field]>, Parse)> {
+        use crate::*;
+        macro_rules! chart {
+            ($name:literal, $chart:ty, $($fields:expr),+) => {
+                ($name, vec![$($fields),+], |json| parsed(<$chart>::from_json(json)))
+            };
+        }
+        vec![
+            chart!("bar", BarChart, BASE_FIELDS, BAR_FIELDS),
+            chart!("box_plot", BoxPlotChart, BASE_FIELDS, BOX_PLOT_FIELDS),
+            chart!("calendar", CalendarChart, BASE_FIELDS, CALENDAR_FIELDS),
+            chart!(
+                "candlestick",
+                CandlestickChart,
+                BASE_FIELDS,
+                CANDLESTICK_FIELDS
+            ),
+            chart!("chord", ChordChart, BASE_FIELDS, CHORD_FIELDS),
+            chart!("funnel", FunnelChart, BASE_FIELDS, FUNNEL_FIELDS),
+            chart!("gauge", GaugeChart, BASE_FIELDS, GAUGE_FIELDS),
+            chart!("graph", GraphChart, BASE_FIELDS, GRAPH_FIELDS),
+            chart!("heatmap", HeatmapChart, BASE_FIELDS, HEATMAP_FIELDS),
+            chart!("histogram", HistogramChart, BASE_FIELDS, HISTOGRAM_FIELDS),
+            chart!(
+                "horizontal_bar",
+                HorizontalBarChart,
+                BASE_FIELDS,
+                HORIZONTAL_BAR_FIELDS
+            ),
+            chart!("line", LineChart, BASE_FIELDS),
+            chart!("parallel", ParallelChart, BASE_FIELDS),
+            chart!("pie", PieChart, BASE_FIELDS, PIE_FIELDS),
+            chart!("polar_bar", PolarBarChart, BASE_FIELDS, POLAR_BAR_FIELDS),
+            chart!("radar", RadarChart, BASE_FIELDS, RADAR_FIELDS),
+            chart!("sankey", SankeyChart, BASE_FIELDS, SANKEY_FIELDS),
+            chart!("scatter", ScatterChart, BASE_FIELDS, SCATTER_FIELDS),
+            chart!("sunburst", SunburstChart, BASE_FIELDS, SUNBURST_FIELDS),
+            chart!("table", TableChart, TABLE_FIELDS),
+            chart!(
+                "theme_river",
+                ThemeRiverChart,
+                BASE_FIELDS,
+                THEME_RIVER_FIELDS
+            ),
+            chart!("tree", TreeChart, BASE_FIELDS, TREE_FIELDS),
+            chart!("treemap", TreemapChart, BASE_FIELDS, TREEMAP_FIELDS),
+            chart!("waterfall", WaterfallChart, BASE_FIELDS, WATERFALL_FIELDS),
+        ]
+    }
+
+    /// Values to try for a key: at least one of them is not its default.
+    fn samples(chart: &str, path: &str, kind: Kind) -> Vec<Value> {
+        // Keys whose values have a shape of their own.
+        let special = match (chart, path) {
+            (_, "theme") => json!(["dark"]),
+            ("calendar", "start_date") => json!(["2024-02-01"]),
+            ("calendar", "end_date") => json!(["2024-03-01"]),
+            ("calendar", "data") => json!([[["2024-02-05", 3]]]),
+            ("calendar", "show_dow_labels") => json!([[0, 6]]),
+            ("table", "data") => json!([[["a", "b"], ["c", "d"]]]),
+            ("table", "text_aligns") => json!([["right", "center"]]),
+            ("table", "cell_styles.indexes") => json!([[1, 2]]),
+            ("waterfall", "data") => json!([[[5, false], [8, true]]]),
+            ("box_plot", "box_series.data") => json!([[[2, 3, 4, 5, 6]]]),
+            ("heatmap", "series.data") => json!([[[0, 1], [1, 5]]]),
+            ("scatter", "series_symbols") => json!([["triangle", "diamond"]]),
+            _ => Value::Null,
+        };
+        if let Value::Array(values) = special {
+            return values;
+        }
+        match kind {
+            Kind::Number => vec![json!(7.25), json!(0.75)],
+            Kind::Size => vec![json!(123.5), json!(77.5)],
+            Kind::Uint | Kind::Count | Kind::Index => vec![json!(3), json!(7)],
+            Kind::Bool => vec![json!(true), json!(false)],
+            Kind::String => vec![json!("zz"), json!("bold")],
+            Kind::Color => vec![json!("#123456"), json!("#654321")],
+            Kind::Enum(values) => values.iter().map(|v| json!(v)).collect(),
+            Kind::Margin => vec![json!(9), json!(4)],
+            Kind::Scale => vec![json!("log"), json!("linear")],
+            Kind::MarkValue => vec![json!(3.5), json!("max")],
+            Kind::XValue => vec![json!(12.5), json!(2.5)],
+            Kind::XValues | Kind::NumberArray => vec![json!([1.5, 2.5])],
+            Kind::StringArray => vec![json!(["p", "q"])],
+            Kind::ColorArray => vec![json!(["#123456"])],
+            Kind::Array | Kind::Object(_) | Kind::ArrayOf(_) | Kind::SelfArray => {
+                panic!("{chart}: no sample for {path}")
+            }
+        }
+    }
+
+    /// The items a nested key is tried in: enough of an item for it to be
+    /// kept, and for its other keys to count.
+    fn items(path: &str) -> Vec<Value> {
+        match path.rsplit('.').next().unwrap_or_default() {
+            "series_list" => vec![json!({"name": "s", "data": [1, 2]})],
+            "symbol" | "series_symbol" => {
+                vec![json!({"type": "circle"}), json!({"type": "rect"})]
+            }
+            "mark_lines" => vec![json!({"category": "average"}), json!({"category": "value"})],
+            "mark_points" => vec![json!({"category": "max"})],
+            "mark_areas" => vec![json!({"from": 1, "to": 2})],
+            "band" => vec![json!({"lower": [1, 2], "upper": [3, 4]})],
+            "nodes" => vec![json!({"name": "a"})],
+            "links" => vec![json!({"source": "a", "target": "b", "value": 1})],
+            "box_series" => vec![json!({"name": "b", "data": [[1, 2, 3, 4, 5]]})],
+            "indicators" => vec![json!({"name": "i", "max": 10})],
+            "series_data" => vec![json!({"name": "n", "value": 1})],
+            _ => vec![json!({})],
+        }
+    }
+
+    /// Collects the keys of `tables` that make no difference to the parsed
+    /// chart. Each key is tried inside every one of `inside`; `wrap` puts
+    /// such an item in its place in the options of the chart.
+    fn inert(
+        (chart, parse): (&str, Parse),
+        tables: &[&[Field]],
+        path: &str,
+        inside: &[Value],
+        wrap: &dyn Fn(Value) -> Value,
+        out: &mut Vec<String>,
+    ) {
+        for field in tables.iter().flat_map(|t| t.iter()) {
+            let name = join(path, field.name);
+            let (nested, values) = match field.kind {
+                Kind::Object(nested) => (Some(nested), items(&name)),
+                Kind::ArrayOf(nested) => (
+                    Some(nested),
+                    items(&name).into_iter().map(|i| json!([i])).collect(),
+                ),
+                Kind::SelfArray => (None, items(path).into_iter().map(|i| json!([i])).collect()),
+                kind => (None, samples(chart, &name, kind)),
+            };
+            let changes = inside.iter().any(|item| {
+                let plain = parse(&wrap(item.clone()).to_string());
+                values.iter().any(|value| {
+                    let mut with = item.clone();
+                    with[field.name] = value.clone();
+                    let parsed = parse(&wrap(with).to_string());
+                    assert!(parsed.is_some(), "{chart}: {name} = {value} is rejected");
+                    parsed != plain
+                })
+            });
+            // An empty object may well be the default; what counts for a
+            // nested key is that the keys inside it are read.
+            if !changes && nested.is_none() {
+                out.push(format!("{chart}: {name}"));
+            }
+            if let Some(nested) = nested {
+                let inner = |nested_item: Value| {
+                    let mut with = inside[0].clone();
+                    with[field.name] = match field.kind {
+                        Kind::ArrayOf(_) => json!([nested_item]),
+                        _ => nested_item,
+                    };
+                    wrap(with)
+                };
+                inert((chart, parse), &[nested], &name, &items(&name), &inner, out);
+            }
+        }
+    }
+
+    #[test]
+    fn every_key_changes_the_chart() {
+        // A key that is accepted has to be read as well: setting it to
+        // something other than its default must show in the parsed chart.
+        let mut out = vec![];
+        for (chart, tables, parse) in charts() {
+            inert((chart, parse), &tables, "", &[json!({})], &|v| v, &mut out);
+        }
+        // The exceptions, each of them said so in the JSON reference: a
+        // calendar is as large as its cells, and a scatter chart always
+        // puts its points on the ticks.
+        out.retain(|key| {
+            ![
+                "calendar: width",
+                "calendar: height",
+                "scatter: x_boundary_gap",
+            ]
+            .contains(&key.as_str())
+        });
+        assert!(
+            out.is_empty(),
+            "keys without any effect:\n{}",
+            out.join("\n")
+        );
+    }
+
+    // ── The JSON reference ──────────────────────────────────────────────────
+
+    /// What a page of the JSON reference documents: the keys in the tables
+    /// below each `<!-- keys: path -->` marker, and the paths that share the
+    /// tables of another one (`<!-- keys: path = other -->`).
+    #[derive(Default)]
+    struct Reference {
+        keys: Vec<(String, Vec<String>)>,
+        aliases: Vec<(String, String)>,
+    }
+
+    fn reference(page: &str) -> Reference {
+        let mut reference = Reference::default();
+        for line in page.lines() {
+            if let Some(marker) = line
+                .strip_prefix("<!-- keys: ")
+                .and_then(|l| l.strip_suffix(" -->"))
+            {
+                match marker.split_once(" = ") {
+                    Some((path, other)) => reference
+                        .aliases
+                        .push((path.to_string(), other.to_string())),
+                    None => reference.keys.push((marker.to_string(), vec![])),
+                }
+            } else if let Some(row) = line.strip_prefix("| `")
+                && let Some((key, _)) = row.split_once('`')
+                && let Some((_, keys)) = reference.keys.last_mut()
+            {
+                keys.push(key.to_string());
+            }
+        }
+        reference
+    }
+
+    /// Checks the table of `path` against `fields`, and goes on with the
+    /// tables of the nested keys.
+    fn check_reference(
+        reference: &Reference,
+        path: &str,
+        fields: &[Field],
+        seen: &mut Vec<String>,
+        errors: &mut Vec<String>,
+    ) {
+        seen.push(path.to_string());
+        let alias = reference.aliases.iter().find(|(p, _)| p == path);
+        let section = alias.map(|(_, other)| other.as_str()).unwrap_or(path);
+        let Some((_, keys)) = reference.keys.iter().find(|(p, _)| p == section) else {
+            errors.push(format!("no `<!-- keys: {section} -->` section for {path}"));
+            return;
+        };
+        for field in fields {
+            if !keys.iter().any(|k| k == field.name) {
+                errors.push(format!("{path}: `{}` is not documented", field.name));
+            }
+        }
+        for key in keys {
+            if !fields.iter().any(|f| f.name == key) {
+                errors.push(format!("{path}: `{key}` is documented, but not a key"));
+            }
+        }
+        // The nested keys of a shared table are checked where it is written.
+        if alias.is_some() {
+            return;
+        }
+        for field in fields {
+            if let Kind::Object(nested) | Kind::ArrayOf(nested) = field.kind {
+                let path = format!("{path}.{}", field.name);
+                check_reference(reference, &path, nested, seen, errors);
+            }
+        }
+    }
+
+    #[test]
+    fn reference_documents_every_key() {
+        // docs/json.md and docs/json-zh.md list every key of every chart:
+        // a new key needs a row in both, a removed one loses its row.
+        for (name, page) in [
+            ("docs/json.md", include_str!("../../docs/json.md")),
+            ("docs/json-zh.md", include_str!("../../docs/json-zh.md")),
+        ] {
+            let reference = reference(page);
+            let (mut seen, mut errors) = (vec![], vec![]);
+            check_reference(&reference, "base", BASE_FIELDS, &mut seen, &mut errors);
+            for (chart, tables, _) in charts() {
+                // The keys of the chart itself; the common ones are `base`.
+                let own: Vec<Field> = tables
+                    .iter()
+                    .filter(|t| !std::ptr::eq(**t, BASE_FIELDS))
+                    .flat_map(|t| t.iter().copied())
+                    .collect();
+                if !own.is_empty() {
+                    check_reference(&reference, chart, &own, &mut seen, &mut errors);
+                }
+            }
+            check_reference(&reference, "multi", MULTI_FIELDS, &mut seen, &mut errors);
+            check_reference(
+                &reference,
+                "multi.child_charts",
+                CHILD_CHART_FIELDS,
+                &mut seen,
+                &mut errors,
+            );
+            check_reference(
+                &reference,
+                "envelope",
+                ENVELOPE_FIELDS,
+                &mut seen,
+                &mut errors,
+            );
+            // A section nothing led to documents keys that do not exist.
+            for (path, _) in reference.keys.iter() {
+                if !seen.contains(path) {
+                    errors.push(format!("`<!-- keys: {path} -->` is not a set of keys"));
+                }
+            }
+            for (path, _) in reference.aliases.iter() {
+                if !seen.contains(path) {
+                    errors.push(format!("`<!-- keys: {path} = … -->` is not a set of keys"));
+                }
+            }
+            assert!(errors.is_empty(), "{name}:\n{}", errors.join("\n"));
+        }
+    }
+
+    #[test]
+    fn every_table_is_checked() {
+        // The tests above start from the charts listed in `charts()`: a
+        // table of a new chart has to be named there (or be nested in one
+        // that is) for its keys to be checked at all.
+        let source = include_str!("schema.rs");
+        let (tables, tests) = source.split_once("#[cfg(test)]").unwrap();
+        // Nested in the common options, or the sides of a margin.
+        let nested = ["SERIES_FIELDS", "Y_AXIS_FIELDS", "MARGIN_FIELDS"];
+        for line in tables.lines() {
+            if let Some(rest) = line.strip_prefix("pub(crate) static ")
+                && let Some((name, _)) = rest.split_once(':')
+                && name.ends_with("_FIELDS")
+            {
+                assert!(
+                    nested.contains(&name) || tests.contains(name),
+                    "{name} is not part of `charts()`"
+                );
+            }
+        }
     }
 }

@@ -212,12 +212,13 @@ pub struct ChartBase {
     pub series_fill: bool,
 
     /// SVG animation (duration/easing/stagger delay) for the chart types that
-    /// support it (bar, line, pie, funnel, sunburst, treemap, sankey).
+    /// support it (bar, horizontal bar, line, pie, funnel, sunburst, treemap,
+    /// sankey, histogram, polar bar, chord).
     pub animation: Option<AnimationConfig>,
     /// When `true`, data shapes get a hover tooltip (`series: value`): a
     /// CSS-revealed label that works in any browser, plus a native `<title>`
-    /// for accessibility. Supported by bar, horizontal bar, line, pie and
-    /// scatter charts. Default: false; output is unchanged when off.
+    /// for accessibility. Not available in calendar, gauge, parallel, radar
+    /// and theme river charts. Default: false; output is unchanged when off.
     pub tooltip_show: bool,
 }
 

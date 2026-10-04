@@ -36,7 +36,8 @@ The library supports twenty-five chart types: `Bar`, `HorizontalBar`, `Line`, `P
 - Series stacking, dash patterns, and per-bar custom colors
 - SVG animation support (duration, easing, stagger) for bar, line, pie, sunburst, funnel, treemap, and sankey charts
 - Null / missing data points via `Option<f32>` (`null` in JSON; legacy `NIL_VALUE` still accepted)
-- JSON-based chart configuration for all chart types
+- JSON-based chart configuration for all chart types, with a
+  [reference of every option](./docs/json.md)
 - Multiple output formats: svg, png, jpeg, webp, avif
 - Scaled image export via `svg_to_png_with_size` and equivalent functions
 - Web-based JSON editor for interactive chart configuration and testing
@@ -314,6 +315,10 @@ svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 ```
 
 ### From json
+
+Every key such a JSON document may have, for every chart — with its type,
+its default and what it does — is listed in the
+[JSON options reference](./docs/json.md).
 
 ```rust,no_run
 use charts_rs::{BarChart, svg_to_png};

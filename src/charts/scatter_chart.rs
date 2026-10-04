@@ -176,16 +176,13 @@ impl ScatterChart {
         if let Some(arr) = value.get("series_symbols").and_then(|v| v.as_array()) {
             s.series_symbols = arr
                 .iter()
-                .filter_map(|item| {
-                    get_series_symbol_from_value(item, "type").or_else(|| {
-                        // also allow bare string: "circle", "triangle", etc.
-                        item.as_str().map(|t| match t {
-                            "rect" | "square" => Symbol::Rect(3.0, None),
-                            "triangle" => Symbol::Triangle(3.0, None),
-                            "diamond" => Symbol::Diamond(3.0, None),
-                            _ => Symbol::Circle(3.0, None),
-                        })
-                    })
+                .filter_map(|item| match item {
+                    // Just the type: "circle", "triangle", etc.
+                    serde_json::Value::String(kind) => {
+                        Some(get_symbol_from_object(&serde_json::json!({ "type": kind })))
+                    }
+                    serde_json::Value::Object(_) => Some(get_symbol_from_object(item)),
+                    _ => None,
                 })
                 .collect();
         }

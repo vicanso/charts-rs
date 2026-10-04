@@ -57,3 +57,37 @@ fn scatter_chart() {
 
     common::assert_snapshot!("scatter_chart/basic_json.svg", scatter_chart.svg().unwrap());
 }
+
+#[test]
+fn scatter_series_symbols() {
+    let chart = |symbols: &str| {
+        ScatterChart::from_json(&format!(
+            r##"{{"series_symbols": {symbols}, "series_list": [
+                {{"name": "a", "data": [1, 2, 3, 4]}},
+                {{"name": "b", "data": [2, 3, 4, 5]}}
+            ]}}"##
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    // By its type alone, or as an object with a size and a color: the same
+    // shapes either way.
+    let names = chart(r#"["triangle", "diamond"]"#);
+    let objects = chart(r#"[{"type": "triangle"}, {"type": "Diamond"}]"#);
+    assert_eq!(names, objects);
+    // Two triangles and two diamonds, no circle for the points.
+    assert_eq!(4, names.matches("<polygon").count());
+    assert_eq!(0, names.matches(r#" r="3""#).count());
+
+    // The size is `series_symbol_sizes`, not the one of the symbol; an
+    // entry that is no symbol is skipped.
+    let plain = chart(r#"["rect", "diamond"]"#);
+    let sized = chart(r#"[{"type": "rect", "size": 7}, null, 5, "diamond"]"#);
+    assert_eq!(plain, sized);
+    assert_ne!(plain, names);
+    // A color of its own instead of the color of the series.
+    let colored = chart(r##"[{"type": "rect", "color": "#123456"}, "diamond"]"##);
+    assert_eq!(2, colored.matches(r##"fill="#123456""##).count());
+    assert!(!plain.contains("#123456"));
+}

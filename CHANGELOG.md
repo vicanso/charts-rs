@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- `ScatterChart`: an object in `series_symbols` (`{"type": "triangle"}`) is
+  drawn as that shape, like the bare string; it was always a circle.
 - A data label on a point at the edge of the plot is moved inside the canvas
   instead of being cut off.
 - A scatter point with a missing coordinate is skipped instead of being drawn
@@ -40,6 +42,9 @@
 
 ### Changed
 
+- `TableChart::from_json` rejects `font_color`, `font_weight` and `indexes`
+  at the top level like any other unknown key: they are keys of the
+  `cell_styles` items, and were accepted and ignored next to them.
 - `from_json` validates its input: an unknown key (with a "did you mean"
   hint), a value of the wrong type, an unknown enum value (matched
   case-insensitively), a non-positive `width`/`height`, a split count above
@@ -65,6 +70,14 @@
 
 ### Added
 
+- JSON options reference: [`docs/json.md`](./docs/json.md) (and
+  [`docs/json-zh.md`](./docs/json-zh.md)) lists every key `from_json`
+  accepts, for every chart, with its type, its default and what it does, and
+  an example per chart. Tests keep it in step with the code: a key without a
+  row (or a row without a key) fails, every example is rendered, and every
+  accepted key has to change the parsed chart.
+- `TableChart`: `body_font_weight`, and `background_color` (the color behind
+  the title) in JSON. Both keys were accepted before, but not read.
 - `ChordChart`: a chord diagram of the flows between nodes. The nodes
   (`nodes`, or derived from the names in `links`) are arcs of a circle as
   long as the flows through them; every link is a ribbon across the circle,
