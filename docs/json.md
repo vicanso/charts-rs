@@ -140,6 +140,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `series_label_font_color` | color | theme | Font color of the data labels. |
 | `series_label_font_weight` | string |  | Font weight of the data labels, e.g. `"bold"`. |
 | `series_label_hide_overlap` | boolean | `false` | Leaves out a data label that would overlap one already drawn. |
+| `stack_percent` | boolean | `false` | Shows the series of a stack as their shares of it: every stack adds up to 100%, on an axis in percent (bar, horizontal bar, line and polar bar charts). |
 
 ### Tooltip and animation
 
@@ -172,6 +173,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `symbol` | object |  | Overrides `series_symbol` for this series; `null` draws no marker. |
 | `x_values` | x value[] |  | The x value of each data point, for a series that is not sampled at the chart’s `x_axis_values`. |
 | `band` | object |  | A filled band around the line: a lower and an upper bound for each data point. |
+| `step` | `"start"` / `"middle"` / `"end"` |  | Draws the line as steps: level between two points, changing to the next value at the point itself (`start`), half way to the next one (`middle`) or at the next point (`end`). Wins over `smooth`. |
 
 #### `series_list[].mark_lines[]`
 
@@ -239,6 +241,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `axis_max` | number |  | Fixed upper bound of the axis; by default derived from the data. |
 | `axis_scale` | scale | `"linear"` | Scale of the axis: linear or logarithmic. |
 | `axis_title` | string |  | Title of the axis, written along it. |
+| `axis_inverse` | boolean | `false` | Turns the axis upside down: the smallest value at the top, the largest at the bottom (a ranking, where 1 is the best place). |
 
 ### `animation`
 
@@ -259,6 +262,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `radius` | number |  | Corner radius of the bars. |
+| `series_label_position` | `"top"` / `"inside"` | `"top"` | Where the value labels of the bars go: above their end, or in the middle of the bar, which suits stacked bars (and is the default with `stack_percent`). |
 
 <!-- example: bar -->
 
@@ -298,7 +302,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 
 ## Line
 
-`LineChart::from_json` — Lines over the categories of `x_axis_data`, or over a continuous x axis when `x_axis_values` are given. It has no keys of its own: smooth curves, area fill, markers, mark lines and bands are all [common options](#common-options).
+`LineChart::from_json` — Lines over the categories of `x_axis_data`, or over a continuous x axis when `x_axis_values` are given. It has no keys of its own: smooth curves, steps, area fill, markers, mark lines and bands are all [common options](#common-options).
 
 <!-- example: line -->
 
@@ -332,6 +336,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `rose_type` | boolean | `true` | Draws a nightingale rose: every slice has the same angle and its radius follows its value. `false` draws a plain pie. |
 | `border_radius` | number |  | Corner radius of the slices. |
 | `start_angle` | number | `0` | Angle the first slice starts at, in degrees clockwise from 12 o’clock. |
+| `end_angle` | number |  | Angle the last slice ends at: the slices share the part of the circle between the two angles (`-90` to `90` is the upper half, a half doughnut). Default: a full turn after `start_angle`. |
 | `series_label_position` | `"inside"` / `"outside"` | `"outside"` | Where the labels go: inside the slices, or outside with a leader line (the default). |
 | `min_show_label_angle` | number | `0` | Slices spanning fewer degrees than this get no label. |
 

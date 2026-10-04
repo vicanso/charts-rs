@@ -202,6 +202,10 @@ pub struct ChartBase {
     /// printing them on top of each other.
     #[serde(default)]
     pub series_label_hide_overlap: bool,
+    /// Shows the series of a stack as their shares of it: every stack adds
+    /// up to 100% (bar, horizontal bar, line and polar bar charts).
+    #[serde(default)]
+    pub stack_percent: bool,
     /// Color palette cycled through by the series.
     pub series_colors: Vec<Color>,
     /// Marker drawn on data points (circle, dot or none).
@@ -275,6 +279,7 @@ pub(crate) fn axis_value_params(
         max: config.axis_max,
         thousands_format,
         scale: config.axis_scale.clone(),
+        inverse: config.axis_inverse,
     }
 }
 
@@ -397,6 +402,11 @@ struct BandTip {
 
 /// Gap between an axis title and the axis labels.
 const AXIS_TITLE_GAP: f32 = 6.0;
+
+/// Longest stack whose shares are worked out for `stack_percent`: a series
+/// placed further along than this (by a huge `start_index`) is off any
+/// chart anyway.
+const MAX_STACK_LENGTH: usize = 1_000_000;
 
 impl CartesianLayout {
     /// Canvas of the plot area between the y axes.
@@ -700,6 +710,9 @@ impl ChartBase {
         }
         if let Some(hide) = get_bool_from_value(&data, "series_label_hide_overlap") {
             self.series_label_hide_overlap = hide;
+        }
+        if let Some(stack_percent) = get_bool_from_value(&data, "stack_percent") {
+            self.stack_percent = stack_percent;
         }
 
         if let Some(series_colors) = get_color_slice_from_value(&data, "series_colors") {
@@ -1383,6 +1396,87 @@ impl ChartBase {
         c.compact = self.compact;
         c
     }
+    /// Turns the values of the stacked series into their shares of the
+    /// stack, in percent, and the value axes into percent axes. This is
+    /// what `stack_percent` draws: the chart with these values instead.
+    pub(crate) fn apply_stack_percent(&mut self, y_axis_configs: &mut [YAxisConfig]) {
+        self.stack_percent = false;
+        // The stacks, as the charts tell them apart: by name and axis.
+        let key = |series: &Series| {
+            series
+                .stack
+                .as_ref()
+                .map(|stack| (stack.clone(), series.y_axis_index))
+        };
+        let mut stacks: Vec<(String, usize)> = vec![];
+        for series in self.series_list.iter() {
+            if let Some(key) = key(series)
+                && !stacks.contains(&key)
+            {
+                stacks.push(key);
+            }
+        }
+        let mut has_negative = false;
+        for stack in stacks.iter() {
+            // What the values of the stack add up to at every category;
+            // a negative value takes its share too, on the other side of 0.
+            let mut totals: Vec<f32> = vec![];
+            for series in self
+                .series_list
+                .iter()
+                .filter(|s| key(s).as_ref() == Some(stack))
+            {
+                for (i, value) in series.iter_values().enumerate() {
+                    let index = i.saturating_add(series.start_index);
+                    if value == NIL_VALUE || index >= MAX_STACK_LENGTH {
+                        continue;
+                    }
+                    if totals.len() <= index {
+                        totals.resize(index + 1, 0.0);
+                    }
+                    totals[index] += value.abs();
+                    has_negative |= value < 0.0;
+                }
+            }
+            for series in self
+                .series_list
+                .iter_mut()
+                .filter(|s| key(s).as_ref() == Some(stack))
+            {
+                let start_index = series.start_index;
+                for (i, value) in series.data.iter_mut().enumerate() {
+                    let total = totals.get(i.saturating_add(start_index)).copied();
+                    let known = value.filter(|v| v.is_finite() && *v != NIL_VALUE);
+                    if let (Some(v), Some(total)) = (known, total) {
+                        *value = Some(if total > 0.0 { v / total * 100.0 } else { 0.0 });
+                    }
+                }
+            }
+        }
+        if stacks.is_empty() {
+            return;
+        }
+        // The axes of the stacks read in percent, up to 100, with ticks on
+        // whole percents — unless they are set otherwise.
+        for (index, config) in y_axis_configs.iter_mut().enumerate() {
+            if !stacks.iter().any(|(_, axis)| *axis == index) {
+                continue;
+            }
+            if config.axis_formatter.is_none() {
+                config.axis_formatter = Some("{c}%".to_string());
+            }
+            if config.axis_max.is_none() && config.axis_min.is_none() && !has_negative {
+                config.axis_max = Some(100.0);
+                let split = config.axis_split_number;
+                if split == 0 || 100 % split != 0 {
+                    config.axis_split_number = 5;
+                }
+            }
+        }
+        if self.series_label_formatter.is_empty() {
+            self.series_label_formatter = "{c}%".to_string();
+        }
+    }
     /// True when there is nothing to draw: no series, or only empty ones.
     pub(crate) fn has_no_data(&self) -> bool {
         self.series_list.iter().all(|s| {
@@ -1717,6 +1811,7 @@ impl ChartBase {
         radius: Option<f32>,
         animation: Option<&AnimationConfig>,
         tooltip: bool,
+        label_inside: bool,
     ) -> Vec<Vec<SeriesLabel>> {
         if series_list.is_empty() {
             return vec![];
@@ -1832,7 +1927,7 @@ impl ChartBase {
                 }
                 let actual_i = match x_scale {
                     Some(_) => self.x_slot(series, i),
-                    None => i + series.start_index,
+                    None => i.saturating_add(series.start_index),
                 };
                 if actual_i >= series_data_count {
                     continue;
@@ -1951,8 +2046,20 @@ impl ChartBase {
                 }
 
                 if series.label_show {
+                    // A label stands above the end of its bar, or in the
+                    // middle of it (it is written 8 above its point). On an
+                    // inverse axis the bar hangs down from its base, and the
+                    // label goes below its end instead of into it.
+                    let font_size = self.series_label_font_size;
+                    let label_y = if label_inside {
+                        y_top + bar_height / 2.0 + font_size * 0.35 + 8.0
+                    } else if y_axis_values.inverse && value >= 0.0 {
+                        y_end + font_size + 12.0
+                    } else {
+                        y_end
+                    };
                     series_labels.push(SeriesLabel {
-                        point: (left + half_bar_width, y_end).into(),
+                        point: (left + half_bar_width, label_y).into(),
                         text: label,
                     });
                 }
@@ -2002,7 +2109,7 @@ impl ChartBase {
             };
             let color = get_color(&self.series_colors, series.index.unwrap_or(index))
                 .with_alpha(BAND_ALPHA);
-            let smooth = series.smooth.unwrap_or(self.series_smooth);
+            let smooth = series.step.is_none() && series.smooth.unwrap_or(self.series_smooth);
             let (mut top, mut bottom): (Vec<Point>, Vec<Point>) = (vec![], vec![]);
             for i in 0..=band.len() {
                 let slot = match x_scale {
@@ -2058,7 +2165,11 @@ impl ChartBase {
                         ..Default::default()
                     });
                 } else {
-                    let mut points = top;
+                    // The band of a stepped line steps along with it.
+                    let (mut points, bottom) = match series.step {
+                        Some(step) => (step_points(&top, step), step_points(&bottom, step)),
+                        None => (top, bottom),
+                    };
                     points.extend(bottom.into_iter().rev());
                     c1.polygon(Polygon {
                         fill: Some(color),
@@ -2124,7 +2235,7 @@ impl ChartBase {
             for (i, value) in series.iter_values().enumerate() {
                 let actual_i = match x_scale {
                     Some(_) => self.x_slot(series, i),
-                    None => i + series.start_index,
+                    None => i.saturating_add(series.start_index),
                 };
                 // On a continuous axis the point sits at its x value; one
                 // without an x value breaks the line like a missing point.
@@ -2244,7 +2355,16 @@ impl ChartBase {
             let fill_color = color.with_alpha(100);
             let fill: Fill = fill_color.into();
             let series_fill = series.fill.unwrap_or(self.series_fill);
-            let series_smooth = series.smooth.unwrap_or(self.series_smooth);
+            // The area of a line reaches down to the start of its axis,
+            // which is at the top when the axis is inverse.
+            let fill_bottom = if y_axis_values.inverse {
+                0.0
+            } else {
+                axis_height
+            };
+            // Steps have corners: a stepped line is never smooth.
+            let step = series.step;
+            let series_smooth = step.is_none() && series.smooth.unwrap_or(self.series_smooth);
             let symbol = series.symbol.clone().or_else(|| self.series_symbol.clone());
 
             for (points, floor) in points_list.into_iter().zip(floor_points_list) {
@@ -2256,12 +2376,17 @@ impl ChartBase {
                 // one place; only the non-stacked fill and the stroke
                 // itself differ by `series_smooth`. The stroke takes ownership
                 // of `points`; the fill clones only when it is also drawn.
+                // The outline of the area: the line itself, or its steps.
+                let outline = |points: &[Point]| match step {
+                    Some(step) => step_points(points, step),
+                    None => points.to_vec(),
+                };
                 if series_fill {
                     if is_stacked {
                         // Area between the current and previous stack
                         // level: top points forward + floor reversed.
-                        let mut poly = points.clone();
-                        let mut rev_floor = floor;
+                        let mut poly = outline(&points);
+                        let mut rev_floor = outline(&floor);
                         rev_floor.reverse();
                         poly.extend(rev_floor);
                         c1.polygon(Polygon {
@@ -2273,13 +2398,13 @@ impl ChartBase {
                         c1.smooth_line_fill(SmoothLineFill {
                             fill,
                             points: points.clone(),
-                            bottom: axis_height,
+                            bottom: fill_bottom,
                         });
                     } else {
                         c1.straight_line_fill(StraightLineFill {
                             fill,
-                            points: points.clone(),
-                            bottom: axis_height,
+                            points: outline(&points),
+                            bottom: fill_bottom,
                             ..Default::default()
                         });
                     }
@@ -2303,6 +2428,7 @@ impl ChartBase {
                         stroke_dash_array: series.stroke_dash_array.clone(),
                         class: line_class,
                         path_length: line_path_length,
+                        step,
                         ..Default::default()
                     });
                 }

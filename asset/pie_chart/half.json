@@ -1,0 +1,17 @@
+{
+    "title_text": "Half doughnut",
+    "title_align": "left",
+    "rose_type": false,
+    "start_angle": -90,
+    "end_angle": 90,
+    "radius": 180,
+    "inner_radius": 100,
+    "border_radius": 4,
+    "series_list": [
+        {"name": "Search", "data": [1048]},
+        {"name": "Direct", "data": [735]},
+        {"name": "Email", "data": [580]},
+        {"name": "Ads", "data": [484]},
+        {"name": "Video", "data": [300]}
+    ]
+}

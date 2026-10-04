@@ -36,6 +36,10 @@ pub struct PieChart {
     pub border_radius: Option<f32>,
     /// Start angle of the first slice, in degrees.
     pub start_angle: f32,
+    /// Angle the last slice ends at, in degrees: the slices share the part
+    /// of the circle between the two angles (`-90` to `90` is the upper
+    /// half). `None` (the default) is a full turn after `start_angle`.
+    pub end_angle: Option<f32>,
 
     // x axis
 
@@ -96,6 +100,9 @@ impl PieChart {
         if let Some(start_angle) = get_f32_from_value(&value, "start_angle") {
             p.start_angle = start_angle;
         }
+        if let Some(end_angle) = get_f32_from_value(&value, "end_angle") {
+            p.end_angle = Some(end_angle);
+        }
         if let Some(position) = get_string_from_value(&value, "series_label_position") {
             p.series_label_position = Some(position.to_lowercase());
         }
@@ -117,6 +124,38 @@ impl PieChart {
     /// Creates a pie chart with default theme.
     pub fn new(series_list: Vec<Series>) -> PieChart {
         PieChart::new_with_theme(series_list, &get_default_theme_name())
+    }
+    /// The angle the slices share: a full turn, or what an `end_angle`
+    /// after the start angle leaves of it.
+    fn span(&self) -> f32 {
+        match self.end_angle {
+            Some(end) if end.is_finite() && end > self.start_angle => {
+                (end - self.start_angle).min(360.0)
+            }
+            _ => 360.0,
+        }
+    }
+    /// The box around a part of the unit circle from `start` over `span`
+    /// degrees, with a hole of radius `hole`: `(left, top, right, bottom)`.
+    fn extent(start: f32, span: f32, hole: f32) -> (f32, f32, f32, f32) {
+        // The ends of the part, and where it is widest in between.
+        let mut angles = vec![start, start + span];
+        let mut cardinal = (start / 90.0).ceil() * 90.0;
+        while cardinal < start + span {
+            angles.push(cardinal);
+            cardinal += 90.0;
+        }
+        let (mut left, mut top, mut right, mut bottom) = (f32::MAX, f32::MAX, f32::MIN, f32::MIN);
+        for angle in angles {
+            for radius in [hole, 1.0] {
+                let point = get_pie_point(0.0, 0.0, radius, angle);
+                left = left.min(point.x);
+                right = right.max(point.x);
+                top = top.min(point.y);
+                bottom = bottom.max(point.y);
+            }
+        }
+        (left, top, right, bottom)
     }
     /// Converts pie chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
@@ -155,7 +194,8 @@ impl PieChart {
         if max <= 0.0 {
             max = 1.0;
         }
-        let mut delta = 360.0 / values.len() as f32;
+        let span = self.span();
+        let mut delta = span / values.len() as f32;
         let mut half_delta = delta / 2.0;
         let mut start_angle = self.start_angle;
         let mut radius_double = c.height();
@@ -169,8 +209,24 @@ impl PieChart {
             r = self.radius;
         }
 
-        let cx = (c.width() - radius_double) / 2.0 + r;
-        let cy = (c.height() - radius_double) / 2.0 + r;
+        let mut cx = (c.width() - radius_double) / 2.0 + r;
+        let mut cy = (c.height() - radius_double) / 2.0 + r;
+        // A part of a circle is not as wide and high as the whole: it may
+        // take a larger radius, and is centered on what is drawn of it.
+        if span < 360.0 {
+            // How large the hole is depends on the radius, which depends on
+            // the room the part takes: twice round settles it.
+            r = self.radius.max(1.0);
+            for _ in 0..2 {
+                let hole = (self.inner_radius / r).clamp(0.0, 1.0);
+                let (left, top, right, bottom) = Self::extent(self.start_angle, span, hole);
+                let fit = (c.width() * 0.8 / (right - left).max(0.1))
+                    .min(c.height() * 0.8 / (bottom - top).max(0.1));
+                r = fit.min(self.radius).max(1.0);
+                cx = c.width() / 2.0 - (left + right) / 2.0 * r;
+                cy = c.height() / 2.0 - (top + bottom) / 2.0 * r;
+            }
+        }
         let label_offset = 20.0;
         let mut series_label_formatter = self.series_label_formatter.clone();
         if series_label_formatter.is_empty() {
@@ -187,7 +243,7 @@ impl PieChart {
             // normal pie
             if !rose_type {
                 cr = r;
-                delta = value / sum * 360.0;
+                delta = value / sum * span;
                 half_delta = delta / 2.0;
             }
             if cr - self.inner_radius < 1.0 {
@@ -320,7 +376,8 @@ impl PieChart {
 
                 points.push(end);
 
-                let is_left = angle > 180.0;
+                // Angles go on past a full turn, and below zero.
+                let is_left = angle.rem_euclid(360.0) > 180.0;
                 if is_left {
                     end.x -= label_offset;
                 } else {

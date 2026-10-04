@@ -276,6 +276,7 @@ impl WaterfallChart {
                 .unwrap_or("")
                 .contains(THOUSANDS_FORMAT_LABEL),
             scale: y_axis_config.axis_scale.clone(),
+            inverse: y_axis_config.axis_inverse,
         });
 
         let mut y_axis_width = if self.y_axis_hidden {

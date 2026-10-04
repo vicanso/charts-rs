@@ -75,6 +75,12 @@ impl LineChart {
     }
     /// Converts line chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
+        // Shares of the stacks: the same chart, drawn from their percentages.
+        if self.stack_percent {
+            let mut chart = self.clone();
+            chart.base.apply_stack_percent(&mut chart.y_axis_configs);
+            return chart.svg();
+        }
         let c = self.new_canvas();
         let layout = self.layout_cartesian(c, &self.y_axis_configs, XAxisMode::Points);
         let c = layout.canvas.clone();

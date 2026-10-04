@@ -90,6 +90,16 @@ impl HorizontalBarChart {
     }
     /// Converts horizontal bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
+        // Shares of the stacks: the same chart, drawn from their percentages.
+        if self.stack_percent {
+            let mut chart = self.clone();
+            chart.base.apply_stack_percent(&mut chart.y_axis_configs);
+            // A full stack leaves no room past its bars for their labels.
+            if chart.series_label_position.is_none() {
+                chart.series_label_position = Some(Position::Inside);
+            }
+            return chart.svg();
+        }
         let mut c = self.new_canvas();
 
         let axis_top = self.render_header(&mut c);
@@ -410,8 +420,15 @@ impl HorizontalBarChart {
                             ..Default::default()
                         });
                     }
+                    // A label goes past the end of its bar, or in the
+                    // middle of it.
+                    let label_x = if self.series_label_position == Some(Position::Inside) {
+                        (x_base + x) / 2.0
+                    } else {
+                        x
+                    };
                     series_labels.push(SeriesLabel {
-                        point: (x, top + half_bar_height).into(),
+                        point: (label_x, top + half_bar_height).into(),
                         text: label,
                     })
                 }
@@ -439,16 +456,21 @@ impl HorizontalBarChart {
                         dy = Some(value.height() / 2.0 - 2.0);
                         label_width = value.width();
                         if series_label_position == Position::Inside {
+                            // Centered on the middle of its bar.
                             dx = None;
-                            let offset = series_label.point.x - value.width();
-                            if offset <= 0.0 {
+                            let left = series_label.point.x - value.width() / 2.0;
+                            if left <= 0.0 {
                                 x = Some(1.0);
                             } else {
-                                x = Some(offset / 2.0);
+                                x = Some(left);
                             }
                         } else if series_label_position == Position::Left {
                             x = Some(0.0);
                             dx = Some(-value.width());
+                        } else if x_axis_values.inverse {
+                            // The bars run to the left on an inverse axis:
+                            // past their end is left of it.
+                            dx = Some(-value.width() - 3.0);
                         }
                     }
                     // The label is vertically centred on its bar.

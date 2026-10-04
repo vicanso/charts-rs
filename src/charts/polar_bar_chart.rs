@@ -274,6 +274,12 @@ impl PolarBarChart {
 
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
+        // Shares of the stacks: the same chart, drawn from their percentages.
+        if self.stack_percent {
+            let mut chart = self.clone();
+            chart.base.apply_stack_percent(&mut chart.y_axis_configs);
+            return chart.svg();
+        }
         let mut c = self.new_canvas();
         let axis_top = self.render_header(&mut c);
         if axis_top > 0.0 {

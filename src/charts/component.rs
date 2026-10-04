@@ -1559,6 +1559,28 @@ impl Ribbon {
     }
 }
 
+/// The corners of the stepped line through `points`: between two points
+/// the line runs level, and changes to the next value where `step` says.
+pub(crate) fn step_points(points: &[Point], step: LineStep) -> Vec<Point> {
+    let mut stepped = Vec::with_capacity(points.len() * 3);
+    for (i, point) in points.iter().enumerate() {
+        if i > 0 {
+            let prev = points[i - 1];
+            match step {
+                LineStep::Start => stepped.push((prev.x, point.y).into()),
+                LineStep::End => stepped.push((point.x, prev.y).into()),
+                LineStep::Middle => {
+                    let middle = (prev.x + point.x) / 2.0;
+                    stepped.push((middle, prev.y).into());
+                    stepped.push((middle, point.y).into());
+                }
+            }
+        }
+        stepped.push(*point);
+    }
+    stepped
+}
+
 struct BaseLine<'a> {
     pub color: Option<Color>,
     pub fill: Option<Color>,
@@ -1566,6 +1588,8 @@ struct BaseLine<'a> {
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
     pub is_smooth: bool,
+    /// Draws the path as steps; the symbols stay on the points.
+    pub step: Option<LineStep>,
     pub close: bool,
     pub stroke_dash_array: Option<String>,
     pub class: Option<String>,
@@ -1637,6 +1661,8 @@ impl<'a> BaseLine<'a> {
         if self.is_smooth {
             // Smooth curves ignore `close`; only straight lines honour it.
             let _ = SmoothCurve::write_points(self.points, false, out);
+        } else if let Some(step) = self.step {
+            write_straight_path(out, &step_points(self.points, step), self.close);
         } else {
             write_straight_path(out, self.points, self.close);
         }
@@ -1748,6 +1774,7 @@ impl SmoothLine {
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: true,
+            step: None,
             close: false,
             stroke_dash_array: self.stroke_dash_array.clone(),
             class: self.class.clone(),
@@ -1909,6 +1936,9 @@ pub struct StraightLine {
     pub class: Option<String>,
     /// SVG pathLength attribute (used by animations).
     pub path_length: Option<f32>,
+    /// Draws the line as steps between its points; the markers stay on the
+    /// points themselves.
+    pub step: Option<LineStep>,
 }
 
 impl Default for StraightLine {
@@ -1923,6 +1953,7 @@ impl Default for StraightLine {
             stroke_dash_array: None,
             class: None,
             path_length: None,
+            step: None,
         }
     }
 }
@@ -1942,6 +1973,7 @@ impl StraightLine {
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: false,
+            step: self.step,
             close: self.close,
             stroke_dash_array: self.stroke_dash_array.clone(),
             class: self.class.clone(),

@@ -1,0 +1,149 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Ranking
+</text>
+<g>
+<line stroke-width="2" x1="210" y1="15" x2="235" y2="15" stroke="#5470C6"/>
+<circle cx="222.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="238" y="19" font-family="Roboto" fill="#464646">
+Alpha
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="280" y1="15" x2="305" y2="15" stroke="#91CC75"/>
+<circle cx="292.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="308" y="19" font-family="Roboto" fill="#464646">
+Beta
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="342" y1="15" x2="367" y2="15" stroke="#FAC858"/>
+<circle cx="354.5" cy="15" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="370" y="19" font-family="Roboto" fill="#464646">
+Gamma
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="426" y1="15" x2="451" y2="15" stroke="#EE6666"/>
+<circle cx="438.5" cy="15" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="454" y="19" font-family="Roboto" fill="#464646">
+Delta
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="493" y1="15" x2="518" y2="15" stroke="#73C0DE"/>
+<circle cx="505.5" cy="15" r="5.5" stroke-width="2" stroke="#73C0DE" fill="#FFFFFF"/>
+<text font-size="14" x="521" y="19" font-family="Roboto" fill="#464646">
+Epsilon
+</text>
+</g>
+<text font-size="14" transform="translate(16.9,202.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Place
+</text>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="35" y1="40" x2="580" y2="40"/><line x1="35" y1="121.2" x2="580" y2="121.2"/><line x1="35" y1="202.5" x2="580" y2="202.5"/><line x1="35" y1="283.8" x2="580" y2="283.8"/>
+</g>
+<g>
+
+<text font-size="14" x="22" y="45" font-family="Roboto" fill="#6E7079">
+1
+</text>
+<text font-size="14" x="19" y="126.2" font-family="Roboto" fill="#6E7079">
+2
+</text>
+<text font-size="14" x="20" y="207.5" font-family="Roboto" fill="#6E7079">
+3
+</text>
+<text font-size="14" x="19" y="288.8" font-family="Roboto" fill="#6E7079">
+4
+</text>
+<text font-size="14" x="19" y="370" font-family="Roboto" fill="#6E7079">
+5
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="35" y1="365" x2="580" y2="365"/>
+<line x1="35" y1="365" x2="35" y2="370"/>
+<line x1="144" y1="365" x2="144" y2="370"/>
+<line x1="253" y1="365" x2="253" y2="370"/>
+<line x1="362" y1="365" x2="362" y2="370"/>
+<line x1="471" y1="365" x2="471" y2="370"/>
+<line x1="580" y1="365" x2="580" y2="370"/>
+</g>
+<text font-size="14" x="19.5" y="384" font-family="Roboto" fill="#6E7079">
+2019
+</text>
+<text font-size="14" x="128" y="384" font-family="Roboto" fill="#6E7079">
+2020
+</text>
+<text font-size="14" x="238.5" y="384" font-family="Roboto" fill="#6E7079">
+2021
+</text>
+<text font-size="14" x="346" y="384" font-family="Roboto" fill="#6E7079">
+2022
+</text>
+<text font-size="14" x="455.5" y="384" font-family="Roboto" fill="#6E7079">
+2023
+</text>
+<text font-size="14" x="564" y="384" font-family="Roboto" fill="#6E7079">
+2024
+</text>
+</g>
+<g>
+<path d="M35,40 C62.2 60.3, 113.8 110, 144 121.2 C168.3 130.3, 228.7 130.3, 253 121.2 C283.2 110, 331.8 51.3, 362 40 C386.3 31, 451.5 25.5, 471 40 C506 66.1, 552.8 161.9, 580 202.5" stroke-width="2" fill="none" stroke="#5470C6"/>
+<g stroke-width="2" stroke="#5470C6" fill="none">
+<circle cx="35" cy="40" r="4"/>
+<circle cx="144" cy="121.2" r="4"/>
+<circle cx="253" cy="121.2" r="4"/>
+<circle cx="362" cy="40" r="4"/>
+<circle cx="471" cy="40" r="4"/>
+<circle cx="580" cy="202.5" r="4"/>
+</g>
+</g>
+<g>
+<path d="M35,121.2 C62.2 100.9, 121.7 31.7, 144 40 C176.2 52, 218 176.4, 253 202.5 C272.5 217, 337.7 193.5, 362 202.5 C392.2 213.8, 443.8 263.4, 471 283.8 C498.2 304.1, 552.8 344.7, 580 365" stroke-width="2" fill="none" stroke="#91CC75"/>
+<g stroke-width="2" stroke="#91CC75" fill="none">
+<circle cx="35" cy="121.2" r="4"/>
+<circle cx="144" cy="40" r="4"/>
+<circle cx="253" cy="202.5" r="4"/>
+<circle cx="362" cy="202.5" r="4"/>
+<circle cx="471" cy="283.8" r="4"/>
+<circle cx="580" cy="365" r="4"/>
+</g>
+</g>
+<g>
+<path d="M35,202.5 C62.2 202.5, 124.5 217, 144 202.5 C179 176.4, 220.8 52, 253 40 C275.3 31.7, 331.8 110, 362 121.2 C386.3 130.3, 446.7 130.3, 471 121.2 C501.2 110, 552.8 60.3, 580 40" stroke-width="2" fill="none" stroke="#FAC858"/>
+<g stroke-width="2" stroke="#FAC858" fill="none">
+<circle cx="35" cy="202.5" r="4"/>
+<circle cx="144" cy="202.5" r="4"/>
+<circle cx="253" cy="40" r="4"/>
+<circle cx="362" cy="121.2" r="4"/>
+<circle cx="471" cy="121.2" r="4"/>
+<circle cx="580" cy="40" r="4"/>
+</g>
+</g>
+<g>
+<path d="M35,283.8 C62.2 304.1, 113.8 353.7, 144 365 C168.3 374, 228.7 374, 253 365 C283.2 353.7, 334.8 304.1, 362 283.8 C389.2 263.4, 443.8 222.8, 471 202.5 C498.2 182.2, 552.8 141.6, 580 121.2" stroke-width="2" fill="none" stroke="#EE6666"/>
+<g stroke-width="2" stroke="#EE6666" fill="none">
+<circle cx="35" cy="283.8" r="4"/>
+<circle cx="144" cy="365" r="4"/>
+<circle cx="253" cy="365" r="4"/>
+<circle cx="362" cy="283.8" r="4"/>
+<circle cx="471" cy="202.5" r="4"/>
+<circle cx="580" cy="121.2" r="4"/>
+</g>
+</g>
+<g>
+<path d="M35,365 C62.2 344.7, 113.8 295, 144 283.8 C168.3 274.7, 228.7 274.7, 253 283.8 C283.2 295, 331.8 353.7, 362 365 C386.3 374, 446.7 374, 471 365 C501.2 353.7, 552.8 304.1, 580 283.8" stroke-width="2" fill="none" stroke="#73C0DE"/>
+<g stroke-width="2" stroke="#73C0DE" fill="none">
+<circle cx="35" cy="365" r="4"/>
+<circle cx="144" cy="283.8" r="4"/>
+<circle cx="253" cy="283.8" r="4"/>
+<circle cx="362" cy="365" r="4"/>
+<circle cx="471" cy="365" r="4"/>
+<circle cx="580" cy="283.8" r="4"/>
+</g>
+</g>
+</svg>

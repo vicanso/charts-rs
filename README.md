@@ -52,6 +52,9 @@ The library supports twenty-five chart types: `Bar`, `HorizontalBar`, `Line`, `P
   instead of overlapping
 - Bands around lines (`series.band`): confidence intervals, forecast ranges
   and min–max envelopes
+- Step lines (`series.step`), 100% stacked bars and areas (`stack_percent`),
+  half and partial pies (`end_angle`), and inverse value axes
+  (`axis_inverse`) for ranking charts
 
 ## Installation
 

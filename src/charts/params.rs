@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::common::{MarkArea, SeriesBand};
+use super::common::{LineStep, MarkArea, SeriesBand};
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 use crate::{
     AxisScale, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, NIL_VALUE, Position,
@@ -311,6 +311,9 @@ pub(crate) fn get_y_axis_config_from_value(t: Arc<Theme>, item: &serde_json::Val
     if let Some(scale) = get_axis_scale_from_value(item, "axis_scale") {
         y_config.axis_scale = scale;
     }
+    if let Some(axis_inverse) = get_bool_from_value(item, "axis_inverse") {
+        y_config.axis_inverse = axis_inverse;
+    }
     if let Some(axis_title) = get_string_from_value(item, "axis_title") {
         y_config.axis_title = Some(axis_title);
     }
@@ -435,6 +438,16 @@ fn get_series_category_from_value(value: &serde_json::Value, key: &str) -> Optio
         }
     }
     None
+}
+
+/// Gets the step of a line series: `start`, `middle` or `end`.
+fn get_line_step_from_value(value: &serde_json::Value, key: &str) -> Option<LineStep> {
+    match value.get(key)?.as_str()?.to_lowercase().as_str() {
+        "start" => Some(LineStep::Start),
+        "middle" => Some(LineStep::Middle),
+        "end" => Some(LineStep::End),
+        _ => None,
+    }
 }
 
 /// Gets series symbol value from serde json.
@@ -593,6 +606,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         symbol: get_series_symbol_from_value(value, "symbol"),
         x_values: get_x_values_from_value(value, "x_values").map(|(values, _)| values),
         band: get_series_band_from_value(value, "band"),
+        step: get_line_step_from_value(value, "step"),
     })
 }
 

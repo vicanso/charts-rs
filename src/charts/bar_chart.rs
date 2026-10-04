@@ -32,6 +32,11 @@ pub struct BarChart {
 
     /// Corner radius of the bars.
     pub radius: Option<f32>,
+    /// Where the value labels of the bars go: above their end (`Top`, the
+    /// default) or in the middle of the bar (`Inside`), which suits stacked
+    /// bars.
+    #[serde(default)]
+    pub series_label_position: Option<Position>,
 }
 
 impl std::ops::Deref for BarChart {
@@ -57,6 +62,9 @@ impl BarChart {
             .fill_option(data, &mut b.y_axis_configs, super::schema::BAR_FIELDS)?;
         if let Some(radius) = get_f32_from_value(&value, "radius") {
             b.radius = Some(radius);
+        }
+        if let Some(position) = get_position_from_value(&value, "series_label_position") {
+            b.series_label_position = Some(position);
         }
         Ok(b)
     }
@@ -92,6 +100,16 @@ impl BarChart {
     }
     /// Converts bar chart to svg.
     pub fn svg(&self) -> canvas::Result<String> {
+        // Shares of the stacks: the same chart, drawn from their percentages.
+        if self.stack_percent {
+            let mut chart = self.clone();
+            chart.base.apply_stack_percent(&mut chart.y_axis_configs);
+            // A full stack leaves no room above its bars for their labels.
+            if chart.series_label_position.is_none() {
+                chart.series_label_position = Some(Position::Inside);
+            }
+            return chart.svg();
+        }
         let c = self.new_canvas();
         // Bars take a band around their x; a chart of lines only does not
         // need that room at the ends of a continuous axis.
@@ -135,6 +153,7 @@ impl BarChart {
             self.radius,
             self.animation.as_ref(),
             self.tooltip_show,
+            self.series_label_position == Some(Position::Inside),
         );
 
         let mut line_series_labels_list = self.render_line(

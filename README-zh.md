@@ -39,6 +39,7 @@
 - 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
 - 基于 Web 的 JSON 编辑器，支持交互式图表配置和测试
 - 折线区间带（`series.band`）：置信区间、预测范围、最低–最高范围
+- 阶梯线（`series.step`）、百分比堆叠（`stack_percent`）、半环 / 部分圆饼图（`end_angle`）、反向数值轴（`axis_inverse`，用于排名图）
 
 ## 安装
 

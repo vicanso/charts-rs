@@ -364,6 +364,8 @@ pub(crate) struct AxisValueParams {
     pub reverse: Option<bool>,
     pub thousands_format: bool,
     pub scale: AxisScale,
+    /// Turns the axis round: the smallest value where the largest was.
+    pub inverse: bool,
 }
 /// The computed labels and value range of an axis.
 #[derive(Clone, Debug, Default)]
@@ -376,6 +378,9 @@ pub struct AxisValues {
     pub max: f32,
     /// Value scale of the axis.
     pub scale: AxisScale,
+    /// The axis is turned round: its smallest value is at the top (of a
+    /// vertical axis), where the largest one usually is.
+    pub inverse: bool,
 }
 
 impl AxisValues {
@@ -383,14 +388,23 @@ impl AxisValues {
         self.max - self.min
     }
     pub(crate) fn get_offset_height(&self, value: f32, max_height: f32) -> f32 {
+        // Where a value lies along the axis, as a share of its length; an
+        // inverse axis counts it from the other end.
+        let place = |percent: f32| {
+            if self.inverse {
+                percent * max_height
+            } else {
+                max_height - percent * max_height
+            }
+        };
         match &self.scale {
             AxisScale::Linear => {
                 let offset = self.get_offset();
                 if offset == 0.0 {
-                    return max_height;
+                    return place(0.0);
                 }
                 let percent = (value - self.min) / offset;
-                max_height - percent * max_height
+                place(percent)
             }
             AxisScale::Log(base) => {
                 let safe = value.max(f32::MIN_POSITIVE);
@@ -399,10 +413,10 @@ impl AxisValues {
                 let log_max = self.max.max(f32::MIN_POSITIVE).log(*base);
                 let log_range = log_max - log_min;
                 if log_range == 0.0 {
-                    return max_height;
+                    return place(0.0);
                 }
                 let percent = (log_val - log_min) / log_range;
-                max_height - percent * max_height
+                place(percent)
             }
         }
     }
@@ -487,7 +501,8 @@ fn get_log_axis_values(params: AxisValueParams, base: f32) -> AxisValues {
         exp = (exp + step).min(exp_max);
     }
 
-    if params.reverse.unwrap_or_default() {
+    // The labels follow the values: the other way round on an inverse axis.
+    if params.reverse.unwrap_or_default() != params.inverse {
         data.reverse();
     }
 
@@ -496,6 +511,7 @@ fn get_log_axis_values(params: AxisValueParams, base: f32) -> AxisValues {
         min: base.powi(exp_min),
         max: base.powi(exp_max),
         scale: AxisScale::Log(base),
+        inverse: params.inverse,
     }
 }
 
@@ -637,7 +653,8 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
             data.push(format_axis_value(value));
         }
     }
-    if params.reverse.unwrap_or_default() {
+    // The labels follow the values: the other way round on an inverse axis.
+    if params.reverse.unwrap_or_default() != params.inverse {
         data.reverse();
     }
 
@@ -646,6 +663,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         min,
         max: min + split_unit * split_number as f32,
         scale: AxisScale::Linear,
+        inverse: params.inverse,
     }
 }
 /// Converts `(x, y)` tuples to [`Point`]s.

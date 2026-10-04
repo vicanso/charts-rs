@@ -1,0 +1,31 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Half doughnut
+</text>
+<path d="M196,307.5 L124,307.5 A4 4 0 0 1 120.1,301.2 A180 180 0 0 1 204.5,154.9 A4 4 0 0 1 211.8,155.2 L247.9,217.5 A4 4 0 0 1 246.9,222.7 A100 100 0 0 0 200.1,304 A4 4 0 0 1 196,307.5 Z" fill="#5470C6" data-series="Search" data-value="1048" data-percentage="33.3"/>
+<path d="M144.1,217.6 C139.7 215.1, 131.4 208.8, 126.7 207.6 C122.1 206.3, 111.7 207.6, 106.7 207.6" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="14.7" y="212.6" font-family="Roboto" fill="#464646">
+Search: 33.3%
+</text>
+<path d="M247.9,217.5 L211.8,155.2 A4 4 0 0 1 215.3,148.7 A180 180 0 0 1 331.2,130.2 A4 4 0 0 1 336.5,135.3 L321.6,205.8 A4 4 0 0 1 317.3,209 A100 100 0 0 0 253,219.3 A4 4 0 0 1 247.9,217.5 Z" fill="#91CC75" data-series="Direct" data-value="735" data-percentage="23.4"/>
+<path d="M271.7,129.7 C270.9 124.8, 271.5 112.5, 268.6 110 C265.7 107.5, 253.6 110, 248.6 110" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="162.6" y="115" font-family="Roboto" fill="#464646">
+Direct: 23.4%
+</text>
+<path d="M321.6,205.8 L336.5,135.3 A4 4 0 0 1 343.5,132.8 A180 180 0 0 1 423.1,176.2 A4 4 0 0 1 424.8,183.4 L373.7,234.2 A4 4 0 0 1 368.4,234.6 A100 100 0 0 0 324.2,210.5 A4 4 0 0 1 321.6,205.8 Z" fill="#FAC858" data-series="Email" data-value="580" data-percentage="18.4"/>
+<path d="M386.1,149.4 C388.5 145, 392 134, 395.6 131.9 C399.3 129.7, 410.6 131.9, 415.6 131.9" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="418.6" y="136.9" font-family="Roboto" fill="#464646">
+Email: 18.4%
+</text>
+<path d="M373.7,234.2 L424.8,183.4 A4 4 0 0 1 432,185.1 A180 180 0 0 1 470,248.4 A4 4 0 0 1 468.2,255.6 L399.4,276.8 A4 4 0 0 1 394.5,274.7 A100 100 0 0 0 373.3,239.5 A4 4 0 0 1 373.7,234.2 Z" fill="#EE6666" data-series="Ads" data-value="484" data-percentage="15.4"/>
+<path d="M454.3,214.8 C458.6 212.2, 466.8 205.8, 471.4 204.5 C476.1 203.2, 486.4 204.5, 491.4 204.5" stroke-width="1" fill="none" stroke="#EE6666"/>
+<text font-size="14" x="494.4" y="209.5" font-family="Roboto" fill="#464646">
+Ads: 15.4%
+</text>
+<path d="M399.4,276.8 L468.2,255.6 A4 4 0 0 1 473.7,260.4 A180 180 0 0 1 479.9,301.2 A4 4 0 0 1 476,307.5 L404,307.5 A4 4 0 0 1 399.9,304 A100 100 0 0 0 396.5,281.3 A4 4 0 0 1 399.4,276.8 Z" fill="#73C0DE" data-series="Video" data-value="300" data-percentage="9.5"/>
+<path d="M478,280.6 C482.9 279.9, 492.8 278, 497.8 277.7 C502.7 277.3, 512.8 277.7, 517.8 277.7" stroke-width="1" fill="none" stroke="#73C0DE"/>
+<text font-size="14" x="520.8" y="282.7" font-family="Roboto" fill="#464646">
+Video: 9.5%
+</text>
+</svg>

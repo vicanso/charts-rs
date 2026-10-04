@@ -134,6 +134,7 @@ pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("symbol", Kind::Object(SYMBOL_FIELDS)),
     f("x_values", Kind::XValues),
     f("band", Kind::Object(BAND_FIELDS)),
+    f("step", Kind::Enum(&["start", "middle", "end"])),
 ];
 
 pub(crate) static Y_AXIS_FIELDS: &[Field] = &[
@@ -150,6 +151,7 @@ pub(crate) static Y_AXIS_FIELDS: &[Field] = &[
     f("axis_max", Kind::Number),
     f("axis_scale", Kind::Scale),
     f("axis_title", Kind::String),
+    f("axis_inverse", Kind::Bool),
 ];
 
 static ANIMATION_FIELDS: &[Field] = &[
@@ -222,6 +224,7 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("series_label_font_weight", Kind::String),
     f("series_label_formatter", Kind::String),
     f("series_label_hide_overlap", Kind::Bool),
+    f("stack_percent", Kind::Bool),
     f("x_axis_type", Kind::Enum(&["category", "value", "time"])),
     f("x_axis_values", Kind::XValues),
     f("x_axis_min", Kind::XValue),
@@ -240,7 +243,10 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
 
 // Per-chart fields, in addition to `BASE_FIELDS`.
 
-pub(crate) static BAR_FIELDS: &[Field] = &[f("radius", Kind::Number)];
+pub(crate) static BAR_FIELDS: &[Field] = &[
+    f("radius", Kind::Number),
+    f("series_label_position", Kind::Enum(&["top", "inside"])),
+];
 
 static BOX_SERIES_FIELDS: &[Field] = &[
     f("name", Kind::String),
@@ -357,6 +363,7 @@ pub(crate) static PIE_FIELDS: &[Field] = &[
     f("rose_type", Kind::Bool),
     f("border_radius", Kind::Number),
     f("start_angle", Kind::Number),
+    f("end_angle", Kind::Number),
     f("series_label_position", Kind::Enum(&["inside", "outside"])),
     f("min_show_label_angle", Kind::Number),
 ];

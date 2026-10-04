@@ -1,0 +1,11 @@
+{
+    "title_text": "Step line",
+    "title_align": "left",
+    "legend_align": "right",
+    "x_axis_data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "series_list": [
+        {"name": "Start", "step": "start", "data": [120, 132, 101, 134, 90, 230, 210]},
+        {"name": "Middle", "step": "middle", "data": [220, 282, 201, 234, 290, 430, 410]},
+        {"name": "End", "step": "end", "data": [450, 432, 401, 454, 590, 530, 510]}
+    ]
+}

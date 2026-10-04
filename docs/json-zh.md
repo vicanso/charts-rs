@@ -140,6 +140,7 @@
 | `series_label_font_color` | 颜色 | 主题 | 数据标签字体颜色。 |
 | `series_label_font_weight` | 字符串 |  | 数据标签字重，例如 `"bold"`。 |
 | `series_label_hide_overlap` | 布尔 | `false` | 隐藏会与已绘制标签重叠的数据标签。 |
+| `stack_percent` | 布尔 | `false` | 把同一堆叠内的系列显示为各自的占比：每个堆叠合计 100%，数值轴以百分比显示（柱状图、条形图、折线图、极坐标柱状图）。 |
 
 ### 提示与动画
 
@@ -172,6 +173,7 @@
 | `symbol` | 对象 |  | 覆盖图表级的 `series_symbol`；`null` 表示不绘制标记。 |
 | `x_values` | x 值数组 |  | 该系列每个数据点的 x 值，用于采样位置与图表 `x_axis_values` 不同的系列。 |
 | `band` | 对象 |  | 折线周围的填充区间带：每个数据点一个下界和一个上界。 |
+| `step` | `"start"` / `"middle"` / `"end"` |  | 把折线绘制为阶梯线：两点之间保持水平，在当前点（`start`）、两点中间（`middle`）或下一个点（`end`）处变为下一个值。优先于 `smooth`。 |
 
 #### `series_list[].mark_lines[]`
 
@@ -239,6 +241,7 @@
 | `axis_max` | 数字 |  | 轴的固定上界；默认由数据推导。 |
 | `axis_scale` | 刻度类型 | `"linear"` | 轴的刻度类型：线性或对数。 |
 | `axis_title` | 字符串 |  | 轴标题，沿轴方向显示。 |
+| `axis_inverse` | 布尔 | `false` | 把轴上下颠倒：最小值在顶部，最大值在底部（用于排名，1 为最好的名次）。 |
 
 ### `animation`
 
@@ -259,6 +262,7 @@
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `radius` | 数字 |  | 柱的圆角半径。 |
+| `series_label_position` | `"top"` / `"inside"` | `"top"` | 柱的数值标签位置：柱末端上方，或柱的中间（适合堆叠柱，开启 `stack_percent` 时默认使用）。 |
 
 <!-- example: bar -->
 
@@ -298,7 +302,7 @@
 
 ## Line
 
-`LineChart::from_json` — 折线图，x 轴为 `x_axis_data` 的类目，或在给出 `x_axis_values` 时为连续轴。它没有专属参数：平滑曲线、面积填充、标记、标记线和区间带都属于[通用参数](#通用参数)。
+`LineChart::from_json` — 折线图，x 轴为 `x_axis_data` 的类目，或在给出 `x_axis_values` 时为连续轴。它没有专属参数：平滑曲线、阶梯线、面积填充、标记、标记线和区间带都属于[通用参数](#通用参数)。
 
 <!-- example: line -->
 
@@ -332,6 +336,7 @@
 | `rose_type` | 布尔 | `true` | 绘制南丁格尔玫瑰图：各扇区角度相同，半径随数值变化。`false` 为普通饼图。 |
 | `border_radius` | 数字 |  | 扇区的圆角半径。 |
 | `start_angle` | 数字 | `0` | 第一个扇区的起始角度，从 12 点方向顺时针计（度）。 |
+| `end_angle` | 数字 |  | 最后一个扇区的终止角度：各扇区平分两个角度之间的圆弧（`-90` 到 `90` 是上半圆，即半环形图）。默认为 `start_angle` 之后一整圈。 |
 | `series_label_position` | `"inside"` / `"outside"` | `"outside"` | 标签位置：扇区内部，或带引导线的外部（默认）。 |
 | `min_show_label_angle` | 数字 | `0` | 角度小于该值的扇区不显示标签。 |
 

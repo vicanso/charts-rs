@@ -77,6 +77,18 @@ pub enum SeriesCategory {
     Bar,
 }
 
+/// Where a stepped line changes from the value of one point to the next.
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Debug)]
+pub enum LineStep {
+    /// At the point itself: the line turns to the next value right away,
+    /// and then runs level to the next point.
+    Start,
+    /// Half way between the two points.
+    Middle,
+    /// At the next point: the line runs level until there.
+    End,
+}
+
 /// The statistic (or fixed value) a mark line is drawn at.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 #[non_exhaustive]
@@ -255,6 +267,10 @@ pub struct Series {
     /// upper bound per data point.
     #[serde(default)]
     pub band: Option<SeriesBand>,
+    /// Draws the line as steps instead of joining the points directly
+    /// (line series only); wins over `smooth`.
+    #[serde(default)]
+    pub step: Option<LineStep>,
 }
 
 /// Animation configuration for SVG chart animations.
@@ -400,6 +416,10 @@ pub struct YAxisConfig {
     /// Title of the axis (e.g. `"Temperature (°C)"`), written along it.
     #[serde(default)]
     pub axis_title: Option<String>,
+    /// Turns the axis upside down: the smallest value at the top, the
+    /// largest at the bottom (a ranking, where 1 is the best place).
+    #[serde(default)]
+    pub axis_inverse: bool,
 }
 
 /// A fill that can be either a solid color or a linear gradient.

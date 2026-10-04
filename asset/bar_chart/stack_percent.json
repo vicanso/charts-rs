@@ -1,0 +1,14 @@
+{
+    "title_text": "Share of visits",
+    "title_align": "left",
+    "legend_align": "right",
+    "legend_category": "round_rect",
+    "stack_percent": true,
+    "x_axis_data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "series_list": [
+        {"name": "Direct", "stack": "total", "label_show": true, "data": [100, 302, 301, 334, 390, 330, 320]},
+        {"name": "Email", "stack": "total", "label_show": true, "data": [320, 132, 101, 134, 90, 230, 210]},
+        {"name": "Ads", "stack": "total", "label_show": true, "data": [220, 182, 191, 234, 290, 330, 310]},
+        {"name": "Search", "stack": "total", "label_show": true, "data": [150, 212, 201, 154, 190, 330, 410]}
+    ]
+}

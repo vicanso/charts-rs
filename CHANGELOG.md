@@ -4,6 +4,10 @@
 
 ### Fixed
 
+- `PieChart`: the label of a slice whose angle runs past a full turn (with a
+  `start_angle`) or below zero is put on the side of the pie it is on.
+- A series with a `start_index` near `usize::MAX` and more than one value no
+  longer overflows in bar and line charts.
 - `ScatterChart`: an object in `series_symbols` (`{"type": "triangle"}`) is
   drawn as that shape, like the bare string; it was always a circle.
 - A data label on a point at the edge of the plot is moved inside the canvas
@@ -70,6 +74,24 @@
 
 ### Added
 
+- Step lines: a series' `step` (`start`, `middle` or `end`) draws its line
+  level between two points, changing value at a corner. The area under the
+  line, stacked areas and bands step along; the markers stay on the points.
+  `step` wins over `smooth`.
+- `stack_percent`: the series of a stack are shown as their shares of it,
+  every stack adding up to 100% on an axis in percent (bar, horizontal bar,
+  line and polar bar charts). Labels and tooltips read in percent too.
+- `BarChart`: `series_label_position` (`top` or `inside`) puts the value
+  labels in the middle of the bars; it is the default with `stack_percent`.
+  Inside labels of a `HorizontalBarChart` are centered on their own segment
+  of a stack, not on the whole bar.
+- `PieChart`: `end_angle`. The slices share the part of the circle from
+  `start_angle` to it — a half doughnut with `-90` and `90` — and the chart
+  is sized and centered on what is drawn.
+- `axis_inverse` in `y_axis_configs`: the smallest value at the top of the
+  axis and the largest at the bottom, as a ranking (bump chart) wants it.
+  Lines, areas, bars, mark lines and bands follow; also the value axis of a
+  horizontal bar chart and both axes of a scatter chart.
 - JSON options reference: [`docs/json.md`](./docs/json.md) (and
   [`docs/json-zh.md`](./docs/json-zh.md)) lists every key `from_json`
   accepts, for every chart, with its type, its default and what it does, and
