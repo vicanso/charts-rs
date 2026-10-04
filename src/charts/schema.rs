@@ -328,6 +328,13 @@ pub(crate) static HEATMAP_FIELDS: &[Field] = &[
     f("series", Kind::Object(HEATMAP_SERIES_FIELDS)),
 ];
 
+pub(crate) static HISTOGRAM_FIELDS: &[Field] = &[
+    f("bin_count", Kind::Count),
+    f("bin_width", Kind::Size),
+    f("percent", Kind::Bool),
+    f("bar_gap", Kind::Number),
+];
+
 pub(crate) static HORIZONTAL_BAR_FIELDS: &[Field] =
     &[f("series_label_position", Kind::Enum(POSITION))];
 

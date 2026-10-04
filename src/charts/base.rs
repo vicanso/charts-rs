@@ -323,6 +323,17 @@ pub(crate) enum XAxisMode {
     Points,
     /// Bars: a continuous axis leaves half a band at both ends.
     Bands,
+    /// A continuous number axis over exactly `min..max` with ticks every
+    /// `tick` from `min` (a histogram's bin edges), whatever x values the
+    /// chart carries.
+    Range {
+        /// Value at the left edge of the plot.
+        min: f64,
+        /// Value at the right edge of the plot.
+        max: f64,
+        /// Distance between two possible ticks.
+        tick: f64,
+    },
 }
 
 /// Space taken along the edges of a chart by its axis titles.
@@ -769,26 +780,28 @@ impl ChartBase {
             return (AxisValues::default(), 0.0);
         }
         let y_axis_values = get_axis_values(axis_value_params(&y_axis_config, data_list, true));
-        let y_axis_width = if let Some(value) = y_axis_config.axis_width {
-            value
-        } else {
-            let y_axis_formatter = &y_axis_config.axis_formatter.clone().unwrap_or_default();
-            let mut longest_item: &str = "";
-            for item in &y_axis_values.data {
-                if item.chars().count() > longest_item.chars().count() {
-                    longest_item = item
-                }
-            }
-            let value = format_string(longest_item, y_axis_formatter);
-            if let Ok(b) =
-                measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &value)
-            {
-                b.width() + 5.0
-            } else {
-                DEFAULT_Y_AXIS_WIDTH
-            }
-        };
+        let y_axis_width = self.y_axis_width_for(&y_axis_config, &y_axis_values);
         (y_axis_values, y_axis_width)
+    }
+    /// The width a y axis needs for its labels: the configured `axis_width`,
+    /// or the longest (formatted) label plus a small gap.
+    pub(crate) fn y_axis_width_for(&self, config: &YAxisConfig, values: &AxisValues) -> f32 {
+        if let Some(value) = config.axis_width {
+            return value;
+        }
+        let y_axis_formatter = &config.axis_formatter.clone().unwrap_or_default();
+        let mut longest_item: &str = "";
+        for item in &values.data {
+            if item.chars().count() > longest_item.chars().count() {
+                longest_item = item
+            }
+        }
+        let value = format_string(longest_item, y_axis_formatter);
+        if let Ok(b) = measure_text_width_family(&self.font_family, config.axis_font_size, &value) {
+            b.width() + 5.0
+        } else {
+            DEFAULT_Y_AXIS_WIDTH
+        }
     }
     /// Renders background for canvas.
     pub(crate) fn render_background(&self, c: Canvas) {
@@ -1230,6 +1243,14 @@ impl ChartBase {
             XAxisMode::Category => None,
             XAxisMode::Points => self.continuous_x(axis_width, false),
             XAxisMode::Bands => self.continuous_x(axis_width, true),
+            XAxisMode::Range { min, max, tick } => Some(ContinuousX {
+                min,
+                max,
+                width: axis_width,
+                band_width: 0.0,
+                time: false,
+                tick_step: Some(tick),
+            }),
         };
         // The ticks of a continuous axis are chosen to fit, so its labels
         // never need the extra height rotated categories do.

@@ -18,9 +18,9 @@ use super::params::{
 };
 use super::{
     BarChart, BoxPlotChart, CalendarChart, CandlestickChart, FunnelChart, GaugeChart, GraphChart,
-    HeatmapChart, HorizontalBarChart, LineChart, ParallelChart, PieChart, RadarChart, SankeyChart,
-    ScatterChart, SunburstChart, TableChart, ThemeRiverChart, TreeChart, TreemapChart,
-    WaterfallChart,
+    HeatmapChart, HistogramChart, HorizontalBarChart, LineChart, ParallelChart, PieChart,
+    RadarChart, SankeyChart, ScatterChart, SunburstChart, TableChart, ThemeRiverChart, TreeChart,
+    TreemapChart, WaterfallChart,
 };
 use super::{Box, Color};
 
@@ -71,6 +71,8 @@ pub enum ChildChart {
     Parallel(ParallelChart, Option<(f32, f32)>),
     /// A theme river chart child.
     ThemeRiver(ThemeRiverChart, Option<(f32, f32)>),
+    /// A histogram chart child.
+    Histogram(HistogramChart, Option<(f32, f32)>),
 }
 /// Several charts composed into one SVG: children are stacked vertically
 /// with `gap` between them, or placed at an explicit position.
@@ -187,6 +189,7 @@ impl MultiChart {
                     "graph" => child!(GraphChart, Graph),
                     "parallel" => child!(ParallelChart, Parallel),
                     "theme_river" => child!(ThemeRiverChart, ThemeRiver),
+                    "histogram" => child!(HistogramChart, Histogram),
                     other => {
                         return Err(canvas::Error::Params {
                             message: format!("unsupported child chart type: {other}"),
@@ -272,6 +275,7 @@ impl MultiChart {
                 ChildChart::Graph(c, position) => render!(c, position),
                 ChildChart::Parallel(c, position) => render!(c, position),
                 ChildChart::ThemeRiver(c, position) => render!(c, position),
+                ChildChart::Histogram(c, position) => render!(c, position),
                 ChildChart::Table(c, position) => {
                     let c = place_child!(c, position);
                     // the height is recomputed by the table itself

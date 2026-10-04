@@ -59,6 +59,7 @@ mod funnel_chart;
 mod gauge_chart;
 mod graph_chart;
 mod heatmap_chart;
+mod histogram_chart;
 mod horizontal_bar_chart;
 mod line_chart;
 mod multi_chart;
@@ -109,6 +110,7 @@ pub use funnel_chart::FunnelChart;
 pub use gauge_chart::GaugeChart;
 pub use graph_chart::{GraphChart, GraphLink, GraphNode};
 pub use heatmap_chart::{HeatmapChart, HeatmapData, HeatmapSeries};
+pub use histogram_chart::HistogramChart;
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use multi_chart::{ChildChart, MultiChart};
@@ -170,6 +172,7 @@ impl_chart!(
     GaugeChart,
     GraphChart,
     HeatmapChart,
+    HistogramChart,
     HorizontalBarChart,
     LineChart,
     MultiChart,

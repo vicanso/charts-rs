@@ -47,6 +47,9 @@ pub(crate) struct ContinuousX {
     pub band_width: f32,
     /// The values are timestamps.
     pub time: bool,
+    /// Ticks only at `min` plus multiples of this step (the bin edges of a
+    /// histogram) instead of at any round value.
+    pub tick_step: Option<f64>,
 }
 
 impl ContinuousX {
@@ -164,19 +167,14 @@ impl ChartBase {
             width,
             band_width,
             time: self.x_axis_type == AxisType::Time,
+            tick_step: None,
         })
     }
     /// The ticks of a continuous x axis: pixel offsets and labels. As many
     /// ticks as fit side by side, at round values (or round times).
     pub(crate) fn x_ticks(&self, scale: &ContinuousX) -> (Vec<f32>, Vec<String>) {
         let formatter = self.x_axis_formatter.as_deref().unwrap_or("");
-        let mut target = ((scale.width / 60.0) as usize).clamp(2, 10);
-        loop {
-            let ticks = if scale.time {
-                time_ticks(scale.min, scale.max, target, self.time_offset(), formatter)
-            } else {
-                value_ticks(scale.min, scale.max, target, formatter)
-            };
+        let fits = |ticks: &[(f64, String)]| -> bool {
             let needed: f32 = ticks
                 .iter()
                 .map(|(_, label)| {
@@ -186,11 +184,35 @@ impl ChartBase {
                         + 12.0
                 })
                 .sum();
-            if needed <= scale.width || target <= 2 {
-                return ticks
-                    .into_iter()
-                    .map(|(x, label)| (scale.px(x), label))
-                    .unzip();
+            needed <= scale.width
+        };
+        let place = |ticks: Vec<(f64, String)>| -> (Vec<f32>, Vec<String>) {
+            ticks
+                .into_iter()
+                .map(|(x, label)| (scale.px(x), label))
+                .unzip()
+        };
+        // Ticks tied to a step: every edge when the labels fit, else every
+        // 2nd, 5th, 10th… so a tick is always on an edge.
+        if let Some(step) = scale.tick_step.filter(|s| s.is_finite() && *s > 0.0) {
+            let mut multiple = 1.0;
+            loop {
+                let ticks = stepped_ticks(scale.min, scale.max, step * multiple, formatter);
+                if fits(&ticks) || ticks.len() <= 2 {
+                    return place(ticks);
+                }
+                multiple = next_multiple(multiple);
+            }
+        }
+        let mut target = ((scale.width / 60.0) as usize).clamp(2, 10);
+        loop {
+            let ticks = if scale.time {
+                time_ticks(scale.min, scale.max, target, self.time_offset(), formatter)
+            } else {
+                value_ticks(scale.min, scale.max, target, formatter)
+            };
+            if fits(&ticks) || target <= 2 {
+                return place(ticks);
             }
             target -= 1;
         }
@@ -229,7 +251,7 @@ impl ChartBase {
 // Number ticks.
 
 /// The smallest of 1, 2, 5 × 10ⁿ that is at least `raw`.
-fn nice_step(raw: f64) -> f64 {
+pub(crate) fn nice_step(raw: f64) -> f64 {
     if !raw.is_finite() || raw <= 0.0 {
         return 1.0;
     }
@@ -248,7 +270,7 @@ fn nice_step(raw: f64) -> f64 {
 }
 
 /// Decimals needed to write multiples of `step` exactly (at most 6).
-fn decimals_of(step: f64) -> usize {
+pub(crate) fn decimals_of(step: f64) -> usize {
     (0..=6)
         .find(|d| {
             let scaled = step * 10_f64.powi(*d);
@@ -258,7 +280,7 @@ fn decimals_of(step: f64) -> usize {
 }
 
 /// `value` with at most `decimals` decimals, trailing zeros trimmed.
-fn format_number(value: f64, decimals: usize) -> String {
+pub(crate) fn format_number(value: f64, decimals: usize) -> String {
     let mut text = format!("{value:.decimals$}");
     if text.contains('.') {
         while text.ends_with('0') {
@@ -278,14 +300,7 @@ fn format_number(value: f64, decimals: usize) -> String {
 /// labels that carry a k / M / G / T suffix once the step is that large.
 fn value_ticks(min: f64, max: f64, target: usize, formatter: &str) -> Vec<(f64, String)> {
     let step = nice_step((max - min) / target.max(1) as f64);
-    // The largest unit the values reach, as long as the step still reads
-    // with at most two decimals in it (1.5M, not 0.0005k).
-    let largest = min.abs().max(max.abs());
-    let (divisor, unit) = [(1e12, "T"), (1e9, "G"), (1e6, "M"), (1e3, "k")]
-        .into_iter()
-        .find(|(divisor, _)| largest >= *divisor && decimals_of(step / divisor) <= 2)
-        .unwrap_or((1.0, ""));
-    let decimals = decimals_of(step / divisor);
+    let label = tick_labeler(min, max, step, 0.0, formatter);
     // Multiples of the step by an integer factor, so no error accumulates.
     let first = (min / step - 1e-9).ceil() as i64;
     let last = (max / step + 1e-9).floor() as i64;
@@ -293,10 +308,59 @@ fn value_ticks(min: f64, max: f64, target: usize, formatter: &str) -> Vec<(f64, 
         .take(1000)
         .map(|k| {
             let value = k as f64 * step;
-            let label = format_number(value / divisor, decimals) + unit;
-            (value, format_string(&label, formatter))
+            (value, label(value))
         })
         .collect()
+}
+
+/// Ticks at `min` plus every multiple of `step` up to `max`.
+fn stepped_ticks(min: f64, max: f64, step: f64, formatter: &str) -> Vec<(f64, String)> {
+    let label = tick_labeler(min, max, step, min, formatter);
+    let count = ((max - min) / step + 1e-9).floor() as i64;
+    (0..=count.clamp(0, 1000))
+        .map(|k| {
+            let value = min + k as f64 * step;
+            (value, label(value))
+        })
+        .collect()
+}
+
+/// The next of 1, 2, 5, 10, 20, 50, … after `multiple`.
+fn next_multiple(multiple: f64) -> f64 {
+    let magnitude = 10_f64.powf(multiple.log10().floor());
+    match (multiple / magnitude).round() as i64 {
+        1 => 2.0 * magnitude,
+        2 => 5.0 * magnitude,
+        _ => 10.0 * magnitude,
+    }
+}
+
+/// How the ticks of a number axis are written: with the largest unit suffix
+/// (k / M / G / T) the values reach, as long as the step — and the `origin`
+/// the ticks are counted from — still read with at most two decimals in it
+/// (1.5M, not 0.0005k).
+fn tick_labeler<'a>(
+    min: f64,
+    max: f64,
+    step: f64,
+    origin: f64,
+    formatter: &'a str,
+) -> impl Fn(f64) -> String + 'a {
+    let decimals = |divisor: f64| decimals_of(step / divisor).max(decimals_of(origin / divisor));
+    let largest = min.abs().max(max.abs());
+    let (divisor, unit) = [(1e12, "T"), (1e9, "G"), (1e6, "M"), (1e3, "k")]
+        .into_iter()
+        .find(|(divisor, _)| largest >= *divisor && decimals(*divisor) <= 2)
+        .unwrap_or((1.0, ""));
+    let decimals = decimals(divisor);
+    move |value| {
+        let mut label = format_number(value / divisor, decimals);
+        // Zero needs no unit.
+        if label != "0" {
+            label.push_str(unit);
+        }
+        format_string(&label, formatter)
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -691,6 +755,27 @@ mod tests {
             vec!["999.5", "1000", "1000.5"],
             labels(value_ticks(999.4, 1000.6, 3, ""))
         );
+    }
+
+    #[test]
+    fn ticks_on_a_step() {
+        assert_eq!(
+            vec!["150", "155", "160"],
+            labels(stepped_ticks(150.0, 160.0, 5.0, ""))
+        );
+        // Counted from the start of the range, not from zero.
+        assert_eq!(
+            vec!["1.5", "4", "6.5"],
+            labels(stepped_ticks(1.5, 7.0, 2.5, ""))
+        );
+        assert_eq!(
+            vec!["0", "2.5k", "5k"],
+            labels(stepped_ticks(0.0, 5000.0, 2500.0, ""))
+        );
+        let multiples: Vec<f64> = std::iter::successors(Some(1.0), |m| Some(next_multiple(*m)))
+            .take(7)
+            .collect();
+        assert_eq!(vec![1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0], multiples);
     }
 
     #[test]

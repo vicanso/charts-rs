@@ -1145,6 +1145,15 @@ fn generate_image() {
             .svg()
             .unwrap(),
         ),
+        (
+            "histogram",
+            charts_rs::HistogramChart::from_json(include_str!(
+                "../asset/histogram_chart/basic.json"
+            ))
+            .unwrap()
+            .svg()
+            .unwrap(),
+        ),
     ] {
         let buf = svg_to_png(&chart).unwrap();
         common::save_asset(&format!("image/{name}.png"), &buf);

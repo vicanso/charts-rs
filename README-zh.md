@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持二十二种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel` 以及 `ThemeRiver`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持二十三种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel`、`ThemeRiver` 以及 `Histogram`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -200,6 +200,12 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/theme-river.png" alt="charts-rs">
 </p>
 
+## Histogram
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/histogram.png" alt="charts-rs">
+</p>
+
 ## 最低 Rust 版本
 
 charts-rs 1.x 需要 Rust 1.88 及以上（edition 2024）。
@@ -215,6 +221,7 @@ cargo run --example pie       # 南丁格尔（玫瑰）图
 cargo run --example sunburst  # 旭日图：标签格式化、分层厚度、动画
 cargo run --example sankey     # 桑基流向图（节点由 links 自动推导）
 cargo run --example tree       # 节点-连线树图（曲线连线，LR 布局）
+cargo run --example histogram  # 直方图：样本在等宽分箱上的分布
 ```
 
 ### 使用 Builder API 创建图表
@@ -390,6 +397,21 @@ Rust 中设置 `chart.x_axis_values`（`Vec<f64>`），时间戳再加上 `chart
 ### 气泡图
 
 散点图设置 `"bubble": true` 后，系列数据按 `[x, y, size]` 三元组读取，圆的面积随 size 变化（`bubble_min_size` / `bubble_max_size` 设置半径范围）。
+
+### 直方图
+
+`HistogramChart` 的系列数据就是原始样本，图表会把它统计到等宽的分箱里：
+
+```json
+{
+  "x_axis_title": "身高 (cm)",
+  "series_list": [{ "name": "成年人", "data": [162.4, 171.0, 168.3, 175.9, 158.2, 169.7] }]
+}
+```
+
+- 默认根据样本自动选择分箱（边界取整数）；可用 `bin_width` 或 `bin_count` 指定，`x_axis_min` / `x_axis_max` 固定范围。
+- `"percent": true` 显示各样本内的占比而不是数量。
+- 多个系列共用分箱并叠加显示（半透明）；设置相同的 `stack` 名称则改为堆叠。
 
 ### 数据标签防重叠
 

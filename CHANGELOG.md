@@ -62,6 +62,13 @@
 
 ### Added
 
+- `HistogramChart`: the distribution of a sample over equal-width bins. The
+  series data is the raw sample; the bins are chosen from it (Sturges' rule,
+  edges rounded to 1 / 2 / 5 × 10ⁿ) or set with `bin_width` / `bin_count`,
+  over the data range or `x_axis_min` / `x_axis_max`. `percent` shows shares
+  instead of counts; several series overlap (translucent) or stack by
+  `stack` name. The x axis ticks sit on the bin edges. Available in
+  `MultiChart` as `"type": "histogram"`.
 - Continuous x axes on line and bar charts: `x_axis_values` (shared) or a
   series' `x_values` place every point at its x value instead of in evenly
   spaced category slots, so unevenly sampled data keeps its real spacing.

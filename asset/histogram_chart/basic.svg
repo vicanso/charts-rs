@@ -1,0 +1,113 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="268" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Heights
+</text>
+<g>
+<line stroke-width="2" x1="264.5" y1="15" x2="289.5" y2="15" stroke="#5470C6"/>
+<circle cx="277" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="292.5" y="19" font-family="Roboto" fill="#464646">
+Height
+</text>
+</g>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="26" y1="40" x2="595" y2="40"/><line x1="26" y1="94.2" x2="595" y2="94.2"/><line x1="26" y1="148.3" x2="595" y2="148.3"/><line x1="26" y1="202.5" x2="595" y2="202.5"/><line x1="26" y1="256.7" x2="595" y2="256.7"/><line x1="26" y1="310.8" x2="595" y2="310.8"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="45" font-family="Roboto" fill="#6E7079">
+36
+</text>
+<text font-size="14" x="2" y="99.2" font-family="Roboto" fill="#6E7079">
+30
+</text>
+<text font-size="14" x="2" y="153.3" font-family="Roboto" fill="#6E7079">
+24
+</text>
+<text font-size="14" x="2" y="207.5" font-family="Roboto" fill="#6E7079">
+18
+</text>
+<text font-size="14" x="2" y="261.7" font-family="Roboto" fill="#6E7079">
+12
+</text>
+<text font-size="14" x="10" y="315.8" font-family="Roboto" fill="#6E7079">
+6
+</text>
+<text font-size="14" x="10" y="370" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="26" y1="365" x2="595" y2="365"/>
+<line x1="26" y1="365" x2="26" y2="370"/>
+<line x1="97.1" y1="365" x2="97.1" y2="370"/>
+<line x1="168.2" y1="365" x2="168.2" y2="370"/>
+<line x1="239.4" y1="365" x2="239.4" y2="370"/>
+<line x1="310.5" y1="365" x2="310.5" y2="370"/>
+<line x1="381.6" y1="365" x2="381.6" y2="370"/>
+<line x1="452.8" y1="365" x2="452.8" y2="370"/>
+<line x1="523.9" y1="365" x2="523.9" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="26" y="384" font-family="Roboto" fill="#6E7079">
+150
+</text>
+<text font-size="14" x="85.1" y="384" font-family="Roboto" fill="#6E7079">
+155
+</text>
+<text font-size="14" x="156.2" y="384" font-family="Roboto" fill="#6E7079">
+160
+</text>
+<text font-size="14" x="227.4" y="384" font-family="Roboto" fill="#6E7079">
+165
+</text>
+<text font-size="14" x="298.5" y="384" font-family="Roboto" fill="#6E7079">
+170
+</text>
+<text font-size="14" x="369.6" y="384" font-family="Roboto" fill="#6E7079">
+175
+</text>
+<text font-size="14" x="440.8" y="384" font-family="Roboto" fill="#6E7079">
+180
+</text>
+<text font-size="14" x="511.9" y="384" font-family="Roboto" fill="#6E7079">
+185
+</text>
+<text font-size="14" x="571" y="384" font-family="Roboto" fill="#6E7079">
+190
+</text>
+</g>
+<rect x="26.5" y="328.9" width="70.1" height="36.1" fill="#5470C6" data-series="Height" data-from="150" data-to="155" data-value="4"/>
+<rect x="97.6" y="265.7" width="70.1" height="99.3" fill="#5470C6" data-series="Height" data-from="155" data-to="160" data-value="11"/>
+<rect x="168.8" y="265.7" width="70.1" height="99.3" fill="#5470C6" data-series="Height" data-from="160" data-to="165" data-value="11"/>
+<rect x="239.9" y="76.1" width="70.1" height="288.9" fill="#5470C6" data-series="Height" data-from="165" data-to="170" data-value="32"/>
+<rect x="311" y="94.2" width="70.1" height="270.8" fill="#5470C6" data-series="Height" data-from="170" data-to="175" data-value="30"/>
+<rect x="382.1" y="130.3" width="70.1" height="234.7" fill="#5470C6" data-series="Height" data-from="175" data-to="180" data-value="26"/>
+<rect x="453.2" y="319.9" width="70.1" height="45.1" fill="#5470C6" data-series="Height" data-from="180" data-to="185" data-value="5"/>
+<rect x="524.4" y="356" width="70.1" height="9" fill="#5470C6" data-series="Height" data-from="185" data-to="190" data-value="1"/>
+<text font-size="14" x="61.6" y="328.9" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
+4
+</text>
+<text font-size="14" x="132.7" y="265.7" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
+11
+</text>
+<text font-size="14" x="203.8" y="265.7" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
+11
+</text>
+<text font-size="14" x="274.9" y="76.1" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+32
+</text>
+<text font-size="14" x="346.1" y="94.2" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+30
+</text>
+<text font-size="14" x="417.2" y="130.3" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+26
+</text>
+<text font-size="14" x="488.3" y="319.9" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
+5
+</text>
+<text font-size="14" x="559.4" y="356" dx="-2.5" dy="-8" font-family="Roboto" fill="#464646">
+1
+</text>
+</svg>

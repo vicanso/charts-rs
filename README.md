@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports twenty-two chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, and `ThemeRiver`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports twenty-three chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, `ThemeRiver`, and `Histogram`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -220,6 +220,12 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/theme-river.png" alt="charts-rs">
 </p>
 
+## Histogram
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/histogram.png" alt="charts-rs">
+</p>
+
 ## Example
 
 Runnable examples live in [`examples/`](./examples); each writes an `svg` file:
@@ -231,6 +237,7 @@ cargo run --example pie       # nightingale (rose) chart
 cargo run --example sunburst  # sunburst with label formatter, ring thickness, animation
 cargo run --example sankey     # sankey flow diagram (nodes auto-derived from links)
 cargo run --example tree       # node-link tree with curved links (LR layout)
+cargo run --example histogram  # distribution of a sample over equal-width bins
 ```
 
 ### New from option
@@ -427,6 +434,25 @@ triples and scales each circle by its size (`bubble_min_size` /
   "series_list": [{ "name": "Asia", "data": [12, 77, 1400, 40, 84, 125] }]
 }
 ```
+
+### Histogram
+
+A `HistogramChart` takes the raw sample as the series data and counts it
+into equal-width bins:
+
+```json
+{
+  "x_axis_title": "Height (cm)",
+  "series_list": [{ "name": "Adults", "data": [162.4, 171.0, 168.3, 175.9, 158.2, 169.7] }]
+}
+```
+
+- The bins are chosen from the sample (with round edges) by default;
+  `bin_width` or `bin_count` set them, and `x_axis_min` / `x_axis_max` fix
+  the range.
+- `"percent": true` shows the share of each sample instead of a count.
+- Several series share the bins and are drawn over each other; give them
+  the same `stack` name to pile them up instead.
 
 ### Overlapping data labels
 

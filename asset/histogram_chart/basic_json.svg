@@ -1,0 +1,119 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Height distribution
+</text>
+<g>
+<line stroke-width="2" x1="525" y1="15" x2="550" y2="15" stroke="#5470C6"/>
+<circle cx="537.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="553" y="19" font-family="Roboto" fill="#464646">
+Adults
+</text>
+</g>
+<text font-size="14" x="320.5" y="391.5" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Height (cm)
+</text>
+<text font-size="14" transform="translate(16.9,192.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+People
+</text>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="46" y1="40" x2="595" y2="40"/><line x1="46" y1="90.8" x2="595" y2="90.8"/><line x1="46" y1="141.7" x2="595" y2="141.7"/><line x1="46" y1="192.5" x2="595" y2="192.5"/><line x1="46" y1="243.3" x2="595" y2="243.3"/><line x1="46" y1="294.2" x2="595" y2="294.2"/>
+</g>
+<g>
+
+<text font-size="14" x="22" y="45" font-family="Roboto" fill="#6E7079">
+36
+</text>
+<text font-size="14" x="22" y="95.8" font-family="Roboto" fill="#6E7079">
+30
+</text>
+<text font-size="14" x="22" y="146.7" font-family="Roboto" fill="#6E7079">
+24
+</text>
+<text font-size="14" x="22" y="197.5" font-family="Roboto" fill="#6E7079">
+18
+</text>
+<text font-size="14" x="22" y="248.3" font-family="Roboto" fill="#6E7079">
+12
+</text>
+<text font-size="14" x="30" y="299.2" font-family="Roboto" fill="#6E7079">
+6
+</text>
+<text font-size="14" x="30" y="350" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="46" y1="345" x2="595" y2="345"/>
+<line x1="46" y1="345" x2="46" y2="350"/>
+<line x1="114.6" y1="345" x2="114.6" y2="350"/>
+<line x1="183.2" y1="345" x2="183.2" y2="350"/>
+<line x1="251.9" y1="345" x2="251.9" y2="350"/>
+<line x1="320.5" y1="345" x2="320.5" y2="350"/>
+<line x1="389.1" y1="345" x2="389.1" y2="350"/>
+<line x1="457.8" y1="345" x2="457.8" y2="350"/>
+<line x1="526.4" y1="345" x2="526.4" y2="350"/>
+<line x1="595" y1="345" x2="595" y2="350"/>
+</g>
+<text font-size="14" x="46" y="364" font-family="Roboto" fill="#6E7079">
+150
+</text>
+<text font-size="14" x="102.6" y="364" font-family="Roboto" fill="#6E7079">
+155
+</text>
+<text font-size="14" x="171.2" y="364" font-family="Roboto" fill="#6E7079">
+160
+</text>
+<text font-size="14" x="239.9" y="364" font-family="Roboto" fill="#6E7079">
+165
+</text>
+<text font-size="14" x="308.5" y="364" font-family="Roboto" fill="#6E7079">
+170
+</text>
+<text font-size="14" x="377.1" y="364" font-family="Roboto" fill="#6E7079">
+175
+</text>
+<text font-size="14" x="445.8" y="364" font-family="Roboto" fill="#6E7079">
+180
+</text>
+<text font-size="14" x="514.4" y="364" font-family="Roboto" fill="#6E7079">
+185
+</text>
+<text font-size="14" x="571" y="364" font-family="Roboto" fill="#6E7079">
+190
+</text>
+</g>
+<rect x="46.5" y="311.1" width="67.6" height="33.9" fill="#5470C6" data-series="Adults" data-from="150" data-to="155" data-value="4"/>
+<rect x="115.1" y="268.8" width="67.6" height="76.2" fill="#5470C6" data-series="Adults" data-from="155" data-to="160" data-value="9"/>
+<rect x="183.8" y="234.9" width="67.6" height="110.1" fill="#5470C6" data-series="Adults" data-from="160" data-to="165" data-value="13"/>
+<rect x="252.4" y="82.4" width="67.6" height="262.6" fill="#5470C6" data-series="Adults" data-from="165" data-to="170" data-value="31"/>
+<rect x="321" y="82.4" width="67.6" height="262.6" fill="#5470C6" data-series="Adults" data-from="170" data-to="175" data-value="31"/>
+<rect x="389.6" y="124.7" width="67.6" height="220.3" fill="#5470C6" data-series="Adults" data-from="175" data-to="180" data-value="26"/>
+<rect x="458.2" y="302.6" width="67.6" height="42.4" fill="#5470C6" data-series="Adults" data-from="180" data-to="185" data-value="5"/>
+<rect x="526.9" y="336.5" width="67.6" height="8.5" fill="#5470C6" data-series="Adults" data-from="185" data-to="190" data-value="1"/>
+<text font-size="14" x="80.3" y="311.1" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
+4
+</text>
+<text font-size="14" x="148.9" y="268.8" dx="-3.5" dy="-8" font-family="Roboto" fill="#464646">
+9
+</text>
+<text font-size="14" x="217.6" y="234.9" dx="-7.5" dy="-8" font-family="Roboto" fill="#464646">
+13
+</text>
+<text font-size="14" x="286.2" y="82.4" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
+31
+</text>
+<text font-size="14" x="354.8" y="82.4" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
+31
+</text>
+<text font-size="14" x="423.4" y="124.7" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+26
+</text>
+<text font-size="14" x="492.1" y="302.6" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
+5
+</text>
+<text font-size="14" x="560.7" y="336.5" dx="-2.5" dy="-8" font-family="Roboto" fill="#464646">
+1
+</text>
+</svg>

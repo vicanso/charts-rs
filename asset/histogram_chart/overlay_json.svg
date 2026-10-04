@@ -1,0 +1,177 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#1F1D1D"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+Response time
+</text>
+<g>
+<line stroke-width="2" x1="504" y1="15" x2="529" y2="15" stroke="#7EB26D"/>
+<circle cx="516.5" cy="15" r="5.5" stroke-width="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="532" y="19" font-family="Roboto" fill="#D8D9DA">
+v1
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="549" y1="15" x2="574" y2="15" stroke="#EAB839"/>
+<circle cx="561.5" cy="15" r="5.5" stroke-width="2" stroke="#EAB839" fill="#EAB839"/>
+<text font-size="14" x="577" y="19" font-family="Roboto" fill="#D8D9DA">
+v2
+</text>
+</g>
+<text font-size="14" x="325.5" y="391.5" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
+Latency (ms)
+</text>
+<text font-size="14" transform="translate(16.9,192.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
+Share of requests
+</text>
+<g stroke="#444343" stroke-width="1">
+<line x1="56" y1="40" x2="595" y2="40"/><line x1="56" y1="90.8" x2="595" y2="90.8"/><line x1="56" y1="141.7" x2="595" y2="141.7"/><line x1="56" y1="192.5" x2="595" y2="192.5"/><line x1="56" y1="243.3" x2="595" y2="243.3"/><line x1="56" y1="294.2" x2="595" y2="294.2"/>
+</g>
+<g>
+
+<text font-size="14" x="22" y="45" font-family="Roboto" fill="#B9B8CE">
+48%
+</text>
+<text font-size="14" x="22" y="95.8" font-family="Roboto" fill="#B9B8CE">
+40%
+</text>
+<text font-size="14" x="22" y="146.7" font-family="Roboto" fill="#B9B8CE">
+32%
+</text>
+<text font-size="14" x="22" y="197.5" font-family="Roboto" fill="#B9B8CE">
+24%
+</text>
+<text font-size="14" x="22" y="248.3" font-family="Roboto" fill="#B9B8CE">
+16%
+</text>
+<text font-size="14" x="30" y="299.2" font-family="Roboto" fill="#B9B8CE">
+8%
+</text>
+<text font-size="14" x="30" y="350" font-family="Roboto" fill="#B9B8CE">
+0%
+</text>
+</g>
+<g>
+<g stroke="#B9B8CE" stroke-width="1">
+<line x1="56" y1="345" x2="595" y2="345"/>
+<line x1="56" y1="345" x2="56" y2="350"/>
+<line x1="115.9" y1="345" x2="115.9" y2="350"/>
+<line x1="175.8" y1="345" x2="175.8" y2="350"/>
+<line x1="235.7" y1="345" x2="235.7" y2="350"/>
+<line x1="295.6" y1="345" x2="295.6" y2="350"/>
+<line x1="355.4" y1="345" x2="355.4" y2="350"/>
+<line x1="415.3" y1="345" x2="415.3" y2="350"/>
+<line x1="475.2" y1="345" x2="475.2" y2="350"/>
+<line x1="535.1" y1="345" x2="535.1" y2="350"/>
+<line x1="595" y1="345" x2="595" y2="350"/>
+</g>
+<text font-size="14" x="56" y="364" font-family="Roboto" fill="#B9B8CE">
+20
+</text>
+<text font-size="14" x="107.9" y="364" font-family="Roboto" fill="#B9B8CE">
+30
+</text>
+<text font-size="14" x="167.8" y="364" font-family="Roboto" fill="#B9B8CE">
+40
+</text>
+<text font-size="14" x="227.7" y="364" font-family="Roboto" fill="#B9B8CE">
+50
+</text>
+<text font-size="14" x="287.6" y="364" font-family="Roboto" fill="#B9B8CE">
+60
+</text>
+<text font-size="14" x="347.4" y="364" font-family="Roboto" fill="#B9B8CE">
+70
+</text>
+<text font-size="14" x="407.3" y="364" font-family="Roboto" fill="#B9B8CE">
+80
+</text>
+<text font-size="14" x="467.2" y="364" font-family="Roboto" fill="#B9B8CE">
+90
+</text>
+<text font-size="14" x="523.1" y="364" font-family="Roboto" fill="#B9B8CE">
+100
+</text>
+<text font-size="14" x="571" y="364" font-family="Roboto" fill="#B9B8CE">
+110
+</text>
+</g>
+<rect x="176.3" y="316.8" width="58.9" height="28.2" fill="#7EB26D" fill-opacity="0.59" class="ct-trigger" data-series="v1" data-from="40" data-to="50" data-value="4.4">
+<title>v1: 40 – 50: 4.4%</title>
+</rect>
+<text font-size="14" x="205.7" y="316.8" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v1: 40 – 50: 4.4%
+</text>
+<rect x="236.2" y="288.5" width="58.9" height="56.5" fill="#7EB26D" fill-opacity="0.59" class="ct-trigger" data-series="v1" data-from="50" data-to="60" data-value="8.9">
+<title>v1: 50 – 60: 8.9%</title>
+</rect>
+<text font-size="14" x="265.6" y="288.5" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v1: 50 – 60: 8.9%
+</text>
+<rect x="296.1" y="295.6" width="58.9" height="49.4" fill="#7EB26D" fill-opacity="0.59" class="ct-trigger" data-series="v1" data-from="60" data-to="70" data-value="7.8">
+<title>v1: 60 – 70: 7.8%</title>
+</rect>
+<text font-size="14" x="325.5" y="295.6" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v1: 60 – 70: 7.8%
+</text>
+<rect x="355.9" y="196.7" width="58.9" height="148.3" fill="#7EB26D" fill-opacity="0.59" class="ct-trigger" data-series="v1" data-from="70" data-to="80" data-value="23.3">
+<title>v1: 70 – 80: 23.3%</title>
+</rect>
+<text font-size="14" x="385.4" y="196.7" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v1: 70 – 80: 23.3%
+</text>
+<rect x="415.8" y="175.6" width="58.9" height="169.4" fill="#7EB26D" fill-opacity="0.59" class="ct-trigger" data-series="v1" data-from="80" data-to="90" data-value="26.7">
+<title>v1: 80 – 90: 26.7%</title>
+</rect>
+<text font-size="14" x="445.3" y="175.6" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v1: 80 – 90: 26.7%
+</text>
+<rect x="475.7" y="189.7" width="58.9" height="155.3" fill="#7EB26D" fill-opacity="0.59" class="ct-trigger" data-series="v1" data-from="90" data-to="100" data-value="24.4">
+<title>v1: 90 – 100: 24.4%</title>
+</rect>
+<text font-size="14" x="505.2" y="189.7" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v1: 90 – 100: 24.4%
+</text>
+<rect x="535.6" y="316.8" width="58.9" height="28.2" fill="#7EB26D" fill-opacity="0.59" class="ct-trigger" data-series="v1" data-from="100" data-to="110" data-value="4.4">
+<title>v1: 100 – 110: 4.4%</title>
+</rect>
+<text font-size="14" x="565.1" y="316.8" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v1: 100 – 110: 4.4%
+</text>
+<rect x="56.5" y="313.2" width="58.9" height="31.8" fill="#EAB839" fill-opacity="0.59" class="ct-trigger" data-series="v2" data-from="20" data-to="30" data-value="5">
+<title>v2: 20 – 30: 5%</title>
+</rect>
+<text font-size="14" x="85.9" y="313.2" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v2: 20 – 30: 5%
+</text>
+<rect x="116.4" y="292" width="58.9" height="53" fill="#EAB839" fill-opacity="0.59" class="ct-trigger" data-series="v2" data-from="30" data-to="40" data-value="8.3">
+<title>v2: 30 – 40: 8.3%</title>
+</rect>
+<text font-size="14" x="145.8" y="292" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v2: 30 – 40: 8.3%
+</text>
+<rect x="176.3" y="217.9" width="58.9" height="127.1" fill="#EAB839" fill-opacity="0.59" class="ct-trigger" data-series="v2" data-from="40" data-to="50" data-value="20">
+<title>v2: 40 – 50: 20%</title>
+</rect>
+<text font-size="14" x="205.7" y="217.9" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v2: 40 – 50: 20%
+</text>
+<rect x="236.2" y="112" width="58.9" height="233" fill="#EAB839" fill-opacity="0.59" class="ct-trigger" data-series="v2" data-from="50" data-to="60" data-value="36.7">
+<title>v2: 50 – 60: 36.7%</title>
+</rect>
+<text font-size="14" x="265.6" y="112" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v2: 50 – 60: 36.7%
+</text>
+<rect x="296.1" y="196.7" width="58.9" height="148.3" fill="#EAB839" fill-opacity="0.59" class="ct-trigger" data-series="v2" data-from="60" data-to="70" data-value="23.3">
+<title>v2: 60 – 70: 23.3%</title>
+</rect>
+<text font-size="14" x="325.5" y="196.7" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v2: 60 – 70: 23.3%
+</text>
+<rect x="355.9" y="302.6" width="58.9" height="42.4" fill="#EAB839" fill-opacity="0.59" class="ct-trigger" data-series="v2" data-from="70" data-to="80" data-value="6.7">
+<title>v2: 70 – 80: 6.7%</title>
+</rect>
+<text font-size="14" x="385.4" y="302.6" dy="-6" text-anchor="middle" font-family="Roboto" fill="#D8D9DA" class="ct-tip">
+v2: 70 – 80: 6.7%
+</text>
+</svg>
