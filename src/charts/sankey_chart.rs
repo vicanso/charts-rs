@@ -136,6 +136,9 @@ pub struct SankeyChart {
     /// When `true`, each link is filled with a source→target color gradient
     /// instead of a translucent source color. Default: false.
     pub link_gradient: bool,
+    /// Direction of the flows: `"horizontal"` (the default, from left to
+    /// right) or `"vertical"` (from top to bottom).
+    pub orient: Option<String>,
 }
 
 impl std::ops::Deref for SankeyChart {
@@ -245,6 +248,9 @@ impl SankeyChart {
         }
         if let Some(b) = get_bool_from_value(&value, "link_gradient") {
             c.link_gradient = b;
+        }
+        if let Some(s) = get_string_from_value(&value, "orient") {
+            c.orient = Some(s);
         }
         c.fill_default();
         Ok(c)
@@ -481,7 +487,18 @@ impl SankeyChart {
             return c.svg();
         }
 
-        let Some((nodes, links)) = self.layout(cw, ch) else {
+        // A vertical diagram is the horizontal one, laid out for a plot on
+        // its side and turned: what is x there is y here.
+        let vertical = self
+            .orient
+            .as_deref()
+            .is_some_and(|orient| orient.eq_ignore_ascii_case("vertical"));
+        let layout = if vertical {
+            self.layout(ch, cw)
+        } else {
+            self.layout(cw, ch)
+        };
+        let Some((nodes, links)) = layout else {
             return c.svg();
         };
 
@@ -517,14 +534,21 @@ impl SankeyChart {
                 &mut points,
             );
 
+            if vertical {
+                for point in points.iter_mut() {
+                    std::mem::swap(&mut point.x, &mut point.y);
+                }
+            }
+
             let (fill, gradient) = if self.link_gradient {
                 (
                     None,
                     Some(Fill::LinearGradient {
                         start_color: source.color.with_alpha(alpha),
                         end_color: target.color.with_alpha(alpha),
-                        // 90 degrees = left (source) to right (target).
-                        angle: 90.0,
+                        // 90 degrees = left (source) to right (target);
+                        // 0 = top to bottom.
+                        angle: if vertical { 0.0 } else { 90.0 },
                     }),
                 )
             } else {
@@ -563,14 +587,18 @@ impl SankeyChart {
                 ],
             });
             if let Some(text) = tooltip_text {
+                let (mut tip_x, mut tip_y) = ((x0 + x1) / 2.0, (top_s + top_t + link.width) / 2.0);
+                if vertical {
+                    std::mem::swap(&mut tip_x, &mut tip_y);
+                }
                 content.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
                     font_family: Some(self.font_family.clone()),
                     font_color: Some(self.series_label_font_color),
                     font_size: Some(self.series_label_font_size),
-                    x: Some((x0 + x1) / 2.0),
-                    y: Some((top_s + top_t + link.width) / 2.0),
+                    x: Some(tip_x),
+                    y: Some(tip_y),
                     text_anchor: Some("middle".to_string()),
                     dominant_baseline: Some("central".to_string()),
                     ..Default::default()
@@ -593,12 +621,18 @@ impl SankeyChart {
                     None => "ct-trigger".to_string(),
                 });
             }
+            // The rectangle of the node: across the flows.
+            let (left, top, width, height) = if vertical {
+                (node.y, node.x, node.dy, self.node_width)
+            } else {
+                (node.x, node.y, self.node_width, node.dy)
+            };
             content.rect(Rect {
                 fill: Some(node.color.into()),
-                left: node.x,
-                top: node.y,
-                width: self.node_width,
-                height: node.dy,
+                left,
+                top,
+                width,
+                height,
                 class,
                 style: self
                     .animation
@@ -619,8 +653,8 @@ impl SankeyChart {
                     font_family: Some(self.font_family.clone()),
                     font_color: Some(self.series_label_font_color),
                     font_size: Some(self.series_label_font_size),
-                    x: Some(node.x + self.node_width / 2.0),
-                    y: Some(node.y),
+                    x: Some(left + width / 2.0),
+                    y: Some(top),
                     dy: Some(-4.0),
                     text_anchor: Some("middle".to_string()),
                     ..Default::default()
@@ -656,11 +690,27 @@ impl SankeyChart {
             }
             // Label outside the node: to the right for left-half nodes, to the
             // left otherwise, keeping text within the content area.
-            let mid_y = node.y + node.dy / 2.0;
-            let (x, anchor) = if node.x + self.node_width / 2.0 < cw / 2.0 {
-                (node.x + self.node_width + 5.0, "start")
+            // Beside the node, on the side the flows leave it; in a
+            // vertical diagram below it, or above it in the lower half.
+            let (x, mid_y, anchor) = if vertical {
+                let x = node.y + node.dy / 2.0;
+                if node.x + self.node_width / 2.0 < ch / 2.0 {
+                    (
+                        x,
+                        node.x + self.node_width + 5.0 + font_size / 2.0,
+                        "middle",
+                    )
+                } else {
+                    (x, node.x - 5.0 - font_size / 2.0, "middle")
+                }
+            } else if node.x + self.node_width / 2.0 < cw / 2.0 {
+                (
+                    node.x + self.node_width + 5.0,
+                    node.y + node.dy / 2.0,
+                    "start",
+                )
             } else {
-                (node.x - 5.0, "end")
+                (node.x - 5.0, node.y + node.dy / 2.0, "end")
             };
             content.text(Text {
                 text,
@@ -679,10 +729,16 @@ impl SankeyChart {
 
         let mut css = String::new();
         if let Some(ref anim) = self.animation {
+            // The flows grow the way they run.
+            let (scale, origin) = if vertical {
+                ("scaleY", "center top")
+            } else {
+                ("scaleX", "left center")
+            };
             css.push_str(&format!(
-                "@keyframes sankey-grow{{from{{transform:scaleX(0)}}to{{transform:scaleX(1)}}}} \
+                "@keyframes sankey-grow{{from{{transform:{scale}(0)}}to{{transform:{scale}(1)}}}} \
                  @keyframes sankey-fade{{from{{opacity:0}}to{{opacity:1}}}} \
-                 .sankey-anim{{transform-box:fill-box;transform-origin:left center;\
+                 .sankey-anim{{transform-box:fill-box;transform-origin:{origin};\
                  animation:sankey-grow {}ms {} both}} \
                  .sankey-fade{{animation:sankey-fade {}ms {} both}} ",
                 anim.duration,

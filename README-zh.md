@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持二十五种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel`、`ThemeRiver`、`Histogram`、`PolarBar` 以及 `Chord`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持二十七种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel`、`ThemeRiver`、`Histogram`、`PolarBar`、`Chord`、`Gantt` 以及 `Map`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -40,6 +40,9 @@
 - 基于 Web 的 JSON 编辑器，支持交互式图表配置和测试
 - 折线区间带（`series.band`）：置信区间、预测范围、最低–最高范围
 - 阶梯线（`series.step`）、百分比堆叠（`stack_percent`）、半环 / 部分圆饼图（`end_angle`）、反向数值轴（`axis_inverse`，用于排名图）
+- 柱、折线、散点上的误差线（`series.error_bar`），以及散点图的回归曲线（`regression`：线性、指数、对数、多项式）
+- 热力图和日历图支持多色渐变与分段配色（`colors`、`steps`、`thresholds`）
+- 仪表盘支持分段着色、多指针，以及每个系列一个进度环（`thresholds`、`multi_ring`）
 
 ## 安装
 
@@ -230,6 +233,18 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/chord.png" alt="charts-rs">
 </p>
 
+## Gantt
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gantt.png" alt="charts-rs">
+</p>
+
+## Map
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/map.png" alt="charts-rs">
+</p>
+
 ## 最低 Rust 版本
 
 charts-rs 1.x 需要 Rust 1.88 及以上（edition 2024）。
@@ -248,6 +263,8 @@ cargo run --example tree       # 节点-连线树图（曲线连线，LR 布局�
 cargo run --example histogram  # 直方图：样本在等宽分箱上的分布
 cargo run --example polar_bar  # 极坐标柱状图：环绕堆叠的柱，以及圆头环形柱
 cargo run --example chord      # 和弦图：节点之间的流量（渐变色带）
+cargo run --example gantt      # 甘特图：带进度、里程碑和当前日期的项目计划
+cargo run --example map        # 地图：区域（GeoJSON）按数值分段着色
 ```
 
 ### 使用 Builder API 创建图表
@@ -484,6 +501,47 @@ Rust 中使用 `PolarBarChart::new(series_list, x_axis_data)`，再设置 `chart
 - 标签默认是节点名称；`series_label_formatter` 可以加上流量（`{c}`）或占比（`{d}`），例如 `"{b} ({d})"`。`tooltip_show`、`animation` 与其它图表用法一致。
 
 Rust 中使用 `ChordChart::new(vec![], vec![("亚洲", "欧洲", 60.0).into()])`。
+
+### 甘特图
+
+`GanttChart` 把任务以横条形式画在时间轴上：
+
+```json
+{
+  "now": "2024-03-19",
+  "tasks": [
+    { "name": "调研", "category": "计划", "start": "2024-03-04", "end": "2024-03-08", "progress": 1 },
+    { "name": "设计", "category": "实施", "start": "2024-03-07", "end": "2024-03-22", "progress": 0.6 },
+    { "name": "评审", "category": "实施", "start": "2024-03-22" }
+  ]
+}
+```
+
+- 每个任务默认独占一行，行名即任务名；`row` 相同的任务共用一行（如会议室的预订、登机口的航班），此时任务名显示在任务条上。
+- `category` 决定任务颜色并作为图例，`progress`（0 到 1）表示完成进度，没有 `end` 的任务是里程碑，`now` 用虚线标出一个时刻。
+- x 轴沿用折线图的时间轴：`x_axis_min` / `x_axis_max`、`x_axis_formatter`、`x_axis_time_offset` 均可使用，`"x_axis_type": "value"` 则改为普通数值轴。
+
+Rust 中使用 `GanttChart::new(vec![("调研", start, end).into()])`，时间为 unix 秒。
+
+### 地图
+
+`MapChart` 按数值为地图上的各个区域着色。区域数据以 GeoJSON 形式随参数传入——库本身不内置任何地图数据：
+
+```json
+{
+  "label_show": true,
+  "thresholds": [100, 300],
+  "colors": ["#deebf7", "#9ecae1", "#3182bd"],
+  "data": [["West", 80], ["East", 420]],
+  "geo_json": { "type": "FeatureCollection", "features": [] }
+}
+```
+
+- `geo_json` 是由 `Polygon` 和 `MultiPolygon` 几何（支持孔洞和岛屿）组成的 `FeatureCollection`；`data` 通过区域名称给出数值，名称取自 feature 的 `name` 属性（可用 `name_property` 指定其它属性）。
+- 色阶与热力图一致：从 `min_color` 到 `max_color`，或经过多个 `colors`，或分段（`steps`、`thresholds`）；色阶图例显示在地图旁边。没有数值的区域使用 `empty_color`。
+- `projection` 可选 `mercator`（默认）或 `equirectangular`。
+
+Rust 中使用 `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`。
 
 ### 折线区间带
 

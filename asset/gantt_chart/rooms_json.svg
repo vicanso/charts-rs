@@ -1,0 +1,99 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#1F1D1D"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+Meeting rooms, March 5th
+</text>
+<g>
+<line stroke-width="2" x1="442" y1="50" x2="467" y2="50" stroke="#7EB26D"/>
+<circle cx="454.5" cy="50" r="5.5" stroke-width="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="470" y="54" font-family="Roboto" fill="#D8D9DA">
+Team
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="512" y1="50" x2="537" y2="50" stroke="#EAB839"/>
+<circle cx="524.5" cy="50" r="5.5" stroke-width="2" stroke="#EAB839" fill="#EAB839"/>
+<text font-size="14" x="540" y="54" font-family="Roboto" fill="#D8D9DA">
+External
+</text>
+</g>
+<line stroke-width="1" x1="67" y1="62" x2="67" y2="365" stroke="#444343"/>
+<line stroke-width="1" x1="172.6" y1="62" x2="172.6" y2="365" stroke="#444343"/>
+<line stroke-width="1" x1="278.2" y1="62" x2="278.2" y2="365" stroke="#444343"/>
+<line stroke-width="1" x1="383.8" y1="62" x2="383.8" y2="365" stroke="#444343"/>
+<line stroke-width="1" x1="489.4" y1="62" x2="489.4" y2="365" stroke="#444343"/>
+<line stroke-width="1" x1="595" y1="62" x2="595" y2="365" stroke="#444343"/>
+<line stroke-width="1" x1="67" y1="163" x2="595" y2="163" stroke="#444343"/>
+<line stroke-width="1" x1="67" y1="264" x2="595" y2="264" stroke="#444343"/>
+<g>
+<g stroke="#B9B8CE" stroke-width="1">
+<line x1="67" y1="365" x2="595" y2="365"/>
+<line x1="67" y1="365" x2="67" y2="370"/>
+<line x1="172.6" y1="365" x2="172.6" y2="370"/>
+<line x1="278.2" y1="365" x2="278.2" y2="370"/>
+<line x1="383.8" y1="365" x2="383.8" y2="370"/>
+<line x1="489.4" y1="365" x2="489.4" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="67" y="384" font-family="Roboto" fill="#B9B8CE">
+08:00
+</text>
+<text font-size="14" x="154.6" y="384" font-family="Roboto" fill="#B9B8CE">
+10:00
+</text>
+<text font-size="14" x="260.2" y="384" font-family="Roboto" fill="#B9B8CE">
+12:00
+</text>
+<text font-size="14" x="365.8" y="384" font-family="Roboto" fill="#B9B8CE">
+14:00
+</text>
+<text font-size="14" x="471.4" y="384" font-family="Roboto" fill="#B9B8CE">
+16:00
+</text>
+<text font-size="14" x="559" y="384" font-family="Roboto" fill="#B9B8CE">
+18:00
+</text>
+</g>
+<text font-size="14" x="59" y="112.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Atlas
+</text>
+<text font-size="14" x="59" y="213.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Borealis
+</text>
+<text font-size="14" x="59" y="314.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Cosmos
+</text>
+<rect x="119.8" y="99.5" width="26.4" height="26" rx="3" ry="3" fill="#7EB26D" data-name="Standup" data-row="Atlas" data-category="Team" data-start="2024-03-05 09:00" data-end="2024-03-05 09:30"/>
+<rect x="172.6" y="99.5" width="105.6" height="26" rx="3" ry="3" fill="#7EB26D" data-name="Design review" data-row="Atlas" data-category="Team" data-start="2024-03-05 10:00" data-end="2024-03-05 12:00"/>
+<text font-size="14" x="225.4" y="112.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Design review
+</text>
+<rect x="383.8" y="99.5" width="79.2" height="26" rx="3" ry="3" fill="#EAB839" data-name="Customer call" data-row="Atlas" data-category="External" data-start="2024-03-05 14:00" data-end="2024-03-05 15:30"/>
+<text font-size="14" x="467" y="112.5" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#D8D9DA">
+Customer call
+</text>
+<rect x="146.2" y="200.5" width="79.2" height="26" rx="3" ry="3" fill="#EAB839" data-name="Interview" data-row="Borealis" data-category="External" data-start="2024-03-05 09:30" data-end="2024-03-05 11:00"/>
+<text font-size="14" x="185.8" y="213.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Interview
+</text>
+<rect x="278.2" y="200.5" width="79.2" height="26" rx="3" ry="3" fill="#7EB26D" data-name="Lunch &amp; learn" data-row="Borealis" data-category="Team" data-start="2024-03-05 12:00" data-end="2024-03-05 13:30"/>
+<text font-size="14" x="361.4" y="213.5" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#D8D9DA">
+Lunch &amp; learn
+</text>
+<rect x="489.4" y="200.5" width="52.8" height="26" rx="3" ry="3" fill="#7EB26D" data-name="Retro" data-row="Borealis" data-category="Team" data-start="2024-03-05 16:00" data-end="2024-03-05 17:00"/>
+<text font-size="14" x="515.8" y="213.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Retro
+</text>
+<rect x="93.4" y="301.5" width="211.2" height="26" rx="3" ry="3" fill="#EAB839" data-name="Workshop" data-row="Cosmos" data-category="External" data-start="2024-03-05 08:30" data-end="2024-03-05 12:30"/>
+<text font-size="14" x="199" y="314.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Workshop
+</text>
+<rect x="331" y="301.5" width="26.4" height="26" rx="3" ry="3" fill="#7EB26D" data-name="1:1" data-row="Cosmos" data-category="Team" data-start="2024-03-05 13:00" data-end="2024-03-05 13:30"/>
+<text font-size="14" x="344.2" y="314.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+1:1
+</text>
+<rect x="436.6" y="301.5" width="132" height="26" rx="3" ry="3" fill="#7EB26D" data-name="Planning" data-row="Cosmos" data-category="Team" data-start="2024-03-05 15:00" data-end="2024-03-05 17:30"/>
+<text font-size="14" x="502.6" y="314.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Planning
+</text>
+</svg>

@@ -463,6 +463,8 @@ pub enum Component {
     Sector(Sector),
     /// A band between two arcs of a circle.
     Ribbon(Ribbon),
+    /// A filled shape of several outlines.
+    Shape(Shape),
 }
 #[derive(Clone, PartialEq, Debug)]
 
@@ -838,6 +840,67 @@ impl Polygon {
         let mut w = TagWriter::open(out, TAG_POLYGON);
         w.raw(ATTR_POINTS, &points);
         w.close();
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default)]
+/// A filled shape of one or several closed outlines, such as a region of a
+/// map with its islands. An outline inside another one is a hole in it.
+pub struct Shape {
+    /// Stroke color of the outlines.
+    pub color: Option<Color>,
+    /// Stroke width of the outlines.
+    pub stroke_width: f32,
+    /// Fill color.
+    pub fill: Option<Color>,
+    /// The outlines, each a list of corners; they are closed by themselves.
+    pub rings: Vec<Vec<Point>>,
+    /// CSS class attribute of the SVG element.
+    pub class: Option<String>,
+    /// Inline style attribute of the SVG element.
+    pub style: Option<String>,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
+    /// `data-*` attributes, see [`Rect::dataset`].
+    pub dataset: Vec<(String, String)>,
+}
+
+impl Shape {
+    /// Renders the component to an SVG fragment.
+    pub fn svg(&self) -> String {
+        let mut out = String::new();
+        self.write_svg(&mut out);
+        out
+    }
+    pub(crate) fn write_svg(&self, out: &mut String) {
+        let mut d = String::new();
+        for ring in self.rings.iter().filter(|ring| ring.len() > 1) {
+            if !d.is_empty() {
+                d.push(' ');
+            }
+            write_straight_path(&mut d, ring, true);
+        }
+        if d.is_empty() {
+            return;
+        }
+        let mut w = TagWriter::open(out, TAG_PATH);
+        w.raw(ATTR_D, &d);
+        // An outline inside another one is cut out of it.
+        if self.rings.len() > 1 {
+            w.raw("fill-rule", "evenodd");
+        }
+        w.color(ATTR_FILL, ATTR_FILL_OPACITY, self.fill);
+        if self.color.is_some() && self.stroke_width > 0.0 {
+            w.float(ATTR_STROKE_WIDTH, self.stroke_width).color(
+                ATTR_STROKE,
+                ATTR_STROKE_OPACITY,
+                self.color,
+            );
+        }
+        w.opt_text(ATTR_CLASS, self.class.as_ref())
+            .opt_text(ATTR_STYLE, self.style.as_ref())
+            .dataset(&self.dataset);
+        w.close_with_title(&self.title);
     }
 }
 

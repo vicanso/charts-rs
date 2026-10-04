@@ -1,0 +1,408 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Commits by hour
+</text>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="38" y1="40" x2="38" y2="365"/>
+<line x1="38" y1="40" x2="33" y2="40"/>
+<line x1="38" y1="86.4" x2="33" y2="86.4"/>
+<line x1="38" y1="132.9" x2="33" y2="132.9"/>
+<line x1="38" y1="179.3" x2="33" y2="179.3"/>
+<line x1="38" y1="225.7" x2="33" y2="225.7"/>
+<line x1="38" y1="272.1" x2="33" y2="272.1"/>
+<line x1="38" y1="318.6" x2="33" y2="318.6"/>
+<line x1="38" y1="365" x2="33" y2="365"/>
+</g>
+<text font-size="14" x="2" y="68.2" font-family="Roboto" fill="#6E7079">
+Mon
+</text>
+<text font-size="14" x="6" y="114.6" font-family="Roboto" fill="#6E7079">
+Tue
+</text>
+<text font-size="14" x="2" y="161.1" font-family="Roboto" fill="#6E7079">
+Wed
+</text>
+<text font-size="14" x="6" y="207.5" font-family="Roboto" fill="#6E7079">
+Thu
+</text>
+<text font-size="14" x="14" y="253.9" font-family="Roboto" fill="#6E7079">
+Fri
+</text>
+<text font-size="14" x="8" y="300.4" font-family="Roboto" fill="#6E7079">
+Sat
+</text>
+<text font-size="14" x="6" y="346.8" font-family="Roboto" fill="#6E7079">
+Sun
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="38" y1="365" x2="595" y2="365"/>
+<line x1="38" y1="365" x2="38" y2="370"/>
+<line x1="84.4" y1="365" x2="84.4" y2="370"/>
+<line x1="130.8" y1="365" x2="130.8" y2="370"/>
+<line x1="177.2" y1="365" x2="177.2" y2="370"/>
+<line x1="223.7" y1="365" x2="223.7" y2="370"/>
+<line x1="270.1" y1="365" x2="270.1" y2="370"/>
+<line x1="316.5" y1="365" x2="316.5" y2="370"/>
+<line x1="362.9" y1="365" x2="362.9" y2="370"/>
+<line x1="409.3" y1="365" x2="409.3" y2="370"/>
+<line x1="455.8" y1="365" x2="455.8" y2="370"/>
+<line x1="502.2" y1="365" x2="502.2" y2="370"/>
+<line x1="548.6" y1="365" x2="548.6" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="53.7" y="384" font-family="Roboto" fill="#6E7079">
+0h
+</text>
+<text font-size="14" x="100.1" y="384" font-family="Roboto" fill="#6E7079">
+2h
+</text>
+<text font-size="14" x="146.5" y="384" font-family="Roboto" fill="#6E7079">
+4h
+</text>
+<text font-size="14" x="193" y="384" font-family="Roboto" fill="#6E7079">
+6h
+</text>
+<text font-size="14" x="239.4" y="384" font-family="Roboto" fill="#6E7079">
+8h
+</text>
+<text font-size="14" x="281.8" y="384" font-family="Roboto" fill="#6E7079">
+10h
+</text>
+<text font-size="14" x="328.2" y="384" font-family="Roboto" fill="#6E7079">
+12h
+</text>
+<text font-size="14" x="374.6" y="384" font-family="Roboto" fill="#6E7079">
+14h
+</text>
+<text font-size="14" x="421" y="384" font-family="Roboto" fill="#6E7079">
+16h
+</text>
+<text font-size="14" x="467.5" y="384" font-family="Roboto" fill="#6E7079">
+18h
+</text>
+<text font-size="14" x="513.9" y="384" font-family="Roboto" fill="#6E7079">
+20h
+</text>
+<text font-size="14" x="560.3" y="384" font-family="Roboto" fill="#6E7079">
+22h
+</text>
+</g>
+<line stroke-width="1" x1="39" y1="340.9" x2="595" y2="340.9" stroke="#E0E6F2"/>
+<circle cx="108.5" cy="340.9" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="1" data-x="2h" data-y="Sun" data-value="1">
+<title>2h, Sun: 1</title>
+</circle>
+<text font-size="14" x="108.5" y="335.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+2h, Sun: 1
+</text>
+<circle cx="293.8" cy="340.9" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="5" data-x="10h" data-y="Sun" data-value="2">
+<title>10h, Sun: 2</title>
+</circle>
+<text font-size="14" x="293.8" y="333" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+10h, Sun: 2
+</text>
+<circle cx="340.2" cy="340.9" r="9.6" fill="#7EB1D3" class="ct-trigger" data-index="6" data-x="12h" data-y="Sun" data-value="3">
+<title>12h, Sun: 3</title>
+</circle>
+<text font-size="14" x="340.2" y="331.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Sun: 3
+</text>
+<circle cx="386.5" cy="340.9" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="7" data-x="14h" data-y="Sun" data-value="1">
+<title>14h, Sun: 1</title>
+</circle>
+<text font-size="14" x="386.5" y="335.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+14h, Sun: 1
+</text>
+<circle cx="479.2" cy="340.9" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="9" data-x="18h" data-y="Sun" data-value="2">
+<title>18h, Sun: 2</title>
+</circle>
+<text font-size="14" x="479.2" y="333" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Sun: 2
+</text>
+<circle cx="525.5" cy="340.9" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="10" data-x="20h" data-y="Sun" data-value="1">
+<title>20h, Sun: 1</title>
+</circle>
+<text font-size="14" x="525.5" y="335.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+20h, Sun: 1
+</text>
+<line stroke-width="1" x1="39" y1="294.6" x2="595" y2="294.6" stroke="#E0E6F2"/>
+<circle cx="154.8" cy="294.6" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="14" data-x="4h" data-y="Sat" data-value="1">
+<title>4h, Sat: 1</title>
+</circle>
+<text font-size="14" x="154.8" y="289" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+4h, Sat: 1
+</text>
+<circle cx="293.8" cy="294.6" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="17" data-x="10h" data-y="Sat" data-value="2">
+<title>10h, Sat: 2</title>
+</circle>
+<text font-size="14" x="293.8" y="286.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+10h, Sat: 2
+</text>
+<circle cx="340.2" cy="294.6" r="11.1" fill="#74A8CE" class="ct-trigger" data-index="18" data-x="12h" data-y="Sat" data-value="4">
+<title>12h, Sat: 4</title>
+</circle>
+<text font-size="14" x="340.2" y="283.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Sat: 4
+</text>
+<circle cx="386.5" cy="294.6" r="9.6" fill="#7EB1D3" class="ct-trigger" data-index="19" data-x="14h" data-y="Sat" data-value="3">
+<title>14h, Sat: 3</title>
+</circle>
+<text font-size="14" x="386.5" y="284.9" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+14h, Sat: 3
+</text>
+<circle cx="432.8" cy="294.6" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="20" data-x="16h" data-y="Sat" data-value="2">
+<title>16h, Sat: 2</title>
+</circle>
+<text font-size="14" x="432.8" y="286.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+16h, Sat: 2
+</text>
+<circle cx="525.5" cy="294.6" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="22" data-x="20h" data-y="Sat" data-value="1">
+<title>20h, Sat: 1</title>
+</circle>
+<text font-size="14" x="525.5" y="289" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+20h, Sat: 1
+</text>
+<line stroke-width="1" x1="39" y1="248.3" x2="595" y2="248.3" stroke="#E0E6F2"/>
+<circle cx="247.5" cy="248.3" r="9.6" fill="#7EB1D3" class="ct-trigger" data-index="28" data-x="8h" data-y="Fri" data-value="3">
+<title>8h, Fri: 3</title>
+</circle>
+<text font-size="14" x="247.5" y="238.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+8h, Fri: 3
+</text>
+<circle cx="293.8" cy="248.3" r="15.7" fill="#4985BA" class="ct-trigger" data-index="29" data-x="10h" data-y="Fri" data-value="8">
+<title>10h, Fri: 8</title>
+</circle>
+<text font-size="14" x="293.8" y="232.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+10h, Fri: 8
+</text>
+<circle cx="340.2" cy="248.3" r="13.6" fill="#5E97C4" class="ct-trigger" data-index="30" data-x="12h" data-y="Fri" data-value="6">
+<title>12h, Fri: 6</title>
+</circle>
+<text font-size="14" x="340.2" y="234.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Fri: 6
+</text>
+<circle cx="386.5" cy="248.3" r="16.7" fill="#3E7DB5" class="ct-trigger" data-index="31" data-x="14h" data-y="Fri" data-value="9">
+<title>14h, Fri: 9</title>
+</circle>
+<text font-size="14" x="386.5" y="231.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+14h, Fri: 9
+</text>
+<circle cx="432.8" cy="248.3" r="14.7" fill="#538EBF" class="ct-trigger" data-index="32" data-x="16h" data-y="Fri" data-value="7">
+<title>16h, Fri: 7</title>
+</circle>
+<text font-size="14" x="432.8" y="233.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+16h, Fri: 7
+</text>
+<circle cx="479.2" cy="248.3" r="11.1" fill="#74A8CE" class="ct-trigger" data-index="33" data-x="18h" data-y="Fri" data-value="4">
+<title>18h, Fri: 4</title>
+</circle>
+<text font-size="14" x="479.2" y="237.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Fri: 4
+</text>
+<circle cx="525.5" cy="248.3" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="34" data-x="20h" data-y="Fri" data-value="2">
+<title>20h, Fri: 2</title>
+</circle>
+<text font-size="14" x="525.5" y="240.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+20h, Fri: 2
+</text>
+<line stroke-width="1" x1="39" y1="202" x2="595" y2="202" stroke="#E0E6F2"/>
+<circle cx="247.5" cy="202" r="12.4" fill="#699FC9" class="ct-trigger" data-index="40" data-x="8h" data-y="Thu" data-value="5">
+<title>8h, Thu: 5</title>
+</circle>
+<text font-size="14" x="247.5" y="189.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+8h, Thu: 5
+</text>
+<circle cx="293.8" cy="202" r="18.5" fill="#296BAB" class="ct-trigger" data-index="41" data-x="10h" data-y="Thu" data-value="11">
+<title>10h, Thu: 11</title>
+</circle>
+<text font-size="14" x="293.8" y="183.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+10h, Thu: 11
+</text>
+<circle cx="340.2" cy="202" r="15.7" fill="#4985BA" class="ct-trigger" data-index="42" data-x="12h" data-y="Thu" data-value="8">
+<title>12h, Thu: 8</title>
+</circle>
+<text font-size="14" x="340.2" y="186.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Thu: 8
+</text>
+<circle cx="386.5" cy="202" r="19.3" fill="#1E63A6" class="ct-trigger" data-index="43" data-x="14h" data-y="Thu" data-value="12">
+<title>14h, Thu: 12</title>
+</circle>
+<text font-size="14" x="386.5" y="182.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+14h, Thu: 12
+</text>
+<circle cx="432.8" cy="202" r="17.6" fill="#3374B0" class="ct-trigger" data-index="44" data-x="16h" data-y="Thu" data-value="10">
+<title>16h, Thu: 10</title>
+</circle>
+<text font-size="14" x="432.8" y="184.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+16h, Thu: 10
+</text>
+<circle cx="479.2" cy="202" r="12.4" fill="#699FC9" class="ct-trigger" data-index="45" data-x="18h" data-y="Thu" data-value="5">
+<title>18h, Thu: 5</title>
+</circle>
+<text font-size="14" x="479.2" y="189.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Thu: 5
+</text>
+<circle cx="525.5" cy="202" r="9.6" fill="#7EB1D3" class="ct-trigger" data-index="46" data-x="20h" data-y="Thu" data-value="3">
+<title>20h, Thu: 3</title>
+</circle>
+<text font-size="14" x="525.5" y="192.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+20h, Thu: 3
+</text>
+<circle cx="571.8" cy="202" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="47" data-x="22h" data-y="Thu" data-value="1">
+<title>22h, Thu: 1</title>
+</circle>
+<text font-size="14" x="571.8" y="196.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+22h, Thu: 1
+</text>
+<line stroke-width="1" x1="39" y1="155.7" x2="595" y2="155.7" stroke="#E0E6F2"/>
+<circle cx="201.2" cy="155.7" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="51" data-x="6h" data-y="Wed" data-value="1">
+<title>6h, Wed: 1</title>
+</circle>
+<text font-size="14" x="201.2" y="150.1" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+6h, Wed: 1
+</text>
+<circle cx="247.5" cy="155.7" r="13.6" fill="#5E97C4" class="ct-trigger" data-index="52" data-x="8h" data-y="Wed" data-value="6">
+<title>8h, Wed: 6</title>
+</circle>
+<text font-size="14" x="247.5" y="142.1" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+8h, Wed: 6
+</text>
+<circle cx="293.8" cy="155.7" r="19.3" fill="#1E63A6" class="ct-trigger" data-index="53" data-x="10h" data-y="Wed" data-value="12">
+<title>10h, Wed: 12</title>
+</circle>
+<text font-size="14" x="293.8" y="136.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+10h, Wed: 12
+</text>
+<circle cx="340.2" cy="155.7" r="16.7" fill="#3E7DB5" class="ct-trigger" data-index="54" data-x="12h" data-y="Wed" data-value="9">
+<title>12h, Wed: 9</title>
+</circle>
+<text font-size="14" x="340.2" y="139" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Wed: 9
+</text>
+<circle cx="386.5" cy="155.7" r="20.8" fill="#08519C" class="ct-trigger" data-index="55" data-x="14h" data-y="Wed" data-value="14">
+<title>14h, Wed: 14</title>
+</circle>
+<text font-size="14" x="386.5" y="134.9" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+14h, Wed: 14
+</text>
+<circle cx="432.8" cy="155.7" r="18.5" fill="#296BAB" class="ct-trigger" data-index="56" data-x="16h" data-y="Wed" data-value="11">
+<title>16h, Wed: 11</title>
+</circle>
+<text font-size="14" x="432.8" y="137.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+16h, Wed: 11
+</text>
+<circle cx="479.2" cy="155.7" r="13.6" fill="#5E97C4" class="ct-trigger" data-index="57" data-x="18h" data-y="Wed" data-value="6">
+<title>18h, Wed: 6</title>
+</circle>
+<text font-size="14" x="479.2" y="142.1" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Wed: 6
+</text>
+<circle cx="525.5" cy="155.7" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="58" data-x="20h" data-y="Wed" data-value="2">
+<title>20h, Wed: 2</title>
+</circle>
+<text font-size="14" x="525.5" y="147.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+20h, Wed: 2
+</text>
+<line stroke-width="1" x1="39" y1="109.4" x2="595" y2="109.4" stroke="#E0E6F2"/>
+<circle cx="247.5" cy="109.4" r="11.1" fill="#74A8CE" class="ct-trigger" data-index="64" data-x="8h" data-y="Tue" data-value="4">
+<title>8h, Tue: 4</title>
+</circle>
+<text font-size="14" x="247.5" y="98.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+8h, Tue: 4
+</text>
+<circle cx="293.8" cy="109.4" r="17.6" fill="#3374B0" class="ct-trigger" data-index="65" data-x="10h" data-y="Tue" data-value="10">
+<title>10h, Tue: 10</title>
+</circle>
+<text font-size="14" x="293.8" y="91.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+10h, Tue: 10
+</text>
+<circle cx="340.2" cy="109.4" r="14.7" fill="#538EBF" class="ct-trigger" data-index="66" data-x="12h" data-y="Tue" data-value="7">
+<title>12h, Tue: 7</title>
+</circle>
+<text font-size="14" x="340.2" y="94.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Tue: 7
+</text>
+<circle cx="386.5" cy="109.4" r="20.1" fill="#135AA1" class="ct-trigger" data-index="67" data-x="14h" data-y="Tue" data-value="13">
+<title>14h, Tue: 13</title>
+</circle>
+<text font-size="14" x="386.5" y="89.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+14h, Tue: 13
+</text>
+<circle cx="432.8" cy="109.4" r="16.7" fill="#3E7DB5" class="ct-trigger" data-index="68" data-x="16h" data-y="Tue" data-value="9">
+<title>16h, Tue: 9</title>
+</circle>
+<text font-size="14" x="432.8" y="92.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+16h, Tue: 9
+</text>
+<circle cx="479.2" cy="109.4" r="14.7" fill="#538EBF" class="ct-trigger" data-index="69" data-x="18h" data-y="Tue" data-value="7">
+<title>18h, Tue: 7</title>
+</circle>
+<text font-size="14" x="479.2" y="94.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Tue: 7
+</text>
+<circle cx="525.5" cy="109.4" r="11.1" fill="#74A8CE" class="ct-trigger" data-index="70" data-x="20h" data-y="Tue" data-value="4">
+<title>20h, Tue: 4</title>
+</circle>
+<text font-size="14" x="525.5" y="98.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+20h, Tue: 4
+</text>
+<circle cx="571.8" cy="109.4" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="71" data-x="22h" data-y="Tue" data-value="2">
+<title>22h, Tue: 2</title>
+</circle>
+<text font-size="14" x="571.8" y="101.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+22h, Tue: 2
+</text>
+<line stroke-width="1" x1="39" y1="63.1" x2="595" y2="63.1" stroke="#E0E6F2"/>
+<circle cx="201.2" cy="63.1" r="7.9" fill="#89B9D8" class="ct-trigger" data-index="75" data-x="6h" data-y="Mon" data-value="2">
+<title>6h, Mon: 2</title>
+</circle>
+<text font-size="14" x="201.2" y="55.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+6h, Mon: 2
+</text>
+<circle cx="247.5" cy="63.1" r="14.7" fill="#538EBF" class="ct-trigger" data-index="76" data-x="8h" data-y="Mon" data-value="7">
+<title>8h, Mon: 7</title>
+</circle>
+<text font-size="14" x="247.5" y="48.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+8h, Mon: 7
+</text>
+<circle cx="293.8" cy="63.1" r="16.7" fill="#3E7DB5" class="ct-trigger" data-index="77" data-x="10h" data-y="Mon" data-value="9">
+<title>10h, Mon: 9</title>
+</circle>
+<text font-size="14" x="293.8" y="46.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+10h, Mon: 9
+</text>
+<circle cx="340.2" cy="63.1" r="13.6" fill="#5E97C4" class="ct-trigger" data-index="78" data-x="12h" data-y="Mon" data-value="6">
+<title>12h, Mon: 6</title>
+</circle>
+<text font-size="14" x="340.2" y="49.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Mon: 6
+</text>
+<circle cx="386.5" cy="63.1" r="17.6" fill="#3374B0" class="ct-trigger" data-index="79" data-x="14h" data-y="Mon" data-value="10">
+<title>14h, Mon: 10</title>
+</circle>
+<text font-size="14" x="386.5" y="45.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+14h, Mon: 10
+</text>
+<circle cx="432.8" cy="63.1" r="15.7" fill="#4985BA" class="ct-trigger" data-index="80" data-x="16h" data-y="Mon" data-value="8">
+<title>16h, Mon: 8</title>
+</circle>
+<text font-size="14" x="432.8" y="47.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+16h, Mon: 8
+</text>
+<circle cx="479.2" cy="63.1" r="9.6" fill="#7EB1D3" class="ct-trigger" data-index="81" data-x="18h" data-y="Mon" data-value="3">
+<title>18h, Mon: 3</title>
+</circle>
+<text font-size="14" x="479.2" y="53.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Mon: 3
+</text>
+<circle cx="525.5" cy="63.1" r="5.6" fill="#94C2DD" class="ct-trigger" data-index="82" data-x="20h" data-y="Mon" data-value="1">
+<title>20h, Mon: 1</title>
+</circle>
+<text font-size="14" x="525.5" y="57.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+20h, Mon: 1
+</text>
+</svg>

@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- `TreeChart`: `orient` is read whatever its case, as it is checked:
+  `"tb"` was accepted and then drawn as `LR`.
 - `PieChart`: the label of a slice whose angle runs past a full turn (with a
   `start_angle`) or below zero is put on the side of the pie it is on.
 - A series with a `start_index` near `usize::MAX` and more than one value no
@@ -74,6 +76,57 @@
 
 ### Added
 
+- `SankeyChart`: `orient` `vertical` runs the flows from top to bottom, the
+  columns of nodes becoming rows.
+- `HeatmapChart`: `series.symbol` `circle` draws a punch card — a circle in
+  every cell that has a value, its area following the value, the circles of
+  a row on a line — instead of filled cells.
+- `MapChart`: a map of regions colored by their values. The regions are
+  GeoJSON given by the caller (`geo_json` in the options, or
+  `MapRegion::from_geo_json`): `Polygon` and `MultiPolygon` features, with
+  their holes and islands; the library has no map data of its own. Mercator
+  (the default) or equirectangular projection, fitted to the plot. The
+  colors are a scale like the heatmap's (`min_color` / `max_color`,
+  `colors`, `steps`, `thresholds`), shown beside the map; `label_show`
+  names the regions. Supports tooltips with `data-*` attributes. Available
+  in `MultiChart` as `"type": "map"`.
+- `Shape` component: a filled shape of several closed outlines, an outline
+  inside another one being a hole in it.
+- `TreeChart`: `orient` also takes `RL` and `BT` (the root on the right, or
+  at the bottom); `layout` `radial` puts the root in the middle and every
+  level on a circle around it, with the names along the spokes;
+  `edge_shape` `polyline` draws the links with square corners.
+- `CandlestickChart`: `candlestick_style` `ohlc` draws OHLC bars — a line
+  from the lowest to the highest price with a tick at the open and one at
+  the close — instead of candles.
+- `GaugeChart`: a pointer for every series (their values listed below the
+  center), instead of the first one only; `thresholds` and `colors` split
+  the scale into segments of their own colors, the pointer taking the color
+  of the segment it points at; `multi_ring` draws every series as a ring of
+  progress of its own, one inside the other.
+- Color scales of several colors and of classes in `HeatmapChart` (under
+  `series`) and `CalendarChart`: `colors` lists the colors the scale goes
+  through, `steps` sorts the values into that many classes of the same
+  width, each in one color, and `thresholds` gives the classes ends of
+  one's own. The labels of a heatmap with such a scale take the light font
+  on dark cells.
+- `ScatterChart`: `regression` (`linear`, `exponential`, `logarithmic` or
+  `polynomial` with `regression_order`) draws the curve that fits the points
+  of each series best, by least squares, in the color of the series;
+  `regression_label_show` writes its formula at its end.
+- Error bars: a series' `error_bar` (`{"lower": [...], "upper": [...]}`,
+  like `band`) draws a line with a cap at both ends over each bar, line
+  point or scatter point. The y axis makes room for the bounds, and
+  tooltips and `data-lower` / `data-upper` tell them.
+- `GanttChart`: tasks as bars along a time axis, for project plans,
+  schedules and timelines. A task has a row of its own or shares one
+  (`row`); `category` colors the tasks and makes the legend, `progress`
+  shows how much is done, a task without an `end` is a milestone and `now`
+  marks a moment across the chart. Names are written on the bars, or beside
+  them where there is room. The axis is the time axis of the line chart
+  (`x_axis_min` / `x_axis_max`, `x_axis_formatter`, `x_axis_time_offset`),
+  or one of plain numbers. Supports tooltips with `data-*` attributes and
+  animation. Available in `MultiChart` as `"type": "gantt"`.
 - Step lines: a series' `step` (`start`, `middle` or `end`) draws its line
   level between two points, changing value at a corner. The area under the
   line, stacked areas and bands step along; the markers stay on the points.

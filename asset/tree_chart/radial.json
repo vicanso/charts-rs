@@ -1,0 +1,38 @@
+{
+    "title_text": "Radial tree",
+    "title_align": "left",
+    "layout": "radial",
+    "height": 560,
+    "tooltip_show": true,
+    "series_data": [
+        {
+            "name": "flare",
+            "children": [
+                {
+                    "name": "analytics",
+                    "children": [
+                        {"name": "cluster", "children": [{"name": "Agglomerative"}, {"name": "Community"}, {"name": "Hierarchical"}]},
+                        {"name": "graph", "children": [{"name": "Betweenness"}, {"name": "LinkDistance"}, {"name": "MaxFlow"}, {"name": "ShortestPaths"}]}
+                    ]
+                },
+                {
+                    "name": "animate",
+                    "children": [{"name": "Easing"}, {"name": "Parallel"}, {"name": "Pause"}, {"name": "Scheduler"}, {"name": "Sequence"}, {"name": "Transition"}]
+                },
+                {
+                    "name": "data",
+                    "children": [
+                        {"name": "converters", "children": [{"name": "Converters"}, {"name": "GraphML"}, {"name": "JSON"}]},
+                        {"name": "DataField"},
+                        {"name": "DataSchema"},
+                        {"name": "DataSet"}
+                    ]
+                },
+                {
+                    "name": "display",
+                    "children": [{"name": "DirtySprite"}, {"name": "LineSprite"}, {"name": "RectSprite"}, {"name": "TextSprite"}]
+                }
+            ]
+        }
+    ]
+}

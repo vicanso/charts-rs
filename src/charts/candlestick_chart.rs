@@ -20,6 +20,18 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use serde::{Deserialize, Serialize};
 
+/// How the four prices of a period are drawn.
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Debug, Default)]
+pub enum CandlestickStyle {
+    /// A candle: a body from the open to the close, on a wick from the
+    /// lowest to the highest price.
+    #[default]
+    Candle,
+    /// An OHLC bar: a line from the lowest to the highest price, with a
+    /// tick to its left at the open and one to its right at the close.
+    Ohlc,
+}
+
 /// A candlestick (OHLC) chart for financial data.
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct CandlestickChart {
@@ -52,6 +64,9 @@ pub struct CandlestickChart {
     pub candlestick_down_color: Color,
     /// Border color of falling candles.
     pub candlestick_down_border_color: Color,
+    /// Draws candles (the default) or OHLC bars.
+    #[serde(default)]
+    pub candlestick_style: CandlestickStyle,
 }
 
 impl std::ops::Deref for CandlestickChart {
@@ -102,6 +117,13 @@ impl CandlestickChart {
         }
         if let Some(value) = get_color_from_value(&value, "candlestick_down_border_color") {
             c.candlestick_down_border_color = value;
+        }
+        if let Some(style) = get_string_from_value(&value, "candlestick_style") {
+            c.candlestick_style = if style.eq_ignore_ascii_case("ohlc") {
+                CandlestickStyle::Ohlc
+            } else {
+                CandlestickStyle::Candle
+            };
         }
         c.fill_default();
         Ok(c)
@@ -184,13 +206,16 @@ impl CandlestickChart {
                 }
 
                 let line_left = half_chunk_width + chunk_width * index as f32 - 1.0;
+                let is_ohlc = self.candlestick_style == CandlestickStyle::Ohlc;
+                // The lines of an OHLC bar carry it alone: a little stronger.
+                let line_width = if is_ohlc { 1.5 } else { 1.0 };
                 c.child(Box {
                     left: left_y_axis_width,
                     ..Default::default()
                 })
                 .line(Line {
                     color: Some(fill),
-                    stroke_width: 1.0,
+                    stroke_width: line_width,
                     left: line_left,
                     top: lowest.min(highest),
                     right: line_left,
@@ -215,13 +240,50 @@ impl CandlestickChart {
                 });
                 let rect_left = half_chunk_width / 2.0 + chunk_width * index as f32 - 1.0;
                 let rect_top = open.min(close);
+                if is_ohlc {
+                    // The open to the left of the line, the close to its right.
+                    for (from, to, price) in [
+                        (rect_left, line_left, open),
+                        (line_left, rect_left + half_chunk_width, close),
+                    ] {
+                        candle_c.line(Line {
+                            color: Some(fill),
+                            stroke_width: line_width,
+                            left: from,
+                            top: price,
+                            right: to,
+                            bottom: price,
+                            ..Default::default()
+                        });
+                    }
+                }
+                // An OHLC bar has no body: an unpainted box around it takes
+                // the hover and tells its prices.
+                let (body_fill, body_border, body_top, body_height, body_style) = if is_ohlc {
+                    (
+                        Color::transparent(),
+                        Color::transparent(),
+                        highest.min(lowest),
+                        (highest - lowest).abs().max(1.0),
+                        Some("pointer-events:all".to_string()),
+                    )
+                } else {
+                    (
+                        fill,
+                        border_color,
+                        rect_top,
+                        (open.max(close) - open.min(close)).max(1.0),
+                        None,
+                    )
+                };
                 candle_c.rect(Rect {
-                    color: Some(border_color),
-                    fill: Some(fill.into()),
+                    color: Some(body_border),
+                    fill: Some(body_fill.into()),
                     left: rect_left,
-                    top: rect_top,
+                    top: body_top,
                     width: half_chunk_width,
-                    height: (open.max(close) - open.min(close)).max(1.0),
+                    height: body_height,
+                    style: body_style,
                     title: tooltip_text.clone(),
                     class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
                     dataset: vec![

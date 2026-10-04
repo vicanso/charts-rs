@@ -1171,6 +1171,20 @@ fn generate_image() {
             .unwrap(),
         ),
         (
+            "map",
+            charts_rs::MapChart::from_json(include_str!("../asset/map_chart/basic.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "gantt",
+            charts_rs::GanttChart::from_json(include_str!("../asset/gantt_chart/basic.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
             "chord",
             charts_rs::ChordChart::from_json(include_str!("../asset/chord_chart/gradient.json"))
                 .unwrap()

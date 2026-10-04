@@ -146,6 +146,28 @@ fn place(
     idx
 }
 
+/// The link between two nodes around a center: a curve that leaves the
+/// first one along its spoke and arrives at the other one along its own.
+/// The nodes are given as `(angle, radius)`.
+fn radial_curve(center: (f32, f32), from: (f32, f32), to: (f32, f32)) -> Vec<Point> {
+    const SEGMENTS: usize = 16;
+    let at = |(angle, radius): (f32, f32)| get_pie_point(center.0, center.1, radius, angle);
+    let middle = (from.1 + to.1) / 2.0;
+    let (p0, p1, p2, p3) = (at(from), at((from.0, middle)), at((to.0, middle)), at(to));
+    (0..=SEGMENTS)
+        .map(|i| {
+            let t = i as f32 / SEGMENTS as f32;
+            let u = 1.0 - t;
+            let (a, b, c, d) = (u * u * u, 3.0 * u * u * t, 3.0 * u * t * t, t * t * t);
+            (
+                a * p0.x + b * p1.x + c * p2.x + d * p3.x,
+                a * p0.y + b * p1.y + c * p2.y + d * p3.y,
+            )
+                .into()
+        })
+        .collect()
+}
+
 // ── TreeChart ────────────────────────────────────────────────────────────────
 
 /// A tree diagram of hierarchical data as linked nodes.
@@ -159,11 +181,19 @@ pub struct TreeChart {
     // tree-specific
     /// Hierarchy roots. Multiple roots form a forest laid out side by side.
     pub series_data: Vec<TreeData>,
-    /// Layout orientation: `"LR"` (default, root on the left) or `"TB"` (root
-    /// on top).
+    /// Layout orientation: where the root is, and which way the tree grows.
+    /// `"LR"` (default, root on the left), `"RL"` (root on the right),
+    /// `"TB"` (root on top) or `"BT"` (root at the bottom).
     pub orient: Option<String>,
     /// Radius of the node circle in pixels. Default: 6.0.
     pub symbol_size: f32,
+    /// `"orthogonal"` (the default) lays the levels out side by side, by
+    /// `orient`; `"radial"` puts the root in the middle and every level on
+    /// a circle around it.
+    pub layout: Option<String>,
+    /// Shape of the links: `"curve"` (the default) or `"polyline"`, with
+    /// square corners.
+    pub edge_shape: Option<String>,
 }
 
 impl std::ops::Deref for TreeChart {
@@ -218,6 +248,12 @@ impl TreeChart {
         if let Some(v) = get_f32_from_value(&value, "symbol_size") {
             c.symbol_size = v;
         }
+        if let Some(s) = get_string_from_value(&value, "layout") {
+            c.layout = Some(s);
+        }
+        if let Some(s) = get_string_from_value(&value, "edge_shape") {
+            c.edge_shape = Some(s);
+        }
         c.fill_default();
         Ok(c)
     }
@@ -267,7 +303,17 @@ impl TreeChart {
         let r = self.symbol_size;
         let font_size = self.series_label_font_size.max(10.0);
         let gap = r + 4.0;
-        let lr = self.orient.as_deref() != Some("TB");
+        // The names are taken as the JSON checks them: whatever their case.
+        let is = |option: &Option<String>, name: &str| {
+            option
+                .as_deref()
+                .is_some_and(|v| v.eq_ignore_ascii_case(name))
+        };
+        let lr = !is(&self.orient, "TB") && !is(&self.orient, "BT");
+        // The root on the far side: the tree grows the other way.
+        let flip = is(&self.orient, "RL") || is(&self.orient, "BT");
+        let radial = is(&self.layout, "radial");
+        let elbow = is(&self.edge_shape, "polyline");
 
         // Longest labels on each side, used to reserve room so labels don't clip.
         let measure = |s: &str| {
@@ -320,20 +366,94 @@ impl TreeChart {
                 .collect()
         };
 
+        let positions: Vec<(f32, f32)> = if flip && !radial {
+            positions
+                .into_iter()
+                .map(|(x, y)| if lr { (cw - x, y) } else { (x, ch - y) })
+                .collect()
+        } else {
+            positions
+        };
+        // Around the root: the angle of every node (in degrees, clockwise
+        // from 12 o'clock) and how far out its level is.
+        let center = (cw / 2.0, ch / 2.0);
+        let roots = nodes.iter().filter(|n| n.depth == 0).count();
+        let polar: Vec<(f32, f32)> = if radial {
+            let outer = (cw.min(ch) / 2.0 - leaf_label - gap - r).max(10.0);
+            // Several roots share a ring of their own around the middle.
+            let (inner, levels) = if roots > 1 {
+                (1.0, depth_span + 1.0)
+            } else {
+                (0.0, depth_span)
+            };
+            nodes
+                .iter()
+                .map(|n| {
+                    (
+                        n.cross / num_leaves * 360.0,
+                        (n.depth as f32 + inner) / levels * outer,
+                    )
+                })
+                .collect()
+        } else {
+            vec![]
+        };
+        let positions: Vec<(f32, f32)> = if radial {
+            polar
+                .iter()
+                .map(|(angle, radius)| {
+                    let p = get_pie_point(center.0, center.1, *radius, *angle);
+                    (p.x, p.y)
+                })
+                .collect()
+        } else {
+            positions
+        };
+        // The side the tree grows to.
+        let side = if flip { -1.0 } else { 1.0 };
+
         // ── Links (parent → child), drawn under the nodes ─────────────────────
         for (i, n) in nodes.iter().enumerate() {
             let Some(p) = n.parent else { continue };
             let (px, py) = positions[p];
             let (cx, cy) = positions[i];
-            let (x1, y1, x2, y2) = if lr {
-                (px + r, py, cx - r, cy)
+            let points = if radial {
+                if elbow {
+                    vec![(px, py).into(), (cx, cy).into()]
+                } else {
+                    radial_curve(center, polar[p], polar[i])
+                }
             } else {
-                (px, py + r, cx, cy - r)
+                let (x1, y1, x2, y2) = if lr {
+                    (px + r * side, py, cx - r * side, cy)
+                } else {
+                    (px, py + r * side, cx, cy - r * side)
+                };
+                if !elbow {
+                    sample_curve(x1, y1, x2, y2, lr)
+                } else if lr {
+                    // Half way across, then over, then on.
+                    let middle = (x1 + x2) / 2.0;
+                    vec![
+                        (x1, y1).into(),
+                        (middle, y1).into(),
+                        (middle, y2).into(),
+                        (x2, y2).into(),
+                    ]
+                } else {
+                    let middle = (y1 + y2) / 2.0;
+                    vec![
+                        (x1, y1).into(),
+                        (x1, middle).into(),
+                        (x2, middle).into(),
+                        (x2, y2).into(),
+                    ]
+                }
             };
             content.polyline(Polyline {
                 color: Some(self.grid_stroke_color),
                 stroke_width: self.series_stroke_width.max(1.0),
-                points: sample_curve(x1, y1, x2, y2, lr),
+                points,
             });
         }
 
@@ -384,16 +504,71 @@ impl TreeChart {
                 continue;
             }
             let (x, y) = positions[i];
+            if radial {
+                let (angle, radius) = polar[i];
+                // The node in the very middle: its name above it.
+                if radius <= 0.0 {
+                    content.text(Text {
+                        text: n.label.clone(),
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(font_size),
+                        font_weight: self.series_label_font_weight.clone(),
+                        x: Some(x),
+                        y: Some(y - gap - font_size * 0.5),
+                        text_anchor: Some("middle".to_string()),
+                        dominant_baseline: Some("central".to_string()),
+                        ..Default::default()
+                    });
+                    continue;
+                }
+                // Along the spoke of the node, upright: on its outside, or
+                // (a node with children) towards the middle where there is
+                // room for its name before the ring of its parent.
+                let parent_radius = n.parent.map(|p| polar[p].1).unwrap_or(0.0);
+                let inwards =
+                    !n.is_leaf && radius - parent_radius >= measure(&n.label) + 2.0 * gap + r;
+                let out = if inwards { -gap } else { gap };
+                let at = get_pie_point(center.0, center.1, radius + out, angle);
+                let right = angle.rem_euclid(360.0) < 180.0;
+                let (turn, anchor) = match (right, !inwards) {
+                    (true, true) => (angle - 90.0, "start"),
+                    (true, false) => (angle - 90.0, "end"),
+                    (false, true) => (angle + 90.0, "end"),
+                    (false, false) => (angle + 90.0, "start"),
+                };
+                content.text(Text {
+                    text: n.label.clone(),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(font_size),
+                    font_weight: self.series_label_font_weight.clone(),
+                    x: Some(at.x),
+                    y: Some(at.y),
+                    transform: Some(format!(
+                        "rotate({} {} {})",
+                        format_float(turn),
+                        format_float(at.x + content.margin.left),
+                        format_float(at.y + content.margin.top)
+                    )),
+                    text_anchor: Some(anchor.to_string()),
+                    dominant_baseline: Some("central".to_string()),
+                    ..Default::default()
+                });
+                continue;
+            }
             let (tx, ty, anchor) = if lr {
-                if n.is_leaf {
+                // A leaf is named on the far side of it, the others on the
+                // side of the root.
+                if n.is_leaf != flip {
                     (x + gap, y, "start")
                 } else {
                     (x - gap, y, "end")
                 }
             } else if n.is_leaf {
-                (x, y + gap + font_size * 0.5, "middle")
+                (x, y + (gap + font_size * 0.5) * side, "middle")
             } else {
-                (x, y - gap, "middle")
+                (x, y - gap * side, "middle")
             };
             content.text(Text {
                 text: n.label.clone(),

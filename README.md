@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports twenty-five chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, `ThemeRiver`, `Histogram`, `PolarBar`, and `Chord`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports twenty-seven chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, `ThemeRiver`, `Histogram`, `PolarBar`, `Chord`, `Gantt`, and `Map`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -55,6 +55,13 @@ The library supports twenty-five chart types: `Bar`, `HorizontalBar`, `Line`, `P
 - Step lines (`series.step`), 100% stacked bars and areas (`stack_percent`),
   half and partial pies (`end_angle`), and inverse value axes
   (`axis_inverse`) for ranking charts
+- Error bars on bars, lines and scatter points (`series.error_bar`), and
+  regression curves in scatter charts (`regression`: linear, exponential,
+  logarithmic, polynomial)
+- Color scales of several colors, or of classes (`colors`, `steps`,
+  `thresholds`), in heatmaps and calendars
+- Gauges with colored segments, several pointers, or a ring of progress for
+  each series (`thresholds`, `multi_ring`)
 
 ## Installation
 
@@ -254,6 +261,18 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/chord.png" alt="charts-rs">
 </p>
 
+## Gantt
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gantt.png" alt="charts-rs">
+</p>
+
+## Map
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/map.png" alt="charts-rs">
+</p>
+
 ## Example
 
 Runnable examples live in [`examples/`](./examples); each writes an `svg` file:
@@ -268,6 +287,8 @@ cargo run --example tree       # node-link tree with curved links (LR layout)
 cargo run --example histogram  # distribution of a sample over equal-width bins
 cargo run --example polar_bar  # polar bars: stacked around the circle, and rings with round caps
 cargo run --example chord      # chord diagram of the flows between nodes (gradient ribbons)
+cargo run --example gantt      # gantt chart: a project plan with progress, milestones and today
+cargo run --example map        # map of regions (GeoJSON) colored by value, in classes
 ```
 
 ### New from option
@@ -553,6 +574,60 @@ across the circle, as wide at both ends as its value.
   `animation` work as in the other charts.
 
 In Rust: `ChordChart::new(vec![], vec![("Asia", "Europe", 60.0).into()])`.
+
+### Gantt chart
+
+A `GanttChart` draws tasks as bars along a time axis:
+
+```json
+{
+  "now": "2024-03-19",
+  "tasks": [
+    { "name": "Research", "category": "Plan", "start": "2024-03-04", "end": "2024-03-08", "progress": 1 },
+    { "name": "Design", "category": "Build", "start": "2024-03-07", "end": "2024-03-22", "progress": 0.6 },
+    { "name": "Sign-off", "category": "Build", "start": "2024-03-22" }
+  ]
+}
+```
+
+- Every task has a row of its own, named after it; tasks with the same `row`
+  share one (the bookings of a room, the flights at a gate) and are named on
+  their bars.
+- `category` colors the tasks and makes the legend, `progress` (0 to 1) shows
+  how much is done, a task without an `end` is a milestone, and `now` marks
+  a moment across the chart.
+- The x axis is the time axis of the line chart: `x_axis_min` /
+  `x_axis_max`, `x_axis_formatter` and `x_axis_time_offset` apply, and
+  `"x_axis_type": "value"` makes it an axis of plain numbers.
+
+In Rust: `GanttChart::new(vec![("Research", start, end).into()])`, with the
+times as unix seconds.
+
+### Map chart
+
+A `MapChart` colors the regions of a map by their values. The regions are
+GeoJSON that comes with the options — the library has no map data of its own:
+
+```json
+{
+  "label_show": true,
+  "thresholds": [100, 300],
+  "colors": ["#deebf7", "#9ecae1", "#3182bd"],
+  "data": [["West", 80], ["East", 420]],
+  "geo_json": { "type": "FeatureCollection", "features": [] }
+}
+```
+
+- `geo_json` is a `FeatureCollection` of `Polygon` and `MultiPolygon`
+  geometries (holes and islands included); `data` gives the value of a
+  region by its name, the property `name` of its feature (or another one,
+  with `name_property`).
+- The scale is the one of the heatmap: from `min_color` to `max_color`,
+  through several `colors`, or in classes (`steps`, `thresholds`); it is
+  shown beside the map. A region without a value is drawn in `empty_color`.
+- `projection` is `mercator` (the default) or `equirectangular`.
+
+In Rust: `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`.
 
 ### Band around a line
 

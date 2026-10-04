@@ -1,0 +1,120 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Regression
+</text>
+<g>
+<line stroke-width="2" x1="431" y1="15" x2="456" y2="15" stroke="#5470C6"/>
+<circle cx="443.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="459" y="19" font-family="Roboto" fill="#464646">
+Trial A
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="507" y1="15" x2="532" y2="15" stroke="#91CC75"/>
+<circle cx="519.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="535" y="19" font-family="Roboto" fill="#464646">
+Trial B
+</text>
+</g>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="26" y1="40" x2="580" y2="40"/><line x1="26" y1="94.2" x2="580" y2="94.2"/><line x1="26" y1="148.3" x2="580" y2="148.3"/><line x1="26" y1="202.5" x2="580" y2="202.5"/><line x1="26" y1="256.7" x2="580" y2="256.7"/><line x1="26" y1="310.8" x2="580" y2="310.8"/>
+</g>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="118.3" y1="40" x2="118.3" y2="365"/><line x1="210.7" y1="40" x2="210.7" y2="365"/><line x1="303" y1="40" x2="303" y2="365"/><line x1="395.3" y1="40" x2="395.3" y2="365"/><line x1="487.7" y1="40" x2="487.7" y2="365"/><line x1="580" y1="40" x2="580" y2="365"/>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="26" y1="40" x2="26" y2="365"/>
+<line x1="26" y1="40" x2="21" y2="40"/>
+<line x1="26" y1="94.2" x2="21" y2="94.2"/>
+<line x1="26" y1="148.3" x2="21" y2="148.3"/>
+<line x1="26" y1="202.5" x2="21" y2="202.5"/>
+<line x1="26" y1="256.7" x2="21" y2="256.7"/>
+<line x1="26" y1="310.8" x2="21" y2="310.8"/>
+<line x1="26" y1="365" x2="21" y2="365"/>
+</g>
+<text font-size="14" x="2" y="45" font-family="Roboto" fill="#6E7079">
+36
+</text>
+<text font-size="14" x="2" y="99.2" font-family="Roboto" fill="#6E7079">
+30
+</text>
+<text font-size="14" x="2" y="153.3" font-family="Roboto" fill="#6E7079">
+24
+</text>
+<text font-size="14" x="2" y="207.5" font-family="Roboto" fill="#6E7079">
+18
+</text>
+<text font-size="14" x="2" y="261.7" font-family="Roboto" fill="#6E7079">
+12
+</text>
+<text font-size="14" x="10" y="315.8" font-family="Roboto" fill="#6E7079">
+6
+</text>
+<text font-size="14" x="10" y="370" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="26" y1="365" x2="580" y2="365"/>
+<line x1="26" y1="365" x2="26" y2="370"/>
+<line x1="118.3" y1="365" x2="118.3" y2="370"/>
+<line x1="210.7" y1="365" x2="210.7" y2="370"/>
+<line x1="303" y1="365" x2="303" y2="370"/>
+<line x1="395.3" y1="365" x2="395.3" y2="370"/>
+<line x1="487.7" y1="365" x2="487.7" y2="370"/>
+<line x1="580" y1="365" x2="580" y2="370"/>
+</g>
+<text font-size="14" x="22" y="384" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="114.3" y="384" font-family="Roboto" fill="#6E7079">
+2
+</text>
+<text font-size="14" x="206.7" y="384" font-family="Roboto" fill="#6E7079">
+4
+</text>
+<text font-size="14" x="299" y="384" font-family="Roboto" fill="#6E7079">
+6
+</text>
+<text font-size="14" x="391.3" y="384" font-family="Roboto" fill="#6E7079">
+8
+</text>
+<text font-size="14" x="479.7" y="384" font-family="Roboto" fill="#6E7079">
+10
+</text>
+<text font-size="14" x="572" y="384" font-family="Roboto" fill="#6E7079">
+12
+</text>
+</g>
+<circle cx="72.2" cy="321.7" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="1" data-y="4.8"/>
+<circle cx="118.3" cy="302.7" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="2" data-y="6.9"/>
+<circle cx="164.5" cy="278.3" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="3" data-y="9.6"/>
+<circle cx="210.7" cy="263.9" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="4" data-y="11.2"/>
+<circle cx="256.8" cy="237.7" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="5" data-y="14.1"/>
+<circle cx="303" cy="226.9" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="6" data-y="15.3"/>
+<circle cx="349.2" cy="195.3" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="7" data-y="18.8"/>
+<circle cx="395.3" cy="179" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="8" data-y="20.6"/>
+<circle cx="441.5" cy="165.5" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="9" data-y="22.1"/>
+<circle cx="487.7" cy="131.2" r="5" fill-opacity="0.82" fill="#5470C6" data-series="Trial A" data-x="10" data-y="25.9"/>
+<path d="M 72.2 320.8 L 78.7 318.1 L 85.2 315.4 L 91.6 312.7 L 98.1 310 L 104.6 307.3 L 111.1 304.5 L 117.6 301.8 L 124.1 299 L 130.6 296.3 L 137.1 293.5 L 143.6 290.8 L 150.1 288 L 156.6 285.2 L 163.1 282.5 L 169.5 279.7 L 176 276.9 L 182.5 274.1 L 189 271.3 L 195.5 268.5 L 202 265.7 L 208.5 262.9 L 215 260 L 221.5 257.2 L 228 254.4 L 234.5 251.5 L 241 248.7 L 247.5 245.8 L 253.9 243 L 260.4 240.1 L 266.9 237.2 L 273.4 234.3 L 279.9 231.5 L 286.4 228.6 L 292.9 225.7 L 299.4 222.8 L 305.9 219.9 L 312.4 216.9 L 318.9 214 L 325.4 211.1 L 331.9 208.2 L 338.3 205.2 L 344.8 202.3 L 351.3 199.3 L 357.8 196.4 L 364.3 193.4 L 370.8 190.4 L 377.3 187.5 L 383.8 184.5 L 390.3 181.5 L 396.8 178.5 L 403.3 175.5 L 409.8 172.5 L 416.3 169.5 L 422.7 166.5 L 429.2 163.5 L 435.7 160.4 L 442.2 157.4 L 448.7 154.4 L 455.2 151.3 L 461.7 148.3 L 468.2 145.2 L 474.7 142.2 L 481.2 139.1 L 487.7 136" stroke-width="2" fill="none" stroke="#5470C6" class="ct-regression"/>
+<text font-size="14" x="305.7" y="128" font-family="Roboto" fill="#464646">
+y = 0.0167x^2 + 2.09x + 2.79
+</text>
+<polygon points="72.2,341 76.5,348.5 67.8,348.5" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="1" data-y="2.1"/>
+<polygon points="118.3,338.3 122.7,345.8 114,345.8" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="2" data-y="2.4"/>
+<polygon points="164.5,324.8 168.8,332.3 160.2,332.3" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="3" data-y="3.9"/>
+<polygon points="210.7,313.1 215,320.6 206.3,320.6" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="4" data-y="5.2"/>
+<polygon points="256.8,288.7 261.2,296.2 252.5,296.2" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="5" data-y="7.9"/>
+<polygon points="303,266.1 307.3,273.6 298.7,273.6" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="6" data-y="10.4"/>
+<polygon points="349.2,226.4 353.5,233.9 344.8,233.9" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="7" data-y="14.8"/>
+<polygon points="395.3,189.4 399.7,196.9 391,196.9" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="8" data-y="18.9"/>
+<polygon points="441.5,137.9 445.8,145.4 437.2,145.4" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="9" data-y="24.6"/>
+<polygon points="487.7,87.4 492,94.9 483.3,94.9" fill="#91CC75" fill-opacity="0.82" data-series="Trial B" data-x="10" data-y="30.2"/>
+<path d="M 72.2 345.3 L 78.7 345.3 L 85.2 345.1 L 91.6 344.8 L 98.1 344.4 L 104.6 343.9 L 111.1 343.2 L 117.6 342.4 L 124.1 341.5 L 130.6 340.4 L 137.1 339.3 L 143.6 338 L 150.1 336.6 L 156.6 335 L 163.1 333.4 L 169.5 331.6 L 176 329.7 L 182.5 327.6 L 189 325.5 L 195.5 323.2 L 202 320.8 L 208.5 318.2 L 215 315.6 L 221.5 312.8 L 228 309.9 L 234.5 306.9 L 241 303.7 L 247.5 300.4 L 253.9 297 L 260.4 293.5 L 266.9 289.9 L 273.4 286.1 L 279.9 282.2 L 286.4 278.2 L 292.9 274 L 299.4 269.8 L 305.9 265.4 L 312.4 260.9 L 318.9 256.2 L 325.4 251.4 L 331.9 246.6 L 338.3 241.5 L 344.8 236.4 L 351.3 231.1 L 357.8 225.8 L 364.3 220.2 L 370.8 214.6 L 377.3 208.8 L 383.8 203 L 390.3 197 L 396.8 190.8 L 403.3 184.6 L 409.8 178.2 L 416.3 171.7 L 422.7 165.1 L 429.2 158.3 L 435.7 151.4 L 442.2 144.4 L 448.7 137.3 L 455.2 130 L 461.7 122.7 L 468.2 115.2 L 474.7 107.6 L 481.2 99.8 L 487.7 91.9" stroke-width="2" fill="none" stroke="#91CC75" class="ct-regression"/>
+<text font-size="14" x="308.7" y="83.9" font-family="Roboto" fill="#464646">
+y = 0.348x^2 - 0.706x + 2.54
+</text>
+</svg>

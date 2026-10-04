@@ -1,0 +1,26 @@
+{
+    "title_text": "Yield by plot",
+    "title_align": "left",
+    "legend_align": "right",
+    "legend_category": "round_rect",
+    "tooltip_show": true,
+    "x_axis_data": ["A", "B", "C", "D", "E"],
+    "series_list": [
+        {
+            "name": "Spring",
+            "data": [42, 55, 48, 61, 39],
+            "error_bar": {"lower": [37, 49, 44, 52, 35], "upper": [47, 60, 55, 68, 44]}
+        },
+        {
+            "name": "Autumn",
+            "data": [35, 47, 52, 44, 30],
+            "error_bar": {"lower": [31, 40, 47, 39, 27], "upper": [40, 52, 58, 50, 36]}
+        },
+        {
+            "name": "Rainfall",
+            "category": "line",
+            "data": [20, 26, 31, 24, 18],
+            "error_bar": {"lower": [16, 22, 25, null, 15], "upper": [24, 31, 36, 28, 22]}
+        }
+    ]
+}

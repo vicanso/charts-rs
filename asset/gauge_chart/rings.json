@@ -1,0 +1,15 @@
+{
+    "title_text": "Activity",
+    "title_align": "left",
+    "legend_show": false,
+    "multi_ring": true,
+    "start_angle": 360,
+    "sweep_angle": 360,
+    "arc_width": 22,
+    "value_formatter": "{c}%",
+    "series_list": [
+        {"name": "Move", "data": [82]},
+        {"name": "Exercise", "data": [64]},
+        {"name": "Stand", "data": [45]}
+    ]
+}

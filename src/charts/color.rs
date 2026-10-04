@@ -231,6 +231,67 @@ impl<'de> Deserialize<'de> for Color {
     }
 }
 
+/// Where `value` lies on a color scale from `min` to `max`, from 0 to 1.
+///
+/// Without classes the scale is continuous. With `thresholds` (the values
+/// where one class ends and the next begins) or `steps` (that many classes
+/// of the same width) the values of a class all lie at the same place: the
+/// first class at 0, the last one at 1, the others evenly between them.
+pub(crate) fn scale_position(
+    value: f32,
+    (min, max): (f32, f32),
+    steps: usize,
+    thresholds: &[f32],
+) -> f32 {
+    let mut limits: Vec<f32> = thresholds
+        .iter()
+        .copied()
+        .filter(|t| t.is_finite())
+        .collect();
+    if !limits.is_empty() {
+        limits.sort_by(f32::total_cmp);
+        let class = limits.iter().filter(|limit| value >= **limit).count();
+        return class as f32 / limits.len() as f32;
+    }
+    let range = max - min;
+    let share = if range > 0.0 {
+        ((value - min) / range).clamp(0.0, 1.0)
+    } else {
+        1.0
+    };
+    if steps < 2 || !share.is_finite() {
+        return if share.is_finite() { share } else { 0.0 };
+    }
+    let class = ((share * steps as f32) as usize).min(steps - 1);
+    class as f32 / (steps - 1) as f32
+}
+
+/// The color at `position` (from 0 to 1) of a gradient through `colors`,
+/// which are spread evenly over it.
+pub(crate) fn gradient_color(colors: &[Color], position: f32) -> Color {
+    let (Some(first), Some(last)) = (colors.first(), colors.last()) else {
+        return Color::default();
+    };
+    // The start of the scale, also when it is a single color.
+    if !position.is_finite() || position <= 0.0 || colors.len() < 2 {
+        return *first;
+    }
+    if position >= 1.0 {
+        return *last;
+    }
+    let place = position * (colors.len() - 1) as f32;
+    let index = (place as usize).min(colors.len() - 2);
+    let share = place - index as f32;
+    let (from, to) = (colors[index], colors[index + 1]);
+    let mix = |a: u8, b: u8| (a as f32 + (b as f32 - a as f32) * share).round() as u8;
+    Color {
+        r: mix(from.r, to.r),
+        g: mix(from.g, to.g),
+        b: mix(from.b, to.b),
+        a: mix(from.a, to.a),
+    }
+}
+
 pub(crate) fn get_color(colors: &[Color], index: usize) -> Color {
     // Guard against an empty palette (e.g. `"series_colors": []` from JSON),
     // which would otherwise panic on `index % 0` / out-of-bounds indexing.
@@ -243,6 +304,48 @@ pub(crate) fn get_color(colors: &[Color], index: usize) -> Color {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn color_scales() {
+        use super::{gradient_color, scale_position};
+        // Continuous: where the value lies between the ends, kept on them.
+        assert_eq!(0.25, scale_position(25.0, (0.0, 100.0), 0, &[]));
+        assert_eq!(0.0, scale_position(-5.0, (0.0, 100.0), 1, &[]));
+        assert_eq!(1.0, scale_position(500.0, (0.0, 100.0), 0, &[]));
+        // Classes of the same width: the first at 0, the last at 1.
+        let class = |value: f32| scale_position(value, (0.0, 100.0), 5, &[]);
+        assert_eq!(
+            vec![0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0],
+            [0.0, 19.9, 20.0, 59.9, 60.0, 99.9, 100.0]
+                .map(class)
+                .to_vec()
+        );
+        // Classes of one's own, whatever the order they are given in.
+        let class = |value: f32| scale_position(value, (0.0, 0.0), 9, &[50.0, 10.0, f32::NAN]);
+        assert_eq!(
+            vec![0.0, 0.5, 0.5, 1.0, 1.0],
+            [9.9, 10.0, 49.9, 50.0, 1e9].map(class).to_vec()
+        );
+        // A scale without a range, and a value that is no number.
+        assert_eq!(1.0, scale_position(3.0, (7.0, 7.0), 0, &[]));
+        assert_eq!(0.0, scale_position(f32::NAN, (0.0, 100.0), 0, &[]));
+
+        let (red, white, blue): (Color, Color, Color) =
+            ("#ff0000".into(), "#ffffff".into(), "#0000ff".into());
+        let colors = [red, white, blue];
+        // The colors are spread evenly: the middle one in the middle.
+        assert_eq!(red, gradient_color(&colors, 0.0));
+        assert_eq!(white, gradient_color(&colors, 0.5));
+        assert_eq!(blue, gradient_color(&colors, 1.0));
+        assert_eq!("#FF8080", gradient_color(&colors, 0.25).hex());
+        assert_eq!("#8080FF", gradient_color(&colors, 0.75).hex());
+        // Off the scale is its end.
+        assert_eq!(red, gradient_color(&colors, -3.0));
+        assert_eq!(blue, gradient_color(&colors, 3.0));
+        assert_eq!(red, gradient_color(&colors, f32::NAN));
+        assert_eq!(red, gradient_color(&[red], 0.7));
+        assert_eq!(Color::default(), gradient_color(&[], 0.5));
+    }
+
     use super::Color;
     use pretty_assertions::assert_eq;
     #[test]

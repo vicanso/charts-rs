@@ -155,6 +155,20 @@ pub struct CalendarChart {
     /// Color for cells with the maximum value (default: green).
     pub max_color: Color,
 
+    /// The colors of the scale, from the smallest value to the largest.
+    /// Two or more take the place of `min_color` and `max_color`: the scale
+    /// goes through all of them.
+    pub colors: Vec<Color>,
+
+    /// Number of classes of the same width the values are sorted into, each
+    /// in one color, instead of a continuous scale. 0 (the default) and 1
+    /// keep it continuous.
+    pub steps: usize,
+
+    /// The values where one class ends and the next begins; takes the place
+    /// of `steps`. A value below the first one is in the first class.
+    pub thresholds: Vec<f32>,
+
     /// Color for cells that have no data entry.
     pub empty_color: Color,
 
@@ -248,6 +262,16 @@ impl CalendarChart {
 
     /// Interpolate between min_color and max_color.
     fn cell_color(&self, value: f32) -> Color {
+        // A scale of several colors, or of classes.
+        if self.colors.len() >= 2 || self.steps >= 2 || !self.thresholds.is_empty() {
+            let position =
+                scale_position(value, (self.min, self.max), self.steps, &self.thresholds);
+            return if self.colors.len() >= 2 {
+                gradient_color(&self.colors, position)
+            } else {
+                gradient_color(&[self.min_color, self.max_color], position)
+            };
+        }
         let value = value.clamp(self.min, self.max);
         let range = self.max - self.min;
         if range <= 0.0 {
@@ -313,6 +337,15 @@ impl CalendarChart {
         }
         if let Some(col) = get_color_from_value(&value, "max_color") {
             c.max_color = col;
+        }
+        if let Some(colors) = get_color_slice_from_value(&value, "colors") {
+            c.colors = colors;
+        }
+        if let Some(steps) = get_usize_from_value(&value, "steps") {
+            c.steps = steps;
+        }
+        if let Some(thresholds) = get_f32_slice_from_value(&value, "thresholds") {
+            c.thresholds = thresholds;
         }
         if let Some(col) = get_color_from_value(&value, "empty_color") {
             c.empty_color = col;

@@ -271,6 +271,11 @@ pub struct Series {
     /// (line series only); wins over `smooth`.
     #[serde(default)]
     pub step: Option<LineStep>,
+    /// Error bars: a lower and an upper bound per data point, drawn as a
+    /// line with a cap at both ends over the bar or the point (bar, line
+    /// and scatter charts).
+    #[serde(default)]
+    pub error_bar: Option<SeriesBand>,
 }
 
 /// Animation configuration for SVG chart animations.

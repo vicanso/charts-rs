@@ -1,0 +1,220 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Yield by plot
+</text>
+<g>
+<rect x="354" y="10" width="25" height="10" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="382" y="19" font-family="Roboto" fill="#464646">
+Spring
+</text>
+</g>
+<g>
+<rect x="428" y="10" width="25" height="10" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="456" y="19" font-family="Roboto" fill="#464646">
+Autumn
+</text>
+</g>
+<g>
+<rect x="512" y="10" width="25" height="10" rx="2" ry="2" stroke="#FAC858" fill="#FAC858"/>
+<text font-size="14" x="540" y="19" font-family="Roboto" fill="#464646">
+Rainfall
+</text>
+</g>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="26" y1="40" x2="595" y2="40"/><line x1="26" y1="94.2" x2="595" y2="94.2"/><line x1="26" y1="148.3" x2="595" y2="148.3"/><line x1="26" y1="202.5" x2="595" y2="202.5"/><line x1="26" y1="256.7" x2="595" y2="256.7"/><line x1="26" y1="310.8" x2="595" y2="310.8"/>
+</g>
+<g>
+
+<text font-size="14" x="2" y="45" font-family="Roboto" fill="#6E7079">
+90
+</text>
+<text font-size="14" x="2" y="99.2" font-family="Roboto" fill="#6E7079">
+75
+</text>
+<text font-size="14" x="2" y="153.3" font-family="Roboto" fill="#6E7079">
+60
+</text>
+<text font-size="14" x="2" y="207.5" font-family="Roboto" fill="#6E7079">
+45
+</text>
+<text font-size="14" x="2" y="261.7" font-family="Roboto" fill="#6E7079">
+30
+</text>
+<text font-size="14" x="2" y="315.8" font-family="Roboto" fill="#6E7079">
+15
+</text>
+<text font-size="14" x="10" y="370" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="26" y1="365" x2="595" y2="365"/>
+<line x1="26" y1="365" x2="26" y2="370"/>
+<line x1="139.8" y1="365" x2="139.8" y2="370"/>
+<line x1="253.6" y1="365" x2="253.6" y2="370"/>
+<line x1="367.4" y1="365" x2="367.4" y2="370"/>
+<line x1="481.2" y1="365" x2="481.2" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="78.4" y="384" font-family="Roboto" fill="#6E7079">
+A
+</text>
+<text font-size="14" x="192.7" y="384" font-family="Roboto" fill="#6E7079">
+B
+</text>
+<text font-size="14" x="306" y="384" font-family="Roboto" fill="#6E7079">
+C
+</text>
+<text font-size="14" x="419.8" y="384" font-family="Roboto" fill="#6E7079">
+D
+</text>
+<text font-size="14" x="534.1" y="384" font-family="Roboto" fill="#6E7079">
+E
+</text>
+</g>
+<rect x="31" y="213.3" width="50.4" height="151.7" fill="#5470C6" class="ct-trigger" data-series="Spring" data-category="A" data-value="42" data-lower="37" data-upper="47">
+<title>Spring: 42 (37 – 47)</title>
+</rect>
+<text font-size="14" x="56.2" y="213.3" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Spring: 42 (37 – 47)
+</text>
+<rect x="144.8" y="166.4" width="50.4" height="198.6" fill="#5470C6" class="ct-trigger" data-series="Spring" data-category="B" data-value="55" data-lower="49" data-upper="60">
+<title>Spring: 55 (49 – 60)</title>
+</rect>
+<text font-size="14" x="170" y="166.4" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Spring: 55 (49 – 60)
+</text>
+<rect x="258.6" y="191.7" width="50.4" height="173.3" fill="#5470C6" class="ct-trigger" data-series="Spring" data-category="C" data-value="48" data-lower="44" data-upper="55">
+<title>Spring: 48 (44 – 55)</title>
+</rect>
+<text font-size="14" x="283.8" y="191.7" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Spring: 48 (44 – 55)
+</text>
+<rect x="372.4" y="144.7" width="50.4" height="220.3" fill="#5470C6" class="ct-trigger" data-series="Spring" data-category="D" data-value="61" data-lower="52" data-upper="68">
+<title>Spring: 61 (52 – 68)</title>
+</rect>
+<text font-size="14" x="397.6" y="144.7" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Spring: 61 (52 – 68)
+</text>
+<rect x="486.2" y="224.2" width="50.4" height="140.8" fill="#5470C6" class="ct-trigger" data-series="Spring" data-category="E" data-value="39" data-lower="35" data-upper="44">
+<title>Spring: 39 (35 – 44)</title>
+</rect>
+<text font-size="14" x="511.4" y="224.2" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Spring: 39 (35 – 44)
+</text>
+<rect x="84.4" y="238.6" width="50.4" height="126.4" fill="#91CC75" class="ct-trigger" data-series="Autumn" data-category="A" data-value="35" data-lower="31" data-upper="40">
+<title>Autumn: 35 (31 – 40)</title>
+</rect>
+<text font-size="14" x="109.6" y="238.6" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Autumn: 35 (31 – 40)
+</text>
+<rect x="198.2" y="195.3" width="50.4" height="169.7" fill="#91CC75" class="ct-trigger" data-series="Autumn" data-category="B" data-value="47" data-lower="40" data-upper="52">
+<title>Autumn: 47 (40 – 52)</title>
+</rect>
+<text font-size="14" x="223.4" y="195.3" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Autumn: 47 (40 – 52)
+</text>
+<rect x="312" y="177.2" width="50.4" height="187.8" fill="#91CC75" class="ct-trigger" data-series="Autumn" data-category="C" data-value="52" data-lower="47" data-upper="58">
+<title>Autumn: 52 (47 – 58)</title>
+</rect>
+<text font-size="14" x="337.2" y="177.2" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Autumn: 52 (47 – 58)
+</text>
+<rect x="425.8" y="206.1" width="50.4" height="158.9" fill="#91CC75" class="ct-trigger" data-series="Autumn" data-category="D" data-value="44" data-lower="39" data-upper="50">
+<title>Autumn: 44 (39 – 50)</title>
+</rect>
+<text font-size="14" x="451" y="206.1" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Autumn: 44 (39 – 50)
+</text>
+<rect x="539.6" y="256.7" width="50.4" height="108.3" fill="#91CC75" class="ct-trigger" data-series="Autumn" data-category="E" data-value="30" data-lower="27" data-upper="36">
+<title>Autumn: 30 (27 – 36)</title>
+</rect>
+<text font-size="14" x="564.8" y="256.7" dy="-6" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Autumn: 30 (27 – 36)
+</text>
+<line stroke-width="1.5" x1="56.2" y1="231.4" x2="56.2" y2="195.3" stroke="#464646"/>
+<line stroke-width="1.5" x1="50.2" y1="231.4" x2="62.2" y2="231.4" stroke="#464646"/>
+<line stroke-width="1.5" x1="50.2" y1="195.3" x2="62.2" y2="195.3" stroke="#464646"/>
+<line stroke-width="1.5" x1="170" y1="188.1" x2="170" y2="148.3" stroke="#464646"/>
+<line stroke-width="1.5" x1="164" y1="188.1" x2="176" y2="188.1" stroke="#464646"/>
+<line stroke-width="1.5" x1="164" y1="148.3" x2="176" y2="148.3" stroke="#464646"/>
+<line stroke-width="1.5" x1="283.8" y1="206.1" x2="283.8" y2="166.4" stroke="#464646"/>
+<line stroke-width="1.5" x1="277.8" y1="206.1" x2="289.8" y2="206.1" stroke="#464646"/>
+<line stroke-width="1.5" x1="277.8" y1="166.4" x2="289.8" y2="166.4" stroke="#464646"/>
+<line stroke-width="1.5" x1="397.6" y1="177.2" x2="397.6" y2="119.4" stroke="#464646"/>
+<line stroke-width="1.5" x1="391.6" y1="177.2" x2="403.6" y2="177.2" stroke="#464646"/>
+<line stroke-width="1.5" x1="391.6" y1="119.4" x2="403.6" y2="119.4" stroke="#464646"/>
+<line stroke-width="1.5" x1="511.4" y1="238.6" x2="511.4" y2="206.1" stroke="#464646"/>
+<line stroke-width="1.5" x1="505.4" y1="238.6" x2="517.4" y2="238.6" stroke="#464646"/>
+<line stroke-width="1.5" x1="505.4" y1="206.1" x2="517.4" y2="206.1" stroke="#464646"/>
+<line stroke-width="1.5" x1="109.6" y1="253.1" x2="109.6" y2="220.6" stroke="#464646"/>
+<line stroke-width="1.5" x1="103.6" y1="253.1" x2="115.6" y2="253.1" stroke="#464646"/>
+<line stroke-width="1.5" x1="103.6" y1="220.6" x2="115.6" y2="220.6" stroke="#464646"/>
+<line stroke-width="1.5" x1="223.4" y1="220.6" x2="223.4" y2="177.2" stroke="#464646"/>
+<line stroke-width="1.5" x1="217.4" y1="220.6" x2="229.4" y2="220.6" stroke="#464646"/>
+<line stroke-width="1.5" x1="217.4" y1="177.2" x2="229.4" y2="177.2" stroke="#464646"/>
+<line stroke-width="1.5" x1="337.2" y1="195.3" x2="337.2" y2="155.6" stroke="#464646"/>
+<line stroke-width="1.5" x1="331.2" y1="195.3" x2="343.2" y2="195.3" stroke="#464646"/>
+<line stroke-width="1.5" x1="331.2" y1="155.6" x2="343.2" y2="155.6" stroke="#464646"/>
+<line stroke-width="1.5" x1="451" y1="224.2" x2="451" y2="184.4" stroke="#464646"/>
+<line stroke-width="1.5" x1="445" y1="224.2" x2="457" y2="224.2" stroke="#464646"/>
+<line stroke-width="1.5" x1="445" y1="184.4" x2="457" y2="184.4" stroke="#464646"/>
+<line stroke-width="1.5" x1="564.8" y1="267.5" x2="564.8" y2="235" stroke="#464646"/>
+<line stroke-width="1.5" x1="558.8" y1="267.5" x2="570.8" y2="267.5" stroke="#464646"/>
+<line stroke-width="1.5" x1="558.8" y1="235" x2="570.8" y2="235" stroke="#464646"/>
+<g>
+<path d="M 82.9 292.8 L 196.7 271.1 L 310.5 253.1 L 424.3 278.3 L 538.1 300" stroke-width="2" fill="none" stroke="#FAC858"/>
+<g stroke-width="2" stroke="#FAC858" fill="#FFFFFF">
+<circle cx="82.9" cy="292.8" r="2"/>
+<circle cx="196.7" cy="271.1" r="2"/>
+<circle cx="310.5" cy="253.1" r="2"/>
+<circle cx="424.3" cy="278.3" r="2"/>
+<circle cx="538.1" cy="300" r="2"/>
+</g>
+</g>
+<line stroke-width="1.5" x1="82.9" y1="307.2" x2="82.9" y2="278.3" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="78.9" y1="307.2" x2="86.9" y2="307.2" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="78.9" y1="278.3" x2="86.9" y2="278.3" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="196.7" y1="285.6" x2="196.7" y2="253.1" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="192.7" y1="285.6" x2="200.7" y2="285.6" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="192.7" y1="253.1" x2="200.7" y2="253.1" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="310.5" y1="274.7" x2="310.5" y2="235" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="306.5" y1="274.7" x2="314.5" y2="274.7" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="306.5" y1="235" x2="314.5" y2="235" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="538.1" y1="310.8" x2="538.1" y2="285.6" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="534.1" y1="310.8" x2="542.1" y2="310.8" stroke="#FAC858"/>
+<line stroke-width="1.5" x1="534.1" y1="285.6" x2="542.1" y2="285.6" stroke="#FAC858"/>
+<circle cx="82.9" cy="292.8" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Rainfall" data-category="A" data-value="20" data-lower="16" data-upper="24">
+<title>Rainfall: 20 (16 – 24)</title>
+</circle>
+<text font-size="14" x="82.9" y="292.8" dy="-8" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Rainfall: 20 (16 – 24)
+</text>
+<circle cx="196.7" cy="271.1" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Rainfall" data-category="B" data-value="26" data-lower="22" data-upper="31">
+<title>Rainfall: 26 (22 – 31)</title>
+</circle>
+<text font-size="14" x="196.7" y="271.1" dy="-8" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Rainfall: 26 (22 – 31)
+</text>
+<circle cx="310.5" cy="253.1" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Rainfall" data-category="C" data-value="31" data-lower="25" data-upper="36">
+<title>Rainfall: 31 (25 – 36)</title>
+</circle>
+<text font-size="14" x="310.5" y="253.1" dy="-8" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Rainfall: 31 (25 – 36)
+</text>
+<circle cx="424.3" cy="278.3" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Rainfall" data-category="D" data-value="24">
+<title>Rainfall: 24</title>
+</circle>
+<text font-size="14" x="424.3" y="278.3" dy="-8" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Rainfall: 24
+</text>
+<circle cx="538.1" cy="300" r="4" fill-opacity="0" fill="#000000" class="ct-trigger" data-series="Rainfall" data-category="E" data-value="18" data-lower="15" data-upper="22">
+<title>Rainfall: 18 (15 – 22)</title>
+</circle>
+<text font-size="14" x="538.1" y="300" dy="-8" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Rainfall: 18 (15 – 22)
+</text>
+</svg>

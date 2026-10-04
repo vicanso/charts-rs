@@ -14,7 +14,7 @@
 
 - [值类型](#值类型)
 - [通用参数](#通用参数)
-- 图表：[Bar](#bar)、[Horizontal bar](#horizontal-bar)、[Line](#line)、[Pie](#pie)、[Radar](#radar)、[Scatter](#scatter)、[Candlestick](#candlestick)、[Table](#table)、[Heatmap](#heatmap)、[Funnel](#funnel)、[Waterfall](#waterfall)、[Calendar](#calendar)、[Gauge](#gauge)、[Treemap](#treemap)、[Box plot](#box-plot)、[Sunburst](#sunburst)、[Sankey](#sankey)、[Tree](#tree)、[Graph](#graph)、[Parallel](#parallel)、[Theme river](#theme-river)、[Histogram](#histogram)、[Polar bar](#polar-bar)、[Chord](#chord)、[Multi chart](#multi-chart)
+- 图表：[Bar](#bar)、[Horizontal bar](#horizontal-bar)、[Line](#line)、[Pie](#pie)、[Radar](#radar)、[Scatter](#scatter)、[Candlestick](#candlestick)、[Table](#table)、[Heatmap](#heatmap)、[Funnel](#funnel)、[Waterfall](#waterfall)、[Calendar](#calendar)、[Gauge](#gauge)、[Treemap](#treemap)、[Box plot](#box-plot)、[Sunburst](#sunburst)、[Sankey](#sankey)、[Tree](#tree)、[Graph](#graph)、[Parallel](#parallel)、[Theme river](#theme-river)、[Histogram](#histogram)、[Polar bar](#polar-bar)、[Chord](#chord)、[Gantt](#gantt)、[Map](#map)、[Multi chart](#multi-chart)
 - [供工具使用的键](#供工具使用的键)
 
 ## 值类型
@@ -174,6 +174,7 @@
 | `x_values` | x 值数组 |  | 该系列每个数据点的 x 值，用于采样位置与图表 `x_axis_values` 不同的系列。 |
 | `band` | 对象 |  | 折线周围的填充区间带：每个数据点一个下界和一个上界。 |
 | `step` | `"start"` / `"middle"` / `"end"` |  | 把折线绘制为阶梯线：两点之间保持水平，在当前点（`start`）、两点中间（`middle`）或下一个点（`end`）处变为下一个值。优先于 `smooth`。 |
+| `error_bar` | 对象 |  | 误差线：每个数据点一个下界和一个上界，在柱或数据点上绘制为两端带短横的竖线（柱状图、折线图、散点图）。y 轴范围会自动包含上下界，提示中会显示区间。 |
 
 #### `series_list[].mark_lines[]`
 
@@ -213,9 +214,12 @@
 | `radius` | 数字 |  | 与 `size` 含义相同；两者都设置时以 `size` 为准。 |
 | `color` | 颜色 |  | 标记的填充颜色；不设置时标记为空心。 |
 
-#### `series_list[].band`
+#### `series_list[].band` 与 `series_list[].error_bar`
 
 <!-- keys: base.series_list.band -->
+<!-- keys: base.series_list.error_bar = base.series_list.band -->
+
+`error_bar` 使用同样的两个列表：上下界都给出的数据点才会画出误差线。
 
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
@@ -405,6 +409,9 @@
 | `bubble_max_size` | 数字 | `30` | 最大气泡的半径。 |
 | `series_symbols` | 数组 |  | 各系列的标记：用字符串写出形状（`"circle"`、`"triangle"`、`"rect"`、`"diamond"`），或写成带 `type` 和填充色 `color` 的对象。大小由 `series_symbol_sizes` 决定。默认各系列依次使用这四种形状，颜色为系列颜色。 |
 | `x_axis_config` | 对象 |  | x 轴配置（散点图的 x 轴是数值轴）。默认与 `y_axis_configs` 的第一项相同。 |
+| `regression` | `"linear"` / `"exponential"` / `"logarithmic"` / `"polynomial"` |  | 为每个系列绘制最贴合其数据点的该类型曲线（最小二乘拟合），颜色与系列相同。指数曲线只拟合 y 大于 0 的点，对数曲线只拟合 x 大于 0 的点。 |
+| `regression_order` | 0–1000 的整数 | `2` | `polynomial` 回归的阶数，1 到 6。 |
+| `regression_label_show` | 布尔 | `false` | 在每条拟合曲线的末端写出公式，例如 `y = 1.5x + 2`。 |
 
 ### `x_axis_config`
 
@@ -436,6 +443,7 @@
 | `candlestick_up_border_color` | 颜色 | `#8A0000` | 上述蜡烛的边框色。 |
 | `candlestick_down_color` | 颜色 | `#00DA3C` | 收盘价低于开盘价的蜡烛的填充色。 |
 | `candlestick_down_border_color` | 颜色 | `#008F28` | 上述蜡烛的边框色。 |
+| `candlestick_style` | `"candle"` / `"ohlc"` | `"candle"` | 绘制蜡烛，或 OHLC 线：一条从最低价到最高价的竖线，左侧短横表示开盘价，右侧短横表示收盘价。 |
 
 <!-- example: candlestick -->
 
@@ -547,8 +555,12 @@
 | `max` | 数字 | `0` | 对应 `max_color` 的数值；`0` 表示取数据中的最大值。 |
 | `min_color` | 颜色 | `#F0D99C` | 最小值的颜色。 |
 | `max_color` | 颜色 | `#BF444C` | 最大值的颜色。 |
-| `min_font_color` | 颜色 | `#464646` | 低数值单元格上标签的字体颜色。 |
-| `max_font_color` | 颜色 | `#EEEEEE` | 高数值单元格上标签的字体颜色。 |
+| `min_font_color` | 颜色 | `#464646` | 低数值单元格上标签的字体颜色；使用 `colors`、`steps` 或 `thresholds` 时用于浅色单元格。 |
+| `max_font_color` | 颜色 | `#EEEEEE` | 高数值单元格上标签的字体颜色；使用 `colors`、`steps` 或 `thresholds` 时用于深色单元格。 |
+| `colors` | 颜色数组 |  | 色阶的颜色，从最小值到最大值。给出两个或更多时取代 `min_color` 和 `max_color`，色阶依次经过所有颜色。 |
+| `steps` | 0–1000 的整数 | `0` | 把数值分成这么多个等宽的分段，每段一种颜色，而不是连续渐变；`0` 和 `1` 表示保持连续。`colors` 的数量与分段数相同时，每段正好对应其中一种颜色。 |
+| `thresholds` | 数字数组 |  | 各分段的分界值；取代 `steps`。小于第一个分界值的数值属于第一段。 |
+| `symbol` | `"rect"` / `"circle"` | `"rect"` | 填充整个单元格（`rect`），或在每个有数值的单元格内画一个面积随数值变化的圆（`circle`），即打卡图。同一行的圆排列在一条线上，不显示数值标签。 |
 | `data` | 数组 |  | 单元格数据 `[index, value]`，其中 `index` = y 序号 × x 类目数 + x 序号。 |
 
 <!-- example: heatmap -->
@@ -631,6 +643,9 @@
 | `max` | 数字 | `0` | 对应 `max_color` 的数值；`0` 表示取数据中的最大值。 |
 | `min_color` | 颜色 | `#EBEDF0` | 数值最小的日期的颜色。 |
 | `max_color` | 颜色 | `#216E39` | 数值最大的日期的颜色。 |
+| `colors` | 颜色数组 |  | 色阶的颜色，从最小值到最大值。给出两个或更多时取代 `min_color` 和 `max_color`，色阶依次经过所有颜色。 |
+| `steps` | 0–1000 的整数 | `0` | 把数值分成这么多个等宽的分段，每段一种颜色，而不是连续渐变；`0` 和 `1` 表示保持连续。`colors` 的数量与分段数相同时，每段正好对应其中一种颜色。 |
+| `thresholds` | 数字数组 |  | 各分段的分界值；取代 `steps`。小于第一个分界值的数值属于第一段。 |
 | `empty_color` | 颜色 | 主题 | 没有数据的日期的颜色。 |
 | `cell_size` | 数字 | `13` | 每个日期方格的边长（像素）。 |
 | `cell_gap` | 数字 | `3` | 方格之间的间距（像素）。 |
@@ -651,7 +666,7 @@
 
 ## Gauge
 
-`GaugeChart::from_json` — 仪表盘。每个系列是刻度上的一个值，取其 `data` 的第一项。
+`GaugeChart::from_json` — 仪表盘。每个系列是刻度上的一个值（取其 `data` 的第一项）：各画一根指针，开启 `multi_ring` 时各画一个进度环。
 
 <!-- keys: gauge -->
 
@@ -659,7 +674,7 @@
 |---|---|---|---|
 | `min` | 数字 | `0` | 刻度起点的数值。 |
 | `max` | 数字 | `100` | 刻度终点的数值。 |
-| `start_angle` | 数字 | `225` | 刻度的起始角度，从 12 点方向顺时针计（度）。 |
+| `start_angle` | 数字 | `225` | 刻度的起始角度，从 12 点方向顺时针计（度）。`0` 表示使用默认值：要从 12 点方向开始请写 `360`。 |
 | `sweep_angle` | 数字 | `270` | 刻度跨越的角度（顺时针，度）。 |
 | `radius` | 数字 | `0` | 外半径（像素）；`0` 表示自适应绘图区。 |
 | `arc_width` | 数字 | `15` | 弧的厚度（像素）。 |
@@ -669,6 +684,9 @@
 | `show_axis_label` | 布尔 | `true` | 是否在弧的两端显示最小值和最大值。 |
 | `split_number` | 0–1000 的整数 | `5` | 主刻度之间的分段数。 |
 | `value_formatter` | 字符串 | `"{c}"` | 中心数值的格式：`{c}` 代表数值。 |
+| `thresholds` | 数字数组 |  | 刻度各分段的分界值。设置后弧上显示各个分段（每段一种颜色）而不是进度，指针使用它所指分段的颜色。 |
+| `colors` | 颜色数组 |  | 各分段的颜色，从低到高。默认使用系列颜色。 |
+| `multi_ring` | 布尔 | `false` | 每个系列画成一个独立的进度环，由外向内排列，数值列在中间，而不是同一表盘上的多根指针。 |
 
 <!-- example: gauge -->
 
@@ -819,6 +837,7 @@
 | `link_opacity` | 数字 | `0.45` | 流量带的不透明度，0 到 1。 |
 | `node_align` | `"left"` / `"right"` / `"justify"` | `"left"` | 节点所在的列：尽量靠左（`left`，默认）、尽量靠右（`right`），或在靠左的基础上把终点节点放到最后一列（`justify`）。 |
 | `link_gradient` | 布尔 | `false` | 流量带使用从源节点颜色到目标节点颜色的渐变，而不是源节点颜色。 |
+| `orient` | `"horizontal"` / `"vertical"` | `"horizontal"` | 流向：从左到右，或从上到下（节点的列变为行）。 |
 
 ### `nodes[]`
 
@@ -862,8 +881,10 @@
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `series_data` | 对象数组 |  | 层级结构的根节点；多个根节点并排布局。 |
-| `orient` | `"LR"` / `"TB"` | `"LR"` | 树的方向：根在左侧（`LR`，默认）或在顶部（`TB`）。 |
+| `orient` | `"LR"` / `"RL"` / `"TB"` / `"BT"` | `"LR"` | 根节点的位置和树的生长方向：根在左侧（`LR`）、右侧（`RL`）、顶部（`TB`）或底部（`BT`）。 |
 | `symbol_size` | 数字 | `6` | 节点圆的半径（像素）。 |
+| `layout` | `"orthogonal"` / `"radial"` | `"orthogonal"` | `orthogonal` 按 `orient` 把各层并排布局；`radial` 把根节点放在中心，每一层排在围绕它的一个圆上。 |
+| `edge_shape` | `"curve"` / `"polyline"` | `"curve"` | 连线的形状：曲线，或直角折线（径向布局下为直线）。 |
 
 ### `series_data[]`
 
@@ -1099,6 +1120,117 @@
 }
 ```
 
+## Gantt
+
+`GanttChart::from_json` — 甘特图：任务以横条形式画在时间轴上，可以每个任务一行，也可以多个任务共用一行。x 轴默认是时间轴（数字表示 unix 秒），把 `x_axis_type` 设为 `value` 则是普通数值轴；`x_axis_min` 和 `x_axis_max` 固定范围，`x_axis_formatter` 和 `x_axis_time_offset` 控制刻度标签。它不使用 `series_list`：图例是任务的类别。
+
+<!-- keys: gantt -->
+
+| 键 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `tasks` | 对象数组 |  | 任务列表；行由任务决定，按首次出现的顺序自上而下排列。 |
+| `bar_height` | 数字 |  | 任务条的高度（像素）；默认为行高的 60%。 |
+| `radius` | 数字 | `3` | 任务条的圆角半径。 |
+| `label_show` | 布尔 | `true` | 在任务条上显示任务名称，放不下时显示在旁边。独占一行的任务不再重复显示：行名就是它的名称。 |
+| `now` | x 值 |  | 用虚线标出的一个时刻，例如今天。 |
+
+### `tasks[]`
+
+<!-- keys: gantt.tasks -->
+
+| 键 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `name` | 字符串 |  | 任务名称。 |
+| `start` | x 值 |  | 任务开始的时刻；没有开始时刻的任务会被忽略。 |
+| `end` | x 值 |  | 任务结束的时刻。省略或与开始时刻相同时，任务是一个里程碑，绘制为菱形。 |
+| `row` | 字符串 |  | 任务所在的行；`row` 相同的任务共用一行。默认独占一行，行名即任务名称。 |
+| `category` | 字符串 |  | 任务的类别：同一类别的任务颜色相同，类别作为图例显示。 |
+| `progress` | 数字 |  | 任务的完成进度，0 到 1：已完成部分使用完整颜色，其余部分颜色较浅。 |
+| `color` | 颜色 |  | 任务的颜色；默认使用其类别的颜色。 |
+
+<!-- example: gantt -->
+
+```json
+{
+  "now": "2024-03-19",
+  "tasks": [
+    {
+      "name": "Research",
+      "category": "Plan",
+      "start": "2024-03-04",
+      "end": "2024-03-08",
+      "progress": 1
+    },
+    {
+      "name": "Design",
+      "category": "Build",
+      "start": "2024-03-07",
+      "end": "2024-03-22",
+      "progress": 0.6
+    },
+    {"name": "Sign-off", "category": "Build", "start": "2024-03-22"},
+    {"name": "Launch", "category": "Plan", "start": "2024-03-25", "end": "2024-03-29"}
+  ]
+}
+```
+
+## Map
+
+`MapChart::from_json` — 地图：各区域按数值着色。区域随参数一起以 GeoJSON 形式传入，图表本身不内置任何地图数据。它不使用 `series_list`。
+
+<!-- keys: map -->
+
+| 键 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `geo_json` | 对象 |  | 区域数据：GeoJSON 的 `FeatureCollection`（或单个 `Feature`），几何类型为 `Polygon` 和 `MultiPolygon`，坐标为经纬度（度）。其它几何类型会被忽略。 |
+| `name_property` | 字符串 | `"name"` | GeoJSON feature 中作为区域名称的属性；没有该属性时使用 feature 的 `id`。 |
+| `data` | 数组 |  | 数值：每个有数值的区域一项 `["区域名称", 数值]`。 |
+| `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | 经纬度到平面的投影方式：墨卡托投影保持形状（南北纬 85° 以外被截掉），等距圆柱投影直接使用经纬度。 |
+| `min` | 数字 | `0` | 色阶起点对应的数值。`min` 和 `max` 都为 `0` 时，色阶从最小值到最大值。 |
+| `max` | 数字 | `0` | 色阶终点对应的数值。 |
+| `min_color` | 颜色 | 主题 | 最小值的颜色：默认是主题第一个颜色的浅色调。 |
+| `max_color` | 颜色 | 主题 | 最大值的颜色：默认是主题的第一个颜色。 |
+| `colors` | 颜色数组 |  | 色阶的颜色，从最小值到最大值。给出两个或更多时取代 `min_color` 和 `max_color`，色阶依次经过所有颜色。 |
+| `steps` | 0–1000 的整数 | `0` | 把数值分成这么多个等宽的分段，每段一种颜色，而不是连续渐变；`0` 和 `1` 表示保持连续。 |
+| `thresholds` | 数字数组 |  | 各分段的分界值；取代 `steps`。小于第一个分界值的数值属于第一段。 |
+| `empty_color` | 颜色 | 主题 | 没有数值的区域的颜色。 |
+| `border_color` | 颜色 | 主题 | 区域边界线的颜色：默认使用背景色。 |
+| `border_width` | 数字 | `1` | 区域边界线的宽度；`0` 表示不绘制。 |
+| `label_show` | 布尔 | `false` | 在每个区域上显示其名称；会与其它名称重叠的名称会被省略。 |
+| `visual_map_show` | 布尔 | `true` | 在地图旁显示颜色的图例：从最小值到最大值的色条，或每个分段一个色块。 |
+
+<!-- example: map -->
+
+```json
+{
+  "label_show": true,
+  "thresholds": [100, 300],
+  "colors": ["#deebf7", "#9ecae1", "#3182bd"],
+  "data": [["West", 80], ["East", 420]],
+  "geo_json": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {"name": "West"},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[100, 20], [106, 20], [107, 26], [101, 27], [100, 20]]]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {"name": "East"},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[106, 20], [113, 21], [112, 27], [107, 26], [106, 20]]]
+        }
+      }
+    ]
+  }
+}
+```
+
 ## Multi chart
 
 `MultiChart::from_json` — 把多个图表合并到一张 SVG 中，自上而下排列或各自指定位置。它不使用通用参数。
@@ -1120,7 +1252,7 @@
 
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `type` | 字符串 |  | 子图表类型：`bar`（默认）、`line`、`horizontal_bar`、`pie`、`radar`、`table`、`scatter`、`candlestick`、`heatmap`、`funnel`、`waterfall`、`calendar`、`gauge`、`treemap`、`box_plot`、`sunburst`、`sankey`、`tree`、`graph`、`parallel`、`theme_river`、`histogram`、`polar_bar` 或 `chord`。 |
+| `type` | 字符串 |  | 子图表类型：`bar`（默认）、`line`、`horizontal_bar`、`pie`、`radar`、`table`、`scatter`、`candlestick`、`heatmap`、`funnel`、`waterfall`、`calendar`、`gauge`、`treemap`、`box_plot`、`sunburst`、`sankey`、`tree`、`graph`、`parallel`、`theme_river`、`histogram`、`polar_bar`、`chord`、`gantt` 或 `map`。 |
 | `x` | 数字 |  | 子图表的水平位置；设置了 `x` 或 `y` 后，子图表放在指定位置而不是排在上一个下方。 |
 | `y` | 数字 |  | 子图表的垂直位置。 |
 

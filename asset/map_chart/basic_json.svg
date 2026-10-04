@@ -1,0 +1,129 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Population by region
+</text>
+<text font-size="14" x="5" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+thousands
+</text>
+<rect x="5" y="381" width="14" height="14" rx="2" ry="2" fill="#EFF3FF"/>
+<text font-size="14" x="25" y="388" dominant-baseline="central" font-family="Roboto" fill="#464646">
+&lt; 100
+</text>
+<rect x="5" y="363" width="14" height="14" rx="2" ry="2" fill="#BDD7E7"/>
+<text font-size="14" x="25" y="370" dominant-baseline="central" font-family="Roboto" fill="#464646">
+100 – 250
+</text>
+<rect x="5" y="345" width="14" height="14" rx="2" ry="2" fill="#6BAED6"/>
+<text font-size="14" x="25" y="352" dominant-baseline="central" font-family="Roboto" fill="#464646">
+250 – 400
+</text>
+<rect x="5" y="327" width="14" height="14" rx="2" ry="2" fill="#3182BD"/>
+<text font-size="14" x="25" y="334" dominant-baseline="central" font-family="Roboto" fill="#464646">
+400 – 550
+</text>
+<rect x="5" y="309" width="14" height="14" rx="2" ry="2" fill="#08519C"/>
+<text font-size="14" x="25" y="316" dominant-baseline="central" font-family="Roboto" fill="#464646">
+≥ 550
+</text>
+<path d="M 169.4 198.6 L 196 203.5 L 223.4 201.7 L 250.5 199.9 L 277.4 206.1 L 281.8 175.5 L 268 147.1 L 261.3 117.4 L 264.3 85.8 L 240.2 88.5 L 221.5 62.5 L 198.3 60 L 174.4 61.4 L 164.5 96 L 166.6 130.7 L 175.8 165.3 Z" fill="#3182BD" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Alder" data-value="412">
+<title>Alder: 412</title>
+</path>
+<text font-size="14" x="217.9" y="137.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Alder: 412
+</text>
+<path d="M 277.4 206.1 L 296 209.7 L 312.8 195.5 L 330.7 189.5 L 349.6 197.6 L 347.7 171.3 L 358.8 145.8 L 356.5 119 L 353.9 92.3 L 332.1 81.5 L 309.3 83.9 L 286.4 94.7 L 264.3 85.8 L 261.3 117.4 L 268 147.1 L 281.8 175.5 Z" fill="#6BAED6" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Birch" data-value="268">
+<title>Birch: 268</title>
+</path>
+<text font-size="14" x="311.1" y="139.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Birch: 268
+</text>
+<path d="M 349.6 197.6 L 372.6 178.9 L 404.1 186.7 L 428.6 172.6 L 451.9 154.8 L 453 137.9 L 440.1 123.8 L 454.6 104.1 L 442.2 89.8 L 419.9 78.5 L 397.8 83.1 L 376 87.7 L 353.9 92.3 L 356.5 119 L 358.8 145.8 L 347.7 171.3 Z M 502.7 129.7 L 498.3 119.8 L 491.6 112.1 L 479.7 110.5 L 468.9 116.9 L 466.3 129.7 L 473.9 142.1 L 478.5 151.4 L 490 150.8 L 503.6 144 Z M 524.7 158.7 L 523.1 150.6 L 517.1 148.5 L 510.2 147.4 L 502 149.8 L 504 158.7 L 505 166.3 L 509.8 172.1 L 516 172.6 L 522 167.9 Z" fill-rule="evenodd" fill="#3182BD" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Cedar" data-value="530">
+<title>Cedar: 530</title>
+</path>
+<text font-size="14" x="399.7" y="133.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Cedar: 530
+</text>
+<path d="M 152.6 294.9 L 176.5 282.6 L 200.6 270.5 L 230.7 280.3 L 253 261.3 L 261.8 249.2 L 265 233.8 L 268.2 218.5 L 277.4 206.1 L 250.5 199.9 L 223.4 201.7 L 196 203.5 L 169.4 198.6 L 159.5 221.8 L 158.6 246.6 L 157.6 271.2 Z" fill="#BDD7E7" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Dune" data-value="145">
+<title>Dune: 145</title>
+</path>
+<text font-size="14" x="209.4" y="238.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Dune: 145
+</text>
+<path d="M 253 261.3 L 274.6 269.7 L 296.5 274.5 L 320.2 259.1 L 341.5 270.7 L 345.9 253 L 344.7 234.1 L 343.4 215.4 L 349.6 197.6 L 330.7 189.5 L 312.8 195.5 L 296 209.7 L 277.4 206.1 L 268.2 218.5 L 265 233.8 L 261.8 249.2 Z" fill="#EFF3FF" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Elm" data-value="96">
+<title>Elm: 96</title>
+</path>
+<text font-size="14" x="306.1" y="234.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Elm: 96
+</text>
+<path d="M 341.5 270.7 L 372.3 264.4 L 399.7 287.3 L 429.8 287.8 L 459.9 286.8 L 449.6 255 L 464.7 220.8 L 459.4 188 L 451.9 154.8 L 428.6 172.6 L 404.1 186.7 L 372.6 178.9 L 349.6 197.6 L 343.4 215.4 L 344.7 234.1 L 345.9 253 Z M 417.2 228.7 L 412.6 219.5 L 401.1 215.9 L 389.8 219.5 L 385 228.7 L 389.8 237.7 L 401.1 241.5 L 412.6 237.7 Z" fill-rule="evenodd" fill="#6BAED6" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Fir" data-value="325">
+<title>Fir: 325</title>
+</path>
+<text font-size="14" x="407.1" y="228.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Fir: 325
+</text>
+<path d="M 459.9 286.8 L 475.5 275.5 L 491.9 285.6 L 507.5 281.3 L 523.6 283.6 L 523.3 258.8 L 524.3 234.1 L 545.4 213.6 L 540.1 187.2 L 517.8 180.2 L 494.6 175.7 L 475.8 156.6 L 451.9 154.8 L 459.4 188 L 464.7 220.8 L 449.6 255 Z" fill="#08519C" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Glen" data-value="610">
+<title>Glen: 610</title>
+</path>
+<text font-size="14" x="492.9" y="223.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Glen: 610
+</text>
+<path d="M 179.7 388.2 L 201.1 395 L 220.4 388.4 L 239.7 381.6 L 259 374.9 L 247.3 347.6 L 255.8 318.6 L 251 290.4 L 253 261.3 L 230.7 280.3 L 200.6 270.5 L 176.5 282.6 L 152.6 294.9 L 159 318.6 L 168.9 341 L 166.1 367.3 Z" fill="#BDD7E7" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Heath" data-value="204">
+<title>Heath: 204</title>
+</path>
+<text font-size="14" x="208.6" y="330.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Heath: 204
+</text>
+<path d="M 259 374.9 L 278.5 368.6 L 298.5 369.8 L 318.3 364.9 L 338.5 369.6 L 335.3 345.2 L 346.1 320.9 L 343.6 295.9 L 341.5 270.7 L 320.2 259.1 L 296.5 274.5 L 274.6 269.7 L 253 261.3 L 251 290.4 L 255.8 318.6 L 247.3 347.6 Z" fill="#EFF3FF" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Ivy" data-value="78">
+<title>Ivy: 78</title>
+</path>
+<text font-size="14" x="296.6" y="317.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Ivy: 78
+</text>
+<path d="M 338.5 369.6 L 362.2 365.4 L 380.1 388.7 L 402.7 390.6 L 425.4 390.6 L 426.1 361.9 L 444 339.7 L 449.6 312.4 L 459.9 286.8 L 429.8 287.8 L 399.7 287.3 L 372.3 264.4 L 341.5 270.7 L 343.6 295.9 L 346.1 320.9 L 335.3 345.2 Z" fill="#6BAED6" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Juniper" data-value="356">
+<title>Juniper: 356</title>
+</path>
+<text font-size="14" x="391.5" y="327.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Juniper: 356
+</text>
+<path d="M 425.4 390.6 L 447.5 376.9 L 471.9 384 L 494.8 377.2 L 518.3 377.4 L 511.9 353.6 L 523.1 331 L 521.3 307.1 L 523.6 283.6 L 507.5 281.3 L 491.9 285.6 L 475.5 275.5 L 459.9 286.8 L 449.6 312.4 L 444 339.7 L 426.1 361.9 Z" fill="#EBEDF0" stroke-width="1" stroke="#FFFFFF" class="ct-trigger" data-name="Kelp">
+<title>Kelp</title>
+</path>
+<text font-size="14" x="479.5" y="334.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Kelp
+</text>
+<text font-size="14" x="217.9" y="137.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#FFFFFF">
+Alder
+</text>
+<text font-size="14" x="311.1" y="139.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Birch
+</text>
+<text font-size="14" x="399.7" y="133.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#FFFFFF">
+Cedar
+</text>
+<text font-size="14" x="209.4" y="238.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Dune
+</text>
+<text font-size="14" x="306.1" y="234.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Elm
+</text>
+<text font-size="14" x="407.1" y="228.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Fir
+</text>
+<text font-size="14" x="492.9" y="223.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#FFFFFF">
+Glen
+</text>
+<text font-size="14" x="208.6" y="330.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Heath
+</text>
+<text font-size="14" x="296.6" y="317.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Ivy
+</text>
+<text font-size="14" x="391.5" y="327.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Juniper
+</text>
+<text font-size="14" x="479.5" y="334.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Kelp
+</text>
+</svg>

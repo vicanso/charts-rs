@@ -42,6 +42,8 @@ fn render(chart: &str, json: &str) -> Result<String> {
         "histogram" => HistogramChart::from_json(json)?.svg(),
         "polar_bar" => PolarBarChart::from_json(json)?.svg(),
         "chord" => ChordChart::from_json(json)?.svg(),
+        "gantt" => GanttChart::from_json(json)?.svg(),
+        "map" => MapChart::from_json(json)?.svg(),
         "multi" => MultiChart::from_json(json)?.svg(),
         other => panic!("no chart for the example `{other}`"),
     }
@@ -54,11 +56,11 @@ fn reference_examples_render() {
         ("docs/json-zh.md", include_str!("../docs/json-zh.md")),
     ] {
         let examples = examples(page);
-        // One for each of the 25 chart types.
+        // One for each of the 27 chart types.
         let mut charts: Vec<&str> = examples.iter().map(|(chart, _)| *chart).collect();
         charts.sort_unstable();
         charts.dedup();
-        assert_eq!(25, charts.len(), "{name}: {charts:?}");
+        assert_eq!(27, charts.len(), "{name}: {charts:?}");
         for (chart, json) in examples {
             let svg = render(chart, json).unwrap_or_else(|e| panic!("{name}: {chart}: {e}"));
             assert!(

@@ -91,3 +91,133 @@ fn scatter_series_symbols() {
     assert_eq!(2, colored.matches(r##"fill="#123456""##).count());
     assert!(!plain.contains("#123456"));
 }
+
+/// `(cx, cy)` of the circles of a series.
+fn circles(svg: &str, series: &str) -> Vec<(f32, f32)> {
+    let number = |tag: &str, name: &str| -> f32 {
+        let key = format!(" {name}=\"");
+        let start = tag.find(&key).unwrap() + key.len();
+        tag[start..start + tag[start..].find('"').unwrap()]
+            .parse()
+            .unwrap()
+    };
+    svg.split("<circle")
+        .skip(1)
+        .filter(|t| t.contains(&format!("data-series=\"{series}\"")))
+        .map(|t| (number(t, "cx"), number(t, "cy")))
+        .collect()
+}
+
+/// The points of every fitted curve of the svg.
+fn curves(svg: &str) -> Vec<Vec<(f32, f32)>> {
+    svg.split("<path d=\"M ")
+        .skip(1)
+        .filter(|t| t[..t.find("/>").unwrap()].contains("ct-regression"))
+        .map(|t| {
+            t[..t.find('"').unwrap()]
+                .split(" L ")
+                .map(|p| {
+                    let (x, y) = p.split_once(' ').unwrap();
+                    (x.parse().unwrap(), y.parse().unwrap())
+                })
+                .collect()
+        })
+        .collect()
+}
+
+#[test]
+fn scatter_regression() {
+    let chart =
+        ScatterChart::from_json(include_str!("../asset/scatter_chart/regression.json")).unwrap();
+    assert_eq!(Some(charts_rs::Regression::Polynomial), chart.regression);
+    common::assert_snapshot!("scatter_chart/regression_json.svg", chart.svg().unwrap());
+
+    let json = |extra: &str| {
+        format!(
+            r##"{{"legend_show": false, "series_symbols": ["circle", "circle"], "series_list": [
+                {{"name": "a", "data": [1, 2, 2, 4, 4, 8, 6, 12]}},
+                {{"name": "b", "data": [1, 9, 3, 7, 5, 5]}}
+            ]{extra}}}"##
+        )
+    };
+    let plain = ScatterChart::from_json(&json("")).unwrap().svg().unwrap();
+    assert!(curves(&plain).is_empty());
+
+    // Points on a line: the fitted line runs from the first to the last.
+    let svg = ScatterChart::from_json(&json(
+        r#", "regression": "linear", "regression_label_show": true"#,
+    ))
+    .unwrap()
+    .svg()
+    .unwrap();
+    let lines = curves(&svg);
+    assert_eq!(2, lines.len());
+    for (line, series) in lines.iter().zip(["a", "b"]) {
+        let points = circles(&svg, series);
+        assert_eq!(2, line.len());
+        let (first, last) = (points[0], points[points.len() - 1]);
+        assert!(
+            (line[0].0 - first.0).abs() < 0.2 && (line[0].1 - first.1).abs() < 0.2,
+            "{line:?}"
+        );
+        assert!(
+            (line[1].0 - last.0).abs() < 0.2 && (line[1].1 - last.1).abs() < 0.2,
+            "{line:?}"
+        );
+    }
+    // In the color of its series, with its formula.
+    assert!(svg.contains(r##"stroke="#5470C6" class="ct-regression""##));
+    assert!(
+        svg.contains("\ny = 2x\n") || svg.contains("\ny = 2x + 0\n"),
+        "{svg}"
+    );
+    assert!(svg.contains("\ny = -x + 10\n"));
+    // The points are where they were.
+    assert_eq!(circles(&plain, "a"), circles(&svg, "a"));
+
+    // A curve is drawn in short pieces, and stays on the plot.
+    let svg = ScatterChart::from_json(&json(
+        r#", "regression": "Exponential", "y_axis_configs": [{"axis_max": 6}]"#,
+    ))
+    .unwrap()
+    .svg()
+    .unwrap();
+    let curve = &curves(&svg)[0];
+    assert!(curve.len() > 10 && curve.len() < 65, "{}", curve.len());
+    let top = curve.iter().map(|p| p.1).fold(f32::MAX, f32::min);
+    assert!(top >= 0.0, "{top}");
+    // A line that leaves the plot is cut where it does.
+    let svg = ScatterChart::from_json(&json(
+        r#", "regression": "linear", "y_axis_configs": [{"axis_max": 6}]"#,
+    ))
+    .unwrap()
+    .svg()
+    .unwrap();
+    let line = &curves(&svg)[0];
+    assert_eq!(2, line.len());
+    let lowest = circles(&svg, "a")[0];
+    assert!((line[0].1 - lowest.1).abs() < 0.2);
+    assert!(line[1].1 < 50.0 && line[1].1 >= 0.0, "{line:?}");
+
+    // A series of one point has no curve; the others keep theirs.
+    let svg = ScatterChart::from_json(
+        r#"{"regression": "polynomial", "regression_order": 3, "series_list": [
+            {"name": "a", "data": [1, 2]},
+            {"name": "b", "data": [1, 1, 2, 8, 3, 27, 4, 64, 5, 125]}
+        ]}"#,
+    )
+    .unwrap()
+    .svg()
+    .unwrap();
+    assert_eq!(1, curves(&svg).len());
+    assert_eq!(65, curves(&svg)[0].len());
+
+    let message = match ScatterChart::from_json(&json(r#", "regression": "cubic""#)) {
+        Ok(_) => panic!("accepted"),
+        Err(e) => e.to_string(),
+    };
+    assert!(
+        message.contains("linear, exponential, logarithmic, polynomial"),
+        "{message}"
+    );
+}

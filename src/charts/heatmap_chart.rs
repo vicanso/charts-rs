@@ -39,6 +39,17 @@ impl From<(usize, f32)> for HeatmapData {
     }
 }
 
+/// How a cell of a heatmap shows its value.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum HeatmapSymbol {
+    /// The whole cell, in the color of the value.
+    #[default]
+    Rect,
+    /// A circle in the cell, as large as the value (and in its color): a
+    /// punch card.
+    Circle,
+}
+
 /// The heatmap cells plus the value range and its color mapping.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HeatmapSeries {
@@ -56,10 +67,40 @@ pub struct HeatmapSeries {
     pub min_font_color: Color,
     /// Label font color on high-value cells.
     pub max_font_color: Color,
+    /// The colors of the scale, from the smallest value to the largest.
+    /// Two or more take the place of `min_color` and `max_color`: the scale
+    /// goes through all of them.
+    pub colors: Vec<Color>,
+    /// Number of classes of the same width the values are sorted into, each
+    /// in one color, instead of a continuous scale. 0 (the default) and 1
+    /// keep it continuous.
+    pub steps: usize,
+    /// The values where one class ends and the next begins; takes the place
+    /// of `steps`. A value below the first one is in the first class.
+    pub thresholds: Vec<f32>,
+    /// Fills the cells, or draws a circle as large as the value in each.
+    pub symbol: HeatmapSymbol,
 }
 
 impl HeatmapSeries {
+    /// True when the scale is more than a gradient from `min_color` to
+    /// `max_color`: several colors, or classes.
+    fn is_custom_scale(&self) -> bool {
+        self.colors.len() >= 2 || self.steps >= 2 || !self.thresholds.is_empty()
+    }
+    /// The color of `value` on a scale of several colors, or of classes.
+    fn scale_color(&self, value: f32) -> Color {
+        let position = scale_position(value, (self.min, self.max), self.steps, &self.thresholds);
+        if self.colors.len() >= 2 {
+            gradient_color(&self.colors, position)
+        } else {
+            gradient_color(&[self.min_color, self.max_color], position)
+        }
+    }
     fn get_color(&self, value: f32) -> Color {
+        if self.is_custom_scale() {
+            return self.scale_color(value);
+        }
         if value < self.min {
             return self.min_color;
         }
@@ -182,6 +223,22 @@ impl HeatmapChart {
             }
             if let Some(max_font_color) = get_color_from_value(value, "max_font_color") {
                 h.series.max_font_color = max_font_color;
+            }
+            if let Some(colors) = get_color_slice_from_value(value, "colors") {
+                h.series.colors = colors;
+            }
+            if let Some(steps) = get_usize_from_value(value, "steps") {
+                h.series.steps = steps;
+            }
+            if let Some(thresholds) = get_f32_slice_from_value(value, "thresholds") {
+                h.series.thresholds = thresholds;
+            }
+            if let Some(symbol) = get_string_from_value(value, "symbol") {
+                h.series.symbol = if symbol.eq_ignore_ascii_case("circle") {
+                    HeatmapSymbol::Circle
+                } else {
+                    HeatmapSymbol::Rect
+                };
             }
             if let Some(data) = value.get("data") {
                 let mut values = vec![];
@@ -325,7 +382,21 @@ impl HeatmapChart {
             ..Default::default()
         });
         let y_axis_count = self.y_axis_data.len();
+        let circles = self.series.symbol == HeatmapSymbol::Circle;
         for i in 0..y_axis_count {
+            // A punch card: the circles of a row lie on a line.
+            if circles {
+                let y = y_unit * (y_axis_count - i - 1) as f32 + y_unit / 2.0;
+                c1.line(Line {
+                    color: Some(self.grid_stroke_color),
+                    stroke_width: self.grid_stroke_width,
+                    left: 0.0,
+                    top: y,
+                    right: x_unit * self.x_axis_data.len() as f32,
+                    bottom: y,
+                    ..Default::default()
+                });
+            }
             for j in 0..self.x_axis_data.len() {
                 let index = i * self.x_axis_data.len() + j;
                 let x = x_unit * j as f32;
@@ -335,7 +406,14 @@ impl HeatmapChart {
                 let mut font_color = self.series.min_font_color;
                 let color = if let Some(value) = data[index] {
                     let percent = (value - self.series.min) / (self.series.max - self.series.min);
-                    if percent >= 0.8 {
+                    // The light font on the high values of a plain scale; on
+                    // a scale of one's own, wherever the cell is dark.
+                    let dark_cell = if self.series.is_custom_scale() {
+                        !self.series.get_color(value).is_light()
+                    } else {
+                        percent >= 0.8
+                    };
+                    if dark_cell {
                         font_color = self.series.max_font_color;
                     }
 
@@ -387,6 +465,47 @@ impl HeatmapChart {
                     )),
                     _ => None,
                 };
+                if circles {
+                    // The area of the circle tells the value; a cell
+                    // without one stays empty.
+                    let Some(value) = data[index] else {
+                        continue;
+                    };
+                    let range = self.series.max - self.series.min;
+                    let share = if range > 0.0 {
+                        ((value - self.series.min) / range).clamp(0.0, 1.0)
+                    } else {
+                        1.0
+                    };
+                    let radius = (x_unit.min(y_unit) * 0.45 * share.sqrt()).max(1.5);
+                    let (cx, cy) = (x + x_unit / 2.0, y + y_unit / 2.0);
+                    c1.circle(Circle {
+                        stroke_color: None,
+                        fill: Some(color),
+                        stroke_width: 0.0,
+                        cx,
+                        cy,
+                        r: radius,
+                        title: tooltip_text.clone(),
+                        class: tooltip_text.as_ref().map(|_| "ct-trigger".to_string()),
+                        dataset,
+                    });
+                    if let Some(tip) = tooltip_text {
+                        c1.text_unmeasured(Text {
+                            text: tip,
+                            class: Some("ct-tip".to_string()),
+                            font_family: Some(self.font_family.clone()),
+                            font_color: Some(self.series_label_font_color),
+                            font_size: Some(self.series_label_font_size),
+                            x: Some(cx),
+                            y: Some(cy - radius),
+                            dy: Some(-4.0),
+                            text_anchor: Some("middle".to_string()),
+                            ..Default::default()
+                        });
+                    }
+                    continue;
+                }
                 c1.rect(Rect {
                     color: Some(color),
                     fill: Some(color.into()),

@@ -1,0 +1,316 @@
+<svg width="600" height="560" viewBox="0 0 600 560" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="560" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Radial tree
+</text>
+<polyline fill="none" stroke-width="2" points="300,297.5 300.1,301.3 300.5,303.7 301.3,304.8 302.5,304.7 304,303.6 305.8,301.6 307.8,298.9 310.1,295.5 312.6,291.6 315.2,287.4 318,282.9 321,278.3 324,273.8 327.1,269.5 330.2,265.4 333.3,261.8" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="333.3,261.8 335.9,258.5 337.5,255.1 338.3,251.8 338.3,248.5 337.8,245.1 336.7,241.7 335.3,238.3 333.6,234.8 331.8,231.2 330.1,227.5 328.4,223.8 327,220 326,216 325.4,212 325.5,207.8 326.4,203.5" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="326.4,203.5 327.1,199.3 327.1,195.5 326.4,192 325,188.8 323.2,185.8 320.9,183 318.4,180.2 315.6,177.6 312.8,174.9 310.1,172.1 307.4,169.2 305,166.2 303,162.9 301.4,159.3 300.4,155.4 300,151" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="326.4,203.5 327.5,199.3 328.5,195.6 329.4,192.4 330.3,189.5 331,186.9 331.7,184.4 332.3,182.2 332.9,179.9 333.6,177.7 334.2,175.4 334.9,173 335.6,170.4 336.4,167.5 337.3,164.2 338.4,160.6 339.5,156.4" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="326.4,203.5 327.9,199.5 329.9,196.2 332.3,193.6 335.1,191.6 338.3,190 341.6,188.8 345.2,187.8 348.9,186.9 352.7,186.1 356.5,185.1 360.3,184.1 363.9,182.7 367.4,180.9 370.6,178.7 373.5,175.9 376.1,172.3" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="333.3,261.8 336.5,259 339.7,257.2 343,256.2 346.3,255.9 349.7,256.2 353.2,257.1 356.7,258.3 360.3,259.7 364,261.2 367.7,262.7 371.6,264.1 375.5,265.3 379.5,266 383.6,266.3 387.8,265.9 392,264.8" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="392,264.8 395.8,262.9 398.5,260.2 400.4,257 401.6,253.2 402.1,248.9 402.2,244.3 401.9,239.4 401.5,234.3 401,229.2 400.5,224 400.3,218.9 400.4,213.9 401,209.2 402.2,204.8 404.2,200.9 407.1,197.5" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="392,264.8 396,263.2 399.4,261.4 402.2,259.5 404.6,257.5 406.7,255.4 408.5,253.2 410.1,250.9 411.5,248.6 413,246.2 414.6,243.9 416.3,241.5 418.2,239.1 420.5,236.8 423.2,234.5 426.3,232.3 430.1,230.1" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="392,264.8 396.1,263.5 399.9,262.8 403.3,262.5 406.4,262.5 409.3,262.8 412.1,263.4 414.8,264.2 417.4,265 420,265.9 422.7,266.8 425.6,267.6 428.6,268.2 431.8,268.6 435.3,268.7 439.2,268.4 443.4,267.7" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="392,264.8 396.2,263.9 400,264.2 403.5,265.6 406.8,267.8 409.9,270.7 412.8,274.3 415.7,278.2 418.6,282.5 421.5,286.8 424.4,291.1 427.4,295.2 430.7,299 434.1,302.2 437.8,304.8 441.8,306.7 446.2,307.5" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="300,297.5 300,301.8 300.3,305.4 300.9,308.6 301.8,311.4 303,313.8 304.3,315.9 305.9,317.9 307.6,319.7 309.5,321.5 311.5,323.3 313.7,325.2 315.9,327.3 318.2,329.7 320.6,332.4 323,335.6 325.4,339.2" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="325.4,339.2 328,342.5 330.9,344.5 334.3,345.4 337.9,345.5 341.8,344.7 346,343.4 350.3,341.6 354.8,339.5 359.5,337.2 364.2,335 368.9,332.9 373.7,331.1 378.4,329.8 383.1,329.1 387.6,329.2 392,330.2" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="325.4,339.2 327.9,342.7 330.5,345.3 333.4,347.1 336.4,348.3 339.6,349 342.9,349.3 346.3,349.3 349.9,349.1 353.5,348.8 357.2,348.5 360.9,348.4 364.7,348.5 368.4,349 372.2,350 376,351.6 379.8,353.8" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="325.4,339.2 327.7,342.8 329.9,345.9 332.1,348.5 334.2,350.7 336.3,352.5 338.4,354.2 340.4,355.6 342.5,357 344.6,358.3 346.7,359.7 349,361.2 351.3,362.9 353.7,364.9 356.2,367.2 358.8,370 361.6,373.3" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="325.4,339.2 327.5,343 329.2,346.4 330.5,349.5 331.5,352.4 332.2,355.1 332.7,357.6 333,360.1 333.3,362.6 333.5,365.1 333.7,367.6 334,370.3 334.5,373.1 335.1,376.1 336.1,379.5 337.3,383.1 338.9,387.1" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="325.4,339.2 327.3,343 328.4,346.6 328.7,350 328.4,353.2 327.5,356.4 326.3,359.4 324.7,362.5 322.8,365.5 320.9,368.6 319,371.7 317.2,375 315.6,378.4 314.3,382 313.4,385.8 313,389.9 313.3,394.3" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="325.4,339.2 327.1,343 327.5,346.6 326.8,350 325.2,353.2 322.7,356.4 319.6,359.4 316,362.5 312,365.5 307.9,368.6 303.7,371.7 299.7,375 295.9,378.4 292.6,382 289.8,385.8 287.8,389.9 286.7,394.3" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="300,297.5 299.6,301.6 298.7,304.9 297.4,307.4 295.7,309.2 293.6,310.5 291.1,311.2 288.4,311.6 285.3,311.8 282,311.7 278.4,311.5 274.7,311.4 270.8,311.3 266.7,311.4 262.5,311.8 258.3,312.6 254,313.9" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="254,313.9 250.2,315.7 247.3,318 245.3,320.7 244,323.9 243.3,327.4 243,331.2 243.1,335.3 243.3,339.5 243.7,343.9 244,348.3 244.2,352.7 244.1,357.1 243.6,361.4 242.5,365.6 240.8,369.6 238.4,373.3" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="238.4,373.3 236,376.8 234.5,380.3 233.8,383.8 233.7,387.3 234.3,390.7 235.2,394.2 236.4,397.7 237.9,401.3 239.4,404.8 240.8,408.5 242.1,412.2 243.1,415.9 243.6,419.8 243.7,423.7 243,427.7 241.6,431.9" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="238.4,373.3 235.6,376.6 233.2,379.5 231.1,382.2 229.2,384.5 227.5,386.6 225.9,388.6 224.4,390.4 223,392.2 221.5,394 220,395.8 218.4,397.8 216.7,399.9 214.8,402.2 212.7,404.9 210.3,407.8 207.5,411.1" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="238.4,373.3 235.4,376.3 232.3,378.5 229,379.9 225.6,380.6 222.1,380.8 218.5,380.6 214.8,380.1 211,379.4 207.2,378.7 203.4,378 199.5,377.5 195.6,377.3 191.8,377.6 187.9,378.3 184.1,379.8 180.3,382" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="254,313.9 249.9,315.3 246.3,316.6 243.2,317.7 240.3,318.7 237.8,319.6 235.4,320.5 233.1,321.3 231,322 228.8,322.8 226.6,323.6 224.2,324.4 221.6,325.4 218.8,326.4 215.6,327.5 212,328.8 208,330.2" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="254,313.9 249.9,315.1 246.2,315.7 242.8,315.9 239.7,315.6 236.8,314.9 234,313.9 231.4,312.8 228.8,311.5 226.2,310.1 223.5,308.7 220.6,307.3 217.6,306.1 214.4,305.1 210.8,304.4 206.9,304.1 202.6,304.2" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="254,313.9 249.9,314.8 246.2,314.8 242.9,314 239.9,312.3 237.1,310.1 234.5,307.3 232,304.1 229.5,300.7 227.1,297.1 224.5,293.4 221.8,289.9 219,286.5 215.9,283.5 212.4,280.9 208.6,278.9 204.4,277.6" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="300,297.5 299.7,301.3 299.1,303.7 298.2,304.7 297,304.5 295.6,303.3 293.9,301.2 292.1,298.3 290.1,294.8 287.8,290.8 285.5,286.4 283,281.7 280.4,277 277.7,272.2 274.9,267.7 272.1,263.4 269.2,259.6" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="269.2,259.6 266.3,256.5 263.2,254.3 260.2,252.9 257,252.1 253.8,251.9 250.4,252 247,252.5 243.6,253.2 240,254 236.4,254.7 232.8,255.4 229,255.7 225.2,255.8 221.3,255.3 217.3,254.3 213.3,252.6" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="269.2,259.6 266.4,256.4 263.7,253.6 261.2,251.4 258.9,249.5 256.5,247.9 254.3,246.6 252,245.4 249.8,244.4 247.6,243.3 245.2,242.3 242.8,241.1 240.3,239.7 237.7,238.1 234.9,236.1 231.8,233.7 228.6,230.8" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="269.2,259.6 266.6,256.2 264.4,253.1 262.7,250.2 261.4,247.4 260.3,244.9 259.5,242.4 258.8,240 258.2,237.6 257.7,235.1 257.1,232.6 256.4,230 255.6,227.3 254.5,224.4 253.1,221.2 251.4,217.8 249.3,214.1" stroke="#E0E6F2"/>
+<polyline fill="none" stroke-width="2" points="269.2,259.6 266.8,256.1 265.2,252.7 264.4,249.4 264.3,246.2 264.7,242.9 265.6,239.7 266.7,236.5 268.1,233.3 269.6,229.9 271.1,226.6 272.4,223.1 273.6,219.5 274.4,215.7 274.7,211.8 274.5,207.8 273.6,203.5" stroke="#E0E6F2"/>
+<circle cx="300" cy="297.5" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="flare" data-value="0" data-depth="0">
+<title>flare</title>
+</circle>
+<text font-size="14" x="300" y="291.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+flare
+</text>
+<circle cx="333.3" cy="261.8" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="analytics" data-value="0" data-depth="1">
+<title>analytics</title>
+</circle>
+<text font-size="14" x="333.3" y="255.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+analytics
+</text>
+<circle cx="326.4" cy="203.5" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="cluster" data-value="0" data-depth="2">
+<title>cluster</title>
+</circle>
+<text font-size="14" x="326.4" y="197.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+cluster
+</text>
+<circle cx="300" cy="151" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Agglomerative" data-value="0" data-depth="3">
+<title>Agglomerative</title>
+</circle>
+<text font-size="14" x="300" y="145" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Agglomerative
+</text>
+<circle cx="339.5" cy="156.4" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Community" data-value="0" data-depth="3">
+<title>Community</title>
+</circle>
+<text font-size="14" x="339.5" y="150.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Community
+</text>
+<circle cx="376.1" cy="172.3" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Hierarchical" data-value="0" data-depth="3">
+<title>Hierarchical</title>
+</circle>
+<text font-size="14" x="376.1" y="166.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Hierarchical
+</text>
+<circle cx="392" cy="264.8" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="graph" data-value="0" data-depth="2">
+<title>graph</title>
+</circle>
+<text font-size="14" x="392" y="258.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+graph
+</text>
+<circle cx="407.1" cy="197.5" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Betweenness" data-value="0" data-depth="3">
+<title>Betweenness</title>
+</circle>
+<text font-size="14" x="407.1" y="191.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Betweenness
+</text>
+<circle cx="430.1" cy="230.1" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="LinkDistance" data-value="0" data-depth="3">
+<title>LinkDistance</title>
+</circle>
+<text font-size="14" x="430.1" y="224.1" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+LinkDistance
+</text>
+<circle cx="443.4" cy="267.7" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="MaxFlow" data-value="0" data-depth="3">
+<title>MaxFlow</title>
+</circle>
+<text font-size="14" x="443.4" y="261.7" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+MaxFlow
+</text>
+<circle cx="446.2" cy="307.5" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="ShortestPaths" data-value="0" data-depth="3">
+<title>ShortestPaths</title>
+</circle>
+<text font-size="14" x="446.2" y="301.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+ShortestPaths
+</text>
+<circle cx="325.4" cy="339.2" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="animate" data-value="0" data-depth="1">
+<title>animate</title>
+</circle>
+<text font-size="14" x="325.4" y="333.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+animate
+</text>
+<circle cx="392" cy="330.2" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Easing" data-value="0" data-depth="2">
+<title>Easing</title>
+</circle>
+<text font-size="14" x="392" y="324.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Easing
+</text>
+<circle cx="379.8" cy="353.8" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Parallel" data-value="0" data-depth="2">
+<title>Parallel</title>
+</circle>
+<text font-size="14" x="379.8" y="347.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Parallel
+</text>
+<circle cx="361.6" cy="373.3" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Pause" data-value="0" data-depth="2">
+<title>Pause</title>
+</circle>
+<text font-size="14" x="361.6" y="367.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Pause
+</text>
+<circle cx="338.9" cy="387.1" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Scheduler" data-value="0" data-depth="2">
+<title>Scheduler</title>
+</circle>
+<text font-size="14" x="338.9" y="381.1" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Scheduler
+</text>
+<circle cx="313.3" cy="394.3" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Sequence" data-value="0" data-depth="2">
+<title>Sequence</title>
+</circle>
+<text font-size="14" x="313.3" y="388.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Sequence
+</text>
+<circle cx="286.7" cy="394.3" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Transition" data-value="0" data-depth="2">
+<title>Transition</title>
+</circle>
+<text font-size="14" x="286.7" y="388.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Transition
+</text>
+<circle cx="254" cy="313.9" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="data" data-value="0" data-depth="1">
+<title>data</title>
+</circle>
+<text font-size="14" x="254" y="307.9" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+data
+</text>
+<circle cx="238.4" cy="373.3" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="converters" data-value="0" data-depth="2">
+<title>converters</title>
+</circle>
+<text font-size="14" x="238.4" y="367.3" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+converters
+</text>
+<circle cx="241.6" cy="431.9" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="Converters" data-value="0" data-depth="3">
+<title>Converters</title>
+</circle>
+<text font-size="14" x="241.6" y="425.9" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Converters
+</text>
+<circle cx="207.5" cy="411.1" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="GraphML" data-value="0" data-depth="3">
+<title>GraphML</title>
+</circle>
+<text font-size="14" x="207.5" y="405.1" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+GraphML
+</text>
+<circle cx="180.3" cy="382" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="JSON" data-value="0" data-depth="3">
+<title>JSON</title>
+</circle>
+<text font-size="14" x="180.3" y="376" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+JSON
+</text>
+<circle cx="208" cy="330.2" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="DataField" data-value="0" data-depth="2">
+<title>DataField</title>
+</circle>
+<text font-size="14" x="208" y="324.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+DataField
+</text>
+<circle cx="202.6" cy="304.2" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="DataSchema" data-value="0" data-depth="2">
+<title>DataSchema</title>
+</circle>
+<text font-size="14" x="202.6" y="298.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+DataSchema
+</text>
+<circle cx="204.4" cy="277.6" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="DataSet" data-value="0" data-depth="2">
+<title>DataSet</title>
+</circle>
+<text font-size="14" x="204.4" y="271.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+DataSet
+</text>
+<circle cx="269.2" cy="259.6" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="display" data-value="0" data-depth="1">
+<title>display</title>
+</circle>
+<text font-size="14" x="269.2" y="253.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+display
+</text>
+<circle cx="213.3" cy="252.6" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="DirtySprite" data-value="0" data-depth="2">
+<title>DirtySprite</title>
+</circle>
+<text font-size="14" x="213.3" y="246.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+DirtySprite
+</text>
+<circle cx="228.6" cy="230.8" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="LineSprite" data-value="0" data-depth="2">
+<title>LineSprite</title>
+</circle>
+<text font-size="14" x="228.6" y="224.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+LineSprite
+</text>
+<circle cx="249.3" cy="214.1" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="RectSprite" data-value="0" data-depth="2">
+<title>RectSprite</title>
+</circle>
+<text font-size="14" x="249.3" y="208.1" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+RectSprite
+</text>
+<circle cx="273.6" cy="203.5" r="6" stroke-width="1" stroke="#FFFFFF" fill="#5470C6" class="ct-trigger" data-name="TextSprite" data-value="0" data-depth="2">
+<title>TextSprite</title>
+</circle>
+<text font-size="14" x="273.6" y="197.5" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+TextSprite
+</text>
+<text font-size="14" x="300" y="280.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+flare
+</text>
+<text font-size="14" x="340.2" y="254.5" transform="rotate(-47 340.2 254.5)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+analytics
+</text>
+<text font-size="14" x="329" y="193.8" transform="rotate(-74.3 329 193.8)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+cluster
+</text>
+<text font-size="14" x="300" y="141" transform="rotate(-90 300 141)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Agglomerative
+</text>
+<text font-size="14" x="342.2" y="146.8" transform="rotate(-74.3 342.2 146.8)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Community
+</text>
+<text font-size="14" x="381.3" y="163.8" transform="rotate(-58.7 381.3 163.8)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Hierarchical
+</text>
+<text font-size="14" x="401.5" y="261.4" transform="rotate(-19.6 401.5 261.4)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+graph
+</text>
+<text font-size="14" x="414.4" y="190.7" transform="rotate(-43 414.4 190.7)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Betweenness
+</text>
+<text font-size="14" x="439" y="225.5" transform="rotate(-27.4 439 225.5)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+LinkDistance
+</text>
+<text font-size="14" x="453.2" y="265.7" transform="rotate(-11.7 453.2 265.7)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+MaxFlow
+</text>
+<text font-size="14" x="456.1" y="308.2" transform="rotate(3.9 456.1 308.2)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+ShortestPaths
+</text>
+<text font-size="14" x="330.6" y="347.8" transform="rotate(58.7 330.6 347.8)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+animate
+</text>
+<text font-size="14" x="401.5" y="333.6" transform="rotate(19.6 401.5 333.6)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Easing
+</text>
+<text font-size="14" x="388" y="359.6" transform="rotate(35.2 388 359.6)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Parallel
+</text>
+<text font-size="14" x="367.9" y="381" transform="rotate(50.9 367.9 381)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Pause
+</text>
+<text font-size="14" x="342.9" y="396.3" transform="rotate(66.5 342.9 396.3)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Scheduler
+</text>
+<text font-size="14" x="314.7" y="404.2" transform="rotate(82.2 314.7 404.2)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Sequence
+</text>
+<text font-size="14" x="285.3" y="404.2" transform="rotate(277.8 285.3 404.2)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Transition
+</text>
+<text font-size="14" x="244.6" y="317.2" transform="rotate(340.4 244.6 317.2)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+data
+</text>
+<text font-size="14" x="232.1" y="381" transform="rotate(309.1 232.1 381)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+converters
+</text>
+<text font-size="14" x="237.7" y="441" transform="rotate(293.5 237.7 441)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+Converters
+</text>
+<text font-size="14" x="201.2" y="418.9" transform="rotate(309.1 201.2 418.9)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+GraphML
+</text>
+<text font-size="14" x="172.1" y="387.8" transform="rotate(324.8 172.1 387.8)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+JSON
+</text>
+<text font-size="14" x="198.5" y="333.6" transform="rotate(340.4 198.5 333.6)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+DataField
+</text>
+<text font-size="14" x="192.6" y="304.8" transform="rotate(356.1 192.6 304.8)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+DataSchema
+</text>
+<text font-size="14" x="194.6" y="275.6" transform="rotate(371.7 194.6 275.6)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+DataSet
+</text>
+<text font-size="14" x="262.9" y="251.9" transform="rotate(410.9 262.9 251.9)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+display
+</text>
+<text font-size="14" x="204.4" y="248" transform="rotate(387.4 204.4 248)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+DirtySprite
+</text>
+<text font-size="14" x="221.3" y="224" transform="rotate(403 221.3 224)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+LineSprite
+</text>
+<text font-size="14" x="244.1" y="205.5" transform="rotate(418.7 244.1 205.5)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+RectSprite
+</text>
+<text font-size="14" x="271" y="193.8" transform="rotate(434.3 271 193.8)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+TextSprite
+</text>
+</svg>

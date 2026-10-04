@@ -403,3 +403,77 @@ fn candlestick_chart() {
         candlestick_chart.svg().unwrap()
     );
 }
+
+#[test]
+fn candlestick_ohlc_style() {
+    let json = |style: &str| {
+        format!(
+            r##"{{"legend_show": false, "tooltip_show": true{style},
+                "x_axis_data": ["a", "b"],
+                "series_list": [{{"name": "Price", "data": [20, 34, 10, 38, 40, 35, 30, 50]}}]}}"##
+        )
+    };
+    let candles = CandlestickChart::from_json(&json("")).unwrap();
+    assert_eq!(
+        charts_rs::CandlestickStyle::Candle,
+        candles.candlestick_style
+    );
+    let explicit =
+        CandlestickChart::from_json(&json(r#", "candlestick_style": "candle""#)).unwrap();
+    assert_eq!(candles.svg().unwrap(), explicit.svg().unwrap());
+
+    let chart = CandlestickChart::from_json(&json(r#", "candlestick_style": "OHLC""#)).unwrap();
+    assert_eq!(charts_rs::CandlestickStyle::Ohlc, chart.candlestick_style);
+    let svg = chart.svg().unwrap();
+    let number = |tag: &str, name: &str| -> f32 {
+        let key = format!(" {name}=\"");
+        let start = tag.find(&key).unwrap() + key.len();
+        tag[start..start + tag[start..].find('"').unwrap()]
+            .parse()
+            .unwrap()
+    };
+    // For each period: the line from low to high, a tick at the open to its
+    // left and one at the close to its right.
+    let lines: Vec<(f32, f32, f32, f32)> = svg
+        .split("<line")
+        .skip(1)
+        .filter(|t| t.contains(r#"stroke-width="1.5""#))
+        .map(|t| {
+            (
+                number(t, "x1"),
+                number(t, "y1"),
+                number(t, "x2"),
+                number(t, "y2"),
+            )
+        })
+        .collect();
+    assert_eq!(6, lines.len());
+    let (stem, open, close) = (lines[0], lines[1], lines[2]);
+    assert_eq!(stem.0, stem.2);
+    assert_eq!((open.1, open.2), (open.3, stem.0));
+    assert_eq!((close.1, close.0), (close.3, stem.0));
+    assert!(open.0 < stem.0 && close.2 > stem.0);
+    // The first period rises (open 20, close 34): its close is higher up.
+    assert!(close.1 < open.1);
+    assert!(stem.1.min(stem.3) < close.1 && open.1 < stem.1.max(stem.3));
+    // In the color of a rising period, the second in that of a falling one.
+    assert_eq!(3, svg.matches(r##"stroke="#EC0000""##).count());
+    assert_eq!(3, svg.matches(r##"stroke="#00DA3C""##).count());
+
+    // No body is painted, but the bar still tells its prices on hover.
+    let boxes: Vec<&str> = svg
+        .split("<rect")
+        .skip(1)
+        .filter(|t| t.contains("data-open="))
+        .collect();
+    assert_eq!(2, boxes.len());
+    assert!(boxes[0].contains(r#"fill="none""#) && boxes[0].contains("pointer-events:all"));
+    assert!(boxes[0].contains(r#"data-open="20" data-close="34" data-low="10" data-high="38""#));
+    assert!(svg.contains("<title>a: 20 / 34 / 10 / 38</title>"));
+
+    let message = match CandlestickChart::from_json(&json(r#", "candlestick_style": "bars""#)) {
+        Ok(_) => panic!("accepted"),
+        Err(e) => e.to_string(),
+    };
+    assert!(message.contains("candle, ohlc"), "{message}");
+}

@@ -11,7 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
-use super::base::{ChartBase, axis_value_params, get_y_axis_config};
+use super::base::{ChartBase, LabelBoxes, axis_value_params, get_y_axis_config, render_error_bar};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -21,6 +21,230 @@ use super::theme::{DEFAULT_Y_AXIS_WIDTH, get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 use serde::{Deserialize, Serialize};
+
+/// The curve fitted through the points of a scatter series.
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Regression {
+    /// A straight line: `y = a + b·x`.
+    Linear,
+    /// `y = a·e^(b·x)`; fitted to the points above 0.
+    Exponential,
+    /// `y = a + b·ln(x)`; fitted to the points right of 0.
+    Logarithmic,
+    /// A polynomial of the order given by `regression_order`.
+    Polynomial,
+}
+
+/// Highest order of a fitted polynomial: beyond it the curve only chases
+/// the noise of the points.
+const MAX_REGRESSION_ORDER: usize = 6;
+/// Number of straight pieces a fitted curve is drawn with.
+const REGRESSION_SEGMENTS: usize = 64;
+
+/// A curve fitted to points by least squares.
+#[derive(Clone, Debug, PartialEq)]
+struct Fit {
+    kind: Regression,
+    /// The coefficients, lowest order first: of the polynomial in `x` (a
+    /// line is one of order 1), or `[a, b]` of the other curves.
+    coefficients: Vec<f64>,
+}
+
+/// Solves the linear system `matrix · x = rhs` by elimination; `None` when
+/// the equations do not determine `x`.
+fn solve(mut matrix: Vec<Vec<f64>>, mut rhs: Vec<f64>) -> Option<Vec<f64>> {
+    let n = rhs.len();
+    for col in 0..n {
+        // The row with the largest entry in this column goes on top.
+        let pivot =
+            (col..n).max_by(|a, b| matrix[*a][col].abs().total_cmp(&matrix[*b][col].abs()))?;
+        if matrix[pivot][col].abs() < 1e-12 {
+            return None;
+        }
+        matrix.swap(col, pivot);
+        rhs.swap(col, pivot);
+        // The rows below lose their entry in this column.
+        let (above, below) = matrix.split_at_mut(col + 1);
+        let top = &above[col];
+        for (offset, row) in below.iter_mut().enumerate() {
+            let factor = row[col] / top[col];
+            for (entry, of_top) in row[col..].iter_mut().zip(&top[col..]) {
+                *entry -= factor * of_top;
+            }
+            rhs[col + 1 + offset] -= factor * rhs[col];
+        }
+    }
+    let mut x = vec![0.0; n];
+    for row in (0..n).rev() {
+        let known: f64 = (row + 1..n).map(|k| matrix[row][k] * x[k]).sum();
+        x[row] = (rhs[row] - known) / matrix[row][row];
+    }
+    x.iter().all(|v| v.is_finite()).then_some(x)
+}
+
+/// The polynomial of `order` closest to the points, lowest order first.
+fn fit_polynomial(points: &[(f64, f64)], order: usize) -> Option<Vec<f64>> {
+    let order = order.min(points.len().saturating_sub(1));
+    if order == 0 {
+        return None;
+    }
+    // Fitted in a variable that runs from about -1 to 1 over the points:
+    // high powers of large x values would drown the small ones.
+    let n = points.len() as f64;
+    let mean = points.iter().map(|p| p.0).sum::<f64>() / n;
+    let scale = points
+        .iter()
+        .map(|p| (p.0 - mean).abs())
+        .fold(0.0, f64::max);
+    if scale <= 0.0 {
+        return None;
+    }
+    let size = order + 1;
+    let mut matrix = vec![vec![0.0; size]; size];
+    let mut rhs = vec![0.0; size];
+    for (x, y) in points {
+        let t = (x - mean) / scale;
+        let powers: Vec<f64> = (0..2 * size).map(|k| t.powi(k as i32)).collect();
+        for row in 0..size {
+            for col in 0..size {
+                matrix[row][col] += powers[row + col];
+            }
+            rhs[row] += powers[row] * y;
+        }
+    }
+    let scaled = solve(matrix, rhs)?;
+    // Back to a polynomial in x: every power of `(x - mean) / scale` is
+    // the one before it times that line.
+    let mut coefficients = vec![0.0; size];
+    let mut power = vec![1.0];
+    for c in scaled {
+        for (k, p) in power.iter().enumerate() {
+            coefficients[k] += c * p;
+        }
+        let mut next = vec![0.0; power.len() + 1];
+        for (k, p) in power.iter().enumerate() {
+            next[k] -= p * mean / scale;
+            next[k + 1] += p / scale;
+        }
+        power = next;
+    }
+    Some(coefficients)
+}
+
+impl Fit {
+    /// Fits a curve of `kind` to the points; `None` when they do not tell
+    /// one (a single point, or all of them above each other).
+    fn new(kind: Regression, order: usize, points: &[(f64, f64)]) -> Option<Fit> {
+        let finite = |p: &&(f64, f64)| p.0.is_finite() && p.1.is_finite();
+        let coefficients = match kind {
+            Regression::Linear | Regression::Polynomial => {
+                let order = if kind == Regression::Linear {
+                    1
+                } else {
+                    order.clamp(1, MAX_REGRESSION_ORDER)
+                };
+                let points: Vec<(f64, f64)> = points.iter().filter(finite).copied().collect();
+                fit_polynomial(&points, order)?
+            }
+            // A line through (x, ln y): ln y = ln a + b·x.
+            Regression::Exponential => {
+                let points: Vec<(f64, f64)> = points
+                    .iter()
+                    .filter(finite)
+                    .filter(|p| p.1 > 0.0)
+                    .map(|p| (p.0, p.1.ln()))
+                    .collect();
+                let line = fit_polynomial(&points, 1)?;
+                vec![line[0].exp(), line[1]]
+            }
+            // A line through (ln x, y).
+            Regression::Logarithmic => {
+                let points: Vec<(f64, f64)> = points
+                    .iter()
+                    .filter(finite)
+                    .filter(|p| p.0 > 0.0)
+                    .map(|p| (p.0.ln(), p.1))
+                    .collect();
+                fit_polynomial(&points, 1)?
+            }
+        };
+        coefficients
+            .iter()
+            .all(|c| c.is_finite())
+            .then_some(Fit { kind, coefficients })
+    }
+    /// The value of the curve at `x`.
+    fn value(&self, x: f64) -> f64 {
+        let c = &self.coefficients;
+        match self.kind {
+            Regression::Linear | Regression::Polynomial => {
+                c.iter().rev().fold(0.0, |sum, c| sum * x + c)
+            }
+            Regression::Exponential => c[0] * (c[1] * x).exp(),
+            Regression::Logarithmic => c[0] + c[1] * x.ln(),
+        }
+    }
+    /// The curve as it is written: `y = 1.5x + 2`.
+    fn formula(&self) -> String {
+        // Three digits tell a coefficient, whatever its size.
+        let number = |value: f64| -> String {
+            let value = value.abs();
+            if value == 0.0 {
+                return "0".to_string();
+            }
+            let decimals = (2 - value.log10().floor() as i32).clamp(0, 9) as usize;
+            let text = format!("{value:.decimals$}");
+            if text.contains('.') {
+                text.trim_end_matches('0').trim_end_matches('.').to_string()
+            } else {
+                text
+            }
+        };
+        let sign = |value: f64| if value < 0.0 { "-" } else { "+" };
+        let lead = |value: f64| if value < 0.0 { "-" } else { "" };
+        let c = &self.coefficients;
+        match self.kind {
+            Regression::Exponential => {
+                format!(
+                    "y = {}{}e^({}{}x)",
+                    lead(c[0]),
+                    number(c[0]),
+                    lead(c[1]),
+                    number(c[1])
+                )
+            }
+            Regression::Logarithmic => format!(
+                "y = {}{} {} {}ln(x)",
+                lead(c[0]),
+                number(c[0]),
+                sign(c[1]),
+                number(c[1])
+            ),
+            Regression::Linear | Regression::Polynomial => {
+                let mut text = "y =".to_string();
+                for (power, value) in c.iter().enumerate().rev() {
+                    let first = power + 1 == c.len();
+                    let x = match power {
+                        0 => String::new(),
+                        1 => "x".to_string(),
+                        _ => format!("x^{power}"),
+                    };
+                    // `x`, not `1x`.
+                    let mut factor = number(*value);
+                    if power > 0 && factor == "1" {
+                        factor.clear();
+                    }
+                    if first {
+                        text.push_str(&format!(" {}{factor}{x}", lead(*value)));
+                    } else {
+                        text.push_str(&format!(" {} {factor}{x}", sign(*value)));
+                    }
+                }
+                text
+            }
+        }
+    }
+}
 
 /// A scatter chart of (x, y) point pairs.
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
@@ -61,6 +285,18 @@ pub struct ScatterChart {
     /// Radius of the largest bubble. Default: 30.
     #[serde(default)]
     pub bubble_max_size: f32,
+
+    // regression
+    /// Draws the curve of this kind that fits the points of each series
+    /// best (by least squares), in the color of the series.
+    #[serde(default)]
+    pub regression: Option<Regression>,
+    /// Order of a `Polynomial` regression, from 1 to 6. Default: 2.
+    #[serde(default)]
+    pub regression_order: usize,
+    /// Writes the formula of each fitted curve at its end.
+    #[serde(default)]
+    pub regression_label_show: bool,
 }
 
 impl std::ops::Deref for ScatterChart {
@@ -195,6 +431,21 @@ impl ScatterChart {
         if let Some(size) = get_f32_from_value(&value, "bubble_max_size") {
             s.bubble_max_size = size;
         }
+        if let Some(kind) = get_string_from_value(&value, "regression") {
+            s.regression = match kind.to_lowercase().as_str() {
+                "linear" => Some(Regression::Linear),
+                "exponential" => Some(Regression::Exponential),
+                "logarithmic" => Some(Regression::Logarithmic),
+                "polynomial" => Some(Regression::Polynomial),
+                _ => None,
+            };
+        }
+        if let Some(order) = get_usize_from_value(&value, "regression_order") {
+            s.regression_order = order;
+        }
+        if let Some(show) = get_bool_from_value(&value, "regression_label_show") {
+            s.regression_label_show = show;
+        }
         s.fill_default();
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
@@ -230,6 +481,9 @@ impl ScatterChart {
         if self.bubble_max_size < self.bubble_min_size {
             self.bubble_max_size = self.bubble_min_size.max(30.0);
         }
+        if self.regression_order == 0 {
+            self.regression_order = 2;
+        }
     }
     /// Creates a scatter chart with default theme.
     pub fn new(series_list: Vec<Series>) -> ScatterChart {
@@ -255,6 +509,10 @@ impl ScatterChart {
         let mut x_axis_data_list = vec![];
         let (mut size_min, mut size_max) = (f32::MAX, f32::MIN);
         for series in self.series_list.iter() {
+            // The error bars have to fit on the y axis as well.
+            if let Some(error) = &series.error_bar {
+                y_axis_data_list.extend(error.values());
+            }
             for (index, data) in series.iter_values().enumerate() {
                 match index % dimension {
                     0 => x_axis_data_list.push(data),
@@ -393,6 +651,8 @@ impl ScatterChart {
             ..Default::default()
         });
         let default_symbol_size = 10.0_f32;
+        // Where the formulas of the fitted curves are written.
+        let mut formula_boxes = LabelBoxes::new(true);
         for (index, series) in self.series_list.iter().enumerate() {
             let series_idx = series.index.unwrap_or(index);
             let mut color = get_color(&self.series_colors, series_idx);
@@ -415,27 +675,58 @@ impl ScatterChart {
                 DEFAULT_SYMBOLS[index % DEFAULT_SYMBOLS.len()].clone()
             };
 
-            // (x, y, bubble size) of every complete point.
-            let mut points: Vec<(f32, f32, Option<f32>)> = vec![];
+            // (x, y, bubble size, error bounds) of every complete point.
+            type Bounds = Option<(f32, f32)>;
+            let mut points: Vec<(f32, f32, Option<f32>, Bounds)> = vec![];
             let mut coords = series.iter_values();
+            let mut point_index = 0;
             while let (Some(x_value), Some(y_value)) = (coords.next(), coords.next()) {
                 let bubble_size = if self.bubble {
                     coords.next().filter(|v| *v != NIL_VALUE)
                 } else {
                     None
                 };
+                let error = series
+                    .error_bar
+                    .as_ref()
+                    .and_then(|e| e.bounds(point_index));
+                point_index += 1;
                 if x_value != NIL_VALUE && y_value != NIL_VALUE {
-                    points.push((x_value, y_value, bubble_size));
+                    points.push((x_value, y_value, bubble_size, error));
                 }
             }
             // Large bubbles first, so small ones are not buried under them.
             if self.bubble {
                 points.sort_by(|a, b| b.2.unwrap_or(0.0).total_cmp(&a.2.unwrap_or(0.0)));
             }
-            for (x_value, y_value, bubble_size) in points {
+            // The curve fitted to the points, kept for after they are drawn.
+            let fit = self.regression.and_then(|kind| {
+                let pairs: Vec<(f64, f64)> =
+                    points.iter().map(|p| (p.0 as f64, p.1 as f64)).collect();
+                // From the leftmost to the rightmost point; a logarithm
+                // only knows the ones right of 0.
+                let xs = pairs
+                    .iter()
+                    .map(|p| p.0)
+                    .filter(|x| kind != Regression::Logarithmic || *x > 0.0);
+                let (from, to) = xs.fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), x| {
+                    (lo.min(x), hi.max(x))
+                });
+                let fit = Fit::new(kind, self.regression_order, &pairs)?;
+                (from < to).then_some((fit, from, to))
+            });
+            for (x_value, y_value, bubble_size, error) in points {
                 let cx = content_width - x_axis_values.get_offset_height(x_value, content_width);
                 let cy = y_axis_values.get_offset_height(y_value, content_height);
                 let radius = bubble_size.map(bubble_radius).unwrap_or(size);
+                // The error bar of the point, under its symbol.
+                if let Some((lower, upper)) = error {
+                    let ends = (
+                        y_axis_values.get_offset_height(lower, content_height),
+                        y_axis_values.get_offset_height(upper, content_height),
+                    );
+                    render_error_bar(&mut content_canvas, cx, ends, 4.0, color);
+                }
                 let title = if self.tooltip_show {
                     Some(match bubble_size {
                         Some(v) => format!(
@@ -463,6 +754,10 @@ impl ScatterChart {
                 if let Some(v) = bubble_size {
                     dataset.push(("size".to_string(), format_float(v)));
                 }
+                if let Some((lower, upper)) = error {
+                    dataset.push(("lower".to_string(), format_float(lower)));
+                    dataset.push(("upper".to_string(), format_float(upper)));
+                }
                 render_scatter_symbol(
                     &mut content_canvas,
                     &symbol,
@@ -473,6 +768,89 @@ impl ScatterChart {
                     title,
                     dataset,
                 );
+            }
+
+            let Some((fit, mut from, mut to)) = fit else {
+                continue;
+            };
+            let (low, high) = (y_axis_values.min as f64, y_axis_values.max as f64);
+            // A straight line is cut where it leaves the plot; a curve is
+            // drawn in short pieces, those outside of the plot left out.
+            let straight = fit.coefficients.len() == 2
+                && fit.kind != Regression::Exponential
+                && fit.kind != Regression::Logarithmic;
+            if straight {
+                let (a, b) = (fit.coefficients[0], fit.coefficients[1]);
+                if b.abs() > 1e-12 {
+                    let (x_low, x_high) = ((low - a) / b, (high - a) / b);
+                    from = from.max(x_low.min(x_high));
+                    to = to.min(x_low.max(x_high));
+                } else if a < low || a > high {
+                    continue;
+                }
+                if from >= to {
+                    continue;
+                }
+            }
+            let steps = if straight { 1 } else { REGRESSION_SEGMENTS };
+            let mut runs: Vec<Vec<Point>> = vec![vec![]];
+            for i in 0..=steps {
+                let x = from + (to - from) * i as f64 / steps as f64;
+                let y = fit.value(x);
+                // A hair of slack for the ends of a line cut at the edge.
+                let slack = (high - low) * 1e-6;
+                if !y.is_finite() || y < low - slack || y > high + slack {
+                    if runs.last().is_some_and(|run| !run.is_empty()) {
+                        runs.push(vec![]);
+                    }
+                    continue;
+                }
+                let px = content_width - x_axis_values.get_offset_height(x as f32, content_width);
+                let py = y_axis_values.get_offset_height(y as f32, content_height);
+                if let Some(run) = runs.last_mut() {
+                    run.push((px, py).into());
+                }
+            }
+            let line_color = get_color(&self.series_colors, series_idx);
+            let mut end = None;
+            for run in runs.into_iter().filter(|run| run.len() > 1) {
+                end = run.last().copied();
+                content_canvas.straight_line(StraightLine {
+                    color: Some(line_color),
+                    points: run,
+                    stroke_width: self.series_stroke_width,
+                    symbol: None,
+                    class: Some("ct-regression".to_string()),
+                    ..Default::default()
+                });
+            }
+            // The formula, at the end of the curve: above it, or below it
+            // where that is off the plot or taken by another formula.
+            if self.regression_label_show
+                && let Some(end) = end
+            {
+                let text = fit.formula();
+                let font_size = self.series_label_font_size;
+                let width = measure_text_width_family(&self.font_family, font_size, &text)
+                    .map(|b| b.width())
+                    .unwrap_or_default();
+                let left = (end.x - width).max(0.0);
+                let baseline = [end.y - 8.0, end.y + font_size + 6.0]
+                    .into_iter()
+                    .filter(|y| *y - font_size >= 0.0 && *y <= content_height)
+                    .find(|y| formula_boxes.try_place(left, y - font_size, width, font_size));
+                if let Some(baseline) = baseline {
+                    content_canvas.text_unmeasured(Text {
+                        text,
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(font_size),
+                        font_weight: self.series_label_font_weight.clone(),
+                        x: Some(left),
+                        y: Some(baseline),
+                        ..Default::default()
+                    });
+                }
             }
         }
 
@@ -486,8 +864,107 @@ impl ScatterChart {
 
 #[cfg(test)]
 mod tests {
-    use super::ScatterChart;
+    use super::{Fit, Regression, ScatterChart};
     use crate::Align;
+
+    fn close(found: &[f64], wanted: &[f64]) {
+        assert_eq!(wanted.len(), found.len(), "{found:?}");
+        for (a, b) in found.iter().zip(wanted) {
+            assert!(
+                (a - b).abs() < 1e-6 * b.abs().max(1.0),
+                "{found:?} is not {wanted:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn fitted_curves() {
+        // Points on a line give the line back.
+        let line = Fit::new(Regression::Linear, 2, &[(0.0, 1.0), (1.0, 3.0), (2.0, 5.0)]).unwrap();
+        close(&line.coefficients, &[1.0, 2.0]);
+        assert_eq!("y = 2x + 1", line.formula());
+        assert!((line.value(10.0) - 21.0).abs() < 1e-9);
+        // Otherwise the line closest to them, by least squares.
+        let line = Fit::new(Regression::Linear, 2, &[(0.0, 0.0), (1.0, 1.0), (2.0, 1.0)]).unwrap();
+        close(&line.coefficients, &[1.0 / 6.0, 0.5]);
+        assert_eq!("y = 0.5x + 0.167", line.formula());
+        let down = Fit::new(Regression::Linear, 2, &[(0.0, -1.0), (1.0, -3.0)]).unwrap();
+        assert_eq!("y = -2x - 1", down.formula());
+
+        // A parabola: y = x² - 2x + 3.
+        let points: Vec<(f64, f64)> = (-2..=3)
+            .map(|x| (x as f64, (x * x - 2 * x + 3) as f64))
+            .collect();
+        let parabola = Fit::new(Regression::Polynomial, 2, &points).unwrap();
+        close(&parabola.coefficients, &[3.0, -2.0, 1.0]);
+        assert_eq!("y = x^2 - 2x + 3", parabola.formula());
+        // A higher order than the points can tell is cut down to it, and
+        // to 6 at most.
+        let cut = Fit::new(Regression::Polynomial, 5, &points[..3]).unwrap();
+        assert_eq!(3, cut.coefficients.len());
+        let many: Vec<(f64, f64)> = (0..20).map(|x| (x as f64, (x % 3) as f64)).collect();
+        assert_eq!(
+            7,
+            Fit::new(Regression::Polynomial, 50, &many)
+                .unwrap()
+                .coefficients
+                .len()
+        );
+        // Far from 0 the fit holds as well: y = x²/2 around x = 1000.
+        let far: Vec<(f64, f64)> = (1000..=1010)
+            .map(|x| (x as f64, (x * x) as f64 / 2.0))
+            .collect();
+        let fit = Fit::new(Regression::Polynomial, 2, &far).unwrap();
+        assert!(
+            (fit.value(1005.0) - 505_012.5).abs() < 1e-3,
+            "{}",
+            fit.value(1005.0)
+        );
+
+        // y = 2·e^(x/2), and y = 1 + 3·ln(x).
+        let points: Vec<(f64, f64)> = (0..5)
+            .map(|x| (x as f64, 2.0 * (x as f64 / 2.0).exp()))
+            .collect();
+        let exponential = Fit::new(Regression::Exponential, 2, &points).unwrap();
+        close(&exponential.coefficients, &[2.0, 0.5]);
+        assert_eq!("y = 2e^(0.5x)", exponential.formula());
+        let points: Vec<(f64, f64)> = (1..6)
+            .map(|x| (x as f64, 1.0 + 3.0 * (x as f64).ln()))
+            .collect();
+        let logarithmic = Fit::new(Regression::Logarithmic, 2, &points).unwrap();
+        close(&logarithmic.coefficients, &[1.0, 3.0]);
+        assert_eq!("y = 1 + 3ln(x)", logarithmic.formula());
+        // Points that have no logarithm are left out of the fit.
+        let mixed = [
+            (-1.0, 5.0),
+            (0.0, 9.0),
+            (1.0, 1.0),
+            (std::f64::consts::E, 4.0),
+        ];
+        close(
+            &Fit::new(Regression::Logarithmic, 2, &mixed)
+                .unwrap()
+                .coefficients,
+            &[1.0, 3.0],
+        );
+
+        // Nothing to fit: one point, points above each other, no numbers.
+        for points in [
+            vec![(1.0, 2.0)],
+            vec![(1.0, 2.0), (1.0, 5.0)],
+            vec![(f64::NAN, 1.0), (2.0, f64::INFINITY)],
+            vec![],
+        ] {
+            for kind in [
+                Regression::Linear,
+                Regression::Polynomial,
+                Regression::Exponential,
+                Regression::Logarithmic,
+            ] {
+                assert_eq!(None, Fit::new(kind, 2, &points), "{kind:?} {points:?}");
+            }
+        }
+    }
 
     fn make_scatter() -> ScatterChart {
         let mut scatter_chart = ScatterChart::new(vec![

@@ -400,6 +400,25 @@ struct BandTip {
     upper: f32,
 }
 
+/// Draws an error bar on `c`: a line at `x` between the two ends, with a
+/// cap `cap` wide to both sides at each of them.
+pub(crate) fn render_error_bar(c: &mut Canvas, x: f32, ends: (f32, f32), cap: f32, color: Color) {
+    let mut line = |from: (f32, f32), to: (f32, f32)| {
+        c.line(Line {
+            color: Some(color),
+            stroke_width: 1.5,
+            left: from.0,
+            top: from.1,
+            right: to.0,
+            bottom: to.1,
+            ..Default::default()
+        });
+    };
+    line((x, ends.0), (x, ends.1));
+    line((x - cap, ends.0), (x + cap, ends.0));
+    line((x - cap, ends.1), (x + cap, ends.1));
+}
+
 /// Gap between an axis title and the axis labels.
 const AXIS_TITLE_GAP: f32 = 6.0;
 
@@ -763,12 +782,14 @@ impl ChartBase {
                 data_list.extend(series.iter_values());
             }
         }
-        // The bounds of a band have to fit on the axis as well as the line.
+        // The bounds of a band, and of error bars, have to fit on the axis
+        // as well as the values.
         for series in self.series_list.iter() {
-            if series.y_axis_index == y_axis_index
-                && let Some(band) = &series.band
-            {
-                data_list.extend(band.values());
+            if series.y_axis_index != y_axis_index {
+                continue;
+            }
+            for bounds in [&series.band, &series.error_bar].into_iter().flatten() {
+                data_list.extend(bounds.values());
             }
         }
         // Stacked series: the effective max at each x-position is the sum of all
@@ -1878,6 +1899,8 @@ impl ChartBase {
             .collect();
 
         let mut series_labels_list = vec![];
+        // `(x, low end, high end)` of the error bars of the values.
+        let mut error_bars: Vec<(f32, f32, f32)> = vec![];
         let get_bar_color = |colors: &Option<Vec<Option<Color>>>, index: usize| -> Option<Color> {
             if let Some(colors) = &colors {
                 if colors.len() <= index {
@@ -1991,8 +2014,23 @@ impl ChartBase {
                 } else {
                     String::new()
                 };
+                // The error bar of the value, drawn once every bar is.
+                let error = series.error_bar.as_ref().and_then(|e| e.bounds(i));
+                let mut dataset = self.point_dataset(series, actual_i, value);
+                let mut range = String::new();
+                if let Some((lower, upper)) = error {
+                    error_bars.push((
+                        left + half_bar_width,
+                        y_axis_values.get_offset_height(lower, max_height),
+                        y_axis_values.get_offset_height(upper, max_height),
+                    ));
+                    let (lower, upper) = (format_float(lower), format_float(upper));
+                    range = format!(" ({lower} – {upper})");
+                    dataset.push(("lower".to_string(), lower));
+                    dataset.push(("upper".to_string(), upper));
+                }
                 let tooltip_text = if tooltip {
-                    format!("{}: {}", series.name, label)
+                    format!("{}: {}{}", series.name, label, range)
                 } else {
                     String::new()
                 };
@@ -2013,7 +2051,7 @@ impl ChartBase {
                     } else {
                         None
                     },
-                    dataset: self.point_dataset(series, actual_i, value),
+                    dataset,
                     color: None,
                 });
 
@@ -2067,6 +2105,11 @@ impl ChartBase {
             if series.label_show {
                 series_labels_list.push(series_labels);
             }
+        }
+        // The error bars, over every bar, in a color that shows on them.
+        let cap = (bar_width / 4.0).clamp(2.0, 6.0);
+        for (x, low, high) in error_bars {
+            render_error_bar(&mut c1, x, (low, high), cap, self.series_label_font_color);
         }
         series_labels_list
     }
@@ -2222,6 +2265,8 @@ impl ChartBase {
             let format_every_label = series.label_show || tooltip;
             let mut series_labels = Vec::new();
             let mut point_datasets = Vec::new();
+            // `(x, low end, high end)` of the error bars of the points.
+            let mut error_bars: Vec<(f32, f32, f32)> = vec![];
 
             let mut max_value = f32::MIN;
             let mut min_value = f32::MAX;
@@ -2289,6 +2334,13 @@ impl ChartBase {
                 };
                 let y = y_axis_values.get_offset_height(effective_value, max_height);
                 points.push((x, y).into());
+                if let Some((lower, upper)) = series.error_bar.as_ref().and_then(|e| e.bounds(i)) {
+                    error_bars.push((
+                        x,
+                        y_axis_values.get_offset_height(lower, max_height),
+                        y_axis_values.get_offset_height(upper, max_height),
+                    ));
+                }
 
                 // Floor points for stacked area fill (previous cumulative level).
                 if is_stacked {
@@ -2312,15 +2364,18 @@ impl ChartBase {
                     });
                     if tooltip {
                         let mut dataset = self.point_dataset(series, actual_i, value);
-                        // A point inside a band also tells its bounds.
-                        let range = series.band.as_ref().and_then(|band| band.bounds(i)).map(
-                            |(lower, upper)| {
-                                let (lower, upper) = (format_float(lower), format_float(upper));
-                                dataset.push(("lower".to_string(), lower.clone()));
-                                dataset.push(("upper".to_string(), upper.clone()));
-                                format!(" ({lower} – {upper})")
-                            },
-                        );
+                        // A point inside a band, or with an error bar, also
+                        // tells its bounds.
+                        let bounds = [&series.band, &series.error_bar]
+                            .into_iter()
+                            .flatten()
+                            .find_map(|b| b.bounds(i));
+                        let range = bounds.map(|(lower, upper)| {
+                            let (lower, upper) = (format_float(lower), format_float(upper));
+                            dataset.push(("lower".to_string(), lower.clone()));
+                            dataset.push(("upper".to_string(), upper.clone()));
+                            format!(" ({lower} – {upper})")
+                        });
                         point_datasets.push((dataset, range));
                     }
                 }
@@ -2432,6 +2487,11 @@ impl ChartBase {
                         ..Default::default()
                     });
                 }
+            }
+
+            // The error bars of the points, over the line, in its color.
+            for (x, low, high) in error_bars {
+                render_error_bar(&mut c1, x, (low, high), 4.0, color);
             }
 
             // Transparent hit-circles at each data point (the line's own

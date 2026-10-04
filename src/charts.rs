@@ -57,12 +57,14 @@ mod encoder;
 mod error;
 mod font;
 mod funnel_chart;
+mod gantt_chart;
 mod gauge_chart;
 mod graph_chart;
 mod heatmap_chart;
 mod histogram_chart;
 mod horizontal_bar_chart;
 mod line_chart;
+mod map_chart;
 mod multi_chart;
 mod parallel_chart;
 mod params;
@@ -96,7 +98,7 @@ pub use common::{
 pub use compact::compact_svg;
 pub use component::{
     Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, Ribbon, Sector,
-    SmoothBand, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+    Shape, SmoothBand, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
     svg_with_accessibility,
 };
 #[cfg(feature = "raster")]
@@ -104,19 +106,21 @@ pub use encoder::*;
 pub use error::{Error, Result};
 
 pub use calendar_chart::CalendarChart;
-pub use candlestick_chart::CandlestickChart;
+pub use candlestick_chart::{CandlestickChart, CandlestickStyle};
 pub use chord_chart::{ChordChart, ChordLink, ChordNode};
 pub use font::{
     DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, add_fonts, get_font, get_font_families,
     measure_text_width_family,
 };
 pub use funnel_chart::FunnelChart;
+pub use gantt_chart::{GanttChart, GanttTask};
 pub use gauge_chart::GaugeChart;
 pub use graph_chart::{GraphChart, GraphLink, GraphNode};
-pub use heatmap_chart::{HeatmapChart, HeatmapData, HeatmapSeries};
+pub use heatmap_chart::{HeatmapChart, HeatmapData, HeatmapSeries, HeatmapSymbol};
 pub use histogram_chart::HistogramChart;
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
+pub use map_chart::{MapChart, MapProjection, MapRegion};
 pub use multi_chart::{ChildChart, MultiChart};
 pub use parallel_chart::ParallelChart;
 // Drawing helpers: public for compatibility, but not part of the documented
@@ -127,7 +131,7 @@ pub use pie_chart::PieChart;
 pub use polar_bar_chart::{PolarAxis, PolarBarChart};
 pub use radar_chart::{RadarChart, RadarIndicator};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
-pub use scatter_chart::ScatterChart;
+pub use scatter_chart::{Regression, ScatterChart};
 pub use sunburst_chart::{SunburstChart, SunburstData};
 pub use table_chart::{TableCellStyle, TableChart};
 pub use theme::Theme;
@@ -175,12 +179,14 @@ impl_chart!(
     CandlestickChart,
     ChordChart,
     FunnelChart,
+    GanttChart,
     GaugeChart,
     GraphChart,
     HeatmapChart,
     HistogramChart,
     HorizontalBarChart,
     LineChart,
+    MapChart,
     MultiChart,
     ParallelChart,
     PieChart,

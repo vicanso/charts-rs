@@ -14,7 +14,7 @@ Every chart can be created from a JSON document with its `from_json`, e.g. `BarC
 
 - [Value types](#value-types)
 - [Common options](#common-options)
-- Charts: [Bar](#bar), [Horizontal bar](#horizontal-bar), [Line](#line), [Pie](#pie), [Radar](#radar), [Scatter](#scatter), [Candlestick](#candlestick), [Table](#table), [Heatmap](#heatmap), [Funnel](#funnel), [Waterfall](#waterfall), [Calendar](#calendar), [Gauge](#gauge), [Treemap](#treemap), [Box plot](#box-plot), [Sunburst](#sunburst), [Sankey](#sankey), [Tree](#tree), [Graph](#graph), [Parallel](#parallel), [Theme river](#theme-river), [Histogram](#histogram), [Polar bar](#polar-bar), [Chord](#chord), [Multi chart](#multi-chart)
+- Charts: [Bar](#bar), [Horizontal bar](#horizontal-bar), [Line](#line), [Pie](#pie), [Radar](#radar), [Scatter](#scatter), [Candlestick](#candlestick), [Table](#table), [Heatmap](#heatmap), [Funnel](#funnel), [Waterfall](#waterfall), [Calendar](#calendar), [Gauge](#gauge), [Treemap](#treemap), [Box plot](#box-plot), [Sunburst](#sunburst), [Sankey](#sankey), [Tree](#tree), [Graph](#graph), [Parallel](#parallel), [Theme river](#theme-river), [Histogram](#histogram), [Polar bar](#polar-bar), [Chord](#chord), [Gantt](#gantt), [Map](#map), [Multi chart](#multi-chart)
 - [Keys for tools](#keys-for-tools)
 
 ## Value types
@@ -174,6 +174,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `x_values` | x value[] |  | The x value of each data point, for a series that is not sampled at the chart’s `x_axis_values`. |
 | `band` | object |  | A filled band around the line: a lower and an upper bound for each data point. |
 | `step` | `"start"` / `"middle"` / `"end"` |  | Draws the line as steps: level between two points, changing to the next value at the point itself (`start`), half way to the next one (`middle`) or at the next point (`end`). Wins over `smooth`. |
+| `error_bar` | object |  | Error bars: a lower and an upper bound for each data point, drawn as a line with a cap at both ends over the bar or the point (bar, line and scatter charts). The y axis makes room for them, and tooltips tell the bounds. |
 
 #### `series_list[].mark_lines[]`
 
@@ -213,9 +214,12 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `radius` | number |  | The same as `size`, which wins when both are set. |
 | `color` | color |  | Fill color of the marker; without one the marker is hollow. |
 
-#### `series_list[].band`
+#### `series_list[].band` and `series_list[].error_bar`
 
 <!-- keys: base.series_list.band -->
+<!-- keys: base.series_list.error_bar = base.series_list.band -->
+
+`error_bar` takes the same two lists: a point has an error bar where both of its bounds are given.
 
 | Key | Type | Default | Description |
 |---|---|---|---|
@@ -405,6 +409,9 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `bubble_max_size` | number | `30` | Radius of the largest bubble. |
 | `series_symbols` | array |  | Marker of each series: its shape as a string (`"circle"`, `"triangle"`, `"rect"`, `"diamond"`), or an object with that `type` and a fill `color`. The size is `series_symbol_sizes`. By default the series cycle through the four shapes, in the color of the series. |
 | `x_axis_config` | object |  | Configuration of the x axis, which is a value axis here. By default the same as the first of `y_axis_configs`. |
+| `regression` | `"linear"` / `"exponential"` / `"logarithmic"` / `"polynomial"` |  | Draws the curve of this kind that fits the points of each series best (by least squares), in the color of the series. An exponential curve is fitted to the points above 0, a logarithmic one to the points right of 0. |
+| `regression_order` | integer 0–1000 | `2` | Order of a `polynomial` regression, from 1 to 6. |
+| `regression_label_show` | boolean | `false` | Writes the formula of each fitted curve at its end, e.g. `y = 1.5x + 2`. |
 
 ### `x_axis_config`
 
@@ -436,6 +443,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 | `candlestick_up_border_color` | color | `#8A0000` | Border color of those candles. |
 | `candlestick_down_color` | color | `#00DA3C` | Fill color of the candles that close lower than they open. |
 | `candlestick_down_border_color` | color | `#008F28` | Border color of those candles. |
+| `candlestick_style` | `"candle"` / `"ohlc"` | `"candle"` | Draws candles, or OHLC bars: a line from the lowest to the highest price with a tick to its left at the open and one to its right at the close. |
 
 <!-- example: candlestick -->
 
@@ -547,8 +555,12 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 | `max` | number | `0` | Value shown in `max_color`; `0` takes the largest value of the data. |
 | `min_color` | color | `#F0D99C` | Color of the smallest value. |
 | `max_color` | color | `#BF444C` | Color of the largest value. |
-| `min_font_color` | color | `#464646` | Font color of the labels on cells with low values. |
-| `max_font_color` | color | `#EEEEEE` | Font color of the labels on cells with high values. |
+| `min_font_color` | color | `#464646` | Font color of the labels on cells with low values; with `colors`, `steps` or `thresholds`, on light cells. |
+| `max_font_color` | color | `#EEEEEE` | Font color of the labels on cells with high values; with `colors`, `steps` or `thresholds`, on dark cells. |
+| `colors` | color[] |  | The colors of the scale, from the smallest value to the largest. Two or more take the place of `min_color` and `max_color`: the scale goes through all of them. |
+| `steps` | integer 0–1000 | `0` | Number of classes of the same width the values are sorted into, each drawn in one color, instead of a continuous scale; `0` and `1` keep it continuous. With as many `colors` as steps, every class has one of them. |
+| `thresholds` | number[] |  | The values where one class ends and the next begins; takes the place of `steps`. A value below the first one is in the first class. |
+| `symbol` | `"rect"` / `"circle"` | `"rect"` | Fills the cells (`rect`), or draws a circle in each cell that has a value, its area following the value — a punch card. The circles of a row lie on a line; they carry no label. |
 | `data` | array |  | The cells as `[index, value]`, where `index` = y index × number of x categories + x index. |
 
 <!-- example: heatmap -->
@@ -631,6 +643,9 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 | `max` | number | `0` | Value shown in `max_color`; `0` takes the largest value of the data. |
 | `min_color` | color | `#EBEDF0` | Color of the days with the smallest value. |
 | `max_color` | color | `#216E39` | Color of the days with the largest value. |
+| `colors` | color[] |  | The colors of the scale, from the smallest value to the largest. Two or more take the place of `min_color` and `max_color`: the scale goes through all of them. |
+| `steps` | integer 0–1000 | `0` | Number of classes of the same width the values are sorted into, each drawn in one color, instead of a continuous scale; `0` and `1` keep it continuous. With as many `colors` as steps, every class has one of them. |
+| `thresholds` | number[] |  | The values where one class ends and the next begins; takes the place of `steps`. A value below the first one is in the first class. |
 | `empty_color` | color | theme | Color of the days without a value. |
 | `cell_size` | number | `13` | Side of a day square in pixels. |
 | `cell_gap` | number | `3` | Gap between the squares in pixels. |
@@ -651,7 +666,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 
 ## Gauge
 
-`GaugeChart::from_json` — A dial. Every series is one value on the scale: the first of its `data`.
+`GaugeChart::from_json` — A dial. Every series is one value on the scale (the first of its `data`): a pointer each, or a ring each with `multi_ring`.
 
 <!-- keys: gauge -->
 
@@ -659,7 +674,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 |---|---|---|---|
 | `min` | number | `0` | Value at the start of the scale. |
 | `max` | number | `100` | Value at the end of the scale. |
-| `start_angle` | number | `225` | Angle the scale starts at, in degrees clockwise from 12 o’clock. |
+| `start_angle` | number | `225` | Angle the scale starts at, in degrees clockwise from 12 o’clock. `0` selects the default: write `360` to start at 12 o’clock. |
 | `sweep_angle` | number | `270` | Angle the scale spans, in degrees clockwise. |
 | `radius` | number | `0` | Outer radius in pixels; `0` fits the plot. |
 | `arc_width` | number | `15` | Thickness of the arc in pixels. |
@@ -669,6 +684,9 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 | `show_axis_label` | boolean | `true` | Writes the minimum and maximum at the ends of the arc. |
 | `split_number` | integer 0–1000 | `5` | Number of intervals between the major ticks. |
 | `value_formatter` | string | `"{c}"` | Format of the value shown in the center: `{c}` is the value. |
+| `thresholds` | number[] |  | The values where one segment of the scale ends and the next begins. With thresholds the arc shows the segments, each in a color of its own, instead of the progress, and a pointer takes the color of the segment it points at. |
+| `colors` | color[] |  | The colors of the segments, from the lowest to the highest. Default: the colors of the series. |
+| `multi_ring` | boolean | `false` | Draws every series as a ring of progress of its own, one inside the other, with the values listed in the middle, instead of as pointers on one dial. |
 
 <!-- example: gauge -->
 
@@ -819,6 +837,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 | `link_opacity` | number | `0.45` | Opacity of the flow ribbons, from 0 to 1. |
 | `node_align` | `"left"` / `"right"` / `"justify"` | `"left"` | Which column a node goes in: as far left as its sources allow (`left`, the default), as far right as its targets allow (`right`), or `left` with the end nodes in the last column (`justify`). |
 | `link_gradient` | boolean | `false` | Fills every link with a gradient from the color of its source to the color of its target, instead of the color of its source. |
+| `orient` | `"horizontal"` / `"vertical"` | `"horizontal"` | Direction of the flows: from left to right, or from top to bottom (the columns of nodes become rows). |
 
 ### `nodes[]`
 
@@ -862,8 +881,10 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `series_data` | object[] |  | The roots of the hierarchy; several roots are laid out side by side. |
-| `orient` | `"LR"` / `"TB"` | `"LR"` | Direction of the tree: root on the left (`LR`, the default) or at the top (`TB`). |
+| `orient` | `"LR"` / `"RL"` / `"TB"` / `"BT"` | `"LR"` | Where the root is, and which way the tree grows: root on the left (`LR`), on the right (`RL`), at the top (`TB`) or at the bottom (`BT`). |
 | `symbol_size` | number | `6` | Radius of the node circles in pixels. |
+| `layout` | `"orthogonal"` / `"radial"` | `"orthogonal"` | `orthogonal` lays the levels out side by side, by `orient`; `radial` puts the root in the middle and every level on a circle around it. |
+| `edge_shape` | `"curve"` / `"polyline"` | `"curve"` | Shape of the links: curves, or lines with square corners (straight lines in a radial tree). |
 
 ### `series_data[]`
 
@@ -1099,6 +1120,117 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 }
 ```
 
+## Gantt
+
+`GanttChart::from_json` — Tasks as bars along a time axis: a row for each task, or several tasks on a row. The axis is a time axis (numbers are unix seconds) unless `x_axis_type` is `value`; `x_axis_min` and `x_axis_max` fix its range, `x_axis_formatter` and `x_axis_time_offset` its labels. It takes no `series_list`: the legend is the categories of the tasks.
+
+<!-- keys: gantt -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `tasks` | object[] |  | The tasks; the rows are taken from them, top to bottom in the order they are first met. |
+| `bar_height` | number |  | Height of the bars in pixels; by default 60% of the height of a row. |
+| `radius` | number | `3` | Corner radius of the bars. |
+| `label_show` | boolean | `true` | Writes the name of a task on its bar, or beside it when it does not fit there. A task on a row of its own is not named again: the row tells its name. |
+| `now` | x value |  | A moment marked by a dashed line across the chart, such as today. |
+
+### `tasks[]`
+
+<!-- keys: gantt.tasks -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the task. |
+| `start` | x value |  | When the task starts; a task without a start is left out. |
+| `end` | x value |  | When the task ends. Without an end, or with the end at the start, the task is a milestone, drawn as a diamond. |
+| `row` | string |  | The row the task is drawn on; tasks with the same row share it. By default a row of its own, named after the task. |
+| `category` | string |  | Category of the task: the tasks of a category share a color, and the categories are the legend. |
+| `progress` | number |  | How much of the task is done, from 0 to 1: that part of the bar is in the full color, the rest lighter. |
+| `color` | color |  | Color of the task; by default the color of its category. |
+
+<!-- example: gantt -->
+
+```json
+{
+  "now": "2024-03-19",
+  "tasks": [
+    {
+      "name": "Research",
+      "category": "Plan",
+      "start": "2024-03-04",
+      "end": "2024-03-08",
+      "progress": 1
+    },
+    {
+      "name": "Design",
+      "category": "Build",
+      "start": "2024-03-07",
+      "end": "2024-03-22",
+      "progress": 0.6
+    },
+    {"name": "Sign-off", "category": "Build", "start": "2024-03-22"},
+    {"name": "Launch", "category": "Plan", "start": "2024-03-25", "end": "2024-03-29"}
+  ]
+}
+```
+
+## Map
+
+`MapChart::from_json` — A map of regions colored by their values. The regions come with the options, as GeoJSON: the chart has no map data of its own. It takes no `series_list`.
+
+<!-- keys: map -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `geo_json` | object |  | The regions: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries, with longitudes and latitudes in degrees. Other geometries are left out. |
+| `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region; without it, the `id` of the feature. |
+| `data` | array |  | The values: `["name of the region", value]` for each region that has one. |
+| `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane: Mercator keeps the shapes (and cuts the map off at 85° north and south), equirectangular takes them as they are. |
+| `min` | number | `0` | Value at the start of the scale. With `min` and `max` both `0` the scale goes from the smallest value to the largest. |
+| `max` | number | `0` | Value at the end of the scale. |
+| `min_color` | color | theme | Color of the smallest value: by default a light tint of the first color of the theme. |
+| `max_color` | color | theme | Color of the largest value: by default the first color of the theme. |
+| `colors` | color[] |  | The colors of the scale, from the smallest value to the largest. Two or more take the place of `min_color` and `max_color`: the scale goes through all of them. |
+| `steps` | integer 0–1000 | `0` | Number of classes of the same width the values are sorted into, each drawn in one color, instead of a continuous scale; `0` and `1` keep it continuous. |
+| `thresholds` | number[] |  | The values where one class ends and the next begins; takes the place of `steps`. A value below the first one is in the first class. |
+| `empty_color` | color | theme | Color of the regions without a value. |
+| `border_color` | color | theme | Color of the borders of the regions: by default the background color. |
+| `border_width` | number | `1` | Width of the borders of the regions; `0` draws none. |
+| `label_show` | boolean | `false` | Writes the name of every region on it; a name that would run into another one is left out. |
+| `visual_map_show` | boolean | `true` | Shows the scale of the colors beside the map: a bar from the smallest value to the largest, or a swatch for every class. |
+
+<!-- example: map -->
+
+```json
+{
+  "label_show": true,
+  "thresholds": [100, 300],
+  "colors": ["#deebf7", "#9ecae1", "#3182bd"],
+  "data": [["West", 80], ["East", 420]],
+  "geo_json": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {"name": "West"},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[100, 20], [106, 20], [107, 26], [101, 27], [100, 20]]]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {"name": "East"},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[106, 20], [113, 21], [112, 27], [107, 26], [106, 20]]]
+        }
+      }
+    ]
+  }
+}
+```
+
 ## Multi chart
 
 `MultiChart::from_json` — Several charts in one SVG, one below the other or at positions of their own. It does not take the common options.
@@ -1120,7 +1252,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `type` | string |  | Type of the child: `bar` (the default), `line`, `horizontal_bar`, `pie`, `radar`, `table`, `scatter`, `candlestick`, `heatmap`, `funnel`, `waterfall`, `calendar`, `gauge`, `treemap`, `box_plot`, `sunburst`, `sankey`, `tree`, `graph`, `parallel`, `theme_river`, `histogram`, `polar_bar` or `chord`. |
+| `type` | string |  | Type of the child: `bar` (the default), `line`, `horizontal_bar`, `pie`, `radar`, `table`, `scatter`, `candlestick`, `heatmap`, `funnel`, `waterfall`, `calendar`, `gauge`, `treemap`, `box_plot`, `sunburst`, `sankey`, `tree`, `graph`, `parallel`, `theme_river`, `histogram`, `polar_bar`, `chord`, `gantt` or `map`. |
 | `x` | number |  | Horizontal position of the child; with `x` or `y` set, the child is placed there instead of below the previous one. |
 | `y` | number |  | Vertical position of the child. |
 

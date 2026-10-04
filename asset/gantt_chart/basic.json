@@ -1,0 +1,18 @@
+{
+    "title_text": "Website relaunch",
+    "title_align": "left",
+    "legend_align": "right",
+    "legend_category": "round_rect",
+    "tooltip_show": true,
+    "now": "2024-03-19",
+    "tasks": [
+        {"name": "Research", "category": "Plan", "start": "2024-03-04", "end": "2024-03-08", "progress": 1},
+        {"name": "Wireframes", "category": "Design", "start": "2024-03-07", "end": "2024-03-14", "progress": 1},
+        {"name": "Visual design", "category": "Design", "start": "2024-03-12", "end": "2024-03-22", "progress": 0.7},
+        {"name": "Design sign-off", "category": "Design", "start": "2024-03-22"},
+        {"name": "Frontend", "category": "Build", "start": "2024-03-18", "end": "2024-04-05", "progress": 0.1},
+        {"name": "Backend", "category": "Build", "start": "2024-03-14", "end": "2024-04-02", "progress": 0.3},
+        {"name": "Testing", "category": "Launch", "start": "2024-04-01", "end": "2024-04-10"},
+        {"name": "Go live", "category": "Launch", "start": "2024-04-11"}
+    ]
+}

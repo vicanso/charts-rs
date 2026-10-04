@@ -1,0 +1,59 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="249.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Project plan
+</text>
+<line stroke-width="1" x1="88.7" y1="40" x2="88.7" y2="365" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="245.1" y1="40" x2="245.1" y2="365" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="401.5" y1="40" x2="401.5" y2="365" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="557.9" y1="40" x2="557.9" y2="365" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="74" y1="105" x2="595" y2="105" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="74" y1="170" x2="595" y2="170" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="74" y1="235" x2="595" y2="235" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="74" y1="300" x2="595" y2="300" stroke="#E0E6F2"/>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="74" y1="365" x2="595" y2="365"/>
+<line x1="88.7" y1="365" x2="88.7" y2="370"/>
+<line x1="245.1" y1="365" x2="245.1" y2="370"/>
+<line x1="401.5" y1="365" x2="401.5" y2="370"/>
+<line x1="557.9" y1="365" x2="557.9" y2="370"/>
+</g>
+<text font-size="14" x="74" y="384" font-family="Roboto" fill="#6E7079">
+03-04
+</text>
+<text font-size="14" x="228.6" y="384" font-family="Roboto" fill="#6E7079">
+03-11
+</text>
+<text font-size="14" x="383.5" y="384" font-family="Roboto" fill="#6E7079">
+03-18
+</text>
+<text font-size="14" x="539.9" y="384" font-family="Roboto" fill="#6E7079">
+03-25
+</text>
+</g>
+<text font-size="14" x="66" y="72.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Research
+</text>
+<text font-size="14" x="66" y="137.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Design
+</text>
+<text font-size="14" x="66" y="202.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Build
+</text>
+<text font-size="14" x="66" y="267.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Test
+</text>
+<text font-size="14" x="66" y="332.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Launch
+</text>
+<rect x="88.7" y="53" width="89.4" height="39" rx="3" ry="3" fill="#5470C6"/>
+<rect x="88.7" y="53" width="89.4" height="39" rx="3" ry="3" fill="#5470C6" fill-opacity="0.43" data-name="Research" data-row="Research" data-start="2024-03-04" data-end="2024-03-08" data-progress="1"/>
+<rect x="155.8" y="118" width="107.2" height="39" rx="3" ry="3" fill="#5470C6"/>
+<rect x="155.8" y="118" width="134" height="39" rx="3" ry="3" fill="#5470C6" fill-opacity="0.43" data-name="Design" data-row="Design" data-start="2024-03-07" data-end="2024-03-13" data-progress="0.8"/>
+<rect x="267.5" y="183" width="67" height="39" rx="3" ry="3" fill="#5470C6"/>
+<rect x="267.5" y="183" width="223.4" height="39" rx="3" ry="3" fill="#5470C6" fill-opacity="0.43" data-name="Build" data-row="Build" data-start="2024-03-12" data-end="2024-03-22" data-progress="0.3"/>
+<rect x="423.9" y="248" width="134" height="39" rx="3" ry="3" fill="#5470C6" fill-opacity="0.43" data-name="Test" data-row="Test" data-start="2024-03-19" data-end="2024-03-25" data-progress="0"/>
+<polygon points="580.3,315 597.8,332.5 580.3,350 562.7,332.5" fill="#5470C6" data-name="Launch" data-row="Launch" data-start="2024-03-26"/>
+<line stroke-width="1" x1="334.5" y1="40" x2="334.5" y2="365" stroke="#464646" stroke-dasharray="4 3"/>
+</svg>

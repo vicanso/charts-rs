@@ -17,10 +17,10 @@ use super::params::{
     get_bool_from_value, get_color_from_value, get_f32_from_value, get_margin_from_value,
 };
 use super::{
-    BarChart, BoxPlotChart, CalendarChart, CandlestickChart, ChordChart, FunnelChart, GaugeChart,
-    GraphChart, HeatmapChart, HistogramChart, HorizontalBarChart, LineChart, ParallelChart,
-    PieChart, PolarBarChart, RadarChart, SankeyChart, ScatterChart, SunburstChart, TableChart,
-    ThemeRiverChart, TreeChart, TreemapChart, WaterfallChart,
+    BarChart, BoxPlotChart, CalendarChart, CandlestickChart, ChordChart, FunnelChart, GanttChart,
+    GaugeChart, GraphChart, HeatmapChart, HistogramChart, HorizontalBarChart, LineChart, MapChart,
+    ParallelChart, PieChart, PolarBarChart, RadarChart, SankeyChart, ScatterChart, SunburstChart,
+    TableChart, ThemeRiverChart, TreeChart, TreemapChart, WaterfallChart,
 };
 use super::{Box, Color};
 
@@ -77,6 +77,10 @@ pub enum ChildChart {
     PolarBar(PolarBarChart, Option<(f32, f32)>),
     /// A chord chart child.
     Chord(ChordChart, Option<(f32, f32)>),
+    /// A gantt chart child.
+    Gantt(GanttChart, Option<(f32, f32)>),
+    /// A map chart child.
+    Map(MapChart, Option<(f32, f32)>),
 }
 /// Several charts composed into one SVG: children are stacked vertically
 /// with `gap` between them, or placed at an explicit position.
@@ -196,6 +200,8 @@ impl MultiChart {
                     "histogram" => child!(HistogramChart, Histogram),
                     "polar_bar" => child!(PolarBarChart, PolarBar),
                     "chord" => child!(ChordChart, Chord),
+                    "gantt" => child!(GanttChart, Gantt),
+                    "map" => child!(MapChart, Map),
                     other => {
                         return Err(canvas::Error::Params {
                             message: format!("unsupported child chart type: {other}"),
@@ -284,6 +290,8 @@ impl MultiChart {
                 ChildChart::Histogram(c, position) => render!(c, position),
                 ChildChart::PolarBar(c, position) => render!(c, position),
                 ChildChart::Chord(c, position) => render!(c, position),
+                ChildChart::Gantt(c, position) => render!(c, position),
+                ChildChart::Map(c, position) => render!(c, position),
                 ChildChart::Table(c, position) => {
                     let c = place_child!(c, position);
                     // the height is recomputed by the table itself

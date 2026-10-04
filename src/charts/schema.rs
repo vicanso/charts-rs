@@ -52,6 +52,8 @@ pub(crate) enum Kind {
     /// An axis scale: `"linear"`, `"log"`, `"log2"`, `"log10"` or
     /// `{"type": "log", "base": n}`.
     Scale,
+    /// Any JSON value: a document of its own, such as GeoJSON.
+    Any,
     /// Any JSON array.
     Array,
     /// An array of numbers; `null` marks a missing point.
@@ -135,6 +137,7 @@ pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("x_values", Kind::XValues),
     f("band", Kind::Object(BAND_FIELDS)),
     f("step", Kind::Enum(&["start", "middle", "end"])),
+    f("error_bar", Kind::Object(BAND_FIELDS)),
 ];
 
 pub(crate) static Y_AXIS_FIELDS: &[Field] = &[
@@ -262,6 +265,9 @@ pub(crate) static CALENDAR_FIELDS: &[Field] = &[
     f("max", Kind::Number),
     f("min_color", Kind::Color),
     f("max_color", Kind::Color),
+    f("colors", Kind::ColorArray),
+    f("steps", Kind::Count),
+    f("thresholds", Kind::NumberArray),
     f("empty_color", Kind::Color),
     f("cell_size", Kind::Number),
     f("cell_gap", Kind::Number),
@@ -276,6 +282,7 @@ pub(crate) static CANDLESTICK_FIELDS: &[Field] = &[
     f("candlestick_up_border_color", Kind::Color),
     f("candlestick_down_color", Kind::Color),
     f("candlestick_down_border_color", Kind::Color),
+    f("candlestick_style", Kind::Enum(&["candle", "ohlc"])),
 ];
 
 pub(crate) static FUNNEL_FIELDS: &[Field] = &[
@@ -287,6 +294,23 @@ pub(crate) static FUNNEL_FIELDS: &[Field] = &[
         Kind::Enum(&["inside", "left", "right"]),
     ),
     f("funnel_align", Kind::Enum(ALIGN)),
+];
+
+static GANTT_TASK_FIELDS: &[Field] = &[
+    f("name", Kind::String),
+    f("start", Kind::XValue),
+    f("end", Kind::XValue),
+    f("row", Kind::String),
+    f("category", Kind::String),
+    f("progress", Kind::Number),
+    f("color", Kind::Color),
+];
+pub(crate) static GANTT_FIELDS: &[Field] = &[
+    f("tasks", Kind::ArrayOf(GANTT_TASK_FIELDS)),
+    f("bar_height", Kind::Number),
+    f("radius", Kind::Number),
+    f("label_show", Kind::Bool),
+    f("now", Kind::XValue),
 ];
 
 pub(crate) static GAUGE_FIELDS: &[Field] = &[
@@ -302,6 +326,9 @@ pub(crate) static GAUGE_FIELDS: &[Field] = &[
     f("show_axis_label", Kind::Bool),
     f("split_number", Kind::Count),
     f("value_formatter", Kind::String),
+    f("thresholds", Kind::NumberArray),
+    f("colors", Kind::ColorArray),
+    f("multi_ring", Kind::Bool),
 ];
 
 static GRAPH_NODE_FIELDS: &[Field] = &[
@@ -330,11 +357,34 @@ static HEATMAP_SERIES_FIELDS: &[Field] = &[
     f("max_color", Kind::Color),
     f("min_font_color", Kind::Color),
     f("max_font_color", Kind::Color),
+    f("colors", Kind::ColorArray),
+    f("steps", Kind::Count),
+    f("thresholds", Kind::NumberArray),
+    f("symbol", Kind::Enum(&["rect", "circle"])),
     f("data", Kind::Array),
 ];
 pub(crate) static HEATMAP_FIELDS: &[Field] = &[
     f("y_axis_data", Kind::StringArray),
     f("series", Kind::Object(HEATMAP_SERIES_FIELDS)),
+];
+
+pub(crate) static MAP_FIELDS: &[Field] = &[
+    f("geo_json", Kind::Any),
+    f("name_property", Kind::String),
+    f("data", Kind::Array),
+    f("projection", Kind::Enum(&["mercator", "equirectangular"])),
+    f("min", Kind::Number),
+    f("max", Kind::Number),
+    f("min_color", Kind::Color),
+    f("max_color", Kind::Color),
+    f("colors", Kind::ColorArray),
+    f("steps", Kind::Count),
+    f("thresholds", Kind::NumberArray),
+    f("empty_color", Kind::Color),
+    f("border_color", Kind::Color),
+    f("border_width", Kind::Number),
+    f("label_show", Kind::Bool),
+    f("visual_map_show", Kind::Bool),
 ];
 
 pub(crate) static HISTOGRAM_FIELDS: &[Field] = &[
@@ -383,6 +433,7 @@ pub(crate) static SANKEY_FIELDS: &[Field] = &[
     f("link_opacity", Kind::Number),
     f("node_align", Kind::Enum(&["left", "right", "justify"])),
     f("link_gradient", Kind::Bool),
+    f("orient", Kind::Enum(&["horizontal", "vertical"])),
 ];
 
 pub(crate) static CHORD_FIELDS: &[Field] = &[
@@ -403,6 +454,12 @@ pub(crate) static SCATTER_FIELDS: &[Field] = &[
     f("bubble_max_size", Kind::Number),
     f("series_symbols", Kind::Array),
     f("x_axis_config", Kind::Object(Y_AXIS_FIELDS)),
+    f(
+        "regression",
+        Kind::Enum(&["linear", "exponential", "logarithmic", "polynomial"]),
+    ),
+    f("regression_order", Kind::Count),
+    f("regression_label_show", Kind::Bool),
 ];
 
 static TREE_NODE_FIELDS: &[Field] = &[
@@ -473,8 +530,10 @@ pub(crate) static THEME_RIVER_FIELDS: &[Field] = &[f("stream_opacity", Kind::Num
 
 pub(crate) static TREE_FIELDS: &[Field] = &[
     f("series_data", Kind::ArrayOf(TREE_NODE_FIELDS)),
-    f("orient", Kind::Enum(&["LR", "TB"])),
+    f("orient", Kind::Enum(&["LR", "RL", "TB", "BT"])),
     f("symbol_size", Kind::Number),
+    f("layout", Kind::Enum(&["orthogonal", "radial"])),
+    f("edge_shape", Kind::Enum(&["curve", "polyline"])),
 ];
 
 pub(crate) static TREEMAP_FIELDS: &[Field] = &[
@@ -668,6 +727,7 @@ fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
             }
             _ => expect("a number or one of average, min, max"),
         },
+        Kind::Any => Ok(()),
         Kind::Array if v.is_array() => Ok(()),
         Kind::Array => expect("an array"),
         Kind::NumberArray => match v.as_array() {
@@ -865,6 +925,7 @@ mod tests {
             ),
             chart!("chord", ChordChart, BASE_FIELDS, CHORD_FIELDS),
             chart!("funnel", FunnelChart, BASE_FIELDS, FUNNEL_FIELDS),
+            chart!("gantt", GanttChart, BASE_FIELDS, GANTT_FIELDS),
             chart!("gauge", GaugeChart, BASE_FIELDS, GAUGE_FIELDS),
             chart!("graph", GraphChart, BASE_FIELDS, GRAPH_FIELDS),
             chart!("heatmap", HeatmapChart, BASE_FIELDS, HEATMAP_FIELDS),
@@ -876,6 +937,7 @@ mod tests {
                 HORIZONTAL_BAR_FIELDS
             ),
             chart!("line", LineChart, BASE_FIELDS),
+            chart!("map", MapChart, BASE_FIELDS, MAP_FIELDS),
             chart!("parallel", ParallelChart, BASE_FIELDS),
             chart!("pie", PieChart, BASE_FIELDS, PIE_FIELDS),
             chart!("polar_bar", PolarBarChart, BASE_FIELDS, POLAR_BAR_FIELDS),
@@ -912,6 +974,9 @@ mod tests {
             ("box_plot", "box_series.data") => json!([[[2, 3, 4, 5, 6]]]),
             ("heatmap", "series.data") => json!([[[0, 1], [1, 5]]]),
             ("scatter", "series_symbols") => json!([["triangle", "diamond"]]),
+            ("map", "data") => json!([[["a", 3]]]),
+            ("map", "geo_json") => json!([{"type": "Feature", "properties": {"name": "a"},
+                "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1]]]}}]),
             _ => Value::Null,
         };
         if let Value::Array(values) = special {
@@ -932,7 +997,7 @@ mod tests {
             Kind::XValues | Kind::NumberArray => vec![json!([1.5, 2.5])],
             Kind::StringArray => vec![json!(["p", "q"])],
             Kind::ColorArray => vec![json!(["#123456"])],
-            Kind::Array | Kind::Object(_) | Kind::ArrayOf(_) | Kind::SelfArray => {
+            Kind::Any | Kind::Array | Kind::Object(_) | Kind::ArrayOf(_) | Kind::SelfArray => {
                 panic!("{chart}: no sample for {path}")
             }
         }
@@ -953,6 +1018,7 @@ mod tests {
             "nodes" => vec![json!({"name": "a"})],
             "links" => vec![json!({"source": "a", "target": "b", "value": 1})],
             "box_series" => vec![json!({"name": "b", "data": [[1, 2, 3, 4, 5]]})],
+            "tasks" => vec![json!({"name": "t", "start": 1, "end": 5})],
             "indicators" => vec![json!({"name": "i", "max": 10})],
             "series_data" => vec![json!({"name": "n", "value": 1})],
             _ => vec![json!({})],
@@ -1019,13 +1085,15 @@ mod tests {
             inert((chart, parse), &tables, "", &[json!({})], &|v| v, &mut out);
         }
         // The exceptions, each of them said so in the JSON reference: a
-        // calendar is as large as its cells, and a scatter chart always
-        // puts its points on the ticks.
+        // calendar is as large as its cells, a scatter chart always puts
+        // its points on the ticks, and the name property of a map only
+        // tells how its GeoJSON is read.
         out.retain(|key| {
             ![
                 "calendar: width",
                 "calendar: height",
                 "scatter: x_boundary_gap",
+                "map: name_property",
             ]
             .contains(&key.as_str())
         });

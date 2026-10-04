@@ -452,7 +452,7 @@ pub(crate) fn format_time(local_seconds: f64, pattern: &str) -> String {
 }
 
 /// The date, with the time of day only as far as it is not zero.
-fn format_time_full(local_seconds: f64) -> String {
+pub(crate) fn format_time_full(local_seconds: f64) -> String {
     let t = civil(local_seconds);
     let pattern = if t.second != 0 {
         "%Y-%m-%d %H:%M:%S"

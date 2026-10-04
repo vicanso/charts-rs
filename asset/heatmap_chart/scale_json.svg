@@ -1,0 +1,433 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Air quality by hour
+</text>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="38" y1="40" x2="38" y2="365"/>
+<line x1="38" y1="40" x2="33" y2="40"/>
+<line x1="38" y1="86.4" x2="33" y2="86.4"/>
+<line x1="38" y1="132.9" x2="33" y2="132.9"/>
+<line x1="38" y1="179.3" x2="33" y2="179.3"/>
+<line x1="38" y1="225.7" x2="33" y2="225.7"/>
+<line x1="38" y1="272.1" x2="33" y2="272.1"/>
+<line x1="38" y1="318.6" x2="33" y2="318.6"/>
+<line x1="38" y1="365" x2="33" y2="365"/>
+</g>
+<text font-size="14" x="14" y="77.5" font-family="Roboto" fill="#6E7079">
+Fri
+</text>
+<text font-size="14" x="6" y="142.5" font-family="Roboto" fill="#6E7079">
+Thu
+</text>
+<text font-size="14" x="2" y="207.5" font-family="Roboto" fill="#6E7079">
+Wed
+</text>
+<text font-size="14" x="6" y="272.5" font-family="Roboto" fill="#6E7079">
+Tue
+</text>
+<text font-size="14" x="2" y="337.5" font-family="Roboto" fill="#6E7079">
+Mon
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="38" y1="365" x2="595" y2="365"/>
+<line x1="38" y1="365" x2="38" y2="370"/>
+<line x1="107.6" y1="365" x2="107.6" y2="370"/>
+<line x1="177.2" y1="365" x2="177.2" y2="370"/>
+<line x1="246.9" y1="365" x2="246.9" y2="370"/>
+<line x1="316.5" y1="365" x2="316.5" y2="370"/>
+<line x1="386.1" y1="365" x2="386.1" y2="370"/>
+<line x1="455.8" y1="365" x2="455.8" y2="370"/>
+<line x1="525.4" y1="365" x2="525.4" y2="370"/>
+<line x1="595" y1="365" x2="595" y2="370"/>
+</g>
+<text font-size="14" x="65.3" y="384" font-family="Roboto" fill="#6E7079">
+0h
+</text>
+<text font-size="14" x="134.9" y="384" font-family="Roboto" fill="#6E7079">
+3h
+</text>
+<text font-size="14" x="204.6" y="384" font-family="Roboto" fill="#6E7079">
+6h
+</text>
+<text font-size="14" x="274.2" y="384" font-family="Roboto" fill="#6E7079">
+9h
+</text>
+<text font-size="14" x="339.8" y="384" font-family="Roboto" fill="#6E7079">
+12h
+</text>
+<text font-size="14" x="409.4" y="384" font-family="Roboto" fill="#6E7079">
+15h
+</text>
+<text font-size="14" x="479.1" y="384" font-family="Roboto" fill="#6E7079">
+18h
+</text>
+<text font-size="14" x="548.7" y="384" font-family="Roboto" fill="#6E7079">
+21h
+</text>
+</g>
+<rect x="39" y="299.2" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="0" data-x="0h" data-y="Mon" data-value="32">
+<title>0h, Mon: 32</title>
+</rect>
+<text font-size="14" x="73.8" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+0h, Mon: 32
+</text>
+<text font-size="14" x="65.8" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+32
+</text>
+<rect x="108.5" y="299.2" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="1" data-x="3h" data-y="Mon" data-value="28">
+<title>3h, Mon: 28</title>
+</rect>
+<text font-size="14" x="143.2" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+3h, Mon: 28
+</text>
+<text font-size="14" x="135.2" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+28
+</text>
+<rect x="178" y="299.2" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="2" data-x="6h" data-y="Mon" data-value="45">
+<title>6h, Mon: 45</title>
+</rect>
+<text font-size="14" x="212.8" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+6h, Mon: 45
+</text>
+<text font-size="14" x="204.8" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+45
+</text>
+<rect x="247.5" y="299.2" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="3" data-x="9h" data-y="Mon" data-value="88">
+<title>9h, Mon: 88</title>
+</rect>
+<text font-size="14" x="282.2" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+9h, Mon: 88
+</text>
+<text font-size="14" x="274.2" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
+88
+</text>
+<rect x="317" y="299.2" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="4" data-x="12h" data-y="Mon" data-value="120">
+<title>12h, Mon: 120</title>
+</rect>
+<text font-size="14" x="351.8" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Mon: 120
+</text>
+<text font-size="14" x="339.8" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
+120
+</text>
+<rect x="386.5" y="299.2" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="5" data-x="15h" data-y="Mon" data-value="135">
+<title>15h, Mon: 135</title>
+</rect>
+<text font-size="14" x="421.2" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+15h, Mon: 135
+</text>
+<text font-size="14" x="409.2" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
+135
+</text>
+<rect x="456" y="299.2" width="69.5" height="64.8" stroke="#F46D43" fill="#F46D43" class="ct-trigger" data-index="6" data-x="18h" data-y="Mon" data-value="162">
+<title>18h, Mon: 162</title>
+</rect>
+<text font-size="14" x="490.8" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Mon: 162
+</text>
+<text font-size="14" x="478.8" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
+162
+</text>
+<rect x="525.5" y="299.2" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="7" data-x="21h" data-y="Mon" data-value="96">
+<title>21h, Mon: 96</title>
+</rect>
+<text font-size="14" x="560.2" y="299.2" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+21h, Mon: 96
+</text>
+<text font-size="14" x="552.2" y="331.6" dominant-baseline="central" font-family="Roboto" fill="#464646">
+96
+</text>
+<rect x="39" y="234.4" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="8" data-x="0h" data-y="Tue" data-value="41">
+<title>0h, Tue: 41</title>
+</rect>
+<text font-size="14" x="73.8" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+0h, Tue: 41
+</text>
+<text font-size="14" x="67.2" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+41
+</text>
+<rect x="108.5" y="234.4" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="9" data-x="3h" data-y="Tue" data-value="35">
+<title>3h, Tue: 35</title>
+</rect>
+<text font-size="14" x="143.2" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+3h, Tue: 35
+</text>
+<text font-size="14" x="135.2" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+35
+</text>
+<rect x="178" y="234.4" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="10" data-x="6h" data-y="Tue" data-value="52">
+<title>6h, Tue: 52</title>
+</rect>
+<text font-size="14" x="212.8" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+6h, Tue: 52
+</text>
+<text font-size="14" x="204.8" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
+52
+</text>
+<rect x="247.5" y="234.4" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="11" data-x="9h" data-y="Tue" data-value="104">
+<title>9h, Tue: 104</title>
+</rect>
+<text font-size="14" x="282.2" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+9h, Tue: 104
+</text>
+<text font-size="14" x="270.2" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
+104
+</text>
+<rect x="317" y="234.4" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="12" data-x="12h" data-y="Tue" data-value="148">
+<title>12h, Tue: 148</title>
+</rect>
+<text font-size="14" x="351.8" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Tue: 148
+</text>
+<text font-size="14" x="339.8" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
+148
+</text>
+<rect x="386.5" y="234.4" width="69.5" height="64.8" stroke="#F46D43" fill="#F46D43" class="ct-trigger" data-index="13" data-x="15h" data-y="Tue" data-value="171">
+<title>15h, Tue: 171</title>
+</rect>
+<text font-size="14" x="421.2" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+15h, Tue: 171
+</text>
+<text font-size="14" x="410.8" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
+171
+</text>
+<rect x="456" y="234.4" width="69.5" height="64.8" stroke="#A50026" fill="#A50026" class="ct-trigger" data-index="14" data-x="18h" data-y="Tue" data-value="205">
+<title>18h, Tue: 205</title>
+</rect>
+<text font-size="14" x="490.8" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Tue: 205
+</text>
+<text font-size="14" x="478.8" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+205
+</text>
+<rect x="525.5" y="234.4" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="15" data-x="21h" data-y="Tue" data-value="143">
+<title>21h, Tue: 143</title>
+</rect>
+<text font-size="14" x="560.2" y="234.4" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+21h, Tue: 143
+</text>
+<text font-size="14" x="548.8" y="266.8" dominant-baseline="central" font-family="Roboto" fill="#464646">
+143
+</text>
+<rect x="39" y="169.6" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="16" data-x="0h" data-y="Wed" data-value="55">
+<title>0h, Wed: 55</title>
+</rect>
+<text font-size="14" x="73.8" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+0h, Wed: 55
+</text>
+<text font-size="14" x="65.8" y="202" dominant-baseline="central" font-family="Roboto" fill="#464646">
+55
+</text>
+<rect x="108.5" y="169.6" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="17" data-x="3h" data-y="Wed" data-value="47">
+<title>3h, Wed: 47</title>
+</rect>
+<text font-size="14" x="143.2" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+3h, Wed: 47
+</text>
+<text font-size="14" x="135.2" y="202" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+47
+</text>
+<rect x="178" y="169.6" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="18" data-x="6h" data-y="Wed" data-value="66">
+<title>6h, Wed: 66</title>
+</rect>
+<text font-size="14" x="212.8" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+6h, Wed: 66
+</text>
+<text font-size="14" x="204.8" y="202" dominant-baseline="central" font-family="Roboto" fill="#464646">
+66
+</text>
+<rect x="247.5" y="169.6" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="19" data-x="9h" data-y="Wed" data-value="125">
+<title>9h, Wed: 125</title>
+</rect>
+<text font-size="14" x="282.2" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+9h, Wed: 125
+</text>
+<text font-size="14" x="270.2" y="202" dominant-baseline="central" font-family="Roboto" fill="#464646">
+125
+</text>
+<rect x="317" y="169.6" width="69.5" height="64.8" stroke="#F46D43" fill="#F46D43" class="ct-trigger" data-index="20" data-x="12h" data-y="Wed" data-value="182">
+<title>12h, Wed: 182</title>
+</rect>
+<text font-size="14" x="351.8" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Wed: 182
+</text>
+<text font-size="14" x="339.8" y="202" dominant-baseline="central" font-family="Roboto" fill="#464646">
+182
+</text>
+<rect x="386.5" y="169.6" width="69.5" height="64.8" stroke="#A50026" fill="#A50026" class="ct-trigger" data-index="21" data-x="15h" data-y="Wed" data-value="214">
+<title>15h, Wed: 214</title>
+</rect>
+<text font-size="14" x="421.2" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+15h, Wed: 214
+</text>
+<text font-size="14" x="409.2" y="202" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+214
+</text>
+<rect x="456" y="169.6" width="69.5" height="64.8" stroke="#A50026" fill="#A50026" class="ct-trigger" data-index="22" data-x="18h" data-y="Wed" data-value="236">
+<title>18h, Wed: 236</title>
+</rect>
+<text font-size="14" x="490.8" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Wed: 236
+</text>
+<text font-size="14" x="478.8" y="202" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+236
+</text>
+<rect x="525.5" y="169.6" width="69.5" height="64.8" stroke="#F46D43" fill="#F46D43" class="ct-trigger" data-index="23" data-x="21h" data-y="Wed" data-value="158">
+<title>21h, Wed: 158</title>
+</rect>
+<text font-size="14" x="560.2" y="169.6" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+21h, Wed: 158
+</text>
+<text font-size="14" x="548.2" y="202" dominant-baseline="central" font-family="Roboto" fill="#464646">
+158
+</text>
+<rect x="39" y="104.8" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="24" data-x="0h" data-y="Thu" data-value="38">
+<title>0h, Thu: 38</title>
+</rect>
+<text font-size="14" x="73.8" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+0h, Thu: 38
+</text>
+<text font-size="14" x="65.8" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+38
+</text>
+<rect x="108.5" y="104.8" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="25" data-x="3h" data-y="Thu" data-value="30">
+<title>3h, Thu: 30</title>
+</rect>
+<text font-size="14" x="143.2" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+3h, Thu: 30
+</text>
+<text font-size="14" x="135.2" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+30
+</text>
+<rect x="178" y="104.8" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="26" data-x="6h" data-y="Thu" data-value="49">
+<title>6h, Thu: 49</title>
+</rect>
+<text font-size="14" x="212.8" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+6h, Thu: 49
+</text>
+<text font-size="14" x="205.2" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+49
+</text>
+<rect x="247.5" y="104.8" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="27" data-x="9h" data-y="Thu" data-value="92">
+<title>9h, Thu: 92</title>
+</rect>
+<text font-size="14" x="282.2" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+9h, Thu: 92
+</text>
+<text font-size="14" x="274.2" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
+92
+</text>
+<rect x="317" y="104.8" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="28" data-x="12h" data-y="Thu" data-value="110">
+<title>12h, Thu: 110</title>
+</rect>
+<text font-size="14" x="351.8" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Thu: 110
+</text>
+<text font-size="14" x="339.8" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
+110
+</text>
+<rect x="386.5" y="104.8" width="69.5" height="64.8" stroke="#FEE08B" fill="#FEE08B" class="ct-trigger" data-index="29" data-x="15h" data-y="Thu" data-value="128">
+<title>15h, Thu: 128</title>
+</rect>
+<text font-size="14" x="421.2" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+15h, Thu: 128
+</text>
+<text font-size="14" x="409.2" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
+128
+</text>
+<rect x="456" y="104.8" width="69.5" height="64.8" stroke="#F46D43" fill="#F46D43" class="ct-trigger" data-index="30" data-x="18h" data-y="Thu" data-value="151">
+<title>18h, Thu: 151</title>
+</rect>
+<text font-size="14" x="490.8" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Thu: 151
+</text>
+<text font-size="14" x="480.2" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
+151
+</text>
+<rect x="525.5" y="104.8" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="31" data-x="21h" data-y="Thu" data-value="87">
+<title>21h, Thu: 87</title>
+</rect>
+<text font-size="14" x="560.2" y="104.8" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+21h, Thu: 87
+</text>
+<text font-size="14" x="552.2" y="137.2" dominant-baseline="central" font-family="Roboto" fill="#464646">
+87
+</text>
+<rect x="39" y="40" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="32" data-x="0h" data-y="Fri" data-value="22">
+<title>0h, Fri: 22</title>
+</rect>
+<text font-size="14" x="73.8" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+0h, Fri: 22
+</text>
+<text font-size="14" x="65.8" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+22
+</text>
+<rect x="108.5" y="40" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="33" data-x="3h" data-y="Fri" data-value="18">
+<title>3h, Fri: 18</title>
+</rect>
+<text font-size="14" x="143.2" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+3h, Fri: 18
+</text>
+<text font-size="14" x="135.2" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+18
+</text>
+<rect x="178" y="40" width="69.5" height="64.8" stroke="#1A9850" fill="#1A9850" class="ct-trigger" data-index="34" data-x="6h" data-y="Fri" data-value="27">
+<title>6h, Fri: 27</title>
+</rect>
+<text font-size="14" x="212.8" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+6h, Fri: 27
+</text>
+<text font-size="14" x="204.8" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
+27
+</text>
+<rect x="247.5" y="40" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="35" data-x="9h" data-y="Fri" data-value="61">
+<title>9h, Fri: 61</title>
+</rect>
+<text font-size="14" x="282.2" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+9h, Fri: 61
+</text>
+<text font-size="14" x="275.8" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+61
+</text>
+<rect x="317" y="40" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="36" data-x="12h" data-y="Fri" data-value="74">
+<title>12h, Fri: 74</title>
+</rect>
+<text font-size="14" x="351.8" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+12h, Fri: 74
+</text>
+<text font-size="14" x="343.8" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+74
+</text>
+<rect x="386.5" y="40" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="37" data-x="15h" data-y="Fri" data-value="83">
+<title>15h, Fri: 83</title>
+</rect>
+<text font-size="14" x="421.2" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+15h, Fri: 83
+</text>
+<text font-size="14" x="413.8" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+83
+</text>
+<rect x="456" y="40" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="38" data-x="18h" data-y="Fri" data-value="98">
+<title>18h, Fri: 98</title>
+</rect>
+<text font-size="14" x="490.8" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+18h, Fri: 98
+</text>
+<text font-size="14" x="482.8" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+98
+</text>
+<rect x="525.5" y="40" width="69.5" height="64.8" stroke="#A6D96A" fill="#A6D96A" class="ct-trigger" data-index="39" data-x="21h" data-y="Fri" data-value="54">
+<title>21h, Fri: 54</title>
+</rect>
+<text font-size="14" x="560.2" y="40" dy="-4" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+21h, Fri: 54
+</text>
+<text font-size="14" x="552.2" y="72.4" dominant-baseline="central" font-family="Roboto" fill="#464646">
+54
+</text>
+</svg>

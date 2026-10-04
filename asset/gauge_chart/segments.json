@@ -1,0 +1,12 @@
+{
+    "title_text": "Speed",
+    "title_align": "left",
+    "legend_show": false,
+    "min": 0,
+    "max": 200,
+    "split_number": 4,
+    "thresholds": [80, 140],
+    "colors": ["#91cc75", "#fac858", "#ee6666"],
+    "value_formatter": "{c} km/h",
+    "series_list": [{"name": "Now", "data": [156]}]
+}

@@ -2,9 +2,9 @@
 mod common;
 
 use charts_rs::{
-    BarChart, CalendarChart, ChordChart, FunnelChart, GaugeChart, HeatmapChart, HistogramChart,
-    LineChart, MultiChart, PieChart, PolarBarChart, SankeyChart, ScatterChart, TableChart,
-    TreemapChart, compact_svg,
+    BarChart, CalendarChart, ChordChart, FunnelChart, GanttChart, GaugeChart, HeatmapChart,
+    HistogramChart, LineChart, MapChart, MultiChart, PieChart, PolarBarChart, SankeyChart,
+    ScatterChart, TableChart, TreemapChart, compact_svg,
 };
 
 /// One JSON per chart type, rendered plain and compact.
@@ -92,6 +92,18 @@ fn cases() -> Vec<(&'static str, String, String)> {
             "chord_gradient",
             ChordChart,
             include_str!("../asset/chord_chart/gradient.json")
+        ),
+        // Gantt charts: rounded bars with progress, milestones, a dashed line.
+        case!(
+            "gantt",
+            GanttChart,
+            include_str!("../asset/gantt_chart/basic.json")
+        ),
+        // A map: outlines of many corners, with a hole and islands.
+        case!(
+            "map",
+            MapChart,
+            include_str!("../asset/map_chart/basic.json")
         ),
     ]
 }

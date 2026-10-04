@@ -12,7 +12,7 @@
 
 use super::component::{
     Arrow, Axis, Bubble, Circle, Component, Grid, LEGEND_WIDTH, Legend, Line, Pie, Polygon,
-    Polyline, Rect, Ribbon, Sector, SmoothBand, SmoothLine, SmoothLineFill, StraightLine,
+    Polyline, Rect, Ribbon, Sector, Shape, SmoothBand, SmoothLine, SmoothLineFill, StraightLine,
     StraightLineFill, Text, write_svg_close, write_svg_open,
 };
 
@@ -191,6 +191,18 @@ impl Canvas {
         }
         let b = get_box_of_points(&c.points);
         self.append(Component::Polygon(c));
+        b
+    }
+    /// Appends shape widget to canvas.
+    pub fn shape(&mut self, shape: Shape) -> Box {
+        let mut c = shape;
+        for p in c.rings.iter_mut().flatten() {
+            p.x += self.margin.left;
+            p.y += self.margin.top
+        }
+        let points: Vec<Point> = c.rings.iter().flatten().copied().collect();
+        let b = get_box_of_points(&points);
+        self.append(Component::Shape(c));
         b
     }
     fn offset_text(&self, text: &mut Text) {
@@ -454,6 +466,7 @@ fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<Stri
         Component::Pie(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
         Component::Sector(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
         Component::Ribbon(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
+        Component::Shape(c) => c.write_svg(out),
     }
     Ok(())
 }

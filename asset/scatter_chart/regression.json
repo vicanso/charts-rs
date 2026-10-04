@@ -1,0 +1,20 @@
+{
+    "title_text": "Regression",
+    "title_align": "left",
+    "legend_align": "right",
+    "margin": {"left": 5, "top": 5, "right": 20, "bottom": 5},
+    "regression": "polynomial",
+    "regression_order": 2,
+    "regression_label_show": true,
+    "series_symbol_sizes": [5, 5],
+    "series_list": [
+        {
+            "name": "Trial A",
+            "data": [1, 4.8, 2, 6.9, 3, 9.6, 4, 11.2, 5, 14.1, 6, 15.3, 7, 18.8, 8, 20.6, 9, 22.1, 10, 25.9]
+        },
+        {
+            "name": "Trial B",
+            "data": [1, 2.1, 2, 2.4, 3, 3.9, 4, 5.2, 5, 7.9, 6, 10.4, 7, 14.8, 8, 18.9, 9, 24.6, 10, 30.2]
+        }
+    ]
+}
