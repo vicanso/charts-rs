@@ -15,7 +15,7 @@
 
 `charts-rs` 提供简洁的图表生成方案，支持 `svg`、`png`、`jpeg`、`webp` 以及 `avif` 等多种输出格式。该库提供十种不同的主题：`light`、`dark`、`grafana`、`ant`、`vintage`、`walden`、`westeros`、`chalk`、`shine` 以及 `shadcn`，默认主题为 `light`。
 
-该库支持二十三种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel`、`ThemeRiver` 以及 `Histogram`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
+该库支持二十四种图表类型：`Bar`、`HorizontalBar`、`Line`、`Pie`、`Radar`、`Scatter`、`Candlestick`、`Table`、`Heatmap`、`Funnel`、`Waterfall`、`MultiChart`、`Calendar`、`Gauge`、`Treemap`、`BoxPlot`、`Sunburst`、`Sankey`、`Tree`、`Graph`、`Parallel`、`ThemeRiver`、`Histogram` 以及 `PolarBar`。参考 `Apache ECharts` 的设计理念，`charts-rs` 使开发者能够创建具有相似功能和外观的图表。
 
 ## 更多主题色
 
@@ -213,6 +213,16 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/histogram.png" alt="charts-rs">
 </p>
 
+## Polar bar
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar-radial.png" alt="charts-rs">
+</p>
+
 ## 最低 Rust 版本
 
 charts-rs 1.x 需要 Rust 1.88 及以上（edition 2024）。
@@ -229,6 +239,7 @@ cargo run --example sunburst  # 旭日图：标签格式化、分层厚度、动
 cargo run --example sankey     # 桑基流向图（节点由 links 自动推导）
 cargo run --example tree       # 节点-连线树图（曲线连线，LR 布局）
 cargo run --example histogram  # 直方图：样本在等宽分箱上的分布
+cargo run --example polar_bar  # 极坐标柱状图：环绕堆叠的柱，以及圆头环形柱
 ```
 
 ### 使用 Builder API 创建图表
@@ -419,6 +430,28 @@ Rust 中设置 `chart.x_axis_values`（`Vec<f64>`），时间戳再加上 `chart
 - 默认根据样本自动选择分箱（边界取整数）；可用 `bin_width` 或 `bin_count` 指定，`x_axis_min` / `x_axis_max` 固定范围。
 - `"percent": true` 显示各样本内的占比而不是数量。
 - 多个系列共用分箱并叠加显示（半透明）；设置相同的 `stack` 名称则改为堆叠。
+
+### 极坐标柱状图
+
+`PolarBarChart` 把柱状图画在极坐标上。类目来自 `x_axis_data`；同一类目内多个系列并排显示，设置相同的 `stack` 名称则堆叠。
+
+```json
+{
+  "inner_radius": 30,
+  "x_axis_data": ["一月", "二月", "三月", "四月"],
+  "series_list": [
+    { "name": "北部", "stack": "total", "data": [42, 38, 51, 64] },
+    { "name": "南部", "stack": "total", "data": [30, 34, 40, 58] }
+  ]
+}
+```
+
+- 默认类目沿圆周排列，柱从圆心向外生长。设置 `"category_axis": "radius"` 后每个类目占一个圆环，柱沿圆周延伸：轴上最大值默认对应四分之三圈（可用 `end_angle` 调整），`"round_cap": true` 让柱的两端变为圆头。
+- `start_angle`（从 12 点方向顺时针的角度）旋转图表，`inner_radius` 在中心留出空洞，`radius` 限制大小，`category_gap`（0 到 0.9，默认 0.2）设置类目之间的留白。
+- 数值轴使用 `y_axis_configs` 的第一项（`axis_min`、`axis_max`、`axis_split_number`、`axis_formatter`）；`x_axis_hidden` / `y_axis_hidden` 分别隐藏类目标签和数值标签。
+- `label_show`、`colors`（每根柱单独的颜色）、`tooltip_show`、`animation` 与柱状图用法一致。
+
+Rust 中使用 `PolarBarChart::new(series_list, x_axis_data)`，再设置 `chart.category_axis = PolarAxis::Radius`。
 
 ### 折线区间带
 

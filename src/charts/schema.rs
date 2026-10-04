@@ -341,6 +341,16 @@ pub(crate) static HISTOGRAM_FIELDS: &[Field] = &[
 pub(crate) static HORIZONTAL_BAR_FIELDS: &[Field] =
     &[f("series_label_position", Kind::Enum(POSITION))];
 
+pub(crate) static POLAR_BAR_FIELDS: &[Field] = &[
+    f("category_axis", Kind::Enum(&["angle", "radius"])),
+    f("radius", Kind::Size),
+    f("inner_radius", Kind::Number),
+    f("start_angle", Kind::Number),
+    f("end_angle", Kind::Number),
+    f("round_cap", Kind::Bool),
+    f("category_gap", Kind::Number),
+];
+
 pub(crate) static PIE_FIELDS: &[Field] = &[
     f("radius", Kind::Number),
     f("inner_radius", Kind::Number),

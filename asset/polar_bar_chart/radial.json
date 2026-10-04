@@ -1,0 +1,19 @@
+{
+    "theme": "dark",
+    "title_text": "Goals reached",
+    "title_align": "left",
+    "legend_show": false,
+    "category_axis": "radius",
+    "round_cap": true,
+    "tooltip_show": true,
+    "y_axis_configs": [{"axis_max": 100, "axis_split_number": 4, "axis_formatter": "{c}%"}],
+    "x_axis_data": ["Sleep", "Steps", "Water", "Reading", "Workout"],
+    "series_list": [
+        {
+            "name": "Done",
+            "data": [92, 74, 61, 45, 28],
+            "label_show": true,
+            "colors": ["#5470C6", "#91CC75", "#FAC858", "#EE6666", "#73C0DE"]
+        }
+    ]
+}

@@ -1161,6 +1161,24 @@ fn generate_image() {
                 .svg()
                 .unwrap(),
         ),
+        (
+            "polar-bar",
+            charts_rs::PolarBarChart::from_json(include_str!(
+                "../asset/polar_bar_chart/stack.json"
+            ))
+            .unwrap()
+            .svg()
+            .unwrap(),
+        ),
+        (
+            "polar-bar-radial",
+            charts_rs::PolarBarChart::from_json(include_str!(
+                "../asset/polar_bar_chart/radial.json"
+            ))
+            .unwrap()
+            .svg()
+            .unwrap(),
+        ),
     ] {
         let buf = svg_to_png(&chart).unwrap();
         common::save_asset(&format!("image/{name}.png"), &buf);

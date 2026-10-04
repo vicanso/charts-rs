@@ -459,6 +459,8 @@ pub enum Component {
     Pie(Pie),
     /// A filled band between two smooth curves.
     SmoothBand(SmoothBand),
+    /// An annular sector with exact arcs.
+    Sector(Sector),
 }
 #[derive(Clone, PartialEq, Debug)]
 
@@ -1273,6 +1275,152 @@ impl Pie {
             attrs.push((ATTR_STROKE, color.hex()));
             attrs.push((ATTR_STROKE_OPACITY, convert_opacity(&color)));
         }
+        if let Some(ref class) = self.class {
+            attrs.push((ATTR_CLASS, class.clone()));
+        }
+        if let Some(ref style) = self.style {
+            attrs.push((ATTR_STYLE, style.clone()));
+        }
+        let element = SVGTag {
+            tag: TAG_PATH,
+            attrs,
+            dataset: &self.dataset,
+            data: title_data(&self.title),
+        }
+        .to_string();
+        if defs.is_empty() {
+            element
+        } else {
+            format!("{defs}{element}")
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
+/// An annular sector: the part of a ring between two angles, drawn with
+/// exact arcs however thin it is — the bar of a polar chart.
+pub struct Sector {
+    /// Fill (solid or gradient).
+    pub fill: Fill,
+    /// Center x coordinate.
+    pub cx: f32,
+    /// Center y coordinate.
+    pub cy: f32,
+    /// Outer radius.
+    pub r: f32,
+    /// Inner radius; 0 renders a wedge from the center.
+    pub ir: f32,
+    /// Start angle in degrees, clockwise from 12 o'clock.
+    pub start_angle: f32,
+    /// Sweep angle in degrees, clockwise; a negative sweep runs backwards
+    /// from the start angle, and 360 or more is the whole ring.
+    pub delta: f32,
+    /// Rounds both ends with a half circle (which reaches past the angles).
+    pub round_cap: bool,
+    /// CSS class attribute of the SVG element.
+    pub class: Option<String>,
+    /// Inline style attribute of the SVG element.
+    pub style: Option<String>,
+    /// Optional native `<title>` child (hover tooltip / accessible name).
+    pub title: Option<String>,
+    /// `data-*` attributes, see [`Rect::dataset`].
+    pub dataset: Vec<(String, String)>,
+}
+
+impl Default for Sector {
+    fn default() -> Self {
+        Sector {
+            fill: Fill::Solid((0, 0, 0).into()),
+            cx: 0.0,
+            cy: 0.0,
+            r: 0.0,
+            ir: 0.0,
+            start_angle: 0.0,
+            delta: 0.0,
+            round_cap: false,
+            class: None,
+            style: None,
+            title: None,
+            dataset: vec![],
+        }
+    }
+}
+
+impl Sector {
+    /// Renders the component to an SVG fragment.
+    pub fn svg(&self) -> String {
+        self.svg_with_grad_seen(None)
+    }
+    /// The outline of the sector as path data.
+    fn path(&self) -> String {
+        let r = self.r.max(0.0);
+        let ir = self.ir.clamp(0.0, r);
+        // A backwards sweep is the same shape started from its other end.
+        let (start, delta) = if self.delta < 0.0 {
+            (self.start_angle + self.delta, -self.delta)
+        } else {
+            (self.start_angle, self.delta)
+        };
+        let end = start + delta;
+        let at = |radius: f32, angle: f32| {
+            let point = get_pie_point(self.cx, self.cy, radius, angle);
+            format!("{},{}", format_float(point.x), format_float(point.y))
+        };
+        let (r_str, ir_str) = (format_float(r), format_float(ir));
+
+        // The whole ring: an arc cannot end where it starts, so each circle
+        // is two halves; the hole runs the other way round to stay empty.
+        if delta >= 360.0 {
+            let mut d = format!(
+                "M{} A{r_str} {r_str} 0 1 1 {} A{r_str} {r_str} 0 1 1 {} Z",
+                at(r, start),
+                at(r, start + 180.0),
+                at(r, start)
+            );
+            if ir > 0.0 {
+                d.push_str(&format!(
+                    " M{} A{ir_str} {ir_str} 0 1 0 {} A{ir_str} {ir_str} 0 1 0 {} Z",
+                    at(ir, start),
+                    at(ir, start + 180.0),
+                    at(ir, start)
+                ));
+            }
+            return d;
+        }
+
+        let large = if delta > 180.0 { 1 } else { 0 };
+        let cap = format_float((r - ir) / 2.0);
+        let mut d = format!(
+            "M{} A{r_str} {r_str} 0 {large} 1 {}",
+            at(r, start),
+            at(r, end)
+        );
+        // Down the far end, round or straight.
+        if self.round_cap {
+            d.push_str(&format!(" A{cap} {cap} 0 0 1 {}", at(ir, end)));
+        } else {
+            d.push_str(&format!(" L{}", at(ir, end)));
+        }
+        // Back along the inner edge; a wedge has only its tip there.
+        if ir > 0.0 {
+            d.push_str(&format!(
+                " A{ir_str} {ir_str} 0 {large} 0 {}",
+                at(ir, start)
+            ));
+        }
+        if self.round_cap {
+            d.push_str(&format!(" A{cap} {cap} 0 0 1 {}", at(r, start)));
+        }
+        d.push_str(" Z");
+        d
+    }
+    pub(crate) fn svg_with_grad_seen(&self, grad_seen: Option<&mut HashSet<String>>) -> String {
+        let defs = fill_svg_defs(&self.fill, grad_seen);
+        let mut attrs = vec![
+            (ATTR_D, self.path()),
+            (ATTR_FILL, fill_svg_attr(&self.fill)),
+            (ATTR_FILL_OPACITY, fill_svg_opacity(&self.fill)),
+        ];
         if let Some(ref class) = self.class {
             attrs.push((ATTR_CLASS, class.clone()));
         }
@@ -2427,11 +2575,79 @@ impl Legend {
 mod tests {
     use super::{
         Arrow, Axis, Bubble, Circle, Fill, Grid, Legend, LegendCategory, Line, Pie, Polygon,
-        Polyline, Rect, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+        Polyline, Rect, Sector, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
         wrap_legends_to_rows,
     };
     use crate::{Align, Color, DEFAULT_FONT_FAMILY, Position, Symbol};
     use pretty_assertions::assert_eq;
+    #[test]
+    fn test_sector() {
+        let sector = |start_angle: f32, delta: f32| Sector {
+            fill: Fill::Solid((0, 0, 0).into()),
+            cx: 100.0,
+            cy: 100.0,
+            r: 50.0,
+            ir: 20.0,
+            start_angle,
+            delta,
+            ..Default::default()
+        };
+        // A quarter of a ring, clockwise from 12 o'clock: out along the
+        // outer edge, back along the inner one.
+        let quarter = "M100,50 A50 50 0 0 1 150,100 L120,100 A20 20 0 0 0 100,80 Z";
+        assert_eq!(quarter, sector(0.0, 90.0).path());
+        assert_eq!(
+            format!(r###"<path d="{quarter}" fill="#000000"/>"###),
+            sector(0.0, 90.0).svg()
+        );
+        // A backwards sweep is the same shape.
+        assert_eq!(quarter, sector(90.0, -90.0).path());
+        // More than half a turn takes the long way round on both edges.
+        assert_eq!(
+            "M100,50 A50 50 0 1 1 50,100 L80,100 A20 20 0 1 0 100,80 Z",
+            sector(0.0, 270.0).path()
+        );
+        // However thin, a sector keeps its angles.
+        assert_eq!(
+            "M100,50 A50 50 0 0 1 100.9,50 L100.3,80 A20 20 0 0 0 100,80 Z",
+            sector(0.0, 1.0).path()
+        );
+        // Without an inner radius it is a wedge from the center.
+        let mut wedge = sector(0.0, 90.0);
+        wedge.ir = 0.0;
+        assert_eq!("M100,50 A50 50 0 0 1 150,100 L100,100 Z", wedge.path());
+        // A full turn is two outlines of two halves each: the ring, and
+        // the hole the other way round.
+        let ring = "M100,50 A50 50 0 1 1 100,150 A50 50 0 1 1 100,50 Z \
+                    M100,80 A20 20 0 1 0 100,120 A20 20 0 1 0 100,80 Z";
+        assert_eq!(ring, sector(0.0, 360.0).path());
+        assert_eq!(ring, sector(0.0, 720.0).path());
+        // Round caps: half circles as wide as the ring, at both ends.
+        let mut round = sector(0.0, 90.0);
+        round.round_cap = true;
+        assert_eq!(
+            "M100,50 A50 50 0 0 1 150,100 A15 15 0 0 1 120,100 A20 20 0 0 0 100,80 \
+             A15 15 0 0 1 100,50 Z",
+            round.path()
+        );
+        // An inner radius beyond the outer one leaves nothing, not a mess.
+        let mut inverted = sector(0.0, 90.0);
+        inverted.ir = 80.0;
+        assert_eq!(
+            "M100,50 A50 50 0 0 1 150,100 L150,100 A50 50 0 0 0 100,50 Z",
+            inverted.path()
+        );
+
+        // Class, style, title and data attributes are written like a pie's.
+        let mut titled = sector(0.0, 90.0);
+        titled.class = Some("ct-trigger".to_string());
+        titled.style = Some("animation-delay:10ms".to_string());
+        titled.title = Some("A: 1".to_string());
+        titled.dataset = vec![("series".to_string(), "A".to_string())];
+        let svg = titled.svg();
+        assert!(svg.contains(r#"class="ct-trigger" style="animation-delay:10ms" data-series="A""#));
+        assert!(svg.contains("<title>A: 1</title>"));
+    }
     #[test]
     fn test_line() {
         let line = Line::default();

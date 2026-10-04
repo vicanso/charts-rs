@@ -3,7 +3,8 @@ mod common;
 
 use charts_rs::{
     BarChart, CalendarChart, FunnelChart, GaugeChart, HeatmapChart, HistogramChart, LineChart,
-    MultiChart, PieChart, SankeyChart, ScatterChart, TableChart, TreemapChart, compact_svg,
+    MultiChart, PieChart, PolarBarChart, SankeyChart, ScatterChart, TableChart, TreemapChart,
+    compact_svg,
 };
 
 /// One JSON per chart type, rendered plain and compact.
@@ -69,6 +70,17 @@ fn cases() -> Vec<(&'static str, String, String)> {
             "band_range",
             LineChart,
             include_str!("../asset/line_chart/band_range.json")
+        ),
+        // Polar bars: wedges from the center, and rings with round caps.
+        case!(
+            "polar_bar",
+            PolarBarChart,
+            include_str!("../asset/polar_bar_chart/stack.json")
+        ),
+        case!(
+            "polar_radial",
+            PolarBarChart,
+            include_str!("../asset/polar_bar_chart/radial.json")
         ),
     ]
 }

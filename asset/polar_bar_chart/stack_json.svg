@@ -1,0 +1,324 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Rainfall by month
+</text>
+<g>
+<rect x="384" y="10" width="25" height="10" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="412" y="19" font-family="Roboto" fill="#464646">
+North
+</text>
+</g>
+<g>
+<rect x="452" y="10" width="25" height="10" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="480" y="19" font-family="Roboto" fill="#464646">
+South
+</text>
+</g>
+<g>
+<rect x="522" y="10" width="25" height="10" rx="2" ry="2" stroke="#FAC858" fill="#FAC858"/>
+<text font-size="14" x="550" y="19" font-family="Roboto" fill="#464646">
+Coast
+</text>
+</g>
+<circle cx="300" cy="217.5" r="30" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="217.5" r="50.6" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="217.5" r="71.2" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="217.5" r="91.8" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="217.5" r="112.3" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="217.5" r="132.9" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="217.5" r="153.5" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<line stroke-width="1" x1="300" y1="187.5" x2="300" y2="64" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="315" y1="191.5" x2="376.8" y2="84.6" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="326" y1="202.5" x2="432.9" y2="140.8" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="330" y1="217.5" x2="453.5" y2="217.5" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="326" y1="232.5" x2="432.9" y2="294.2" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="315" y1="243.5" x2="376.8" y2="350.4" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="300" y1="247.5" x2="300" y2="371" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="285" y1="243.5" x2="223.2" y2="350.4" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="274" y1="232.5" x2="167.1" y2="294.2" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="270" y1="217.5" x2="146.5" y2="217.5" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="274" y1="202.5" x2="167.1" y2="140.8" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="285" y1="191.5" x2="223.3" y2="84.6" stroke="#E0E6F2"/>
+<path d="M302.5,170.3 A47.3 47.3 0 0 1 321.5,175.4 L313.6,190.8 A30 30 0 0 0 301.6,187.5 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Jan" data-value="42">
+<title>North: 42</title>
+</path>
+<text font-size="14" x="310" y="180.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 42
+</text>
+<path d="M324.9,179.2 A45.6 45.6 0 0 1 338.3,192.6 L325.2,201.2 A30 30 0 0 0 316.3,192.3 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Feb" data-value="38">
+<title>North: 38</title>
+</path>
+<text font-size="14" x="326.7" y="190.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 38
+</text>
+<path d="M345.4,194.3 A51 51 0 0 1 350.9,214.8 L330,215.9 A30 30 0 0 0 326.7,203.9 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Mar" data-value="51">
+<title>North: 51</title>
+</path>
+<text font-size="14" x="339.1" y="207" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 51
+</text>
+<path d="M356.3,220.4 A56.3 56.3 0 0 1 350.2,243.1 L326.7,231.1 A30 30 0 0 0 330,219.1 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Apr" data-value="64">
+<title>North: 64</title>
+</path>
+<text font-size="14" x="341.7" y="228.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 64
+</text>
+<path d="M355.5,253.6 A66.2 66.2 0 0 1 336.1,273 L316.3,242.7 A30 30 0 0 0 325.2,233.8 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="May" data-value="88">
+<title>North: 88</title>
+</path>
+<text font-size="14" x="334" y="251.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 88
+</text>
+<path d="M336,288.2 A79.4 79.4 0 0 1 304.2,296.8 L301.6,247.5 A30 30 0 0 0 313.6,244.2 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Jun" data-value="120">
+<title>North: 120</title>
+</path>
+<text font-size="14" x="314.2" y="270.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 120
+</text>
+<path d="M295.2,308.3 A90.9 90.9 0 0 1 258.7,298.5 L286.4,244.2 A30 30 0 0 0 298.4,247.5 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Jul" data-value="148">
+<title>North: 148</title>
+</path>
+<text font-size="14" x="284.4" y="275.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 148
+</text>
+<path d="M253.2,289.6 A86 86 0 0 1 227.9,264.3 L274.8,233.8 A30 30 0 0 0 283.7,242.7 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Aug" data-value="136">
+<title>North: 136</title>
+</path>
+<text font-size="14" x="259" y="258.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 136
+</text>
+<path d="M238.8,248.7 A68.7 68.7 0 0 1 231.4,221.1 L270,219.1 A30 30 0 0 0 273.3,231.1 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Sep" data-value="94">
+<title>North: 94</title>
+</path>
+<text font-size="14" x="252.3" y="230.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 94
+</text>
+<path d="M241.3,214.4 A58.8 58.8 0 0 1 247.6,190.8 L273.3,203.9 A30 30 0 0 0 270,215.9 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Oct" data-value="70">
+<title>North: 70</title>
+</path>
+<text font-size="14" x="257.1" y="206" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 70
+</text>
+<path d="M256.9,189.5 A51.4 51.4 0 0 1 272,174.4 L283.7,192.3 A30 30 0 0 0 274.8,201.2 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Nov" data-value="52">
+<title>North: 52</title>
+</path>
+<text font-size="14" x="271.2" y="188.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 52
+</text>
+<path d="M278,174.3 A48.5 48.5 0 0 1 297.5,169 L298.4,187.5 A30 30 0 0 0 286.4,190.8 Z" fill="#5470C6" class="ct-trigger" data-series="North" data-category="Dec" data-value="45">
+<title>North: 45</title>
+</path>
+<text font-size="14" x="289.8" y="179.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+North: 45
+</text>
+<path d="M303.1,157.9 A59.6 59.6 0 0 1 327.1,164.4 L321.5,175.4 A47.3 47.3 0 0 0 302.5,170.3 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Jan" data-value="30">
+<title>South: 30</title>
+</path>
+<text font-size="14" x="313.8" y="165.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 30
+</text>
+<path d="M332.5,167.5 A59.6 59.6 0 0 1 350,185 L338.3,192.6 A45.6 45.6 0 0 0 324.9,179.2 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Feb" data-value="34">
+<title>South: 34</title>
+</path>
+<text font-size="14" x="337.2" y="180.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 34
+</text>
+<path d="M360.1,186.9 A67.5 67.5 0 0 1 367.4,214 L350.9,214.8 A51 51 0 0 0 345.4,194.3 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Mar" data-value="40">
+<title>South: 40</title>
+</path>
+<text font-size="14" x="357.2" y="202.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 40
+</text>
+<path d="M380.1,221.7 A80.2 80.2 0 0 1 371.5,253.9 L350.2,243.1 A56.3 56.3 0 0 0 356.3,220.4 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Apr" data-value="58">
+<title>South: 58</title>
+</path>
+<text font-size="14" x="366" y="235.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 58
+</text>
+<path d="M381.8,270.6 A97.5 97.5 0 0 1 353.1,299.3 L336.1,273 A66.2 66.2 0 0 0 355.5,253.6 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="May" data-value="76">
+<title>South: 76</title>
+</path>
+<text font-size="14" x="357.9" y="275.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 76
+</text>
+<path d="M354.4,324.2 A119.7 119.7 0 0 1 306.3,337.1 L304.2,296.8 A79.4 79.4 0 0 0 336,288.2 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Jun" data-value="98">
+<title>South: 98</title>
+</path>
+<text font-size="14" x="325.8" y="313.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 98
+</text>
+<path d="M292.9,353.5 A136.2 136.2 0 0 1 238.2,338.9 L258.7,298.5 A90.9 90.9 0 0 0 295.2,308.3 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Jul" data-value="110">
+<title>South: 110</title>
+</path>
+<text font-size="14" x="270.6" y="327.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 110
+</text>
+<path d="M229.9,325.5 A128.8 128.8 0 0 1 192,287.6 L227.9,264.3 A86 86 0 0 0 253.2,289.6 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Aug" data-value="104">
+<title>South: 104</title>
+</path>
+<text font-size="14" x="224.1" y="293.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 104
+</text>
+<path d="M208.7,264 A102.5 102.5 0 0 1 197.7,222.9 L231.4,221.1 A68.7 68.7 0 0 0 238.8,248.7 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Sep" data-value="82">
+<title>South: 82</title>
+</path>
+<text font-size="14" x="217.3" y="239.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 82
+</text>
+<path d="M216.6,213.1 A83.5 83.5 0 0 1 225.6,179.6 L247.6,190.8 A58.8 58.8 0 0 0 241.3,214.4 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Oct" data-value="60">
+<title>South: 60</title>
+</path>
+<text font-size="14" x="231.3" y="199.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 60
+</text>
+<path d="M242.7,180.3 A68.3 68.3 0 0 1 262.8,160.2 L272,174.4 A51.4 51.4 0 0 0 256.9,189.5 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Nov" data-value="41">
+<title>South: 41</title>
+</path>
+<text font-size="14" x="257.7" y="175.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 41
+</text>
+<path d="M271.8,162.2 A62.1 62.1 0 0 1 296.7,155.5 L297.5,169 A48.5 48.5 0 0 0 278,174.3 Z" fill="#91CC75" class="ct-trigger" data-series="South" data-category="Dec" data-value="33">
+<title>South: 33</title>
+</path>
+<text font-size="14" x="285.7" y="164.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+South: 33
+</text>
+<path d="M304.3,135.3 A82.3 82.3 0 0 1 337.4,144.2 L327.1,164.4 A59.6 59.6 0 0 0 303.1,157.9 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Jan" data-value="55">
+<title>Coast: 55</title>
+</path>
+<text font-size="14" x="318.4" y="149" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 55
+</text>
+<path d="M343.2,150.9 A79.4 79.4 0 0 1 366.6,174.3 L350,185 A59.6 59.6 0 0 0 332.5,167.5 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Feb" data-value="48">
+<title>Coast: 48</title>
+</path>
+<text font-size="14" x="349.2" y="168.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 48
+</text>
+<path d="M376.2,178.6 A85.6 85.6 0 0 1 385.5,213 L367.4,214 A67.5 67.5 0 0 0 360.1,186.9 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Mar" data-value="44">
+<title>Coast: 44</title>
+</path>
+<text font-size="14" x="373.9" y="197.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 44
+</text>
+<path d="M396.6,222.6 A96.7 96.7 0 0 1 386.2,261.4 L371.5,253.9 A80.2 80.2 0 0 0 380.1,221.7 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Apr" data-value="40">
+<title>Coast: 40</title>
+</path>
+<text font-size="14" x="385.4" y="240.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 40
+</text>
+<path d="M394.2,278.7 A112.3 112.3 0 0 1 361.2,311.7 L353.1,299.3 A97.5 97.5 0 0 0 381.8,270.6 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="May" data-value="36">
+<title>Coast: 36</title>
+</path>
+<text font-size="14" x="374.2" y="291.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 36
+</text>
+<path d="M360,335.2 A132.1 132.1 0 0 1 306.9,349.4 L306.3,337.1 A119.7 119.7 0 0 0 354.4,324.2 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Jun" data-value="30">
+<title>Coast: 30</title>
+</path>
+<text font-size="14" x="332.6" y="339.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 30
+</text>
+<path d="M292.3,365 A147.7 147.7 0 0 1 232.9,349.1 L238.2,338.9 A136.2 136.2 0 0 0 292.9,353.5 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Jul" data-value="28">
+<title>Coast: 28</title>
+</path>
+<text font-size="14" x="263.3" y="354.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 28
+</text>
+<path d="M222.2,337.3 A142.8 142.8 0 0 1 180.2,295.3 L192,287.6 A128.8 128.8 0 0 0 229.9,325.5 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Aug" data-value="34">
+<title>Coast: 34</title>
+</path>
+<text font-size="14" x="204" y="313.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 34
+</text>
+<path d="M191.8,272.6 A121.4 121.4 0 0 1 178.8,223.9 L197.7,222.9 A102.5 102.5 0 0 0 208.7,264 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Sep" data-value="46">
+<title>Coast: 46</title>
+</path>
+<text font-size="14" x="191.9" y="246.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 46
+</text>
+<path d="M192.8,211.9 A107.4 107.4 0 0 1 204.3,168.7 L225.6,179.6 A83.5 83.5 0 0 0 216.6,213.1 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Oct" data-value="58">
+<title>Coast: 58</title>
+</path>
+<text font-size="14" x="207.8" y="192.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 58
+</text>
+<path d="M219.9,165.5 A95.5 95.5 0 0 1 248,137.4 L262.8,160.2 A68.3 68.3 0 0 0 242.7,180.3 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Nov" data-value="66">
+<title>Coast: 66</title>
+</path>
+<text font-size="14" x="242.1" y="159.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 66
+</text>
+<path d="M260.6,140.2 A86.8 86.8 0 0 1 295.5,130.8 L296.7,155.5 A62.1 62.1 0 0 0 271.8,162.2 Z" fill="#FAC858" class="ct-trigger" data-series="Coast" data-category="Dec" data-value="60">
+<title>Coast: 60</title>
+</path>
+<text font-size="14" x="280.7" y="145.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Coast: 60
+</text>
+<rect x="240" y="65" width="57" height="14" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="295" y="72" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+300 mm
+</text>
+<rect x="240" y="85.6" width="57" height="14" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="295" y="92.6" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+250 mm
+</text>
+<rect x="240" y="106.2" width="57" height="14" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="295" y="113.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+200 mm
+</text>
+<rect x="240" y="126.8" width="57" height="14" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="295" y="133.8" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+150 mm
+</text>
+<rect x="240" y="147.3" width="57" height="14" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="295" y="154.3" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+100 mm
+</text>
+<rect x="248" y="167.9" width="49" height="14" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="295" y="174.9" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+50 mm
+</text>
+<rect x="256" y="188.5" width="41" height="14" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="295" y="195.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+0 mm
+</text>
+<text font-size="14" x="341.3" y="56.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Jan
+</text>
+<text font-size="14" x="412.8" y="104.7" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+Feb
+</text>
+<text font-size="14" x="454.1" y="176.2" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+Mar
+</text>
+<text font-size="14" x="454.1" y="258.8" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+Apr
+</text>
+<text font-size="14" x="412.8" y="330.3" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+May
+</text>
+<text font-size="14" x="341.3" y="378.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Jun
+</text>
+<text font-size="14" x="258.7" y="378.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Jul
+</text>
+<text font-size="14" x="187.2" y="330.3" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Aug
+</text>
+<text font-size="14" x="145.9" y="258.8" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Sep
+</text>
+<text font-size="14" x="145.9" y="176.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Oct
+</text>
+<text font-size="14" x="187.2" y="104.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Nov
+</text>
+<text font-size="14" x="258.7" y="56.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+Dec
+</text>
+</svg>

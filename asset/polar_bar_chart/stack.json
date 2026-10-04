@@ -1,0 +1,15 @@
+{
+    "title_text": "Rainfall by month",
+    "title_align": "left",
+    "legend_align": "right",
+    "legend_category": "round_rect",
+    "inner_radius": 30,
+    "tooltip_show": true,
+    "y_axis_configs": [{"axis_formatter": "{c} mm"}],
+    "x_axis_data": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "series_list": [
+        {"name": "North", "stack": "total", "data": [42, 38, 51, 64, 88, 120, 148, 136, 94, 70, 52, 45]},
+        {"name": "South", "stack": "total", "data": [30, 34, 40, 58, 76, 98, 110, 104, 82, 60, 41, 33]},
+        {"name": "Coast", "stack": "total", "data": [55, 48, 44, 40, 36, 30, 28, 34, 46, 58, 66, 60]}
+    ]
+}

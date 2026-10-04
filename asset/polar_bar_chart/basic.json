@@ -1,0 +1,11 @@
+{
+    "title_text": "Weekly visits",
+    "title_align": "left",
+    "legend_align": "right",
+    "legend_category": "round_rect",
+    "x_axis_data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "series_list": [
+        {"name": "Email", "data": [120, 132, 101, 134, 90, 230, 210]},
+        {"name": "Search", "data": [220, 182, 191, 234, 290, 330, 310]}
+    ]
+}

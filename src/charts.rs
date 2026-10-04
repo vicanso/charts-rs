@@ -67,6 +67,7 @@ mod parallel_chart;
 mod params;
 mod path;
 mod pie_chart;
+mod polar_bar_chart;
 mod radar_chart;
 mod sankey_chart;
 mod scatter_chart;
@@ -93,8 +94,9 @@ pub use common::{
 };
 pub use compact::compact_svg;
 pub use component::{
-    Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, SmoothBand,
-    SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text, svg_with_accessibility,
+    Axis, Circle, Grid, Legend, LegendCategory, Line, Pie, Polygon, Polyline, Rect, Sector,
+    SmoothBand, SmoothLine, SmoothLineFill, StraightLine, StraightLineFill, Text,
+    svg_with_accessibility,
 };
 #[cfg(feature = "raster")]
 pub use encoder::*;
@@ -120,6 +122,7 @@ pub use parallel_chart::ParallelChart;
 #[doc(hidden)]
 pub use path::{QuadraticBezier, SmoothCurve};
 pub use pie_chart::PieChart;
+pub use polar_bar_chart::{PolarAxis, PolarBarChart};
 pub use radar_chart::{RadarChart, RadarIndicator};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
 pub use scatter_chart::ScatterChart;
@@ -178,6 +181,7 @@ impl_chart!(
     MultiChart,
     ParallelChart,
     PieChart,
+    PolarBarChart,
     RadarChart,
     SankeyChart,
     ScatterChart,

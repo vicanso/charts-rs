@@ -17,7 +17,7 @@
 
 `charts-rs` provides a straightforward approach to generating charts with support for multiple output formats including `svg`, `png`, `jpeg`, `webp`, and `avif`. The library offers ten distinct themes: `light`, `dark`, `grafana`, `ant`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, and `shadcn`, with `light` as the default theme.
 
-The library supports twenty-three chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, `ThemeRiver`, and `Histogram`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
+The library supports twenty-four chart types: `Bar`, `HorizontalBar`, `Line`, `Pie`, `Radar`, `Scatter`, `Candlestick`, `Table`, `Heatmap`, `Funnel`, `Waterfall`, `MultiChart`, `Calendar`, `Gauge`, `Treemap`, `BoxPlot`, `Sunburst`, `Sankey`, `Tree`, `Graph`, `Parallel`, `ThemeRiver`, `Histogram`, and `PolarBar`. Drawing inspiration from `Apache ECharts`, `charts-rs` enables developers to create charts with similar functionality and appearance.
 
 ## Themes
 
@@ -234,6 +234,16 @@ Charts Web Source: [https://github.com/vicanso/charts-rs-web](https://github.com
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/histogram.png" alt="charts-rs">
 </p>
 
+## Polar bar
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar-radial.png" alt="charts-rs">
+</p>
+
 ## Example
 
 Runnable examples live in [`examples/`](./examples); each writes an `svg` file:
@@ -246,6 +256,7 @@ cargo run --example sunburst  # sunburst with label formatter, ring thickness, a
 cargo run --example sankey     # sankey flow diagram (nodes auto-derived from links)
 cargo run --example tree       # node-link tree with curved links (LR layout)
 cargo run --example histogram  # distribution of a sample over equal-width bins
+cargo run --example polar_bar  # polar bars: stacked around the circle, and rings with round caps
 ```
 
 ### New from option
@@ -461,6 +472,40 @@ into equal-width bins:
 - `"percent": true` shows the share of each sample instead of a count.
 - Several series share the bins and are drawn over each other; give them
   the same `stack` name to pile them up instead.
+
+### Polar bar chart
+
+A `PolarBarChart` draws the bars of a bar chart on polar axes. The categories
+are `x_axis_data`; series sit side by side within a category, or pile up when
+they share a `stack` name.
+
+```json
+{
+  "inner_radius": 30,
+  "x_axis_data": ["Jan", "Feb", "Mar", "Apr"],
+  "series_list": [
+    { "name": "North", "stack": "total", "data": [42, 38, 51, 64] },
+    { "name": "South", "stack": "total", "data": [30, 34, 40, 58] }
+  ]
+}
+```
+
+- By default the categories go around the circle and the bars grow outwards.
+  `"category_axis": "radius"` gives every category a ring instead, and the
+  bars run around the circle: by default over three quarters of it for the
+  largest value on the axis (`end_angle` changes that), with `"round_cap":
+  true` for rounded ends.
+- `start_angle` (degrees clockwise from 12 o'clock) turns the chart,
+  `inner_radius` leaves a hole in the center, `radius` limits the size and
+  `category_gap` (0 to 0.9, default 0.2) sets the space between categories.
+- The value axis is the first of `y_axis_configs` (`axis_min`, `axis_max`,
+  `axis_split_number`, `axis_formatter`); `x_axis_hidden` / `y_axis_hidden`
+  hide the category and the value labels.
+- `label_show`, `colors` (a color per bar), `tooltip_show` and `animation`
+  work as in a bar chart.
+
+In Rust: `PolarBarChart::new(series_list, x_axis_data)`, then
+`chart.category_axis = PolarAxis::Radius`.
 
 ### Band around a line
 

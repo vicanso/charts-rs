@@ -1,0 +1,12 @@
+{
+    "title_text": "Score by team",
+    "title_align": "left",
+    "legend_align": "right",
+    "legend_category": "round_rect",
+    "category_axis": "radius",
+    "x_axis_data": ["Design", "Backend", "Frontend", "QA"],
+    "series_list": [
+        {"name": "2023", "data": [62, 81, 74, 55]},
+        {"name": "2024", "data": [78, 88, 69, 71]}
+    ]
+}

@@ -65,6 +65,17 @@
 
 ### Added
 
+- `PolarBarChart`: a bar chart on polar axes. The categories (`x_axis_data`)
+  go around the circle and the bars grow outwards, or — with
+  `category_axis: "radius"` — every category is a ring and the bars run
+  around the circle (`end_angle`, `round_cap`). Series sit side by side or
+  stack by `stack` name; `start_angle`, `inner_radius`, `radius` and
+  `category_gap` shape the plot, and the value axis takes its range, split
+  number and label format from `y_axis_configs`. Supports data labels,
+  per-bar `colors`, tooltips with `data-*` attributes and animation.
+  Available in `MultiChart` as `"type": "polar_bar"`.
+- `Sector` component: an annular sector drawn with exact arcs (also a full
+  ring, a wedge, or with round caps), which the polar bars are made of.
 - Bands around lines: a series' `band` (`{"lower": [...], "upper": [...]}`,
   `SeriesBand` in Rust) fills the area between a lower and an upper bound of
   each point in the color of the series — confidence intervals, forecast

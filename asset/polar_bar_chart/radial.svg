@@ -1,0 +1,72 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<g>
+<line stroke-width="2" x1="257" y1="15" x2="282" y2="15" stroke="#5470C6"/>
+<circle cx="269.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="285" y="19" font-family="Roboto" fill="#464646">
+Progress
+</text>
+</g>
+<circle cx="300" cy="211" r="40.5" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="211" r="162" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<line stroke-width="1" x1="300" y1="170.5" x2="300" y2="49" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="328.6" y1="182.4" x2="414.6" y2="96.4" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="340.5" y1="211" x2="462" y2="211" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="328.6" y1="239.6" x2="414.6" y2="325.6" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="300" y1="251.5" x2="300" y2="373" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="271.4" y1="239.6" x2="185.4" y2="325.6" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="259.5" y1="211" x2="138" y2="211" stroke="#E0E6F2"/>
+<path d="M300,143.2 A67.8 67.8 0 0 1 357.8,246.4 A12.2 12.2 0 0 1 337.1,233.7 A43.5 43.5 0 0 0 300,167.5 A12.2 12.2 0 0 1 300,143.2 Z" fill="#5470C6" data-series="Progress" data-category="Q1" data-value="45"/>
+<path d="M300,112.8 A98.2 98.2 0 0 1 321.4,306.8 A12.2 12.2 0 0 1 316.1,283.1 A73.9 73.9 0 0 0 300,137.1 A12.2 12.2 0 0 1 300,112.8 Z" fill="#5470C6" data-series="Progress" data-category="Q2" data-value="62"/>
+<path d="M300,82.4 A128.6 128.6 0 1 1 234.5,321.7 A12.1 12.1 0 0 1 246.9,300.8 A104.3 104.3 0 1 0 300,106.7 A12.1 12.1 0 0 1 300,82.4 Z" fill="#5470C6" data-series="Progress" data-category="Q3" data-value="78"/>
+<path d="M300,52 A159 159 0 1 1 155.1,276.4 A12.2 12.2 0 0 1 177.3,266.4 A134.7 134.7 0 1 0 300,76.3 A12.2 12.2 0 0 1 300,52 Z" fill="#5470C6" data-series="Progress" data-category="Q4" data-value="91"/>
+<rect x="262.9" y="56.7" width="22" height="15" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="282.9" y="64.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Q4
+</text>
+<rect x="263.9" y="87.1" width="21" height="15" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="282.9" y="94.6" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Q3
+</text>
+<rect x="262.9" y="117.4" width="22" height="15" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="282.9" y="124.9" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Q2
+</text>
+<rect x="265.9" y="147.8" width="19" height="15" rx="2" ry="2" fill="#FFFFFF" fill-opacity="0.78"/>
+<text font-size="14" x="282.9" y="155.3" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Q1
+</text>
+<text font-size="14" x="300" y="36" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="418.8" y="92.2" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+16.7
+</text>
+<text font-size="14" x="468" y="211" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+33.3
+</text>
+<text font-size="14" x="418.8" y="329.8" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">
+50
+</text>
+<text font-size="14" x="300" y="386" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+66.7
+</text>
+<text font-size="14" x="181.2" y="329.8" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+83.3
+</text>
+<text font-size="14" x="132" y="211" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+100
+</text>
+<text font-size="14" x="338.5" y="254.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+45
+</text>
+<text font-size="14" x="302" y="298.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+62
+</text>
+<text font-size="14" x="226" y="302.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+78
+</text>
+<text font-size="14" x="159.1" y="255.8" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+91
+</text>
+</svg>

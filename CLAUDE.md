@@ -23,10 +23,10 @@ cargo fmt
 
 ## Architecture
 
-**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 23 chart types and 10 built-in themes, with an API inspired by Apache ECharts.
+**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 24 chart types and 10 built-in themes, with an API inspired by Apache ECharts.
 
 ### Chart Types
-`BarChart`, `HorizontalBarChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, `CandlestickChart`, `TableChart`, `HeatmapChart`, `FunnelChart`, `WaterfallChart`, `MultiChart`, `CalendarChart`, `GaugeChart`, `TreemapChart`, `BoxPlotChart`, `SunburstChart`, `SankeyChart`, `TreeChart`, `GraphChart`, `ParallelChart`, `ThemeRiverChart`, `HistogramChart`
+`BarChart`, `HorizontalBarChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, `CandlestickChart`, `TableChart`, `HeatmapChart`, `FunnelChart`, `WaterfallChart`, `MultiChart`, `CalendarChart`, `GaugeChart`, `TreemapChart`, `BoxPlotChart`, `SunburstChart`, `SankeyChart`, `TreeChart`, `GraphChart`, `ParallelChart`, `ThemeRiverChart`, `HistogramChart`, `PolarBarChart`
 
 ### Two Creation Paths
 
@@ -56,7 +56,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 
 | Module | Purpose |
 |--------|---------|
-| `src/charts/component.rs` | SVG primitive components: Text, Line, Rect, Circle, Polygon, Polyline, Grid, Legend, Axis, Pie |
+| `src/charts/component.rs` | SVG primitive components: Text, Line, Rect, Circle, Polygon, Polyline, Grid, Legend, Axis, Pie, Sector |
 | `src/charts/canvas.rs` | Canvas abstraction — coordinate transformations, rendering context, SVG tag building |
 | `src/charts/theme.rs` | Theme system; global registry via `Lazy<ArcSwap<AHashMap>>`; `get_theme()`, `add_theme()` |
 | `src/charts/common.rs` | Shared types: `Series`, `YAxisConfig`, `MarkPoint`, `MarkLine`, `Position`, `Align`, `Symbol` |

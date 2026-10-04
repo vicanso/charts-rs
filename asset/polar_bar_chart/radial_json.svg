@@ -1,0 +1,94 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#100C2A"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#EEEEEE">
+Goals reached
+</text>
+<circle cx="300" cy="217.5" r="38.9" stroke-width="1" stroke="#474753" fill="none"/>
+<circle cx="300" cy="217.5" r="155.5" stroke-width="1" stroke="#474753" fill="none"/>
+<line stroke-width="1" x1="300" y1="178.6" x2="300" y2="62" stroke="#474753"/>
+<line stroke-width="1" x1="335.9" y1="202.6" x2="443.7" y2="158" stroke="#474753"/>
+<line stroke-width="1" x1="327.5" y1="245" x2="410" y2="327.5" stroke="#474753"/>
+<line stroke-width="1" x1="285.1" y1="253.4" x2="240.5" y2="361.2" stroke="#474753"/>
+<line stroke-width="1" x1="261.1" y1="217.5" x2="144.5" y2="217.5" stroke="#474753"/>
+<path d="M300,157.6 A59.9 59.9 0 1 1 244.3,239.5 A9.3 9.3 0 0 1 261.7,232.7 A41.2 41.2 0 1 0 300,176.3 A9.3 9.3 0 0 1 300,157.6 Z" fill="#5470C6" class="ct-trigger" data-series="Done" data-category="Sleep" data-value="92">
+<title>Done: 92</title>
+</path>
+<text font-size="14" x="341.8" y="245.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Done: 92
+</text>
+<path d="M300,134.3 A83.2 83.2 0 1 1 271.8,295.8 A9.3 9.3 0 0 1 278.1,278.2 A64.5 64.5 0 1 0 300,153 A9.3 9.3 0 0 1 300,134.3 Z" fill="#91CC75" class="ct-trigger" data-series="Done" data-category="Steps" data-value="74">
+<title>Done: 74</title>
+</path>
+<text font-size="14" x="372.8" y="230.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Done: 74
+</text>
+<path d="M300,111 A106.5 106.5 0 0 1 328.1,320.2 A9.3 9.3 0 0 1 323.2,302.2 A87.9 87.9 0 0 0 300,129.6 A9.3 9.3 0 0 1 300,111 Z" fill="#FAC858" class="ct-trigger" data-series="Done" data-category="Water" data-value="61">
+<title>Done: 61</title>
+</path>
+<text font-size="14" x="396.3" y="204.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Done: 61
+</text>
+<path d="M300,87.7 A129.8 129.8 0 0 1 410.7,285.3 A9.3 9.3 0 0 1 394.8,275.6 A111.2 111.2 0 0 0 300,106.3 A9.3 9.3 0 0 1 300,87.7 Z" fill="#EE6666" class="ct-trigger" data-series="Done" data-category="Reading" data-value="45">
+<title>Done: 45</title>
+</path>
+<text font-size="14" x="405.1" y="158.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Done: 45
+</text>
+<path d="M300,64.3 A153.2 153.2 0 0 1 448.4,179.4 A9.3 9.3 0 0 1 430.3,184 A134.5 134.5 0 0 0 300,83 A9.3 9.3 0 0 1 300,64.3 Z" fill="#73C0DE" class="ct-trigger" data-series="Done" data-category="Workout" data-value="28">
+<title>Done: 28</title>
+</path>
+<text font-size="14" x="388.2" y="103.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE" class="ct-tip">
+Done: 28
+</text>
+<rect x="228.7" y="66.7" width="59" height="14" rx="2" ry="2" fill="#100C2A" fill-opacity="0.78"/>
+<text font-size="14" x="285.7" y="73.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Workout
+</text>
+<rect x="231.7" y="89" width="56" height="16" rx="2" ry="2" fill="#100C2A" fill-opacity="0.78"/>
+<text font-size="14" x="285.7" y="97" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Reading
+</text>
+<rect x="244.7" y="113.3" width="43" height="14" rx="2" ry="2" fill="#100C2A" fill-opacity="0.78"/>
+<text font-size="14" x="285.7" y="120.3" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Water
+</text>
+<rect x="246.7" y="135.6" width="41" height="16" rx="2" ry="2" fill="#100C2A" fill-opacity="0.78"/>
+<text font-size="14" x="285.7" y="143.6" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Steps
+</text>
+<rect x="246.7" y="159" width="41" height="16" rx="2" ry="2" fill="#100C2A" fill-opacity="0.78"/>
+<text font-size="14" x="285.7" y="167" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+Sleep
+</text>
+<text font-size="14" x="300" y="49" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
+0%
+</text>
+<text font-size="14" x="449.2" y="155.7" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#B9B8CE">
+25%
+</text>
+<text font-size="14" x="414.2" y="331.7" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#B9B8CE">
+50%
+</text>
+<text font-size="14" x="238.2" y="366.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+75%
+</text>
+<text font-size="14" x="138.5" y="217.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#B9B8CE">
+100%
+</text>
+<text font-size="14" x="247.7" y="222.8" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#EEEEEE">
+92
+</text>
+<text font-size="14" x="261.5" y="282.1" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#EEEEEE">
+74
+</text>
+<text font-size="14" x="311.8" y="315" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#EEEEEE">
+61
+</text>
+<text font-size="14" x="395.3" y="292.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#EEEEEE">
+45
+</text>
+<text font-size="14" x="442.9" y="202.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+28
+</text>
+</svg>
