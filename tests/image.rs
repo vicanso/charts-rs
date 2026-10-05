@@ -351,6 +351,9 @@ fn generate_image() {
     candlestick_chart.y_axis_configs[0].axis_formatter = Some("{t}".to_string());
     let buf = svg_to_png(&candlestick_chart.svg().unwrap()).unwrap();
     common::save_asset("image/candlestick.png", &buf);
+    candlestick_chart.candlestick_style = charts_rs::CandlestickStyle::Ohlc;
+    let buf = svg_to_png(&candlestick_chart.svg().unwrap()).unwrap();
+    common::save_asset("image/candlestick-ohlc.png", &buf);
 
     // table chart
     let mut table_chart = TableChart::new_with_theme(
@@ -1200,6 +1203,101 @@ fn generate_image() {
             .svg()
             .unwrap(),
         ),
+        // variants of the charts above
+        (
+            "pie-half",
+            PieChart::from_json(include_str!("../asset/pie_chart/half.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "pie-nested",
+            PieChart::from_json(include_str!("../asset/pie_chart/nested.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "line-step",
+            LineChart::from_json(include_str!("../asset/line_chart/step.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "line-bump",
+            LineChart::from_json(include_str!("../asset/line_chart/bump.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "bar-stack-percent",
+            BarChart::from_json(include_str!("../asset/bar_chart/stack_percent.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "bar-error-bar",
+            BarChart::from_json(include_str!("../asset/bar_chart/error_bar.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "scatter-regression",
+            ScatterChart::from_json(include_str!("../asset/scatter_chart/regression.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "heatmap-scale",
+            HeatmapChart::from_json(include_str!("../asset/heatmap_chart/scale.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "heatmap-punch-card",
+            HeatmapChart::from_json(include_str!("../asset/heatmap_chart/punch_card.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "gauge-rings",
+            GaugeChart::from_json(include_str!("../asset/gauge_chart/rings.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "gauge-segments",
+            GaugeChart::from_json(include_str!("../asset/gauge_chart/segments.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        ("tree-radial", {
+            let mut chart =
+                charts_rs::TreeChart::from_json(include_str!("../asset/tree_chart/radial.json"))
+                    .unwrap();
+            // Room for the names of the branches between the rings.
+            chart.width = 700.0;
+            chart.height = 680.0;
+            chart.svg().unwrap()
+        }),
+        ("sankey-vertical", {
+            let mut chart = charts_rs::SankeyChart::from_json(include_str!(
+                "../asset/sankey_chart/integration.json"
+            ))
+            .unwrap();
+            chart.orient = Some("vertical".to_string());
+            chart.svg().unwrap()
+        }),
     ] {
         let buf = svg_to_png(&chart).unwrap();
         common::save_asset(&format!("image/{name}.png"), &buf);

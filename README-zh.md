@@ -79,6 +79,14 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mix-line-bar.png" alt="charts-rs">
 </p>
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/bar-stack-percent.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/bar-error-bar.png" alt="charts-rs">
+</p>
+
 ## Horizontal bar
 
 <p align="center">
@@ -89,6 +97,14 @@ charts-rs = { version = "1", features = ["png"] }
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line-step.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line-bump.png" alt="charts-rs">
 </p>
 
 ## Line band
@@ -103,6 +119,14 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie.png" alt="charts-rs">
 </p>
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie-half.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie-nested.png" alt="charts-rs">
+</p>
+
 ## Radar
 
 <p align="center">
@@ -115,10 +139,18 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/scatter.png" alt="charts-rs">
 </p>
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/scatter-regression.png" alt="charts-rs">
+</p>
+
 ## Candlestick
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/candlestick.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/candlestick-ohlc.png" alt="charts-rs">
 </p>
 
 ## Table
@@ -131,6 +163,14 @@ charts-rs = { version = "1", features = ["png"] }
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/heatmap.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/heatmap-scale.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/heatmap-punch-card.png" alt="charts-rs">
 </p>
 
 ## Funnel
@@ -155,6 +195,14 @@ charts-rs = { version = "1", features = ["png"] }
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gauge.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gauge-segments.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gauge-rings.png" alt="charts-rs">
 </p>
 
 ## Treemap
@@ -187,10 +235,18 @@ charts-rs = { version = "1", features = ["png"] }
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sankey.png" alt="charts-rs">
 </p>
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sankey-vertical.png" alt="charts-rs">
+</p>
+
 ## Tree
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/tree.png" alt="charts-rs">
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/tree-radial.png" alt="charts-rs">
 </p>
 
 ## Graph

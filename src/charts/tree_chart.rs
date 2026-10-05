@@ -526,11 +526,35 @@ impl TreeChart {
                 // (a node with children) towards the middle where there is
                 // room for its name before the ring of its parent.
                 let parent_radius = n.parent.map(|p| polar[p].1).unwrap_or(0.0);
-                let inwards =
-                    !n.is_leaf && radius - parent_radius >= measure(&n.label) + 2.0 * gap + r;
+                let needed = measure(&n.label) + 2.0 * gap + r;
+                // The name of the node in the very middle is above it: the
+                // spokes that point up stay clear of it.
+                let below_name = parent_radius <= 0.0 && angle.to_radians().cos() > 0.0;
+                let clear = if below_name { font_size + gap } else { 0.0 };
+                let inwards = !n.is_leaf && radius - parent_radius >= needed + clear;
                 let out = if inwards { -gap } else { gap };
                 let at = get_pie_point(center.0, center.1, radius + out, angle);
                 let right = angle.rem_euclid(360.0) < 180.0;
+                // A child on the spoke itself, and no room for the name
+                // before it: the name goes beside the spoke, on the side
+                // the child is not, rather than over it.
+                let blocking = nodes
+                    .iter()
+                    .enumerate()
+                    .filter(|(child, c)| c.parent == Some(i) && polar[*child].1 - radius < needed)
+                    .map(|(child, _)| (polar[child].0 - angle).to_radians() * polar[child].1)
+                    .find(|across| across.abs() < font_size * 0.5);
+                let at = match blocking {
+                    Some(across) if !inwards => {
+                        let aside = if across > 0.0 { -1.0 } else { 1.0 } * (font_size + 2.0);
+                        let (sin, cos) = angle.to_radians().sin_cos();
+                        Point {
+                            x: at.x + aside * cos,
+                            y: at.y + aside * sin,
+                        }
+                    }
+                    _ => at,
+                };
                 let (turn, anchor) = match (right, !inwards) {
                     (true, true) => (angle - 90.0, "start"),
                     (true, false) => (angle - 90.0, "end"),

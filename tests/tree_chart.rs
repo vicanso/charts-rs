@@ -176,3 +176,116 @@ fn tree_around_its_root() {
         assert!(message.contains(key), "{message}");
     }
 }
+
+/// Where the name of a node is written, along its spoke.
+fn name_position(svg: &str, name: &str) -> (f32, f32) {
+    let ending = format!(">\n{name}\n</text>");
+    let tag = svg
+        .split("<text")
+        .skip(1)
+        .find(|t| t.contains("transform=\"rotate(") && t.contains(&ending))
+        .unwrap();
+    let attr = |name: &str| -> f32 {
+        let key = format!(" {name}=\"");
+        let start = tag.find(&key).unwrap() + key.len();
+        tag[start..start + tag[start..].find('"').unwrap()]
+            .parse()
+            .unwrap()
+    };
+    (attr("x"), attr("y"))
+}
+
+#[test]
+fn tree_names_around_the_root_keep_clear() {
+    let position = |svg: &str, name: &str| -> (f32, f32) {
+        let nodes = node_positions(svg);
+        let node = nodes.iter().find(|n| n.0 == name).unwrap();
+        (node.1, node.2)
+    };
+    // How far the name of a node is from its spoke, and from the middle
+    // compared to the node itself.
+    let placed = |svg: &str, name: &str| -> (f32, f32) {
+        let (root, node, at) = (
+            position(svg, "root"),
+            position(svg, name),
+            name_position(svg, name),
+        );
+        let spoke = (node.0 - root.0, node.1 - root.1);
+        let to = (at.0 - root.0, at.1 - root.1);
+        let length = spoke.0.hypot(spoke.1);
+        (
+            (spoke.0 * to.1 - spoke.1 * to.0).abs() / length,
+            to.0.hypot(to.1) - length,
+        )
+    };
+    let tree = |size: u32, children: &str| -> String {
+        let json = format!(
+            r#"{{"width": {size}, "height": {size}, "layout": "radial", "series_data": [
+                {{"name": "root", "children": [{children}]}}
+            ]}}"#
+        );
+        TreeChart::from_json(&json).unwrap().svg().unwrap()
+    };
+    let leaves = |names: &[&str]| -> String {
+        names
+            .iter()
+            .map(|n| format!(r#"{{"name": "{n}"}}"#))
+            .collect::<Vec<_>>()
+            .join(",")
+    };
+
+    // The middle one of three children is on the spoke of its parent: with
+    // no room before it, the name of the parent is beside the spoke.
+    let branch = |name: &str, children: &[&str]| -> String {
+        format!(
+            r#"{{"name": "{name}", "children": [{}]}}"#,
+            leaves(children)
+        )
+    };
+    let three = format!(
+        "{},{}",
+        branch("a branch of three", &["x", "y", "z"]),
+        leaves(&["p", "q", "r"])
+    );
+    let (beside, further) = placed(&tree(300, &three), "a branch of three");
+    assert!(beside > 10.0 && further > 0.0, "{beside} {further}");
+    // Between two children there is room: the name stays on the spoke.
+    let two = format!(
+        "{},{}",
+        branch("a branch of two", &["x", "y"]),
+        leaves(&["p", "q", "r"])
+    );
+    let (beside, further) = placed(&tree(300, &two), "a branch of two");
+    assert!(beside < 0.5 && further > 0.0, "{beside} {further}");
+    // With room for it before the child, it is on the spoke as well.
+    let short = format!("{},{}", branch("b", &["x", "y", "z"]), leaves(&["p", "q"]));
+    let (beside, _) = placed(&tree(600, &short), "b");
+    assert!(beside < 0.5, "{beside}");
+
+    // A name is written towards the middle when there is room before the
+    // root. The root has its own name above it, so that a spoke that points
+    // up needs more room than one that points down.
+    let first_inwards = |children: &str| -> u32 {
+        (200..=1200)
+            .step_by(20)
+            .find(|size| placed(&tree(*size, children), "branch").1 < 0.0)
+            .unwrap()
+    };
+    let up = format!(
+        "{},{}",
+        branch("branch", &["x", "y"]),
+        leaves(&["a", "b", "c", "d", "e", "f"])
+    );
+    let down = format!(
+        "{},{},{}",
+        leaves(&["a", "b", "c"]),
+        branch("branch", &["x", "y"]),
+        leaves(&["d", "e", "f"])
+    );
+    assert!(
+        first_inwards(&up) > first_inwards(&down),
+        "{} {}",
+        first_inwards(&up),
+        first_inwards(&down)
+    );
+}

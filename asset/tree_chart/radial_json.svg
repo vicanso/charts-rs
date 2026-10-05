@@ -226,7 +226,7 @@ flare
 <text font-size="14" x="340.2" y="254.5" transform="rotate(-47 340.2 254.5)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 analytics
 </text>
-<text font-size="14" x="329" y="193.8" transform="rotate(-74.3 329 193.8)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+<text font-size="14" x="344.5" y="198.1" transform="rotate(-74.3 344.5 198.1)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 cluster
 </text>
 <text font-size="14" x="300" y="141" transform="rotate(-90 300 141)" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -274,10 +274,10 @@ Sequence
 <text font-size="14" x="285.3" y="404.2" transform="rotate(277.8 285.3 404.2)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
 Transition
 </text>
-<text font-size="14" x="244.6" y="317.2" transform="rotate(340.4 244.6 317.2)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+<text font-size="14" x="239.2" y="302.1" transform="rotate(340.4 239.2 302.1)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
 data
 </text>
-<text font-size="14" x="232.1" y="381" transform="rotate(309.1 232.1 381)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+<text font-size="14" x="219.6" y="370.9" transform="rotate(309.1 219.6 370.9)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
 converters
 </text>
 <text font-size="14" x="237.7" y="441" transform="rotate(293.5 237.7 441)" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
