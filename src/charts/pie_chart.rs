@@ -59,8 +59,8 @@ pub struct PieChart {
     /// line (default 0: only zero-value slices are skipped).
     pub min_show_label_angle: f32,
     /// Gap between two rings of nested pies (series with a `ring`), in
-    /// pixels. Default: 6.
-    pub ring_gap: f32,
+    /// pixels; `None` is 6.
+    pub ring_gap: Option<f32>,
 }
 
 impl std::ops::Deref for PieChart {
@@ -79,7 +79,6 @@ impl PieChart {
     fn fill_default(&mut self) {
         self.radius = 150.0;
         self.inner_radius = 40.0;
-        self.ring_gap = DEFAULT_RING_GAP;
         self.rose_type = Some(true);
     }
     /// A pie names its slices beside them: without a say of the theme or of
@@ -124,7 +123,7 @@ impl PieChart {
             p.min_show_label_angle = angle;
         }
         if let Some(ring_gap) = get_f32_from_value(&value, "ring_gap") {
-            p.ring_gap = ring_gap;
+            p.ring_gap = Some(ring_gap);
         }
         Ok(p)
     }
@@ -272,7 +271,11 @@ impl PieChart {
             vec![(self.inner_radius, r)]
         } else {
             let room = (r - self.inner_radius).max(1.0);
-            let gap = self.ring_gap.max(0.0).min(room / (ring_count as f32 * 3.0));
+            let gap = self
+                .ring_gap
+                .unwrap_or(DEFAULT_RING_GAP)
+                .max(0.0)
+                .min(room / (ring_count as f32 * 3.0));
             let width = (room - gap * (ring_count - 1) as f32) / ring_count as f32;
             (0..ring_count)
                 .map(|ring| {

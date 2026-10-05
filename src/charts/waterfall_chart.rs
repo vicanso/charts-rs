@@ -513,7 +513,7 @@ impl WaterfallChart {
         if has_negative {
             draw_c.line(Line {
                 color: Some(self.x_axis.stroke_color),
-                stroke_width: 1.0,
+                stroke_width: self.x_axis.stroke_width.unwrap_or(1.0),
                 left: 0.0,
                 top: zero_y,
                 right: axis_width,

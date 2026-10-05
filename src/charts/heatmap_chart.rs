@@ -390,11 +390,11 @@ impl HeatmapChart {
                 c1.line(Line {
                     color: Some(self.grid.stroke_color),
                     stroke_width: self.grid.stroke_width,
+                    stroke_dash_array: self.grid.stroke_dash_array.clone(),
                     left: 0.0,
                     top: y,
                     right: x_unit * self.x_axis.data.len() as f32,
                     bottom: y,
-                    ..Default::default()
                 });
             }
             for j in 0..self.x_axis.data.len() {
@@ -484,6 +484,7 @@ impl HeatmapChart {
                         stroke_color: None,
                         fill: Some(color),
                         stroke_width: 0.0,
+                        stroke_dash_array: None,
                         cx,
                         cy,
                         r: radius,

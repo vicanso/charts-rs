@@ -71,9 +71,21 @@ its own (`radius`, `series_label_position`, …).
   also read the legacy tables (Mac Roman, Big5, GB 2312, symbol) and, in
   fonts that have them, measured some characters as the glyph of another.
 - `Error::ParseFont` carries the message of `ttf-parser`.
+- A font is registered under the names of its family (see "Added"), which
+  `get_font_families` lists: more names than before. Of several faces of a
+  family given in one `add_fonts` call the regular one is measured with,
+  not the last one.
 
 ### Fixed
 
+- A scatter or box plot chart with a logarithmic y axis and no values no
+  longer panics (`index out of bounds`): the axis has no label to take its
+  width from.
+- `TableChart` takes the title and the sub-title of its theme whole, as the
+  other charts do: the weight of the sub-title, and whatever else a custom
+  theme sets there, used to be left out.
+- The zero line of a `WaterfallChart` with negative values is as wide as
+  its x axis (`x_axis_stroke_width`).
 - `TreeChart`: `orient` is read whatever its case, as it is checked:
   `"tb"` was accepted and then drawn as `LR`.
 - `PieChart`: the label of a slice whose angle runs past a full turn (with a
@@ -146,6 +158,20 @@ its own (`radius`, `series_label_position`, …).
 
 ### Added
 
+- `add_fonts` registers every face of a font collection (`.ttc`), and a
+  font under each name of its family: the typographic family and the
+  family, in every language they are given in (`"PingFang SC"` and
+  `"苹方-简"`) — the names the rasterizer and a browser find the font by.
+  Only the first face of a collection was registered, under its full name
+  without the words of a weight (still a name of the first face).
+- Fonts whose names are in Mac Roman only (`Helvetica.ttc`, `Menlo.ttc`,
+  `STHeiti`) are registered; `add_fonts` used to return `Ok` and skip them.
+- Symbol fonts (Wingdings), which have no table of Unicode characters, are
+  measured by their symbol table — as the rasterizer shapes their text —
+  instead of every character as the missing glyph.
+- `grid_stroke_dash_array` also dashes the web of a radar chart, the rings
+  and spokes of a polar bar chart, the lines of a punch card and the axes
+  of a parallel chart.
 - Style options for what used to be fixed values. Left out, each of them is
   that value, and no output changes:
   - `series_fill_opacity`: how opaque the fill of an area is (0.39 under a
@@ -156,7 +182,8 @@ its own (`radius`, `series_label_position`, …).
   - `tooltip_font_size`, `tooltip_font_color`, `tooltip_font_weight`: the
     font of the hover tooltips, which is otherwise that of the data labels.
   - `color`, `stroke_width` and `stroke_dash_array` of a mark line; `color`
-    and `opacity` of a mark area.
+    and `opacity` of a mark area (a color with an alpha of its own keeps
+    it).
   - `stroke_width` of an `error_bar`.
   - `PieChart`: `ring_gap`, the gap between the rings of nested pies.
   - `TableChart`: `border_width`.
@@ -165,7 +192,8 @@ its own (`radius`, `series_label_position`, …).
   fields for (see the breaking changes).
 - `SankeyChart`: `orient` `vertical` runs the flows from top to bottom, the
   columns of nodes becoming rows.
-- `HeatmapChart`: `series.symbol` `circle` draws a punch card — a circle in
+- `HeatmapChart`: `series.symbol` (`heatmap_series.symbol` in Rust)
+  `circle` draws a punch card — a circle in
   every cell that has a value, its area following the value, the circles of
   a row on a line — instead of filled cells.
 - `MapChart`: a map of regions colored by their values. The regions are

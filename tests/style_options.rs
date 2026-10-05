@@ -3,7 +3,8 @@
 
 use charts_rs::{
     BarChart, GanttChart, HorizontalBarChart, LineChart, MarkArea, MarkLine, MarkLineCategory,
-    PieChart, RadarChart, ScatterChart, Series, SeriesBand, TableChart, WaterfallChart,
+    PieChart, PolarBarChart, RadarChart, ScatterChart, Series, SeriesBand, TableChart,
+    WaterfallChart,
 };
 
 const DATA: &str = r#""x_axis_data": ["a", "b", "c"],
@@ -89,6 +90,37 @@ fn grid_lines_are_dashed() {
     };
     assert!(!gantt("").contains("stroke-dasharray=\"4,2\""));
     assert!(gantt(dashed).contains("stroke-dasharray=\"4,2\""));
+
+    // So are the web of a radar chart, and the rings and spokes of a polar
+    // bar chart.
+    let radar = |extra: &str| {
+        RadarChart::from_json(&format!(
+            r#"{{"indicators": [{{"name": "a", "max": 5}}, {{"name": "b", "max": 5}},
+                {{"name": "c", "max": 5}}],
+                "series_list": [{{"name": "s", "data": [1, 3, 2]}}]{extra}}}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    let polar = |extra: &str| {
+        PolarBarChart::from_json(&json(extra))
+            .unwrap()
+            .svg()
+            .unwrap()
+    };
+    for (name, plain, with) in [
+        ("radar", radar(""), radar(dashed)),
+        ("polar bar", polar(""), polar(dashed)),
+    ] {
+        assert!(!plain.contains("stroke-dasharray"), "{name}");
+        assert!(tags(&with, "stroke-dasharray=\"4,2\"").len() >= 4, "{name}");
+        assert_eq!(
+            plain,
+            with.replace(" stroke-dasharray=\"4,2\"", ""),
+            "{name}"
+        );
+    }
 }
 
 #[test]
@@ -456,7 +488,8 @@ fn rings_of_a_pie_are_as_far_apart_as_told() {
         assert_eq!((20.0, 100.0), (inner[0], outer[1]), "{extra}");
         outer[0] - inner[1]
     };
-    assert_eq!(6.0, pie("").ring_gap);
+    assert_eq!(None, pie("").ring_gap);
+    assert_eq!(Some(10.0), pie(r#", "ring_gap": 10"#).ring_gap);
     assert_eq!(6.0, gap(""));
     assert_eq!(0.0, gap(r#", "ring_gap": 0"#));
     assert_eq!(10.0, gap(r#", "ring_gap": 10"#));
@@ -485,7 +518,8 @@ fn table_borders_have_a_width() {
         ))
         .unwrap()
     };
-    assert_eq!(1.0, table("").border_width);
+    assert_eq!(None, table("").border_width);
+    assert_eq!(Some(3.0), table(r#", "border_width": 3"#).border_width);
     let plain = table("").svg().unwrap();
     let wide = table(r#", "border_width": 3"#).svg().unwrap();
     let lines = |svg: &str| -> Vec<String> {
@@ -530,5 +564,97 @@ fn waterfall_connectors_are_dashed_as_told() {
     assert!(
         !waterfall(r#", "connector_line_show": false, "connector_line_dash_array": "1,2""#)
             .contains("stroke-dasharray")
+    );
+}
+
+#[test]
+fn lines_drawn_as_a_grid_are_dashed_too() {
+    use charts_rs::{HeatmapChart, ParallelChart};
+    let dashed = r#", "grid_stroke_dash_array": "4,2""#;
+    // The rows of a punch card, and the axes of a parallel chart.
+    let punch_card = |extra: &str| {
+        HeatmapChart::from_json(&format!(
+            r#"{{"x_axis_data": ["a", "b"], "y_axis_data": ["p", "q"],
+                "series": {{"symbol": "circle", "data": [[0, 1], [1, 5], [2, 3], [3, 2]]}}{extra}}}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    let parallel = |extra: &str| {
+        ParallelChart::from_json(&json(extra))
+            .unwrap()
+            .svg()
+            .unwrap()
+    };
+    for (name, lines, plain, with) in [
+        ("punch card", 2, punch_card(""), punch_card(dashed)),
+        ("parallel", 3, parallel(""), parallel(dashed)),
+    ] {
+        assert!(!plain.contains("stroke-dasharray"), "{name}");
+        assert_eq!(
+            lines,
+            tags(&with, "stroke-dasharray=\"4,2\"").len(),
+            "{name}"
+        );
+        assert_eq!(
+            plain,
+            with.replace(" stroke-dasharray=\"4,2\"", ""),
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn the_zero_line_of_a_waterfall_is_as_wide_as_its_axis() {
+    let waterfall = |extra: &str| {
+        WaterfallChart::from_json(&format!(
+            r##"{{"x_axis_data": ["a", "b", "c"], "data": [3, -5, 1],
+                "x_axis_stroke_color": "#123456", "connector_line_show": false{extra}}}"##
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    let widths = |svg: &str| -> Vec<String> {
+        tags(svg, "stroke=\"#123456\"")
+            .into_iter()
+            .map(|tag| {
+                let start = tag.find("stroke-width=\"").unwrap() + 14;
+                tag[start..start + tag[start..].find('"').unwrap()].to_string()
+            })
+            .collect()
+    };
+    // The axis, and the line of 0 across the bars.
+    assert_eq!(vec!["1", "1"], widths(&waterfall("")));
+    assert_eq!(
+        vec!["4", "4"],
+        widths(&waterfall(r#", "x_axis_stroke_width": 4"#))
+    );
+}
+
+#[test]
+fn a_mark_area_keeps_the_alpha_of_its_color() {
+    let area = |style: &str| {
+        BarChart::from_json(&format!(
+            r##"{{"x_axis_data": ["a", "b"], "series_list": [{{"name": "s", "data": [1, 3],
+                "mark_areas": [{{"from": 1, "to": 2{style}}}]}}]}}"##
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    let opacity = |svg: &str| -> String {
+        let band = tags(svg, "fill=\"#FF0000\"")[0];
+        let start = band.find("fill-opacity=\"").unwrap() + 14;
+        band[start..start + band[start..].find('"').unwrap()].to_string()
+    };
+    // A plain color is as faint as the band always was.
+    assert_eq!("0.16", opacity(&area(r##", "color": "#ff0000""##)));
+    // One with an alpha keeps it, unless an opacity is given.
+    assert_eq!("0.5", opacity(&area(r##", "color": "#ff000080""##)));
+    assert_eq!(
+        "0.25",
+        opacity(&area(r##", "color": "#ff000080", "opacity": 0.25"##))
     );
 }

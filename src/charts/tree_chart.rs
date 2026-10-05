@@ -471,6 +471,7 @@ impl TreeChart {
                 fill: Some(n.color),
                 stroke_color: Some(self.background_color),
                 stroke_width: 1.0,
+                stroke_dash_array: None,
                 cx: x,
                 cy: y,
                 r,

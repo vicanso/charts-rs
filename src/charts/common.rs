@@ -116,7 +116,8 @@ pub struct MarkArea {
     /// Color of the band; `None` is the color of the series.
     #[serde(default)]
     pub color: Option<Color>,
-    /// How opaque the band is, from 0 to 1; `None` is 0.16.
+    /// How opaque the band is, from 0 to 1; `None` is the alpha of `color`
+    /// where that has one, and 0.16 otherwise.
     #[serde(default)]
     pub opacity: Option<f32>,
 }
@@ -124,9 +125,13 @@ pub struct MarkArea {
 impl MarkArea {
     /// The fill of the band, on a series of the given color.
     pub(crate) fn fill(&self, series: Color) -> Color {
-        self.color
-            .unwrap_or(series)
-            .with_alpha(self.opacity.map_or(40, opacity_alpha))
+        let alpha = match (self.opacity, self.color) {
+            (Some(opacity), _) => opacity_alpha(opacity),
+            // A color that comes with an alpha keeps it.
+            (None, Some(color)) if color.a != 255 => color.a,
+            _ => 40,
+        };
+        self.color.unwrap_or(series).with_alpha(alpha)
     }
 }
 
@@ -591,7 +596,9 @@ pub struct GridConfig {
     /// Stroke width of the grid lines.
     pub stroke_width: f32,
     /// Dashes of the grid lines, as `stroke-dasharray` takes them (e.g.
-    /// `"4,2"`); `None` is solid lines.
+    /// `"4,2"`); `None` is solid lines. The grid of a chart with an x and a
+    /// y axis, of a gantt, radar and polar bar chart, the lines of a punch
+    /// card and the axes of a parallel chart.
     pub stroke_dash_array: Option<String>,
 }
 
@@ -640,8 +647,9 @@ pub struct TooltipConfig {
     /// for accessibility. Not available in calendar, gauge, parallel, radar
     /// and theme river charts. Default: false; output is unchanged when off.
     pub show: bool,
-    /// Font of the tooltips. What is left unset is that of the data labels:
-    /// a size of 0, a color of nothing, no weight.
+    /// Font of the tooltips. A size of 0 and a color of nothing are those of
+    /// the data labels (a scatter chart writes neither, and leaves them to
+    /// the viewer); without a weight the tooltips have none.
     pub font: FontConfig,
 }
 

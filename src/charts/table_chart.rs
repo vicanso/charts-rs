@@ -78,9 +78,9 @@ pub struct TableChart {
     pub text_aligns: Vec<Align>,
     /// Color of the row separator lines.
     pub border_color: Color,
-    /// Stroke width of the row separator lines and of the outer border.
-    /// Default: 1.
-    pub border_width: f32,
+    /// Stroke width of the row separator lines and of the outer border;
+    /// `None` is 1.
+    pub border_width: Option<f32>,
     /// Draws the outer border.
     pub outlined: bool,
 
@@ -269,7 +269,7 @@ impl TableChart {
             self.border_color = border_color;
         }
         if let Some(border_width) = get_f32_from_value(&data, "border_width") {
-            self.border_width = border_width;
+            self.border_width = Some(border_width);
         }
         if let Some(outlined) = get_bool_from_value(&data, "outlined") {
             self.outlined = outlined;
@@ -286,7 +286,6 @@ impl TableChart {
     pub fn new_with_theme(data: Vec<Vec<String>>, theme: &str) -> TableChart {
         let mut table = TableChart {
             data,
-            border_width: 1.0,
             header: TableHeaderConfig {
                 row_padding: (10.0, 8.0).into(),
                 row_height: 30.0,
@@ -307,18 +306,13 @@ impl TableChart {
         self.width = t.width;
         self.background_color = t.background_color;
 
-        self.title.font.color = t.title.font.color;
-        self.title.font.size = t.title.font.size;
-        self.title.font.weight.clone_from(&t.title.font.weight);
-        self.title.margin.clone_from(&t.title.margin);
-        self.title.align = t.title.align.clone();
-        self.title.height = t.title.height * 1.5;
-
-        self.sub_title.font.color = t.sub_title.font.color;
-        self.sub_title.font.size = t.sub_title.font.size;
-        self.sub_title.margin.clone_from(&t.sub_title.margin);
-        self.sub_title.align = t.sub_title.align.clone();
-        self.sub_title.height = t.sub_title.height;
+        // The title and the sub-title of the theme, whatever it holds of
+        // them; a table leaves its title half as much room again.
+        self.title = TitleConfig {
+            height: t.title.height * 1.5,
+            ..t.title.clone()
+        };
+        self.sub_title = t.sub_title.clone();
 
         self.header.font.size = t.sub_title.font.size;
         self.header.font.color = t.sub_title.font.color;
@@ -561,7 +555,7 @@ impl TableChart {
             if !self.border_color.is_transparent() {
                 c.line(Line {
                     color: Some(self.border_color),
-                    stroke_width: self.border_width,
+                    stroke_width: self.border_width.unwrap_or(1.0),
                     top,
                     right: c.width(),
                     bottom: top,
@@ -635,7 +629,7 @@ impl TableChart {
             c.rect(Rect {
                 color: Some(self.border_color),
                 // The default of SVG is the default here: nothing is written.
-                stroke_width: (self.border_width != 1.0).then_some(self.border_width),
+                stroke_width: self.border_width.filter(|width| *width != 1.0),
                 fill: Some(Color::transparent().into()),
                 left: 0.0,
                 top: 0.0,

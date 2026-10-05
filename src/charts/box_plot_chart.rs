@@ -168,9 +168,16 @@ impl BoxPlotChart {
         } else if let Some(w) = y_axis_config.width {
             w
         } else {
+            // A log axis of no values has no labels to be as wide as.
             let formatter = y_axis_config.formatter.clone().unwrap_or_default();
-            let label = format_string(&y_axis_values.data[0], &formatter);
-            measure_text_width_family(&self.font_family, y_axis_config.font.size, &label)
+            y_axis_values
+                .data
+                .first()
+                .and_then(|label| {
+                    let label = format_string(label, &formatter);
+                    measure_text_width_family(&self.font_family, y_axis_config.font.size, &label)
+                        .ok()
+                })
                 .map(|b| b.width() + 5.0)
                 .unwrap_or(DEFAULT_Y_AXIS_WIDTH)
         };

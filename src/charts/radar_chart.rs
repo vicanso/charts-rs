@@ -184,6 +184,7 @@ impl RadarChart {
                 color: Some(self.grid.stroke_color),
                 points,
                 stroke_width: self.grid.stroke_width,
+                stroke_dash_array: self.grid.stroke_dash_array.clone(),
                 symbol: None,
                 close: true,
                 ..Default::default()
@@ -234,11 +235,11 @@ impl RadarChart {
             c.child(Box::default()).line(Line {
                 color: Some(self.grid.stroke_color),
                 stroke_width: self.grid.stroke_width,
+                stroke_dash_array: self.grid.stroke_dash_array.clone(),
                 left: p.x,
                 top: p.y,
                 right: cx,
                 bottom: cy,
-                ..Default::default()
             });
         }
 

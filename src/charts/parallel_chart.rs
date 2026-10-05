@@ -176,11 +176,11 @@ impl ParallelChart {
             content.line(Line {
                 color: Some(self.grid.stroke_color),
                 stroke_width: self.grid.stroke_width.max(1.0),
+                stroke_dash_array: self.grid.stroke_dash_array.clone(),
                 left: x,
                 top: plot_top,
                 right: x,
                 bottom: plot_bottom,
-                ..Default::default()
             });
             // Dimension name above the axis.
             if let Some(name) = self.x_axis.data.get(j) {

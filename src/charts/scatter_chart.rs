@@ -539,14 +539,15 @@ impl ScatterChart {
         } else if let Some(value) = y_axis_config.width {
             value
         } else {
+            // A log axis of no values has no labels to be as wide as.
             let y_axis_formatter = &y_axis_config.formatter.clone().unwrap_or_default();
-            let str = format_string(&y_axis_values.data[0], y_axis_formatter);
-            if let Ok(b) =
-                measure_text_width_family(&self.font_family, y_axis_config.font.size, &str)
-            {
-                b.width() + 5.0
-            } else {
-                DEFAULT_Y_AXIS_WIDTH
+            let width = y_axis_values.data.first().and_then(|label| {
+                let str = format_string(label, y_axis_formatter);
+                measure_text_width_family(&self.font_family, y_axis_config.font.size, &str).ok()
+            });
+            match width {
+                Some(b) => b.width() + 5.0,
+                None => DEFAULT_Y_AXIS_WIDTH,
             }
         };
 

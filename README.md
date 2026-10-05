@@ -410,9 +410,10 @@ JSON key is the path of the field joined with `_`:
 | `"tooltip_show": true` | `chart.tooltip.show = true` |
 
 The exceptions: `x_boundary_gap` is `x_axis.boundary_gap`, `x_axis_type` is
-`x_axis.kind`, and the `axis_` of the keys of a y axis is left out
-(`"axis_min"` is `y_axis_configs[0].min`). Every JSON key is described in the
-[JSON reference](./docs/json.md).
+`x_axis.kind`, the `axis_` of the keys of a y axis is left out (`"axis_min"`
+is `y_axis_configs[0].min`), and the `series` object of a heatmap is
+`heatmap_series` (`series` being the options of the series, on every chart).
+Every JSON key is described in the [JSON reference](./docs/json.md).
 
 ### From json
 
@@ -752,6 +753,11 @@ use charts_rs::add_fonts;
 let buf = std::fs::read("path/to/font.ttf").unwrap();
 add_fonts(&[&buf]).unwrap();
 ```
+
+A font is known by the names of its family, in every language it gives them
+in: `"font_family": "PingFang SC"` and `"苹方-简"` are the same font. Every
+face of a collection (`.ttc`) is registered, and text is measured with the
+regular face of a family. `get_font_families()` lists the names.
 
 A `font_family` that is not registered is still written to the SVG (the
 viewer resolves it), but text is measured with the default font.

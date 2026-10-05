@@ -58,7 +58,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 |--------|---------|
 | `src/charts/component.rs` | SVG primitive components: Text, Line, Rect, Circle, Polygon, Polyline, Grid, Legend, Axis, Pie, Sector, Ribbon, Shape |
 | `src/charts/canvas.rs` | Canvas abstraction — coordinate transformations, rendering context, SVG tag building |
-| `src/charts/theme.rs` | Theme system; global registry via `Lazy<ArcSwap<AHashMap>>`; `get_theme()`, `add_theme()` |
+| `src/charts/theme.rs` | Theme system: a `Theme` is the canvas defaults plus the same option groups a chart has; global registry via `LazyLock<ArcSwap<HashMap>>`; `get_theme()`, `add_theme()` |
 | `src/charts/common.rs` | Shared types: `Series`, `MarkPoint`, `MarkLine`, `Position`, `Align`, `Symbol`, and the option groups `FontConfig`, `TitleConfig`, `LegendConfig`, `XAxisConfig`, `YAxisConfig`, `GridConfig`, `SeriesConfig`, `TooltipConfig` |
 | `src/charts/params.rs` | JSON parsing utilities (`get_*_from_value()` functions) used in `from_json()` implementations |
 | `src/charts/color.rs` | `Color` type with hex parsing (`"#345"`, `"#ffcc00"`) and opacity |
@@ -74,7 +74,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 - **Colors**: hex strings `"#345"` or `"#ffcc00"`; parsed in `color.rs`
 - **Box margins**: `left, top, right, bottom` (CSS-like padding/margin fields)
 - **`image-encoder` feature**: optional; enables PNG/JPEG/WebP/AVIF export
-- **Options in Rust and JSON**: a JSON key is the Rust field path joined with `_` (`title_font_size` ↔ `title.font.size`); the exceptions are `x_boundary_gap` (`x_axis.boundary_gap`), `x_axis_type` (`x_axis.kind`) and the `axis_` prefix of y axis keys, which the Rust fields leave out. JSON keys never change with the Rust structs
+- **Options in Rust and JSON**: a JSON key is the Rust field path joined with `_` (`title_font_size` ↔ `title.font.size`); the exceptions are `x_boundary_gap` (`x_axis.boundary_gap`), `x_axis_type` (`x_axis.kind`), the `axis_` prefix of y axis keys, which the Rust fields leave out, and the `series` object of a heatmap (`heatmap_series`). JSON keys never change with the Rust structs
 
 ### Tests
 

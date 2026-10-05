@@ -382,7 +382,7 @@ svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 | `"series_label_font_color": "#333"` | `chart.series.label.font.color = "#333".into()` |
 | `"tooltip_show": true` | `chart.tooltip.show = true` |
 
-例外：`x_boundary_gap` 对应 `x_axis.boundary_gap`，`x_axis_type` 对应 `x_axis.kind`，y 轴配置的参数去掉 `axis_` 前缀（`"axis_min"` 对应 `y_axis_configs[0].min`）。所有 JSON 参数见 [JSON 参数文档](./docs/json-zh.md)。
+例外：`x_boundary_gap` 对应 `x_axis.boundary_gap`，`x_axis_type` 对应 `x_axis.kind`，y 轴配置的参数去掉 `axis_` 前缀（`"axis_min"` 对应 `y_axis_configs[0].min`），热力图的 `series` 对象对应 `heatmap_series`（`series` 在所有图表上都是系列的样式分组）。所有 JSON 参数见 [JSON 参数文档](./docs/json-zh.md)。
 
 ### 通过 JSON 字符串配置创建图表
 
@@ -657,6 +657,10 @@ series.band = Some(SeriesBand::new(
 let buf = fs::read(file).unwrap();
 add_fonts(&[&buf]).unwrap();
 ```
+
+字体按其字体族名称注册，并且包含各种语言的名称：`"font_family": "PingFang SC"` 与 `"苹方-简"` 是同一个字体。字体集合（`.ttc`）中的每个字体都会注册，文字宽度按该字体族的常规体测量。`get_font_families()` 可列出全部名称。
+
+未注册的 `font_family` 仍会写入 SVG（由查看器解析），但文字宽度按默认字体测量。
 
 字体只保留原始字节，字形在测量文字时按需读取，因此加载大体积的中文字体也只占用字体文件本身大小的内存。
 

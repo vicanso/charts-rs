@@ -663,6 +663,9 @@ pub struct Circle {
     pub fill: Option<Color>,
     /// Stroke width.
     pub stroke_width: f32,
+    /// Dashes of the stroke, as `stroke-dasharray` takes them; `None` (or an
+    /// empty string) is a solid one.
+    pub stroke_dash_array: Option<String>,
     /// Center x coordinate.
     pub cx: f32,
     /// Center y coordinate.
@@ -683,6 +686,7 @@ impl Default for Circle {
             stroke_color: None,
             fill: None,
             stroke_width: 1.0,
+            stroke_dash_array: None,
             cx: 0.0,
             cy: 0.0,
             r: 3.0,
@@ -707,7 +711,11 @@ impl Circle {
         if self.stroke_color.is_some() {
             w.float(ATTR_STROKE_WIDTH, self.stroke_width);
         }
-        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.stroke_color);
+        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.stroke_color)
+            .opt_text(
+                ATTR_STROKE_DASH_ARRAY,
+                self.stroke_dash_array.as_ref().filter(|d| !d.is_empty()),
+            );
         match self.fill {
             Some(color) => {
                 w.raw(ATTR_FILL_OPACITY, &convert_opacity(&color));

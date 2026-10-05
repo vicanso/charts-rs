@@ -333,3 +333,27 @@ fn json_colors_are_validated() {
         chart.series_list[0].colors
     );
 }
+
+#[test]
+fn log_axis_without_values_does_not_panic() {
+    // A log axis has no ticks without values: nothing may ask for the first.
+    let empty = r#"{"x_axis_data": [], "series_list": [{"name": "A", "data": []}],
+        "y_axis_configs": [{"axis_scale": "log"}]}"#;
+    let none = r#"{"y_axis_configs": [{"axis_scale": "log"}]}"#;
+    for json in [empty, none] {
+        let svgs = [
+            BarChart::from_json(json).unwrap().svg(),
+            LineChart::from_json(json).unwrap().svg(),
+            HorizontalBarChart::from_json(json).unwrap().svg(),
+            charts_rs::ScatterChart::from_json(json).unwrap().svg(),
+            charts_rs::BoxPlotChart::from_json(json).unwrap().svg(),
+            CandlestickChart::from_json(json).unwrap().svg(),
+            charts_rs::HistogramChart::from_json(json).unwrap().svg(),
+            charts_rs::PolarBarChart::from_json(json).unwrap().svg(),
+            charts_rs::WaterfallChart::from_json(json).unwrap().svg(),
+        ];
+        for svg in svgs.into_iter().flatten() {
+            assert_valid_numbers(&svg);
+        }
+    }
+}

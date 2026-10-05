@@ -125,7 +125,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 |---|---|---|---|
 | `grid_stroke_color` | color | theme | Color of the grid lines. |
 | `grid_stroke_width` | number | `1` | Width of the grid lines. |
-| `grid_stroke_dash_array` | string |  | Dashes of the grid lines, as the `stroke-dasharray` of SVG takes them (e.g. `"4,2"`). Solid lines by default. Applies to the grid of the charts with an x and a y axis, and to that of the gantt chart. |
+| `grid_stroke_dash_array` | string |  | Dashes of the grid lines, as the `stroke-dasharray` of SVG takes them (e.g. `"4,2"`). Solid lines by default. Applies to the grid of the charts with an x and a y axis, to those of the gantt, radar and polar bar charts, to the lines of a punch card and to the axes of a parallel chart. |
 
 ### Series
 
@@ -150,9 +150,9 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `tooltip_show` | boolean | `false` | Gives every data shape a tooltip that shows on hover (plain CSS, no script), and a `<title>` for assistive tools. Not available in calendar, gauge, parallel, radar and theme river charts. |
-| `tooltip_font_size` | number |  | Font size of the tooltips. Default: that of the data labels (`series_label_font_size`). |
-| `tooltip_font_color` | color |  | Font color of the tooltips. Default: that of the data labels (`series_label_font_color`). |
-| `tooltip_font_weight` | string |  | Font weight of the tooltips, e.g. `"bold"`. |
+| `tooltip_font_size` | number |  | Font size of the tooltips. Default: that of the data labels (`series_label_font_size`); a scatter chart leaves it to the viewer. |
+| `tooltip_font_color` | color |  | Font color of the tooltips. Default: that of the data labels (`series_label_font_color`); a scatter chart leaves it to the viewer. |
+| `tooltip_font_weight` | string |  | Font weight of the tooltips, e.g. `"bold"`. None by default. |
 | `animation` | object |  | Animates the chart as it appears; `{}` uses the defaults. Supported by the bar, horizontal bar, line, pie, funnel, sunburst, treemap, sankey, histogram, polar bar and chord charts. |
 
 ### `series_list[]`
@@ -212,7 +212,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `from` | number / `"average"` / `"min"` / `"max"` |  | One edge of the band. |
 | `to` | number / `"average"` / `"min"` / `"max"` |  | The other edge of the band. |
 | `color` | color |  | Color of the band. Default: the color of the series. |
-| `opacity` | number | `0.16` | How opaque the band is, from 0 to 1. |
+| `opacity` | number | `0.16` | How opaque the band is, from 0 to 1. A `color` with an alpha of its own (`"#ff000080"`) keeps it when no opacity is given. |
 
 #### `series_list[].symbol` and `series_symbol`
 

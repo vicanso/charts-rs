@@ -137,3 +137,132 @@ fn fonts_are_registered_by_their_name() {
         assert!(message.starts_with("Error parse font: "), "{message}");
     }
 }
+
+// ── Fonts made of the embedded one ──────────────────────────────────────────
+
+/// Where a table of a font is: its offset and its length.
+fn table(font: &[u8], tag: &[u8; 4]) -> (usize, usize) {
+    let u32_at = |at: usize| u32::from_be_bytes(font[at..at + 4].try_into().unwrap()) as usize;
+    let count = u16::from_be_bytes([font[4], font[5]]) as usize;
+    (0..count)
+        .map(|i| 12 + i * 16)
+        .find(|record| &font[*record..*record + 4] == tag)
+        .map(|record| (u32_at(record + 8), u32_at(record + 12)))
+        .unwrap()
+}
+
+/// The embedded font under another name of six letters.
+fn renamed(name: &str) -> Vec<u8> {
+    assert_eq!(6, name.len());
+    let utf16 = |text: &str| -> Vec<u8> { text.bytes().flat_map(|b| [0, b]).collect() };
+    let (from, to) = (utf16("Roboto"), utf16(name));
+    let mut font = DEFAULT_FONT_DATA.to_vec();
+    let (offset, length) = table(&font, b"name");
+    let mut at = offset;
+    while at + from.len() <= offset + length {
+        if font[at..at + from.len()] == from[..] {
+            font[at..at + to.len()].copy_from_slice(&to);
+            at += from.len();
+        } else {
+            at += 1;
+        }
+    }
+    font
+}
+
+fn width(family: &str, text: &str) -> f32 {
+    measure_text_width_family(family, 14.0, text)
+        .unwrap()
+        .width()
+}
+
+#[test]
+fn a_font_is_registered_by_its_family() {
+    add_fonts(&[&renamed("Tester")]).unwrap();
+    let families = get_font_families().unwrap();
+    assert!(families.contains(&"Tester".to_string()), "{families:?}");
+    assert_eq!(
+        width("Roboto", "Hello World!"),
+        width("Tester", "Hello World!")
+    );
+}
+
+#[test]
+fn a_font_named_in_mac_roman_only_is_registered() {
+    // The name of the family, moved from the Unicode names of the font to
+    // one in Mac Roman, written over its copyright notice.
+    let mut font = renamed("Unused");
+    let (name, _) = table(&font, b"name");
+    let u16_at = |font: &[u8], at: usize| u16::from_be_bytes([font[at], font[at + 1]]) as usize;
+    let (count, storage) = (u16_at(&font, name + 2), u16_at(&font, name + 4));
+    let record = |id: usize| -> usize {
+        (0..count)
+            .map(|i| name + 6 + i * 12)
+            .find(|record| u16_at(&font, *record + 6) == id)
+            .unwrap()
+    };
+    let (family, copyright) = (record(1), record(0));
+    let text = name + storage + u16_at(&font, copyright + 10);
+    font[text..text + 6].copy_from_slice(b"Macish");
+    // Platform 1 (Macintosh), encoding 0 (Roman), language 0 (English),
+    // six bytes at the offset of the notice.
+    let offset = [font[copyright + 10], font[copyright + 11]];
+    font[family..family + 6].copy_from_slice(&[0, 1, 0, 0, 0, 0]);
+    font[family + 8..family + 10].copy_from_slice(&[0, 6]);
+    font[family + 10..family + 12].copy_from_slice(&offset);
+
+    add_fonts(&[&font]).unwrap();
+    let families = get_font_families().unwrap();
+    assert!(families.contains(&"Macish".to_string()), "{families:?}");
+    assert_eq!(
+        width("Roboto", "Hello World!"),
+        width("Macish", "Hello World!")
+    );
+}
+
+#[test]
+fn a_symbol_font_is_measured_by_its_own_table() {
+    // Both tables of characters said to be those of a symbol font: none of
+    // them is one of Unicode any more.
+    let mut font = renamed("Symbls");
+    let (cmap, _) = table(&font, b"cmap");
+    let count = u16::from_be_bytes([font[cmap + 2], font[cmap + 3]]) as usize;
+    for record in (0..count).map(|i| cmap + 4 + i * 8) {
+        font[record..record + 4].copy_from_slice(&[0, 3, 0, 0]);
+    }
+    add_fonts(&[&font]).unwrap();
+    assert_eq!(
+        width("Roboto", "Hello World!"),
+        width("Symbls", "Hello World!")
+    );
+    // Not the one box that every character without a glyph is measured as.
+    assert!(width("Symbls", "WWWWW") > 2.0 * width("Symbls", "iiiii"));
+    assert_eq!(width("Symbls", "中中中中中"), width("Symbls", "文文文文文"));
+}
+
+#[test]
+fn the_regular_face_of_a_family_is_measured_with() {
+    // A bold face of the family, twice as large so that it shows.
+    let bold = |name: &str| -> Vec<u8> {
+        let mut font = renamed(name);
+        let (os2, _) = table(&font, b"OS/2");
+        font[os2 + 4..os2 + 6].copy_from_slice(&700_u16.to_be_bytes());
+        let (head, _) = table(&font, b"head");
+        font[head + 18..head + 20].copy_from_slice(&1024_u16.to_be_bytes());
+        font
+    };
+    let regular = width("Roboto", "Hello World!");
+
+    // Whichever comes first in a call.
+    add_fonts(&[&bold("Weight"), &renamed("Weight")]).unwrap();
+    assert_eq!(regular, width("Weight", "Hello World!"));
+    add_fonts(&[&renamed("Heavyw"), &bold("Heavyw")]).unwrap();
+    assert_eq!(regular, width("Heavyw", "Hello World!"));
+
+    // A later call replaces the family, as it always did.
+    add_fonts(&[&bold("Weight")]).unwrap();
+    assert!(width("Weight", "Hello World!") > regular * 1.9);
+    // The only face of a family is the one, whatever its weight.
+    add_fonts(&[&bold("Onlybd")]).unwrap();
+    assert!(width("Onlybd", "Hello World!") > regular * 1.9);
+}

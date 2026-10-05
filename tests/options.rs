@@ -285,3 +285,30 @@ fn a_theme_is_written_as_it_is_grouped() {
     assert_eq!(Align::Left, title.align);
     assert!(title.text.is_empty() && title.font.weight.is_none());
 }
+
+#[test]
+fn a_table_takes_the_title_of_its_theme() {
+    let mut theme = theme_from("light");
+    theme.title.align = Align::Right;
+    theme.sub_title.font.weight = Some("bold".to_string());
+    theme.sub_title.font.size = 17.0;
+    add_theme("options-test-table", theme);
+    let rows = || vec![vec!["Name".to_string()], vec!["A".to_string()]];
+
+    let plain = TableChart::new(rows());
+    let themed = TableChart::new_with_theme(rows(), "options-test-table");
+    assert_eq!(Align::Right, themed.title.align);
+    assert_eq!(Some("bold".to_string()), themed.sub_title.font.weight);
+    assert_eq!(17.0, themed.sub_title.font.size);
+    // The title of a table has half as much room again as the theme gives.
+    assert_eq!(plain.title.height, themed.title.height);
+    assert_eq!(get_theme("light").title.height * 1.5, plain.title.height);
+    // And from JSON.
+    let from_json = TableChart::from_json(
+        r#"{"theme": "options-test-table", "title_text": "T", "sub_title_text": "S",
+            "data": [["Name"], ["A"]]}"#,
+    )
+    .unwrap();
+    assert_eq!(Align::Right, from_json.title.align);
+    assert!(from_json.svg().unwrap().contains("font-weight=\"bold\""));
+}

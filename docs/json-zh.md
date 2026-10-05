@@ -125,7 +125,7 @@
 |---|---|---|---|
 | `grid_stroke_color` | 颜色 | 主题 | 网格线颜色。 |
 | `grid_stroke_width` | 数字 | `1` | 网格线宽度。 |
-| `grid_stroke_dash_array` | 字符串 |  | 网格线的虚线样式，写法同 SVG 的 `stroke-dasharray`（例如 `"4,2"`）。默认为实线。作用于带 x、y 轴的图表以及甘特图的网格。 |
+| `grid_stroke_dash_array` | 字符串 |  | 网格线的虚线样式，写法同 SVG 的 `stroke-dasharray`（例如 `"4,2"`）。默认为实线。作用于带 x、y 轴的图表，甘特图、雷达图和极坐标柱状图的网格，以及单轴散点图（punch card）的行线和平行坐标图的轴线。 |
 
 ### 系列
 
@@ -150,9 +150,9 @@
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `tooltip_show` | 布尔 | `false` | 为每个数据图形添加悬停提示（纯 CSS 实现，无需脚本），同时写入供辅助工具使用的 `<title>`。日历图、仪表盘、平行坐标图、雷达图和主题河流图不支持。 |
-| `tooltip_font_size` | 数字 |  | 悬停提示的字号。默认与数据标签相同（`series_label_font_size`）。 |
-| `tooltip_font_color` | 颜色 |  | 悬停提示的字体颜色。默认与数据标签相同（`series_label_font_color`）。 |
-| `tooltip_font_weight` | 字符串 |  | 悬停提示的字重，例如 `"bold"`。 |
+| `tooltip_font_size` | 数字 |  | 悬停提示的字号。默认与数据标签相同（`series_label_font_size`）；散点图默认不写字号，由查看器决定。 |
+| `tooltip_font_color` | 颜色 |  | 悬停提示的字体颜色。默认与数据标签相同（`series_label_font_color`）；散点图默认不写颜色，由查看器决定。 |
+| `tooltip_font_weight` | 字符串 |  | 悬停提示的字重，例如 `"bold"`。默认不设置。 |
 | `animation` | 对象 |  | 图表出现时的动画；`{}` 表示使用默认值。支持柱状图、条形图、折线图、饼图、漏斗图、旭日图、矩形树图、桑基图、直方图、极坐标柱状图与和弦图。 |
 
 ### `series_list[]`
@@ -212,7 +212,7 @@
 | `from` | 数字 / `"average"` / `"min"` / `"max"` |  | 阴影带的一条边。 |
 | `to` | 数字 / `"average"` / `"min"` / `"max"` |  | 阴影带的另一条边。 |
 | `color` | 颜色 |  | 阴影带的颜色。默认为系列颜色。 |
-| `opacity` | 数字 | `0.16` | 阴影带的不透明度，0 到 1。 |
+| `opacity` | 数字 | `0.16` | 阴影带的不透明度，0 到 1。未设置时，如果 `color` 自带透明度（如 `"#ff000080"`）则沿用它。 |
 
 #### `series_list[].symbol` 与 `series_symbol`
 

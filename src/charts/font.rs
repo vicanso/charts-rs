@@ -18,7 +18,7 @@ use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, OnceLock};
-use ttf_parser::{Face, GlyphId, OutlineBuilder};
+use ttf_parser::{Face, GlyphId, Language, OutlineBuilder, PlatformId, name_id};
 
 // Crate-level error/result (see `error.rs`); re-exported to keep `font::Error`.
 pub use super::error::{Error, Result};
@@ -39,6 +39,8 @@ struct FontFace {
     // Tells the fonts apart in the per-thread glyph cache.
     id: u64,
     data: FontData,
+    // Which of the faces of a collection (`.ttc`) it is; 0 otherwise.
+    index: u32,
     units_per_em: f32,
     // Of a line, in font units: from its top down to the baseline, and down
     // to the top of the next line.
@@ -46,29 +48,54 @@ struct FontFace {
     new_line: f32,
 }
 
+/// What a face is registered by: the names of its family, and how far it is
+/// from the regular face of that family.
+struct FaceNames {
+    // The families the face is found under, as `fontdb` reads them.
+    families: Vec<String>,
+    // Its full name without the words of a weight, which is what a font was
+    // registered under up to 1.x; kept so that such a name still measures.
+    alias: Option<String>,
+    // Slanted or not, and how far from the normal weight and width.
+    slant: (bool, u16, u16),
+}
+
 impl FontFace {
-    /// Reads a font: its family (empty when it has no name) and what it is
-    /// measured with.
-    fn new(data: FontData) -> Result<(String, FontFace)> {
+    /// Reads face `index` of a font: its names and what it is measured with.
+    fn new(data: FontData, index: u32) -> Result<(FaceNames, FontFace)> {
         static NEXT_ID: AtomicU64 = AtomicU64::new(0);
-        let (family, units_per_em, ascent, new_line) = {
-            let face = Face::parse((*data).as_ref(), 0).map_err(|e| Error::ParseFont {
+        let (names, units_per_em, ascent, new_line) = {
+            let face = Face::parse((*data).as_ref(), index).map_err(|e| Error::ParseFont {
                 message: e.to_string(),
             })?;
             let ascent = i32::from(face.ascender());
             let new_line = ascent - i32::from(face.descender()) + i32::from(face.line_gap());
+            let families = family_names(&face);
+            // Only the first face of a file ever had one.
+            let alias = Some(get_family_from_face(&face))
+                .filter(|alias| index == 0 && !alias.is_empty() && !families.contains(alias));
+            let names = FaceNames {
+                families,
+                alias,
+                slant: (
+                    face.is_italic() || face.is_oblique(),
+                    face.weight().to_number().abs_diff(400),
+                    face.width().to_number().abs_diff(5),
+                ),
+            };
             (
-                get_family_from_face(&face),
+                names,
                 f32::from(face.units_per_em()),
                 ascent as f32,
                 new_line as f32,
             )
         };
         Ok((
-            family,
+            names,
             FontFace {
                 id: NEXT_ID.fetch_add(1, Ordering::Relaxed),
                 data,
+                index,
                 units_per_em,
                 ascent,
                 new_line,
@@ -100,12 +127,15 @@ impl FontFace {
 
     fn read_glyph(&self, c: char) -> Glyph {
         // The bytes were parsed when the font was registered.
-        let Ok(face) = Face::parse((*self.data).as_ref(), 0) else {
+        let Ok(face) = Face::parse((*self.data).as_ref(), self.index) else {
             return Glyph::default();
         };
         // A character the font does not have is measured as its glyph for
         // those, the first one.
-        let id = face.glyph_index(c).unwrap_or(GlyphId(0));
+        let id = face
+            .glyph_index(c)
+            .or_else(|| symbol_glyph(&face, c))
+            .unwrap_or(GlyphId(0));
         if id.0 >= face.number_of_glyphs() {
             return Glyph::default();
         }
@@ -299,12 +329,73 @@ struct FontRegistry {
 // drop entries computed against the previous fonts.
 static FONT_GENERATION: AtomicU64 = AtomicU64::new(0);
 
+/// The glyph of a character in a symbol font, which has no table of Unicode
+/// characters: its glyphs are at U+F000 to U+F0FF, and it is written with
+/// the characters up to U+00FF as well — as the shaper of the rasterizer
+/// reads such a font.
+fn symbol_glyph(face: &Face, c: char) -> Option<GlyphId> {
+    const WINDOWS_SYMBOL_ENCODING: u16 = 0;
+    let subtable = face.tables().cmap?.subtables.into_iter().find(|subtable| {
+        subtable.platform_id == PlatformId::Windows
+            && subtable.encoding_id == WINDOWS_SYMBOL_ENCODING
+    })?;
+    let code = u32::from(c);
+    subtable.glyph_index(code).or_else(|| {
+        (code <= 0xFF)
+            .then(|| subtable.glyph_index(0xF000 + code))
+            .flatten()
+    })
+}
+
+/// The families of a face, as `fontdb` — which the rasterizer finds its
+/// fonts with — reads them: the typographic family and the family, in every
+/// language they are named in. Old fonts name theirs in Mac Roman only;
+/// such a name counts where there is no English one in Unicode.
+fn family_names(face: &Face) -> Vec<String> {
+    const MAC_ROMAN_ENCODING: u16 = 0;
+    let mut families: Vec<String> = vec![];
+    let mut add = |name: String| {
+        let name = name.trim().to_string();
+        if !name.is_empty() && !families.contains(&name) {
+            families.push(name);
+        }
+    };
+    for id in [name_id::TYPOGRAPHIC_FAMILY, name_id::FAMILY] {
+        let mut english = false;
+        for name in face.names() {
+            if name.name_id == id
+                && name.is_unicode()
+                && let Some(text) = name.to_string()
+            {
+                english |= name.language() == Language::English_UnitedStates;
+                add(text);
+            }
+        }
+        if english {
+            continue;
+        }
+        // The letters of ASCII are those of Mac Roman; a name with others
+        // is left to its Unicode form.
+        let mac_roman = face.names().into_iter().find_map(|name| {
+            (name.name_id == id
+                && name.platform_id == PlatformId::Macintosh
+                && name.encoding_id == MAC_ROMAN_ENCODING
+                && name.name.is_ascii())
+            .then(|| String::from_utf8_lossy(name.name).into_owned())
+        });
+        if let Some(text) = mac_roman {
+            add(text);
+        }
+    }
+    families
+}
+
 fn get_family_from_face(face: &Face) -> String {
     // The full name of the font, where it is given in Unicode.
     let Some(name) = face
         .names()
         .into_iter()
-        .find(|name| name.name_id == ttf_parser::name_id::FULL_NAME && name.is_unicode())
+        .find(|name| name.name_id == name_id::FULL_NAME && name.is_unicode())
         .and_then(|name| name.to_string())
     else {
         return String::new();
@@ -332,7 +423,7 @@ fn global_fonts() -> Result<&'static ArcSwap<FontRegistry>> {
     // so a font-parse failure is propagated here before anything is stored.
     // The embedded font is referenced in place, not copied.
     let data: FontData = Arc::new(DEFAULT_FONT_DATA);
-    let (_, font) = FontFace::new(data.clone())?;
+    let (_, font) = FontFace::new(data.clone(), 0)?;
     let mut fonts = HashMap::new();
     fonts.insert(DEFAULT_FONT_FAMILY.to_string(), Arc::new(font));
     let registry = FontRegistry {
@@ -343,32 +434,70 @@ fn global_fonts() -> Result<&'static ArcSwap<FontRegistry>> {
     Ok(GLOBAL_FONTS.get_or_init(|| ArcSwap::from_pointee(registry)))
 }
 
-/// Registers fonts (TTF/OTF data); the family name is read from the font
-/// itself. Fonts can be added at any time — new fonts take effect for
+/// Registers fonts (TTF/OTF data, or a collection of them: TTC); the family
+/// names are read from the fonts themselves, in every language they are
+/// given in (`"PingFang SC"` and `"苹方-简"`), and each face of a collection
+/// is registered. Fonts can be added at any time — new fonts take effect for
 /// subsequent renders, replacing any font already registered under the same
 /// family.
+///
+/// Text is measured with one face of a family: of the faces given in one
+/// call, the regular one (upright, of normal weight and width) or the one
+/// nearest to it.
 pub fn add_fonts(fonts: &[&[u8]]) -> Result<()> {
     // Parse up front so errors surface before the registry is touched.
-    let mut parsed = Vec::with_capacity(fonts.len());
+    // For each name the face of this call it stands for, and how much that
+    // face is the one the name asks for: a family before an old alias, an
+    // upright face before a slanted one, then the weight and the width.
+    type Rank = (bool, (bool, u16, u16));
+    let mut chosen: HashMap<String, (Rank, Arc<FontFace>)> = HashMap::new();
+    let mut datas = Vec::with_capacity(fonts.len());
     for data in fonts.iter() {
         let data: FontData = Arc::new(data.to_vec());
-        let (family, font) = FontFace::new(data.clone())?;
-        if !family.is_empty() {
-            parsed.push((family, Arc::new(font), data));
+        let count = ttf_parser::fonts_in_collection((*data).as_ref()).unwrap_or(1);
+        let mut error = None;
+        let mut read = false;
+        for index in 0..count.max(1) {
+            let (names, face) = match FontFace::new(data.clone(), index) {
+                Ok(face) => face,
+                Err(e) => {
+                    error.get_or_insert(e);
+                    continue;
+                }
+            };
+            read = true;
+            let face = Arc::new(face);
+            let aliases = names.alias.into_iter().map(|name| (name, true));
+            let families = names.families.into_iter().map(|name| (name, false));
+            for (name, is_alias) in families.chain(aliases) {
+                let rank = (is_alias, names.slant);
+                match chosen.get(&name) {
+                    Some((best, _)) if *best <= rank => {}
+                    _ => {
+                        chosen.insert(name, (rank, face.clone()));
+                    }
+                }
+            }
         }
+        // A file none of whose faces can be read is no font; a collection
+        // with a face that cannot is used for the others.
+        if let Some(e) = error.filter(|_| !read) {
+            return Err(e);
+        }
+        datas.push(data);
     }
     let cell = global_fonts()?;
-    if parsed.is_empty() {
+    if datas.is_empty() {
         return Ok(());
     }
     cell.rcu(|current| {
         let mut fonts = current.fonts.clone();
-        let mut datas = current.datas.clone();
-        for (family, font, data) in parsed.iter() {
+        for (family, (_, font)) in chosen.iter() {
             fonts.insert(family.clone(), font.clone());
-            datas.push(data.clone());
         }
-        FontRegistry { fonts, datas }
+        let mut all = current.datas.clone();
+        all.extend(datas.iter().cloned());
+        FontRegistry { fonts, datas: all }
     });
     FONT_GENERATION.fetch_add(1, Ordering::Relaxed);
     #[cfg(feature = "raster")]
