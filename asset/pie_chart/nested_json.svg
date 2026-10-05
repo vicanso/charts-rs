@@ -1,0 +1,121 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<style>.ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}</style>
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Access source
+</text>
+<path d="M300,217.5 L300,151.5 A2 2 0 0 1 302.4,149.5 A68 68 0 0 1 302.4,285.5 A68 68 0 0 1 295.7,285.4 A2 2 0 0 1 293.5,283.2 L299.8,219.5 Z" fill="#5470C6" class="ct-trigger" data-series="Search" data-value="1548" data-percentage="51.6" data-ring="0">
+<title>Search: 1548 (51.6%)</title>
+</path>
+<text font-size="14" x="334" y="219.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Search: 1548 (51.6%)
+</text>
+<text font-size="14" x="318.3" y="224.4" font-family="Roboto" fill="#FFFFFF">
+Search
+</text>
+<path d="M300,217.5 L293.5,283.2 A2 2 0 0 1 291,284.9 A68 68 0 0 1 232.4,209.7 A2 2 0 0 1 234.7,207.7 L298,217.2 Z" fill="#91CC75" class="ct-trigger" data-series="Direct" data-value="775" data-percentage="25.8" data-ring="0">
+<title>Direct: 775 (25.8%)</title>
+</path>
+<text font-size="14" x="273.2" y="238.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Direct: 775 (25.8%)
+</text>
+<text font-size="14" x="247.8" y="247.5" font-family="Roboto" fill="#000000" fill-opacity="0.78">
+Direct
+</text>
+<path d="M300,217.5 L234.7,207.7 A2 2 0 0 1 233.2,205 A68 68 0 0 1 297.6,149.5 A2 2 0 0 1 300,151.5 L300,215.5 Z" fill="#FAC858" class="ct-trigger" data-series="Marketing" data-value="679" data-percentage="22.6" data-ring="0">
+<title>Marketing: 679 (22.6%)</title>
+</path>
+<text font-size="14" x="277.8" y="191.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Marketing: 679 (22.6%)
+</text>
+<path d="M300,141.5 L300,77.5 A2 2 0 0 1 305,75.6 A142 142 0 0 1 418.2,296.2 A2 2 0 0 1 413.7,299.1 L361.7,261.8 A2 2 0 0 1 361.6,258.5 A74 74 0 0 0 302.6,143.5 A2 2 0 0 1 300,141.5 Z" fill="#EE6666" class="ct-trigger" data-series="Baidu" data-value="1048" data-percentage="34.9" data-ring="1">
+<title>Baidu: 1048 (34.9%)</title>
+</path>
+<text font-size="14" x="396.1" y="168.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Baidu: 1048 (34.9%)
+</text>
+<path d="M426.3,152.7 C430.8 150.4, 439.4 144.7, 444.1 143.5 C448.9 142.4, 459.1 143.5, 464.1 143.5" stroke-width="1" fill="none" stroke="#EE6666"/>
+<text font-size="14" x="467.1" y="148.5" font-family="Roboto" fill="#464646">
+Baidu: 34.9%
+</text>
+<path d="M361.7,261.8 L413.7,299.1 A2 2 0 0 1 412.4,304.3 A142 142 0 0 1 362.7,344.9 A2 2 0 0 1 357.4,345.2 L331.2,286.8 A2 2 0 0 1 332.7,283.9 A74 74 0 0 0 358.6,262.7 A2 2 0 0 1 361.7,261.8 Z" fill="#73C0DE" class="ct-trigger" data-series="Google" data-value="251" data-percentage="8.4" data-ring="1">
+<title>Google: 251 (8.4%)</title>
+</path>
+<text font-size="14" x="368.4" y="301.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Google: 251 (8.4%)
+</text>
+<path d="M389.9,327.4 C393.1 331.3, 398.5 341, 402.6 342.9 C406.6 344.8, 417.6 342.9, 422.6 342.9" stroke-width="1" fill="none" stroke="#73C0DE"/>
+<text font-size="14" x="425.6" y="347.9" font-family="Roboto" fill="#464646">
+Google: 8.4%
+</text>
+<path d="M331.2,286.8 L357.4,345.2 A2 2 0 0 1 353.7,349 A142 142 0 0 1 321.2,357.9 A2 2 0 0 1 316.1,356.6 L308.7,293 A2 2 0 0 1 311.1,290.7 A74 74 0 0 0 328,286 A2 2 0 0 1 331.2,286.8 Z" fill="#3BA272" class="ct-trigger" data-series="Bing" data-value="147" data-percentage="4.9" data-ring="1">
+<title>Bing: 147 (4.9%)</title>
+</path>
+<text font-size="14" x="328.7" y="321.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Bing: 147 (4.9%)
+</text>
+<path d="M337.7,354.4 C339.1 359.2, 339.9 371.3, 343 373.7 C346.2 376.1, 358 373.7, 363 373.7" stroke-width="1" fill="none" stroke="#3BA272"/>
+<text font-size="14" x="366" y="378.7" font-family="Roboto" fill="#464646">
+Bing: 4.9%
+</text>
+<path d="M308.7,293 L316.1,356.6 A2 2 0 0 1 311.4,359 A142 142 0 0 1 291,359.2 A2 2 0 0 1 286.3,356.8 L292.5,293.1 A2 2 0 0 1 295.3,291.4 A74 74 0 0 0 305.9,291.3 A2 2 0 0 1 308.7,293 Z" fill="#FC8452" class="ct-trigger" data-series="Others" data-value="102" data-percentage="3.4" data-ring="1">
+<title>Others: 102 (3.4%)</title>
+</path>
+<text font-size="14" x="300.9" y="325.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Others: 102 (3.4%)
+</text>
+<path d="M301.2,359.5 C301.2 366.5, 298.4 383.6, 301.4 387.7 C303.4 390.6, 316.4 387.7, 321.4 387.7" stroke-width="1" fill="none" stroke="#FC8452"/>
+<text font-size="14" x="324.4" y="392.7" font-family="Roboto" fill="#464646">
+Others: 3.4%
+</text>
+<path d="M292.5,293.1 L286.3,356.8 A2 2 0 0 1 281.1,358.2 A142 142 0 0 1 201.7,320 A2 2 0 0 1 199.6,315.1 L245.5,270.5 A2 2 0 0 1 248.8,270.9 A74 74 0 0 0 290.2,290.8 A2 2 0 0 1 292.5,293.1 Z" fill="#9A60B4" class="ct-trigger" data-series="Typed" data-value="335" data-percentage="11.2" data-ring="1">
+<title>Typed: 335 (11.2%)</title>
+</path>
+<text font-size="14" x="253.1" y="314.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Typed: 335 (11.2%)
+</text>
+<path d="M238.4,345.4 C236.2 349.9, 233.3 361.2, 229.7 363.4 C226.1 365.7, 214.7 363.4, 209.7 363.4" stroke-width="1" fill="none" stroke="#9A60B4"/>
+<text font-size="14" x="123.7" y="368.4" font-family="Roboto" fill="#464646">
+Typed: 11.2%
+</text>
+<path d="M245.5,270.5 L199.6,315.1 A2 2 0 0 1 194.8,312.9 A142 142 0 0 1 158.9,201.2 A2 2 0 0 1 161.6,196.6 L224.8,206.2 A2 2 0 0 1 226.5,209 A74 74 0 0 0 245.2,267.2 A2 2 0 0 1 245.5,270.5 Z" fill="#EA7CCC" class="ct-trigger" data-series="Bookmarks" data-value="440" data-percentage="14.7" data-ring="1">
+<title>Bookmarks: 440 (14.7%)</title>
+</path>
+<text font-size="14" x="197.2" y="250.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Bookmarks: 440 (14.7%)
+</text>
+<path d="M164.8,260.9 C160 262.5, 150.6 266.3, 145.8 267 C140.9 267.8, 130.8 267, 125.8 267" stroke-width="1" fill="none" stroke="#EA7CCC"/>
+<text font-size="14" x="4.8" y="272" font-family="Roboto" fill="#464646">
+Bookmarks: 14.7%
+</text>
+<path d="M224.8,206.2 L161.6,196.6 A2 2 0 0 1 160.4,191.4 A142 142 0 0 1 197.4,119.3 A2 2 0 0 1 202.3,117.2 L247,163.1 A2 2 0 0 1 246.5,166.3 A74 74 0 0 0 227.3,203.9 A2 2 0 0 1 224.8,206.2 Z" fill="#5470C6" class="ct-trigger" data-series="Email" data-value="310" data-percentage="10.3" data-ring="1">
+<title>Email: 310 (10.3%)</title>
+</path>
+<text font-size="14" x="203.9" y="168.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Email: 310 (10.3%)
+</text>
+<path d="M173.7,152.7 C169.2 150.4, 160.6 144.7, 155.9 143.5 C151.1 142.4, 140.9 143.5, 135.9 143.5" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="52.9" y="148.5" font-family="Roboto" fill="#464646">
+Email: 10.3%
+</text>
+<path d="M247,163.1 L202.3,117.2 A2 2 0 0 1 204.5,112.4 A142 142 0 0 1 255.7,82.6 A2 2 0 0 1 261,83.1 L278.8,144.5 A2 2 0 0 1 276.9,147.2 A74 74 0 0 0 250.2,162.7 A2 2 0 0 1 247,163.1 Z" fill="#91CC75" class="ct-trigger" data-series="Ads" data-value="234" data-percentage="7.8" data-ring="1">
+<title>Ads: 234 (7.8%)</title>
+</path>
+<text font-size="14" x="245.6" y="124.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Ads: 234 (7.8%)
+</text>
+<path d="M228.5,94.8 C226 90.5, 222.2 79.7, 218.5 77.5 C214.7 75.4, 203.5 77.5, 198.5 77.5" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="134.5" y="82.5" font-family="Roboto" fill="#464646">
+Ads: 7.8%
+</text>
+<path d="M278.8,144.5 L261,83.1 A2 2 0 0 1 265.2,79.8 A142 142 0 0 1 295,75.6 A2 2 0 0 1 300,77.5 L300,141.5 A2 2 0 0 1 297.4,143.5 A74 74 0 0 0 281.9,145.8 A2 2 0 0 1 278.8,144.5 Z" fill="#FAC858" class="ct-trigger" data-series="Video" data-value="135" data-percentage="4.5" data-ring="1">
+<title>Video: 135 (4.5%)</title>
+</path>
+<text font-size="14" x="284.8" y="110.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646" class="ct-tip">
+Video: 135 (4.5%)
+</text>
+<path d="M280,76.9 C279.3 72, 280 59.6, 277.2 57.1 C274.3 54.6, 262.2 57.1, 257.2 57.1" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="182.2" y="62.1" font-family="Roboto" fill="#464646">
+Video: 4.5%
+</text>
+</svg>

@@ -53,8 +53,8 @@ The library supports twenty-seven chart types: `Bar`, `HorizontalBar`, `Line`, `
 - Bands around lines (`series.band`): confidence intervals, forecast ranges
   and min–max envelopes
 - Step lines (`series.step`), 100% stacked bars and areas (`stack_percent`),
-  half and partial pies (`end_angle`), and inverse value axes
-  (`axis_inverse`) for ranking charts
+  half and partial pies (`end_angle`), nested pies (`series.ring`), and
+  inverse value axes (`axis_inverse`) for ranking charts
 - Error bars on bars, lines and scatter points (`series.error_bar`), and
   regression curves in scatter charts (`regression`: linear, exponential,
   logarithmic, polynomial)

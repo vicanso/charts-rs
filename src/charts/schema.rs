@@ -138,6 +138,7 @@ pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("band", Kind::Object(BAND_FIELDS)),
     f("step", Kind::Enum(&["start", "middle", "end"])),
     f("error_bar", Kind::Object(BAND_FIELDS)),
+    f("ring", Kind::Index),
 ];
 
 pub(crate) static Y_AXIS_FIELDS: &[Field] = &[

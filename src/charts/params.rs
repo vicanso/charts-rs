@@ -608,6 +608,7 @@ fn get_series_from_value(value: &serde_json::Value) -> Option<Series> {
         band: get_series_band_from_value(value, "band"),
         step: get_line_step_from_value(value, "step"),
         error_bar: get_series_band_from_value(value, "error_bar"),
+        ring: get_usize_from_value(value, "ring").unwrap_or_default(),
     })
 }
 

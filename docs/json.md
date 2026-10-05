@@ -175,6 +175,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `band` | object |  | A filled band around the line: a lower and an upper bound for each data point. |
 | `step` | `"start"` / `"middle"` / `"end"` |  | Draws the line as steps: level between two points, changing to the next value at the point itself (`start`), half way to the next one (`middle`) or at the next point (`end`). Wins over `smooth`. |
 | `error_bar` | object |  | Error bars: a lower and an upper bound for each data point, drawn as a line with a cap at both ends over the bar or the point (bar, line and scatter charts). The y axis makes room for them, and tooltips tell the bounds. |
+| `ring` | integer ≥ 0 | `0` | In a pie chart: the ring the series is a slice of. The series of a ring share a circle of their own, the lowest ring innermost — nested pies. |
 
 #### `series_list[].mark_lines[]`
 
@@ -329,7 +330,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 
 ## Pie
 
-`PieChart::from_json` — A pie, a donut or a nightingale rose. Every series is one slice: its value is the sum of its `data`.
+`PieChart::from_json` — A pie, a donut or a nightingale rose. Every series is one slice: its value is the sum of its `data`. Series with different `ring` numbers make nested pies: every ring shares the turn among its own slices, the rings split the room between `inner_radius` and `radius`, and the slices of the inner rings are named on them.
 
 <!-- keys: pie -->
 

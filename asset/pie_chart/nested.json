@@ -1,0 +1,23 @@
+{
+    "title_text": "Access source",
+    "title_align": "left",
+    "rose_type": false,
+    "radius": 150,
+    "inner_radius": 0,
+    "border_radius": 2,
+    "tooltip_show": true,
+    "series_list": [
+        {"name": "Search", "data": [1548], "ring": 0},
+        {"name": "Direct", "data": [775], "ring": 0},
+        {"name": "Marketing", "data": [679], "ring": 0},
+        {"name": "Baidu", "data": [1048], "ring": 1},
+        {"name": "Google", "data": [251], "ring": 1},
+        {"name": "Bing", "data": [147], "ring": 1},
+        {"name": "Others", "data": [102], "ring": 1},
+        {"name": "Typed", "data": [335], "ring": 1},
+        {"name": "Bookmarks", "data": [440], "ring": 1},
+        {"name": "Email", "data": [310], "ring": 1},
+        {"name": "Ads", "data": [234], "ring": 1},
+        {"name": "Video", "data": [135], "ring": 1}
+    ]
+}

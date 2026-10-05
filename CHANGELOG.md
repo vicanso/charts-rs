@@ -141,6 +141,12 @@
 - `PieChart`: `end_angle`. The slices share the part of the circle from
   `start_angle` to it — a half doughnut with `-90` and `90` — and the chart
   is sized and centered on what is drawn.
+- `PieChart`: nested pies. A series' `ring` puts its slice on a ring of its
+  own: the series of a ring share a full turn among themselves, and the
+  rings split the room from `inner_radius` to `radius`, the lowest number
+  innermost. The slices of the inner rings are named on them (their name by
+  default, `series_label_formatter` otherwise); the outermost ring keeps its
+  labels and their lines. Slices carry `data-ring`.
 - `axis_inverse` in `y_axis_configs`: the smallest value at the top of the
   axis and the largest at the bottom, as a ranking (bump chart) wants it.
   Lines, areas, bars, mark lines and bands follow; also the value axis of a

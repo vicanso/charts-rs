@@ -20,6 +20,9 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 
+/// Gap between two rings of nested pies.
+const RING_GAP: f32 = 6.0;
+
 /// A pie / nightingale rose chart; each series contributes one value.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PieChart {
@@ -176,28 +179,42 @@ impl PieChart {
             .iter()
             .map(|item| item.data.iter().flatten().sum())
             .collect();
-        let mut max = 0.0;
-        let mut sum = 0.0;
-        for item in values.iter() {
-            sum += *item;
-            if *item > max {
-                max = *item;
+        // The rings of nested pies: the series of a ring share a circle of
+        // their own, the lowest ring innermost. Usually there is just one.
+        let mut ring_ids: Vec<usize> = self.series_list.iter().map(|s| s.ring).collect();
+        ring_ids.sort_unstable();
+        ring_ids.dedup();
+        let ring_count = ring_ids.len().max(1);
+        let ring_of = |series: &Series| {
+            ring_ids
+                .iter()
+                .position(|id| *id == series.ring)
+                .unwrap_or(0)
+        };
+        // The total, the largest value and the number of slices of each ring.
+        let mut sums = vec![0.0_f32; ring_count];
+        let mut maxes = vec![0.0_f32; ring_count];
+        let mut counts = vec![0_usize; ring_count];
+        for (series, item) in self.series_list.iter().zip(values.iter()) {
+            let ring = ring_of(series);
+            sums[ring] += *item;
+            if *item > maxes[ring] {
+                maxes[ring] = *item;
             }
+            counts[ring] += 1;
         }
         // Guard against non-positive totals (e.g. every series value is 0):
         // all numerators are 0 in that case, so flooring the divisors to a
         // positive value keeps `delta` / `cr` / percentages finite instead of
         // producing NaN coordinates.
-        if sum <= 0.0 {
-            sum = 1.0;
-        }
-        if max <= 0.0 {
-            max = 1.0;
+        for value in sums.iter_mut().chain(maxes.iter_mut()) {
+            if *value <= 0.0 {
+                *value = 1.0;
+            }
         }
         let span = self.span();
-        let mut delta = span / values.len() as f32;
-        let mut half_delta = delta / 2.0;
-        let mut start_angle = self.start_angle;
+        // Where the next slice of each ring starts.
+        let mut starts = vec![self.start_angle; ring_count];
         let mut radius_double = c.height();
 
         if c.width() < radius_double {
@@ -234,20 +251,41 @@ impl PieChart {
         }
         let rose_type = self.rose_type.unwrap_or_default();
 
+        // The inner and the outer radius of each ring: the room between the
+        // hole and the edge, shared evenly, with a gap between two rings.
+        let bands: Vec<(f32, f32)> = if ring_count < 2 {
+            vec![(self.inner_radius, r)]
+        } else {
+            let room = (r - self.inner_radius).max(1.0);
+            let gap = RING_GAP.min(room / (ring_count as f32 * 3.0));
+            let width = (room - gap * (ring_count - 1) as f32) / ring_count as f32;
+            (0..ring_count)
+                .map(|ring| {
+                    let inner = self.inner_radius + (width + gap) * ring as f32;
+                    (inner, inner + width)
+                })
+                .collect()
+        };
+
         let mut prev_quadrant = u8::MAX;
         let mut prev_end_y = f32::MAX;
         for (index, series) in self.series_list.iter().enumerate() {
+            let ring = ring_of(series);
+            let (sum, max) = (sums[ring], maxes[ring]);
+            let (band_inner, band_outer) = bands[ring];
+            let start_angle = starts[ring];
             let value = values[index];
-            let mut cr = value / max * (r - self.inner_radius) + self.inner_radius;
+            let mut delta = span / counts[ring] as f32;
+            let mut cr = value / max * (band_outer - band_inner) + band_inner;
             let color = get_color(&self.series_colors, series.index.unwrap_or(index));
             // normal pie
             if !rose_type {
-                cr = r;
+                cr = band_outer;
                 delta = value / sum * span;
-                half_delta = delta / 2.0;
             }
-            if cr - self.inner_radius < 1.0 {
-                cr = self.inner_radius + 1.0;
+            let half_delta = delta / 2.0;
+            if cr - band_inner < 1.0 {
+                cr = band_inner + 1.0;
             }
             let (anim_class, anim_style, fade_class) = if let Some(ref a) = self.animation {
                 (
@@ -263,7 +301,7 @@ impl PieChart {
                 cx,
                 cy,
                 r: cr,
-                ir: self.inner_radius,
+                ir: band_inner,
                 start_angle,
                 delta,
                 class: anim_class,
@@ -275,6 +313,11 @@ impl PieChart {
                 ],
                 ..Default::default()
             };
+            // Which of the nested pies the slice is in.
+            if ring_count > 1 {
+                pie.dataset
+                    .push(("ring".to_string(), series.ring.to_string()));
+            }
             if let Some(border_radius) = self.border_radius {
                 pie.border_radius = border_radius;
             }
@@ -303,13 +346,16 @@ impl PieChart {
 
             c.pie(pie);
 
-            let is_inside = self.series_label_position == Some("inside".to_string());
+            // Only the outermost ring has room around it for its labels:
+            // the slices of the rings inside it are named on them.
+            let nested = ring + 1 < ring_count;
+            let is_inside = nested || self.series_label_position == Some("inside".to_string());
 
             let angle = start_angle + half_delta;
             // Hidden hover label, drawn immediately after the slice so the
             // adjacent-sibling CSS rule reveals it on hover.
             if let Some(text) = tooltip_text {
-                let p = get_pie_point(cx, cy, (cr + self.inner_radius) / 2.0, angle);
+                let p = get_pie_point(cx, cy, (cr + band_inner) / 2.0, angle);
                 c.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
@@ -323,33 +369,64 @@ impl PieChart {
                     ..Default::default()
                 });
             }
+            starts[ring] += delta;
             // A zero-value (or too thin) slice has nothing to point at.
             if value <= 0.0 || delta <= 0.0 || delta < self.min_show_label_angle {
-                start_angle += delta;
                 continue;
             }
             let label_option = LabelOption {
                 series_name: series.name.clone(),
                 value,
                 percentage: value / sum,
-                formatter: series_label_formatter.clone(),
+                // On a slice of an inner ring there is room for its name,
+                // unless a format asks for more.
+                formatter: if nested && self.series_label_formatter.is_empty() {
+                    "{a}".to_string()
+                } else {
+                    series_label_formatter.clone()
+                },
                 ..Default::default()
             };
             let label_text = label_option.format();
+            let mut label_color = self.series_label_font_color;
 
             let label_margin = if is_inside {
-                let label_point = get_pie_point(cx, cy, 2. * cr / 3., angle);
+                // A little past the middle of the slice of a nested pie,
+                // where it is wider; two thirds out on the one pie there is
+                // otherwise.
+                let label_radius = if ring_count > 1 {
+                    band_inner + (cr - band_inner) * 0.6
+                } else {
+                    2. * cr / 3.
+                };
+                let label_point = get_pie_point(cx, cy, label_radius, angle);
                 let mut label_margin = Box {
                     left: label_point.x,
                     top: label_point.y,
                     ..Default::default()
                 };
+                let mut width = 0.0;
                 if let Ok(b) = measure_text_width_family(
                     &self.font_family,
                     self.series_label_font_size,
                     &label_text,
                 ) {
+                    width = b.width();
                     label_margin.left -= b.width() / 2.;
+                }
+                if ring_count > 1 {
+                    // A name wider or higher than its slice is left out;
+                    // the others stand on it, in a color that shows there.
+                    let across = 2.0 * label_radius * (delta.min(180.0) / 2.0).to_radians().sin();
+                    if width > across || cr - band_inner < self.series_label_font_size + 2.0 {
+                        continue;
+                    }
+                    label_margin.top += self.series_label_font_size * 0.35;
+                    label_color = if color.is_light() {
+                        Color::black().with_alpha(200)
+                    } else {
+                        Color::white()
+                    };
                 }
 
                 label_margin
@@ -417,12 +494,10 @@ impl PieChart {
                 text: label_text,
                 font_family: Some(self.font_family.clone()),
                 font_size: Some(self.series_label_font_size),
-                font_color: Some(self.series_label_font_color),
+                font_color: Some(label_color),
                 class: fade_class,
                 ..Default::default()
             });
-
-            start_angle += delta;
         }
 
         let mut css = String::new();

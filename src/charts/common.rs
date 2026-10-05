@@ -276,6 +276,11 @@ pub struct Series {
     /// and scatter charts).
     #[serde(default)]
     pub error_bar: Option<SeriesBand>,
+    /// The ring of a pie chart the series is a slice of. The series of a
+    /// ring share a circle of their own, the lowest ring innermost: nested
+    /// pies. Default: 0, every series on the one ring.
+    #[serde(default)]
+    pub ring: usize,
 }
 
 /// Animation configuration for SVG chart animations.

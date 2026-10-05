@@ -39,7 +39,7 @@
 - 支持指定目标尺寸的图片导出（`svg_to_png_with_size` 及各格式对应函数）
 - 基于 Web 的 JSON 编辑器，支持交互式图表配置和测试
 - 折线区间带（`series.band`）：置信区间、预测范围、最低–最高范围
-- 阶梯线（`series.step`）、百分比堆叠（`stack_percent`）、半环 / 部分圆饼图（`end_angle`）、反向数值轴（`axis_inverse`，用于排名图）
+- 阶梯线（`series.step`）、百分比堆叠（`stack_percent`）、半环 / 部分圆饼图（`end_angle`）、嵌套多环饼图（`series.ring`）、反向数值轴（`axis_inverse`，用于排名图）
 - 柱、折线、散点上的误差线（`series.error_bar`），以及散点图的回归曲线（`regression`：线性、指数、对数、多项式）
 - 热力图和日历图支持多色渐变与分段配色（`colors`、`steps`、`thresholds`）
 - 仪表盘支持分段着色、多指针，以及每个系列一个进度环（`thresholds`、`multi_ring`）

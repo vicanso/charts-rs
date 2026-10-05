@@ -233,3 +233,173 @@ fn pie_end_angle() {
     };
     assert!(message.contains("end_angle"), "{message}");
 }
+
+/// The slices of a pie, as their tags.
+fn slices(svg: &str) -> Vec<&str> {
+    svg.split("<path")
+        .skip(1)
+        .filter(|t| t.contains("data-series="))
+        .collect()
+}
+
+fn slice_attr<'a>(tag: &'a str, name: &str) -> &'a str {
+    let key = format!(" {name}=\"");
+    let start = tag.find(&key).unwrap() + key.len();
+    &tag[start..start + tag[start..].find('"').unwrap()]
+}
+
+/// The radii of the arcs of a slice: its inner edge, and its outer one. The
+/// corners are arcs as well, of no radius when they are not rounded.
+fn slice_radii(tag: &str) -> Vec<f32> {
+    let mut radii: Vec<f32> = slice_attr(tag, "d")
+        .split(' ')
+        .filter_map(|token| token.strip_prefix('A')?.parse().ok())
+        .filter(|radius| *radius > 0.0)
+        .collect();
+    radii.sort_by(f32::total_cmp);
+    radii.dedup();
+    radii
+}
+
+#[test]
+fn pie_nested_snapshot() {
+    let chart = PieChart::from_json(include_str!("../asset/pie_chart/nested.json")).unwrap();
+    assert_eq!(1, chart.series_list[3].ring);
+    common::assert_snapshot!("pie_chart/nested_json.svg", chart.svg().unwrap());
+}
+
+#[test]
+fn pie_rings() {
+    let json = |rings: [usize; 5], extra: &str| {
+        format!(
+            r##"{{"rose_type": false, "radius": 100, "inner_radius": 20, "border_radius": 0{extra},
+                "series_list": [
+                    {{"name": "in a", "data": [30], "ring": {}}},
+                    {{"name": "in b", "data": [10], "ring": {}}},
+                    {{"name": "out a", "data": [5], "ring": {}}},
+                    {{"name": "out b", "data": [5], "ring": {}}},
+                    {{"name": "out c", "data": [10], "ring": {}}}
+                ]}}"##,
+            rings[0], rings[1], rings[2], rings[3], rings[4]
+        )
+    };
+    let nested = PieChart::from_json(&json([0, 0, 1, 1, 1], ""))
+        .unwrap()
+        .svg()
+        .unwrap();
+    let slices_of = slices(&nested);
+    assert_eq!(5, slices_of.len());
+
+    // Each ring shares the turn among its own slices.
+    let shares: Vec<&str> = slices_of
+        .iter()
+        .map(|s| slice_attr(s, "data-percentage"))
+        .collect();
+    assert_eq!(vec!["75", "25", "25", "25", "50"], shares);
+    assert_eq!(
+        ("0", "1"),
+        (
+            slice_attr(slices_of[0], "data-ring"),
+            slice_attr(slices_of[2], "data-ring")
+        )
+    );
+    // The rings split the room between the hole and the edge, with a gap:
+    // 80 pixels for two rings of 37 and 6 between them.
+    assert_eq!(vec![20.0, 57.0], slice_radii(slices_of[0]));
+    assert_eq!(vec![63.0, 100.0], slice_radii(slices_of[2]));
+    assert_eq!(slice_radii(slices_of[0]), slice_radii(slices_of[1]));
+
+    // The slices of the inner ring are named on them, by their name; the
+    // outer ring keeps its labels and their lines.
+    let texts: Vec<&str> = nested
+        .lines()
+        .map(str::trim)
+        .filter(|l| !l.is_empty() && !l.starts_with('<'))
+        .collect();
+    assert!(texts.contains(&"in a"), "{texts:?}");
+    assert!(texts.contains(&"out c: 50%"), "{texts:?}");
+    assert!(!texts.iter().any(|t| t.starts_with("in a:")), "{texts:?}");
+    // A format of one's own is used on every ring.
+    let formatted = PieChart::from_json(&json(
+        [0, 0, 1, 1, 1],
+        r#", "series_label_formatter": "{c}""#,
+    ))
+    .unwrap()
+    .svg()
+    .unwrap();
+    assert!(formatted.lines().any(|l| l.trim() == "30"));
+    assert!(texts.contains(&"in b"), "{texts:?}");
+    // A name wider than its slice is left out rather than written across it.
+    let thin = PieChart::from_json(
+        r##"{"rose_type": false, "radius": 100, "series_list": [
+            {"name": "wide", "data": [97], "ring": 0},
+            {"name": "thin", "data": [3], "ring": 0},
+            {"name": "out", "data": [1], "ring": 1}
+        ]}"##,
+    )
+    .unwrap()
+    .svg()
+    .unwrap();
+    let lines: Vec<&str> = thin.lines().map(str::trim).collect();
+    assert!(lines.contains(&"wide") && !lines.contains(&"thin"));
+    assert_eq!(3, slices(&thin).len());
+
+    // The numbers of the rings only tell their order: 3 and 9 are 0 and 1.
+    let renumbered = PieChart::from_json(&json([3, 3, 9, 9, 9], ""))
+        .unwrap()
+        .svg()
+        .unwrap();
+    assert_eq!(
+        nested
+            .replace("data-ring=\"0\"", "data-ring=\"3\"")
+            .replace("data-ring=\"1\"", "data-ring=\"9\""),
+        renumbered
+    );
+    // Three rings.
+    let three = PieChart::from_json(&json([0, 1, 2, 2, 2], ""))
+        .unwrap()
+        .svg()
+        .unwrap();
+    let slices_of = slices(&three);
+    assert_eq!("100", slice_attr(slices_of[0], "data-percentage"));
+    assert_eq!("100", slice_attr(slices_of[1], "data-percentage"));
+    let edges: Vec<Vec<f32>> = slices_of.iter().map(|s| slice_radii(s)).collect();
+    assert!(
+        edges[0][1] < edges[1][0] && edges[1][1] < edges[2][0],
+        "{edges:?}"
+    );
+    assert!((edges[2][1] - 100.0).abs() < 0.1);
+
+    // One ring is the pie as it always was, whatever its number.
+    let plain = PieChart::from_json(&json([0, 0, 0, 0, 0], ""))
+        .unwrap()
+        .svg()
+        .unwrap();
+    let moved = PieChart::from_json(&json([4, 4, 4, 4, 4], ""))
+        .unwrap()
+        .svg()
+        .unwrap();
+    assert_eq!(plain, moved);
+    assert!(!plain.contains("data-ring"));
+
+    // A rose in each ring, half a turn, a ring of nothing: all are drawn.
+    for extra in [
+        r#", "rose_type": true"#,
+        r#", "start_angle": -90, "end_angle": 90"#,
+        r#", "inner_radius": 500"#,
+    ] {
+        let svg = PieChart::from_json(&json([0, 0, 1, 1, 1], extra))
+            .unwrap()
+            .svg()
+            .unwrap();
+        assert!(!svg.contains("NaN") && !svg.contains("inf"), "{extra}");
+        assert_eq!(5, slices(&svg).len(), "{extra}");
+    }
+
+    let message =
+        match PieChart::from_json(r#"{"series_list": [{"name": "a", "data": [1], "ring": -1}]}"#) {
+            Ok(_) => panic!("accepted"),
+            Err(e) => e.to_string(),
+        };
+    assert!(message.contains("series_list[0].ring"), "{message}");
+}
