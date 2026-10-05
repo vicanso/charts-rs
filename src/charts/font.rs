@@ -13,12 +13,12 @@
 use arc_swap::ArcSwap;
 
 use super::util::*;
-use fontdue::Font;
-use fontdue::layout::{CoordinateSystem, Layout, TextStyle};
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, OnceLock};
+use ttf_parser::{Face, GlyphId, OutlineBuilder};
 
 // Crate-level error/result (see `error.rs`); re-exported to keep `font::Error`.
 pub use super::error::{Error, Result};
@@ -28,12 +28,268 @@ pub static DEFAULT_FONT_FAMILY: &str = "Roboto";
 /// Raw TTF data of the embedded default font.
 pub static DEFAULT_FONT_DATA: &[u8] = include_bytes!("../Roboto.ttf");
 
-/// Raw font bytes shared between the fontdue registry and the raster
-/// `fontdb` (image-encoder), so each font is held in memory once.
+/// Raw font bytes shared between the registry and the raster `fontdb`
+/// (image-encoder), so each font is held in memory once.
 pub(crate) type FontData = Arc<dyn AsRef<[u8]> + Send + Sync>;
 
+/// A registered font: its bytes, and the numbers every measurement starts
+/// from. The glyphs are read from the bytes as they are first measured, so a
+/// font costs no more memory than its file.
+struct FontFace {
+    // Tells the fonts apart in the per-thread glyph cache.
+    id: u64,
+    data: FontData,
+    units_per_em: f32,
+    // Of a line, in font units: from its top down to the baseline, and down
+    // to the top of the next line.
+    ascent: f32,
+    new_line: f32,
+}
+
+impl FontFace {
+    /// Reads a font: its family (empty when it has no name) and what it is
+    /// measured with.
+    fn new(data: FontData) -> Result<(String, FontFace)> {
+        static NEXT_ID: AtomicU64 = AtomicU64::new(0);
+        let (family, units_per_em, ascent, new_line) = {
+            let face = Face::parse((*data).as_ref(), 0).map_err(|e| Error::ParseFont {
+                message: e.to_string(),
+            })?;
+            let ascent = i32::from(face.ascender());
+            let new_line = ascent - i32::from(face.descender()) + i32::from(face.line_gap());
+            (
+                get_family_from_face(&face),
+                f32::from(face.units_per_em()),
+                ascent as f32,
+                new_line as f32,
+            )
+        };
+        Ok((
+            family,
+            FontFace {
+                id: NEXT_ID.fetch_add(1, Ordering::Relaxed),
+                data,
+                units_per_em,
+                ascent,
+                new_line,
+            },
+        ))
+    }
+
+    /// The glyph of a character, read from the font the first time a thread
+    /// asks for it.
+    fn glyph(&self, c: char) -> Glyph {
+        let generation = FONT_GENERATION.load(Ordering::Relaxed);
+        GLYPHS.with(|cell| {
+            let mut cache = cell.borrow_mut();
+            if cache.0 != generation {
+                cache.1.clear();
+                cache.0 = generation;
+            }
+            if let Some(glyph) = cache.1.get(&(self.id, c)) {
+                return *glyph;
+            }
+            let glyph = self.read_glyph(c);
+            if cache.1.len() >= GLYPH_CACHE_LIMIT {
+                cache.1.clear();
+            }
+            cache.1.insert((self.id, c), glyph);
+            glyph
+        })
+    }
+
+    fn read_glyph(&self, c: char) -> Glyph {
+        // The bytes were parsed when the font was registered.
+        let Ok(face) = Face::parse((*self.data).as_ref(), 0) else {
+            return Glyph::default();
+        };
+        // A character the font does not have is measured as its glyph for
+        // those, the first one.
+        let id = face.glyph_index(c).unwrap_or(GlyphId(0));
+        if id.0 >= face.number_of_glyphs() {
+            return Glyph::default();
+        }
+        let mut outline = OutlineBox::new(self.units_per_em);
+        face.outline_glyph(id, &mut outline);
+        let (xmin, ymin, width, height) = outline.finish();
+        Glyph {
+            advance: face.glyph_hor_advance(id).map(f32::from).unwrap_or(0.0),
+            xmin,
+            ymin,
+            width,
+            height,
+        }
+    }
+}
+
+/// What is measured of a glyph, in font units: how far on the next one
+/// starts, and the box around its outline.
+#[derive(Clone, Copy, Default)]
+struct Glyph {
+    advance: f32,
+    xmin: f32,
+    ymin: f32,
+    width: f32,
+    height: f32,
+}
+
+// Upper bound of the per-thread glyph cache below: far more than the
+// characters of any chart, and cleared when full so that it stays bounded
+// whatever is measured.
+const GLYPH_CACHE_LIMIT: usize = 16384;
+
+// The generation of the registry the glyphs were read at, and the glyphs by
+// font and character.
+type GlyphCache = (u64, HashMap<(u64, char), Glyph>);
+
+thread_local! {
+    // The glyphs a thread has read so far.
+    static GLYPHS: RefCell<GlyphCache> = RefCell::new((0, HashMap::new()));
+}
+
+/// The box around the outline of a glyph. The text of every chart was placed
+/// with the boxes of `fontdue`, which are kept to the bit: a curve is cut
+/// into the lines it was cut into there, and a level line is left out as it
+/// was (the algorithm is `fontdue`'s, MIT / Apache-2.0 / Zlib).
+struct OutlineBox {
+    // Twice the area of the triangle a curve may bulge by before it is cut.
+    max_area: f32,
+    start: (f32, f32),
+    previous: (f32, f32),
+    xmin: f32,
+    xmax: f32,
+    ymin: f32,
+    ymax: f32,
+    // Whether any line counted.
+    lines: bool,
+    // The pieces of the curve that is being cut: both ends, as a point and
+    // as how far along the curve it is.
+    pieces: Vec<[(f32, f32, f32); 2]>,
+}
+
+impl OutlineBox {
+    fn new(units_per_em: f32) -> Self {
+        // 3 pixels at 40 pixels to the em.
+        OutlineBox {
+            max_area: 3.0 * 2.0 * (units_per_em / 40.0),
+            start: (0.0, 0.0),
+            previous: (0.0, 0.0),
+            xmin: f32::MAX,
+            xmax: f32::MIN,
+            ymin: f32::MAX,
+            ymax: f32::MIN,
+            lines: false,
+            pieces: Vec::new(),
+        }
+    }
+
+    fn line(&mut self, from: (f32, f32), to: (f32, f32)) {
+        // Only whether they are exactly the same matters.
+        if from.1.to_bits() == to.1.to_bits() {
+            return;
+        }
+        self.lines = true;
+        for (x, y) in [from, to] {
+            if x < self.xmin {
+                self.xmin = x;
+            }
+            if x > self.xmax {
+                self.xmax = x;
+            }
+            if y < self.ymin {
+                self.ymin = y;
+            }
+            if y > self.ymax {
+                self.ymax = y;
+            }
+        }
+    }
+
+    /// Cuts a curve from the previous point to `end` into lines; `point`
+    /// gives the point at a share of the way along it.
+    fn curve(&mut self, end: (f32, f32), point: impl Fn(f32) -> (f32, f32)) {
+        let start = self.previous;
+        self.pieces.clear();
+        self.pieces
+            .push([(start.0, start.1, 0.0), (end.0, end.1, 1.0)]);
+        while let Some([a, c]) = self.pieces.pop() {
+            let t = (a.2 + c.2) * 0.5;
+            let b = point(t);
+            let area = (b.0 - a.0) * (c.1 - a.1) - (c.0 - a.0) * (b.1 - a.1);
+            if area.abs() > self.max_area {
+                self.pieces.push([a, (b.0, b.1, t)]);
+                self.pieces.push([(b.0, b.1, t), c]);
+            } else {
+                self.line((a.0, a.1), (c.0, c.1));
+            }
+        }
+        self.previous = end;
+    }
+
+    /// `(xmin, ymin, width, height)`.
+    fn finish(self) -> (f32, f32, f32, f32) {
+        if !self.lines {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        (
+            self.xmin,
+            self.ymin,
+            self.xmax - self.xmin,
+            self.ymax - self.ymin,
+        )
+    }
+}
+
+impl OutlineBuilder for OutlineBox {
+    fn move_to(&mut self, x: f32, y: f32) {
+        self.start = (x, y);
+        self.previous = (x, y);
+    }
+
+    fn line_to(&mut self, x: f32, y: f32) {
+        self.line(self.previous, (x, y));
+        self.previous = (x, y);
+    }
+
+    fn quad_to(&mut self, x1: f32, y1: f32, x: f32, y: f32) {
+        let (a, b, c) = (self.previous, (x1, y1), (x, y));
+        self.curve(c, |t| {
+            let tm = 1.0 - t;
+            let (ka, kb, kc) = (tm * tm, 2.0 * tm * t, t * t);
+            (
+                ka * a.0 + kb * b.0 + kc * c.0,
+                ka * a.1 + kb * b.1 + kc * c.1,
+            )
+        });
+    }
+
+    fn curve_to(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x: f32, y: f32) {
+        let (a, b, c, d) = (self.previous, (x1, y1), (x2, y2), (x, y));
+        self.curve(d, |t| {
+            let tm = 1.0 - t;
+            let (ka, kb, kc, kd) = (
+                tm * tm * tm,
+                3.0 * (tm * tm) * t,
+                3.0 * tm * (t * t),
+                t * t * t,
+            );
+            (
+                ka * a.0 + kb * b.0 + kc * c.0 + kd * d.0,
+                ka * a.1 + kb * b.1 + kc * c.1 + kd * d.1,
+            )
+        });
+    }
+
+    fn close(&mut self) {
+        if self.start != self.previous {
+            self.line(self.previous, self.start);
+        }
+        self.previous = self.start;
+    }
+}
+
 struct FontRegistry {
-    fonts: HashMap<String, Arc<Font>>,
+    fonts: HashMap<String, Arc<FontFace>>,
     // Raw bytes of every registered font; the raster fontdb (image-encoder)
     // needs the original data to rebuild itself when fonts change.
     datas: Vec<FontData>,
@@ -43,20 +299,19 @@ struct FontRegistry {
 // drop entries computed against the previous fonts.
 static FONT_GENERATION: AtomicU64 = AtomicU64::new(0);
 
-// fontdue reports parse failures as plain `&str` messages.
-fn parse_font_error(message: &str) -> Error {
-    Error::ParseFont {
-        message: message.to_string(),
-    }
-}
-
-fn get_family_from_font(font: &Font) -> String {
-    let Some(name) = font.name() else {
+fn get_family_from_face(face: &Face) -> String {
+    // The full name of the font, where it is given in Unicode.
+    let Some(name) = face
+        .names()
+        .into_iter()
+        .find(|name| name.name_id == ttf_parser::name_id::FULL_NAME && name.is_unicode())
+        .and_then(|name| name.to_string())
+    else {
         return String::new();
     };
     // Strip font-weight words so e.g. "Roboto Bold" registers as "Roboto".
     // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
-    let mut family = name.to_string();
+    let mut family = name;
     for weight in ["Thin", "Light", "Regular", "Medium", "Bold"] {
         if family.contains(weight) {
             family = family.replace(weight, "");
@@ -75,14 +330,14 @@ fn global_fonts() -> Result<&'static ArcSwap<FontRegistry>> {
     }
     // Build outside the cell: std's `OnceLock` has no stable `get_or_try_init`,
     // so a font-parse failure is propagated here before anything is stored.
-    let font = Font::from_bytes(DEFAULT_FONT_DATA, fontdue::FontSettings::default())
-        .map_err(parse_font_error)?;
+    // The embedded font is referenced in place, not copied.
+    let data: FontData = Arc::new(DEFAULT_FONT_DATA);
+    let (_, font) = FontFace::new(data.clone())?;
     let mut fonts = HashMap::new();
     fonts.insert(DEFAULT_FONT_FAMILY.to_string(), Arc::new(font));
     let registry = FontRegistry {
         fonts,
-        // The embedded font is referenced in place, not copied.
-        datas: vec![Arc::new(DEFAULT_FONT_DATA)],
+        datas: vec![data],
     };
     // A concurrent caller may have initialized first; keep whichever won.
     Ok(GLOBAL_FONTS.get_or_init(|| ArcSwap::from_pointee(registry)))
@@ -96,11 +351,9 @@ pub fn add_fonts(fonts: &[&[u8]]) -> Result<()> {
     // Parse up front so errors surface before the registry is touched.
     let mut parsed = Vec::with_capacity(fonts.len());
     for data in fonts.iter() {
-        let font =
-            Font::from_bytes(*data, fontdue::FontSettings::default()).map_err(parse_font_error)?;
-        let family = get_family_from_font(&font);
+        let data: FontData = Arc::new(data.to_vec());
+        let (family, font) = FontFace::new(data.clone())?;
         if !family.is_empty() {
-            let data: FontData = Arc::new(data.to_vec());
             parsed.push((family, Arc::new(font), data));
         }
     }
@@ -130,8 +383,8 @@ pub(crate) fn registered_font_datas() -> Vec<FontData> {
         .unwrap_or_default()
 }
 
-/// Gets font by font family.
-pub fn get_font(name: &str) -> Result<Arc<Font>> {
+/// Gets the font of a family, or the default one when it is not registered.
+fn get_font(name: &str) -> Result<Arc<FontFace>> {
     let registry = global_fonts()?.load();
     if let Some(font) = registry
         .fonts
@@ -153,41 +406,134 @@ pub fn get_font_families() -> Result<Vec<String>> {
     Ok(families)
 }
 
-thread_local! {
-    // One reusable layout per thread: `clear()` keeps the internal buffers, so
-    // the per-measurement `Layout` allocations disappear after warm-up.
-    static MEASURE_LAYOUT: std::cell::RefCell<Layout> =
-        std::cell::RefCell::new(Layout::new(CoordinateSystem::PositiveYDown));
+// What ends a line after the character before.
+#[derive(Clone, Copy, PartialEq)]
+enum LineEnd {
+    None,
+    // A line feed and the like: the next character starts a line.
+    Always,
+    // A carriage return: so does the next one, unless it is the line feed
+    // of the pair.
+    CarriageReturn,
 }
 
-fn glyphs_extent(layout: &Layout) -> Box {
-    let mut right = 0.0_f32;
-    let mut bottom = 0.0_f32;
-    for g in layout.glyphs().iter() {
-        let x = g.x + g.width as f32;
-        let y = g.y + g.height as f32;
-        if x > right {
-            right = x;
-        }
-        if y > bottom {
-            bottom = y;
+/// The extent of text as it is laid out, one character after another. The
+/// lines and the rounding to whole pixels are those of the layout of
+/// `fontdue`, which the charts were measured with before: a glyph starts on
+/// a whole pixel and its box is as many whole pixels as cover its outline.
+struct Extent<'a> {
+    font: &'a FontFace,
+    scale: f32,
+    // Of a line, in pixels.
+    ascent: f32,
+    new_line: f32,
+    // Where the next glyph starts, and where its line did.
+    position: f32,
+    line_start: f32,
+    // Of the line: its baseline, and how far below it the next line starts.
+    baseline: f32,
+    below: f32,
+    line_end: LineEnd,
+    count: usize,
+    right: f32,
+    bottom: f32,
+}
+
+impl<'a> Extent<'a> {
+    fn new(font: &'a FontFace, font_size: f32) -> Self {
+        let scale = font_size / font.units_per_em;
+        let ascent = (font.ascent * scale).ceil();
+        let new_line = (font.new_line * scale).ceil();
+        // The first line is never less than nothing.
+        let first_ascent = if ascent > 0.0 { ascent } else { 0.0 };
+        let first_new_line = if new_line > 0.0 { new_line } else { 0.0 };
+        Extent {
+            font,
+            scale,
+            ascent,
+            new_line,
+            position: 0.0,
+            line_start: 0.0,
+            baseline: first_ascent,
+            below: first_new_line - first_ascent,
+            line_end: LineEnd::None,
+            count: 0,
+            right: 0.0,
+            bottom: 0.0,
         }
     }
-    Box {
-        right,
-        bottom,
-        ..Default::default()
+
+    fn push(&mut self, c: char) {
+        let starts_line = match self.line_end {
+            LineEnd::None => false,
+            LineEnd::Always => true,
+            LineEnd::CarriageReturn => c != '\n',
+        };
+        self.line_end = match c {
+            '\n' | '\u{0B}' | '\u{0C}' | '\u{85}' | '\u{2028}' | '\u{2029}' => LineEnd::Always,
+            '\r' => LineEnd::CarriageReturn,
+            _ => LineEnd::None,
+        };
+        if starts_line && self.count > 0 {
+            self.baseline += self.below;
+            self.baseline += self.ascent;
+            self.below = self.new_line - self.ascent;
+            self.line_start = self.position;
+        }
+        self.count += 1;
+
+        // A control character takes no room.
+        let glyph = if matches!(c, '\0'..='\x1F' | '\x7F') {
+            Glyph::default()
+        } else {
+            self.font.glyph(c)
+        };
+        let (xmin, ymin) = (glyph.xmin * self.scale, glyph.ymin * self.scale);
+        let (width, height) = (glyph.width * self.scale, glyph.height * self.scale);
+        // The box in whole pixels: what the outline starts into its first
+        // pixel is added to its size before that is rounded up.
+        let mut offset_x = (xmin + 0.0).fract();
+        if offset_x.is_sign_negative() {
+            offset_x += 1.0;
+        }
+        let mut offset_y = (1.0 - height.fract() - ymin.fract()).fract();
+        if offset_y.is_sign_negative() {
+            offset_y += 1.0;
+        }
+        let pixels = |size: f32| (size.ceil() as i32) as usize as f32;
+        let x = (self.position + xmin).floor() + (0.0 - self.line_start);
+        let y = (-height - ymin).floor() + self.baseline;
+        let right = x + pixels(width + offset_x);
+        let bottom = y + pixels(height + offset_y);
+        if right > self.right {
+            self.right = right;
+        }
+        if bottom > self.bottom {
+            self.bottom = bottom;
+        }
+        self.position += (self.scale * glyph.advance).ceil();
+    }
+
+    fn width(&self) -> f32 {
+        self.right
+    }
+
+    fn to_box(&self) -> Box {
+        Box {
+            right: self.right,
+            bottom: self.bottom,
+            ..Default::default()
+        }
     }
 }
 
 /// Measures the display area of text of a specified font size.
-pub fn measure_text(font: &Font, font_size: f32, text: &str) -> Box {
-    MEASURE_LAYOUT.with(|l| {
-        let mut layout = l.borrow_mut();
-        layout.clear();
-        layout.append(&[font], &TextStyle::new(text, font_size, 0));
-        glyphs_extent(&layout)
-    })
+fn measure_text(font: &FontFace, font_size: f32, text: &str) -> Box {
+    let mut extent = Extent::new(font, font_size);
+    for c in text.chars() {
+        extent.push(c);
+    }
+    extent.to_box()
 }
 
 // Upper bound for the measurement memo below; charts re-measure the same
@@ -440,28 +786,20 @@ pub fn text_wrap_fit(
         return Ok(vec![text.to_string()]);
     }
 
-    // Append char by char into one persistent layout instead of re-laying out
-    // every growing prefix (O(n²) glyph layouts → O(n)). The layout applies no
-    // kerning, so incremental appends match a fresh layout of the same prefix.
-    let mut layout = Layout::new(CoordinateSystem::PositiveYDown);
-    let fonts = std::slice::from_ref(&font);
-    let mut buf = [0u8; 4];
+    // Append char by char into one running extent instead of re-measuring
+    // every growing prefix (O(n²) glyph layouts → O(n)). No kerning is
+    // applied, so the running extent matches a fresh one of the same prefix.
+    let mut extent = Extent::new(&font, font_size);
     let mut current = String::new();
     let mut result = vec![];
     for item in text.chars() {
-        layout.append(
-            fonts,
-            &TextStyle::new(item.encode_utf8(&mut buf), font_size, 0),
-        );
-        if glyphs_extent(&layout).width() > width {
+        extent.push(item);
+        if extent.width() > width {
             result.push(current);
             current = String::from(item);
             // Start the next line's measurement from scratch.
-            layout.clear();
-            layout.append(
-                fonts,
-                &TextStyle::new(item.encode_utf8(&mut buf), font_size, 0),
-            );
+            extent = Extent::new(&font, font_size);
+            extent.push(item);
             continue;
         }
         current.push(item);
@@ -475,8 +813,8 @@ pub fn text_wrap_fit(
 #[cfg(test)]
 mod tests {
     use super::{
-        get_font, get_font_families, measure_label_row_width, measure_text_width_family,
-        text_wrap_fit,
+        GLYPH_CACHE_LIMIT, GLYPHS, get_font, get_font_families, measure_label_row_width,
+        measure_text_width_family, text_wrap_fit,
     };
     use crate::format_string;
     use pretty_assertions::assert_eq;
@@ -492,6 +830,33 @@ mod tests {
         assert_eq!(14.0, b.height());
 
         assert_eq!("Roboto", get_font_families().unwrap().join(","));
+    }
+    #[test]
+    fn glyphs_are_read_as_they_are_measured() {
+        let font = get_font("Roboto").unwrap();
+        // A space has no outline, and so no box; it still takes room.
+        let space = font.glyph(' ');
+        assert_eq!((0.0, 0.0), (space.width, space.height));
+        assert!(space.advance > 0.0);
+        // A letter stands on the baseline.
+        let letter = font.glyph('H');
+        assert!(letter.width > 0.0 && letter.height > 0.0 && letter.ymin == 0.0);
+        assert!(letter.advance > letter.width);
+
+        // The glyphs a thread has read are kept, up to a limit: more
+        // characters than that (none of them in the font) do not grow it.
+        let first = 0x4E00_u32;
+        for code in first..first + GLYPH_CACHE_LIMIT as u32 + 100 {
+            font.glyph(char::from_u32(code).unwrap());
+        }
+        let kept = GLYPHS.with(|cell| cell.borrow().1.len());
+        assert!(kept > 0 && kept <= GLYPH_CACHE_LIMIT, "{kept}");
+        // What was dropped is read again, the same.
+        let again = font.glyph('H');
+        assert_eq!(
+            (letter.advance, letter.width, letter.height),
+            (again.advance, again.width, again.height)
+        );
     }
     #[test]
     fn wrap_fit() {

@@ -109,8 +109,7 @@ pub use calendar_chart::CalendarChart;
 pub use candlestick_chart::{CandlestickChart, CandlestickStyle};
 pub use chord_chart::{ChordChart, ChordLink, ChordNode};
 pub use font::{
-    DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, add_fonts, get_font, get_font_families,
-    measure_text_width_family,
+    DEFAULT_FONT_DATA, DEFAULT_FONT_FAMILY, add_fonts, get_font_families, measure_text_width_family,
 };
 pub use funnel_chart::FunnelChart;
 pub use gantt_chart::{GanttChart, GanttTask};

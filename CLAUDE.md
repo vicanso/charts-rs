@@ -62,7 +62,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 | `src/charts/common.rs` | Shared types: `Series`, `YAxisConfig`, `MarkPoint`, `MarkLine`, `Position`, `Align`, `Symbol` |
 | `src/charts/params.rs` | JSON parsing utilities (`get_*_from_value()` functions) used in `from_json()` implementations |
 | `src/charts/color.rs` | `Color` type with hex parsing (`"#345"`, `"#ffcc00"`) and opacity |
-| `src/charts/font.rs` | Font management via `fontdue`; custom TTF/OTF loading; default: embedded `Roboto.ttf` |
+| `src/charts/font.rs` | Font registry and text measurement via `ttf-parser` (glyphs are read lazily from the font bytes); custom TTF/OTF loading; default: embedded `Roboto.ttf` |
 | `src/charts/encoder.rs` | Raster image encoding via `resvg` + `image` (gated on `image-encoder` feature) |
 | `src/charts/base.rs` | `ChartBase` — the ~50 shared chart fields plus `fill_theme()`/`fill_option()`/`render_header()`/`render_bar()`/`render_line()` etc.; every chart embeds it and exposes it via `Deref`/`DerefMut` (`chart.title_text` works directly) |
 

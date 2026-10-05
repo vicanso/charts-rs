@@ -644,6 +644,8 @@ let buf = fs::read(file).unwrap();
 add_fonts(&[&buf]).unwrap();
 ```
 
+字体只保留原始字节，字形在测量文字时按需读取，因此加载大体积的中文字体也只占用字体文件本身大小的内存。
+
 ## 开源协议声明
 
 This project is licensed under the [Apache-2.0 license].

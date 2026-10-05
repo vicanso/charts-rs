@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Breaking changes
+
+- `get_font` is removed, and `fontdue` with it: text is measured with
+  `ttf-parser`, straight from the bytes of a font. Fonts are registered with
+  `add_fonts` and text is measured with `measure_text_width_family` as
+  before, and the measurements are the same to the pixel — every snapshot is
+  byte-identical. They were checked against `fontdue` for every character of
+  the embedded font and of over 300 other fonts (TrueType, CFF, collections,
+  variable).
+- A character is looked up in the Unicode tables of a font only. `fontdue`
+  also read the legacy tables (Mac Roman, Big5, GB 2312, symbol) and, in
+  fonts that have them, measured some characters as the glyph of another.
+- `Error::ParseFont` carries the message of `ttf-parser`.
+
 ### Fixed
 
 - `TreeChart`: `orient` is read whatever its case, as it is checked:
@@ -283,7 +297,13 @@
   lines and an axis' ticks sits on their `<g>` instead of on every element;
   a circle without a stroke no longer carries a `stroke-width`. The SVG is
   smaller and the snapshots changed accordingly.
-- Font bytes are shared between the fontdue registry and the raster `fontdb`
+- A font costs the memory of its file. `fontdue` read the outline of every
+  glyph when a font was added and kept them all: 3.5 MB for the embedded
+  Roboto and 255 MB for a 22 MB CJK font, next to its bytes. A glyph is now
+  read when it is first measured, and only its box is kept, so adding that
+  font no longer takes 200 ms of parsing either. Wrapping the text of a
+  table is about 30% faster.
+- Font bytes are shared between the font registry and the raster `fontdb`
   (`Arc`), so adding fonts no longer deep-copies every registered font, and
   the embedded default font is referenced in place.
 - The SVG document is written once: the `<svg>` header is streamed ahead of

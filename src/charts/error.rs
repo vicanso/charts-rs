@@ -42,7 +42,7 @@ pub enum Error {
     },
     /// The font data could not be parsed.
     ParseFont {
-        /// The parse failure reported by fontdue.
+        /// The parse failure reported by the font parser.
         message: String,
     },
 

@@ -736,6 +736,9 @@ add_fonts(&[&buf]).unwrap();
 A `font_family` that is not registered is still written to the SVG (the
 viewer resolves it), but text is measured with the default font.
 
+A font is kept as its bytes and its glyphs are read as text is measured with
+them, so a large CJK font costs no more memory than its file.
+
 ## Compact output
 
 `chart.compact = true` (JSON `"compact": true`) writes the SVG the way an
