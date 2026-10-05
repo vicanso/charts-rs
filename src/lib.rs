@@ -443,8 +443,10 @@ pub fn version() -> &'static str {
     VERSION
 }
 
-// Compiles the README's Rust snippets as doctests (with the raster feature
-// they use), so the examples cannot drift from the API.
+// Compiles the Rust snippets of the README and of the guide as doctests
+// (with the raster feature they use), so the examples cannot drift from the
+// API.
 #[cfg(all(doctest, feature = "png"))]
 #[doc = include_str!("../README.md")]
+#[doc = include_str!("../docs/guide.md")]
 pub struct ReadmeDoctests;

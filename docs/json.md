@@ -46,7 +46,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
 | `y` | number | `0` | Vertical offset of the chart inside the SVG. |
 | `margin` | margin | `5` | Margin around the whole chart. |
-| `font_family` | string | `"Roboto"` | Font family of every text. The font has to be loaded (see “Load more fonts” in the README) for text to be measured correctly. |
+| `font_family` | string | `"Roboto"` | Font family of every text. The font has to be loaded (see [Fonts](./guide.md#fonts) in the guide) for text to be measured correctly. |
 | `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
 | `empty_text` | string |  | Text shown in the middle of the plot when there is no data to draw. |
 
@@ -492,7 +492,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `height` | number > 0 |  | Ignored: a table is as high as its rows. |
 | `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
 | `y` | number | `0` | Vertical offset of the chart inside the SVG. |
-| `font_family` | string | `"Roboto"` | Font family of every text. The font has to be loaded (see “Load more fonts” in the README) for text to be measured correctly. |
+| `font_family` | string | `"Roboto"` | Font family of every text. The font has to be loaded (see [Fonts](./guide.md#fonts) in the guide) for text to be measured correctly. |
 | `background_color` | color | theme | Background color behind the title; the rows have `header_background_color` and `body_background_colors`. |
 | `title_text` | string |  | Title text; no title is drawn when empty. |
 | `title_font_size` | number | `18` | Title font size. |
