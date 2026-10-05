@@ -23,9 +23,9 @@ fn main() {
     ];
 
     let mut sankey_chart = SankeyChart::new(vec![], links);
-    sankey_chart.title_text = "Energy Flow".to_string();
+    sankey_chart.title.text = "Energy Flow".to_string();
     // "{b}" node name, "{c}" throughput — see the README for all placeholders
-    sankey_chart.series_label_formatter = "{b} ({c})".to_string();
+    sankey_chart.series.label.formatter = "{b} ({c})".to_string();
     // Fill each ribbon with a source -> target color gradient.
     sankey_chart.link_gradient = true;
     // Flow-grow: columns expand left to right, 200ms apart; labels fade in.

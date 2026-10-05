@@ -96,8 +96,8 @@ fn every_value_is_counted_once() {
     assert!(svg.contains("data-from=\"0\" data-to=\"2\""), "{svg}");
 
     // A fixed range leaves out what lies beyond it.
-    chart.x_axis_min = Some(0.0);
-    chart.x_axis_max = Some(6.0);
+    chart.x_axis.min = Some(0.0);
+    chart.x_axis.max = Some(6.0);
     chart.bin_width = Some(3.0);
     assert_eq!(vec![3.0, 7.0], bar_values(&chart.svg().unwrap()));
 }
@@ -125,7 +125,7 @@ fn percent_shows_the_share_of_each_sample() {
             .any(|l| l.ends_with('%') && *l != "75%" && *l != "25%")
     );
     // A format of its own wins.
-    chart.y_axis_configs[0].axis_formatter = Some("{c} pct".to_string());
+    chart.y_axis_configs[0].formatter = Some("{c} pct".to_string());
     assert!(
         texts(&chart.svg().unwrap())
             .iter()
@@ -171,7 +171,7 @@ fn several_samples_overlap_or_stack() {
 fn labels_tooltips_and_animation() {
     let mut chart = HistogramChart::new(vec![("Heights", sample()).into()]);
     chart.bin_width = Some(2.0);
-    chart.tooltip_show = true;
+    chart.tooltip.show = true;
     chart.series_list[0].label_show = true;
     chart.animation = Some(charts_rs::AnimationConfig::default());
     let svg = chart.svg().unwrap();

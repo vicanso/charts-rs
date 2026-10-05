@@ -206,12 +206,12 @@ fn extreme_inputs_do_not_panic() {
 
     // No categories with `x_boundary_gap = false` used to underflow.
     let mut chart = LineChart::new(vec![("A", Vec::<f32>::new()).into()], vec![]);
-    chart.x_boundary_gap = Some(false);
+    chart.x_axis.boundary_gap = Some(false);
     assert_valid_numbers(&chart.svg().unwrap());
 
     // A single point without boundary gap divided by zero.
     let mut chart = LineChart::new(vec![("A", vec![3.0]).into()], vec!["a".into()]);
-    chart.x_boundary_gap = Some(false);
+    chart.x_axis.boundary_gap = Some(false);
     assert_valid_numbers(&chart.svg().unwrap());
 
     // An empty row palette used to divide by zero.
@@ -285,11 +285,11 @@ fn bar_hidden_y_axis_keeps_right_axis_scale() {
 #[test]
 fn table_sub_title_uses_its_own_alignment() {
     let mut chart = TableChart::new(vec![vec!["h".into()], vec!["r".into()]]);
-    chart.title_text = "Title".into();
-    chart.sub_title_text = "Sub".into();
-    chart.sub_title_align = Align::Right;
+    chart.title.text = "Title".into();
+    chart.sub_title.text = "Sub".into();
+    chart.sub_title.align = Align::Right;
     let right = chart.svg().unwrap();
-    chart.sub_title_align = Align::Center;
+    chart.sub_title.align = Align::Center;
     let center = chart.svg().unwrap();
     assert_ne!(right, center);
 }
@@ -322,8 +322,8 @@ fn json_colors_are_validated() {
         }"##,
     )
     .unwrap();
-    assert_eq!(3, chart.series_colors.len());
-    assert_eq!(Color::from("#0f0"), chart.series_colors[2]);
+    assert_eq!(3, chart.series.colors.len());
+    assert_eq!(Color::from("#0f0"), chart.series.colors[2]);
     assert_eq!(
         Some(vec![
             Some(Color::from("#f00")),

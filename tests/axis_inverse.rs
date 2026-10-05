@@ -68,16 +68,16 @@ fn categories(count: usize) -> Vec<String> {
 /// A line chart with an axis from 0 to 40, without a legend.
 fn line(series_list: Vec<Series>) -> LineChart {
     let mut chart = LineChart::new(series_list, categories(4));
-    chart.legend_show = Some(false);
-    chart.y_axis_configs[0].axis_max = Some(40.0);
-    chart.y_axis_configs[0].axis_split_number = 4;
+    chart.legend.show = Some(false);
+    chart.y_axis_configs[0].max = Some(40.0);
+    chart.y_axis_configs[0].split_number = 4;
     chart
 }
 
 #[test]
 fn bump_chart_snapshot() {
     let chart = LineChart::from_json(include_str!("../asset/line_chart/bump.json")).unwrap();
-    assert!(chart.y_axis_configs[0].axis_inverse);
+    assert!(chart.y_axis_configs[0].inverse);
     common::assert_snapshot!("line_chart/bump_json.svg", chart.svg().unwrap());
 }
 
@@ -85,7 +85,7 @@ fn bump_chart_snapshot() {
 fn inverse_axis_turns_the_plot_upside_down() {
     let mut chart = line(vec![("A", vec![0.0, 10.0, 30.0, 40.0]).into()]);
     let plain = chart.svg().unwrap();
-    chart.y_axis_configs[0].axis_inverse = true;
+    chart.y_axis_configs[0].inverse = true;
     let inverse = chart.svg().unwrap();
 
     let (up, down) = (&paths(&plain)[0], &paths(&inverse)[0]);
@@ -112,9 +112,9 @@ fn inverse_axis_turns_the_plot_upside_down() {
 #[test]
 fn area_reaches_to_the_start_of_the_axis() {
     let mut chart = line(vec![("A", vec![10.0, 20.0, 30.0, 20.0]).into()]);
-    chart.series_fill = true;
+    chart.series.fill = true;
     let plain = chart.svg().unwrap();
-    chart.y_axis_configs[0].axis_inverse = true;
+    chart.y_axis_configs[0].inverse = true;
     let inverse = chart.svg().unwrap();
     // The area is closed along the line of the value 0: the bottom of the
     // plot, or its top on an inverse axis.
@@ -131,12 +131,12 @@ fn bars_hang_from_their_base() {
     let mut series: Series = ("A", vec![10.0, 40.0, -10.0]).into();
     series.label_show = true;
     let mut chart = BarChart::new(vec![series], categories(3));
-    chart.legend_show = Some(false);
-    chart.y_axis_configs[0].axis_min = Some(-20.0);
-    chart.y_axis_configs[0].axis_max = Some(40.0);
-    chart.y_axis_configs[0].axis_split_number = 3;
+    chart.legend.show = Some(false);
+    chart.y_axis_configs[0].min = Some(-20.0);
+    chart.y_axis_configs[0].max = Some(40.0);
+    chart.y_axis_configs[0].split_number = 3;
     let plain = chart.svg().unwrap();
-    chart.y_axis_configs[0].axis_inverse = true;
+    chart.y_axis_configs[0].inverse = true;
     let inverse = chart.svg().unwrap();
 
     let (up, down) = (bars(&plain), bars(&inverse));
@@ -166,7 +166,7 @@ fn each_axis_is_inverse_on_its_own() {
     right.y_axis_index = 1;
     let mut chart = line(vec![("A", vec![0.0, 10.0, 30.0, 40.0]).into(), right]);
     chart.y_axis_configs.push(chart.y_axis_configs[0].clone());
-    chart.y_axis_configs[1].axis_inverse = true;
+    chart.y_axis_configs[1].inverse = true;
     let svg = chart.svg().unwrap();
     let lines = paths(&svg);
     // The same values: up on the left axis, down on the right one.
@@ -181,10 +181,10 @@ fn inverse_log_axis() {
         vec![("A", vec![1.0, 10.0, 100.0, 1000.0]).into()],
         categories(4),
     );
-    chart.legend_show = Some(false);
-    chart.y_axis_configs[0].axis_scale = AxisScale::Log(10.0);
+    chart.legend.show = Some(false);
+    chart.y_axis_configs[0].scale = AxisScale::Log(10.0);
     let plain = chart.svg().unwrap();
-    chart.y_axis_configs[0].axis_inverse = true;
+    chart.y_axis_configs[0].inverse = true;
     let inverse = chart.svg().unwrap();
     let (up, down) = (&paths(&plain)[0], &paths(&inverse)[0]);
     // Evenly spaced decades, in the other direction.
@@ -201,8 +201,8 @@ fn inverse_axes_of_other_charts() {
     // A scatter chart: each of its two value axes on its own.
     let scatter = |x: bool, y: bool| {
         let mut chart = ScatterChart::new(vec![("A", vec![1.0, 2.0, 9.0, 8.0]).into()]);
-        chart.x_axis_config.axis_inverse = x;
-        chart.y_axis_configs[0].axis_inverse = y;
+        chart.x_axis_config.inverse = x;
+        chart.y_axis_configs[0].inverse = y;
         let svg = chart.svg().unwrap();
         let points: Vec<(f32, f32)> = svg
             .split("<circle")
@@ -222,9 +222,9 @@ fn inverse_axes_of_other_charts() {
     let mut series: Series = ("A", vec![10.0, 33.0]).into();
     series.label_show = true;
     let mut chart = HorizontalBarChart::new(vec![series], categories(2));
-    chart.legend_show = Some(false);
+    chart.legend.show = Some(false);
     let plain = bars(&chart.svg().unwrap());
-    chart.y_axis_configs[0].axis_inverse = true;
+    chart.y_axis_configs[0].inverse = true;
     let svg = chart.svg().unwrap();
     let inverse = bars(&svg);
     assert_eq!(plain[0].0, plain[1].0);
@@ -246,11 +246,11 @@ fn inverse_from_json() {
         )
     };
     let plain = LineChart::from_json(&json("{}")).unwrap();
-    assert!(!plain.y_axis_configs[0].axis_inverse);
+    assert!(!plain.y_axis_configs[0].inverse);
     let off = LineChart::from_json(&json(r#"{"axis_inverse": false}"#)).unwrap();
     assert_eq!(plain.svg().unwrap(), off.svg().unwrap());
     let on = LineChart::from_json(&json(r#"{"axis_inverse": true}"#)).unwrap();
-    assert!(on.y_axis_configs[0].axis_inverse);
+    assert!(on.y_axis_configs[0].inverse);
     let (up, down) = (
         &paths(&plain.svg().unwrap())[0],
         &paths(&on.svg().unwrap())[0],

@@ -21,7 +21,7 @@ use super::theme::{get_default_theme_name, get_theme};
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LineChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     // x axis
 
@@ -64,7 +64,7 @@ impl LineChart {
             ..Default::default()
         };
         l.series_list = series_list;
-        l.x_axis_data = x_axis_data;
+        l.x_axis.data = x_axis_data;
         let theme = get_theme(theme);
         l.base.fill_theme(theme, &mut l.y_axis_configs);
         l
@@ -99,7 +99,7 @@ impl LineChart {
             layout.x_count,
             layout.x.as_ref(),
             self.animation.as_ref(),
-            self.tooltip_show,
+            self.tooltip.show,
         );
         self.render_series_label(layout.plot(), series_labels_list);
 
@@ -126,7 +126,7 @@ impl LineChart {
                 ));
             }
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             if !css.is_empty() {
                 css.push(' ');
             }
@@ -181,15 +181,16 @@ mod tests {
         );
         line_chart.series_list[0].stroke_dash_array = Some("4,2".to_string());
         line_chart.margin.right = 50.0;
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });
         line_chart.series_list[3].mark_lines = vec![MarkLine {
             category: MarkLineCategory::Average,
+            ..Default::default()
         }];
         line_chart.series_list[3].label_show = true;
         line_chart.series_list[2].mark_points = vec![
@@ -238,9 +239,9 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()
@@ -284,14 +285,14 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });
-        line_chart.x_boundary_gap = Some(false);
+        line_chart.x_axis.boundary_gap = Some(false);
         line_chart.margin = (5.0, 5.0, 15.0, 5.0).into();
         assert_snapshot!("line_chart/boundary_gap.svg", line_chart.svg().unwrap());
     }
@@ -315,11 +316,11 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        line_chart.series_fill = true;
-        line_chart.series_smooth = true;
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.series.fill = true;
+        line_chart.series.smooth = true;
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()
@@ -351,12 +352,12 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.title_align = Align::Left;
-        line_chart.legend_align = Align::Right;
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.title.align = Align::Left;
+        line_chart.legend.align = Align::Right;
 
-        line_chart.x_boundary_gap = Some(false);
+        line_chart.x_axis.boundary_gap = Some(false);
         line_chart.margin = (5.0, 5.0, 15.0, 5.0).into();
         assert_snapshot!(
             "line_chart/legend_align_right.svg",
@@ -399,16 +400,16 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });
         line_chart.series_list[3].y_axis_index = 1;
         let mut y_axis_config = line_chart.y_axis_configs[0].clone();
-        y_axis_config.axis_font_color = "#ee6666".into();
+        y_axis_config.font.color = "#ee6666".into();
         line_chart.y_axis_configs.push(y_axis_config);
 
         assert_snapshot!("line_chart/two_y_axis.svg", line_chart.svg().unwrap());
@@ -446,9 +447,9 @@ mod tests {
             ],
         );
         line_chart.series_list[0].start_index = 1;
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()
@@ -497,15 +498,16 @@ mod tests {
         );
         line_chart.series_list[0].stroke_dash_array = Some("4,2".to_string());
         line_chart.margin.right = 50.0;
-        line_chart.title_text = "Stacked Area Chart".to_string();
-        line_chart.sub_title_text = "Hello World".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.title.text = "Stacked Area Chart".to_string();
+        line_chart.sub_title.text = "Hello World".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()
         });
         line_chart.series_list[3].mark_lines = vec![MarkLine {
             category: MarkLineCategory::Average,
+            ..Default::default()
         }];
         line_chart.series_list[3].label_show = true;
         line_chart.series_list[2].mark_points = vec![
@@ -516,7 +518,7 @@ mod tests {
                 category: MarkPointCategory::Min,
             },
         ];
-        line_chart.x_axis_hidden = true;
+        line_chart.x_axis.hidden = true;
         line_chart.y_axis_hidden = true;
         assert_snapshot!("line_chart/no_axis.svg", line_chart.svg().unwrap());
     }
@@ -548,8 +550,8 @@ mod tests {
                 "12".to_string(),
             ],
         );
-        line_chart.title_text = "Request Latency".to_string();
-        line_chart.legend_margin = Some(Box {
+        line_chart.title.text = "Request Latency".to_string();
+        line_chart.legend.margin = Some(Box {
             top: 50.0,
             bottom: 10.0,
             ..Default::default()

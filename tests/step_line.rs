@@ -122,7 +122,7 @@ fn steps_turn_where_asked() {
 fn markers_and_labels_stay_on_the_points() {
     let mut plain = chart(vec![stepped(vec![10.0, 30.0, 20.0], None)]);
     plain.series_list[0].label_show = true;
-    plain.tooltip_show = true;
+    plain.tooltip.show = true;
     let mut steps = plain.clone();
     steps.series_list[0].step = Some(LineStep::Middle);
     let (plain, steps) = (plain.svg().unwrap(), steps.svg().unwrap());
@@ -145,7 +145,7 @@ fn markers_and_labels_stay_on_the_points() {
 fn step_wins_over_smooth() {
     let mut chart = chart(vec![stepped(vec![10.0, 30.0, 20.0], Some(LineStep::End))]);
     let steps = chart.svg().unwrap();
-    chart.series_smooth = true;
+    chart.series.smooth = true;
     assert_eq!(steps, chart.svg().unwrap());
     chart.series_list[0].smooth = Some(true);
     assert_eq!(steps, chart.svg().unwrap());
@@ -159,7 +159,7 @@ fn area_follows_the_steps() {
     let mut chart = chart(vec![stepped(vec![10.0, 30.0, 20.0], Some(LineStep::End))]);
     let line = paths(&chart.svg().unwrap()).remove(0);
     assert_eq!(5, line.len());
-    chart.series_fill = true;
+    chart.series.fill = true;
     let svg = chart.svg().unwrap();
     let paths = paths(&svg);
     // The area first, then the line: the same corners, closed along the
@@ -239,7 +239,7 @@ fn step_on_a_continuous_axis_and_in_a_bar_chart() {
         vec![stepped(vec![10.0, 30.0, 20.0], Some(LineStep::End))],
         vec![],
     );
-    chart.x_axis_values = vec![0.0, 1.0, 10.0];
+    chart.x_axis.values = vec![0.0, 1.0, 10.0];
     let line = paths(&chart.svg().unwrap()).remove(0);
     assert_eq!(5, line.len());
     // The steps are as long as the distance to the next x value.

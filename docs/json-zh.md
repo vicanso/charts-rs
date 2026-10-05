@@ -102,6 +102,7 @@
 | `x_axis_hidden` | 布尔 | `false` | 隐藏 x 轴。极坐标柱状图中隐藏类目标签。 |
 | `x_axis_height` | 数字 | `30` | x 轴占用的高度。 |
 | `x_axis_stroke_color` | 颜色 | 主题 | x 轴轴线和刻度线的颜色。 |
+| `x_axis_stroke_width` | 数字 | `1` | x 轴轴线和刻度线的宽度。 |
 | `x_axis_font_size` | 数字 | `14` | x 轴标签字号。 |
 | `x_axis_font_color` | 颜色 | 主题 | x 轴标签字体颜色。 |
 | `x_axis_font_weight` | 字符串 |  | x 轴标签字重，例如 `"bold"`。 |
@@ -124,6 +125,7 @@
 |---|---|---|---|
 | `grid_stroke_color` | 颜色 | 主题 | 网格线颜色。 |
 | `grid_stroke_width` | 数字 | `1` | 网格线宽度。 |
+| `grid_stroke_dash_array` | 字符串 |  | 网格线的虚线样式，写法同 SVG 的 `stroke-dasharray`（例如 `"4,2"`）。默认为实线。作用于带 x、y 轴的图表以及甘特图的网格。 |
 
 ### 系列
 
@@ -135,6 +137,7 @@
 | `series_symbol` | 对象 |  | 所有折线数据点上的标记；设为 `null` 则不绘制。默认：半径等于 `series_stroke_width`、以背景色填充的圆。 |
 | `series_smooth` | 布尔 | `false` | 折线系列绘制为平滑曲线。 |
 | `series_fill` | 布尔 | `false` | 填充折线系列下方的区域。 |
+| `series_fill_opacity` | 数字 |  | 面积填充的不透明度，0 到 1。默认折线下方为 `0.39`，雷达图为 `0.2`。 |
 | `series_label_formatter` | 字符串 |  | 数据标签的格式：`{c}` 数值、`{a}` 系列名、`{b}` 类目名、`{d}` 百分比、`{t}` 千位格式的数值。 |
 | `series_label_font_size` | 数字 | `14` | 数据标签字号。 |
 | `series_label_font_color` | 颜色 | 主题 | 数据标签字体颜色。 |
@@ -147,6 +150,9 @@
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `tooltip_show` | 布尔 | `false` | 为每个数据图形添加悬停提示（纯 CSS 实现，无需脚本），同时写入供辅助工具使用的 `<title>`。日历图、仪表盘、平行坐标图、雷达图和主题河流图不支持。 |
+| `tooltip_font_size` | 数字 |  | 悬停提示的字号。默认与数据标签相同（`series_label_font_size`）。 |
+| `tooltip_font_color` | 颜色 |  | 悬停提示的字体颜色。默认与数据标签相同（`series_label_font_color`）。 |
+| `tooltip_font_weight` | 字符串 |  | 悬停提示的字重，例如 `"bold"`。 |
 | `animation` | 对象 |  | 图表出现时的动画；`{}` 表示使用默认值。支持柱状图、条形图、折线图、饼图、漏斗图、旭日图、矩形树图、桑基图、直方图、极坐标柱状图与和弦图。 |
 
 ### `series_list[]`
@@ -185,6 +191,9 @@
 |---|---|---|---|
 | `category` | `"average"` / `"min"` / `"max"` / `"value"` |  | 标记线的位置：系列的平均值、最小值、最大值，或由 `value` 指定。 |
 | `value` | 数字 |  | `category` 为 `value` 时标记线所在的数值。 |
+| `color` | 颜色 |  | 标记线及其圆点、箭头的颜色。默认为系列颜色。 |
+| `stroke_width` | 数字 | `1` | 标记线的宽度。 |
+| `stroke_dash_array` | 字符串 | `"4,2"` | 标记线的虚线样式，写法同 SVG 的 `stroke-dasharray`；`""` 表示实线。 |
 
 #### `series_list[].mark_points[]`
 
@@ -202,6 +211,8 @@
 |---|---|---|---|
 | `from` | 数字 / `"average"` / `"min"` / `"max"` |  | 阴影带的一条边。 |
 | `to` | 数字 / `"average"` / `"min"` / `"max"` |  | 阴影带的另一条边。 |
+| `color` | 颜色 |  | 阴影带的颜色。默认为系列颜色。 |
+| `opacity` | 数字 | `0.16` | 阴影带的不透明度，0 到 1。 |
 
 #### `series_list[].symbol` 与 `series_symbol`
 
@@ -215,17 +226,26 @@
 | `radius` | 数字 |  | 与 `size` 含义相同；两者都设置时以 `size` 为准。 |
 | `color` | 颜色 |  | 标记的填充颜色；不设置时标记为空心。 |
 
-#### `series_list[].band` 与 `series_list[].error_bar`
+#### `series_list[].band`
 
 <!-- keys: base.series_list.band -->
-<!-- keys: base.series_list.error_bar = base.series_list.band -->
-
-`error_bar` 使用同样的两个列表：上下界都给出的数据点才会画出误差线。
 
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `lower` | 数字数组 |  | 每个点的下界；`null` 处区间带断开。 |
 | `upper` | 数字数组 |  | 每个点的上界；`null` 处区间带断开。 |
+
+#### `series_list[].error_bar`
+
+<!-- keys: base.series_list.error_bar -->
+
+与区间带同样的两个列表：上下界都给出的数据点才会画出误差线。
+
+| 键 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `lower` | 数字数组 |  | 每个点误差线的下端；`null` 表示该点没有误差线。 |
+| `upper` | 数字数组 |  | 每个点误差线的上端；`null` 表示该点没有误差线。 |
+| `stroke_width` | 数字 | `1.5` | 误差线的宽度。 |
 
 ### `y_axis_configs[]`
 
@@ -237,6 +257,7 @@
 | `axis_font_color` | 颜色 | 主题 | 轴标签字体颜色。 |
 | `axis_font_weight` | 字符串 |  | 轴标签字重，例如 `"bold"`。 |
 | `axis_stroke_color` | 颜色 | `transparent` | 轴线颜色；默认透明。 |
+| `axis_stroke_width` | 数字 | `1` | 轴线和刻度线的宽度。 |
 | `axis_width` | 数字 |  | 轴占用的宽度；默认按标签所需宽度计算。 |
 | `axis_split_number` | 0–1000 的整数 | `6` | 数值范围被分成的段数。 |
 | `axis_name_gap` | 数字 | `8` | 轴线与标签之间的间距。 |
@@ -344,6 +365,7 @@
 | `end_angle` | 数字 |  | 最后一个扇区的终止角度：各扇区平分两个角度之间的圆弧（`-90` 到 `90` 是上半圆，即半环形图）。默认为 `start_angle` 之后一整圈。 |
 | `series_label_position` | `"inside"` / `"outside"` | `"outside"` | 标签位置：扇区内部，或带引导线的外部（默认）。 |
 | `min_show_label_angle` | 数字 | `0` | 角度小于该值的扇区不显示标签。 |
+| `ring_gap` | 数字 | `6` | 嵌套饼图（设置了 `ring` 的系列）相邻两环之间的间隙，单位为像素。 |
 
 <!-- example: pie -->
 
@@ -418,7 +440,7 @@
 
 <!-- keys: scatter.x_axis_config = base.y_axis_configs -->
 
-与 [`y_axis_configs[]`](#y_axis_configs) 的键相同。
+与 [`y_axis_configs[]`](#y_axis_configs) 的键相同。其中决定数值的键会生效——`axis_min`、`axis_max`、`axis_split_number`、`axis_formatter`；x 轴的字体、颜色和线宽仍由 `x_axis_*` 参数设置。
 
 <!-- example: scatter -->
 
@@ -490,6 +512,7 @@
 | `spans` | 数字数组 |  | 各列宽度：小于 1 的值表示占表格宽度的比例，更大的值表示像素；其余列平分剩余宽度。 |
 | `text_aligns` | 字符串数组 |  | 各列文字的对齐方式：`"left"`、`"center"` 或 `"right"`。 |
 | `border_color` | 颜色 | 主题 | 行间分隔线的颜色。 |
+| `border_width` | 数字 | `1` | 行间分隔线及外边框的宽度。 |
 | `header_row_padding` | 边距 | `{left: 10, top: 8, right: 10, bottom: 8}` | 表头行的内边距。 |
 | `header_row_height` | 数字 | `30` | 表头行的最小高度。 |
 | `header_font_size` | 数字 | `14` | 表头字号。 |
@@ -615,6 +638,7 @@
 |---|---|---|---|
 | `label_show` | 布尔 | `true` | 在每根柱上显示数值标签。 |
 | `connector_line_show` | 布尔 | `true` | 在相邻柱之间绘制虚线连接。 |
+| `connector_line_dash_array` | 字符串 | `"4,4"` | 连接线的虚线样式，写法同 SVG 的 `stroke-dasharray`；`""` 表示实线。 |
 | `bar_width_ratio` | 数字 | `0.6` | 柱宽占类目宽度的比例，0 到 1。 |
 | `increase_color` | 颜色 | 主题 | 增加项的柱颜色。 |
 | `decrease_color` | 颜色 | `#EE6666` | 减少项的柱颜色。 |

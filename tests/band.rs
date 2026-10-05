@@ -170,7 +170,7 @@ fn smooth_line_gets_a_smooth_band() {
         )
     };
     let mut smooth = chart(vec![series()]);
-    smooth.series_smooth = true;
+    smooth.series.smooth = true;
     let svg = smooth.svg().unwrap();
     let smooth_bands = bands(&svg);
     assert_eq!(1, smooth_bands.len());
@@ -182,7 +182,7 @@ fn smooth_line_gets_a_smooth_band() {
     let mut straight = series();
     straight.smooth = Some(false);
     let mut chart = chart(vec![straight]);
-    chart.series_smooth = true;
+    chart.series.smooth = true;
     let svg = chart.svg().unwrap();
     assert!(bands(&svg)[0].starts_with("polygon"));
 }
@@ -224,7 +224,7 @@ fn band_without_a_line() {
         ..Default::default()
     };
     let mut chart = chart(vec![series]);
-    chart.tooltip_show = true;
+    chart.tooltip.show = true;
     let svg = chart.svg().unwrap();
 
     // Not an empty chart: the band is the data.
@@ -258,7 +258,7 @@ fn band_without_a_line() {
     assert!((y + height - corners[5].1).abs() < 0.2);
 
     // No tooltips, no strips.
-    chart.tooltip_show = false;
+    chart.tooltip.show = false;
     assert!(!chart.svg().unwrap().contains("ct-trigger"));
 }
 
@@ -273,7 +273,7 @@ fn point_tooltip_tells_the_bounds() {
         ),
         ("B", vec![1.0, 2.0, 3.0]).into(),
     ]);
-    chart.tooltip_show = true;
+    chart.tooltip.show = true;
     let svg = chart.svg().unwrap();
 
     assert!(svg.contains("<title>A: 5 (4 – 6)</title>"));
@@ -352,7 +352,7 @@ fn band_follows_start_index_and_the_axis_layout() {
     series.start_index = 2;
     let mut chart = LineChart::new(vec![series], categories(4));
     for gap in [true, false] {
-        chart.x_boundary_gap = Some(gap);
+        chart.x_axis.boundary_gap = Some(gap);
         let svg = chart.svg().unwrap();
         let line = &line_points(&svg)[0];
         let corners = corners(bands(&svg)[0]);
@@ -368,7 +368,7 @@ fn band_follows_start_index_and_the_axis_layout() {
         vec![banded("A", vec![5.0; 5], vec![4.0; 5], vec![6.0; 5])],
         categories(3),
     );
-    chart.x_boundary_gap = Some(true);
+    chart.x_axis.boundary_gap = Some(true);
     assert_eq!(6, corners(bands(&chart.svg().unwrap())[0]).len());
 }
 
@@ -384,7 +384,7 @@ fn band_on_a_continuous_axis() {
         )],
         vec![],
     );
-    chart.x_axis_values = vec![0.0, 1.0, 5.0, 10.0];
+    chart.x_axis.values = vec![0.0, 1.0, 5.0, 10.0];
     let svg = chart.svg().unwrap();
     let line = &line_points(&svg)[0];
     let band = corners(bands(&svg)[0]);
@@ -453,6 +453,7 @@ fn band_from_json() {
         Some(SeriesBand {
             lower: vec![Some(4.0), None, Some(5.0)],
             upper: vec![Some(6.0), Some(9.0), Some(8.0)],
+            ..Default::default()
         }),
         chart.series_list[0].band
     );

@@ -33,11 +33,10 @@ pub enum CandlestickStyle {
 }
 
 /// A candlestick (OHLC) chart for financial data.
-#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct CandlestickChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
-    #[serde(flatten)]
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     // [open price1, close price1, lowest price1, highest price1, open price2, close price2, ...]
 
@@ -65,7 +64,6 @@ pub struct CandlestickChart {
     /// Border color of falling candles.
     pub candlestick_down_border_color: Color,
     /// Draws candles (the default) or OHLC bars.
-    #[serde(default)]
     pub candlestick_style: CandlestickStyle,
 }
 
@@ -145,7 +143,7 @@ impl CandlestickChart {
             ..Default::default()
         };
         c.series_list = series_list;
-        c.x_axis_data = x_axis_data;
+        c.x_axis.data = x_axis_data;
         let theme = get_theme(theme);
         c.base.fill_theme(theme, &mut c.y_axis_configs);
         c.fill_default();
@@ -166,14 +164,14 @@ impl CandlestickChart {
         let left_y_axis_values = &layout.left;
         let axis_width = layout.axis_width;
         let axis_height = layout.axis_height;
-        let x_axis_height = if self.x_axis_hidden {
+        let x_axis_height = if self.x_axis.hidden {
             0.0
         } else {
-            self.x_axis_height
+            self.x_axis.height
         };
-        // `.max(1)` guards against an empty `x_axis_data` producing `inf`/`NaN`
+        // `.max(1)` guards against an empty `x_axis.data` producing `inf`/`NaN`
         // coordinates (division by zero).
-        let chunk_width = axis_width / self.x_axis_data.len().max(1) as f32;
+        let chunk_width = axis_width / self.x_axis.data.len().max(1) as f32;
         let half_chunk_width = chunk_width / 2.0;
         for series in self.series_list.iter() {
             if series.category.is_some() {
@@ -223,8 +221,8 @@ impl CandlestickChart {
                     ..Default::default()
                 });
 
-                let category = self.x_axis_data.get(index).cloned().unwrap_or_default();
-                let tooltip_text = self.tooltip_show.then(|| {
+                let category = self.x_axis.data.get(index).cloned().unwrap_or_default();
+                let tooltip_text = self.tooltip.show.then(|| {
                     format!(
                         "{}: {} / {} / {} / {}",
                         category,
@@ -300,9 +298,10 @@ impl CandlestickChart {
                     candle_c.text(Text {
                         text,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(rect_left + half_chunk_width / 2.0),
                         y: Some(highest.min(lowest)),
                         dy: Some(-6.0),
@@ -332,7 +331,7 @@ impl CandlestickChart {
             &y_axis_values_list,
             max_height,
             axis_height,
-            self.x_axis_data.len(),
+            self.x_axis.data.len(),
             None,
             None,
             false,
@@ -357,7 +356,7 @@ impl CandlestickChart {
             max_height,
         );
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()
@@ -415,7 +414,7 @@ mod tests {
                 "2017-10-27".to_string(),
             ],
         );
-        candlestick_chart.x_axis_hidden = true;
+        candlestick_chart.x_axis.hidden = true;
         candlestick_chart.y_axis_hidden = true;
         assert_snapshot!(
             "candlestick_chart/no_axis.svg",
@@ -543,13 +542,13 @@ mod tests {
         );
         candlestick_chart.series_list[0].category = Some(SeriesCategory::Line);
         candlestick_chart.series_list[0].start_index = 5;
-        candlestick_chart.y_axis_configs[0].axis_min = Some(2100.0);
-        candlestick_chart.y_axis_configs[0].axis_max = Some(2460.0);
-        candlestick_chart.y_axis_configs[0].axis_formatter = Some("{t}".to_string());
+        candlestick_chart.y_axis_configs[0].min = Some(2100.0);
+        candlestick_chart.y_axis_configs[0].max = Some(2460.0);
+        candlestick_chart.y_axis_configs[0].formatter = Some("{t}".to_string());
         assert_snapshot!("candlestick_chart/sh.svg", candlestick_chart.svg().unwrap());
     }
 
-    // An empty `x_axis_data` previously divided by zero (`chunk_width`),
+    // An empty `x_axis.data` previously divided by zero (`chunk_width`),
     // producing `inf`/`NaN` rect and line coordinates.
     #[test]
     fn empty_x_axis_no_nan() {

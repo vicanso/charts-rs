@@ -24,7 +24,7 @@ use crate::charts::measure_text_width_family;
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HorizontalBarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     // x axis
 
@@ -79,7 +79,7 @@ impl HorizontalBarChart {
             ..Default::default()
         };
         h.series_list = series_list;
-        h.x_axis_data = x_axis_data;
+        h.x_axis.data = x_axis_data;
         let theme = get_theme(theme);
         h.base.fill_theme(theme, &mut h.y_axis_configs);
         h
@@ -103,18 +103,18 @@ impl HorizontalBarChart {
         let mut c = self.new_canvas();
 
         let axis_top = self.render_header(&mut c);
-        // Titles follow position too: `x_axis_title` below the value axis,
-        // the first y config's `axis_title` beside the categories.
+        // Titles follow position too: `x_axis.title` below the value axis,
+        // the first y config's `title` beside the categories.
         let titles =
-            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis.title, false);
 
         // The value axis is the base's "x axis" (bottom) and the category
         // axis its "y axis" (left), so `x_axis_*` / `y_axis_*` options keep
         // their meaning of "the axis at the bottom / on the left".
-        let x_axis_height = if self.x_axis_hidden {
+        let x_axis_height = if self.x_axis.hidden {
             0.0
         } else {
-            self.x_axis_height
+            self.x_axis.height
         };
         let axis_height = c.height() - axis_top - x_axis_height;
         // minus the height of top text area
@@ -127,12 +127,12 @@ impl HorizontalBarChart {
 
         let mut y_axis_width = 0.0;
         if !self.y_axis_hidden {
-            let mut data = self.x_axis_data.clone();
+            let mut data = self.x_axis.data.clone();
             data.reverse();
             let mut max_width = 0.0;
             for text in data.iter() {
                 if let Ok(b) =
-                    measure_text_width_family(&self.font_family, self.x_axis_font_size, text)
+                    measure_text_width_family(&self.font_family, self.x_axis.font.size, text)
                     && b.width() > max_width
                 {
                     max_width = b.width();
@@ -143,20 +143,21 @@ impl HorizontalBarChart {
                 position: Position::Left,
                 height: axis_height,
                 width: y_axis_width,
-                split_number: self.x_axis_data.len(),
+                split_number: self.x_axis.data.len(),
                 font_family: self.font_family.clone(),
-                stroke_color: Some(self.x_axis_stroke_color),
+                stroke_color: Some(self.x_axis.stroke_color),
+                stroke_width: self.x_axis.stroke_width.unwrap_or(1.0),
                 name_align: Align::Center,
-                name_gap: self.x_axis_name_gap,
-                font_color: Some(self.x_axis_font_color),
-                font_size: self.x_axis_font_size,
-                font_weight: self.x_axis_font_weight.clone(),
+                name_gap: self.x_axis.name_gap,
+                font_color: Some(self.x_axis.font.color),
+                font_size: self.x_axis.font.size,
+                font_weight: self.x_axis.font.weight.clone(),
                 data,
                 ..Default::default()
             });
         }
 
-        let category_count = self.x_axis_data.len().max(1);
+        let category_count = self.x_axis.data.len().max(1);
         // Assign each series a slot: stacked series share one. Positive and
         // negative values stack separately, away from the 0 line.
         let mut stack_slot_keys: Vec<String> = vec![];
@@ -230,13 +231,13 @@ impl HorizontalBarChart {
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
-            &self.x_axis_title,
+            &self.x_axis.title,
             y_axis_width,
             axis_top,
             x_axis_width,
             axis_height,
         );
-        if !self.x_axis_hidden {
+        if !self.x_axis.hidden {
             c.child(Box {
                 left: y_axis_width,
                 top: axis_height,
@@ -246,16 +247,17 @@ impl HorizontalBarChart {
                 position: Position::Bottom,
                 height: x_axis_height,
                 width: x_axis_width,
-                split_number: x_axis_config.axis_split_number,
+                split_number: x_axis_config.split_number,
                 font_family: self.font_family.clone(),
-                stroke_color: Some(x_axis_config.axis_stroke_color),
+                stroke_color: Some(x_axis_config.stroke_color),
+                stroke_width: x_axis_config.stroke_width.unwrap_or(1.0),
                 name_align: Align::Left,
-                name_gap: x_axis_config.axis_name_gap,
-                font_color: Some(x_axis_config.axis_font_color),
-                font_size: x_axis_config.axis_font_size,
-                font_weight: x_axis_config.axis_font_weight.clone(),
+                name_gap: x_axis_config.name_gap,
+                font_color: Some(x_axis_config.font.color),
+                font_size: x_axis_config.font.size,
+                font_weight: x_axis_config.font.weight.clone(),
                 data: x_axis_values.data.clone(),
-                formatter: x_axis_config.axis_formatter.clone(),
+                formatter: x_axis_config.formatter.clone(),
                 ..Default::default()
             });
         }
@@ -267,9 +269,10 @@ impl HorizontalBarChart {
         .grid(Grid {
             right: x_axis_width,
             bottom: axis_height,
-            color: Some(self.grid_stroke_color),
-            stroke_width: self.grid_stroke_width,
-            verticals: x_axis_config.axis_split_number,
+            color: Some(self.grid.stroke_color),
+            stroke_width: self.grid.stroke_width,
+            stroke_dash_array: self.grid.stroke_dash_array.clone(),
+            verticals: x_axis_config.split_number,
             hidden_verticals: vec![0],
             ..Default::default()
         });
@@ -308,7 +311,7 @@ impl HorizontalBarChart {
             let half_bar_height = bar_height / 2.0;
 
             // Bars grow from the 0 line so negative values extend to the left
-            // of it; with a positive `axis_min` there is no 0 and the axis
+            // of it; with a positive `min` there is no 0 and the axis
             // start is used, as before.
             let zero_x =
                 (max_width - x_axis_values.get_offset_height(0.0, max_width)).clamp(0.0, max_width);
@@ -328,7 +331,7 @@ impl HorizontalBarChart {
             for (index, series) in self.series_list.iter().enumerate() {
                 let slot_index = series_slot_indices[index];
                 let stack_index = series_stack_indices[index];
-                let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+                let color = get_color(&self.series.colors, series.index.unwrap_or(index));
 
                 let mut series_labels = vec![];
                 for (i, value) in series.iter_values().enumerate() {
@@ -369,7 +372,7 @@ impl HorizontalBarChart {
                         .and_then(|colors| colors.get(i).copied().flatten())
                         .unwrap_or(color);
                     let label = self.format_series_label(series, actual_i, value);
-                    let tip = if self.tooltip_show {
+                    let tip = if self.tooltip.show {
                         Some(format!("{}: {}", series.name, label))
                     } else {
                         None
@@ -410,9 +413,10 @@ impl HorizontalBarChart {
                         c1.text_unmeasured(Text {
                             text,
                             class: Some("ct-tip".to_string()),
+                            font_weight: self.tooltip.font.weight.clone(),
                             font_family: Some(self.font_family.clone()),
-                            font_color: Some(self.series_label_font_color),
-                            font_size: Some(self.series_label_font_size),
+                            font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                            font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                             x: Some(x),
                             y: Some(top + half_bar_height),
                             dy: Some(-4.0),
@@ -441,7 +445,7 @@ impl HorizontalBarChart {
                 .series_label_position
                 .clone()
                 .unwrap_or(Position::Right);
-            let mut placed = LabelBoxes::new(self.series_label_hide_overlap);
+            let mut placed = LabelBoxes::new(self.series.label.hide_overlap);
             for series_labels in series_labels_list.iter() {
                 for series_label in series_labels.iter() {
                     let mut dy = None;
@@ -450,7 +454,7 @@ impl HorizontalBarChart {
                     let mut label_width = 0.0;
                     if let Ok(value) = measure_text_width_family(
                         &self.font_family,
-                        self.series_label_font_size,
+                        self.series.label.font.size,
                         &series_label.text,
                     ) {
                         dy = Some(value.height() / 2.0 - 2.0);
@@ -474,7 +478,7 @@ impl HorizontalBarChart {
                         }
                     }
                     // The label is vertically centred on its bar.
-                    let font_size = self.series_label_font_size;
+                    let font_size = self.series.label.font.size;
                     if !placed.try_place(
                         x.unwrap_or_default() + dx.unwrap_or_default(),
                         series_label.point.y - font_size / 2.0,
@@ -488,9 +492,9 @@ impl HorizontalBarChart {
                         dx,
                         dy,
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
-                        font_weight: self.series_label_font_weight.clone(),
+                        font_color: Some(self.series.label.font.color),
+                        font_size: Some(self.series.label.font.size),
+                        font_weight: self.series.label.font.weight.clone(),
                         x,
                         y: Some(series_label.point.y),
                         ..Default::default()
@@ -512,7 +516,7 @@ impl HorizontalBarChart {
                 if series.mark_lines.is_empty() && series.mark_areas.is_empty() {
                     continue;
                 }
-                let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+                let color = get_color(&self.series.colors, series.index.unwrap_or(index));
                 let values: Vec<f32> = series.iter_values().filter(|v| *v != NIL_VALUE).collect();
                 let stat = mark_statistics(&values);
                 let value_x =
@@ -524,7 +528,7 @@ impl HorizontalBarChart {
                     };
                     let (x_from, x_to) = (value_x(from), value_x(to));
                     c1.rect(Rect {
-                        fill: Some(color.with_alpha(40).into()),
+                        fill: Some(mark_area.fill(color).into()),
                         left: x_from.min(x_to),
                         top: 0.0,
                         width: (x_from - x_to).abs(),
@@ -536,6 +540,7 @@ impl HorizontalBarChart {
                     let Some(value) = stat(&mark_line.category) else {
                         continue;
                     };
+                    let color = mark_line.color.unwrap_or(color);
                     let x = value_x(value);
                     c1.circle(Circle {
                         stroke_color: Some(color),
@@ -551,16 +556,16 @@ impl HorizontalBarChart {
                         top: 4.0,
                         right: x,
                         bottom: max_height - 8.0,
-                        stroke_dash_array: Some("4,2".to_string()),
-                        ..Default::default()
+                        stroke_width: mark_line.stroke_width.unwrap_or(1.0),
+                        stroke_dash_array: mark_line.dash(),
                     });
                     c1.text(Text {
                         text: format_float(value),
                         font_family: Some(self.font_family.clone()),
-                        font_size: Some(self.series_label_font_size),
-                        font_color: Some(self.series_label_font_color),
+                        font_size: Some(self.series.label.font.size),
+                        font_color: Some(self.series.label.font.color),
                         x: Some(x),
-                        y: Some(self.series_label_font_size),
+                        y: Some(self.series.label.font.size),
                         dx: Some(4.0),
                         ..Default::default()
                     });
@@ -577,7 +582,7 @@ impl HorizontalBarChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -616,11 +621,11 @@ mod tests {
                 "World".to_string(),
             ],
         );
-        horizontal_bar_chart.title_text = "World Population".to_string();
-        horizontal_bar_chart.series_label_formatter = "{t}".to_string();
+        horizontal_bar_chart.title.text = "World Population".to_string();
+        horizontal_bar_chart.series.label.formatter = "{t}".to_string();
         horizontal_bar_chart.margin.right = 15.0;
         horizontal_bar_chart.series_list[0].label_show = true;
-        horizontal_bar_chart.title_align = Align::Left;
+        horizontal_bar_chart.title.align = Align::Left;
         assert_snapshot!(
             "horizontal_bar_chart/basic.svg",
             horizontal_bar_chart.svg().unwrap()
@@ -651,11 +656,11 @@ mod tests {
                 "World".to_string(),
             ],
         );
-        horizontal_bar_chart.title_text = "World Population".to_string();
-        horizontal_bar_chart.series_label_formatter = "{t}".to_string();
+        horizontal_bar_chart.title.text = "World Population".to_string();
+        horizontal_bar_chart.series.label.formatter = "{t}".to_string();
         horizontal_bar_chart.margin.right = 15.0;
         horizontal_bar_chart.series_list[0].label_show = true;
-        horizontal_bar_chart.title_align = Align::Left;
+        horizontal_bar_chart.title.align = Align::Left;
         horizontal_bar_chart.series_label_position = Some(Position::Inside);
         assert_snapshot!(
             "horizontal_bar_chart/basic_label_inside.svg",
@@ -687,10 +692,10 @@ mod tests {
                 "World".to_string(),
             ],
         );
-        horizontal_bar_chart.title_text = "World Population".to_string();
+        horizontal_bar_chart.title.text = "World Population".to_string();
         horizontal_bar_chart.margin.right = 15.0;
         horizontal_bar_chart.series_list[0].label_show = true;
-        horizontal_bar_chart.title_align = Align::Left;
+        horizontal_bar_chart.title.align = Align::Left;
         assert_snapshot!(
             "horizontal_bar_chart/nil_value.svg",
             horizontal_bar_chart.svg().unwrap()

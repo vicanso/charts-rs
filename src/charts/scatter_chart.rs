@@ -247,11 +247,10 @@ impl Fit {
 }
 
 /// A scatter chart of (x, y) point pairs.
-#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct ScatterChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
-    #[serde(flatten)]
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     // x axis
     /// Configuration of the value x axis.
@@ -270,32 +269,26 @@ pub struct ScatterChart {
     pub series_symbol_sizes: Vec<f32>,
     /// Per-series symbol shapes. When empty the chart cycles through
     /// Circle → Triangle → Rect → Diamond by series index.
-    /// `series_symbol` (if Some) overrides all per-series symbols.
+    /// `series.symbol` (if Some) overrides all per-series symbols.
     pub series_symbols: Vec<Symbol>,
 
     // bubble
     /// Bubble chart: the series data are `[x, y, size]` triples instead of
     /// `[x, y]` pairs, and each symbol's radius follows its size (by area),
     /// between `bubble_min_size` and `bubble_max_size`.
-    #[serde(default)]
     pub bubble: bool,
     /// Radius of the smallest bubble. Default: 4.
-    #[serde(default)]
     pub bubble_min_size: f32,
     /// Radius of the largest bubble. Default: 30.
-    #[serde(default)]
     pub bubble_max_size: f32,
 
     // regression
     /// Draws the curve of this kind that fits the points of each series
     /// best (by least squares), in the color of the series.
-    #[serde(default)]
     pub regression: Option<Regression>,
     /// Order of a `Polynomial` regression, from 1 to 6. Default: 2.
-    #[serde(default)]
     pub regression_order: usize,
     /// Writes the formula of each fitted curve at its end.
-    #[serde(default)]
     pub regression_label_show: bool,
 }
 
@@ -320,6 +313,7 @@ fn render_scatter_symbol(
     r: f32,
     color: Color,
     title: Option<String>,
+    tip_font: &FontConfig,
     dataset: Vec<(String, String)>,
 ) {
     // When a tooltip is present the symbol is the hover trigger; a hidden
@@ -383,9 +377,13 @@ fn render_scatter_symbol(
         Symbol::None => return,
     }
     if let Some(text) = title {
+        // What the font of the tooltips leaves unset is left to the viewer.
         canvas.text_unmeasured(Text {
             text,
             class: Some("ct-tip".to_string()),
+            font_size: (tip_font.size > 0.0).then_some(tip_font.size),
+            font_color: (!tip_font.color.is_zero()).then_some(tip_font.color),
+            font_weight: tip_font.weight.clone(),
             x: Some(cx),
             y: Some(cy),
             dy: Some(-8.0),
@@ -466,15 +464,15 @@ impl ScatterChart {
         s
     }
     fn fill_default(&mut self) {
-        if self.y_axis_configs[0].axis_stroke_color.is_zero() {
-            self.y_axis_configs[0].axis_stroke_color = self.x_axis_stroke_color;
+        if self.y_axis_configs[0].stroke_color.is_zero() {
+            self.y_axis_configs[0].stroke_color = self.x_axis.stroke_color;
         }
-        if self.x_axis_config.axis_split_number == 0 {
+        if self.x_axis_config.split_number == 0 {
             self.x_axis_config = self.y_axis_configs[0].clone();
-            // The y axis' title is not the x axis' (that is `x_axis_title`).
-            self.x_axis_config.axis_title = None;
+            // The y axis' title is not the x axis' (that is `x_axis.title`).
+            self.x_axis_config.title = None;
         }
-        self.x_boundary_gap = Some(false);
+        self.x_axis.boundary_gap = Some(false);
         if self.bubble_min_size <= 0.0 {
             self.bubble_min_size = 4.0;
         }
@@ -493,13 +491,13 @@ impl ScatterChart {
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = self.new_canvas();
 
-        let mut x_axis_height = self.x_axis_height;
-        if self.x_axis_hidden {
+        let mut x_axis_height = self.x_axis.height;
+        if self.x_axis.hidden {
             x_axis_height = 0.0;
         }
         let axis_top = self.render_header(&mut c);
         let titles =
-            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis.title, false);
 
         let y_axis_config = get_y_axis_config(&self.y_axis_configs, 0);
 
@@ -538,13 +536,13 @@ impl ScatterChart {
             get_axis_values(axis_value_params(&y_axis_config, y_axis_data_list, true));
         let y_axis_width = if self.y_axis_hidden {
             0.0
-        } else if let Some(value) = y_axis_config.axis_width {
+        } else if let Some(value) = y_axis_config.width {
             value
         } else {
-            let y_axis_formatter = &y_axis_config.axis_formatter.clone().unwrap_or_default();
+            let y_axis_formatter = &y_axis_config.formatter.clone().unwrap_or_default();
             let str = format_string(&y_axis_values.data[0], y_axis_formatter);
             if let Ok(b) =
-                measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &str)
+                measure_text_width_family(&self.font_family, y_axis_config.font.size, &str)
             {
                 b.width() + 5.0
             } else {
@@ -557,7 +555,7 @@ impl ScatterChart {
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
-            &self.x_axis_title,
+            &self.x_axis.title,
             y_axis_width,
             axis_top,
             axis_width,
@@ -589,9 +587,10 @@ impl ScatterChart {
         .grid(Grid {
             right: x_axis_width,
             bottom: axis_height,
-            color: Some(self.grid_stroke_color),
-            stroke_width: self.grid_stroke_width,
-            verticals: y_axis_config.axis_split_number,
+            color: Some(self.grid.stroke_color),
+            stroke_width: self.grid.stroke_width,
+            stroke_dash_array: self.grid.stroke_dash_array.clone(),
+            verticals: y_axis_config.split_number,
             hidden_verticals: vec![0],
             ..Default::default()
         });
@@ -614,14 +613,10 @@ impl ScatterChart {
             x_axis_data_list,
             false,
         ));
-        let x_axis_formatter = &self
-            .x_axis_config
-            .axis_formatter
-            .clone()
-            .unwrap_or_default();
+        let x_axis_formatter = &self.x_axis_config.formatter.clone().unwrap_or_default();
         let content_width = c.width() - y_axis_width;
         let content_height = axis_height;
-        if !self.x_axis_hidden {
+        if !self.x_axis.hidden {
             self.render_x_axis(
                 c.child(Box {
                     top: c.height() - x_axis_height,
@@ -655,7 +650,7 @@ impl ScatterChart {
         let mut formula_boxes = LabelBoxes::new(true);
         for (index, series) in self.series_list.iter().enumerate() {
             let series_idx = series.index.unwrap_or(index);
-            let mut color = get_color(&self.series_colors, series_idx);
+            let mut color = get_color(&self.series.colors, series_idx);
             let size = *self
                 .series_symbol_sizes
                 .get(series_idx)
@@ -664,7 +659,7 @@ impl ScatterChart {
 
             // Resolve which symbol to use for this series.
             // series_symbols takes precedence; otherwise cycle through defaults.
-            // (series_symbol is intentionally ignored here — it's set by fill_theme
+            // (`series.symbol` is intentionally ignored here — it's set by fill_theme
             //  for line-chart node colors and is not meaningful for scatter dots.)
             let symbol = if let Some(s) = self.series_symbols.get(series_idx) {
                 s.clone()
@@ -725,9 +720,13 @@ impl ScatterChart {
                         y_axis_values.get_offset_height(lower, content_height),
                         y_axis_values.get_offset_height(upper, content_height),
                     );
-                    render_error_bar(&mut content_canvas, cx, ends, 4.0, color);
+                    let stroke = (
+                        color,
+                        SeriesBand::error_bar_width(series.error_bar.as_ref()),
+                    );
+                    render_error_bar(&mut content_canvas, cx, ends, 4.0, stroke);
                 }
-                let title = if self.tooltip_show {
+                let title = if self.tooltip.show {
                     Some(match bubble_size {
                         Some(v) => format!(
                             "{}: ({}, {}, {})",
@@ -766,6 +765,7 @@ impl ScatterChart {
                     radius,
                     color,
                     title,
+                    &self.tooltip.font,
                     dataset,
                 );
             }
@@ -811,14 +811,14 @@ impl ScatterChart {
                     run.push((px, py).into());
                 }
             }
-            let line_color = get_color(&self.series_colors, series_idx);
+            let line_color = get_color(&self.series.colors, series_idx);
             let mut end = None;
             for run in runs.into_iter().filter(|run| run.len() > 1) {
                 end = run.last().copied();
                 content_canvas.straight_line(StraightLine {
                     color: Some(line_color),
                     points: run,
-                    stroke_width: self.series_stroke_width,
+                    stroke_width: self.series.stroke_width,
                     symbol: None,
                     class: Some("ct-regression".to_string()),
                     ..Default::default()
@@ -830,7 +830,7 @@ impl ScatterChart {
                 && let Some(end) = end
             {
                 let text = fit.formula();
-                let font_size = self.series_label_font_size;
+                let font_size = self.series.label.font.size;
                 let width = measure_text_width_family(&self.font_family, font_size, &text)
                     .map(|b| b.width())
                     .unwrap_or_default();
@@ -843,9 +843,9 @@ impl ScatterChart {
                     content_canvas.text_unmeasured(Text {
                         text,
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
+                        font_color: Some(self.series.label.font.color),
                         font_size: Some(font_size),
-                        font_weight: self.series_label_font_weight.clone(),
+                        font_weight: self.series.label.font.weight.clone(),
                         x: Some(left),
                         y: Some(baseline),
                         ..Default::default()
@@ -854,7 +854,7 @@ impl ScatterChart {
             }
         }
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()
@@ -991,18 +991,18 @@ mod tests {
             )
                 .into(),
         ]);
-        scatter_chart.title_text = "Male and female height and weight distribution".to_string();
+        scatter_chart.title.text = "Male and female height and weight distribution".to_string();
         scatter_chart.margin.right = 20.0;
-        scatter_chart.title_align = Align::Left;
-        scatter_chart.sub_title_text = "Data from: Heinz 2003".to_string();
-        scatter_chart.sub_title_align = Align::Left;
-        scatter_chart.legend_align = Align::Right;
-        scatter_chart.y_axis_configs[0].axis_min = Some(40.0);
-        scatter_chart.y_axis_configs[0].axis_max = Some(130.0);
-        scatter_chart.y_axis_configs[0].axis_formatter = Some("{c} kg".to_string());
-        scatter_chart.x_axis_config.axis_min = Some(140.0);
-        scatter_chart.x_axis_config.axis_max = Some(230.0);
-        scatter_chart.x_axis_config.axis_formatter = Some("{c} cm".to_string());
+        scatter_chart.title.align = Align::Left;
+        scatter_chart.sub_title.text = "Data from: Heinz 2003".to_string();
+        scatter_chart.sub_title.align = Align::Left;
+        scatter_chart.legend.align = Align::Right;
+        scatter_chart.y_axis_configs[0].min = Some(40.0);
+        scatter_chart.y_axis_configs[0].max = Some(130.0);
+        scatter_chart.y_axis_configs[0].formatter = Some("{c} kg".to_string());
+        scatter_chart.x_axis_config.min = Some(140.0);
+        scatter_chart.x_axis_config.max = Some(230.0);
+        scatter_chart.x_axis_config.formatter = Some("{c} cm".to_string());
         scatter_chart.series_symbol_sizes = vec![6.0, 6.0];
         scatter_chart
     }
@@ -1015,7 +1015,7 @@ mod tests {
     #[test]
     fn scatter_chart_no_axis() {
         let mut scatter_chart = make_scatter();
-        scatter_chart.x_axis_hidden = true;
+        scatter_chart.x_axis.hidden = true;
         scatter_chart.y_axis_hidden = true;
         assert_snapshot!("scatter_chart/no_axis.svg", scatter_chart.svg().unwrap());
     }

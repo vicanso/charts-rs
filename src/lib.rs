@@ -171,9 +171,9 @@
 //!         "Sun".to_string(),
 //!     ],
 //! );
-//! bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-//! bar_chart.title_text = "Bar Chart".to_string();
-//! bar_chart.legend_margin = Some(Box {
+//! bar_chart.y_axis_configs[0].width = Some(55.0);
+//! bar_chart.title.text = "Bar Chart".to_string();
+//! bar_chart.legend.margin = Some(Box {
 //!     top: 35.0,
 //!     bottom: 10.0,
 //!     ..Default::default()
@@ -214,9 +214,9 @@
 //!     ],
 //! );
 //! bar_chart.series_list[0].category = Some(SeriesCategory::Line);
-//! bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-//! bar_chart.title_text = "Bar Line Chart".to_string();
-//! bar_chart.legend_margin = Some(Box {
+//! bar_chart.y_axis_configs[0].width = Some(55.0);
+//! bar_chart.title.text = "Bar Line Chart".to_string();
+//! bar_chart.legend.margin = Some(Box {
 //!     top: 35.0,
 //!     bottom: 10.0,
 //!     ..Default::default()
@@ -248,10 +248,10 @@
 //!         "World".to_string(),
 //!     ],
 //! );
-//! horizontal_bar_chart.title_text = "World Population".to_string();
+//! horizontal_bar_chart.title.text = "World Population".to_string();
 //! horizontal_bar_chart.margin.right = 15.0;
 //! horizontal_bar_chart.series_list[0].label_show = true;
-//! horizontal_bar_chart.title_align = Align::Left;
+//! horizontal_bar_chart.title.align = Align::Left;
 //! println!("{}", horizontal_bar_chart.svg().unwrap());
 //! ```
 //!
@@ -275,9 +275,9 @@
 //!         "Sun".to_string(),
 //!     ],
 //! );
-//! line_chart.title_text = "Stacked Area Chart".to_string();
-//! line_chart.sub_title_text = "Hello World".to_string();
-//! line_chart.legend_margin = Some(Box {
+//! line_chart.title.text = "Stacked Area Chart".to_string();
+//! line_chart.sub_title.text = "Hello World".to_string();
+//! line_chart.legend.margin = Some(Box {
 //!     top: 50.0,
 //!     bottom: 10.0,
 //!     ..Default::default()
@@ -299,8 +299,8 @@
 //!     ("rose 7", vec![22.0]).into(),
 //!     ("rose 8", vec![18.0]).into(),
 //! ]);
-//! pie_chart.title_text = "Nightingale Chart".to_string();
-//! pie_chart.sub_title_text = "Fake Data".to_string();
+//! pie_chart.title.text = "Nightingale Chart".to_string();
+//! pie_chart.sub_title.text = "Fake Data".to_string();
 //! println!("{}", pie_chart.svg().unwrap());
 //! ```
 //!
@@ -350,7 +350,7 @@
 //!         "+4.32%".to_string(),
 //!     ],
 //! ]);
-//! table_chart.title_text = "NASDAQ".to_string();
+//! table_chart.title.text = "NASDAQ".to_string();
 //! println!("{}", table_chart.svg().unwrap());
 //! ```
 //!

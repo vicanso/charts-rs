@@ -29,9 +29,9 @@ fn main() {
     .collect();
 
     let mut map = MapChart::new(regions, data);
-    map.title_text = "Population by region".to_string();
+    map.title.text = "Population by region".to_string();
     map.label_show = true;
-    map.tooltip_show = true;
+    map.tooltip.show = true;
     // Five classes, each in a color of its own.
     map.thresholds = vec![100.0, 250.0, 400.0, 550.0];
     map.colors = ["#eff3ff", "#bdd7e7", "#6baed6", "#3182bd", "#08519c"]

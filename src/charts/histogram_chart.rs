@@ -65,7 +65,7 @@ impl Bins {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HistogramChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     /// Configuration of the y (count) axis.
     pub y_axis_configs: Vec<YAxisConfig>,
@@ -137,11 +137,11 @@ impl HistogramChart {
     }
 
     /// The bins for samples spanning `min..=max`, the largest of them `n`
-    /// values. `x_axis_min` / `x_axis_max` fix the range instead.
+    /// values. `x_axis.min` / `x_axis.max` fix the range instead.
     fn bins(&self, min: f64, max: f64, n: usize) -> Bins {
-        let fixed_min = self.x_axis_min.filter(|v| v.is_finite());
+        let fixed_min = self.x_axis.min.filter(|v| v.is_finite());
         let mut lo = fixed_min.unwrap_or(min);
-        let mut hi = self.x_axis_max.filter(|v| v.is_finite()).unwrap_or(max);
+        let mut hi = self.x_axis.max.filter(|v| v.is_finite()).unwrap_or(max);
         if !lo.is_finite() || !hi.is_finite() {
             (lo, hi) = (0.0, 1.0);
         }
@@ -257,9 +257,9 @@ impl HistogramChart {
         let mut y_axis_configs = self.y_axis_configs.clone();
         if self.percent
             && let Some(config) = y_axis_configs.first_mut()
-            && config.axis_formatter.is_none()
+            && config.formatter.is_none()
         {
-            config.axis_formatter = Some("{c}%".to_string());
+            config.formatter = Some("{c}%".to_string());
         }
         let y_axis_config = get_y_axis_config(&y_axis_configs, 0);
         let has_values = samples.iter().any(|values| !values.is_empty());
@@ -315,7 +315,7 @@ impl HistogramChart {
         for (series_index, (series, counts)) in
             self.series_list.iter().zip(heights.iter()).enumerate()
         {
-            let mut color = get_color(&self.series_colors, series.index.unwrap_or(series_index));
+            let mut color = get_color(&self.series.colors, series.index.unwrap_or(series_index));
             let stack_index = series
                 .stack
                 .as_deref()
@@ -339,7 +339,7 @@ impl HistogramChart {
                 let top = y_axis_values.get_offset_height(base + value, max_height);
                 let bottom = y_axis_values.get_offset_height(base, max_height);
 
-                let tooltip_text = self.tooltip_show.then(|| {
+                let tooltip_text = self.tooltip.show.then(|| {
                     format!(
                         "{}: {} – {}: {}",
                         series.name,
@@ -381,9 +381,10 @@ impl HistogramChart {
                     plot.text_unmeasured(Text {
                         text,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(left + width / 2.0),
                         y: Some(top),
                         dy: Some(-6.0),
@@ -414,7 +415,7 @@ impl HistogramChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -496,8 +497,8 @@ mod tests {
             c.bins(1.0, 9.0, 50)
         );
         // A fixed range.
-        c.x_axis_min = Some(-5.0);
-        c.x_axis_max = Some(20.0);
+        c.x_axis.min = Some(-5.0);
+        c.x_axis.max = Some(20.0);
         assert_eq!(
             Bins {
                 start: -5.0,
@@ -544,7 +545,7 @@ mod tests {
     #[test]
     fn histogram_chart_basic() {
         let mut c = HistogramChart::new(vec![Series::new("Height".to_string(), sample())]);
-        c.title_text = "Heights".to_string();
+        c.title.text = "Heights".to_string();
         c.series_list[0].label_show = true;
         assert_snapshot!("histogram_chart/basic.svg", c.svg().unwrap());
     }

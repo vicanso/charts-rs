@@ -16,15 +16,13 @@ use super::common::*;
 use super::component::*;
 use super::params::*;
 use super::theme::{get_default_theme_name, get_theme};
-use serde::{Deserialize, Serialize};
 
 /// A vertical bar chart. Series can be individually switched to lines
 /// (bar/line mix), stacked, and bound to one of two y axes.
-#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct BarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
-    #[serde(flatten)]
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
 
     /// Y axis configurations; one per axis, up to two.
@@ -35,7 +33,6 @@ pub struct BarChart {
     /// Where the value labels of the bars go: above their end (`Top`, the
     /// default) or in the middle of the bar (`Inside`), which suits stacked
     /// bars.
-    #[serde(default)]
     pub series_label_position: Option<Position>,
 }
 
@@ -85,7 +82,10 @@ impl BarChart {
         let mut b = BarChart {
             base: ChartBase {
                 series_list,
-                x_axis_data,
+                x_axis: XAxisConfig {
+                    data: x_axis_data,
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             ..Default::default()
@@ -152,7 +152,7 @@ impl BarChart {
             layout.x.as_ref(),
             self.radius,
             self.animation.as_ref(),
-            self.tooltip_show,
+            self.tooltip.show,
             self.series_label_position == Some(Position::Inside),
         );
 
@@ -165,7 +165,7 @@ impl BarChart {
             layout.x_count,
             layout.x.as_ref(),
             None,
-            self.tooltip_show,
+            self.tooltip.show,
         );
 
         bar_series_labels_list.append(&mut line_series_labels_list);
@@ -185,7 +185,7 @@ impl BarChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -238,15 +238,15 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar & Line Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar & Line Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.legend_category = LegendCategory::RoundRect;
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.legend.category = LegendCategory::RoundRect;
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_list[0].colors = Some(vec![None, Some("#a90000".into())]);
         assert_snapshot!("bar_chart/basic.svg", bar_chart.svg().unwrap());
@@ -287,17 +287,17 @@ mod tests {
             ],
             THEME_DARK,
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
         bar_chart.radius = Some(5.0);
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
-        bar_chart.legend_category = LegendCategory::Circle;
+        bar_chart.legend.category = LegendCategory::Circle;
         assert_snapshot!("bar_chart/basic_dark.svg", bar_chart.svg().unwrap());
     }
 
@@ -337,14 +337,14 @@ mod tests {
             ],
             THEME_ANT,
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         assert_snapshot!("bar_chart/basic_ant.svg", bar_chart.svg().unwrap());
     }
@@ -385,14 +385,14 @@ mod tests {
             ],
             THEME_GRAFANA,
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         assert_snapshot!("bar_chart/basic_grafana.svg", bar_chart.svg().unwrap());
     }
@@ -433,15 +433,15 @@ mod tests {
             ],
             THEME_GRAFANA,
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.y_axis_configs[0].axis_max = Some(1500.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.y_axis_configs[0].max = Some(1500.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         assert_snapshot!("bar_chart/y_axis_min_max.svg", bar_chart.svg().unwrap());
     }
@@ -482,15 +482,15 @@ mod tests {
             ],
         );
         bar_chart.series_list[0].category = Some(SeriesCategory::Line);
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.legend_category = LegendCategory::Rect;
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.legend.category = LegendCategory::Rect;
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_list[3].label_show = true;
 
@@ -529,19 +529,19 @@ mod tests {
         bar_chart.series_list[2].category = Some(SeriesCategory::Line);
         bar_chart.series_list[2].y_axis_index = 1;
 
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.legend_category = LegendCategory::Rect;
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.legend.category = LegendCategory::Rect;
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart
             .y_axis_configs
             .push(bar_chart.y_axis_configs[0].clone());
-        bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
+        bar_chart.y_axis_configs[1].formatter = Some("{c} °C".to_string());
         assert_snapshot!("bar_chart/two_y_axis.svg", bar_chart.svg().unwrap());
     }
 
@@ -576,14 +576,14 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         bar_chart.series_list[0].start_index = 1;
         assert_snapshot!(
@@ -627,14 +627,14 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         assert_snapshot!("bar_chart/nil_value.svg", bar_chart.svg().unwrap());
     }
@@ -708,14 +708,14 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.y_axis_configs[0].width = Some(55.0);
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
         });
-        bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+        bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
         bar_chart.series_list[0].label_show = true;
         assert_snapshot!("bar_chart/nil_value.svg", bar_chart.svg().unwrap());
     }
@@ -755,10 +755,10 @@ mod tests {
                 "Sun".to_string(),
             ],
         );
-        bar_chart.x_axis_hidden = true;
+        bar_chart.x_axis.hidden = true;
         bar_chart.y_axis_hidden = true;
-        bar_chart.title_text = "Bar Chart".to_string();
-        bar_chart.legend_margin = Some(Box {
+        bar_chart.title.text = "Bar Chart".to_string();
+        bar_chart.legend.margin = Some(Box {
             top: 35.0,
             bottom: 10.0,
             ..Default::default()
@@ -775,7 +775,7 @@ mod tests {
         );
 
         bar_chart.series_list[0].label_show = true;
-        bar_chart.series_label_formatter = "{:.1}".to_string();
+        bar_chart.series.label.formatter = "{:.1}".to_string();
 
         assert_snapshot!(
             "bar_chart/custom_label_formatter.svg",
@@ -935,7 +935,7 @@ mod tests {
         assert!(!off_svg.contains("ct-trigger"));
     }
 
-    // An empty `series_colors` palette from JSON must not panic (previously
+    // An empty `series.colors` palette from JSON must not panic (previously
     // `index % colors.len()` divided by zero in `get_color`).
     #[test]
     fn empty_series_colors_no_panic() {

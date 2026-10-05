@@ -137,7 +137,7 @@ fn regions_from_value(value: &serde_json::Value, name_property: &str) -> Vec<Map
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -203,7 +203,7 @@ struct Outline {
 
 impl MapChart {
     fn fill_default(&mut self) {
-        let first = get_color(&self.series_colors, 0);
+        let first = get_color(&self.series.colors, 0);
         let background = self.background_color;
         let tint = |a: u8, b: u8| (b as f32 + (a as f32 - b as f32) * 0.15).round() as u8;
         self.max_color = first;
@@ -370,7 +370,7 @@ impl MapChart {
     /// Draws the scale of the colors at the bottom left of `c`, and returns
     /// the width it takes.
     fn render_visual_map(&self, c: &mut canvas::Canvas, range: (f32, f32)) -> f32 {
-        let font_size = self.series_label_font_size;
+        let font_size = self.series.label.font.size;
         let colors = self.scale_colors();
         let limits = self.class_limits(range);
         let label = |c: &mut canvas::Canvas, text: String, x: f32, y: f32| -> f32 {
@@ -380,7 +380,7 @@ impl MapChart {
             c.text_unmeasured(Text {
                 text,
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
+                font_color: Some(self.series.label.font.color),
                 font_size: Some(font_size),
                 x: Some(x),
                 y: Some(y),
@@ -591,7 +591,7 @@ impl MapChart {
                 Some(value) => format!("{}: {}", region.name, format_float(value)),
                 None => region.name.clone(),
             };
-            let tooltip_text = (self.tooltip_show && !text.is_empty()).then_some(text);
+            let tooltip_text = (self.tooltip.show && !text.is_empty()).then_some(text);
             // The name stands on the largest part of the region.
             let center = outlines
                 .iter()
@@ -616,9 +616,10 @@ impl MapChart {
                 content.text_unmeasured(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                     x: Some(center.x),
                     y: Some(center.y),
                     text_anchor: Some("middle".to_string()),
@@ -638,7 +639,7 @@ impl MapChart {
         }
 
         // The names, over every region.
-        let font_size = self.series_label_font_size;
+        let font_size = self.series.label.font.size;
         let mut boxes = LabelBoxes::new(true);
         for (center, name, color) in labels {
             let width = measure_text_width_family(&self.font_family, font_size, name)
@@ -657,7 +658,7 @@ impl MapChart {
                 font_family: Some(self.font_family.clone()),
                 font_color: Some(color),
                 font_size: Some(font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(center.x),
                 y: Some(center.y),
                 text_anchor: Some("middle".to_string()),
@@ -666,7 +667,7 @@ impl MapChart {
             });
         }
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()

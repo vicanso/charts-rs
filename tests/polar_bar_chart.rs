@@ -124,9 +124,9 @@ fn chart(series_list: Vec<Series>, categories: &[&str]) -> PolarBarChart {
     let mut chart = PolarBarChart::new(series_list, names(categories));
     chart.width = 400.0;
     chart.height = 400.0;
-    chart.legend_show = Some(false);
-    chart.y_axis_configs[0].axis_max = Some(40.0);
-    chart.y_axis_configs[0].axis_split_number = 4;
+    chart.legend.show = Some(false);
+    chart.y_axis_configs[0].max = Some(40.0);
+    chart.y_axis_configs[0].split_number = 4;
     chart
 }
 
@@ -376,8 +376,8 @@ fn round_caps() {
 #[test]
 fn negative_values_grow_the_other_way() {
     let mut chart = chart(vec![("A", vec![20.0, -20.0]).into()], &["a", "b"]);
-    chart.y_axis_configs[0].axis_min = Some(-40.0);
-    chart.y_axis_configs[0].axis_max = Some(40.0);
+    chart.y_axis_configs[0].min = Some(-40.0);
+    chart.y_axis_configs[0].max = Some(40.0);
     let svg = chart.svg().unwrap();
     let r = rings(&svg).last().unwrap().2;
     let shapes: Vec<Shape> = bars(&svg).iter().map(|b| shape(b)).collect();
@@ -414,8 +414,8 @@ fn tooltips_labels_and_colors() {
     series.label_show = true;
     series.colors = Some(vec![None, Some("#ff0000".into()), None]);
     let mut chart = chart(vec![series], &["a", "b", "c"]);
-    chart.tooltip_show = true;
-    chart.series_label_formatter = "{c} k".to_string();
+    chart.tooltip.show = true;
+    chart.series.label.formatter = "{c} k".to_string();
     let svg = chart.svg().unwrap();
 
     let bars = bars(&svg);
@@ -437,7 +437,7 @@ fn tooltips_labels_and_colors() {
         texts(&svg).iter().filter(|t| **t == "Visits: 20 k").count()
     );
 
-    chart.tooltip_show = false;
+    chart.tooltip.show = false;
     chart.series_list[0].label_show = false;
     let svg = chart.svg().unwrap();
     assert!(!svg.contains("ct-t") && !svg.contains("<title>") && !svg.contains("<style>"));
@@ -470,7 +470,7 @@ fn axis_labels_can_be_hidden() {
     // The ticks along the ray stand on a backdrop.
     assert!(both.matches("<rect").count() > 1);
 
-    chart.x_axis_hidden = true;
+    chart.x_axis.hidden = true;
     let svg = chart.svg().unwrap();
     assert!(!texts(&svg).contains(&"first") && texts(&svg).contains(&"20"));
     // Without labels around it, the plot is larger.
@@ -492,7 +492,7 @@ fn axis_labels_can_be_hidden() {
 #[test]
 fn formatter_and_axis_range() {
     let mut chart = chart(vec![("A", vec![10.0, 80.0]).into()], &["a", "b"]);
-    chart.y_axis_configs[0].axis_formatter = Some("{c} mm".to_string());
+    chart.y_axis_configs[0].formatter = Some("{c} mm".to_string());
     let svg = chart.svg().unwrap();
     assert!(texts(&svg).contains(&"40 mm"));
     // A value beyond the axis is cut off at its end.
@@ -500,8 +500,8 @@ fn formatter_and_axis_range() {
     assert!(close(shape(bars(&svg)[1]).outer, r, 0.1));
 
     // Without a fixed end the axis is rounded up from the data.
-    chart.y_axis_configs[0].axis_max = None;
-    chart.y_axis_configs[0].axis_split_number = 0;
+    chart.y_axis_configs[0].max = None;
+    chart.y_axis_configs[0].split_number = 0;
     let svg = chart.svg().unwrap();
     let longest = shape(bars(&svg)[1]).outer;
     let r = rings(&svg).last().unwrap().2;
@@ -551,7 +551,7 @@ fn odd_input_stays_finite() {
             chart.inner_radius = Some(inner);
             chart.radius = Some(radius);
             chart.round_cap = true;
-            chart.tooltip_show = true;
+            chart.tooltip.show = true;
             chart.series_list[1].label_show = true;
             let svg = chart.svg().unwrap();
             assert!(

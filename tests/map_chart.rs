@@ -242,7 +242,7 @@ fn mercator_stretches_the_north() {
 fn names_tooltips_and_the_scale() {
     let mut chart = chart(vec![("west", 20.0), ("east", 80.0)]);
     chart.label_show = true;
-    chart.tooltip_show = true;
+    chart.tooltip.show = true;
     chart.min_color = "#ffffff".into();
     chart.max_color = "#000000".into();
     let svg = chart.svg().unwrap();
@@ -267,7 +267,7 @@ fn names_tooltips_and_the_scale() {
     // The scale beside the map: a bar from the smallest to the largest
     // value, and the map moves over for it.
     chart.label_show = false;
-    chart.tooltip_show = false;
+    chart.tooltip.show = false;
     chart.visual_map_show = None;
     let svg = chart.svg().unwrap();
     assert_eq!(vec!["80", "20"], texts(&svg));

@@ -50,8 +50,11 @@ fn calendar(scale: &str) -> String {
 #[test]
 fn heatmap_scale_snapshot() {
     let chart = HeatmapChart::from_json(include_str!("../asset/heatmap_chart/scale.json")).unwrap();
-    assert_eq!(5, chart.series.colors.len());
-    assert_eq!(vec![50.0, 100.0, 150.0, 200.0], chart.series.thresholds);
+    assert_eq!(5, chart.heatmap_series.colors.len());
+    assert_eq!(
+        vec![50.0, 100.0, 150.0, 200.0],
+        chart.heatmap_series.thresholds
+    );
     common::assert_snapshot!("heatmap_chart/scale_json.svg", chart.svg().unwrap());
 }
 

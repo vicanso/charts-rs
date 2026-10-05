@@ -113,7 +113,7 @@ fn sample_link_edge(x0: f32, y0: f32, x1: f32, y1: f32, segments: usize, out: &m
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SankeyChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -304,7 +304,7 @@ impl SankeyChart {
             .iter()
             .enumerate()
             .map(|(i, name)| {
-                let color = explicit_color[i].unwrap_or_else(|| get_color(&self.series_colors, i));
+                let color = explicit_color[i].unwrap_or_else(|| get_color(&self.series.colors, i));
                 LayoutNode {
                     name: name.clone(),
                     color,
@@ -554,7 +554,7 @@ impl SankeyChart {
             } else {
                 (Some(source.color.with_alpha(alpha)), None)
             };
-            let tooltip_text = self.tooltip_show.then(|| {
+            let tooltip_text = self.tooltip.show.then(|| {
                 format!(
                     "{} → {}: {}",
                     source.name,
@@ -594,9 +594,10 @@ impl SankeyChart {
                 content.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                     x: Some(tip_x),
                     y: Some(tip_y),
                     text_anchor: Some("middle".to_string()),
@@ -612,7 +613,8 @@ impl SankeyChart {
                 continue;
             }
             let tooltip_text = self
-                .tooltip_show
+                .tooltip
+                .show
                 .then(|| format!("{}: {}", node.name, format_float(node.value)));
             let mut class = self.animation.as_ref().map(|_| "sankey-anim".to_string());
             if tooltip_text.is_some() {
@@ -650,9 +652,10 @@ impl SankeyChart {
                 content.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                     x: Some(left + width / 2.0),
                     y: Some(top),
                     dy: Some(-4.0),
@@ -663,13 +666,13 @@ impl SankeyChart {
         }
 
         // ── Node labels ───────────────────────────────────────────────────────
-        let font_size = self.series_label_font_size.max(10.0);
-        let font_color = self.series_label_font_color;
+        let font_size = self.series.label.font.size.max(10.0);
+        let font_color = self.series.label.font.color;
         for node in &nodes {
             if node.dy <= 0.0 {
                 continue;
             }
-            let text = if self.series_label_formatter.is_empty() {
+            let text = if self.series.label.formatter.is_empty() {
                 node.name.clone()
             } else {
                 LabelOption {
@@ -681,7 +684,7 @@ impl SankeyChart {
                     } else {
                         0.0
                     },
-                    formatter: self.series_label_formatter.clone(),
+                    formatter: self.series.label.formatter.clone(),
                 }
                 .format()
             };
@@ -717,7 +720,7 @@ impl SankeyChart {
                 font_family: Some(self.font_family.clone()),
                 font_color: Some(font_color),
                 font_size: Some(font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(x),
                 y: Some(mid_y),
                 text_anchor: Some(anchor.to_string()),
@@ -747,7 +750,7 @@ impl SankeyChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -930,7 +933,7 @@ mod tests {
             vec![SankeyNode::from("a"), SankeyNode::from("b")],
             vec![("a", "b", 10.0).into()],
         );
-        chart.series_label_formatter = "{b}: {c}".to_string();
+        chart.series.label.formatter = "{b}: {c}".to_string();
         let svg = chart.svg().unwrap();
         // Node "a" is the sole layer-0 node, so its value (10) is the grand total.
         assert!(svg.contains("a: 10"), "missing formatted source label");

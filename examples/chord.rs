@@ -18,12 +18,12 @@ fn main() {
         ("Oceania", "Americas", 10.0).into(),
     ];
     let mut chord = ChordChart::new(vec![], links);
-    chord.title_text = "Trade between regions".to_string();
+    chord.title.text = "Trade between regions".to_string();
     // Name every node with its share of all the flows.
-    chord.series_label_formatter = "{b} ({d})".to_string();
+    chord.series.label.formatter = "{b} ({d})".to_string();
     // Fade every ribbon from the color of its source to that of its target.
     chord.link_gradient = true;
-    chord.tooltip_show = true;
+    chord.tooltip.show = true;
 
     std::fs::write("chord.svg", chord.svg().unwrap()).unwrap();
     println!("wrote chord.svg");

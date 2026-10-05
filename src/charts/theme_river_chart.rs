@@ -26,11 +26,11 @@ use super::util::*;
 /// composition and its evolution over time are both easy to read.
 ///
 /// Data reuses the shared model: `series_list` holds one [`Series`] per stream
-/// and `x_axis_data` holds the time-axis labels.
+/// and `x_axis.data` holds the time-axis labels.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ThemeRiverChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -74,7 +74,7 @@ impl ThemeRiverChart {
             ..Default::default()
         };
         c.series_list = series_list;
-        c.x_axis_data = x_axis_data;
+        c.x_axis.data = x_axis_data;
         c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
@@ -85,7 +85,7 @@ impl ThemeRiverChart {
         let mut c = ThemeRiverChart {
             ..Default::default()
         };
-        // `series_list` and `x_axis_data` are parsed by the derived fill_option.
+        // `series_list` and `x_axis.data` are parsed by the derived fill_option.
         let value = c.base.fill_option(
             json,
             &mut c.y_axis_configs,
@@ -125,9 +125,9 @@ impl ThemeRiverChart {
             return c.svg();
         }
 
-        let font_size = self.series_label_font_size.max(10.0);
+        let font_size = self.series.label.font.size.max(10.0);
         // Reserve space at the bottom for the time-axis labels.
-        let x_label_h = if self.x_axis_data.is_empty() {
+        let x_label_h = if self.x_axis.data.is_empty() {
             0.0
         } else {
             font_size + 6.0
@@ -179,7 +179,7 @@ impl ThemeRiverChart {
 
         // ── Stream bands (stacked, centered baseline) ─────────────────────────
         for (i, s) in self.series_list.iter().enumerate() {
-            let color = get_color(&self.series_colors, s.index.unwrap_or(i)).with_alpha(alpha);
+            let color = get_color(&self.series.colors, s.index.unwrap_or(i)).with_alpha(alpha);
             let mut top_pts: Vec<Point> = Vec::with_capacity(t_count);
             let mut bottom_pts: Vec<Point> = Vec::with_capacity(t_count);
             for t in 0..t_count {
@@ -191,7 +191,7 @@ impl ThemeRiverChart {
                 top_pts.push((x, y_top).into());
                 bottom_pts.push((x, y_bottom).into());
             }
-            if self.series_smooth {
+            if self.series.smooth {
                 content.smooth_band(SmoothBand {
                     top: top_pts,
                     bottom: bottom_pts,
@@ -244,9 +244,9 @@ impl ThemeRiverChart {
             content.text(Text {
                 text: s.name.clone(),
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
+                font_color: Some(self.series.label.font.color),
                 font_size: Some(font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(lx),
                 y: Some(y),
                 text_anchor: Some(la.to_string()),
@@ -256,12 +256,12 @@ impl ThemeRiverChart {
         }
 
         // ── Time-axis labels ──────────────────────────────────────────────────
-        if !self.x_axis_data.is_empty() {
+        if !self.x_axis.data.is_empty() {
             // Subsample so labels do not overlap (~one every ~60px).
             let max_labels = (cw / 60.0).floor().max(1.0) as usize;
             let step = t_count.div_ceil(max_labels).max(1);
             let y = plot_h + font_size * 0.8;
-            for (t, label) in self.x_axis_data.iter().enumerate().take(t_count) {
+            for (t, label) in self.x_axis.data.iter().enumerate().take(t_count) {
                 if t % step != 0 && t != t_count - 1 {
                     continue;
                 }
@@ -278,7 +278,7 @@ impl ThemeRiverChart {
                 content.text(Text {
                     text: label.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.x_axis_font_color),
+                    font_color: Some(self.x_axis.font.color),
                     font_size: Some(font_size),
                     x: Some(x_at(t)),
                     y: Some(y),
@@ -316,7 +316,7 @@ mod tests {
                 "2025".to_string(),
             ],
         );
-        c.legend_show = Some(false);
+        c.legend.show = Some(false);
         c
     }
 

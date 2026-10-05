@@ -43,7 +43,7 @@ pub struct GanttTask {
     /// Name of the task.
     pub name: String,
     /// When the task starts: a unix timestamp in seconds (or a plain number
-    /// with `x_axis_type` set to `Value`).
+    /// with `x_axis.kind` set to `Value`).
     pub start: f64,
     /// When the task ends. A task that ends when it starts is a milestone,
     /// drawn as a diamond.
@@ -101,12 +101,12 @@ impl GanttTask {
 /// several tasks on a row — a project plan, a schedule, a timeline.
 ///
 /// The axis is a time axis (`start` and `end` are unix seconds; JSON also
-/// takes date strings); with `x_axis_type` set to `Value` it is an axis of
-/// plain numbers. `x_axis_min` / `x_axis_max` fix its range.
+/// takes date strings); with `x_axis.kind` set to `Value` it is an axis of
+/// plain numbers. `x_axis.min` / `x_axis.max` fix its range.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GanttChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     /// Configuration of the axis of the rows: the font of their names.
     pub y_axis_configs: Vec<YAxisConfig>,
@@ -219,13 +219,13 @@ impl GanttChart {
 
     /// The axis reads as time unless it is said to be one of plain numbers.
     fn is_time(&self) -> bool {
-        self.x_axis_type != AxisType::Value
+        self.x_axis.kind != AxisType::Value
     }
 
     /// A moment as it is told in tooltips and `data-*` attributes.
     fn moment_text(&self, value: f64) -> String {
         if self.is_time() {
-            format_time_full(value + self.x_axis_time_offset as f64 * 60.0)
+            format_time_full(value + self.x_axis.time_offset as f64 * 60.0)
         } else {
             format_number(value, 6)
         }
@@ -263,11 +263,11 @@ impl GanttChart {
             }
         }
         // The categories are the legend of a gantt chart.
-        if !categories.is_empty() && self.legend_show.unwrap_or(true) {
+        if !categories.is_empty() && self.legend.show.unwrap_or(true) {
             let entries: Vec<(&str, Color)> = categories
                 .iter()
                 .enumerate()
-                .map(|(i, name)| (*name, get_color(&self.series_colors, i)))
+                .map(|(i, name)| (*name, get_color(&self.series.colors, i)))
                 .collect();
             axis_top += self.render_legend_entries(
                 c.child(Box {
@@ -278,13 +278,13 @@ impl GanttChart {
             );
         }
 
-        let x_axis_height = if self.x_axis_hidden {
+        let x_axis_height = if self.x_axis.hidden {
             0.0
         } else {
-            self.x_axis_height
+            self.x_axis.height
         };
         let titles =
-            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis.title, false);
         let plot_height = c.height() - x_axis_height - axis_top;
         if axis_top > 0.0 {
             c = c.child(Box {
@@ -304,7 +304,7 @@ impl GanttChart {
             0.0
         } else {
             rows.iter()
-                .map(|row| measure(row, row_config.axis_font_size))
+                .map(|row| measure(row, row_config.font.size))
                 .fold(0.0, f32::max)
                 + LABEL_GAP
         };
@@ -315,7 +315,7 @@ impl GanttChart {
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
-            &self.x_axis_title,
+            &self.x_axis.title,
             y_axis_width,
             axis_top,
             plot_width,
@@ -340,11 +340,13 @@ impl GanttChart {
             if self.is_time() { 1800.0 } else { 0.5 }
         };
         min = self
-            .x_axis_min
+            .x_axis
+            .min
             .filter(|v| v.is_finite())
             .unwrap_or(min - padding);
         max = self
-            .x_axis_max
+            .x_axis
+            .max
             .filter(|v| v.is_finite())
             .unwrap_or(max + padding);
         if max <= min {
@@ -367,13 +369,13 @@ impl GanttChart {
         let row_height = plot_height / rows.len() as f32;
         let grid_line = |plot: &mut canvas::Canvas, from: (f32, f32), to: (f32, f32)| {
             plot.line(Line {
-                color: Some(self.grid_stroke_color),
-                stroke_width: self.grid_stroke_width,
+                color: Some(self.grid.stroke_color),
+                stroke_width: self.grid.stroke_width,
+                stroke_dash_array: self.grid.stroke_dash_array.clone(),
                 left: from.0,
                 top: from.1,
                 right: to.0,
                 bottom: to.1,
-                ..Default::default()
             });
         };
         let (ticks, _) = self.x_ticks(&scale);
@@ -384,7 +386,7 @@ impl GanttChart {
             let y = row_height * row as f32;
             grid_line(&mut plot, (0.0, y), (plot_width, y));
         }
-        if !self.x_axis_hidden {
+        if !self.x_axis.hidden {
             self.render_continuous_x_axis(
                 plot.child(Box {
                     top: plot_height,
@@ -400,9 +402,9 @@ impl GanttChart {
                 c.text_unmeasured(Text {
                     text: row.to_string(),
                     font_family: Some(self.font_family.clone()),
-                    font_size: Some(row_config.axis_font_size),
-                    font_color: Some(row_config.axis_font_color),
-                    font_weight: row_config.axis_font_weight.clone(),
+                    font_size: Some(row_config.font.size),
+                    font_color: Some(row_config.font.color),
+                    font_weight: row_config.font.weight.clone(),
                     x: Some(y_axis_width - LABEL_GAP),
                     y: Some(row_height * (index as f32 + 0.5)),
                     text_anchor: Some("end".to_string()),
@@ -441,7 +443,7 @@ impl GanttChart {
                     right: scale.px(span.1).clamp(0.0, plot_width),
                     color: task
                         .color
-                        .unwrap_or_else(|| get_color(&self.series_colors, index)),
+                        .unwrap_or_else(|| get_color(&self.series.colors, index)),
                 }
             })
             .collect();
@@ -459,7 +461,7 @@ impl GanttChart {
                 (item.left, item.left + (item.right - item.left).max(1.0))
             }
         };
-        let font_size = self.series_label_font_size;
+        let font_size = self.series.label.font.size;
         for item in placed.iter() {
             let task = item.task;
             let top = row_height * item.row as f32 + (row_height - bar_height) / 2.0;
@@ -471,7 +473,7 @@ impl GanttChart {
                 .map(|v| v.clamp(0.0, 1.0));
 
             let (start, end) = task.span().unwrap_or_default();
-            let tooltip_text = self.tooltip_show.then(|| {
+            let tooltip_text = self.tooltip.show.then(|| {
                 let mut text = if is_milestone {
                     format!("{}: {}", task.name, self.moment_text(start))
                 } else {
@@ -575,9 +577,10 @@ impl GanttChart {
                 plot.text_unmeasured(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(font_size)),
                     x: Some(((shape_left + shape_right) / 2.0).clamp(0.0, plot_width)),
                     y: Some(top),
                     dy: Some(-4.0),
@@ -613,9 +616,9 @@ impl GanttChart {
                 };
                 ((shape_left + shape_right) / 2.0, "middle", color)
             } else if free(shape_right + 4.0, shape_right + 4.0 + width) {
-                (shape_right + 4.0, "start", self.series_label_font_color)
+                (shape_right + 4.0, "start", self.series.label.font.color)
             } else if free(shape_left - 4.0 - width, shape_left - 4.0) {
-                (shape_left - 4.0, "end", self.series_label_font_color)
+                (shape_left - 4.0, "end", self.series.label.font.color)
             } else {
                 continue;
             };
@@ -624,7 +627,7 @@ impl GanttChart {
                 font_family: Some(self.font_family.clone()),
                 font_color: Some(color),
                 font_size: Some(font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(x),
                 y: Some(middle),
                 text_anchor: Some(anchor.to_string()),
@@ -638,7 +641,7 @@ impl GanttChart {
         if let Some(now) = self.now.filter(|v| v.is_finite() && *v >= min && *v <= max) {
             let x = scale.px(now);
             plot.line(Line {
-                color: Some(self.title_font_color),
+                color: Some(self.title.font.color),
                 stroke_width: 1.0,
                 left: x,
                 top: 0.0,
@@ -662,7 +665,7 @@ impl GanttChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -716,7 +719,7 @@ mod tests {
             task("Test", 15.0, 21.0, 0.0),
             ("Launch", T0 + 22.0 * DAY, T0 + 22.0 * DAY).into(),
         ]);
-        chart.title_text = "Project plan".to_string();
+        chart.title.text = "Project plan".to_string();
         chart.now = Some(T0 + 11.0 * DAY);
         assert_snapshot!("gantt_chart/basic.svg", chart.svg().unwrap());
     }

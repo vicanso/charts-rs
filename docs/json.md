@@ -102,6 +102,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `x_axis_hidden` | boolean | `false` | Hides the x axis. In a polar bar chart: the category labels. |
 | `x_axis_height` | number | `30` | Height reserved for the x axis. |
 | `x_axis_stroke_color` | color | theme | Color of the x axis line and ticks. |
+| `x_axis_stroke_width` | number | `1` | Width of the x axis line and ticks. |
 | `x_axis_font_size` | number | `14` | Font size of the x axis labels. |
 | `x_axis_font_color` | color | theme | Font color of the x axis labels. |
 | `x_axis_font_weight` | string |  | Font weight of the x axis labels, e.g. `"bold"`. |
@@ -124,6 +125,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 |---|---|---|---|
 | `grid_stroke_color` | color | theme | Color of the grid lines. |
 | `grid_stroke_width` | number | `1` | Width of the grid lines. |
+| `grid_stroke_dash_array` | string |  | Dashes of the grid lines, as the `stroke-dasharray` of SVG takes them (e.g. `"4,2"`). Solid lines by default. Applies to the grid of the charts with an x and a y axis, and to that of the gantt chart. |
 
 ### Series
 
@@ -135,6 +137,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `series_symbol` | object |  | Marker drawn on the data points of every line; `null` draws none. Default: a circle as large as `series_stroke_width`, filled with the background color. |
 | `series_smooth` | boolean | `false` | Draws line series as smooth curves. |
 | `series_fill` | boolean | `false` | Fills the area under line series. |
+| `series_fill_opacity` | number |  | How opaque the fill of an area is, from 0 to 1. Default: `0.39` under a line, `0.2` in a radar chart. |
 | `series_label_formatter` | string |  | Format of the data labels: `{c}` value, `{a}` series name, `{b}` category, `{d}` percentage, `{t}` value in thousands notation. |
 | `series_label_font_size` | number | `14` | Font size of the data labels. |
 | `series_label_font_color` | color | theme | Font color of the data labels. |
@@ -147,6 +150,9 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `tooltip_show` | boolean | `false` | Gives every data shape a tooltip that shows on hover (plain CSS, no script), and a `<title>` for assistive tools. Not available in calendar, gauge, parallel, radar and theme river charts. |
+| `tooltip_font_size` | number |  | Font size of the tooltips. Default: that of the data labels (`series_label_font_size`). |
+| `tooltip_font_color` | color |  | Font color of the tooltips. Default: that of the data labels (`series_label_font_color`). |
+| `tooltip_font_weight` | string |  | Font weight of the tooltips, e.g. `"bold"`. |
 | `animation` | object |  | Animates the chart as it appears; `{}` uses the defaults. Supported by the bar, horizontal bar, line, pie, funnel, sunburst, treemap, sankey, histogram, polar bar and chord charts. |
 
 ### `series_list[]`
@@ -185,6 +191,9 @@ These keys are accepted by every chart except the table and the multi chart. A c
 |---|---|---|---|
 | `category` | `"average"` / `"min"` / `"max"` / `"value"` |  | Where the line is drawn: at the average, the minimum or the maximum of the series, or at `value`. |
 | `value` | number |  | The value of the line when `category` is `value`. |
+| `color` | color |  | Color of the line, its dot and its arrow. Default: the color of the series. |
+| `stroke_width` | number | `1` | Width of the line. |
+| `stroke_dash_array` | string | `"4,2"` | Dashes of the line, as the `stroke-dasharray` of SVG takes them; `""` draws a solid line. |
 
 #### `series_list[].mark_points[]`
 
@@ -202,6 +211,8 @@ These keys are accepted by every chart except the table and the multi chart. A c
 |---|---|---|---|
 | `from` | number / `"average"` / `"min"` / `"max"` |  | One edge of the band. |
 | `to` | number / `"average"` / `"min"` / `"max"` |  | The other edge of the band. |
+| `color` | color |  | Color of the band. Default: the color of the series. |
+| `opacity` | number | `0.16` | How opaque the band is, from 0 to 1. |
 
 #### `series_list[].symbol` and `series_symbol`
 
@@ -215,17 +226,26 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `radius` | number |  | The same as `size`, which wins when both are set. |
 | `color` | color |  | Fill color of the marker; without one the marker is hollow. |
 
-#### `series_list[].band` and `series_list[].error_bar`
+#### `series_list[].band`
 
 <!-- keys: base.series_list.band -->
-<!-- keys: base.series_list.error_bar = base.series_list.band -->
-
-`error_bar` takes the same two lists: a point has an error bar where both of its bounds are given.
 
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `lower` | number[] |  | Lower bound of each point; `null` leaves a gap in the band. |
 | `upper` | number[] |  | Upper bound of each point; `null` leaves a gap in the band. |
+
+#### `series_list[].error_bar`
+
+<!-- keys: base.series_list.error_bar -->
+
+The same two lists as a band: a point has an error bar where both of its bounds are given.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `lower` | number[] |  | Lower end of the error bar of each point; `null` leaves the point without one. |
+| `upper` | number[] |  | Upper end of the error bar of each point; `null` leaves the point without one. |
+| `stroke_width` | number | `1.5` | Width of the error bars. |
 
 ### `y_axis_configs[]`
 
@@ -237,6 +257,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `axis_font_color` | color | theme | Font color of the axis labels. |
 | `axis_font_weight` | string |  | Font weight of the axis labels, e.g. `"bold"`. |
 | `axis_stroke_color` | color | `transparent` | Color of the axis line; transparent by default. |
+| `axis_stroke_width` | number | `1` | Width of the axis line and ticks. |
 | `axis_width` | number |  | Width reserved for the axis; by default as wide as its labels need. |
 | `axis_split_number` | integer 0–1000 | `6` | Number of intervals the value range is split into. |
 | `axis_name_gap` | number | `8` | Gap between the axis line and its labels. |
@@ -344,6 +365,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `end_angle` | number |  | Angle the last slice ends at: the slices share the part of the circle between the two angles (`-90` to `90` is the upper half, a half doughnut). Default: a full turn after `start_angle`. |
 | `series_label_position` | `"inside"` / `"outside"` | `"outside"` | Where the labels go: inside the slices, or outside with a leader line (the default). |
 | `min_show_label_angle` | number | `0` | Slices spanning fewer degrees than this get no label. |
+| `ring_gap` | number | `6` | Gap between two rings of nested pies (series with a `ring`), in pixels. |
 
 <!-- example: pie -->
 
@@ -418,7 +440,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 
 <!-- keys: scatter.x_axis_config = base.y_axis_configs -->
 
-The same keys as [`y_axis_configs[]`](#y_axis_configs).
+The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the values of the axis is used — `axis_min`, `axis_max`, `axis_split_number`, `axis_formatter`; the font, the color and the line width of the x axis are those of the `x_axis_*` options.
 
 <!-- example: scatter -->
 
@@ -490,6 +512,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 | `spans` | number[] |  | Width of each column: values below 1 are shares of the table width, larger ones pixels; the other columns share the rest. |
 | `text_aligns` | string[] |  | Alignment of the text of each column: `"left"`, `"center"` or `"right"`. |
 | `border_color` | color | theme | Color of the lines between the rows. |
+| `border_width` | number | `1` | Width of the lines between the rows, and of the outer border. |
 | `header_row_padding` | margin | `{left: 10, top: 8, right: 10, bottom: 8}` | Padding of the header row. |
 | `header_row_height` | number | `30` | Smallest height of the header row. |
 | `header_font_size` | number | `14` | Font size of the header. |
@@ -615,6 +638,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs).
 |---|---|---|---|
 | `label_show` | boolean | `true` | Shows the value of every bar as a label. |
 | `connector_line_show` | boolean | `true` | Draws a dashed line from each bar to the next. |
+| `connector_line_dash_array` | string | `"4,4"` | Dashes of the connector lines, as the `stroke-dasharray` of SVG takes them; `""` draws solid lines. |
 | `bar_width_ratio` | number | `0.6` | Share of a category’s width taken by its bar, from 0 to 1. |
 | `increase_color` | color | theme | Color of the bars that add to the total. |
 | `decrease_color` | color | `#EE6666` | Color of the bars that take from the total. |

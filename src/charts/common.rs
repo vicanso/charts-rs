@@ -10,6 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::component::LegendCategory;
 use super::{Box, Color, NIL_VALUE};
 use crate::Point;
 use serde::{Deserialize, Serialize};
@@ -112,16 +113,36 @@ pub struct MarkArea {
     pub from: MarkLineCategory,
     /// The other edge of the band.
     pub to: MarkLineCategory,
+    /// Color of the band; `None` is the color of the series.
+    #[serde(default)]
+    pub color: Option<Color>,
+    /// How opaque the band is, from 0 to 1; `None` is 0.16.
+    #[serde(default)]
+    pub opacity: Option<f32>,
+}
+
+impl MarkArea {
+    /// The fill of the band, on a series of the given color.
+    pub(crate) fn fill(&self, series: Color) -> Color {
+        self.color
+            .unwrap_or(series)
+            .with_alpha(self.opacity.map_or(40, opacity_alpha))
+    }
+}
+
+/// The alpha of an opacity from 0 to 1.
+pub(crate) fn opacity_alpha(opacity: f32) -> u8 {
+    (opacity.clamp(0.0, 1.0) * 255.0).round() as u8
 }
 
 /// What the x axis of a line or bar chart measures.
 ///
-/// A chart has a category axis until x values are given (`x_axis_values`,
+/// A chart has a category axis until x values are given (`x_axis.values`,
 /// or `x_values` on a series); then the axis is continuous and this says
 /// how its values read.
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug, Default)]
 pub enum AxisType {
-    /// Evenly spaced categories (`x_axis_data`); with x values, plain
+    /// Evenly spaced categories (`x_axis.data`); with x values, plain
     /// numbers.
     #[default]
     Category,
@@ -159,6 +180,28 @@ pub enum MarkPointCategory {
 pub struct MarkLine {
     /// The statistic the line is drawn at.
     pub category: MarkLineCategory,
+    /// Color of the line, its dot and its arrow; `None` is the color of
+    /// the series.
+    #[serde(default)]
+    pub color: Option<Color>,
+    /// Stroke width of the line; `None` is 1.
+    #[serde(default)]
+    pub stroke_width: Option<f32>,
+    /// Dashes of the line, as `stroke-dasharray` takes them; `None` is
+    /// `"4,2"`, and an empty string a solid line.
+    #[serde(default)]
+    pub stroke_dash_array: Option<String>,
+}
+
+impl MarkLine {
+    /// The dashes of the line; `None` for a solid one.
+    pub(crate) fn dash(&self) -> Option<String> {
+        match &self.stroke_dash_array {
+            None => Some("4,2".to_string()),
+            Some(dash) if dash.is_empty() => None,
+            Some(dash) => Some(dash.clone()),
+        }
+    }
 }
 
 /// A marker highlighting a series statistic (min or max) on its data point.
@@ -180,9 +223,17 @@ pub struct SeriesBand {
     pub lower: Vec<Option<f32>>,
     /// Upper bound of each point; `None` leaves a gap in the band.
     pub upper: Vec<Option<f32>>,
+    /// Stroke width of the error bars the bounds are drawn as
+    /// (`Series::error_bar`); `None` is 1.5. A band has no stroke.
+    #[serde(default)]
+    pub stroke_width: Option<f32>,
 }
 
 impl SeriesBand {
+    /// The stroke width of the error bars the bounds are drawn as.
+    pub(crate) fn error_bar_width(band: Option<&SeriesBand>) -> f32 {
+        band.and_then(|b| b.stroke_width).unwrap_or(1.5)
+    }
     /// Creates a band from its bounds. The legacy `NIL_VALUE` sentinel marks
     /// a missing bound, as in [`Series::new`].
     pub fn new(lower: Vec<f32>, upper: Vec<f32>) -> Self {
@@ -195,6 +246,7 @@ impl SeriesBand {
         SeriesBand {
             lower: nullable(lower),
             upper: nullable(upper),
+            ..Default::default()
         }
     }
     /// Number of points the band spans.
@@ -247,18 +299,18 @@ pub struct Series {
     pub stroke_dash_array: Option<String>,
     /// Stack group name; series with the same name and `y_axis_index` are stacked.
     pub stack: Option<String>,
-    /// Overrides the chart-wide `series_smooth` for this series.
+    /// Overrides the chart-wide `series.smooth` for this series.
     #[serde(default)]
     pub smooth: Option<bool>,
-    /// Overrides the chart-wide `series_fill` for this series.
+    /// Overrides the chart-wide `series.fill` for this series.
     #[serde(default)]
     pub fill: Option<bool>,
-    /// Overrides the chart-wide `series_symbol` for this series
+    /// Overrides the chart-wide `series.symbol` for this series
     /// (`Some(Symbol::None)` draws no marker).
     #[serde(default)]
     pub symbol: Option<Symbol>,
     /// The x value of each data point, on a continuous x axis, for a series
-    /// that is not sampled at the chart's `x_axis_values`. Timestamps are
+    /// that is not sampled at the chart's `x_axis.values`. Timestamps are
     /// unix seconds. `start_index` does not apply to a series with its own
     /// x values.
     #[serde(default)]
@@ -393,43 +445,204 @@ impl From<(&str, Vec<Option<f32>>)> for Series {
     }
 }
 
+/// How a text is written: the title, the sub-title, the legend, the labels
+/// of the axes and those of the series each have one.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct FontConfig {
+    /// Font size.
+    pub size: f32,
+    /// Font color.
+    pub color: Color,
+    /// Font weight, e.g. `"bold"`.
+    pub weight: Option<String>,
+}
+
+/// The title of a chart, and its sub-title.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct TitleConfig {
+    /// The text.
+    pub text: String,
+    /// Font of the text.
+    pub font: FontConfig,
+    /// Margin around the block.
+    pub margin: Option<Box>,
+    /// Horizontal alignment.
+    pub align: Align,
+    /// Height reserved for the row.
+    pub height: f32,
+}
+
+/// The legend of a chart.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct LegendConfig {
+    /// Font of the entries.
+    pub font: FontConfig,
+    /// Horizontal alignment of the legend.
+    pub align: Align,
+    /// Margin around the legend block.
+    pub margin: Option<Box>,
+    /// Marker shape (normal, rect or round rect).
+    pub category: LegendCategory,
+    /// Shows or hides the legend; `None` follows the chart's default.
+    pub show: Option<bool>,
+    /// Where the legend goes: top (the default, beside the title), bottom,
+    /// or stacked vertically on the left / right of the plot.
+    pub position: Option<Position>,
+}
+
+/// The x axis of a chart.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct XAxisConfig {
+    /// Labels of the axis.
+    pub data: Vec<String>,
+    /// Height reserved for the axis block.
+    pub height: f32,
+    /// Stroke color of the axis line and ticks.
+    pub stroke_color: Color,
+    /// Stroke width of the axis line and ticks; `None` is 1.
+    pub stroke_width: Option<f32>,
+    /// Font of the labels.
+    pub font: FontConfig,
+    /// Gap between the axis line and its labels.
+    pub name_gap: f32,
+    /// Rotation of the labels, in radians (e.g. `0.785` for 45°).
+    pub name_rotate: f32,
+    /// Margin around the axis block.
+    pub margin: Option<Box>,
+    /// Whether a gap is left on both ends of the axis (bar-style) or the
+    /// first/last points sit on the edges (line-style).
+    pub boundary_gap: Option<bool>,
+    /// What to do with labels that do not fit side by side: thin them out
+    /// (default), rotate them, or cut them with an ellipsis.
+    pub label_overflow: AxisLabelOverflow,
+    /// How continuous x values read: plain numbers, or timestamps (`Time`).
+    /// The axis is continuous whenever x values are given; see `values`.
+    pub kind: AxisType,
+    /// The x value of each data point, shared by every series (a series may
+    /// carry its own in `Series::x_values`). Setting them turns the x axis
+    /// of line and bar charts from evenly spaced categories into a
+    /// continuous scale, so unevenly sampled data keeps its real spacing.
+    /// Timestamps are seconds since the unix epoch; JSON also takes date
+    /// strings such as `"2024-01-05"` or `"2024-01-05 08:30"`.
+    pub values: Vec<f64>,
+    /// Fixed start of a continuous axis; `None` starts at the first value.
+    pub min: Option<f64>,
+    /// Fixed end of a continuous axis; `None` ends at the last value.
+    pub max: Option<f64>,
+    /// Format of the labels: `{c}` is the label; on a time axis a
+    /// `strftime`-like pattern (`%Y %y %m %d %H %M %S %b`) replaces the
+    /// automatic one.
+    pub formatter: Option<String>,
+    /// Minutes east of UTC that a time axis is displayed in (480 for
+    /// UTC+8). Timestamps are shown in UTC by default.
+    pub time_offset: i32,
+    /// Title of the axis, written below its labels.
+    pub title: String,
+    /// Hides the axis entirely (charts without an x axis ignore this).
+    pub hidden: bool,
+}
+
 /// Configuration of one y axis; charts hold one entry per axis in
 /// `y_axis_configs` (up to two).
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
 pub struct YAxisConfig {
-    /// Y axis label font size.
-    pub axis_font_size: f32,
-    /// Y axis label font color.
-    pub axis_font_color: Color,
-    /// Y axis label font weight, e.g. `"bold"`.
-    pub axis_font_weight: Option<String>,
+    /// Font of the labels.
+    pub font: FontConfig,
     /// Stroke color of the axis line.
-    pub axis_stroke_color: Color,
+    pub stroke_color: Color,
+    /// Stroke width of the axis line and ticks; `None` is 1.
+    pub stroke_width: Option<f32>,
     /// Width reserved for the axis block; `None` sizes it from the labels.
-    pub axis_width: Option<f32>,
+    pub width: Option<f32>,
     /// Number of intervals the value range splits into.
-    pub axis_split_number: usize,
+    pub split_number: usize,
     /// Gap between the axis line and its labels.
-    pub axis_name_gap: f32,
+    pub name_gap: f32,
     /// Alignment of the axis labels.
-    pub axis_name_align: Option<Align>,
+    pub name_align: Option<Align>,
     /// Margin around the axis block.
-    pub axis_margin: Option<Box>,
+    pub margin: Option<Box>,
     /// Label format, supporting `{c}` value and `{t}` thousands.
-    pub axis_formatter: Option<String>,
+    pub formatter: Option<String>,
     /// Fixed lower bound of the value range; `None` derives it from the data.
-    pub axis_min: Option<f32>,
+    pub min: Option<f32>,
     /// Fixed upper bound of the value range; `None` derives it from the data.
-    pub axis_max: Option<f32>,
+    pub max: Option<f32>,
     /// Value scale of the axis (linear or logarithmic).
-    pub axis_scale: AxisScale,
+    pub scale: AxisScale,
     /// Title of the axis (e.g. `"Temperature (°C)"`), written along it.
-    #[serde(default)]
-    pub axis_title: Option<String>,
+    pub title: Option<String>,
     /// Turns the axis upside down: the smallest value at the top, the
     /// largest at the bottom (a ranking, where 1 is the best place).
-    #[serde(default)]
-    pub axis_inverse: bool,
+    pub inverse: bool,
+}
+
+/// The grid lines of a chart.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct GridConfig {
+    /// Stroke color of the grid lines.
+    pub stroke_color: Color,
+    /// Stroke width of the grid lines.
+    pub stroke_width: f32,
+    /// Dashes of the grid lines, as `stroke-dasharray` takes them (e.g.
+    /// `"4,2"`); `None` is solid lines.
+    pub stroke_dash_array: Option<String>,
+}
+
+/// How the series of a chart are drawn, where a series does not say so
+/// itself. Their data is in `series_list`.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct SeriesConfig {
+    /// Stroke width of series lines.
+    pub stroke_width: f32,
+    /// Color palette cycled through by the series.
+    pub colors: Vec<Color>,
+    /// Marker drawn on data points (circle, dot or none).
+    pub symbol: Option<Symbol>,
+    /// Draws line series as smooth curves.
+    pub smooth: bool,
+    /// Fills the area under line series.
+    pub fill: bool,
+    /// How opaque the fill of an area is, from 0 to 1; `None` is 0.39
+    /// under a line and 0.2 in a radar chart.
+    pub fill_opacity: Option<f32>,
+    /// The data labels.
+    pub label: SeriesLabelConfig,
+}
+
+/// The data labels of the series.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct SeriesLabelConfig {
+    /// Font of the labels.
+    pub font: FontConfig,
+    /// Label format, supporting `{c}` value, `{a}` series name, `{b}`
+    /// category, `{d}` percentage and `{t}` thousands.
+    pub formatter: String,
+    /// Drops a data label that would overlap one already drawn, instead of
+    /// printing them on top of each other.
+    pub hide_overlap: bool,
+}
+
+/// The hover tooltips of a chart.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct TooltipConfig {
+    /// When `true`, data shapes get a hover tooltip (`series: value`): a
+    /// CSS-revealed label that works in any browser, plus a native `<title>`
+    /// for accessibility. Not available in calendar, gauge, parallel, radar
+    /// and theme river charts. Default: false; output is unchanged when off.
+    pub show: bool,
+    /// Font of the tooltips. What is left unset is that of the data labels:
+    /// a size of 0, a color of nothing, no weight.
+    pub font: FontConfig,
 }
 
 /// A fill that can be either a solid color or a linear gradient.
@@ -493,6 +706,7 @@ mod tests {
         let band = SeriesBand {
             lower: vec![Some(f32::NAN), Some(1.0)],
             upper: vec![Some(2.0), Some(f32::INFINITY)],
+            ..Default::default()
         };
         assert_eq!(None, band.bounds(0));
         assert_eq!(None, band.bounds(1));

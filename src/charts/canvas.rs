@@ -697,6 +697,7 @@ Hello World!
             hidden_verticals: vec![0],
             horizontals: 6,
             hidden_horizontals: vec![6],
+            ..Default::default()
         });
         assert_eq!("(10,10,390,290)", b.to_string());
         assert_eq!(

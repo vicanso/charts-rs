@@ -16,9 +16,9 @@ fn main() {
         })
         .collect();
     let mut histogram = HistogramChart::new(vec![("Adults", heights).into()]);
-    histogram.title_text = "Height distribution".to_string();
-    histogram.x_axis_title = "Height (cm)".to_string();
-    histogram.y_axis_configs[0].axis_title = Some("People".to_string());
+    histogram.title.text = "Height distribution".to_string();
+    histogram.x_axis.title = "Height (cm)".to_string();
+    histogram.y_axis_configs[0].title = Some("People".to_string());
     histogram.series_list[0].label_show = true;
     // Bins are chosen from the sample by default; fix their width instead.
     histogram.bin_width = Some(5.0);

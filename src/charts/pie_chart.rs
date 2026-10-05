@@ -20,14 +20,14 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 
-/// Gap between two rings of nested pies.
-const RING_GAP: f32 = 6.0;
+/// Gap between two rings of nested pies, unless `ring_gap` says so.
+const DEFAULT_RING_GAP: f32 = 6.0;
 
 /// A pie / nightingale rose chart; each series contributes one value.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PieChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     /// Outer radius of the pie.
     pub radius: f32,
@@ -58,6 +58,9 @@ pub struct PieChart {
     /// Slices spanning less than this many degrees get no label or leader
     /// line (default 0: only zero-value slices are skipped).
     pub min_show_label_angle: f32,
+    /// Gap between two rings of nested pies (series with a `ring`), in
+    /// pixels. Default: 6.
+    pub ring_gap: f32,
 }
 
 impl std::ops::Deref for PieChart {
@@ -76,8 +79,15 @@ impl PieChart {
     fn fill_default(&mut self) {
         self.radius = 150.0;
         self.inner_radius = 40.0;
-        self.legend_show = Some(false);
+        self.ring_gap = DEFAULT_RING_GAP;
         self.rose_type = Some(true);
+    }
+    /// A pie names its slices beside them: without a say of the theme or of
+    /// the options, it has no legend.
+    fn fill_legend_default(&mut self) {
+        if self.legend.show.is_none() {
+            self.legend.show = Some(false);
+        }
     }
     /// Creates a pie chart from json.
     pub fn from_json(data: &str) -> canvas::Result<PieChart> {
@@ -88,6 +98,7 @@ impl PieChart {
         let value = p
             .base
             .fill_option(data, &mut p.y_axis_configs, super::schema::PIE_FIELDS)?;
+        p.fill_legend_default();
         if let Some(radius) = get_f32_from_value(&value, "radius") {
             p.radius = radius;
         }
@@ -112,6 +123,9 @@ impl PieChart {
         if let Some(angle) = get_f32_from_value(&value, "min_show_label_angle") {
             p.min_show_label_angle = angle;
         }
+        if let Some(ring_gap) = get_f32_from_value(&value, "ring_gap") {
+            p.ring_gap = ring_gap;
+        }
         Ok(p)
     }
     /// Creates a pie chart with custom theme.
@@ -122,6 +136,7 @@ impl PieChart {
         p.series_list = series_list;
         p.fill_default();
         p.base.fill_theme(get_theme(theme), &mut p.y_axis_configs);
+        p.fill_legend_default();
         p
     }
     /// Creates a pie chart with default theme.
@@ -245,7 +260,7 @@ impl PieChart {
             }
         }
         let label_offset = 20.0;
-        let mut series_label_formatter = self.series_label_formatter.clone();
+        let mut series_label_formatter = self.series.label.formatter.clone();
         if series_label_formatter.is_empty() {
             series_label_formatter = "{a}: {d}".to_string();
         }
@@ -257,7 +272,7 @@ impl PieChart {
             vec![(self.inner_radius, r)]
         } else {
             let room = (r - self.inner_radius).max(1.0);
-            let gap = RING_GAP.min(room / (ring_count as f32 * 3.0));
+            let gap = self.ring_gap.max(0.0).min(room / (ring_count as f32 * 3.0));
             let width = (room - gap * (ring_count - 1) as f32) / ring_count as f32;
             (0..ring_count)
                 .map(|ring| {
@@ -277,7 +292,7 @@ impl PieChart {
             let value = values[index];
             let mut delta = span / counts[ring] as f32;
             let mut cr = value / max * (band_outer - band_inner) + band_inner;
-            let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+            let color = get_color(&self.series.colors, series.index.unwrap_or(index));
             // normal pie
             if !rose_type {
                 cr = band_outer;
@@ -321,7 +336,7 @@ impl PieChart {
             if let Some(border_radius) = self.border_radius {
                 pie.border_radius = border_radius;
             }
-            let tooltip_text = if self.tooltip_show {
+            let tooltip_text = if self.tooltip.show {
                 Some(
                     LabelOption {
                         series_name: series.name.clone(),
@@ -359,9 +374,10 @@ impl PieChart {
                 c.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                     x: Some(p.x),
                     y: Some(p.y),
                     text_anchor: Some("middle".to_string()),
@@ -380,7 +396,7 @@ impl PieChart {
                 percentage: value / sum,
                 // On a slice of an inner ring there is room for its name,
                 // unless a format asks for more.
-                formatter: if nested && self.series_label_formatter.is_empty() {
+                formatter: if nested && self.series.label.formatter.is_empty() {
                     "{a}".to_string()
                 } else {
                     series_label_formatter.clone()
@@ -388,7 +404,7 @@ impl PieChart {
                 ..Default::default()
             };
             let label_text = label_option.format();
-            let mut label_color = self.series_label_font_color;
+            let mut label_color = self.series.label.font.color;
 
             let label_margin = if is_inside {
                 // A little past the middle of the slice of a nested pie,
@@ -408,7 +424,7 @@ impl PieChart {
                 let mut width = 0.0;
                 if let Ok(b) = measure_text_width_family(
                     &self.font_family,
-                    self.series_label_font_size,
+                    self.series.label.font.size,
                     &label_text,
                 ) {
                     width = b.width();
@@ -418,10 +434,10 @@ impl PieChart {
                     // A name wider or higher than its slice is left out;
                     // the others stand on it, in a color that shows there.
                     let across = 2.0 * label_radius * (delta.min(180.0) / 2.0).to_radians().sin();
-                    if width > across || cr - band_inner < self.series_label_font_size + 2.0 {
+                    if width > across || cr - band_inner < self.series.label.font.size + 2.0 {
                         continue;
                     }
-                    label_margin.top += self.series_label_font_size * 0.35;
+                    label_margin.top += self.series.label.font.size * 0.35;
                     label_color = if color.is_light() {
                         Color::black().with_alpha(200)
                     } else {
@@ -442,11 +458,11 @@ impl PieChart {
                     prev_quadrant = quadrant;
                 }
                 // label overlap
-                if (end.y - prev_end_y).abs() < self.series_label_font_size {
+                if (end.y - prev_end_y).abs() < self.series.label.font.size {
                     if quadrant == 1 || quadrant == 4 {
-                        end.y = prev_end_y + self.series_label_font_size;
+                        end.y = prev_end_y + self.series.label.font.size;
                     } else {
-                        end.y = prev_end_y - self.series_label_font_size;
+                        end.y = prev_end_y - self.series.label.font.size;
                     }
                 }
                 prev_end_y = end.y;
@@ -469,7 +485,7 @@ impl PieChart {
                 if is_left {
                     if let Ok(b) = measure_text_width_family(
                         &self.font_family,
-                        self.series_label_font_size,
+                        self.series.label.font.size,
                         &label_text,
                     ) {
                         label_margin.left -= b.width();
@@ -493,7 +509,7 @@ impl PieChart {
             c.child(label_margin).text(Text {
                 text: label_text,
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(self.series_label_font_size),
+                font_size: Some(self.series.label.font.size),
                 font_color: Some(label_color),
                 class: fade_class,
                 ..Default::default()
@@ -515,7 +531,7 @@ impl PieChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             if !css.is_empty() {
                 css.push(' ');
             }
@@ -545,8 +561,8 @@ mod tests {
             ("rose 7", vec![22.0]).into(),
             ("rose 8", vec![18.0]).into(),
         ]);
-        pie_chart.title_text = "Nightingale Chart".to_string();
-        pie_chart.sub_title_text = "Fake Data".to_string();
+        pie_chart.title.text = "Nightingale Chart".to_string();
+        pie_chart.sub_title.text = "Fake Data".to_string();
         assert_snapshot!("pie_chart/basic.svg", pie_chart.svg().unwrap());
     }
 
@@ -564,8 +580,8 @@ mod tests {
         ]);
         pie_chart.width = 400.0;
         pie_chart.height = 300.0;
-        pie_chart.title_text = "Nightingale Chart".to_string();
-        pie_chart.sub_title_text = "Fake Data".to_string();
+        pie_chart.title.text = "Nightingale Chart".to_string();
+        pie_chart.sub_title.text = "Fake Data".to_string();
         assert_snapshot!("pie_chart/small_basic.svg", pie_chart.svg().unwrap());
     }
 
@@ -582,8 +598,8 @@ mod tests {
             ("rose 8", vec![18.0]).into(),
         ]);
         pie_chart.rose_type = Some(false);
-        pie_chart.title_text = "Pie Chart".to_string();
-        pie_chart.sub_title_text = "Fake Data".to_string();
+        pie_chart.title.text = "Pie Chart".to_string();
+        pie_chart.sub_title.text = "Fake Data".to_string();
         assert_snapshot!("pie_chart/not_rose.svg", pie_chart.svg().unwrap());
     }
 
@@ -600,8 +616,8 @@ mod tests {
         pie_chart.rose_type = Some(false);
         pie_chart.inner_radius = 0.0;
         pie_chart.border_radius = Some(0.0);
-        pie_chart.title_text = "Pie Chart".to_string();
-        pie_chart.sub_title_text = "Fake Data".to_string();
+        pie_chart.title.text = "Pie Chart".to_string();
+        pie_chart.sub_title.text = "Fake Data".to_string();
         assert_snapshot!("pie_chart/not_rose_radius.svg", pie_chart.svg().unwrap());
     }
 
@@ -653,8 +669,8 @@ mod tests {
             ("rose 7", vec![22.0]).into(),
             ("rose 8", vec![18.0]).into(),
         ]);
-        pie_chart.title_text = "Nightingale Chart".to_string();
-        pie_chart.sub_title_text = "Fake Data".to_string();
+        pie_chart.title.text = "Nightingale Chart".to_string();
+        pie_chart.sub_title.text = "Fake Data".to_string();
         assert_snapshot!("pie_chart/rose_small_piece.svg", pie_chart.svg().unwrap());
     }
 

@@ -58,7 +58,7 @@ fn stacked(name: &str, data: Vec<f32>, stack: &str) -> Series {
 fn chart(series_list: Vec<Series>) -> BarChart {
     let count = series_list.iter().map(|s| s.data.len()).max().unwrap_or(0);
     let mut chart = BarChart::new(series_list, categories(count));
-    chart.legend_show = Some(false);
+    chart.legend.show = Some(false);
     chart.stack_percent = true;
     chart
 }
@@ -101,7 +101,7 @@ fn shares_add_up_to_the_whole() {
 
     // The chart is drawn from its shares, not turned into them.
     assert_eq!(Some(10.0), chart.series_list[0].data[0]);
-    assert!(chart.y_axis_configs[0].axis_max.is_none());
+    assert!(chart.y_axis_configs[0].max.is_none());
     assert_eq!(svg, chart.svg().unwrap());
 }
 
@@ -187,10 +187,10 @@ fn axis_and_labels_can_be_set() {
 
     // A format, a position and an axis of one's own are kept.
     let mut chart = chart(series());
-    chart.series_label_formatter = "{a} {c}".to_string();
+    chart.series.label.formatter = "{a} {c}".to_string();
     chart.series_label_position = Some(Position::Top);
-    chart.y_axis_configs[0].axis_formatter = Some("{c} pct".to_string());
-    chart.y_axis_configs[0].axis_split_number = 4;
+    chart.y_axis_configs[0].formatter = Some("{c} pct".to_string());
+    chart.y_axis_configs[0].split_number = 4;
     let svg = chart.svg().unwrap();
     let texts = texts(&svg);
     assert!(
@@ -204,7 +204,7 @@ fn axis_and_labels_can_be_set() {
     let label = svg.split("<text").find(|t| t.contains("\nA 25\n")).unwrap();
     assert!(number(label, "y") <= number(bars(&svg)[0], "y"));
     // A fixed end of the axis is not moved to 100.
-    chart.y_axis_configs[0].axis_max = Some(200.0);
+    chart.y_axis_configs[0].max = Some(200.0);
     assert!(self::texts(&chart.svg().unwrap()).contains(&"200 pct"));
 }
 
@@ -213,7 +213,7 @@ fn labels_inside_bars_without_shares() {
     let mut series: Series = ("A", vec![10.0, 30.0]).into();
     series.label_show = true;
     let mut chart = BarChart::new(vec![series], categories(2));
-    chart.legend_show = Some(false);
+    chart.legend.show = Some(false);
     let above = chart.svg().unwrap();
     chart.series_label_position = Some(Position::Inside);
     let inside = chart.svg().unwrap();
@@ -248,7 +248,7 @@ fn other_charts_that_stack() {
     };
     // Horizontal bars: side by side they fill the row.
     let mut chart = HorizontalBarChart::new(series(), categories(2));
-    chart.legend_show = Some(false);
+    chart.legend.show = Some(false);
     let plain = chart.svg().unwrap();
     chart.stack_percent = true;
     let svg = chart.svg().unwrap();
@@ -262,9 +262,9 @@ fn other_charts_that_stack() {
 
     // Lines: the top of the stack runs along 100%.
     let mut chart = LineChart::new(series(), categories(2));
-    chart.legend_show = Some(false);
+    chart.legend.show = Some(false);
     chart.stack_percent = true;
-    chart.tooltip_show = true;
+    chart.tooltip.show = true;
     let svg = chart.svg().unwrap();
     assert!(svg.contains("<title>A: 25%</title>") && svg.contains("<title>B: 75%</title>"));
     let top: Vec<f32> = svg

@@ -111,11 +111,24 @@ static SYMBOL_FIELDS: &[Field] = &[
 static MARK_LINE_FIELDS: &[Field] = &[
     f("category", Kind::Enum(&["average", "min", "max", "value"])),
     f("value", Kind::Number),
+    f("color", Kind::Color),
+    f("stroke_width", Kind::Number),
+    f("stroke_dash_array", Kind::String),
 ];
 static MARK_POINT_FIELDS: &[Field] = &[f("category", Kind::Enum(&["min", "max"]))];
-static MARK_AREA_FIELDS: &[Field] = &[f("from", Kind::MarkValue), f("to", Kind::MarkValue)];
+static MARK_AREA_FIELDS: &[Field] = &[
+    f("from", Kind::MarkValue),
+    f("to", Kind::MarkValue),
+    f("color", Kind::Color),
+    f("opacity", Kind::Number),
+];
 
 static BAND_FIELDS: &[Field] = &[f("lower", Kind::NumberArray), f("upper", Kind::NumberArray)];
+static ERROR_BAR_FIELDS: &[Field] = &[
+    f("lower", Kind::NumberArray),
+    f("upper", Kind::NumberArray),
+    f("stroke_width", Kind::Number),
+];
 
 pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("name", Kind::String),
@@ -137,7 +150,7 @@ pub(crate) static SERIES_FIELDS: &[Field] = &[
     f("x_values", Kind::XValues),
     f("band", Kind::Object(BAND_FIELDS)),
     f("step", Kind::Enum(&["start", "middle", "end"])),
-    f("error_bar", Kind::Object(BAND_FIELDS)),
+    f("error_bar", Kind::Object(ERROR_BAR_FIELDS)),
     f("ring", Kind::Index),
 ];
 
@@ -146,6 +159,7 @@ pub(crate) static Y_AXIS_FIELDS: &[Field] = &[
     f("axis_font_color", Kind::Color),
     f("axis_font_weight", Kind::String),
     f("axis_stroke_color", Kind::Color),
+    f("axis_stroke_width", Kind::Number),
     f("axis_width", Kind::Number),
     f("axis_split_number", Kind::Count),
     f("axis_name_gap", Kind::Number),
@@ -206,6 +220,7 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("x_axis_data", Kind::StringArray),
     f("x_axis_height", Kind::Number),
     f("x_axis_stroke_color", Kind::Color),
+    f("x_axis_stroke_width", Kind::Number),
     f("x_axis_font_size", Kind::Number),
     f("x_axis_font_color", Kind::Color),
     f("x_axis_font_weight", Kind::String),
@@ -222,6 +237,7 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("y_axis_configs", Kind::ArrayOf(Y_AXIS_FIELDS)),
     f("grid_stroke_color", Kind::Color),
     f("grid_stroke_width", Kind::Number),
+    f("grid_stroke_dash_array", Kind::String),
     f("series_stroke_width", Kind::Number),
     f("series_label_font_color", Kind::Color),
     f("series_label_font_size", Kind::Number),
@@ -240,8 +256,12 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("series_symbol", Kind::Object(SYMBOL_FIELDS)),
     f("series_smooth", Kind::Bool),
     f("series_fill", Kind::Bool),
+    f("series_fill_opacity", Kind::Number),
     f("animation", Kind::Object(ANIMATION_FIELDS)),
     f("tooltip_show", Kind::Bool),
+    f("tooltip_font_size", Kind::Number),
+    f("tooltip_font_color", Kind::Color),
+    f("tooltip_font_weight", Kind::String),
     f("series_list", Kind::ArrayOf(SERIES_FIELDS)),
 ];
 
@@ -417,6 +437,7 @@ pub(crate) static PIE_FIELDS: &[Field] = &[
     f("end_angle", Kind::Number),
     f("series_label_position", Kind::Enum(&["inside", "outside"])),
     f("min_show_label_angle", Kind::Number),
+    f("ring_gap", Kind::Number),
 ];
 
 static INDICATOR_FIELDS: &[Field] = &[f("name", Kind::String), f("max", Kind::Number)];
@@ -510,6 +531,7 @@ pub(crate) static TABLE_FIELDS: &[Field] = &[
     f("spans", Kind::NumberArray),
     f("text_aligns", Kind::StringArray),
     f("border_color", Kind::Color),
+    f("border_width", Kind::Number),
     f("header_row_padding", Kind::Margin),
     f("header_row_height", Kind::Number),
     f("header_font_size", Kind::Number),
@@ -545,6 +567,7 @@ pub(crate) static TREEMAP_FIELDS: &[Field] = &[
 pub(crate) static WATERFALL_FIELDS: &[Field] = &[
     f("label_show", Kind::Bool),
     f("connector_line_show", Kind::Bool),
+    f("connector_line_dash_array", Kind::String),
     f("bar_width_ratio", Kind::Number),
     f("increase_color", Kind::Color),
     f("decrease_color", Kind::Color),

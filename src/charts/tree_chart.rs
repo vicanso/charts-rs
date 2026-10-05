@@ -174,7 +174,7 @@ fn radial_curve(center: (f32, f32), from: (f32, f32), to: (f32, f32)) -> Vec<Poi
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TreeChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -280,13 +280,13 @@ impl TreeChart {
         let mut nodes: Vec<TNode> = vec![];
         let mut leaf = 0.0_f32;
         for (i, root) in self.series_data.iter().enumerate() {
-            let base = get_color(&self.series_colors, i);
+            let base = get_color(&self.series.colors, i);
             place(
                 root,
                 0,
                 None,
                 base,
-                &self.series_label_formatter,
+                &self.series.label.formatter,
                 grand_total,
                 &mut nodes,
                 &mut leaf,
@@ -301,7 +301,7 @@ impl TreeChart {
         let leaf_span = (num_leaves - 1.0).max(1.0);
 
         let r = self.symbol_size;
-        let font_size = self.series_label_font_size.max(10.0);
+        let font_size = self.series.label.font.size.max(10.0);
         let gap = r + 4.0;
         // The names are taken as the JSON checks them: whatever their case.
         let is = |option: &Option<String>, name: &str| {
@@ -451,8 +451,8 @@ impl TreeChart {
                 }
             };
             content.polyline(Polyline {
-                color: Some(self.grid_stroke_color),
-                stroke_width: self.series_stroke_width.max(1.0),
+                color: Some(self.grid.stroke_color),
+                stroke_width: self.series.stroke_width.max(1.0),
                 points,
             });
         }
@@ -460,7 +460,7 @@ impl TreeChart {
         // ── Nodes ─────────────────────────────────────────────────────────────
         for (i, n) in nodes.iter().enumerate() {
             let (x, y) = positions[i];
-            let tooltip_text = self.tooltip_show.then(|| {
+            let tooltip_text = self.tooltip.show.then(|| {
                 if n.value > 0.0 {
                     format!("{}: {}", n.label, format_float(n.value))
                 } else {
@@ -486,9 +486,10 @@ impl TreeChart {
                 content.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(font_size)),
                     x: Some(x),
                     y: Some(y - r),
                     dy: Some(-4.0),
@@ -511,9 +512,9 @@ impl TreeChart {
                     content.text(Text {
                         text: n.label.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
+                        font_color: Some(self.series.label.font.color),
                         font_size: Some(font_size),
-                        font_weight: self.series_label_font_weight.clone(),
+                        font_weight: self.series.label.font.weight.clone(),
                         x: Some(x),
                         y: Some(y - gap - font_size * 0.5),
                         text_anchor: Some("middle".to_string()),
@@ -564,9 +565,9 @@ impl TreeChart {
                 content.text(Text {
                     text: n.label.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
+                    font_color: Some(self.series.label.font.color),
                     font_size: Some(font_size),
-                    font_weight: self.series_label_font_weight.clone(),
+                    font_weight: self.series.label.font.weight.clone(),
                     x: Some(at.x),
                     y: Some(at.y),
                     transform: Some(format!(
@@ -597,9 +598,9 @@ impl TreeChart {
             content.text(Text {
                 text: n.label.clone(),
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
+                font_color: Some(self.series.label.font.color),
                 font_size: Some(font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(tx),
                 y: Some(ty),
                 text_anchor: Some(anchor.to_string()),
@@ -608,7 +609,7 @@ impl TreeChart {
             });
         }
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()
@@ -675,7 +676,7 @@ mod tests {
     #[test]
     fn tree_chart_label_formatter() {
         let mut chart = make_tree();
-        chart.series_label_formatter = "{b}: {c}".to_string();
+        chart.series.label.formatter = "{b}: {c}".to_string();
         let svg = chart.svg().unwrap();
         // Root total = 1 + 1 + 2 = 4; leaf A1 = 1.
         assert!(svg.contains("root: 4"), "missing formatted root label");

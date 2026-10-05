@@ -30,13 +30,14 @@ fn main() {
             "Sun".to_string(),
         ],
     );
-    line_chart.title_text = "Line Chart".to_string();
+    line_chart.title.text = "Line Chart".to_string();
     // smooth curves with a translucent area fill under each line
-    line_chart.series_smooth = true;
-    line_chart.series_fill = true;
+    line_chart.series.smooth = true;
+    line_chart.series.fill = true;
     // an average mark line and min/max mark points on the second series
     line_chart.series_list[1].mark_lines = vec![MarkLine {
         category: MarkLineCategory::Average,
+        ..Default::default()
     }];
     line_chart.series_list[1].mark_points = vec![
         MarkPoint {

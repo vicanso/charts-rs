@@ -177,7 +177,7 @@ struct SVGTag<'a> {
 
 /// Shared CSS for the opt-in hover tooltip: a hidden `.ct-tip` label revealed
 /// when the adjacent `.ct-trigger` data shape is hovered. Charts inject this
-/// (via `svg_with_style`) when `tooltip_show` is set. Works in any browser,
+/// (via `svg_with_style`) when `tooltip.show` is set. Works in any browser,
 /// unlike the bare `<title>` element.
 pub(crate) const TOOLTIP_STYLE: &str =
     ".ct-tip{opacity:0;pointer-events:none} .ct-trigger:hover+.ct-tip{opacity:1}";
@@ -539,6 +539,8 @@ impl Line {
 pub struct Rect {
     /// Stroke color.
     pub color: Option<Color>,
+    /// Stroke width; `None` leaves it to the default of SVG, 1.
+    pub stroke_width: Option<f32>,
     /// Fill (solid or gradient).
     pub fill: Option<Fill>,
     /// Left (x) coordinate.
@@ -578,7 +580,8 @@ impl Rect {
         }
         let mut w = TagWriter::open(out, TAG_RECT);
         self.write_geometry(&mut w);
-        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color);
+        w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color)
+            .opt_float(ATTR_STROKE_WIDTH, self.stroke_width);
         if let Some(fill) = &self.fill {
             let fill_attr = fill_svg_attr(fill);
             w.raw(ATTR_FILL, &fill_attr);
@@ -2099,6 +2102,9 @@ pub struct Grid {
     pub color: Option<Color>,
     /// Stroke width.
     pub stroke_width: f32,
+    /// Dashes of the lines, as `stroke-dasharray` takes them; `None` (or an
+    /// empty string) is solid lines.
+    pub stroke_dash_array: Option<String>,
     /// Number of vertical grid lines.
     pub verticals: usize,
     /// Indexes of vertical lines to hide.
@@ -2140,7 +2146,11 @@ impl Grid {
         let mut out = String::with_capacity(points.len() * 40 + 64);
         let mut w = TagWriter::open(&mut out, TAG_GROUP);
         w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color)
-            .float(ATTR_STROKE_WIDTH, self.stroke_width);
+            .float(ATTR_STROKE_WIDTH, self.stroke_width)
+            .opt_text(
+                ATTR_STROKE_DASH_ARRAY,
+                self.stroke_dash_array.as_ref().filter(|d| !d.is_empty()),
+            );
         let mut lines = String::with_capacity(points.len() * 40);
         for (left, top, right, bottom) in points.iter() {
             Line {
@@ -2205,6 +2215,8 @@ pub struct Axis {
     /// per label in `data` (a continuous axis). When set the ticks and
     /// labels sit at these positions instead of being evenly spaced.
     pub tick_positions: Option<Vec<f32>>,
+    /// Stroke width of the axis line and the ticks.
+    pub stroke_width: f32,
 }
 impl Default for Axis {
     fn default() -> Self {
@@ -2230,6 +2242,7 @@ impl Default for Axis {
             tick_interval: 0,
             label_overflow: AxisLabelOverflow::Thin,
             tick_positions: None,
+            stroke_width: 1.0,
         }
     }
 }
@@ -2286,7 +2299,7 @@ impl Axis {
         }
         // The stroke width lives on the group; the axis line and ticks only
         // carry their ends.
-        attrs.push((ATTR_STROKE_WIDTH, format_float(1.0)));
+        attrs.push((ATTR_STROKE_WIDTH, format_float(self.stroke_width)));
 
         let mut line_data = vec![];
         if !is_transparent {
@@ -3525,6 +3538,7 @@ Hello World!
                 hidden_verticals: vec![0, 6],
                 horizontals: 5,
                 hidden_horizontals: vec![0, 5],
+                ..Default::default()
             }
             .svg()
         );

@@ -24,7 +24,7 @@ use crate::charts::measure_text_width_family;
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FunnelChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
 
     y_axis_configs: Vec<YAxisConfig>,
@@ -168,9 +168,9 @@ impl FunnelChart {
         let stage_h = (funnel_height - (n as f32 - 1.0) * gap) / n as f32;
 
         let label_pos = self.series_label_position.as_deref().unwrap_or("right");
-        let label_font_size = self.series_label_font_size;
-        let label_color = self.series_label_font_color;
-        let mut formatter = self.series_label_formatter.clone();
+        let label_font_size = self.series.label.font.size;
+        let label_color = self.series.label.font.color;
+        let mut formatter = self.series.label.formatter.clone();
         if formatter.is_empty() {
             formatter = "{a}: {c}".to_string();
         }
@@ -198,10 +198,10 @@ impl FunnelChart {
             let x_right_top = x_left_top + top_w;
             let x_right_bot = x_left_bot + bot_w;
 
-            let color = get_color(&self.series_colors, *color_idx);
+            let color = get_color(&self.series.colors, *color_idx);
             let percentage = if total > 0.0 { val / total } else { 0.0 };
 
-            let tooltip_text = self.tooltip_show.then(|| {
+            let tooltip_text = self.tooltip.show.then(|| {
                 LabelOption {
                     series_name: name.clone(),
                     value: *val,
@@ -243,9 +243,10 @@ impl FunnelChart {
                 c.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(label_color),
-                    font_size: Some(label_font_size),
+                    font_color: Some(self.tooltip_font_color(label_color)),
+                    font_size: Some(self.tooltip_font_size(label_font_size)),
                     x: Some((x_left_top + x_right_top) / 2.0),
                     y: Some(mid_y),
                     text_anchor: Some("middle".to_string()),
@@ -278,7 +279,7 @@ impl FunnelChart {
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(label_color),
                         font_size: Some(label_font_size),
-                        font_weight: self.series_label_font_weight.clone(),
+                        font_weight: self.series.label.font.weight.clone(),
                         dominant_baseline: Some("central".to_string()),
                         x: Some(text_x),
                         y: Some(mid_y),
@@ -299,7 +300,7 @@ impl FunnelChart {
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(label_color),
                         font_size: Some(label_font_size),
-                        font_weight: self.series_label_font_weight.clone(),
+                        font_weight: self.series.label.font.weight.clone(),
                         dominant_baseline: Some("central".to_string()),
                         x: Some(text_x.max(0.0)),
                         y: Some(mid_y),
@@ -324,7 +325,7 @@ impl FunnelChart {
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(label_color),
                         font_size: Some(label_font_size),
-                        font_weight: self.series_label_font_weight.clone(),
+                        font_weight: self.series.label.font.weight.clone(),
                         dominant_baseline: Some("central".to_string()),
                         x: Some(text_x.max(0.0)),
                         y: Some(mid_y),
@@ -344,7 +345,7 @@ impl FunnelChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -379,7 +380,7 @@ mod tests {
     #[test]
     fn funnel_chart_inside_label() {
         let mut chart = FunnelChart::new(make_series());
-        chart.title_text = "Conversion Funnel".to_string();
+        chart.title.text = "Conversion Funnel".to_string();
         chart.series_label_position = Some("inside".to_string());
         assert_snapshot!("funnel_chart/inside_label.svg", chart.svg().unwrap());
     }

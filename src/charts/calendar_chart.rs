@@ -125,7 +125,7 @@ static DOW_ABBR: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CalendarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
 
     // title
@@ -417,10 +417,10 @@ impl CalendarChart {
 
     fn auto_height(&self) -> f32 {
         let step = self.cell_size + self.cell_gap;
-        let title_h = if !self.title_text.is_empty() {
-            self.title_height
-                + if !self.sub_title_text.is_empty() {
-                    self.sub_title_height
+        let title_h = if !self.title.text.is_empty() {
+            self.title.height
+                + if !self.sub_title.text.is_empty() {
+                    self.sub_title.height
                 } else {
                     0.0
                 }
@@ -471,8 +471,8 @@ impl CalendarChart {
         let mlh = self.month_label_height; // top row height
 
         // ── Day-of-week labels ────────────────────────────────────────────────
-        let dow_font_size = self.x_axis_font_size.max(10.0);
-        let dow_color = self.x_axis_font_color;
+        let dow_font_size = self.x_axis.font.size.max(10.0);
+        let dow_color = self.x_axis.font.color;
         for &row in &self.show_dow_labels {
             let label = DOW_ABBR[row % 7];
             let y = mlh + row as f32 * step + self.cell_size / 2.0;
@@ -490,8 +490,8 @@ impl CalendarChart {
 
         // ── Month labels ──────────────────────────────────────────────────────
         // We track which week each month starts in.
-        let month_font_size = self.x_axis_font_size.max(10.0);
-        let month_color = self.x_axis_font_color;
+        let month_font_size = self.x_axis.font.size.max(10.0);
+        let month_color = self.x_axis.font.color;
         let mut cur_y = sy;
         let mut cur_m = sm;
         let mut cur_d = sd;

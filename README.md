@@ -45,8 +45,8 @@ The library supports twenty-seven chart types: `Bar`, `HorizontalBar`, `Line`, `
   with a hint, not silently ignored
 - Legend placement (`legend_position`: top, bottom, left, right), per-series
   `smooth` / `fill` / `symbol` overrides, fixed-value mark lines
-- Hover tooltips (`tooltip_show`) and `data-*` attributes on the data shapes
-  of every chart, for interactive consumers
+- Hover tooltips (`tooltip_show`, with a font of their own) and `data-*`
+  attributes on the data shapes of every chart, for interactive consumers
 - Value and time x axes for line and bar charts (unevenly sampled data keeps
   its real spacing), axis titles, bubble charts, and data labels that hide
   instead of overlapping
@@ -374,9 +374,9 @@ let mut bar_chart = BarChart::new_with_theme(
     ],
     THEME_GRAFANA,
 );
-bar_chart.title_text = "Mixed Line and Bar".to_string();
-bar_chart.legend_margin = Some(Box {
-    top: bar_chart.title_height,
+bar_chart.title.text = "Mixed Line and Bar".to_string();
+bar_chart.legend.margin = Some(Box {
+    top: bar_chart.title.height,
     bottom: 5.0,
     ..Default::default()
 });
@@ -387,12 +387,32 @@ bar_chart.series_list[2].label_show = true;
 bar_chart
     .y_axis_configs
     .push(bar_chart.y_axis_configs[0].clone());
-bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
-bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
+bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
+bar_chart.y_axis_configs[1].formatter = Some("{c} °C".to_string());
 
 println!("{}", &bar_chart.svg().unwrap());
 svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 ```
+
+### Options in Rust and in JSON
+
+The options are the same on both paths, and this README names them by their
+JSON key. In Rust the shared ones are grouped by what they belong to —
+`title`, `sub_title`, `legend`, `x_axis`, `grid`, `series`, `tooltip` — and a
+JSON key is the path of the field joined with `_`:
+
+| JSON | Rust |
+|------|------|
+| `"title_font_size": 18` | `chart.title.font.size = 18.0` |
+| `"legend_position": "bottom"` | `chart.legend.position = Some(Position::Bottom)` |
+| `"x_axis_data": [...]` | `chart.x_axis.data = vec![...]` |
+| `"series_label_font_color": "#333"` | `chart.series.label.font.color = "#333".into()` |
+| `"tooltip_show": true` | `chart.tooltip.show = true` |
+
+The exceptions: `x_boundary_gap` is `x_axis.boundary_gap`, `x_axis_type` is
+`x_axis.kind`, and the `axis_` of the keys of a y axis is left out
+(`"axis_min"` is `y_axis_configs[0].min`). Every JSON key is described in the
+[JSON reference](./docs/json.md).
 
 ### From json
 
@@ -525,8 +545,8 @@ its value, so irregular samples keep their real spacing.
   such as `"%m-%d %H:%M"` on a time axis) and `x_axis_time_offset` (minutes
   east of UTC) shows timestamps in local time.
 
-In Rust, set `chart.x_axis_values` (`Vec<f64>`) and, for timestamps,
-`chart.x_axis_type = AxisType::Time`.
+In Rust, set `chart.x_axis.values` (`Vec<f64>`) and, for timestamps,
+`chart.x_axis.kind = AxisType::Time`.
 
 ### Axis titles
 

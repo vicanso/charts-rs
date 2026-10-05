@@ -58,7 +58,7 @@ fn table_body_font_weight_and_background() {
 
     // The weight of the body rows, as the header has one of its own.
     let chart = TableChart::from_json(&json(r#", "body_font_weight": "bold""#)).unwrap();
-    assert_eq!(Some("bold".to_string()), chart.body_font_weight);
+    assert_eq!(Some("bold".to_string()), chart.body.font.weight);
     let svg = chart.svg().unwrap();
     assert_eq!(4, svg.matches(r#"font-weight="bold""#).count());
     // A header weight wins in the header, a cell style in its cell.

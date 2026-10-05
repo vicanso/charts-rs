@@ -48,15 +48,15 @@ fn make_bar_chart() -> BarChart {
         ],
     );
     bar_chart.series_list[0].category = Some(SeriesCategory::Line);
-    bar_chart.y_axis_configs[0].axis_width = Some(55.0);
-    bar_chart.title_text = "Bar Chart".to_string();
-    bar_chart.legend_margin = Some(Box {
+    bar_chart.y_axis_configs[0].width = Some(55.0);
+    bar_chart.title.text = "Bar Chart".to_string();
+    bar_chart.legend.margin = Some(Box {
         top: 35.0,
         bottom: 10.0,
         ..Default::default()
     });
-    bar_chart.legend_category = LegendCategory::Rect;
-    bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
+    bar_chart.legend.category = LegendCategory::Rect;
+    bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
     bar_chart.series_list[0].label_show = true;
     bar_chart.series_list[3].label_show = true;
     bar_chart
@@ -73,10 +73,10 @@ fn make_line_chart(points: usize, tooltip: bool) -> LineChart {
         vec![("A", data.clone()).into(), ("B", data).into()],
         categories,
     );
-    chart.series_smooth = true;
-    chart.series_fill = true;
-    chart.tooltip_show = tooltip;
-    chart.title_text = "Line".to_string();
+    chart.series.smooth = true;
+    chart.series.fill = true;
+    chart.tooltip.show = tooltip;
+    chart.title.text = "Line".to_string();
     chart
 }
 
@@ -95,7 +95,7 @@ fn make_table_chart() -> TableChart {
         ]);
     }
     let mut chart = TableChart::new(rows);
-    chart.title_text = "Table".to_string();
+    chart.title.text = "Table".to_string();
     chart
 }
 
@@ -127,7 +127,7 @@ fn make_pie_chart() -> PieChart {
             .map(|i| (format!("Slice {i}").as_str(), vec![10.0 + i as f32 * 3.0]).into())
             .collect(),
     );
-    chart.title_text = "Pie".to_string();
+    chart.title.text = "Pie".to_string();
     chart
 }
 

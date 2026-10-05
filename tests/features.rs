@@ -43,8 +43,8 @@ fn horizontal_bar_parity_with_bar_chart() {
     let mut b: Series = ("B", vec![2.0, -4.0]).into();
     b.stack = Some("s".into());
     let mut chart = HorizontalBarChart::new(vec![a, b], vec!["a".into(), "b".into()]);
-    chart.y_axis_configs[0].axis_formatter = Some("{c} kg".to_string());
-    chart.series_label_formatter = "{b}: {c}".to_string();
+    chart.y_axis_configs[0].formatter = Some("{c} kg".to_string());
+    chart.series.label.formatter = "{b}: {c}".to_string();
     chart.series_list[0].label_show = true;
     chart.animation = Some(charts_rs::AnimationConfig::default());
     let svg = chart.svg().unwrap();
@@ -67,7 +67,7 @@ fn horizontal_bar_parity_with_bar_chart() {
     // Hidden axes drop their space; the x axis height follows the option.
     chart.animation = None;
     let shown = chart.svg().unwrap();
-    chart.x_axis_hidden = true;
+    chart.x_axis.hidden = true;
     chart.y_axis_hidden = true;
     let hidden = chart.svg().unwrap();
     assert!(count(&hidden, "<text") < count(&shown, "<text"));
@@ -91,11 +91,11 @@ fn legend_positions_reserve_space() {
     let top = make().svg().unwrap();
     let top_bars = rects(&top);
     let mut hidden = make();
-    hidden.legend_show = Some(false);
+    hidden.legend.show = Some(false);
     let no_legend_bars = rects(&hidden.svg().unwrap());
     for position in [Position::Bottom, Position::Left, Position::Right] {
         let mut chart = make();
-        chart.legend_position = Some(position.clone());
+        chart.legend.position = Some(position.clone());
         let svg = chart.svg().unwrap();
         assert_ne!(top, svg);
         let bars = rects(&svg);
@@ -116,7 +116,7 @@ fn legend_positions_reserve_space() {
         r#"{"legend_position": "bottom", "series_list": [{"name": "A", "data": [1]}], "x_axis_data": ["a"]}"#,
     )
     .unwrap();
-    assert_eq!(Some(Position::Bottom), chart.legend_position);
+    assert_eq!(Some(Position::Bottom), chart.legend.position);
 }
 
 #[test]
@@ -130,8 +130,8 @@ fn per_series_line_overrides() {
         vec![smooth, plain],
         vec!["a".into(), "b".into(), "c".into()],
     );
-    chart.series_smooth = false;
-    chart.series_fill = false;
+    chart.series.smooth = false;
+    chart.series.fill = false;
     let svg = chart.svg().unwrap();
     // One curved (C commands) filled path for S, one straight polyline for P.
     assert!(svg.contains(" C"), "series S is smooth");
@@ -157,9 +157,11 @@ fn mark_lines_on_bar_charts_and_fixed_values() {
     series.mark_lines = vec![
         MarkLine {
             category: MarkLineCategory::Average,
+            ..Default::default()
         },
         MarkLine {
             category: MarkLineCategory::Value(25.0),
+            ..Default::default()
         },
     ];
     let chart = BarChart::new(vec![series], vec!["a".into(), "b".into(), "c".into()]);
@@ -182,6 +184,7 @@ fn mark_lines_on_bar_charts_and_fixed_values() {
     let mut series: Series = ("A", vec![1.0, 2.0, 0.5, 2.5, 2.0, 1.0, 0.5, 2.5]).into();
     series.mark_lines = vec![MarkLine {
         category: MarkLineCategory::Max,
+        ..Default::default()
     }];
     let svg = CandlestickChart::new(vec![series], vec!["a".into(), "b".into()])
         .svg()
@@ -223,12 +226,12 @@ fn empty_data_placeholder_and_title_ellipsis() {
     let svg = chart.svg().unwrap();
     assert!(svg.contains("No data"));
     chart.series_list[0].data = vec![Some(1.0)];
-    chart.x_axis_data = vec!["a".into()];
+    chart.x_axis.data = vec!["a".into()];
     assert!(!chart.svg().unwrap().contains("No data"));
 
     let mut chart = BarChart::new(vec![("A", vec![1.0]).into()], vec!["a".into()]);
     chart.width = 150.0;
-    chart.title_text = "A very long title that cannot possibly fit in the canvas".into();
+    chart.title.text = "A very long title that cannot possibly fit in the canvas".into();
     let svg = chart.svg().unwrap();
     assert!(svg.contains("…"), "title is cut with an ellipsis");
     assert!(!svg.contains("x=\"-"), "no negative title x");
@@ -245,7 +248,7 @@ fn tooltips_and_datasets_across_charts() {
         r#"{"series_list": [{"name": "Visit", "data": [100]}, {"name": "Buy", "data": [20]}]}"#,
     )
     .unwrap();
-    funnel.tooltip_show = true;
+    funnel.tooltip.show = true;
     let svg = funnel.svg().unwrap();
     assert!(svg.contains("ct-trigger") && svg.contains("ct-tip") && svg.contains("<title>"));
     assert!(svg.contains("data-series=\"Visit\"") && svg.contains("data-percentage=\"83.3\""));
@@ -254,7 +257,7 @@ fn tooltips_and_datasets_across_charts() {
         r#"{"series_data": [{"name": "docs", "children": [{"name": "a.md", "value": 3}, {"name": "b.md", "value": 1}]}, {"name": "src", "value": 4}], "series_label_formatter": "{c} KB"}"#,
     )
     .unwrap();
-    treemap.tooltip_show = true;
+    treemap.tooltip.show = true;
     let svg = treemap.svg().unwrap();
     assert!(svg.contains("a.md") && svg.contains("b.md") && svg.contains("src"));
     assert!(svg.contains("3 KB"), "formatter applies to values");
@@ -267,7 +270,7 @@ fn tooltips_and_datasets_across_charts() {
         vec![("A", vec![1.0, 2.0, 0.5, 2.5]).into()],
         vec!["mon".into()],
     );
-    candle.tooltip_show = true;
+    candle.tooltip.show = true;
     let svg = candle.svg().unwrap();
     assert!(svg.contains("<title>mon: 1 / 2 / 0.5 / 2.5</title>"));
     assert!(svg.contains("data-open=\"1\"") && svg.contains("data-high=\"2.5\""));
@@ -276,7 +279,7 @@ fn tooltips_and_datasets_across_charts() {
         r#"{"x_axis_data": ["a"], "y_axis_data": ["x"], "series": {"data": [[0, 7]]}}"#,
     )
     .unwrap();
-    heatmap.tooltip_show = true;
+    heatmap.tooltip.show = true;
     let svg = heatmap.svg().unwrap();
     assert!(svg.contains("<title>a, x: 7</title>") && svg.contains("ct-tip"));
 
@@ -284,7 +287,7 @@ fn tooltips_and_datasets_across_charts() {
         r#"{"x_axis_data": ["a", "total"], "data": [[5, false], [0, true]]}"#,
     )
     .unwrap();
-    waterfall.tooltip_show = true;
+    waterfall.tooltip.show = true;
     let svg = waterfall.svg().unwrap();
     assert!(svg.contains("<title>total: 5</title>") && svg.contains("data-total=\"true\""));
 
@@ -292,7 +295,7 @@ fn tooltips_and_datasets_across_charts() {
         r#"{"x_axis_data": ["a"], "box_series": [{"name": "A", "data": [[1, 2, 3, 4, 5]]}]}"#,
     )
     .unwrap();
-    boxplot.tooltip_show = true;
+    boxplot.tooltip.show = true;
     let svg = boxplot.svg().unwrap();
     assert!(
         svg.contains("<title>A: 1 / 2 / 3 / 4 / 5</title>") && svg.contains("data-median=\"3\"")
@@ -302,7 +305,7 @@ fn tooltips_and_datasets_across_charts() {
         r#"{"links": [{"source": "a", "target": "b", "value": 4}, {"source": "b", "target": "c", "value": 1}], "categories": ["Core", "Edge"], "nodes": [{"name": "a", "category": 0}, {"name": "b", "category": 1}, {"name": "c", "category": 1}]}"#,
     )
     .unwrap();
-    graph.tooltip_show = true;
+    graph.tooltip.show = true;
     let svg = graph.svg().unwrap();
     assert!(
         svg.contains("Core") && svg.contains("Edge"),
@@ -329,11 +332,11 @@ fn tooltips_and_datasets_across_charts() {
 fn label_formatter_templates_on_cartesian_charts() {
     let mut chart = BarChart::new(vec![("Sales", vec![120.0]).into()], vec!["Q1".into()]);
     chart.series_list[0].label_show = true;
-    chart.series_label_formatter = "{a}/{b}: {c} ml".into();
+    chart.series.label.formatter = "{a}/{b}: {c} ml".into();
     let svg = chart.svg().unwrap();
     assert!(svg.contains("Sales/Q1: 120 ml"), "{svg}");
     // Precision-only formatters keep the legacy number formatting.
-    chart.series_label_formatter = "{:.2}".into();
+    chart.series.label.formatter = "{:.2}".into();
     assert!(!chart.svg().unwrap().contains("120.00"));
     assert!(chart.svg().unwrap().lines().any(|l| l.trim() == "120"));
 }
@@ -344,8 +347,8 @@ fn node_chart_options() {
         vec![("r", vec![1.0, 20.0]).into(), ("s", vec![2.0, 10.0]).into()],
         vec!["p".into(), "q".into()],
     );
-    parallel.y_axis_configs[0].axis_max = Some(100.0);
-    parallel.y_axis_configs[0].axis_formatter = Some("{c}%".into());
+    parallel.y_axis_configs[0].max = Some(100.0);
+    parallel.y_axis_configs[0].formatter = Some("{c}%".into());
     let svg = parallel.svg().unwrap();
     assert!(svg.contains("100%"), "pinned max with formatter: {svg}");
 
@@ -354,7 +357,7 @@ fn node_chart_options() {
         vec!["a".into(), "b".into(), "c".into()],
     );
     let straight = river.svg().unwrap();
-    river.series_smooth = true;
+    river.series.smooth = true;
     let smooth = river.svg().unwrap();
     assert!(straight.contains("<polygon") && !smooth.contains("<polygon"));
     assert!(smooth.contains("<path") && smooth.contains(" C"));
@@ -391,8 +394,8 @@ fn node_chart_options() {
     );
 
     let mut pie = PieChart::new(vec![("A", vec![99.0]).into(), ("B", vec![0.0]).into()]);
-    pie.legend_show = Some(false);
-    pie.series_label_formatter = "{a}".into();
+    pie.legend.show = Some(false);
+    pie.series.label.formatter = "{a}".into();
     let svg = pie.svg().unwrap();
     assert!(
         !svg.lines().any(|l| l.trim() == "B"),
@@ -414,13 +417,13 @@ fn axis_range_options() {
     assert!(bars[2].3 > 50.0, "0.005 is not flattened: {:?}", bars);
     // Configured bounds are exact: values beyond them are clipped.
     let mut chart = BarChart::new(vec![("A", vec![150.0]).into()], vec!["a".into()]);
-    chart.y_axis_configs[0].axis_max = Some(100.0);
+    chart.y_axis_configs[0].max = Some(100.0);
     let svg = chart.svg().unwrap();
     assert!(svg.lines().any(|l| l.trim() == "100"));
     assert!(!svg.lines().any(|l| l.trim() == "170"));
     // Alignment of title/legend still parses.
     let chart = BarChart::from_json(r#"{"title_align": "right"}"#).unwrap();
-    assert_eq!(Align::Right, chart.title_align);
+    assert_eq!(Align::Right, chart.title.align);
 }
 
 #[test]
@@ -431,10 +434,12 @@ fn mark_areas_and_horizontal_mark_lines() {
         MarkArea {
             from: MarkLineCategory::Value(12.0),
             to: MarkLineCategory::Value(18.0),
+            ..Default::default()
         },
         MarkArea {
             from: MarkLineCategory::Min,
             to: MarkLineCategory::Average,
+            ..Default::default()
         },
     ];
     let svg = LineChart::new(
@@ -456,7 +461,8 @@ fn mark_areas_and_horizontal_mark_lines() {
     assert_eq!(
         MarkArea {
             from: MarkLineCategory::Value(1.0),
-            to: MarkLineCategory::Max
+            to: MarkLineCategory::Max,
+            ..Default::default()
         },
         chart.series_list[0].mark_areas[0]
     );
@@ -465,6 +471,7 @@ fn mark_areas_and_horizontal_mark_lines() {
     // Horizontal bars: vertical mark lines and bands.
     series.mark_lines = vec![MarkLine {
         category: MarkLineCategory::Average,
+        ..Default::default()
     }];
     let svg = HorizontalBarChart::new(vec![series], vec!["a".into(), "b".into(), "c".into()])
         .svg()
@@ -486,7 +493,7 @@ fn x_axis_label_overflow_modes() {
     let data: Vec<f32> = (0..12).map(|i| i as f32).collect();
     let make = |mode: AxisLabelOverflow| {
         let mut chart = BarChart::new(vec![("A", data.clone()).into()], labels.clone());
-        chart.x_axis_label_overflow = mode;
+        chart.x_axis.label_overflow = mode;
         chart
     };
     let thin = make(AxisLabelOverflow::Thin).svg().unwrap();
@@ -517,7 +524,7 @@ fn x_axis_label_overflow_modes() {
     );
 
     let chart = BarChart::from_json(r#"{"x_axis_label_overflow": "Ellipsis"}"#).unwrap();
-    assert_eq!(AxisLabelOverflow::Ellipsis, chart.x_axis_label_overflow);
+    assert_eq!(AxisLabelOverflow::Ellipsis, chart.x_axis.label_overflow);
 }
 
 #[test]
@@ -527,7 +534,7 @@ fn node_chart_tooltips() {
         r#"{"series_data": [{"name": "root", "children": [{"name": "leaf", "value": 3}]}]}"#,
     )
     .unwrap();
-    sunburst.tooltip_show = true;
+    sunburst.tooltip.show = true;
     let svg = sunburst.svg().unwrap();
     assert!(svg.contains("<title>leaf: 3 (100%)</title>") && svg.contains("ct-tip"));
     assert!(svg.contains("data-name=\"leaf\" data-value=\"3\""));
@@ -536,14 +543,14 @@ fn node_chart_tooltips() {
         r#"{"series_data": [{"name": "root", "children": [{"name": "leaf", "value": 2}]}]}"#,
     )
     .unwrap();
-    tree.tooltip_show = true;
+    tree.tooltip.show = true;
     let svg = tree.svg().unwrap();
     assert!(svg.contains("<title>leaf: 2</title>") && svg.contains("data-depth=\"1\""));
 
     let mut sankey =
         SankeyChart::from_json(r#"{"links": [{"source": "a", "target": "b", "value": 5}]}"#)
             .unwrap();
-    sankey.tooltip_show = true;
+    sankey.tooltip.show = true;
     let svg = sankey.svg().unwrap();
     assert!(svg.contains("<title>a → b: 5</title>"), "{svg}");
     assert!(svg.contains("<title>a: 5</title>") && svg.contains("data-target=\"b\""));
@@ -556,7 +563,7 @@ fn shared_paint_is_hoisted_to_groups() {
         vec![("A", vec![1.0, 2.0, 3.0]).into()],
         vec!["a".into(), "b".into(), "c".into()],
     );
-    chart.series_symbol = Some(Symbol::Circle(3.0, None));
+    chart.series.symbol = Some(Symbol::Circle(3.0, None));
     let svg = chart.svg().unwrap();
     // Symbols: one group carries the paint, the circles only their geometry.
     assert!(svg.contains("<g stroke-width=\"2\""), "{svg}");

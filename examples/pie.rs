@@ -16,10 +16,10 @@ fn main() {
         ("rose 7", vec![22.0]).into(),
         ("rose 8", vec![18.0]).into(),
     ]);
-    pie_chart.title_text = "Nightingale Chart".to_string();
-    pie_chart.sub_title_text = "Fake Data".to_string();
+    pie_chart.title.text = "Nightingale Chart".to_string();
+    pie_chart.sub_title.text = "Fake Data".to_string();
     // "{a}" series name, "{d}" percentage — see the README for all placeholders
-    pie_chart.series_label_formatter = "{a}: {d}".to_string();
+    pie_chart.series.label.formatter = "{a}: {d}".to_string();
 
     std::fs::write("pie.svg", pie_chart.svg().unwrap()).unwrap();
     println!("wrote pie.svg");

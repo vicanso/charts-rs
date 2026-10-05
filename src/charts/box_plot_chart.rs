@@ -37,7 +37,7 @@ pub struct BoxPlotSeries {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BoxPlotChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     // x axis
 
@@ -76,8 +76,8 @@ impl BoxPlotChart {
             }
             self.series_list = series_list;
         }
-        if self.y_axis_configs[0].axis_stroke_color.is_zero() {
-            self.y_axis_configs[0].axis_stroke_color = self.x_axis_stroke_color;
+        if self.y_axis_configs[0].stroke_color.is_zero() {
+            self.y_axis_configs[0].stroke_color = self.x_axis.stroke_color;
         }
     }
 
@@ -91,7 +91,7 @@ impl BoxPlotChart {
             box_series,
             ..Default::default()
         };
-        c.x_axis_data = x_axis_data;
+        c.x_axis.data = x_axis_data;
         c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
@@ -140,13 +140,13 @@ impl BoxPlotChart {
     /// Renders the chart to an SVG string.
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = self.new_canvas();
-        let mut x_axis_height = self.x_axis_height;
-        if self.x_axis_hidden {
+        let mut x_axis_height = self.x_axis.height;
+        if self.x_axis.hidden {
             x_axis_height = 0.0;
         }
         let axis_top = self.render_header(&mut c);
         let titles =
-            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis.title, false);
 
         // Collect all values to build y-axis range
         let mut all_values: Vec<f32> = vec![];
@@ -165,12 +165,12 @@ impl BoxPlotChart {
 
         let y_axis_width = if self.y_axis_hidden {
             0.0
-        } else if let Some(w) = y_axis_config.axis_width {
+        } else if let Some(w) = y_axis_config.width {
             w
         } else {
-            let formatter = y_axis_config.axis_formatter.clone().unwrap_or_default();
+            let formatter = y_axis_config.formatter.clone().unwrap_or_default();
             let label = format_string(&y_axis_values.data[0], &formatter);
-            measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &label)
+            measure_text_width_family(&self.font_family, y_axis_config.font.size, &label)
                 .map(|b| b.width() + 5.0)
                 .unwrap_or(DEFAULT_Y_AXIS_WIDTH)
         };
@@ -180,7 +180,7 @@ impl BoxPlotChart {
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
-            &self.x_axis_title,
+            &self.x_axis.title,
             y_axis_width,
             axis_top,
             axis_width,
@@ -218,19 +218,19 @@ impl BoxPlotChart {
         }
 
         // X axis
-        if !self.x_axis_hidden {
+        if !self.x_axis.hidden {
             self.render_x_axis(
                 c.child(Box {
                     top: c.height() - x_axis_height,
                     left: y_axis_width,
                     ..Default::default()
                 }),
-                self.x_axis_data.clone(),
+                self.x_axis.data.clone(),
                 axis_width,
             );
         }
 
-        let num_cats = self.x_axis_data.len().max(
+        let num_cats = self.x_axis.data.len().max(
             self.box_series
                 .iter()
                 .map(|bs| bs.data.len())
@@ -253,7 +253,7 @@ impl BoxPlotChart {
         let box_w = box_step * 0.8;
         // Cap width for whisker line
         let cap_half = box_w * 0.3;
-        let stroke_w = self.series_stroke_width.max(1.0);
+        let stroke_w = self.series.stroke_width.max(1.0);
 
         let mut data_c = c.child(Box {
             left: y_axis_width,
@@ -261,7 +261,7 @@ impl BoxPlotChart {
         });
 
         for (si, bs) in self.box_series.iter().enumerate() {
-            let color = get_color(&self.series_colors, bs.index.unwrap_or(si));
+            let color = get_color(&self.series.colors, bs.index.unwrap_or(si));
             let fill_color = color.with_alpha(80);
 
             for (ci, entry) in bs.data.iter().enumerate() {
@@ -286,7 +286,7 @@ impl BoxPlotChart {
                 let box_height = (y_q1 - y_q3).abs();
 
                 // IQR box (Q1..Q3)
-                let tooltip_text = self.tooltip_show.then(|| {
+                let tooltip_text = self.tooltip.show.then(|| {
                     format!(
                         "{}: {} / {} / {} / {} / {}",
                         bs.name,
@@ -310,7 +310,7 @@ impl BoxPlotChart {
                         ("series".to_string(), bs.name.clone()),
                         (
                             "category".to_string(),
-                            self.x_axis_data.get(ci).cloned().unwrap_or_default(),
+                            self.x_axis.data.get(ci).cloned().unwrap_or_default(),
                         ),
                         ("min".to_string(), format_float(v_min)),
                         ("q1".to_string(), format_float(v_q1)),
@@ -324,9 +324,10 @@ impl BoxPlotChart {
                     data_c.text(Text {
                         text,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(cx),
                         y: Some(y_max),
                         dy: Some(-6.0),
@@ -392,7 +393,7 @@ impl BoxPlotChart {
             }
         }
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()
@@ -472,7 +473,7 @@ mod tests {
         assert_snapshot!("box_plot_chart/basic_json.svg", chart.svg().unwrap());
     }
 
-    // `x_axis_hidden` / `y_axis_hidden` must be honored from JSON (previously
+    // `x_axis.hidden` / `y_axis_hidden` must be honored from JSON (previously
     // parsed nowhere, so `svg()` ignored them).
     #[test]
     fn box_plot_axis_hidden_from_json() {
@@ -485,7 +486,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        assert!(hidden.x_axis_hidden, "x_axis_hidden must be parsed");
+        assert!(hidden.x_axis.hidden, "x_axis_hidden must be parsed");
         assert!(hidden.y_axis_hidden, "y_axis_hidden must be parsed");
 
         let shown = BoxPlotChart::from_json(

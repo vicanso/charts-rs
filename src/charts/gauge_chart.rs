@@ -33,7 +33,7 @@ fn arc_points(cx: f32, cy: f32, r: f32, start: f32, end_deg: f32, n: usize) -> V
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GaugeChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -214,7 +214,7 @@ impl GaugeChart {
     /// The color of the `index`-th segment of the scale.
     fn segment_color(&self, index: usize) -> Color {
         if self.colors.is_empty() {
-            get_color(&self.series_colors, index)
+            get_color(&self.series.colors, index)
         } else {
             self.colors[index % self.colors.len()]
         }
@@ -272,14 +272,14 @@ impl GaugeChart {
             if ratio > 0.0 {
                 let pieces = ((360.0 * ratio).round() as usize).max(1);
                 body.polyline(Polyline {
-                    color: Some(get_color(&self.series_colors, *index)),
+                    color: Some(get_color(&self.series.colors, *index)),
                     stroke_width: arc_width,
                     points: arc_points(cx, cy, arc_r, start, start + ratio * sweep, pieces),
                 });
             }
         }
         // The values, one line each, centered on the middle of the rings.
-        let font_size = self.series_label_font_size;
+        let font_size = self.series.label.font.size;
         let line_height = font_size + 6.0;
         let top = cy - line_height * (values.len() as f32 - 1.0) / 2.0;
         for (line, (index, series, value)) in values.iter().enumerate() {
@@ -291,7 +291,7 @@ impl GaugeChart {
             body.text(Text {
                 text,
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(get_color(&self.series_colors, *index)),
+                font_color: Some(get_color(&self.series.colors, *index)),
                 font_size: Some(font_size),
                 font_weight: Some("bold".to_string()),
                 dominant_baseline: Some("middle".to_string()),
@@ -406,7 +406,7 @@ impl GaugeChart {
             // The pointer tells the segment it is in.
             color_at(needle_value)
         } else {
-            get_color(&self.series_colors, 0)
+            get_color(&self.series.colors, 0)
         };
 
         // The progress of the one value of the dial: segments, and several
@@ -442,8 +442,8 @@ impl GaugeChart {
         // ── Axis labels (min / max) ───────────────────────────────────────────
         let show_label = self.show_axis_label.unwrap_or(true);
         if show_label {
-            let label_font_size = self.series_label_font_size;
-            let label_color = self.series_label_font_color;
+            let label_font_size = self.series.label.font.size;
+            let label_color = self.series.label.font.color;
             let label_r = r + self.arc_width + 6.0;
 
             let min_pt = get_pie_point(cx, cy, label_r, start);
@@ -524,7 +524,7 @@ impl GaugeChart {
                 let value = value.clamp(self.min, self.max);
                 let angle = start + share(value) * sweep;
                 let color = if limits.is_empty() {
-                    get_color(&self.series_colors, *index)
+                    get_color(&self.series.colors, *index)
                 } else {
                     color_at(value)
                 };
@@ -571,7 +571,7 @@ impl GaugeChart {
         // Several pointers: their values in a list, each in the color of
         // its pointer, instead of the one large value.
         if !others.is_empty() {
-            let font_size = self.series_label_font_size;
+            let font_size = self.series.label.font.size;
             let line_height = font_size + 4.0;
             let first = self
                 .series_list
@@ -587,7 +587,7 @@ impl GaugeChart {
                 let color = if index == 0 {
                     progress_color
                 } else if limits.is_empty() {
-                    get_color(&self.series_colors, index)
+                    get_color(&self.series.colors, index)
                 } else {
                     color_at(value.clamp(self.min, self.max))
                 };
@@ -610,7 +610,7 @@ impl GaugeChart {
         body.text(Text {
             text: value_text,
             font_family: Some(self.font_family.clone()),
-            font_color: Some(self.title_font_color),
+            font_color: Some(self.title.font.color),
             font_size: Some(value_font_size),
             font_weight: Some("bold".to_string()),
             dominant_baseline: Some("middle".to_string()),
@@ -627,8 +627,8 @@ impl GaugeChart {
             body.text(Text {
                 text: series.name.clone(),
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
-                font_size: Some(self.series_label_font_size),
+                font_color: Some(self.series.label.font.color),
+                font_size: Some(self.series.label.font.size),
                 dominant_baseline: Some("middle".to_string()),
                 text_anchor: Some("middle".to_string()),
                 x: Some(cx),

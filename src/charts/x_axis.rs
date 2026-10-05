@@ -14,9 +14,9 @@
 //!
 //! A chart's x axis is a category axis by default — point `i` of every
 //! series sits in slot `i`, evenly spaced. As soon as x values are given
-//! (`x_axis_values` for the chart, or `x_values` on a series) the axis
+//! (`x_axis.values` for the chart, or `x_values` on a series) the axis
 //! becomes continuous: every point is placed at its x value, so unevenly
-//! sampled data keeps its real spacing. `x_axis_type` says whether the
+//! sampled data keeps its real spacing. `x_axis.kind` says whether the
 //! values are plain numbers or timestamps (unix seconds), which decides how
 //! the ticks are chosen and labelled.
 
@@ -62,7 +62,7 @@ impl ContinuousX {
 impl ChartBase {
     /// True when x values were given, which makes the x axis continuous.
     pub(crate) fn has_x_values(&self) -> bool {
-        !self.x_axis_values.is_empty()
+        !self.x_axis.values.is_empty()
             || self
                 .series_list
                 .iter()
@@ -70,7 +70,7 @@ impl ChartBase {
     }
     /// The slot of data point `i` of `series`: its index into the series'
     /// own `x_values` when it has them, else into the chart's categories or
-    /// `x_axis_values` (which `start_index` shifts).
+    /// `x_axis.values` (which `start_index` shifts).
     pub(crate) fn x_slot(&self, series: &Series, i: usize) -> usize {
         if series.x_values.is_some() {
             i
@@ -80,40 +80,41 @@ impl ChartBase {
     }
     /// The x value of a series' slot on a continuous axis.
     pub(crate) fn x_value(&self, series: &Series, slot: usize) -> Option<f64> {
-        let values = series.x_values.as_ref().unwrap_or(&self.x_axis_values);
+        let values = series.x_values.as_ref().unwrap_or(&self.x_axis.values);
         values.get(slot).copied().filter(|v| v.is_finite())
     }
     /// How many slots the series span: the categories, or on a continuous
     /// axis the longest list of x values.
     pub(crate) fn x_count(&self) -> usize {
         if !self.has_x_values() {
-            return self.x_axis_data.len();
+            return self.x_axis.data.len();
         }
         self.series_list
             .iter()
             .filter_map(|s| s.x_values.as_ref().map(|x| x.len().min(s.slot_len())))
-            .chain(std::iter::once(self.x_axis_values.len()))
+            .chain(std::iter::once(self.x_axis.values.len()))
             .max()
             .unwrap_or(0)
     }
     /// What a data point's x is called in labels and `data-*` attributes:
     /// its category, or its formatted x value on a continuous axis.
     pub(crate) fn x_label(&self, series: &Series, slot: usize) -> Option<Cow<'_, str>> {
-        if series.x_values.is_none() && self.x_axis_values.is_empty() {
+        if series.x_values.is_none() && self.x_axis.values.is_empty() {
             return self
-                .x_axis_data
+                .x_axis
+                .data
                 .get(slot)
                 .map(|s| Cow::Borrowed(s.as_str()));
         }
         let x = self.x_value(series, slot)?;
-        Some(Cow::Owned(if self.x_axis_type == AxisType::Time {
+        Some(Cow::Owned(if self.x_axis.kind == AxisType::Time {
             format_time_full(x + self.time_offset())
         } else {
             format_number(x, 6)
         }))
     }
     fn time_offset(&self) -> f64 {
-        self.x_axis_time_offset as f64 * MINUTE
+        self.x_axis.time_offset as f64 * MINUTE
     }
     /// The scale of the continuous x axis over a plot `width` pixels wide,
     /// or `None` on a category axis. With `bands` the range is widened by
@@ -124,7 +125,7 @@ impl ChartBase {
             .iter()
             .filter_map(|s| s.x_values.as_ref())
             .flatten()
-            .chain(self.x_axis_values.iter())
+            .chain(self.x_axis.values.iter())
             .copied()
             .filter(|v| v.is_finite())
             .collect();
@@ -151,10 +152,10 @@ impl ChartBase {
             min -= 0.5;
             max += 0.5;
         }
-        if let Some(value) = self.x_axis_min.filter(|v| v.is_finite()) {
+        if let Some(value) = self.x_axis.min.filter(|v| v.is_finite()) {
             min = value;
         }
-        if let Some(value) = self.x_axis_max.filter(|v| v.is_finite()) {
+        if let Some(value) = self.x_axis.max.filter(|v| v.is_finite()) {
             max = value;
         }
         if max <= min {
@@ -166,19 +167,19 @@ impl ChartBase {
             max,
             width,
             band_width,
-            time: self.x_axis_type == AxisType::Time,
+            time: self.x_axis.kind == AxisType::Time,
             tick_step: None,
         })
     }
     /// The ticks of a continuous x axis: pixel offsets and labels. As many
     /// ticks as fit side by side, at round values (or round times).
     pub(crate) fn x_ticks(&self, scale: &ContinuousX) -> (Vec<f32>, Vec<String>) {
-        let formatter = self.x_axis_formatter.as_deref().unwrap_or("");
+        let formatter = self.x_axis.formatter.as_deref().unwrap_or("");
         let fits = |ticks: &[(f64, String)]| -> bool {
             let needed: f32 = ticks
                 .iter()
                 .map(|(_, label)| {
-                    measure_text_width_family(&self.font_family, self.x_axis_font_size, label)
+                    measure_text_width_family(&self.font_family, self.x_axis.font.size, label)
                         .map(|b| b.width())
                         .unwrap_or_default()
                         + 12.0
@@ -227,7 +228,7 @@ impl ChartBase {
         x_axis_height: f32,
     ) {
         let (positions, labels) = self.x_ticks(scale);
-        let margin = self.x_axis_margin.unwrap_or_default();
+        let margin = self.x_axis.margin.unwrap_or_default();
         c.child(margin).axis(Axis {
             height: x_axis_height,
             width: axis_width,
@@ -235,12 +236,13 @@ impl ChartBase {
             font_family: self.font_family.clone(),
             data: labels,
             tick_positions: Some(positions),
-            font_color: Some(self.x_axis_font_color),
-            font_weight: self.x_axis_font_weight.clone(),
-            stroke_color: Some(self.x_axis_stroke_color),
-            font_size: self.x_axis_font_size,
-            name_gap: self.x_axis_name_gap,
-            name_rotate: self.x_axis_name_rotate,
+            font_color: Some(self.x_axis.font.color),
+            font_weight: self.x_axis.font.weight.clone(),
+            stroke_color: Some(self.x_axis.stroke_color),
+            stroke_width: self.x_axis.stroke_width.unwrap_or(1.0),
+            font_size: self.x_axis.font.size,
+            name_gap: self.x_axis.name_gap,
+            name_rotate: self.x_axis.name_rotate,
             name_align: Align::Center,
             ..Default::default()
         });

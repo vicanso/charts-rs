@@ -33,9 +33,9 @@ fn main() {
         vec![north, south],
         months.iter().map(|m| m.to_string()).collect(),
     );
-    chart.title_text = "Rainfall by month".to_string();
+    chart.title.text = "Rainfall by month".to_string();
     chart.inner_radius = Some(30.0);
-    chart.y_axis_configs[0].axis_formatter = Some("{c} mm".to_string());
+    chart.y_axis_configs[0].formatter = Some("{c} mm".to_string());
     std::fs::write("polar_bar.svg", chart.svg().unwrap()).unwrap();
     println!("wrote polar_bar.svg");
 
@@ -50,13 +50,13 @@ fn main() {
             .map(|c| c.to_string())
             .collect(),
     );
-    chart.title_text = "Goals reached".to_string();
-    chart.legend_show = Some(false);
+    chart.title.text = "Goals reached".to_string();
+    chart.legend.show = Some(false);
     chart.category_axis = PolarAxis::Radius;
     chart.round_cap = true;
-    chart.y_axis_configs[0].axis_max = Some(100.0);
-    chart.y_axis_configs[0].axis_split_number = 4;
-    chart.y_axis_configs[0].axis_formatter = Some("{c}%".to_string());
+    chart.y_axis_configs[0].max = Some(100.0);
+    chart.y_axis_configs[0].split_number = 4;
+    chart.y_axis_configs[0].formatter = Some("{c}%".to_string());
     std::fs::write("polar_bar_radial.svg", chart.svg().unwrap()).unwrap();
     println!("wrote polar_bar_radial.svg");
 }

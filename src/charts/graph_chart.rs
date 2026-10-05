@@ -88,7 +88,7 @@ impl From<(&str, &str, f32)> for GraphLink {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GraphChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -208,12 +208,12 @@ impl GraphChart {
 
         let mut axis_top = self.render_header(&mut c);
         // The categories are the legend of a graph (its series list is empty).
-        if !self.categories.is_empty() && self.legend_show.unwrap_or(true) {
+        if !self.categories.is_empty() && self.legend.show.unwrap_or(true) {
             let entries: Vec<(&str, Color)> = self
                 .categories
                 .iter()
                 .enumerate()
-                .map(|(i, name)| (name.as_str(), get_color(&self.series_colors, i)))
+                .map(|(i, name)| (name.as_str(), get_color(&self.series.colors, i)))
                 .collect();
             axis_top += self.render_legend_entries(
                 c.child(Box {
@@ -248,7 +248,7 @@ impl GraphChart {
             }
             let color = n
                 .color
-                .unwrap_or_else(|| get_color(&self.series_colors, n.category.unwrap_or(i)));
+                .unwrap_or_else(|| get_color(&self.series.colors, n.category.unwrap_or(i)));
             name_index.insert(n.name.clone(), names.len());
             names.push(n.name.clone());
             colors.push(color);
@@ -262,7 +262,7 @@ impl GraphChart {
                 if name_index.contains_key(name.as_str()) {
                     continue;
                 }
-                let color = get_color(&self.series_colors, names.len());
+                let color = get_color(&self.series.colors, names.len());
                 name_index.insert(name.clone(), names.len());
                 names.push(name.clone());
                 colors.push(color);
@@ -282,7 +282,7 @@ impl GraphChart {
         // Edge widths: the base stroke, scaled up to 4x by the link value
         // when values are provided.
         let max_edge_value = edge_values.iter().copied().fold(0.0_f32, f32::max);
-        let base_edge_width = self.grid_stroke_width.max(1.0);
+        let base_edge_width = self.grid.stroke_width.max(1.0);
         let edge_widths: Vec<f32> = edge_values
             .iter()
             .map(|&v| {
@@ -378,7 +378,7 @@ impl GraphChart {
 
         // Normalize the laid-out positions into the content box, leaving room for
         // node radii and the labels drawn just beneath each node.
-        let font_size = self.series_label_font_size.max(10.0);
+        let font_size = self.series.label.font.size.max(10.0);
         let (mut min_x, mut max_x, mut min_y, mut max_y) = (f32::MAX, f32::MIN, f32::MAX, f32::MIN);
         for i in 0..n {
             min_x = min_x.min(xs[i]);
@@ -402,7 +402,7 @@ impl GraphChart {
         // ── Edges (drawn first, under the nodes) ──────────────────────────────
         for (&(a, b), &stroke_width) in edges.iter().zip(edge_widths.iter()) {
             content.line(Line {
-                color: Some(self.grid_stroke_color),
+                color: Some(self.grid.stroke_color),
                 stroke_width,
                 left: xs[a],
                 top: ys[a],
@@ -414,7 +414,7 @@ impl GraphChart {
 
         // ── Nodes ─────────────────────────────────────────────────────────────
         for i in 0..n {
-            let tooltip_text = self.tooltip_show.then(|| names[i].clone());
+            let tooltip_text = self.tooltip.show.then(|| names[i].clone());
             content.circle(Circle {
                 fill: Some(colors[i]),
                 stroke_color: Some(self.background_color),
@@ -430,9 +430,10 @@ impl GraphChart {
                 content.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(font_size)),
                     x: Some(xs[i]),
                     y: Some(ys[i] - radii[i]),
                     dy: Some(-4.0),
@@ -450,9 +451,9 @@ impl GraphChart {
             content.text(Text {
                 text: names[i].clone(),
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
+                font_color: Some(self.series.label.font.color),
                 font_size: Some(font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(xs[i]),
                 y: Some(ys[i] + radii[i] + font_size * 0.7),
                 text_anchor: Some("middle".to_string()),
@@ -461,7 +462,7 @@ impl GraphChart {
             });
         }
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()

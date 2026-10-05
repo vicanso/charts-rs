@@ -58,7 +58,7 @@ impl From<(f32, bool)> for WaterfallData {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WaterfallChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
 
     // title
@@ -77,13 +77,13 @@ pub struct WaterfallChart {
     /// entries where `is_total = true` which reset to 0 and show the running sum.
     pub data: Vec<WaterfallData>,
 
-    /// Bar color for positive increments.  Defaults to the first `series_colors` entry.
+    /// Bar color for positive increments.  Defaults to the first `series.colors` entry.
     pub increase_color: Color,
 
     /// Bar color for negative increments.  Defaults to a warm red.
     pub decrease_color: Color,
 
-    /// Bar color for "total" bars.  Defaults to the second `series_colors` entry.
+    /// Bar color for "total" bars.  Defaults to the second `series.colors` entry.
     pub total_color: Color,
 
     /// Whether to show value labels above/below each bar (default: true).
@@ -91,6 +91,9 @@ pub struct WaterfallChart {
 
     /// Whether to draw a dashed connector line between adjacent bars (default: true).
     pub connector_line_show: bool,
+    /// Dashes of the connector lines, as `stroke-dasharray` takes them;
+    /// `None` is `"4,4"`, and an empty string solid lines.
+    pub connector_line_dash_array: Option<String>,
 
     /// Fraction of each x-unit occupied by a bar (0..1, default: 0.6).
     pub bar_width_ratio: f32,
@@ -111,17 +114,17 @@ impl std::ops::DerefMut for WaterfallChart {
 impl WaterfallChart {
     fn fill_default(&mut self) {
         // legend hidden by default (no series names in the usual sense)
-        if self.legend_show.is_none() {
-            self.legend_show = Some(false);
+        if self.legend.show.is_none() {
+            self.legend.show = Some(false);
         }
         if self.bar_width_ratio <= 0.0 {
             self.bar_width_ratio = 0.6;
         }
         if self.increase_color.is_zero() {
-            self.increase_color = get_color(&self.series_colors, 0);
+            self.increase_color = get_color(&self.series.colors, 0);
         }
         if self.total_color.is_zero() {
-            self.total_color = get_color(&self.series_colors, 1);
+            self.total_color = get_color(&self.series.colors, 1);
         }
         if self.decrease_color.is_zero() {
             // warm red not in the default palette – hard-coded
@@ -146,7 +149,7 @@ impl WaterfallChart {
             connector_line_show: true,
             ..Default::default()
         };
-        c.x_axis_data = x_axis_data;
+        c.x_axis.data = x_axis_data;
         c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c.fill_default();
         c
@@ -168,6 +171,9 @@ impl WaterfallChart {
         }
         if let Some(b) = get_bool_from_value(&value, "connector_line_show") {
             c.connector_line_show = b;
+        }
+        if let Some(dash) = get_string_from_value(&value, "connector_line_dash_array") {
+            c.connector_line_dash_array = Some(dash);
         }
         if let Some(v) = get_f32_from_value(&value, "bar_width_ratio") {
             c.bar_width_ratio = v;
@@ -203,7 +209,7 @@ impl WaterfallChart {
             c.data = items;
         }
         if let Some(x) = get_string_slice_from_value(&value, "x_axis_data") {
-            c.x_axis_data = x;
+            c.x_axis.data = x;
         }
 
         c.fill_default();
@@ -250,13 +256,13 @@ impl WaterfallChart {
 
         let mut c = self.new_canvas();
 
-        let mut x_axis_height = self.x_axis_height;
-        if self.x_axis_hidden {
+        let mut x_axis_height = self.x_axis.height;
+        if self.x_axis.hidden {
             x_axis_height = 0.0;
         }
         let axis_top = self.render_header(&mut c);
         let titles =
-            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis.title, false);
 
         // ── Compute axis values ───────────────────────────────────────────────
         let cum = self.compute_cumulative();
@@ -266,25 +272,25 @@ impl WaterfallChart {
         let y_axis_config = &self.y_axis_configs[0];
         let y_axis_values = get_axis_values(AxisValueParams {
             data_list: all_vals,
-            split_number: y_axis_config.axis_split_number,
+            split_number: y_axis_config.split_number,
             reverse: Some(true),
-            min: y_axis_config.axis_min,
-            max: y_axis_config.axis_max,
+            min: y_axis_config.min,
+            max: y_axis_config.max,
             thousands_format: y_axis_config
-                .axis_formatter
+                .formatter
                 .as_deref()
                 .unwrap_or("")
                 .contains(THOUSANDS_FORMAT_LABEL),
-            scale: y_axis_config.axis_scale.clone(),
-            inverse: y_axis_config.axis_inverse,
+            scale: y_axis_config.scale.clone(),
+            inverse: y_axis_config.inverse,
         });
 
         let mut y_axis_width = if self.y_axis_hidden {
             0.0
-        } else if let Some(w) = y_axis_config.axis_width {
+        } else if let Some(w) = y_axis_config.width {
             w
         } else {
-            let formatter = y_axis_config.axis_formatter.clone().unwrap_or_default();
+            let formatter = y_axis_config.formatter.clone().unwrap_or_default();
             let longest = y_axis_values
                 .data
                 .iter()
@@ -292,7 +298,7 @@ impl WaterfallChart {
                 .map(|s| s.as_str())
                 .unwrap_or("");
             let label = format_string(longest, &formatter);
-            measure_text_width_family(&self.font_family, y_axis_config.axis_font_size, &label)
+            measure_text_width_family(&self.font_family, y_axis_config.font.size, &label)
                 .map(|b| b.width() + 5.0)
                 .unwrap_or(DEFAULT_Y_AXIS_WIDTH)
         };
@@ -305,7 +311,7 @@ impl WaterfallChart {
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
-            &self.x_axis_title,
+            &self.x_axis.title,
             y_axis_width,
             axis_top,
             axis_width,
@@ -341,14 +347,14 @@ impl WaterfallChart {
             );
         }
 
-        if !self.x_axis_hidden {
+        if !self.x_axis.hidden {
             self.render_x_axis(
                 c.child(Box {
                     top: c.height() - x_axis_height,
                     left: y_axis_width,
                     ..Default::default()
                 }),
-                self.x_axis_data.clone(),
+                self.x_axis.data.clone(),
                 axis_width,
             );
         }
@@ -361,10 +367,10 @@ impl WaterfallChart {
         let bar_margin = (unit_w - bar_w) / 2.0;
 
         // Label format – {c} = value, {a} = series name (empty here)
-        let formatter = if self.series_label_formatter.is_empty() {
+        let formatter = if self.series.label.formatter.is_empty() {
             "{c}".to_string()
         } else {
-            self.series_label_formatter.clone()
+            self.series.label.formatter.clone()
         };
 
         let mut draw_c = c.child(Box {
@@ -395,14 +401,15 @@ impl WaterfallChart {
                 self.decrease_color
             };
 
-            let category = self.x_axis_data.get(i).cloned().unwrap_or_default();
+            let category = self.x_axis.data.get(i).cloned().unwrap_or_default();
             let shown_value = if item.is_total {
                 bar_top_val
             } else {
                 item.value
             };
             let tooltip_text = self
-                .tooltip_show
+                .tooltip
+                .show
                 .then(|| format!("{}: {}", category, format_float(shown_value)));
             draw_c.rect(Rect {
                 color: Some(color),
@@ -426,9 +433,10 @@ impl WaterfallChart {
                 draw_c.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                     x: Some(x_left + bar_w / 2.0),
                     y: Some(y_high),
                     dy: Some(-6.0),
@@ -455,12 +463,12 @@ impl WaterfallChart {
                 let label_y = if item.value >= 0.0 || item.is_total {
                     y_high - 4.0 // above bar
                 } else {
-                    y_low + self.series_label_font_size + 2.0 // below bar
+                    y_low + self.series.label.font.size + 2.0 // below bar
                 };
                 let mut label_x = x_left + bar_w / 2.0;
                 if let Ok(b) = measure_text_width_family(
                     &self.font_family,
-                    self.series_label_font_size,
+                    self.series.label.font.size,
                     &label_text,
                 ) {
                     label_x -= b.width() / 2.0;
@@ -468,9 +476,9 @@ impl WaterfallChart {
                 draw_c.text(Text {
                     text: label_text,
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
-                    font_weight: self.series_label_font_weight.clone(),
+                    font_color: Some(self.series.label.font.color),
+                    font_size: Some(self.series.label.font.size),
+                    font_weight: self.series.label.font.weight.clone(),
                     x: Some(label_x),
                     y: Some(label_y),
                     ..Default::default()
@@ -485,9 +493,13 @@ impl WaterfallChart {
                 let next_x_left = (i + 1) as f32 * unit_w + bar_margin;
 
                 draw_c.line(Line {
-                    color: Some(self.grid_stroke_color),
+                    color: Some(self.grid.stroke_color),
                     stroke_width: 1.0,
-                    stroke_dash_array: Some("4,4".to_string()),
+                    stroke_dash_array: match &self.connector_line_dash_array {
+                        None => Some("4,4".to_string()),
+                        Some(dash) if dash.is_empty() => None,
+                        Some(dash) => Some(dash.clone()),
+                    },
                     left: x_right,
                     top: connector_y,
                     right: next_x_left,
@@ -500,7 +512,7 @@ impl WaterfallChart {
         let has_negative = self.data.iter().any(|d| d.value < 0.0);
         if has_negative {
             draw_c.line(Line {
-                color: Some(self.x_axis_stroke_color),
+                color: Some(self.x_axis.stroke_color),
                 stroke_width: 1.0,
                 left: 0.0,
                 top: zero_y,
@@ -510,7 +522,7 @@ impl WaterfallChart {
             });
         }
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()

@@ -267,55 +267,51 @@ pub(crate) fn get_string_slice_from_value(
 
 /// Gets y axis config value from serde json.
 pub(crate) fn get_y_axis_config_from_value(t: Arc<Theme>, item: &serde_json::Value) -> YAxisConfig {
-    let mut y_config = YAxisConfig {
-        axis_font_size: t.y_axis_font_size,
-        axis_font_color: t.y_axis_font_color,
-        axis_stroke_color: t.y_axis_stroke_color,
-        axis_split_number: t.y_axis_split_number,
-        axis_name_gap: t.y_axis_name_gap,
-        ..Default::default()
-    };
+    let mut y_config = t.y_axis.clone();
     if let Some(axis_font_size) = get_f32_from_value(item, "axis_font_size") {
-        y_config.axis_font_size = axis_font_size;
+        y_config.font.size = axis_font_size;
     }
     if let Some(axis_font_color) = get_color_from_value(item, "axis_font_color") {
-        y_config.axis_font_color = axis_font_color;
+        y_config.font.color = axis_font_color;
     }
     if let Some(axis_font_weight) = get_string_from_value(item, "axis_font_weight") {
-        y_config.axis_font_weight = Some(axis_font_weight);
+        y_config.font.weight = Some(axis_font_weight);
     }
     if let Some(axis_stroke_color) = get_color_from_value(item, "axis_stroke_color") {
-        y_config.axis_stroke_color = axis_stroke_color;
+        y_config.stroke_color = axis_stroke_color;
+    }
+    if let Some(axis_stroke_width) = get_f32_from_value(item, "axis_stroke_width") {
+        y_config.stroke_width = Some(axis_stroke_width);
     }
     if let Some(axis_width) = get_f32_from_value(item, "axis_width") {
-        y_config.axis_width = Some(axis_width);
+        y_config.width = Some(axis_width);
     }
     if let Some(axis_split_number) = get_usize_from_value(item, "axis_split_number") {
-        y_config.axis_split_number = axis_split_number;
+        y_config.split_number = axis_split_number;
     }
     if let Some(axis_name_gap) = get_f32_from_value(item, "axis_name_gap") {
-        y_config.axis_name_gap = axis_name_gap;
+        y_config.name_gap = axis_name_gap;
     }
     if let Some(axis_formatter) = get_string_from_value(item, "axis_formatter") {
-        y_config.axis_formatter = Some(axis_formatter);
+        y_config.formatter = Some(axis_formatter);
     }
     if let Some(axis_margin) = get_margin_from_value(item, "axis_margin") {
-        y_config.axis_margin = Some(axis_margin);
+        y_config.margin = Some(axis_margin);
     }
     if let Some(axis_min) = get_f32_from_value(item, "axis_min") {
-        y_config.axis_min = Some(axis_min);
+        y_config.min = Some(axis_min);
     }
     if let Some(axis_max) = get_f32_from_value(item, "axis_max") {
-        y_config.axis_max = Some(axis_max);
+        y_config.max = Some(axis_max);
     }
     if let Some(scale) = get_axis_scale_from_value(item, "axis_scale") {
-        y_config.axis_scale = scale;
+        y_config.scale = scale;
     }
     if let Some(axis_inverse) = get_bool_from_value(item, "axis_inverse") {
-        y_config.axis_inverse = axis_inverse;
+        y_config.inverse = axis_inverse;
     }
     if let Some(axis_title) = get_string_from_value(item, "axis_title") {
-        y_config.axis_title = Some(axis_title);
+        y_config.title = Some(axis_title);
     }
     y_config
 }
@@ -496,7 +492,12 @@ fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {
                     ),
                     _ => MarkLineCategory::Average,
                 };
-                mark_lines.push(MarkLine { category })
+                mark_lines.push(MarkLine {
+                    category,
+                    color: get_color_from_value(item, "color"),
+                    stroke_width: get_f32_from_value(item, "stroke_width"),
+                    stroke_dash_array: get_string_from_value(item, "stroke_dash_array"),
+                })
             }
         }
     }
@@ -527,7 +528,12 @@ fn get_mark_areas(value: &serde_json::Value, key: &str) -> Vec<MarkArea> {
                 get_mark_value(item.get("from")),
                 get_mark_value(item.get("to")),
             ) {
-                mark_areas.push(MarkArea { from, to });
+                mark_areas.push(MarkArea {
+                    from,
+                    to,
+                    color: get_color_from_value(item, "color"),
+                    opacity: get_f32_from_value(item, "opacity"),
+                });
             }
         }
     }
@@ -579,6 +585,7 @@ fn get_series_band_from_value(value: &serde_json::Value, key: &str) -> Option<Se
     Some(SeriesBand {
         lower: get_f32_slice_from_value_support_nil(band, "lower").unwrap_or_default(),
         upper: get_f32_slice_from_value_support_nil(band, "upper").unwrap_or_default(),
+        stroke_width: get_f32_from_value(band, "stroke_width"),
     })
 }
 

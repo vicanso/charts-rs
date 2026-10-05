@@ -130,11 +130,11 @@ impl HeatmapSeries {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HeatmapChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     // no use, but for derive chart
     /// The heatmap cell data and color mapping.
-    pub series: HeatmapSeries,
+    pub heatmap_series: HeatmapSeries,
 
     // title
 
@@ -167,31 +167,31 @@ impl std::ops::DerefMut for HeatmapChart {
 
 impl HeatmapChart {
     fn fill_default(&mut self) {
-        if self.y_axis_configs[0].axis_stroke_color.is_zero() {
-            self.y_axis_configs[0].axis_stroke_color = self.x_axis_stroke_color;
+        if self.y_axis_configs[0].stroke_color.is_zero() {
+            self.y_axis_configs[0].stroke_color = self.x_axis.stroke_color;
         }
-        self.y_axis_configs[0].axis_name_align = Some(Align::Center);
-        self.y_axis_configs[0].axis_split_number += 1;
-        if self.series.max_color.is_zero() {
-            self.series.max_color = (191, 68, 76).into();
+        self.y_axis_configs[0].name_align = Some(Align::Center);
+        self.y_axis_configs[0].split_number += 1;
+        if self.heatmap_series.max_color.is_zero() {
+            self.heatmap_series.max_color = (191, 68, 76).into();
         }
-        if self.series.min_color.is_zero() {
-            self.series.min_color = (240, 217, 156).into();
+        if self.heatmap_series.min_color.is_zero() {
+            self.heatmap_series.min_color = (240, 217, 156).into();
         }
-        if self.series.min_font_color.is_zero() {
-            self.series.min_font_color = (70, 70, 70).into();
+        if self.heatmap_series.min_font_color.is_zero() {
+            self.heatmap_series.min_font_color = (70, 70, 70).into();
         }
-        if self.series.max_font_color.is_zero() {
-            self.series.max_font_color = (238, 238, 238).into();
+        if self.heatmap_series.max_font_color.is_zero() {
+            self.heatmap_series.max_font_color = (238, 238, 238).into();
         }
-        if self.series.max == 0.0 {
+        if self.heatmap_series.max == 0.0 {
             let mut max = 0.0;
-            for item in self.series.data.iter() {
+            for item in self.heatmap_series.data.iter() {
                 if item.value > max {
                     max = item.value
                 }
             }
-            self.series.max = max;
+            self.heatmap_series.max = max;
         }
     }
     /// Creates a heatmap chart from json.
@@ -207,34 +207,34 @@ impl HeatmapChart {
         }
         if let Some(value) = value.get("series") {
             if let Some(min) = get_f32_from_value(value, "min") {
-                h.series.min = min;
+                h.heatmap_series.min = min;
             }
             if let Some(max) = get_f32_from_value(value, "max") {
-                h.series.max = max;
+                h.heatmap_series.max = max;
             }
             if let Some(min_color) = get_color_from_value(value, "min_color") {
-                h.series.min_color = min_color;
+                h.heatmap_series.min_color = min_color;
             }
             if let Some(max_color) = get_color_from_value(value, "max_color") {
-                h.series.max_color = max_color;
+                h.heatmap_series.max_color = max_color;
             }
             if let Some(min_font_color) = get_color_from_value(value, "min_font_color") {
-                h.series.min_font_color = min_font_color;
+                h.heatmap_series.min_font_color = min_font_color;
             }
             if let Some(max_font_color) = get_color_from_value(value, "max_font_color") {
-                h.series.max_font_color = max_font_color;
+                h.heatmap_series.max_font_color = max_font_color;
             }
             if let Some(colors) = get_color_slice_from_value(value, "colors") {
-                h.series.colors = colors;
+                h.heatmap_series.colors = colors;
             }
             if let Some(steps) = get_usize_from_value(value, "steps") {
-                h.series.steps = steps;
+                h.heatmap_series.steps = steps;
             }
             if let Some(thresholds) = get_f32_slice_from_value(value, "thresholds") {
-                h.series.thresholds = thresholds;
+                h.heatmap_series.thresholds = thresholds;
             }
             if let Some(symbol) = get_string_from_value(value, "symbol") {
-                h.series.symbol = if symbol.eq_ignore_ascii_case("circle") {
+                h.heatmap_series.symbol = if symbol.eq_ignore_ascii_case("circle") {
                     HeatmapSymbol::Circle
                 } else {
                     HeatmapSymbol::Rect
@@ -255,7 +255,7 @@ impl HeatmapChart {
                         }
                     }
                 }
-                h.series.data = values;
+                h.heatmap_series.data = values;
             }
         }
         h.fill_default();
@@ -285,7 +285,7 @@ impl HeatmapChart {
             y_axis_data,
             ..Default::default()
         };
-        h.x_axis_data = x_axis_data;
+        h.x_axis.data = x_axis_data;
         let mut max = 0.0_f32;
         let mut data = vec![];
         for item in series_data.iter() {
@@ -294,7 +294,7 @@ impl HeatmapChart {
             }
             data.push((*item).into());
         }
-        h.series.data = data;
+        h.heatmap_series.data = data;
         let theme = get_theme(theme);
         h.base.fill_theme(theme, &mut h.y_axis_configs);
         h.fill_default();
@@ -304,19 +304,19 @@ impl HeatmapChart {
     pub fn svg(&self) -> canvas::Result<String> {
         let mut c = self.new_canvas();
 
-        if self.x_axis_data.is_empty() || self.y_axis_data.is_empty() {
+        if self.x_axis.data.is_empty() || self.y_axis_data.is_empty() {
             return Err(canvas::Error::Params {
                 message: "x axis or y axis can not be empty".to_string(),
             });
         }
 
-        let mut x_axis_height = self.x_axis_height;
-        if self.x_axis_hidden {
+        let mut x_axis_height = self.x_axis.height;
+        if self.x_axis.hidden {
             x_axis_height = 0.0;
         }
         let axis_top = self.render_header(&mut c);
         let titles =
-            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis_title, false);
+            self.reserve_axis_titles(&mut c, &self.y_axis_configs, &self.x_axis.title, false);
         let axis_height = c.height() - x_axis_height - axis_top;
 
         // minus the height of top text area
@@ -330,7 +330,7 @@ impl HeatmapChart {
         if !self.y_axis_hidden {
             let max_text_width_box = measure_max_text_width_family(
                 &self.font_family,
-                self.y_axis_configs[0].axis_font_size,
+                self.y_axis_configs[0].font.size,
                 self.y_axis_data.iter().map(|item| item.as_str()).collect(),
             )?;
             y_axis_width = max_text_width_box.width() + self.margin.left;
@@ -350,80 +350,81 @@ impl HeatmapChart {
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
-            &self.x_axis_title,
+            &self.x_axis.title,
             y_axis_width,
             axis_top,
             axis_width,
             axis_height,
         );
         // x axis
-        if !self.x_axis_hidden {
+        if !self.x_axis.hidden {
             self.render_x_axis(
                 c.child(Box {
                     top: c.height() - x_axis_height,
                     left: y_axis_width,
                     ..Default::default()
                 }),
-                self.x_axis_data.clone(),
+                self.x_axis.data.clone(),
                 axis_width,
             );
         }
-        let mut data = vec![None; self.x_axis_data.len() * self.y_axis_data.len()];
-        for item in self.series.data.iter() {
+        let mut data = vec![None; self.x_axis.data.len() * self.y_axis_data.len()];
+        for item in self.heatmap_series.data.iter() {
             if item.index < data.len() {
                 data[item.index] = Some(item.value);
             }
         }
 
-        let x_unit = (axis_width - 1.0) / self.x_axis_data.len() as f32;
+        let x_unit = (axis_width - 1.0) / self.x_axis.data.len() as f32;
         let y_unit = (axis_height - 1.0) / self.y_axis_data.len() as f32;
         let mut c1 = c.child(Box {
             left: y_axis_width + 1.0,
             ..Default::default()
         });
         let y_axis_count = self.y_axis_data.len();
-        let circles = self.series.symbol == HeatmapSymbol::Circle;
+        let circles = self.heatmap_series.symbol == HeatmapSymbol::Circle;
         for i in 0..y_axis_count {
             // A punch card: the circles of a row lie on a line.
             if circles {
                 let y = y_unit * (y_axis_count - i - 1) as f32 + y_unit / 2.0;
                 c1.line(Line {
-                    color: Some(self.grid_stroke_color),
-                    stroke_width: self.grid_stroke_width,
+                    color: Some(self.grid.stroke_color),
+                    stroke_width: self.grid.stroke_width,
                     left: 0.0,
                     top: y,
-                    right: x_unit * self.x_axis_data.len() as f32,
+                    right: x_unit * self.x_axis.data.len() as f32,
                     bottom: y,
                     ..Default::default()
                 });
             }
-            for j in 0..self.x_axis_data.len() {
-                let index = i * self.x_axis_data.len() + j;
+            for j in 0..self.x_axis.data.len() {
+                let index = i * self.x_axis.data.len() + j;
                 let x = x_unit * j as f32;
                 // position of y axis starts from bottom
                 let y = y_unit * (y_axis_count - i - 1) as f32;
                 let mut text = "".to_string();
-                let mut font_color = self.series.min_font_color;
+                let mut font_color = self.heatmap_series.min_font_color;
                 let color = if let Some(value) = data[index] {
-                    let percent = (value - self.series.min) / (self.series.max - self.series.min);
+                    let percent = (value - self.heatmap_series.min)
+                        / (self.heatmap_series.max - self.heatmap_series.min);
                     // The light font on the high values of a plain scale; on
                     // a scale of one's own, wherever the cell is dark.
-                    let dark_cell = if self.series.is_custom_scale() {
-                        !self.series.get_color(value).is_light()
+                    let dark_cell = if self.heatmap_series.is_custom_scale() {
+                        !self.heatmap_series.get_color(value).is_light()
                     } else {
                         percent >= 0.8
                     };
                     if dark_cell {
-                        font_color = self.series.max_font_color;
+                        font_color = self.heatmap_series.max_font_color;
                     }
 
                     text = format_series_label(
-                        &self.series_label_formatter,
+                        &self.series.label.formatter,
                         value,
                         &self.y_axis_data[i],
-                        &self.x_axis_data[j],
+                        &self.x_axis.data[j],
                     );
-                    self.series.get_color(value)
+                    self.heatmap_series.get_color(value)
                 } else {
                     let mut color_index = j;
                     if i % 2 != 0 {
@@ -450,16 +451,16 @@ impl HeatmapChart {
                 // is keyed by; only cells that have data carry a value.
                 let mut dataset = vec![
                     ("index".to_string(), index.to_string()),
-                    ("x".to_string(), self.x_axis_data[j].clone()),
+                    ("x".to_string(), self.x_axis.data[j].clone()),
                     ("y".to_string(), self.y_axis_data[i].clone()),
                 ];
                 if let Some(value) = data[index] {
                     dataset.push(("value".to_string(), format_float(value)));
                 }
-                let tooltip_text = match (self.tooltip_show, data[index]) {
+                let tooltip_text = match (self.tooltip.show, data[index]) {
                     (true, Some(value)) => Some(format!(
                         "{}, {}: {}",
-                        self.x_axis_data[j],
+                        self.x_axis.data[j],
                         self.y_axis_data[i],
                         format_float(value)
                     )),
@@ -471,9 +472,9 @@ impl HeatmapChart {
                     let Some(value) = data[index] else {
                         continue;
                     };
-                    let range = self.series.max - self.series.min;
+                    let range = self.heatmap_series.max - self.heatmap_series.min;
                     let share = if range > 0.0 {
-                        ((value - self.series.min) / range).clamp(0.0, 1.0)
+                        ((value - self.heatmap_series.min) / range).clamp(0.0, 1.0)
                     } else {
                         1.0
                     };
@@ -494,9 +495,10 @@ impl HeatmapChart {
                         c1.text_unmeasured(Text {
                             text: tip,
                             class: Some("ct-tip".to_string()),
+                            font_weight: self.tooltip.font.weight.clone(),
                             font_family: Some(self.font_family.clone()),
-                            font_color: Some(self.series_label_font_color),
-                            font_size: Some(self.series_label_font_size),
+                            font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                            font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                             x: Some(cx),
                             y: Some(cy - radius),
                             dy: Some(-4.0),
@@ -522,9 +524,10 @@ impl HeatmapChart {
                     c1.text_unmeasured(Text {
                         text: tip,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(x + x_unit / 2.0),
                         y: Some(y),
                         dy: Some(-4.0),
@@ -537,7 +540,7 @@ impl HeatmapChart {
                     let y1 = y + y_unit / 2.0;
                     if let Ok(b) = measure_text_width_family(
                         &self.font_family,
-                        self.series_label_font_size,
+                        self.series.label.font.size,
                         &text,
                     ) {
                         x1 -= b.width() / 2.0;
@@ -546,8 +549,8 @@ impl HeatmapChart {
                         text,
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(font_color),
-                        font_size: Some(self.series_label_font_size),
-                        font_weight: self.series_label_font_weight.clone(),
+                        font_size: Some(self.series.label.font.size),
+                        font_weight: self.series.label.font.weight.clone(),
                         dominant_baseline: Some("central".to_string()),
                         x: Some(x1),
                         y: Some(y1),
@@ -557,7 +560,7 @@ impl HeatmapChart {
             }
         }
 
-        if self.tooltip_show {
+        if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
             c.svg()
@@ -608,7 +611,7 @@ mod tests {
             y_axis_data,
         );
         heatmap_chart.width = 800.0;
-        heatmap_chart.series.max = 10.0;
+        heatmap_chart.heatmap_series.max = 10.0;
 
         assert_snapshot!("heatmap_chart/basic.svg", heatmap_chart.svg().unwrap());
     }
@@ -651,7 +654,7 @@ mod tests {
             THEME_DARK,
         );
         heatmap_chart.width = 800.0;
-        heatmap_chart.series.max = 10.0;
+        heatmap_chart.heatmap_series.max = 10.0;
 
         assert_snapshot!("heatmap_chart/basic_dark.svg", heatmap_chart.svg().unwrap());
     }
@@ -693,8 +696,8 @@ mod tests {
             y_axis_data,
         );
         heatmap_chart.width = 800.0;
-        heatmap_chart.series.max = 10.0;
-        heatmap_chart.x_axis_hidden = true;
+        heatmap_chart.heatmap_series.max = 10.0;
+        heatmap_chart.x_axis.hidden = true;
         heatmap_chart.y_axis_hidden = true;
 
         assert_snapshot!("heatmap_chart/no_axis.svg", heatmap_chart.svg().unwrap());

@@ -350,9 +350,9 @@ let mut bar_chart = BarChart::new_with_theme(
     ],
     THEME_GRAFANA,
 );
-bar_chart.title_text = "Mixed Line and Bar".to_string();
-bar_chart.legend_margin = Some(Box {
-    top: bar_chart.title_height,
+bar_chart.title.text = "Mixed Line and Bar".to_string();
+bar_chart.legend.margin = Some(Box {
+    top: bar_chart.title.height,
     bottom: 5.0,
     ..Default::default()
 });
@@ -363,12 +363,26 @@ bar_chart.series_list[2].label_show = true;
 bar_chart
     .y_axis_configs
     .push(bar_chart.y_axis_configs[0].clone());
-bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
-bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
+bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
+bar_chart.y_axis_configs[1].formatter = Some("{c} °C".to_string());
 
 println!("{}", &bar_chart.svg().unwrap());
 svg_to_png(&bar_chart.svg().unwrap()).unwrap();
 ```
+
+### Rust 与 JSON 中的参数
+
+两种方式的参数相同，本文档统一用 JSON 参数名来称呼它们。在 Rust 中，共享的参数按所属元素分组——`title`、`sub_title`、`legend`、`x_axis`、`grid`、`series`、`tooltip`——JSON 参数名就是字段路径用 `_` 连接：
+
+| JSON | Rust |
+|------|------|
+| `"title_font_size": 18` | `chart.title.font.size = 18.0` |
+| `"legend_position": "bottom"` | `chart.legend.position = Some(Position::Bottom)` |
+| `"x_axis_data": [...]` | `chart.x_axis.data = vec![...]` |
+| `"series_label_font_color": "#333"` | `chart.series.label.font.color = "#333".into()` |
+| `"tooltip_show": true` | `chart.tooltip.show = true` |
+
+例外：`x_boundary_gap` 对应 `x_axis.boundary_gap`，`x_axis_type` 对应 `x_axis.kind`，y 轴配置的参数去掉 `axis_` 前缀（`"axis_min"` 对应 `y_axis_configs[0].min`）。所有 JSON 参数见 [JSON 参数文档](./docs/json-zh.md)。
 
 ### 通过 JSON 字符串配置创建图表
 
@@ -489,7 +503,7 @@ let series: Series = ("销售额", vec![Some(120.0), None, Some(101.0)]).into();
 - 日期字符串（`2024-03-01`、`2024-03-01 08:30`、`2024-03-01T08:30:00+08:00`）会自动使用时间轴；数字是普通数值，配合 `"x_axis_type": "time"` 时表示 unix 秒。
 - 刻度落在整数值或整点时间上。`x_axis_min` / `x_axis_max` 固定范围，`x_axis_formatter` 设置标签格式（`"{c} km"`，时间轴可用 `"%m-%d %H:%M"` 这类模式），`x_axis_time_offset`（相对 UTC 的分钟数，东八区为 480）用于按本地时间显示时间戳。
 
-Rust 中设置 `chart.x_axis_values`（`Vec<f64>`），时间戳再加上 `chart.x_axis_type = AxisType::Time`。
+Rust 中设置 `chart.x_axis.values`（`Vec<f64>`），时间戳再加上 `chart.x_axis.kind = AxisType::Time`。
 
 ### 坐标轴标题
 

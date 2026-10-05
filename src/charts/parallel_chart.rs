@@ -25,15 +25,15 @@ use super::util::*;
 /// view for comparing many records across many numeric dimensions at once.
 ///
 /// Data reuses the shared model: `series_list` holds one [`Series`] per record
-/// (its `data` are the values, one per dimension) and `x_axis_data` holds the
+/// (its `data` are the values, one per dimension) and `x_axis.data` holds the
 /// dimension names. Each axis is scaled independently to its own min..max.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ParallelChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
-    /// One config per dimension (falling back to the first): `axis_min` /
-    /// `axis_max` pin the range of that axis and `axis_formatter` formats
+    /// One config per dimension (falling back to the first): `min` /
+    /// `max` pin the range of that axis and `formatter` formats
     /// its min/max labels.
     pub y_axis_configs: Vec<YAxisConfig>,
 }
@@ -66,7 +66,7 @@ impl ParallelChart {
             ..Default::default()
         };
         c.series_list = series_list;
-        c.x_axis_data = x_axis_data;
+        c.x_axis.data = x_axis_data;
         c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c
     }
@@ -76,7 +76,7 @@ impl ParallelChart {
         let mut c = ParallelChart {
             ..Default::default()
         };
-        // `series_list` and `x_axis_data` are parsed by the derived fill_option.
+        // `series_list` and `x_axis.data` are parsed by the derived fill_option.
         c.base.fill_option(json, &mut c.y_axis_configs, &[])?;
         Ok(c)
     }
@@ -99,8 +99,8 @@ impl ParallelChart {
         }
 
         // Number of axes: the dimension names if given, else the longest record.
-        let n = if !self.x_axis_data.is_empty() {
-            self.x_axis_data.len()
+        let n = if !self.x_axis.data.is_empty() {
+            self.x_axis.data.len()
         } else {
             self.series_list
                 .iter()
@@ -112,7 +112,7 @@ impl ParallelChart {
             return c.svg();
         }
 
-        let font_size = self.series_label_font_size.max(10.0);
+        let font_size = self.series.label.font.size.max(10.0);
         // Reserve room for the dimension name (top) and min/max value labels.
         let top_pad = font_size + 6.0;
         let bottom_pad = font_size + 6.0;
@@ -149,10 +149,10 @@ impl ParallelChart {
         let axis_config = |j: usize| get_y_axis_config(&self.y_axis_configs, j);
         for j in 0..n {
             let config = axis_config(j);
-            if let Some(min) = config.axis_min.filter(|v| v.is_finite()) {
+            if let Some(min) = config.min.filter(|v| v.is_finite()) {
                 mins[j] = min;
             }
-            if let Some(max) = config.axis_max.filter(|v| v.is_finite()) {
+            if let Some(max) = config.max.filter(|v| v.is_finite()) {
                 maxs[j] = max;
             }
             // Empty or flat dimension: fall back to a unit range so the mapping
@@ -174,8 +174,8 @@ impl ParallelChart {
         for j in 0..n {
             let x = x_at(j);
             content.line(Line {
-                color: Some(self.grid_stroke_color),
-                stroke_width: self.grid_stroke_width.max(1.0),
+                color: Some(self.grid.stroke_color),
+                stroke_width: self.grid.stroke_width.max(1.0),
                 left: x,
                 top: plot_top,
                 right: x,
@@ -183,13 +183,13 @@ impl ParallelChart {
                 ..Default::default()
             });
             // Dimension name above the axis.
-            if let Some(name) = self.x_axis_data.get(j) {
+            if let Some(name) = self.x_axis.data.get(j) {
                 content.text(Text {
                     text: name.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.x_axis_font_color),
+                    font_color: Some(self.x_axis.font.color),
                     font_size: Some(font_size),
-                    font_weight: self.x_axis_font_weight.clone(),
+                    font_weight: self.x_axis.font.weight.clone(),
                     x: Some(x),
                     y: Some(plot_top - font_size * 0.6),
                     text_anchor: Some("middle".to_string()),
@@ -205,7 +205,7 @@ impl ParallelChart {
             } else {
                 (x + 3.0, "start")
             };
-            let formatter = axis_config(j).axis_formatter.unwrap_or_default();
+            let formatter = axis_config(j).formatter.unwrap_or_default();
             for (value, y) in [
                 (maxs[j], plot_top + font_size * 0.6),
                 (mins[j], plot_bottom - font_size * 0.6),
@@ -213,7 +213,7 @@ impl ParallelChart {
                 content.text(Text {
                     text: format_string(&format_float(value), &formatter),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
+                    font_color: Some(self.series.label.font.color),
                     font_size: Some(font_size * 0.85),
                     x: Some(label_x),
                     y: Some(y),
@@ -226,7 +226,7 @@ impl ParallelChart {
 
         // ── Record polylines ──────────────────────────────────────────────────
         for (i, s) in self.series_list.iter().enumerate() {
-            let color = get_color(&self.series_colors, s.index.unwrap_or(i));
+            let color = get_color(&self.series.colors, s.index.unwrap_or(i));
             let mut points: Vec<Point> = Vec::with_capacity(n);
             for j in 0..n {
                 if let Some(v) = val(s, j) {
@@ -238,7 +238,7 @@ impl ParallelChart {
             }
             content.polyline(Polyline {
                 color: Some(color),
-                stroke_width: self.series_stroke_width.max(1.0),
+                stroke_width: self.series.stroke_width.max(1.0),
                 points,
             });
         }

@@ -71,7 +71,10 @@ fn heatmap_chart_cell_dataset() {
 fn heatmap_punch_card() {
     let chart =
         HeatmapChart::from_json(include_str!("../asset/heatmap_chart/punch_card.json")).unwrap();
-    assert_eq!(charts_rs::HeatmapSymbol::Circle, chart.series.symbol);
+    assert_eq!(
+        charts_rs::HeatmapSymbol::Circle,
+        chart.heatmap_series.symbol
+    );
     common::assert_snapshot!("heatmap_chart/punch_card_json.svg", chart.svg().unwrap());
 
     let json = |symbol: &str| {

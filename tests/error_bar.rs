@@ -73,10 +73,10 @@ fn error_bars_on_bars() {
         )],
         categories(2),
     );
-    chart.legend_show = Some(false);
-    chart.tooltip_show = true;
-    chart.y_axis_configs[0].axis_max = Some(40.0);
-    chart.y_axis_configs[0].axis_split_number = 4;
+    chart.legend.show = Some(false);
+    chart.tooltip.show = true;
+    chart.y_axis_configs[0].max = Some(40.0);
+    chart.y_axis_configs[0].split_number = 4;
     let svg = chart.svg().unwrap();
 
     let lines = error_lines(&svg);
@@ -149,8 +149,8 @@ fn error_bars_on_lines_and_points() {
         )],
         categories(3),
     );
-    chart.legend_show = Some(false);
-    chart.tooltip_show = true;
+    chart.legend.show = Some(false);
+    chart.tooltip.show = true;
     let svg = chart.svg().unwrap();
     // A point without both of its bounds has no error bar; a bound without
     // a point neither.
@@ -178,7 +178,7 @@ fn error_bars_on_lines_and_points() {
     );
     series.name = "S".to_string();
     let mut chart = ScatterChart::new(vec![series]);
-    chart.legend_show = Some(false);
+    chart.legend.show = Some(false);
     let svg = chart.svg().unwrap();
     let lines = error_lines(&svg);
     assert_eq!(9, lines.len());
@@ -218,6 +218,7 @@ fn error_bar_from_json() {
         Some(SeriesBand {
             lower: vec![Some(10.0), None],
             upper: vec![Some(30.0), Some(15.0)],
+            ..Default::default()
         }),
         chart.series_list[0].error_bar
     );

@@ -36,11 +36,37 @@ pub struct TableCellStyle {
     pub indexes: Vec<usize>,
 }
 
+/// The header row of a table.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct TableHeaderConfig {
+    /// Padding of the row.
+    pub row_padding: Box,
+    /// Minimum height of the row.
+    pub row_height: f32,
+    /// Font of the cells.
+    pub font: FontConfig,
+    /// Background color of the row.
+    pub background_color: Color,
+}
+
+/// The body rows of a table.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct TableBodyConfig {
+    /// Padding of the rows.
+    pub row_padding: Box,
+    /// Minimum height of the rows.
+    pub row_height: f32,
+    /// Font of the cells.
+    pub font: FontConfig,
+    /// Background colors of the rows, cycled per row.
+    pub background_colors: Vec<Color>,
+}
+
 /// A table rendered as SVG, with optional per-cell style overrides.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TableChart {
     /// The shared chart options (size, title/sub-title, font); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
 
     /// The table content as rows of cells; the first row is the header.
@@ -52,34 +78,16 @@ pub struct TableChart {
     pub text_aligns: Vec<Align>,
     /// Color of the row separator lines.
     pub border_color: Color,
+    /// Stroke width of the row separator lines and of the outer border.
+    /// Default: 1.
+    pub border_width: f32,
     /// Draws the outer border.
     pub outlined: bool,
 
-    /// Padding of the header row.
-    pub header_row_padding: Box,
-    /// Minimum height of the header row.
-    pub header_row_height: f32,
-    /// Header font size.
-    pub header_font_size: f32,
-    /// Header font weight, e.g. `"bold"`.
-    pub header_font_weight: Option<String>,
-    /// Header font color.
-    pub header_font_color: Color,
-    /// Header background color.
-    pub header_background_color: Color,
-
-    /// Padding of body rows.
-    pub body_row_padding: Box,
-    /// Minimum height of body rows.
-    pub body_row_height: f32,
-    /// Body font size.
-    pub body_font_size: f32,
-    /// Body font color.
-    pub body_font_color: Color,
-    /// Body font weight, e.g. `"bold"`.
-    pub body_font_weight: Option<String>,
-    /// Body row background colors, cycled per row.
-    pub body_background_colors: Vec<Color>,
+    /// The header row.
+    pub header: TableHeaderConfig,
+    /// The body rows.
+    pub body: TableBodyConfig,
 
     /// Per-cell style overrides.
     pub cell_styles: Vec<TableCellStyle>,
@@ -127,47 +135,47 @@ impl TableChart {
             self.background_color = background_color;
         }
         if let Some(title_text) = get_string_from_value(&data, "title_text") {
-            self.title_text = title_text;
+            self.title.text = title_text;
         }
         if let Some(title_font_size) = get_f32_from_value(&data, "title_font_size") {
-            self.title_font_size = title_font_size;
+            self.title.font.size = title_font_size;
         }
         if let Some(title_font_color) = get_color_from_value(&data, "title_font_color") {
-            self.title_font_color = title_font_color;
+            self.title.font.color = title_font_color;
         }
         if let Some(title_font_weight) = get_string_from_value(&data, "title_font_weight") {
-            self.title_font_weight = Some(title_font_weight);
+            self.title.font.weight = Some(title_font_weight);
         }
         if let Some(title_margin) = get_margin_from_value(&data, "title_margin") {
-            self.title_margin = Some(title_margin);
+            self.title.margin = Some(title_margin);
         }
         if let Some(title_align) = get_align_from_value(&data, "title_align") {
-            self.title_align = title_align;
+            self.title.align = title_align;
         }
         if let Some(title_height) = get_f32_from_value(&data, "title_height") {
-            self.title_height = title_height;
+            self.title.height = title_height;
         }
 
         if let Some(sub_title_text) = get_string_from_value(&data, "sub_title_text") {
-            self.sub_title_text = sub_title_text;
+            self.sub_title.text = sub_title_text;
         }
         if let Some(sub_title_font_size) = get_f32_from_value(&data, "sub_title_font_size") {
-            self.sub_title_font_size = sub_title_font_size;
+            self.sub_title.font.size = sub_title_font_size;
         }
         if let Some(sub_title_font_color) = get_color_from_value(&data, "sub_title_font_color") {
-            self.sub_title_font_color = sub_title_font_color;
+            self.sub_title.font.color = sub_title_font_color;
         }
         if let Some(sub_title_font_weight) = get_string_from_value(&data, "sub_title_font_weight") {
-            self.sub_title_font_weight = Some(sub_title_font_weight);
+            self.sub_title.font.weight = Some(sub_title_font_weight);
         }
         if let Some(sub_title_margin) = get_margin_from_value(&data, "sub_title_margin") {
-            self.sub_title_margin = Some(sub_title_margin);
+            self.sub_title.margin = Some(sub_title_margin);
         }
         if let Some(sub_title_align) = get_align_from_value(&data, "sub_title_align") {
-            self.sub_title_align = sub_title_align;
+            self.sub_title.align = sub_title_align;
         }
         if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
-            self.sub_title_height = sub_title_height;
+            self.sub_title.height = sub_title_height;
         }
         if let Some(data) = data.get("cell_styles")
             && let Some(arr) = data.as_array()
@@ -218,47 +226,50 @@ impl TableChart {
             self.text_aligns = text_aligns;
         }
         if let Some(header_row_padding) = get_margin_from_value(&data, "header_row_padding") {
-            self.header_row_padding = header_row_padding;
+            self.header.row_padding = header_row_padding;
         }
         if let Some(header_row_height) = get_f32_from_value(&data, "header_row_height") {
-            self.header_row_height = header_row_height;
+            self.header.row_height = header_row_height;
         }
         if let Some(header_font_size) = get_f32_from_value(&data, "header_font_size") {
-            self.header_font_size = header_font_size;
+            self.header.font.size = header_font_size;
         }
         if let Some(header_font_weight) = get_string_from_value(&data, "header_font_weight") {
-            self.header_font_weight = Some(header_font_weight);
+            self.header.font.weight = Some(header_font_weight);
         }
         if let Some(header_font_color) = get_color_from_value(&data, "header_font_color") {
-            self.header_font_color = header_font_color;
+            self.header.font.color = header_font_color;
         }
         if let Some(header_background_color) =
             get_color_from_value(&data, "header_background_color")
         {
-            self.header_background_color = header_background_color;
+            self.header.background_color = header_background_color;
         }
         if let Some(body_row_padding) = get_margin_from_value(&data, "body_row_padding") {
-            self.body_row_padding = body_row_padding;
+            self.body.row_padding = body_row_padding;
         }
         if let Some(body_row_height) = get_f32_from_value(&data, "body_row_height") {
-            self.body_row_height = body_row_height;
+            self.body.row_height = body_row_height;
         }
         if let Some(body_font_size) = get_f32_from_value(&data, "body_font_size") {
-            self.body_font_size = body_font_size;
+            self.body.font.size = body_font_size;
         }
         if let Some(body_font_color) = get_color_from_value(&data, "body_font_color") {
-            self.body_font_color = body_font_color;
+            self.body.font.color = body_font_color;
         }
         if let Some(body_font_weight) = get_string_from_value(&data, "body_font_weight") {
-            self.body_font_weight = Some(body_font_weight);
+            self.body.font.weight = Some(body_font_weight);
         }
         if let Some(body_background_colors) =
             get_color_slice_from_value(&data, "body_background_colors")
         {
-            self.body_background_colors = body_background_colors;
+            self.body.background_colors = body_background_colors;
         }
         if let Some(border_color) = get_color_from_value(&data, "border_color") {
             self.border_color = border_color;
+        }
+        if let Some(border_width) = get_f32_from_value(&data, "border_width") {
+            self.border_width = border_width;
         }
         if let Some(outlined) = get_bool_from_value(&data, "outlined") {
             self.outlined = outlined;
@@ -275,10 +286,17 @@ impl TableChart {
     pub fn new_with_theme(data: Vec<Vec<String>>, theme: &str) -> TableChart {
         let mut table = TableChart {
             data,
-            header_row_padding: (10.0, 8.0).into(),
-            header_row_height: 30.0,
-            body_row_padding: (10.0, 5.0).into(),
-            body_row_height: 30.0,
+            border_width: 1.0,
+            header: TableHeaderConfig {
+                row_padding: (10.0, 8.0).into(),
+                row_height: 30.0,
+                ..Default::default()
+            },
+            body: TableBodyConfig {
+                row_padding: (10.0, 5.0).into(),
+                row_height: 30.0,
+                ..Default::default()
+            },
             ..Default::default()
         };
         table.fill_theme(get_theme(theme));
@@ -289,26 +307,26 @@ impl TableChart {
         self.width = t.width;
         self.background_color = t.background_color;
 
-        self.title_font_color = t.title_font_color;
-        self.title_font_size = t.title_font_size;
-        self.title_font_weight.clone_from(&t.title_font_weight);
-        self.title_margin.clone_from(&t.title_margin);
-        self.title_align = t.title_align.clone();
-        self.title_height = t.title_height * 1.5;
+        self.title.font.color = t.title.font.color;
+        self.title.font.size = t.title.font.size;
+        self.title.font.weight.clone_from(&t.title.font.weight);
+        self.title.margin.clone_from(&t.title.margin);
+        self.title.align = t.title.align.clone();
+        self.title.height = t.title.height * 1.5;
 
-        self.sub_title_font_color = t.sub_title_font_color;
-        self.sub_title_font_size = t.sub_title_font_size;
-        self.sub_title_margin.clone_from(&t.sub_title_margin);
-        self.sub_title_align = t.sub_title_align.clone();
-        self.sub_title_height = t.sub_title_height;
+        self.sub_title.font.color = t.sub_title.font.color;
+        self.sub_title.font.size = t.sub_title.font.size;
+        self.sub_title.margin.clone_from(&t.sub_title.margin);
+        self.sub_title.align = t.sub_title.align.clone();
+        self.sub_title.height = t.sub_title.height;
 
-        self.header_font_size = t.sub_title_font_size;
-        self.header_font_color = t.sub_title_font_color;
-        self.header_background_color = t.table_header_color;
+        self.header.font.size = t.sub_title.font.size;
+        self.header.font.color = t.sub_title.font.color;
+        self.header.background_color = t.table_header_color;
 
-        self.body_font_size = t.sub_title_font_size;
-        self.body_font_color = t.sub_title_font_color;
-        self.body_background_colors.clone_from(&t.table_body_colors);
+        self.body.font.size = t.sub_title.font.size;
+        self.body.font.color = t.sub_title.font.color;
+        self.body.background_colors.clone_from(&t.table_body_colors);
         self.border_color = t.table_border_color;
     }
     /// Creates a table chart with default theme.
@@ -318,13 +336,13 @@ impl TableChart {
     fn render_title(&self, c: Canvas) -> f32 {
         let mut title_height = 0.0;
 
-        if !self.title_text.is_empty() {
-            let title_margin = self.title_margin.unwrap_or_default();
+        if !self.title.text.is_empty() {
+            let title_margin = self.title.margin.unwrap_or_default();
             let mut x = 0.0;
             if let Ok(title_box) =
-                measure_text_width_family(&self.font_family, self.title_font_size, &self.title_text)
+                measure_text_width_family(&self.font_family, self.title.font.size, &self.title.text)
             {
-                x = match self.title_align {
+                x = match self.title.align {
                     Align::Center => (c.width() - title_box.width()) / 2.0,
                     Align::Right => c.width() - title_box.width(),
                     _ => 0.0,
@@ -332,40 +350,40 @@ impl TableChart {
             }
             let title_margin_bottom = title_margin.bottom;
             let b = c.child(title_margin).text(Text {
-                text: self.title_text.clone(),
+                text: self.title.text.clone(),
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(self.title_font_size),
-                font_weight: self.title_font_weight.clone(),
-                font_color: Some(self.title_font_color),
-                line_height: Some(self.title_height),
+                font_size: Some(self.title.font.size),
+                font_weight: self.title.font.weight.clone(),
+                font_color: Some(self.title.font.color),
+                line_height: Some(self.title.height),
                 x: Some(x),
                 ..Default::default()
             });
             title_height = b.height() + title_margin_bottom;
         }
-        if !self.sub_title_text.is_empty() {
-            let mut sub_title_margin = self.sub_title_margin.unwrap_or_default();
+        if !self.sub_title.text.is_empty() {
+            let mut sub_title_margin = self.sub_title.margin.unwrap_or_default();
             let mut x = 0.0;
             if let Ok(sub_title_box) = measure_text_width_family(
                 &self.font_family,
-                self.sub_title_font_size,
-                &self.sub_title_text,
+                self.sub_title.font.size,
+                &self.sub_title.text,
             ) {
-                x = match self.sub_title_align {
+                x = match self.sub_title.align {
                     Align::Center => (c.width() - sub_title_box.width()) / 2.0,
                     Align::Right => c.width() - sub_title_box.width(),
                     _ => 0.0,
                 }
             }
             let sub_title_margin_bottom = sub_title_margin.bottom;
-            sub_title_margin.top += self.title_height;
+            sub_title_margin.top += self.title.height;
             let b = c.child(sub_title_margin).text(Text {
-                text: self.sub_title_text.clone(),
+                text: self.sub_title.text.clone(),
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(self.sub_title_font_size),
-                font_color: Some(self.sub_title_font_color),
-                font_weight: self.sub_title_font_weight.clone(),
-                line_height: Some(self.sub_title_height),
+                font_size: Some(self.sub_title.font.size),
+                font_color: Some(self.sub_title.font.color),
+                font_weight: self.sub_title.font.weight.clone(),
+                line_height: Some(self.sub_title.height),
                 x: Some(x),
                 ..Default::default()
             });
@@ -402,13 +420,13 @@ impl TableChart {
 
         let mut c = self.new_canvas();
 
-        if !self.title_text.is_empty() {
-            let mut title_height = self.title_height;
-            if let Some(value) = self.title_margin {
+        if !self.title.text.is_empty() {
+            let mut title_height = self.title.height;
+            if let Some(value) = self.title.margin {
                 title_height += value.top + value.bottom;
             }
-            if !self.sub_title_text.is_empty() {
-                title_height += self.sub_title_height;
+            if !self.sub_title.text.is_empty() {
+                title_height += self.sub_title.height;
             }
             c.rect(Rect {
                 fill: Some(self.background_color.into()),
@@ -471,12 +489,12 @@ impl TableChart {
 
         let mut table_content_list = vec![];
         for (i, items) in self.data.iter().enumerate() {
-            let mut font_size = self.body_font_size;
-            let mut padding = self.body_row_padding.left + self.body_row_padding.right;
+            let mut font_size = self.body.font.size;
+            let mut padding = self.body.row_padding.left + self.body.row_padding.right;
             let is_header = i == 0;
             if is_header {
-                font_size = self.header_font_size;
-                padding = self.header_row_padding.left + self.header_row_padding.right;
+                font_size = self.header.font.size;
+                padding = self.header.row_padding.left + self.header.row_padding.right;
             }
 
             let mut row_content_list = vec![];
@@ -493,37 +511,37 @@ impl TableChart {
             table_content_list.push(row_content_list);
         }
         let mut top = 0.0;
-        let body_background_color_count = self.body_background_colors.len();
+        let body_background_color_count = self.body.background_colors.len();
 
         for (i, items) in table_content_list.iter().enumerate() {
             let mut left = 0.0;
             let mut right = 0.0;
-            let mut line_height = self.body_row_height;
-            let mut padding = self.body_row_padding.top + self.body_row_padding.bottom;
-            let mut font_size = self.body_font_size;
-            let mut font_color = self.body_font_color;
+            let mut line_height = self.body.row_height;
+            let mut padding = self.body.row_padding.top + self.body.row_padding.bottom;
+            let mut font_size = self.body.font.size;
+            let mut font_color = self.body.font.color;
 
             let is_header = i == 0;
-            let mut font_weight = self.body_font_weight.clone();
+            let mut font_weight = self.body.font.weight.clone();
             let bg_color = if is_header {
-                line_height = self.header_row_height;
-                padding = self.header_row_padding.top + self.header_row_padding.bottom;
-                font_size = self.header_font_size;
-                font_color = self.header_font_color;
-                font_weight.clone_from(&self.header_font_weight);
-                self.header_background_color
+                line_height = self.header.row_height;
+                padding = self.header.row_padding.top + self.header.row_padding.bottom;
+                font_size = self.header.font.size;
+                font_color = self.header.font.color;
+                font_weight.clone_from(&self.header.font.weight);
+                self.header.background_color
             } else if body_background_color_count == 0 {
                 // An empty palette (`"body_background_colors": []`) means no
                 // row striping rather than a division by zero.
                 Color::transparent()
             } else {
-                self.body_background_colors[(i - 1) % body_background_color_count]
+                self.body.background_colors[(i - 1) % body_background_color_count]
             };
 
             let row_padding = if is_header {
-                self.header_row_padding
+                self.header.row_padding
             } else {
-                self.body_row_padding
+                self.body.row_padding
             };
             let mut count = 0;
             for content_list in items.iter() {
@@ -543,7 +561,7 @@ impl TableChart {
             if !self.border_color.is_transparent() {
                 c.line(Line {
                     color: Some(self.border_color),
-                    stroke_width: 1.0,
+                    stroke_width: self.border_width,
                     top,
                     right: c.width(),
                     bottom: top,
@@ -616,6 +634,8 @@ impl TableChart {
         if self.outlined {
             c.rect(Rect {
                 color: Some(self.border_color),
+                // The default of SVG is the default here: nothing is written.
+                stroke_width: (self.border_width != 1.0).then_some(self.border_width),
                 fill: Some(Color::transparent().into()),
                 left: 0.0,
                 top: 0.0,
@@ -660,7 +680,7 @@ mod tests {
                 "+4.32%".to_string(),
             ],
         ]);
-        table_chart.title_text = "NASDAQ".to_string();
+        table_chart.title.text = "NASDAQ".to_string();
         table_chart.cell_styles = vec![TableCellStyle {
             indexes: vec![1, 2],
             font_weight: Some("bold".to_string()),
@@ -695,7 +715,7 @@ mod tests {
                 "+4.32%".to_string(),
             ],
         ]);
-        table_chart.title_text = "NASDAQ".to_string();
+        table_chart.title.text = "NASDAQ".to_string();
         table_chart.text_aligns = vec![Align::Left, Align::Center];
         table_chart.cell_styles = vec![
             TableCellStyle {
@@ -741,7 +761,7 @@ mod tests {
             ],
             THEME_DARK,
         );
-        table_chart.title_text = "NASDAQ".to_string();
+        table_chart.title.text = "NASDAQ".to_string();
         table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
         assert_snapshot!("table_chart/basic_dark.svg", table_chart.svg().unwrap());
     }
@@ -773,7 +793,7 @@ mod tests {
             ],
             THEME_ANT,
         );
-        table_chart.title_text = "NASDAQ".to_string();
+        table_chart.title.text = "NASDAQ".to_string();
         table_chart.text_aligns = vec![Align::Left, Align::Center, Align::Right];
         assert_snapshot!("table_chart/basic_ant.svg", table_chart.svg().unwrap());
     }
@@ -805,8 +825,8 @@ mod tests {
             ],
             THEME_GRAFANA,
         );
-        table_chart.title_text = "NASDAQ".to_string();
-        table_chart.sub_title_text = "stock".to_string();
+        table_chart.title.text = "NASDAQ".to_string();
+        table_chart.sub_title.text = "stock".to_string();
         table_chart.spans = vec![0.5, 0.3, 0.2];
         let green = "#2d7c2b".into();
         let red = "#a93b01".into();

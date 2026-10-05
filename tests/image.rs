@@ -32,22 +32,22 @@ fn generate_image() {
         ],
         THEME_GRAFANA,
     );
-    bar_chart.title_text = "Mixed Line and Bar".to_string();
-    bar_chart.legend_margin = Some(Box {
-        top: bar_chart.title_height,
+    bar_chart.title.text = "Mixed Line and Bar".to_string();
+    bar_chart.legend.margin = Some(Box {
+        top: bar_chart.title.height,
         bottom: 5.0,
         ..Default::default()
     });
     bar_chart.series_list[2].category = Some(SeriesCategory::Line);
     bar_chart.series_list[2].y_axis_index = 1;
     bar_chart.series_list[2].label_show = true;
-    bar_chart.x_axis_name_rotate = 0.785;
+    bar_chart.x_axis.name_rotate = 0.785;
 
     bar_chart
         .y_axis_configs
         .push(bar_chart.y_axis_configs[0].clone());
-    bar_chart.y_axis_configs[0].axis_formatter = Some("{c} ml".to_string());
-    bar_chart.y_axis_configs[1].axis_formatter = Some("{c} °C".to_string());
+    bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
+    bar_chart.y_axis_configs[1].formatter = Some("{c} °C".to_string());
 
     let buf = svg_to_png(&bar_chart.svg().unwrap()).unwrap();
     common::save_asset("image/mix-line-bar.png", &buf);
@@ -80,8 +80,8 @@ fn generate_image() {
         series_list.label_show = true;
     }
     horizontal_bar_chart.margin.right = 30.0;
-    horizontal_bar_chart.title_text = "World Population".to_string();
-    horizontal_bar_chart.title_align = Align::Left;
+    horizontal_bar_chart.title.text = "World Population".to_string();
+    horizontal_bar_chart.title.align = Align::Left;
     let buf = svg_to_png(&horizontal_bar_chart.svg().unwrap()).unwrap();
     common::save_asset("image/horizontal-bar.png", &buf);
 
@@ -121,16 +121,17 @@ fn generate_image() {
         THEME_GRAFANA,
     );
     line_chart.margin.right = 50.0;
-    line_chart.title_text = "Smoothed Line & Instagram Chart".to_string();
-    line_chart.legend_margin = Some(Box {
-        top: line_chart.title_height,
+    line_chart.title.text = "Smoothed Line & Instagram Chart".to_string();
+    line_chart.legend.margin = Some(Box {
+        top: line_chart.title.height,
         bottom: 5.0,
         ..Default::default()
     });
-    line_chart.series_smooth = true;
+    line_chart.series.smooth = true;
     line_chart.series_list[3].label_show = true;
     line_chart.series_list[3].mark_lines = vec![MarkLine {
         category: MarkLineCategory::Average,
+        ..Default::default()
     }];
     let buf = svg_to_png(&line_chart.svg().unwrap()).unwrap();
     common::save_asset("image/line.png", &buf);
@@ -149,8 +150,8 @@ fn generate_image() {
         ],
         THEME_GRAFANA,
     );
-    pie_chart.title_text = "Nightingale Chart".to_string();
-    pie_chart.sub_title_text = "Fake Data".to_string();
+    pie_chart.title.text = "Nightingale Chart".to_string();
+    pie_chart.sub_title.text = "Fake Data".to_string();
     let buf = svg_to_png(&pie_chart.svg().unwrap()).unwrap();
     common::save_asset("image/pie.png", &buf);
 
@@ -210,19 +211,19 @@ fn generate_image() {
         THEME_GRAFANA,
     );
 
-    scatter_chart.title_text = "Male and female height and weight distribution".to_string();
+    scatter_chart.title.text = "Male and female height and weight distribution".to_string();
     scatter_chart.margin.right = 20.0;
-    scatter_chart.title_align = Align::Left;
-    scatter_chart.sub_title_text = "Data from: Heinz 2003".to_string();
-    scatter_chart.sub_title_align = Align::Left;
-    scatter_chart.legend_align = Align::Right;
-    scatter_chart.y_axis_configs[0].axis_min = Some(40.0);
-    scatter_chart.y_axis_configs[0].axis_max = Some(130.0);
-    scatter_chart.y_axis_configs[0].axis_formatter = Some("{c} kg".to_string());
+    scatter_chart.title.align = Align::Left;
+    scatter_chart.sub_title.text = "Data from: Heinz 2003".to_string();
+    scatter_chart.sub_title.align = Align::Left;
+    scatter_chart.legend.align = Align::Right;
+    scatter_chart.y_axis_configs[0].min = Some(40.0);
+    scatter_chart.y_axis_configs[0].max = Some(130.0);
+    scatter_chart.y_axis_configs[0].formatter = Some("{c} kg".to_string());
 
-    scatter_chart.x_axis_config.axis_min = Some(140.0);
-    scatter_chart.x_axis_config.axis_max = Some(230.0);
-    scatter_chart.x_axis_config.axis_formatter = Some("{c} cm".to_string());
+    scatter_chart.x_axis_config.min = Some(140.0);
+    scatter_chart.x_axis_config.max = Some(230.0);
+    scatter_chart.x_axis_config.formatter = Some("{c} cm".to_string());
 
     scatter_chart.series_symbol_sizes = vec![6.0, 6.0];
     let buf = svg_to_png(&scatter_chart.svg().unwrap()).unwrap();
@@ -346,9 +347,9 @@ fn generate_image() {
     );
     candlestick_chart.series_list[0].category = Some(SeriesCategory::Line);
     candlestick_chart.series_list[0].start_index = 5;
-    candlestick_chart.y_axis_configs[0].axis_min = Some(2100.0);
-    candlestick_chart.y_axis_configs[0].axis_max = Some(2460.0);
-    candlestick_chart.y_axis_configs[0].axis_formatter = Some("{t}".to_string());
+    candlestick_chart.y_axis_configs[0].min = Some(2100.0);
+    candlestick_chart.y_axis_configs[0].max = Some(2460.0);
+    candlestick_chart.y_axis_configs[0].formatter = Some("{t}".to_string());
     let buf = svg_to_png(&candlestick_chart.svg().unwrap()).unwrap();
     common::save_asset("image/candlestick.png", &buf);
     candlestick_chart.candlestick_style = charts_rs::CandlestickStyle::Ohlc;
@@ -403,7 +404,7 @@ fn generate_image() {
             ..Default::default()
         },
     ];
-    table_chart.title_text = "NASDAQ".to_string();
+    table_chart.title.text = "NASDAQ".to_string();
     let buf = svg_to_avif(&table_chart.svg().unwrap()).unwrap();
     common::save_asset("image/table.avif", &buf);
 

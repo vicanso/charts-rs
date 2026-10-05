@@ -91,9 +91,10 @@ pub use box_plot_chart::{BoxPlotChart, BoxPlotSeries};
 pub use canvas::Canvas;
 pub use color::Color;
 pub use common::{
-    Align, AnimationConfig, AxisLabelOverflow, AxisScale, AxisType, Fill, LineStep, MarkArea,
-    MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, Position, Series, SeriesBand,
-    SeriesCategory, SeriesLabel, Symbol, YAxisConfig,
+    Align, AnimationConfig, AxisLabelOverflow, AxisScale, AxisType, Fill, FontConfig, GridConfig,
+    LegendConfig, LineStep, MarkArea, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory,
+    Position, Series, SeriesBand, SeriesCategory, SeriesConfig, SeriesLabel, SeriesLabelConfig,
+    Symbol, TitleConfig, TooltipConfig, XAxisConfig, YAxisConfig,
 };
 pub use compact::compact_svg;
 pub use component::{
@@ -132,7 +133,7 @@ pub use radar_chart::{RadarChart, RadarIndicator};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
 pub use scatter_chart::{Regression, ScatterChart};
 pub use sunburst_chart::{SunburstChart, SunburstData};
-pub use table_chart::{TableCellStyle, TableChart};
+pub use table_chart::{TableBodyConfig, TableCellStyle, TableChart, TableHeaderConfig};
 pub use theme::Theme;
 pub use theme::{
     THEME_ANT, THEME_CHALK, THEME_DARK, THEME_GRAFANA, THEME_LIGHT, THEME_SHADCN, THEME_SHINE,

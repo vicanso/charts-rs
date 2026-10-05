@@ -542,7 +542,7 @@ pub(crate) fn get_axis_values(params: AxisValueParams) -> AxisValues {
         }
     }
     // A configured bound is the bound (values beyond it are clipped), as the
-    // `axis_min` / `axis_max` docs say; it is not merely a floor / ceiling.
+    // `min` / `max` docs of a y axis say; it is not merely a floor / ceiling.
     let mut is_custom_min = false;
     if let Some(value) = params.min
         && value.is_finite()

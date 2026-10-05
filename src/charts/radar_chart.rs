@@ -58,7 +58,7 @@ fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RadarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     // x axis
 
@@ -105,7 +105,7 @@ impl RadarChart {
             r.split_number = split_number;
         }
         if data.get("series_fill").is_none() {
-            r.series_fill = true;
+            r.series.fill = true;
         }
         Ok(r)
     }
@@ -120,9 +120,9 @@ impl RadarChart {
             ..Default::default()
         };
         r.series_list = series_list;
-        r.series_fill = true;
         let theme = get_theme(theme);
         r.base.fill_theme(theme, &mut r.y_axis_configs);
+        r.series.fill = true;
         r
     }
     /// Creates a radar chart with default theme.
@@ -181,9 +181,9 @@ impl RadarChart {
                 points.push(get_pie_point(cx, cy, ir, angle * index as f32));
             }
             c.straight_line(StraightLine {
-                color: Some(self.grid_stroke_color),
+                color: Some(self.grid.stroke_color),
                 points,
-                stroke_width: self.grid_stroke_width,
+                stroke_width: self.grid.stroke_width,
                 symbol: None,
                 close: true,
                 ..Default::default()
@@ -197,7 +197,7 @@ impl RadarChart {
             let x_offset = 3.0;
             if let Ok(measurement) = measure_text_width_family(
                 &self.font_family,
-                self.series_label_font_size,
+                self.series.label.font.size,
                 &item.name,
             ) {
                 if current_angle < 10.0 || (360.0 - current_angle) < 10.0 {
@@ -224,16 +224,16 @@ impl RadarChart {
             }
             c.text(Text {
                 text: item.name.clone(),
-                font_size: Some(self.series_label_font_size),
+                font_size: Some(self.series.label.font.size),
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
+                font_color: Some(self.series.label.font.color),
                 x: Some(x),
                 y: Some(y),
                 ..Default::default()
             });
             c.child(Box::default()).line(Line {
-                color: Some(self.grid_stroke_color),
-                stroke_width: self.grid_stroke_width,
+                color: Some(self.grid.stroke_color),
+                stroke_width: self.grid.stroke_width,
                 left: p.x,
                 top: p.y,
                 right: cx,
@@ -244,7 +244,7 @@ impl RadarChart {
 
         let mut label_positions = vec![];
         for (index, series) in self.series_list.iter().enumerate() {
-            let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+            let color = get_color(&self.series.colors, series.index.unwrap_or(index));
             let mut points = vec![];
             for (i, (item, value)) in indicators.iter().zip(series.iter_values()).enumerate() {
                 // Treat a missing point (`NIL_VALUE`) or a non-positive
@@ -260,7 +260,7 @@ impl RadarChart {
                 let p = get_pie_point(cx, cy, ir, angle * i as f32);
                 if series.label_show {
                     let label = format_series_label(
-                        &self.series_label_formatter,
+                        &self.series.label.formatter,
                         value,
                         &series.name,
                         &item.name,
@@ -269,8 +269,8 @@ impl RadarChart {
                 }
                 points.push(p);
             }
-            let fill = if self.series_fill {
-                Some(color.with_alpha(50))
+            let fill = if self.series.fill {
+                Some(color.with_alpha(self.fill_alpha(50)))
             } else {
                 None
             };
@@ -278,7 +278,7 @@ impl RadarChart {
                 color: Some(color),
                 fill,
                 points,
-                stroke_width: self.series_stroke_width,
+                stroke_width: self.series.stroke_width,
                 close: true,
                 ..Default::default()
             });
@@ -288,7 +288,7 @@ impl RadarChart {
             let text = item.1.clone();
             let point = item.0;
             if let Ok(value) =
-                measure_text_width_family(&self.font_family, self.series_label_font_size, &text)
+                measure_text_width_family(&self.font_family, self.series.label.font.size, &text)
             {
                 dx = Some(-value.width() / 2.0);
             }
@@ -297,9 +297,9 @@ impl RadarChart {
                 dy: Some(-8.0),
                 dx,
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
-                font_size: Some(self.series_label_font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_color: Some(self.series.label.font.color),
+                font_size: Some(self.series.label.font.size),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(point.x),
                 y: Some(point.y),
                 ..Default::default()

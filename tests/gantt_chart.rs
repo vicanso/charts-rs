@@ -60,9 +60,9 @@ fn on_row(name: &str, row: &str, start: f64, end: f64) -> GanttTask {
 /// the rows: the plot is as wide as the chart less its margins.
 fn chart(tasks: Vec<GanttTask>) -> GanttChart {
     let mut chart = GanttChart::new(tasks);
-    chart.x_axis_type = AxisType::Value;
-    chart.x_axis_min = Some(0.0);
-    chart.x_axis_max = Some(10.0);
+    chart.x_axis.kind = AxisType::Value;
+    chart.x_axis.min = Some(0.0);
+    chart.x_axis.max = Some(10.0);
     chart.y_axis_hidden = true;
     chart
 }
@@ -276,7 +276,7 @@ fn categories_color_the_tasks() {
         .unwrap();
     assert!(bars(&svg).iter().all(|b| attr(b, "fill") == "#5470C6"));
     let mut hidden = chart(vec![categorized("a", Some("Plan"))]);
-    hidden.legend_show = Some(false);
+    hidden.legend.show = Some(false);
     assert!(!self::texts(&hidden.svg().unwrap()).contains(&"Plan"));
 }
 
@@ -314,7 +314,7 @@ fn time_axis_and_the_marked_moment() {
     let mut chart = self::chart(vec![task("a", 2.0, 6.0)]);
     chart.now = Some(50.0);
     assert!(!chart.svg().unwrap().contains("stroke-dasharray"));
-    chart.x_axis_max = None;
+    chart.x_axis.max = None;
     let svg = chart.svg().unwrap();
     assert!(svg.contains("stroke-dasharray"));
     assert!(number(bars(&svg)[0], "width") < 60.0);
@@ -343,8 +343,8 @@ fn fixed_range_cuts_the_tasks() {
 
     // Without a fixed range there is a little room at both ends.
     let mut chart = chart(vec![task("a", 2.0, 6.0)]);
-    chart.x_axis_min = None;
-    chart.x_axis_max = None;
+    chart.x_axis.min = None;
+    chart.x_axis.max = None;
     let svg = chart.svg().unwrap();
     let bar = self::bars(&svg)[0];
     assert!(number(bar, "x") > left + 5.0);
@@ -372,7 +372,7 @@ fn nothing_to_draw_and_odd_input() {
         chart.bar_height = Some(bar_height);
         chart.radius = radius;
         chart.now = Some(f64::NAN);
-        chart.tooltip_show = true;
+        chart.tooltip.show = true;
         let svg = chart.svg().unwrap();
         assert!(
             !svg.contains("NaN") && !svg.contains("inf"),
@@ -434,9 +434,9 @@ fn gantt_from_json() {
 
     // The same chart, built in code.
     let mut built = GanttChart::new(from_json.tasks.clone());
-    built.x_axis_type = AxisType::Value;
-    built.x_axis_min = Some(0.0);
-    built.x_axis_max = Some(10.0);
+    built.x_axis.kind = AxisType::Value;
+    built.x_axis.min = Some(0.0);
+    built.x_axis.max = Some(10.0);
     built.bar_height = Some(12.0);
     built.radius = 0.0;
     built.label_show = false;

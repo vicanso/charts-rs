@@ -33,10 +33,10 @@ fn main() {
         task("Testing", "Launch", 28.0, 37.0, 0.0),
         task("Go live", "Launch", 38.0, 38.0, 0.0),
     ]);
-    gantt.title_text = "Website relaunch".to_string();
+    gantt.title.text = "Website relaunch".to_string();
     // Today, as a dashed line across the plan.
     gantt.now = Some(START + 15.0 * DAY);
-    gantt.tooltip_show = true;
+    gantt.tooltip.show = true;
 
     std::fs::write("gantt.svg", gantt.svg().unwrap()).unwrap();
     println!("wrote gantt.svg");

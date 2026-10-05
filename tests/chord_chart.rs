@@ -313,8 +313,8 @@ fn links_between_the_same_two_nodes() {
 #[test]
 fn tooltips_and_labels() {
     let mut chart = chart(triangle());
-    chart.tooltip_show = true;
-    chart.series_label_formatter = "{b}: {c} ({d})".to_string();
+    chart.tooltip.show = true;
+    chart.series.label.formatter = "{b}: {c} ({d})".to_string();
     let svg = chart.svg().unwrap();
     assert!(svg.contains(".ct-trigger:hover+.ct-tip"));
     assert_eq!(6, svg.matches(r#"class="ct-trigger""#).count());
@@ -417,7 +417,7 @@ fn odd_input_stays_finite() {
         chart.node_width = width;
         chart.radius = Some(radius);
         chart.start_angle = start;
-        chart.tooltip_show = true;
+        chart.tooltip.show = true;
         chart.link_gradient = true;
         let svg = chart.svg().unwrap();
         assert!(

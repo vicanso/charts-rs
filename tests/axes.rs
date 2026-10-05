@@ -60,9 +60,9 @@ const T0: f64 = 1_709_251_200.0;
 #[test]
 fn time_axis_keeps_the_real_spacing() {
     let mut chart = LineChart::new(vec![("A", vec![1.0, 2.0, 3.0, 4.0]).into()], vec![]);
-    chart.x_axis_type = AxisType::Time;
-    chart.x_axis_values = vec![T0, T0 + HOUR, T0 + 3.0 * HOUR, T0 + 9.0 * HOUR];
-    chart.tooltip_show = true;
+    chart.x_axis.kind = AxisType::Time;
+    chart.x_axis.values = vec![T0, T0 + HOUR, T0 + 3.0 * HOUR, T0 + 9.0 * HOUR];
+    chart.tooltip.show = true;
     let svg = chart.svg().unwrap();
     let xs = point_xs(&svg);
     assert_eq!(4, xs.len());
@@ -79,12 +79,12 @@ fn time_axis_keeps_the_real_spacing() {
     assert!(svg.contains("data-category=\"2024-03-01 03:00\""), "{svg}");
 
     // A display offset shifts the labels, not the points.
-    chart.x_axis_time_offset = 8 * 60;
+    chart.x_axis.time_offset = 8 * 60;
     let shifted = chart.svg().unwrap();
     assert_eq!(xs, point_xs(&shifted));
     assert!(shifted.contains("data-category=\"2024-03-01 11:00\""));
     // A custom pattern.
-    chart.x_axis_formatter = Some("%H:%M".to_string());
+    chart.x_axis.formatter = Some("%H:%M".to_string());
     assert!(texts(&chart.svg().unwrap()).contains(&"10:00"));
 }
 
@@ -93,8 +93,8 @@ fn value_axis_and_per_series_x() {
     let mut own: Series = ("B", vec![5.0, 6.0]).into();
     own.x_values = Some(vec![2.0, 10.0]);
     let mut chart = LineChart::new(vec![("A", vec![1.0, 2.0, 3.0]).into(), own], vec![]);
-    chart.x_axis_values = vec![0.0, 5.0, 20.0];
-    chart.tooltip_show = true;
+    chart.x_axis.values = vec![0.0, 5.0, 20.0];
+    chart.tooltip.show = true;
     let svg = chart.svg().unwrap();
     let xs = point_xs(&svg);
     assert_eq!(5, xs.len());
@@ -108,8 +108,8 @@ fn value_axis_and_per_series_x() {
         assert!(labels.contains(&label), "{label} in {labels:?}");
     }
     // A fixed range.
-    chart.x_axis_min = Some(-20.0);
-    chart.x_axis_max = Some(20.0);
+    chart.x_axis.min = Some(-20.0);
+    chart.x_axis.max = Some(20.0);
     let xs = point_xs(&chart.svg().unwrap());
     let width = xs[2] - xs[0];
     assert!((xs[1] - xs[0] - width * 0.25).abs() < 0.3);
@@ -117,8 +117,8 @@ fn value_axis_and_per_series_x() {
 
     // A point without an x value breaks the line instead of being guessed.
     let mut chart = LineChart::new(vec![("A", vec![1.0, 2.0, 3.0]).into()], vec![]);
-    chart.x_axis_values = vec![0.0, f64::NAN, 2.0];
-    chart.tooltip_show = true;
+    chart.x_axis.values = vec![0.0, f64::NAN, 2.0];
+    chart.tooltip.show = true;
     assert_eq!(2, point_xs(&chart.svg().unwrap()).len());
 
     // Without x values the axis stays a category axis.
@@ -127,7 +127,7 @@ fn value_axis_and_per_series_x() {
         vec!["a".into(), "b".into()],
     );
     let plain = chart.svg().unwrap();
-    chart.x_axis_type = AxisType::Time;
+    chart.x_axis.kind = AxisType::Time;
     assert_eq!(plain, chart.svg().unwrap());
 }
 
@@ -140,8 +140,8 @@ fn bars_on_a_continuous_axis() {
         vec![("Orders", vec![10.0, 20.0, 30.0, 40.0]).into(), line],
         vec![],
     );
-    chart.x_axis_type = AxisType::Time;
-    chart.x_axis_values = vec![T0, T0 + day, T0 + 4.0 * day, T0 + 5.0 * day];
+    chart.x_axis.kind = AxisType::Time;
+    chart.x_axis.values = vec![T0, T0 + day, T0 + 4.0 * day, T0 + 5.0 * day];
     let svg = chart.svg().unwrap();
     let bars = rects(&svg);
     assert_eq!(4, bars.len(), "{svg}");
@@ -158,7 +158,7 @@ fn bars_on_a_continuous_axis() {
 
     // A single x value still gets a bar of a sensible width.
     let mut chart = BarChart::new(vec![("A", vec![3.0]).into()], vec![]);
-    chart.x_axis_values = vec![7.0];
+    chart.x_axis.values = vec![7.0];
     let bars = rects(&chart.svg().unwrap());
     assert_eq!(1, bars.len());
     assert!(bars[0].2 > 50.0 && bars[0].2 < 400.0, "{bars:?}");
@@ -173,13 +173,13 @@ fn x_values_from_json() {
     )
     .unwrap();
     // Date strings make it a time axis; numbers are unix seconds.
-    assert_eq!(AxisType::Time, chart.x_axis_type);
-    assert_eq!(T0, chart.x_axis_values[0]);
-    assert_eq!(T0 + 36.0 * HOUR, chart.x_axis_values[1]);
-    assert_eq!(T0 + 4.0 * 86400.0 - 8.0 * HOUR, chart.x_axis_values[2]);
-    assert!(chart.x_axis_values[3].is_nan());
-    assert_eq!(Some(T0 - 2.0 * 86400.0), chart.x_axis_min);
-    assert_eq!(480, chart.x_axis_time_offset);
+    assert_eq!(AxisType::Time, chart.x_axis.kind);
+    assert_eq!(T0, chart.x_axis.values[0]);
+    assert_eq!(T0 + 36.0 * HOUR, chart.x_axis.values[1]);
+    assert_eq!(T0 + 4.0 * 86400.0 - 8.0 * HOUR, chart.x_axis.values[2]);
+    assert!(chart.x_axis.values[3].is_nan());
+    assert_eq!(Some(T0 - 2.0 * 86400.0), chart.x_axis.min);
+    assert_eq!(480, chart.x_axis.time_offset);
     assert_eq!(
         Some(vec![1_709_337_600.0, 1_709_424_000.0]),
         chart.series_list[1].x_values
@@ -190,7 +190,7 @@ fn x_values_from_json() {
         r#"{"x_axis_type": "value", "x_axis_values": [1, 2.5], "series_list": [{"name": "A", "data": [1, 2]}]}"#,
     )
     .unwrap();
-    assert_eq!(AxisType::Value, chart.x_axis_type);
+    assert_eq!(AxisType::Value, chart.x_axis.kind);
 
     assert!(
         err(LineChart::from_json(r#"{"x_axis_values": ["yesterday"]}"#)).contains("x_axis_values")
@@ -221,9 +221,9 @@ fn axis_titles() {
     };
     let plain = make().svg().unwrap();
     let mut chart = make();
-    chart.x_axis_title = "Weekday".to_string();
-    chart.y_axis_configs[0].axis_title = Some("Orders".to_string());
-    chart.y_axis_configs[1].axis_title = Some("Rate <%>".to_string());
+    chart.x_axis.title = "Weekday".to_string();
+    chart.y_axis_configs[0].title = Some("Orders".to_string());
+    chart.y_axis_configs[1].title = Some("Rate <%>".to_string());
     let svg = chart.svg().unwrap();
     let labels = texts(&svg);
     for title in ["Weekday", "Orders", "Rate &lt;%&gt;"] {
@@ -239,7 +239,7 @@ fn axis_titles() {
     assert!(after[0].0 > before[0].0, "shifted right of the y title");
 
     // A hidden axis has no title.
-    chart.x_axis_hidden = true;
+    chart.x_axis.hidden = true;
     chart.y_axis_hidden = true;
     let hidden = chart.svg().unwrap();
     assert!(!hidden.contains("Weekday") && !hidden.contains("rotate("));
@@ -249,11 +249,8 @@ fn axis_titles() {
             "series_list": [{"name": "A", "data": [1, 2]}], "x_axis_data": ["a", "b"]}"#,
     )
     .unwrap();
-    assert_eq!("Day", chart.x_axis_title);
-    assert_eq!(
-        Some("Count".to_string()),
-        chart.y_axis_configs[0].axis_title
-    );
+    assert_eq!("Day", chart.x_axis.title);
+    assert_eq!(Some("Count".to_string()), chart.y_axis_configs[0].title);
 }
 
 #[test]
@@ -323,7 +320,7 @@ fn bubble_chart() {
     chart.bubble = true;
     chart.bubble_min_size = 5.0;
     chart.bubble_max_size = 25.0;
-    chart.tooltip_show = true;
+    chart.tooltip.show = true;
     let svg = chart.svg().unwrap();
     let radii: Vec<f32> = svg
         .split("<circle")
@@ -367,7 +364,7 @@ fn overlapping_data_labels_can_be_hidden() {
     let mut series: Series = ("A", data).into();
     series.label_show = true;
     let mut chart = LineChart::new(vec![series], categories);
-    chart.legend_show = Some(false);
+    chart.legend.show = Some(false);
     // The data labels are the four-digit values (axis labels read "1k").
     let count = |svg: &str| {
         texts(svg)
@@ -377,7 +374,7 @@ fn overlapping_data_labels_can_be_hidden() {
     };
     let all = chart.svg().unwrap();
     assert_eq!(60, count(&all), "every label by default");
-    chart.series_label_hide_overlap = true;
+    chart.series.label.hide_overlap = true;
     let hidden = chart.svg().unwrap();
     let kept = count(&hidden);
     assert!(kept > 5 && kept < 40, "{kept} labels kept");
@@ -388,7 +385,7 @@ fn overlapping_data_labels_can_be_hidden() {
     );
 
     let chart = LineChart::from_json(r#"{"series_label_hide_overlap": true}"#).unwrap();
-    assert!(chart.series_label_hide_overlap);
+    assert!(chart.series.label.hide_overlap);
 }
 
 #[test]
@@ -396,8 +393,8 @@ fn a_label_on_the_edge_stays_on_the_canvas() {
     let mut series: Series = ("A", vec![1.0, 123456.0]).into();
     series.label_show = true;
     let mut chart = LineChart::new(vec![series], vec![]);
-    chart.x_axis_values = vec![0.0, 10.0];
-    chart.series_label_formatter = "{c} units".to_string();
+    chart.x_axis.values = vec![0.0, 10.0];
+    chart.series.label.formatter = "{c} units".to_string();
     let svg = chart.svg().unwrap();
     // The last point sits on the right edge of the plot; its label is
     // moved left instead of being cut off by the canvas.

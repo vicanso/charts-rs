@@ -107,7 +107,7 @@ struct LayoutLink {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChordChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -276,7 +276,7 @@ impl ChordChart {
             .map(|(index, name)| LayoutNode {
                 name: name.to_string(),
                 color: explicit_color[index]
-                    .unwrap_or_else(|| get_color(&self.series_colors, index)),
+                    .unwrap_or_else(|| get_color(&self.series.colors, index)),
                 value: 0.0,
                 start: 0.0,
                 end: 0.0,
@@ -380,14 +380,14 @@ impl ChordChart {
         let total: f32 = nodes.iter().map(|n| n.value).sum();
 
         // The labels: the name of the node, or what the formatter makes of it.
-        let font_size = self.series_label_font_size;
+        let font_size = self.series.label.font.size;
         let labels: Vec<(String, f32, f32)> = nodes
             .iter()
             .map(|node| {
                 if node.value <= 0.0 {
                     return (String::new(), 0.0, 0.0);
                 }
-                let text = if self.series_label_formatter.is_empty() {
+                let text = if self.series.label.formatter.is_empty() {
                     node.name.clone()
                 } else {
                     LabelOption {
@@ -395,7 +395,7 @@ impl ChordChart {
                         category_name: node.name.clone(),
                         value: node.value,
                         percentage: node.value / total,
-                        formatter: self.series_label_formatter.clone(),
+                        formatter: self.series.label.formatter.clone(),
                     }
                     .format()
                 };
@@ -458,9 +458,10 @@ impl ChordChart {
             content.text_unmeasured(Text {
                 text,
                 class: Some("ct-tip".to_string()),
+                font_weight: self.tooltip.font.weight.clone(),
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
-                font_size: Some(self.series_label_font_size),
+                font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                 x: Some(point.x),
                 y: Some(point.y),
                 text_anchor: Some("middle".to_string()),
@@ -487,7 +488,7 @@ impl ChordChart {
             } else {
                 source.color.with_alpha(alpha).into()
             };
-            let tooltip_text = self.tooltip_show.then(|| {
+            let tooltip_text = self.tooltip.show.then(|| {
                 format!(
                     "{} → {}: {}",
                     source.name,
@@ -531,7 +532,8 @@ impl ChordChart {
                 continue;
             }
             let tooltip_text = self
-                .tooltip_show
+                .tooltip
+                .show
                 .then(|| format!("{}: {}", node.name, format_float(node.value)));
             content.sector(Sector {
                 fill: node.color.into(),
@@ -580,9 +582,9 @@ impl ChordChart {
             content.text_unmeasured(Text {
                 text,
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series_label_font_color),
+                font_color: Some(self.series.label.font.color),
                 font_size: Some(font_size),
-                font_weight: self.series_label_font_weight.clone(),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(at.x),
                 y: Some(at.y),
                 text_anchor: Some(at.anchor.to_string()),
@@ -607,7 +609,7 @@ impl ChordChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -707,7 +709,7 @@ mod tests {
                 ("Oceania", "Americas", 10.0).into(),
             ],
         );
-        chart.title_text = "Trade between regions".to_string();
+        chart.title.text = "Trade between regions".to_string();
         assert_snapshot!("chord_chart/basic.svg", chart.svg().unwrap());
     }
 }

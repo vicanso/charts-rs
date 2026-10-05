@@ -33,7 +33,7 @@ cargo fmt
 **Builder API:**
 ```rust
 let mut chart = BarChart::new(series_list, x_axis_data);
-chart.title_text = "My Chart".to_string();
+chart.title.text = "My Chart".to_string();
 chart.svg()?;
 ```
 
@@ -59,12 +59,12 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 | `src/charts/component.rs` | SVG primitive components: Text, Line, Rect, Circle, Polygon, Polyline, Grid, Legend, Axis, Pie, Sector, Ribbon, Shape |
 | `src/charts/canvas.rs` | Canvas abstraction — coordinate transformations, rendering context, SVG tag building |
 | `src/charts/theme.rs` | Theme system; global registry via `Lazy<ArcSwap<AHashMap>>`; `get_theme()`, `add_theme()` |
-| `src/charts/common.rs` | Shared types: `Series`, `YAxisConfig`, `MarkPoint`, `MarkLine`, `Position`, `Align`, `Symbol` |
+| `src/charts/common.rs` | Shared types: `Series`, `MarkPoint`, `MarkLine`, `Position`, `Align`, `Symbol`, and the option groups `FontConfig`, `TitleConfig`, `LegendConfig`, `XAxisConfig`, `YAxisConfig`, `GridConfig`, `SeriesConfig`, `TooltipConfig` |
 | `src/charts/params.rs` | JSON parsing utilities (`get_*_from_value()` functions) used in `from_json()` implementations |
 | `src/charts/color.rs` | `Color` type with hex parsing (`"#345"`, `"#ffcc00"`) and opacity |
 | `src/charts/font.rs` | Font registry and text measurement via `ttf-parser` (glyphs are read lazily from the font bytes); custom TTF/OTF loading; default: embedded `Roboto.ttf` |
 | `src/charts/encoder.rs` | Raster image encoding via `resvg` + `image` (gated on `image-encoder` feature) |
-| `src/charts/base.rs` | `ChartBase` — the ~50 shared chart fields plus `fill_theme()`/`fill_option()`/`render_header()`/`render_bar()`/`render_line()` etc.; every chart embeds it and exposes it via `Deref`/`DerefMut` (`chart.title_text` works directly) |
+| `src/charts/base.rs` | `ChartBase` — the shared chart options, grouped by element (`title`, `sub_title`, `legend`, `x_axis`, `grid`, `series`, `tooltip`), plus `fill_theme()`/`fill_option()`/`render_header()`/`render_bar()`/`render_line()` etc.; every chart embeds it and exposes it via `Deref`/`DerefMut` (`chart.title.text` works directly) |
 
 ### Important Conventions
 
@@ -74,6 +74,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 - **Colors**: hex strings `"#345"` or `"#ffcc00"`; parsed in `color.rs`
 - **Box margins**: `left, top, right, bottom` (CSS-like padding/margin fields)
 - **`image-encoder` feature**: optional; enables PNG/JPEG/WebP/AVIF export
+- **Options in Rust and JSON**: a JSON key is the Rust field path joined with `_` (`title_font_size` ↔ `title.font.size`); the exceptions are `x_boundary_gap` (`x_axis.boundary_gap`), `x_axis_type` (`x_axis.kind`) and the `axis_` prefix of y axis keys, which the Rust fields leave out. JSON keys never change with the Rust structs
 
 ### Tests
 

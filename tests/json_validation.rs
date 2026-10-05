@@ -64,7 +64,7 @@ fn enum_values_are_case_insensitive() {
         r#"{"title_align": "Right", "series_list": [{"name": "a", "data": [1], "mark_lines": [{"category": "Max"}]}]}"#,
     )
     .unwrap();
-    assert_eq!(charts_rs::Align::Right, chart.title_align);
+    assert_eq!(charts_rs::Align::Right, chart.title.align);
     assert_eq!(
         charts_rs::MarkLineCategory::Max,
         chart.series_list[0].mark_lines[0].category
@@ -85,7 +85,7 @@ fn null_and_numeric_margins_are_accepted() {
     .unwrap();
     assert_eq!(12.0, chart.margin.left);
     assert_eq!(12.0, chart.margin.bottom);
-    assert_eq!(3.0, chart.title_margin.as_ref().unwrap().top);
+    assert_eq!(3.0, chart.title.margin.as_ref().unwrap().top);
 }
 
 #[test]

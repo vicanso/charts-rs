@@ -11,16 +11,14 @@
 // limitations under the License.
 
 //! The shared chart state and rendering helpers. Every chart struct embeds a
-//! [`ChartBase`] (exposed through `Deref`/`DerefMut`, so `chart.title_text`
-//! keeps working) instead of repeating these fields, and the theme filling,
+//! [`ChartBase`] (exposed through `Deref`/`DerefMut`, so `chart.title.text`
+//! reads and writes it) instead of repeating these fields, and the theme filling,
 //! JSON option parsing and common render passes live here as ordinary
 //! methods — compiled once, lint-covered and debuggable, replacing the old
 //! `#[derive(Chart)]` proc-macro expansion.
 
 use std::collections::BTreeMap;
 use std::sync::Arc;
-
-use serde::{Deserialize, Serialize};
 
 use super::canvas;
 use super::canvas::Canvas;
@@ -38,8 +36,8 @@ use super::x_axis::ContinuousX;
 /// The options shared by every chart type: canvas size and position, the data
 /// series, font/background, the title, sub-title and legend blocks, the x/y
 /// axis and grid configuration, and the series styling defaults. Charts expose
-/// these fields directly through `Deref`, e.g. `chart.title_text = ...`.
-#[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
+/// these fields directly through `Deref`, e.g. `chart.title.text = ...`.
+#[derive(Clone, PartialEq, Debug, Default)]
 pub struct ChartBase {
     /// Canvas width.
     pub width: f32,
@@ -51,179 +49,49 @@ pub struct ChartBase {
     pub y: f32,
     /// Margin around the whole chart.
     pub margin: Box,
-    /// The data series of the chart.
-    pub series_list: Vec<Series>,
+    /// Background color of the chart.
+    pub background_color: Color,
+    /// Whether the current theme is a light theme.
+    pub is_light: bool,
     /// Font family used for every text; must be registered with `add_fonts`
     /// (or be the embedded default) to be measured correctly. An unknown
     /// family is still written to the SVG for the viewer to resolve, but the
     /// layout measures text with the default font.
     pub font_family: String,
-    /// Background color of the chart.
-    pub background_color: Color,
-    /// Whether the current theme is a light theme.
-    pub is_light: bool,
-
-    /// Title text.
-    pub title_text: String,
-    /// Title font size.
-    pub title_font_size: f32,
-    /// Title font color.
-    pub title_font_color: Color,
-    /// Title font weight, e.g. `"bold"`.
-    pub title_font_weight: Option<String>,
-    /// Margin around the title block.
-    pub title_margin: Option<Box>,
-    /// Horizontal alignment of the title.
-    pub title_align: Align,
-    /// Height reserved for the title row.
-    pub title_height: f32,
-
-    /// Sub-title text.
-    pub sub_title_text: String,
-    /// Sub-title font size.
-    pub sub_title_font_size: f32,
-    /// Sub-title font color.
-    pub sub_title_font_color: Color,
-    /// Sub-title font weight, e.g. `"bold"`.
-    pub sub_title_font_weight: Option<String>,
-    /// Margin around the sub-title block.
-    pub sub_title_margin: Option<Box>,
-    /// Horizontal alignment of the sub-title.
-    pub sub_title_align: Align,
-    /// Height reserved for the sub-title row.
-    pub sub_title_height: f32,
-
-    /// Legend font size.
-    pub legend_font_size: f32,
-    /// Legend font color.
-    pub legend_font_color: Color,
-    /// Legend font weight, e.g. `"bold"`.
-    pub legend_font_weight: Option<String>,
-    /// Horizontal alignment of the legend.
-    pub legend_align: Align,
-    /// Margin around the legend block.
-    pub legend_margin: Option<Box>,
-    /// Legend marker shape (normal, rect or round rect).
-    pub legend_category: LegendCategory,
-    /// Shows or hides the legend; `None` follows the chart's default.
-    pub legend_show: Option<bool>,
-    /// Where the legend goes: top (the default, beside the title), bottom,
-    /// or stacked vertically on the left / right of the plot.
-    #[serde(default)]
-    pub legend_position: Option<Position>,
-    /// Text shown in the middle of the plot when there is no data to draw
-    /// (every series is empty); nothing is shown when unset.
-    #[serde(default)]
-    pub empty_text: Option<String>,
     /// Emit compact SVG: no whitespace, relative path data, merged grid
     /// lines, shared attributes hoisted, defaults dropped. Renders the same
     /// and is typically 20–30% smaller; see [`compact_svg`](crate::compact_svg).
-    #[serde(default)]
     pub compact: bool,
-
-    /// Labels of the x axis.
-    pub x_axis_data: Vec<String>,
-    /// Height reserved for the x axis block.
-    pub x_axis_height: f32,
-    /// Stroke color of the x axis line and ticks.
-    pub x_axis_stroke_color: Color,
-    /// X axis label font size.
-    pub x_axis_font_size: f32,
-    /// X axis label font color.
-    pub x_axis_font_color: Color,
-    /// X axis label font weight, e.g. `"bold"`.
-    pub x_axis_font_weight: Option<String>,
-    /// Gap between the axis line and its labels.
-    pub x_axis_name_gap: f32,
-    /// Rotation of the x axis labels, in radians (e.g. `0.785` for 45°).
-    pub x_axis_name_rotate: f32,
-    /// Margin around the x axis block.
-    pub x_axis_margin: Option<Box>,
-    /// Whether a gap is left on both ends of the x axis (bar-style) or the
-    /// first/last points sit on the edges (line-style).
-    pub x_boundary_gap: Option<bool>,
-    /// What to do with x axis labels that do not fit side by side: thin
-    /// them out (default), rotate them, or cut them with an ellipsis.
-    #[serde(default)]
-    pub x_axis_label_overflow: AxisLabelOverflow,
-    /// How continuous x values read: plain numbers, or timestamps (`Time`).
-    /// The axis is continuous whenever x values are given; see
-    /// `x_axis_values`.
-    #[serde(default)]
-    pub x_axis_type: AxisType,
-    /// The x value of each data point, shared by every series (a series may
-    /// carry its own in `Series::x_values`). Setting them turns the x axis
-    /// of line and bar charts from evenly spaced categories into a
-    /// continuous scale, so unevenly sampled data keeps its real spacing.
-    /// Timestamps are seconds since the unix epoch; JSON also takes date
-    /// strings such as `"2024-01-05"` or `"2024-01-05 08:30"`.
-    #[serde(default)]
-    pub x_axis_values: Vec<f64>,
-    /// Fixed start of a continuous x axis; `None` starts at the first value.
-    #[serde(default)]
-    pub x_axis_min: Option<f64>,
-    /// Fixed end of a continuous x axis; `None` ends at the last value.
-    #[serde(default)]
-    pub x_axis_max: Option<f64>,
-    /// Format of the x axis labels: `{c}` is the label; on a time axis a
-    /// `strftime`-like pattern (`%Y %y %m %d %H %M %S %b`) replaces the
-    /// automatic one.
-    #[serde(default)]
-    pub x_axis_formatter: Option<String>,
-    /// Minutes east of UTC that a time axis is displayed in (480 for
-    /// UTC+8). Timestamps are shown in UTC by default.
-    #[serde(default)]
-    pub x_axis_time_offset: i32,
-    /// Title of the x axis, written below its labels.
-    #[serde(default)]
-    pub x_axis_title: String,
-    /// Hides the x axis entirely (charts without an x axis ignore this).
-    pub x_axis_hidden: bool,
-    /// Hides the y axis entirely (charts without a y axis ignore this).
-    pub y_axis_hidden: bool,
-
-    /// Stroke color of the grid lines.
-    pub grid_stroke_color: Color,
-    /// Stroke width of the grid lines.
-    pub grid_stroke_width: f32,
-
-    /// Stroke width of series lines.
-    pub series_stroke_width: f32,
-    /// Series label font color.
-    pub series_label_font_color: Color,
-    /// Series label font size.
-    pub series_label_font_size: f32,
-    /// Series label font weight, e.g. `"bold"`.
-    pub series_label_font_weight: Option<String>,
-    /// Series label format, supporting `{c}` value, `{a}` series name,
-    /// `{b}` category, `{d}` percentage and `{t}` thousands.
-    pub series_label_formatter: String,
-    /// Drops a data label that would overlap one already drawn, instead of
-    /// printing them on top of each other.
-    #[serde(default)]
-    pub series_label_hide_overlap: bool,
+    /// Text shown in the middle of the plot when there is no data to draw
+    /// (every series is empty); nothing is shown when unset.
+    pub empty_text: Option<String>,
     /// Shows the series of a stack as their shares of it: every stack adds
     /// up to 100% (bar, horizontal bar, line and polar bar charts).
-    #[serde(default)]
     pub stack_percent: bool,
-    /// Color palette cycled through by the series.
-    pub series_colors: Vec<Color>,
-    /// Marker drawn on data points (circle, dot or none).
-    pub series_symbol: Option<Symbol>,
-    /// Draws line series as smooth curves.
-    pub series_smooth: bool,
-    /// Fills the area under line series.
-    pub series_fill: bool,
-
+    /// Hides the y axis entirely (charts without a y axis ignore this).
+    pub y_axis_hidden: bool,
     /// SVG animation (duration/easing/stagger delay) for the chart types that
     /// support it (bar, horizontal bar, line, pie, funnel, sunburst, treemap,
     /// sankey, histogram, polar bar, chord).
     pub animation: Option<AnimationConfig>,
-    /// When `true`, data shapes get a hover tooltip (`series: value`): a
-    /// CSS-revealed label that works in any browser, plus a native `<title>`
-    /// for accessibility. Not available in calendar, gauge, parallel, radar
-    /// and theme river charts. Default: false; output is unchanged when off.
-    pub tooltip_show: bool,
+
+    /// The data series of the chart.
+    pub series_list: Vec<Series>,
+
+    /// The title.
+    pub title: TitleConfig,
+    /// The sub-title, below the title.
+    pub sub_title: TitleConfig,
+    /// The legend.
+    pub legend: LegendConfig,
+    /// The x axis. The y axes are the `y_axis_configs` of a chart.
+    pub x_axis: XAxisConfig,
+    /// The grid lines.
+    pub grid: GridConfig,
+    /// How the series are drawn.
+    pub series: SeriesConfig,
+    /// The hover tooltips.
+    pub tooltip: TooltipConfig,
 }
 
 /// Gets y axis config by index.
@@ -260,7 +128,7 @@ pub(crate) fn check_theme_name(theme: &str) -> canvas::Result<()> {
 }
 
 /// Builds the axis parameters from an axis config, so every chart applies
-/// `axis_min` / `axis_max`, the split count, the scale and thousands
+/// `min` / `max`, the split count, the scale and thousands
 /// formatting the same way.
 pub(crate) fn axis_value_params(
     config: &YAxisConfig,
@@ -268,18 +136,18 @@ pub(crate) fn axis_value_params(
     reverse: bool,
 ) -> AxisValueParams {
     let thousands_format = config
-        .axis_formatter
+        .formatter
         .as_deref()
         .is_some_and(|f| f.contains(THOUSANDS_FORMAT_LABEL));
     AxisValueParams {
         data_list,
-        split_number: config.axis_split_number,
+        split_number: config.split_number,
         reverse: Some(reverse),
-        min: config.axis_min,
-        max: config.axis_max,
+        min: config.min,
+        max: config.max,
         thousands_format,
-        scale: config.axis_scale.clone(),
-        inverse: config.axis_inverse,
+        scale: config.scale.clone(),
+        inverse: config.inverse,
     }
 }
 
@@ -352,7 +220,7 @@ pub(crate) struct AxisTitles {
 }
 
 /// The boxes of the data labels drawn so far, to drop a label that would
-/// overlap one of them (`series_label_hide_overlap`). When disabled every
+/// overlap one of them (`series.label.hide_overlap`). When disabled every
 /// label is accepted and nothing is recorded.
 pub(crate) struct LabelBoxes {
     enabled: bool,
@@ -401,12 +269,19 @@ struct BandTip {
 }
 
 /// Draws an error bar on `c`: a line at `x` between the two ends, with a
-/// cap `cap` wide to both sides at each of them.
-pub(crate) fn render_error_bar(c: &mut Canvas, x: f32, ends: (f32, f32), cap: f32, color: Color) {
+/// cap `cap` wide to both sides at each of them. `stroke` is its color and
+/// its width.
+pub(crate) fn render_error_bar(
+    c: &mut Canvas,
+    x: f32,
+    ends: (f32, f32),
+    cap: f32,
+    stroke: (Color, f32),
+) {
     let mut line = |from: (f32, f32), to: (f32, f32)| {
         c.line(Line {
-            color: Some(color),
-            stroke_width: 1.5,
+            color: Some(stroke.0),
+            stroke_width: stroke.1,
             left: from.0,
             top: from.1,
             right: to.0,
@@ -456,51 +331,47 @@ impl ChartBase {
         self.background_color = t.background_color;
         self.is_light = t.is_light;
 
-        self.title_font_color = t.title_font_color;
-        self.title_font_size = t.title_font_size;
-        self.title_font_weight = t.title_font_weight.clone();
-        self.title_margin = t.title_margin;
-        self.title_align = t.title_align.clone();
-        self.title_height = t.title_height;
-
-        self.sub_title_font_color = t.sub_title_font_color;
-        self.sub_title_font_size = t.sub_title_font_size;
-        self.sub_title_margin = t.sub_title_margin;
-        self.sub_title_align = t.sub_title_align.clone();
-        self.sub_title_height = t.sub_title_height;
-
-        self.legend_font_color = t.legend_font_color;
-        self.legend_font_size = t.legend_font_size;
-        self.legend_align = t.legend_align.clone();
-        self.legend_margin = t.legend_margin;
-
-        self.x_axis_font_size = t.x_axis_font_size;
-        self.x_axis_font_color = t.x_axis_font_color;
-        self.x_axis_stroke_color = t.x_axis_stroke_color;
-        self.x_axis_name_gap = t.x_axis_name_gap;
-        self.x_axis_height = t.x_axis_height;
-
-        *y_axis_configs = vec![YAxisConfig {
-            axis_font_size: t.y_axis_font_size,
-            axis_font_color: t.y_axis_font_color,
-            axis_stroke_color: t.y_axis_stroke_color,
-            axis_split_number: t.y_axis_split_number,
-            axis_name_gap: t.y_axis_name_gap,
-            ..Default::default()
-        }];
-
-        self.grid_stroke_color = t.grid_stroke_color;
-        self.grid_stroke_width = t.grid_stroke_width;
-
-        self.series_colors = t.series_colors.clone();
-        self.series_label_font_color = t.series_label_font_color;
-        self.series_label_font_size = t.series_label_font_size;
-        self.series_stroke_width = t.series_stroke_width;
-
-        self.series_symbol = Some(Symbol::Circle(
-            self.series_stroke_width,
-            Some(self.background_color),
-        ));
+        self.title = t.title.clone();
+        self.sub_title = t.sub_title.clone();
+        self.legend = t.legend.clone();
+        // The labels of the x axis are those the chart was created with.
+        let x_axis_data = std::mem::take(&mut self.x_axis.data);
+        self.x_axis = XAxisConfig {
+            data: x_axis_data,
+            ..t.x_axis.clone()
+        };
+        *y_axis_configs = vec![t.y_axis.clone()];
+        self.grid = t.grid.clone();
+        self.series = t.series.clone();
+        if self.series.symbol.is_none() {
+            self.series.symbol = Some(Symbol::Circle(
+                self.series.stroke_width,
+                Some(self.background_color),
+            ));
+        }
+    }
+    /// The alpha of the fill of an area: that of `series.fill_opacity`, or
+    /// the one the chart fills with when there is none.
+    pub(crate) fn fill_alpha(&self, default: u8) -> u8 {
+        self.series.fill_opacity.map_or(default, opacity_alpha)
+    }
+    /// The size the tooltips are written in: their own, or that of the
+    /// labels they stand in for.
+    pub(crate) fn tooltip_font_size(&self, label: f32) -> f32 {
+        if self.tooltip.font.size > 0.0 {
+            self.tooltip.font.size
+        } else {
+            label
+        }
+    }
+    /// The color the tooltips are written in: their own, or that of the
+    /// labels they stand in for.
+    pub(crate) fn tooltip_font_color(&self, label: Color) -> Color {
+        if self.tooltip.font.color.is_zero() {
+            label
+        } else {
+            self.tooltip.font.color
+        }
     }
     /// Fills the options from json config; `y_axis_configs` is threaded in the
     /// same way as for [`ChartBase::fill_theme`].
@@ -540,72 +411,72 @@ impl ChartBase {
             self.font_family = font_family;
         }
         if let Some(title_text) = get_string_from_value(&data, "title_text") {
-            self.title_text = title_text;
+            self.title.text = title_text;
         }
         if let Some(title_font_size) = get_f32_from_value(&data, "title_font_size") {
-            self.title_font_size = title_font_size;
+            self.title.font.size = title_font_size;
         }
         if let Some(title_font_color) = get_color_from_value(&data, "title_font_color") {
-            self.title_font_color = title_font_color;
+            self.title.font.color = title_font_color;
         }
         if let Some(title_font_weight) = get_string_from_value(&data, "title_font_weight") {
-            self.title_font_weight = Some(title_font_weight);
+            self.title.font.weight = Some(title_font_weight);
         }
         if let Some(title_margin) = get_margin_from_value(&data, "title_margin") {
-            self.title_margin = Some(title_margin);
+            self.title.margin = Some(title_margin);
         }
         if let Some(title_align) = get_align_from_value(&data, "title_align") {
-            self.title_align = title_align;
+            self.title.align = title_align;
         }
         if let Some(title_height) = get_f32_from_value(&data, "title_height") {
-            self.title_height = title_height;
+            self.title.height = title_height;
         }
 
         if let Some(sub_title_text) = get_string_from_value(&data, "sub_title_text") {
-            self.sub_title_text = sub_title_text;
+            self.sub_title.text = sub_title_text;
         }
         if let Some(sub_title_font_size) = get_f32_from_value(&data, "sub_title_font_size") {
-            self.sub_title_font_size = sub_title_font_size;
+            self.sub_title.font.size = sub_title_font_size;
         }
         if let Some(sub_title_font_color) = get_color_from_value(&data, "sub_title_font_color") {
-            self.sub_title_font_color = sub_title_font_color;
+            self.sub_title.font.color = sub_title_font_color;
         }
         if let Some(sub_title_font_weight) = get_string_from_value(&data, "sub_title_font_weight") {
-            self.sub_title_font_weight = Some(sub_title_font_weight);
+            self.sub_title.font.weight = Some(sub_title_font_weight);
         }
         if let Some(sub_title_margin) = get_margin_from_value(&data, "sub_title_margin") {
-            self.sub_title_margin = Some(sub_title_margin);
+            self.sub_title.margin = Some(sub_title_margin);
         }
         if let Some(sub_title_align) = get_align_from_value(&data, "sub_title_align") {
-            self.sub_title_align = sub_title_align;
+            self.sub_title.align = sub_title_align;
         }
         if let Some(sub_title_height) = get_f32_from_value(&data, "sub_title_height") {
-            self.sub_title_height = sub_title_height;
+            self.sub_title.height = sub_title_height;
         }
 
         if let Some(legend_font_size) = get_f32_from_value(&data, "legend_font_size") {
-            self.legend_font_size = legend_font_size;
+            self.legend.font.size = legend_font_size;
         }
         if let Some(legend_font_color) = get_color_from_value(&data, "legend_font_color") {
-            self.legend_font_color = legend_font_color;
+            self.legend.font.color = legend_font_color;
         }
         if let Some(legend_font_weight) = get_string_from_value(&data, "legend_font_weight") {
-            self.legend_font_weight = Some(legend_font_weight);
+            self.legend.font.weight = Some(legend_font_weight);
         }
         if let Some(legend_align) = get_align_from_value(&data, "legend_align") {
-            self.legend_align = legend_align;
+            self.legend.align = legend_align;
         }
         if let Some(legend_margin) = get_margin_from_value(&data, "legend_margin") {
-            self.legend_margin = Some(legend_margin);
+            self.legend.margin = Some(legend_margin);
         }
         if let Some(legend_category) = get_legend_category_from_value(&data, "legend_category") {
-            self.legend_category = legend_category;
+            self.legend.category = legend_category;
         }
         if let Some(legend_show) = get_bool_from_value(&data, "legend_show") {
-            self.legend_show = Some(legend_show);
+            self.legend.show = Some(legend_show);
         }
         if let Some(legend_position) = get_position_from_value(&data, "legend_position") {
-            self.legend_position = Some(legend_position);
+            self.legend.position = Some(legend_position);
         }
         if let Some(empty_text) = get_string_from_value(&data, "empty_text") {
             self.empty_text = Some(empty_text);
@@ -615,44 +486,47 @@ impl ChartBase {
         }
 
         if let Some(x_axis_data) = get_string_slice_from_value(&data, "x_axis_data") {
-            self.x_axis_data = x_axis_data;
+            self.x_axis.data = x_axis_data;
         }
         if let Some(x_axis_height) = get_f32_from_value(&data, "x_axis_height") {
-            self.x_axis_height = x_axis_height;
+            self.x_axis.height = x_axis_height;
         }
         if let Some(x_axis_stroke_color) = get_color_from_value(&data, "x_axis_stroke_color") {
-            self.x_axis_stroke_color = x_axis_stroke_color;
+            self.x_axis.stroke_color = x_axis_stroke_color;
+        }
+        if let Some(x_axis_stroke_width) = get_f32_from_value(&data, "x_axis_stroke_width") {
+            self.x_axis.stroke_width = Some(x_axis_stroke_width);
         }
         if let Some(x_axis_font_size) = get_f32_from_value(&data, "x_axis_font_size") {
-            self.x_axis_font_size = x_axis_font_size;
+            self.x_axis.font.size = x_axis_font_size;
         }
         if let Some(x_axis_font_color) = get_color_from_value(&data, "x_axis_font_color") {
-            self.x_axis_font_color = x_axis_font_color;
+            self.x_axis.font.color = x_axis_font_color;
         }
         if let Some(x_axis_font_weight) = get_string_from_value(&data, "x_axis_font_weight") {
-            self.x_axis_font_weight = Some(x_axis_font_weight);
+            self.x_axis.font.weight = Some(x_axis_font_weight);
         }
         if let Some(x_axis_name_gap) = get_f32_from_value(&data, "x_axis_name_gap") {
-            self.x_axis_name_gap = x_axis_name_gap;
+            self.x_axis.name_gap = x_axis_name_gap;
         }
         if let Some(x_axis_name_rotate) = get_f32_from_value(&data, "x_axis_name_rotate") {
-            self.x_axis_name_rotate = x_axis_name_rotate;
+            self.x_axis.name_rotate = x_axis_name_rotate;
         }
         if let Some(x_axis_margin) = get_margin_from_value(&data, "x_axis_margin") {
-            self.x_axis_margin = Some(x_axis_margin);
+            self.x_axis.margin = Some(x_axis_margin);
         }
         if let Some(x_boundary_gap) = get_bool_from_value(&data, "x_boundary_gap") {
-            self.x_boundary_gap = Some(x_boundary_gap);
+            self.x_axis.boundary_gap = Some(x_boundary_gap);
         }
         if let Some(overflow) = get_string_from_value(&data, "x_axis_label_overflow") {
-            self.x_axis_label_overflow = match overflow.to_lowercase().as_str() {
+            self.x_axis.label_overflow = match overflow.to_lowercase().as_str() {
                 "rotate" => AxisLabelOverflow::Rotate,
                 "ellipsis" => AxisLabelOverflow::Ellipsis,
                 _ => AxisLabelOverflow::Thin,
             };
         }
         if let Some(kind) = get_string_from_value(&data, "x_axis_type") {
-            self.x_axis_type = match kind.to_lowercase().as_str() {
+            self.x_axis.kind = match kind.to_lowercase().as_str() {
                 "value" => AxisType::Value,
                 "time" => AxisType::Time,
                 _ => AxisType::Category,
@@ -661,7 +535,7 @@ impl ChartBase {
         // Date strings make the axis a time axis unless it says otherwise.
         let mut has_time_strings = false;
         if let Some((values, has_time)) = get_x_values_from_value(&data, "x_axis_values") {
-            self.x_axis_values = values;
+            self.x_axis.values = values;
             has_time_strings |= has_time;
         }
         if let Some(list) = data.get("series_list").and_then(|v| v.as_array()) {
@@ -670,27 +544,27 @@ impl ChartBase {
             });
         }
         if let Some((value, has_time)) = data.get("x_axis_min").and_then(get_x_value) {
-            self.x_axis_min = Some(value);
+            self.x_axis.min = Some(value);
             has_time_strings |= has_time;
         }
         if let Some((value, has_time)) = data.get("x_axis_max").and_then(get_x_value) {
-            self.x_axis_max = Some(value);
+            self.x_axis.max = Some(value);
             has_time_strings |= has_time;
         }
-        if has_time_strings && self.x_axis_type == AxisType::Category {
-            self.x_axis_type = AxisType::Time;
+        if has_time_strings && self.x_axis.kind == AxisType::Category {
+            self.x_axis.kind = AxisType::Time;
         }
         if let Some(formatter) = get_string_from_value(&data, "x_axis_formatter") {
-            self.x_axis_formatter = Some(formatter);
+            self.x_axis.formatter = Some(formatter);
         }
         if let Some(offset) = get_f32_from_value(&data, "x_axis_time_offset") {
-            self.x_axis_time_offset = offset as i32;
+            self.x_axis.time_offset = offset as i32;
         }
         if let Some(title) = get_string_from_value(&data, "x_axis_title") {
-            self.x_axis_title = title;
+            self.x_axis.title = title;
         }
         if let Some(x_axis_hidden) = get_bool_from_value(&data, "x_axis_hidden") {
-            self.x_axis_hidden = x_axis_hidden;
+            self.x_axis.hidden = x_axis_hidden;
         }
         if let Some(y_axis_hidden) = get_bool_from_value(&data, "y_axis_hidden") {
             self.y_axis_hidden = y_axis_hidden;
@@ -701,50 +575,56 @@ impl ChartBase {
         }
 
         if let Some(grid_stroke_color) = get_color_from_value(&data, "grid_stroke_color") {
-            self.grid_stroke_color = grid_stroke_color;
+            self.grid.stroke_color = grid_stroke_color;
         }
         if let Some(grid_stroke_width) = get_f32_from_value(&data, "grid_stroke_width") {
-            self.grid_stroke_width = grid_stroke_width;
+            self.grid.stroke_width = grid_stroke_width;
+        }
+        if let Some(dash) = get_string_from_value(&data, "grid_stroke_dash_array") {
+            self.grid.stroke_dash_array = Some(dash);
         }
 
         if let Some(series_stroke_width) = get_f32_from_value(&data, "series_stroke_width") {
-            self.series_stroke_width = series_stroke_width;
+            self.series.stroke_width = series_stroke_width;
         }
         if let Some(series_label_font_color) =
             get_color_from_value(&data, "series_label_font_color")
         {
-            self.series_label_font_color = series_label_font_color;
+            self.series.label.font.color = series_label_font_color;
         }
         if let Some(series_label_font_size) = get_f32_from_value(&data, "series_label_font_size") {
-            self.series_label_font_size = series_label_font_size;
+            self.series.label.font.size = series_label_font_size;
         }
         if let Some(series_label_font_weight) =
             get_string_from_value(&data, "series_label_font_weight")
         {
-            self.series_label_font_weight = Some(series_label_font_weight);
+            self.series.label.font.weight = Some(series_label_font_weight);
         }
         if let Some(series_label_formatter) = get_string_from_value(&data, "series_label_formatter")
         {
-            self.series_label_formatter = series_label_formatter;
+            self.series.label.formatter = series_label_formatter;
         }
         if let Some(hide) = get_bool_from_value(&data, "series_label_hide_overlap") {
-            self.series_label_hide_overlap = hide;
+            self.series.label.hide_overlap = hide;
         }
         if let Some(stack_percent) = get_bool_from_value(&data, "stack_percent") {
             self.stack_percent = stack_percent;
         }
 
         if let Some(series_colors) = get_color_slice_from_value(&data, "series_colors") {
-            self.series_colors = series_colors;
+            self.series.colors = series_colors;
         }
         if let Some(series_symbol) = get_series_symbol_from_value(&data, "series_symbol") {
-            self.series_symbol = Some(series_symbol);
+            self.series.symbol = Some(series_symbol);
         }
         if let Some(series_smooth) = get_bool_from_value(&data, "series_smooth") {
-            self.series_smooth = series_smooth;
+            self.series.smooth = series_smooth;
         }
         if let Some(series_fill) = get_bool_from_value(&data, "series_fill") {
-            self.series_fill = series_fill;
+            self.series.fill = series_fill;
+        }
+        if let Some(opacity) = get_f32_from_value(&data, "series_fill_opacity") {
+            self.series.fill_opacity = Some(opacity);
         }
 
         if let Some(anim) = data.get("animation")
@@ -763,7 +643,16 @@ impl ChartBase {
             self.animation = Some(config);
         }
         if let Some(v) = get_bool_from_value(&data, "tooltip_show") {
-            self.tooltip_show = v;
+            self.tooltip.show = v;
+        }
+        if let Some(size) = get_f32_from_value(&data, "tooltip_font_size") {
+            self.tooltip.font.size = size;
+        }
+        if let Some(color) = get_color_from_value(&data, "tooltip_font_color") {
+            self.tooltip.font.color = color;
+        }
+        if let Some(weight) = get_string_from_value(&data, "tooltip_font_weight") {
+            self.tooltip.font.weight = Some(weight);
         }
 
         Ok(data)
@@ -841,13 +730,13 @@ impl ChartBase {
         let y_axis_width = self.y_axis_width_for(&y_axis_config, &y_axis_values);
         (y_axis_values, y_axis_width)
     }
-    /// The width a y axis needs for its labels: the configured `axis_width`,
+    /// The width a y axis needs for its labels: the configured `width`,
     /// or the longest (formatted) label plus a small gap.
     pub(crate) fn y_axis_width_for(&self, config: &YAxisConfig, values: &AxisValues) -> f32 {
-        if let Some(value) = config.axis_width {
+        if let Some(value) = config.width {
             return value;
         }
-        let y_axis_formatter = &config.axis_formatter.clone().unwrap_or_default();
+        let y_axis_formatter = &config.formatter.clone().unwrap_or_default();
         let mut longest_item: &str = "";
         for item in &values.data {
             if item.chars().count() > longest_item.chars().count() {
@@ -855,7 +744,7 @@ impl ChartBase {
             }
         }
         let value = format_string(longest_item, y_axis_formatter);
-        if let Ok(b) = measure_text_width_family(&self.font_family, config.axis_font_size, &value) {
+        if let Ok(b) = measure_text_width_family(&self.font_family, config.font.size, &value) {
             b.width() + 5.0
         } else {
             DEFAULT_Y_AXIS_WIDTH
@@ -884,7 +773,7 @@ impl ChartBase {
 
         let title_height = self.render_title(c.child(Box::default()));
 
-        match self.legend_position {
+        match self.legend.position {
             Some(Position::Bottom) => {
                 // Reserve the legend rows at the bottom; the plot sits above.
                 let legend_height = self.legend_height(c.width());
@@ -898,7 +787,7 @@ impl ChartBase {
                 title_height
             }
             Some(Position::Left) | Some(Position::Right) => {
-                let right = self.legend_position == Some(Position::Right);
+                let right = self.legend.position == Some(Position::Right);
                 let width = self.render_legend_vertical(
                     c.child(Box {
                         top: title_height,
@@ -928,14 +817,14 @@ impl ChartBase {
         if legends.is_empty() {
             return 0.0;
         }
-        let legend_margin = self.legend_margin.unwrap_or_default();
+        let legend_margin = self.legend.margin.unwrap_or_default();
         let rows = wrap_legends_to_rows(
             &self.font_family,
-            self.legend_font_size,
+            self.legend.font.size,
             &legends,
             width - legend_margin.left - legend_margin.right,
         );
-        (self.legend_font_size + LEGEND_MARGIN) * rows.len() as f32
+        (self.legend.font.size + LEGEND_MARGIN) * rows.len() as f32
             + legend_margin.top
             + legend_margin.bottom
     }
@@ -947,9 +836,9 @@ impl ChartBase {
         if legends.is_empty() {
             return 0.0;
         }
-        let widths = measure_legend_widths(&self.font_family, self.legend_font_size, &legends);
+        let widths = measure_legend_widths(&self.font_family, self.legend.font.size, &legends);
         let max_width = widths.iter().copied().fold(0.0_f32, f32::max);
-        let legend_margin = self.legend_margin.unwrap_or_default();
+        let legend_margin = self.legend.margin.unwrap_or_default();
         let margin_width = legend_margin.left + legend_margin.right;
         let mut legend_canvas = c.child(legend_margin);
         let left = if right {
@@ -957,7 +846,7 @@ impl ChartBase {
         } else {
             0.0
         };
-        let unit_height = self.legend_font_size + LEGEND_MARGIN;
+        let unit_height = self.legend.font.size + LEGEND_MARGIN;
         let mut top = 0.0;
         for (name, color) in entries.iter() {
             if name.is_empty() {
@@ -971,15 +860,15 @@ impl ChartBase {
             };
             legend_canvas.legend(Legend {
                 text: name.to_string(),
-                font_size: self.legend_font_size,
+                font_size: self.legend.font.size,
                 font_family: self.font_family.clone(),
-                font_color: Some(self.legend_font_color),
-                font_weight: self.legend_font_weight.clone(),
+                font_color: Some(self.legend.font.color),
+                font_weight: self.legend.font.weight.clone(),
                 stroke_color: Some(color),
                 fill,
                 left,
                 top,
-                category: self.legend_category.clone(),
+                category: self.legend.category.clone(),
             });
             top += unit_height;
         }
@@ -989,21 +878,21 @@ impl ChartBase {
     pub(crate) fn render_title(&self, c: Canvas) -> f32 {
         let mut title_height = 0.0;
 
-        if !self.title_text.is_empty() {
-            let title_margin = self.title_margin.unwrap_or_default();
+        if !self.title.text.is_empty() {
+            let title_margin = self.title.margin.unwrap_or_default();
             // A title wider than the canvas is cut with an ellipsis rather
             // than pushed to a negative x and clipped.
             let title_text = text_ellipsis(
                 &self.font_family,
-                self.title_font_size,
-                &self.title_text,
+                self.title.font.size,
+                &self.title.text,
                 c.width() - title_margin.left - title_margin.right,
             );
             let mut x = 0.0;
             if let Ok(title_box) =
-                measure_text_width_family(&self.font_family, self.title_font_size, &title_text)
+                measure_text_width_family(&self.font_family, self.title.font.size, &title_text)
             {
-                x = match self.title_align {
+                x = match self.title.align {
                     Align::Center => (c.width() - title_box.width()) / 2.0,
                     Align::Right => c.width() - title_box.width(),
                     _ => 0.0,
@@ -1013,44 +902,44 @@ impl ChartBase {
             let b = c.child(title_margin).text(Text {
                 text: title_text,
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(self.title_font_size),
-                font_weight: self.title_font_weight.clone(),
-                font_color: Some(self.title_font_color),
-                line_height: Some(self.title_height),
+                font_size: Some(self.title.font.size),
+                font_weight: self.title.font.weight.clone(),
+                font_color: Some(self.title.font.color),
+                line_height: Some(self.title.height),
                 x: Some(x),
                 ..Default::default()
             });
             title_height = b.outer_height() + title_margin_bottom;
         }
-        if !self.sub_title_text.is_empty() {
-            let mut sub_title_margin = self.sub_title_margin.unwrap_or_default();
+        if !self.sub_title.text.is_empty() {
+            let mut sub_title_margin = self.sub_title.margin.unwrap_or_default();
             let sub_title_text = text_ellipsis(
                 &self.font_family,
-                self.sub_title_font_size,
-                &self.sub_title_text,
+                self.sub_title.font.size,
+                &self.sub_title.text,
                 c.width() - sub_title_margin.left - sub_title_margin.right,
             );
             let mut x = 0.0;
             if let Ok(sub_title_box) = measure_text_width_family(
                 &self.font_family,
-                self.sub_title_font_size,
+                self.sub_title.font.size,
                 &sub_title_text,
             ) {
-                x = match self.sub_title_align {
+                x = match self.sub_title.align {
                     Align::Center => (c.width() - sub_title_box.width()) / 2.0,
                     Align::Right => c.width() - sub_title_box.width(),
                     _ => 0.0,
                 }
             }
             let sub_title_margin_bottom = sub_title_margin.bottom;
-            sub_title_margin.top += self.title_height;
+            sub_title_margin.top += self.title.height;
             let b = c.child(sub_title_margin).text(Text {
                 text: sub_title_text,
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(self.sub_title_font_size),
-                font_color: Some(self.sub_title_font_color),
-                line_height: Some(self.sub_title_height),
-                font_weight: self.sub_title_font_weight.clone(),
+                font_size: Some(self.sub_title.font.size),
+                font_color: Some(self.sub_title.font.color),
+                line_height: Some(self.sub_title.height),
+                font_weight: self.sub_title.font.weight.clone(),
                 x: Some(x),
                 ..Default::default()
             });
@@ -1065,14 +954,14 @@ impl ChartBase {
     }
     /// The legend entries of the series: name and color, in series order.
     fn legend_entries(&self) -> Vec<(&str, Color)> {
-        if !self.legend_show.unwrap_or(true) {
+        if !self.legend.show.unwrap_or(true) {
             return vec![];
         }
         self.series_list
             .iter()
             .enumerate()
             .map(|(index, series)| {
-                let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+                let color = get_color(&self.series.colors, series.index.unwrap_or(index));
                 (series.name.as_str(), color)
             })
             .collect()
@@ -1085,22 +974,22 @@ impl ChartBase {
             return 0.0;
         }
         let legends: Vec<&str> = entries.iter().map(|(name, _)| *name).collect();
-        let legend_margin = self.legend_margin.unwrap_or_default();
+        let legend_margin = self.legend.margin.unwrap_or_default();
         let legend_margin_value = legend_margin.top + legend_margin.bottom;
         let mut legend_canvas = c.child(legend_margin);
         let legend_canvas_width = legend_canvas.width();
         let rows = wrap_legends_to_rows(
             &self.font_family,
-            self.legend_font_size,
+            self.legend.font.size,
             &legends,
             legend_canvas_width,
         );
         let mut current_legend_index = 0;
-        let legend_unit_height = self.legend_font_size + LEGEND_MARGIN;
+        let legend_unit_height = self.legend.font.size + LEGEND_MARGIN;
         let mut legend_top = 0.0;
         let row_count = rows.len();
         for (row_index, (legend_width, legend_texts)) in rows.iter().enumerate() {
-            let mut legend_left = match self.legend_align {
+            let mut legend_left = match self.legend.align {
                 Align::Right => legend_canvas_width - legend_width,
                 Align::Left => 0.0,
                 Align::Center => (legend_canvas_width - legend_width) / 2.0,
@@ -1125,15 +1014,15 @@ impl ChartBase {
                 };
                 let b = legend_canvas.legend(Legend {
                     text: name.to_string(),
-                    font_size: self.legend_font_size,
+                    font_size: self.legend.font.size,
                     font_family: self.font_family.clone(),
-                    font_color: Some(self.legend_font_color),
-                    font_weight: self.legend_font_weight.clone(),
+                    font_color: Some(self.legend.font.color),
+                    font_weight: self.legend.font.weight.clone(),
                     stroke_color: Some(color),
                     fill,
                     left: legend_left,
                     top: legend_top,
-                    category: self.legend_category.clone(),
+                    category: self.legend.category.clone(),
                 });
                 legend_left += b.width() + LEGEND_MARGIN;
             }
@@ -1180,15 +1069,15 @@ impl ChartBase {
                 _ => 0.0,
             }
         };
-        let bottom = if self.x_axis_hidden {
+        let bottom = if self.x_axis.hidden {
             0.0
         } else {
-            strip(Some(x_title), self.x_axis_font_size)
+            strip(Some(x_title), self.x_axis.font.size)
         };
         let side = |index: usize| -> f32 {
             match y_axis_configs.get(index) {
                 Some(config) if !self.y_axis_hidden => {
-                    strip(config.axis_title.as_deref(), config.axis_font_size)
+                    strip(config.title.as_deref(), config.font.size)
                 }
                 _ => 0.0,
             }
@@ -1225,12 +1114,12 @@ impl ChartBase {
             outer.text_unmeasured(Text {
                 text: x_title.to_string(),
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(self.x_axis_font_size),
-                font_color: Some(self.x_axis_font_color),
-                font_weight: self.x_axis_font_weight.clone(),
+                font_size: Some(self.x_axis.font.size),
+                font_color: Some(self.x_axis.font.color),
+                font_weight: self.x_axis.font.weight.clone(),
                 x: Some(titles.left + plot_left + plot_width / 2.0),
                 // The baseline sits a descender above the bottom edge.
-                y: Some(outer.height() - self.x_axis_font_size * 0.25),
+                y: Some(outer.height() - self.x_axis.font.size * 0.25),
                 text_anchor: Some("middle".to_string()),
                 ..Default::default()
             });
@@ -1243,13 +1132,13 @@ impl ChartBase {
             let Some(config) = y_axis_configs.get(index) else {
                 continue;
             };
-            let Some(title) = config.axis_title.as_deref() else {
+            let Some(title) = config.title.as_deref() else {
                 continue;
             };
             if strip <= 0.0 {
                 continue;
             }
-            let inset = config.axis_font_size * 0.85;
+            let inset = config.font.size * 0.85;
             let x = if index == 0 {
                 outer.margin.left + inset
             } else {
@@ -1258,9 +1147,9 @@ impl ChartBase {
             outer.append(Component::Text(Text {
                 text: title.to_string(),
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(config.axis_font_size),
-                font_color: Some(config.axis_font_color),
-                font_weight: config.axis_font_weight.clone(),
+                font_size: Some(config.font.size),
+                font_color: Some(config.font.color),
+                font_weight: config.font.weight.clone(),
                 transform: Some(format!(
                     "translate({},{}) rotate({angle})",
                     format_float(x),
@@ -1285,7 +1174,7 @@ impl ChartBase {
     ) -> CartesianLayout {
         let mut c = c;
         let titles =
-            self.reserve_axis_titles(&mut c, y_axis_configs, &self.x_axis_title, right.is_some());
+            self.reserve_axis_titles(&mut c, y_axis_configs, &self.x_axis.title, right.is_some());
         let (left_values, mut left_width) = left;
         let (right_values, mut right_width) = right.unwrap_or_default();
         // The value ranges are still needed to place the series when the
@@ -1313,15 +1202,15 @@ impl ChartBase {
         // The ticks of a continuous axis are chosen to fit, so its labels
         // never need the extra height rotated categories do.
         let x_axis_height = match x {
-            Some(_) if self.x_axis_hidden => 0.0,
-            Some(_) => self.x_axis_height,
+            Some(_) if self.x_axis.hidden => 0.0,
+            Some(_) => self.x_axis.height,
             None => self.x_axis_height_for(c.width() - left_width - right_width),
         };
         let axis_height = (c.height() - x_axis_height - axis_top).max(0.0);
         self.render_axis_titles(
             &titles,
             y_axis_configs,
-            &self.x_axis_title,
+            &self.x_axis.title,
             left_width,
             axis_top,
             axis_width,
@@ -1372,7 +1261,7 @@ impl ChartBase {
                 1,
             );
         }
-        if !self.x_axis_hidden {
+        if !self.x_axis.hidden {
             let axis_canvas = c.child(Box {
                 top: c.height() - x_axis_height,
                 left: left_width,
@@ -1385,7 +1274,7 @@ impl ChartBase {
                 }
                 None => self.render_x_axis_with_height(
                     axis_canvas,
-                    self.x_axis_data.clone(),
+                    self.x_axis.data.clone(),
                     axis_width,
                     x_axis_height,
                 ),
@@ -1395,7 +1284,7 @@ impl ChartBase {
         let x_count = if x.is_some() {
             self.x_count()
         } else {
-            self.x_axis_data.len()
+            self.x_axis.data.len()
         };
         CartesianLayout {
             canvas: c,
@@ -1483,19 +1372,19 @@ impl ChartBase {
             if !stacks.iter().any(|(_, axis)| *axis == index) {
                 continue;
             }
-            if config.axis_formatter.is_none() {
-                config.axis_formatter = Some("{c}%".to_string());
+            if config.formatter.is_none() {
+                config.formatter = Some("{c}%".to_string());
             }
-            if config.axis_max.is_none() && config.axis_min.is_none() && !has_negative {
-                config.axis_max = Some(100.0);
-                let split = config.axis_split_number;
+            if config.max.is_none() && config.min.is_none() && !has_negative {
+                config.max = Some(100.0);
+                let split = config.split_number;
                 if split == 0 || 100 % split != 0 {
-                    config.axis_split_number = 5;
+                    config.split_number = 5;
                 }
             }
         }
-        if self.series_label_formatter.is_empty() {
-            self.series_label_formatter = "{c}%".to_string();
+        if self.series.label.formatter.is_empty() {
+            self.series.label.formatter = "{c}%".to_string();
         }
     }
     /// True when there is nothing to draw: no series, or only empty ones.
@@ -1519,8 +1408,8 @@ impl ChartBase {
         c.text(Text {
             text: text.to_string(),
             font_family: Some(self.font_family.clone()),
-            font_size: Some(self.series_label_font_size),
-            font_color: Some(self.series_label_font_color),
+            font_size: Some(self.series.label.font.size),
+            font_color: Some(self.series.label.font.color),
             x: Some(c.width() / 2.0),
             y: Some(c.height() / 2.0),
             text_anchor: Some("middle".to_string()),
@@ -1562,7 +1451,7 @@ impl ChartBase {
             } else {
                 y_axis_values_list[series.y_axis_index]
             };
-            let color = get_color(&self.series_colors, series.index.unwrap_or(index));
+            let color = get_color(&self.series.colors, series.index.unwrap_or(index));
             let values: Vec<f32> = series.iter_values().filter(|v| *v != NIL_VALUE).collect();
             let stat = mark_statistics(&values);
             // Bands first, so the lines stay visible on top of them.
@@ -1573,7 +1462,7 @@ impl ChartBase {
                 let y_from = y_axis_values.get_offset_height(from, max_height);
                 let y_to = y_axis_values.get_offset_height(to, max_height);
                 c.rect(Rect {
-                    fill: Some(color.with_alpha(40).into()),
+                    fill: Some(mark_area.fill(color).into()),
                     left: 0.0,
                     top: y_from.min(y_to),
                     width: c.width(),
@@ -1585,6 +1474,7 @@ impl ChartBase {
                 let Some(value) = stat(&mark_line.category) else {
                     continue;
                 };
+                let color = mark_line.color.unwrap_or(color);
                 let y = y_axis_values.get_offset_height(value, max_height);
                 let arrow_width = 10.0;
                 c.circle(Circle {
@@ -1601,8 +1491,8 @@ impl ChartBase {
                     top: y,
                     right: c.width() - arrow_width,
                     bottom: y,
-                    stroke_dash_array: Some("4,2".to_string()),
-                    ..Default::default()
+                    stroke_width: mark_line.stroke_width.unwrap_or(1.0),
+                    stroke_dash_array: mark_line.dash(),
                 });
                 c.arrow(Arrow {
                     x: c.width() - arrow_width,
@@ -1614,8 +1504,8 @@ impl ChartBase {
                 c.text(Text {
                     text: format_float(value),
                     font_family: Some(self.font_family.clone()),
-                    font_size: Some(self.series_label_font_size),
-                    font_color: Some(self.series_label_font_color),
+                    font_size: Some(self.series.label.font.size),
+                    font_color: Some(self.series.label.font.color),
                     x: Some(c.width() - arrow_width - 4.0),
                     y: Some(y),
                     dy: Some(-6.0),
@@ -1625,12 +1515,12 @@ impl ChartBase {
             }
         }
     }
-    /// Formats the label of one data point with `series_label_formatter`;
+    /// Formats the label of one data point with `series.label.formatter`;
     /// `{b}` is the x axis category at `index`.
     pub(crate) fn format_series_label(&self, series: &Series, index: usize, value: f32) -> String {
         let category = self.x_label(series, index);
         format_series_label(
-            &self.series_label_formatter,
+            &self.series.label.formatter,
             value,
             &series.name,
             category.as_deref().unwrap_or(""),
@@ -1647,12 +1537,13 @@ impl ChartBase {
     ) {
         let mut c1 = c;
         let y_axis_config = get_y_axis_config(y_axis_configs, 0);
-        let axis_split_number = y_axis_config.axis_split_number;
+        let axis_split_number = y_axis_config.split_number;
         c1.grid(Grid {
             right: axis_width,
             bottom: axis_height,
-            color: Some(self.grid_stroke_color),
-            stroke_width: self.grid_stroke_width,
+            color: Some(self.grid.stroke_color),
+            stroke_width: self.grid.stroke_width,
+            stroke_dash_array: self.grid.stroke_dash_array.clone(),
             horizontals: axis_split_number,
             hidden_horizontals: vec![axis_split_number],
             ..Default::default()
@@ -1676,59 +1567,60 @@ impl ChartBase {
             position = Position::Right;
         }
         let mut name_align = Align::Left;
-        if let Some(value) = &y_axis_config.axis_name_align {
+        if let Some(value) = &y_axis_config.name_align {
             name_align = value.clone();
         }
-        let margin = y_axis_config.axis_margin.unwrap_or_default();
+        let margin = y_axis_config.margin.unwrap_or_default();
         c1.child(margin).axis(Axis {
             position,
             height: axis_height,
             width: axis_width,
-            split_number: y_axis_config.axis_split_number,
+            split_number: y_axis_config.split_number,
             font_family: self.font_family.clone(),
-            stroke_color: Some(y_axis_config.axis_stroke_color),
+            stroke_color: Some(y_axis_config.stroke_color),
+            stroke_width: y_axis_config.stroke_width.unwrap_or(1.0),
             name_align,
-            name_gap: y_axis_config.axis_name_gap,
-            font_color: Some(y_axis_config.axis_font_color),
-            font_size: y_axis_config.axis_font_size,
-            font_weight: y_axis_config.axis_font_weight.clone(),
+            name_gap: y_axis_config.name_gap,
+            font_color: Some(y_axis_config.font.color),
+            font_size: y_axis_config.font.size,
+            font_weight: y_axis_config.font.weight.clone(),
             data,
-            formatter: y_axis_config.axis_formatter.clone(),
+            formatter: y_axis_config.formatter.clone(),
             ..Default::default()
         });
     }
-    /// Renders x axis widget for canvas, the x_boundary_gap parameter set to false,
+    /// Renders x axis widget for canvas, the `x_axis.boundary_gap` parameter set to false,
     /// the align will be left.
     pub(crate) fn render_x_axis(&self, c: Canvas, data: Vec<String>, axis_width: f32) {
-        self.render_x_axis_with_height(c, data, axis_width, self.x_axis_height)
+        self.render_x_axis_with_height(c, data, axis_width, self.x_axis.height)
     }
-    /// The height the x axis needs for its labels: `x_axis_height`, or more
-    /// when the labels are rotated to fit (`x_axis_label_overflow`).
+    /// The height the x axis needs for its labels: `x_axis.height`, or more
+    /// when the labels are rotated to fit (`x_axis.label_overflow`).
     pub(crate) fn x_axis_height_for(&self, axis_width: f32) -> f32 {
-        if self.x_axis_hidden {
+        if self.x_axis.hidden {
             return 0.0;
         }
-        if self.x_axis_label_overflow != AxisLabelOverflow::Rotate
-            || self.x_axis_name_rotate != 0.0
-            || self.x_axis_data.is_empty()
+        if self.x_axis.label_overflow != AxisLabelOverflow::Rotate
+            || self.x_axis.name_rotate != 0.0
+            || self.x_axis.data.is_empty()
         {
-            return self.x_axis_height;
+            return self.x_axis.height;
         }
         let mut total = 0.0;
         let mut widest = 0.0_f32;
-        for text in self.x_axis_data.iter() {
-            if let Ok(b) = measure_text_width_family(&self.font_family, self.x_axis_font_size, text)
+        for text in self.x_axis.data.iter() {
+            if let Ok(b) = measure_text_width_family(&self.font_family, self.x_axis.font.size, text)
             {
                 total += b.width();
                 widest = widest.max(b.width());
             }
         }
         if total <= axis_width {
-            return self.x_axis_height;
+            return self.x_axis.height;
         }
         // Rotated 45°: the label's projection plus the tick and gap.
-        let rotated = (widest + self.x_axis_font_size) * std::f32::consts::FRAC_1_SQRT_2;
-        self.x_axis_height.max(rotated + self.x_axis_name_gap + 8.0)
+        let rotated = (widest + self.x_axis.font.size) * std::f32::consts::FRAC_1_SQRT_2;
+        self.x_axis.height.max(rotated + self.x_axis.name_gap + 8.0)
     }
     /// [`Self::render_x_axis`] with an explicit axis height.
     pub(crate) fn render_x_axis_with_height(
@@ -1741,27 +1633,28 @@ impl ChartBase {
         let c1 = c;
 
         let mut split_number = data.len();
-        let name_align = if self.x_boundary_gap.unwrap_or(true) {
+        let name_align = if self.x_axis.boundary_gap.unwrap_or(true) {
             Align::Center
         } else {
             split_number = split_number.saturating_sub(1);
             Align::Left
         };
-        let margin = self.x_axis_margin.unwrap_or_default();
+        let margin = self.x_axis.margin.unwrap_or_default();
         c1.child(margin).axis(Axis {
             height: x_axis_height,
             width: axis_width,
             split_number,
             font_family: self.font_family.clone(),
             data,
-            font_color: Some(self.x_axis_font_color),
-            font_weight: self.x_axis_font_weight.clone(),
-            stroke_color: Some(self.x_axis_stroke_color),
-            font_size: self.x_axis_font_size,
-            name_gap: self.x_axis_name_gap,
-            name_rotate: self.x_axis_name_rotate,
+            font_color: Some(self.x_axis.font.color),
+            font_weight: self.x_axis.font.weight.clone(),
+            stroke_color: Some(self.x_axis.stroke_color),
+            stroke_width: self.x_axis.stroke_width.unwrap_or(1.0),
+            font_size: self.x_axis.font.size,
+            name_gap: self.x_axis.name_gap,
+            name_rotate: self.x_axis.name_rotate,
             name_align,
-            label_overflow: self.x_axis_label_overflow.clone(),
+            label_overflow: self.x_axis.label_overflow.clone(),
             ..Default::default()
         });
     }
@@ -1772,14 +1665,14 @@ impl ChartBase {
         }
         let mut c1 = c;
         // Boxes of the labels drawn so far, when overlapping ones are hidden.
-        let mut placed = LabelBoxes::new(self.series_label_hide_overlap);
+        let mut placed = LabelBoxes::new(self.series.label.hide_overlap);
         for series_labels in series_labels_list.iter() {
             for series_label in series_labels.iter() {
                 let mut dx = None;
                 let mut width = 0.0;
                 if let Ok(value) = measure_text_width_family(
                     &self.font_family,
-                    self.series_label_font_size,
+                    self.series.label.font.size,
                     &series_label.text,
                 ) {
                     width = value.width();
@@ -1798,9 +1691,9 @@ impl ChartBase {
                 let bottom = series_label.point.y - 8.0;
                 if !placed.try_place(
                     left,
-                    bottom - self.series_label_font_size,
+                    bottom - self.series.label.font.size,
                     width,
-                    self.series_label_font_size,
+                    self.series.label.font.size,
                 ) {
                     continue;
                 }
@@ -1809,9 +1702,9 @@ impl ChartBase {
                     dy: Some(-8.0),
                     dx,
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
-                    font_weight: self.series_label_font_weight.clone(),
+                    font_color: Some(self.series.label.font.color),
+                    font_size: Some(self.series.label.font.size),
+                    font_weight: self.series.label.font.weight.clone(),
                     x: Some(series_label.point.x),
                     y: Some(series_label.point.y),
                     ..Default::default()
@@ -1899,8 +1792,9 @@ impl ChartBase {
             .collect();
 
         let mut series_labels_list = vec![];
-        // `(x, low end, high end)` of the error bars of the values.
-        let mut error_bars: Vec<(f32, f32, f32)> = vec![];
+        // `(x, low end, high end, stroke width)` of the error bars of the
+        // values.
+        let mut error_bars: Vec<(f32, f32, f32, f32)> = vec![];
         let get_bar_color = |colors: &Option<Vec<Option<Color>>>, index: usize| -> Option<Color> {
             if let Some(colors) = &colors {
                 if colors.len() <= index {
@@ -1920,9 +1814,9 @@ impl ChartBase {
             } else {
                 y_axis_values_list[series.y_axis_index]
             };
-            let color = get_color(&self.series_colors, series.index.unwrap_or(series_idx));
+            let color = get_color(&self.series.colors, series.index.unwrap_or(series_idx));
             // Bars grow from the 0 line, not from the axis bottom, so negative
-            // values hang below it. With a minimum above 0 (custom `axis_min`)
+            // values hang below it. With a minimum above 0 (a `min` of its own)
             // or a log scale there is no 0 on the axis; fall back to the axis
             // bottom as before.
             let zero_y = y_axis_values
@@ -2023,6 +1917,7 @@ impl ChartBase {
                         left + half_bar_width,
                         y_axis_values.get_offset_height(lower, max_height),
                         y_axis_values.get_offset_height(upper, max_height),
+                        SeriesBand::error_bar_width(series.error_bar.as_ref()),
                     ));
                     let (lower, upper) = (format_float(lower), format_float(upper));
                     range = format!(" ({lower} – {upper})");
@@ -2053,6 +1948,7 @@ impl ChartBase {
                     },
                     dataset,
                     color: None,
+                    stroke_width: None,
                 });
 
                 // CSS hover tooltip: a hidden label drawn immediately
@@ -2062,9 +1958,10 @@ impl ChartBase {
                     c1.text_unmeasured(Text {
                         text: tooltip_text,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(left + half_bar_width),
                         y: Some(y_top),
                         dy: Some(-6.0),
@@ -2088,7 +1985,7 @@ impl ChartBase {
                     // middle of it (it is written 8 above its point). On an
                     // inverse axis the bar hangs down from its base, and the
                     // label goes below its end instead of into it.
-                    let font_size = self.series_label_font_size;
+                    let font_size = self.series.label.font.size;
                     let label_y = if label_inside {
                         y_top + bar_height / 2.0 + font_size * 0.35 + 8.0
                     } else if y_axis_values.inverse && value >= 0.0 {
@@ -2108,8 +2005,9 @@ impl ChartBase {
         }
         // The error bars, over every bar, in a color that shows on them.
         let cap = (bar_width / 4.0).clamp(2.0, 6.0);
-        for (x, low, high) in error_bars {
-            render_error_bar(&mut c1, x, (low, high), cap, self.series_label_font_color);
+        for (x, low, high, width) in error_bars {
+            let stroke = (self.series.label.font.color, width);
+            render_error_bar(&mut c1, x, (low, high), cap, stroke);
         }
         series_labels_list
     }
@@ -2131,7 +2029,7 @@ impl ChartBase {
             return vec![];
         }
         let mut c1 = c;
-        let x_boundary_gap = self.x_boundary_gap.unwrap_or(true);
+        let x_boundary_gap = self.x_axis.boundary_gap.unwrap_or(true);
         let split_unit_offset = if !x_boundary_gap { 1.0_f32 } else { 0.0_f32 };
         // A single point without boundary gap would give 0 units (inf width).
         let split_unit_count = (series_data_count as f32 - split_unit_offset).max(1.0);
@@ -2150,9 +2048,9 @@ impl ChartBase {
             } else {
                 y_axis_values_list[series.y_axis_index]
             };
-            let color = get_color(&self.series_colors, series.index.unwrap_or(index))
+            let color = get_color(&self.series.colors, series.index.unwrap_or(index))
                 .with_alpha(BAND_ALPHA);
-            let smooth = series.step.is_none() && series.smooth.unwrap_or(self.series_smooth);
+            let smooth = series.step.is_none() && series.smooth.unwrap_or(self.series.smooth);
             let (mut top, mut bottom): (Vec<Point>, Vec<Point>) = (vec![], vec![]);
             for i in 0..=band.len() {
                 let slot = match x_scale {
@@ -2406,10 +2304,10 @@ impl ChartBase {
                 }
             }
 
-            let color = get_color(&self.series_colors, series.index.unwrap_or(index));
-            let fill_color = color.with_alpha(100);
+            let color = get_color(&self.series.colors, series.index.unwrap_or(index));
+            let fill_color = color.with_alpha(self.fill_alpha(100));
             let fill: Fill = fill_color.into();
-            let series_fill = series.fill.unwrap_or(self.series_fill);
+            let series_fill = series.fill.unwrap_or(self.series.fill);
             // The area of a line reaches down to the start of its axis,
             // which is at the top when the axis is inverse.
             let fill_bottom = if y_axis_values.inverse {
@@ -2419,8 +2317,8 @@ impl ChartBase {
             };
             // Steps have corners: a stepped line is never smooth.
             let step = series.step;
-            let series_smooth = step.is_none() && series.smooth.unwrap_or(self.series_smooth);
-            let symbol = series.symbol.clone().or_else(|| self.series_symbol.clone());
+            let series_smooth = step.is_none() && series.smooth.unwrap_or(self.series.smooth);
+            let symbol = series.symbol.clone().or_else(|| self.series.symbol.clone());
 
             for (points, floor) in points_list.into_iter().zip(floor_points_list) {
                 let line_class = animation.map(|_| format!("line-anim-{}", index));
@@ -2429,7 +2327,7 @@ impl ChartBase {
                 // Fill first, then stroke. The stacked-area polygon is
                 // identical for smooth and straight lines, so it lives in
                 // one place; only the non-stacked fill and the stroke
-                // itself differ by `series_smooth`. The stroke takes ownership
+                // itself differ by `series.smooth`. The stroke takes ownership
                 // of `points`; the fill clones only when it is also drawn.
                 // The outline of the area: the line itself, or its steps.
                 let outline = |points: &[Point]| match step {
@@ -2468,7 +2366,7 @@ impl ChartBase {
                     c1.smooth_line(SmoothLine {
                         points,
                         color: Some(color),
-                        stroke_width: self.series_stroke_width,
+                        stroke_width: self.series.stroke_width,
                         symbol: symbol.clone(),
                         stroke_dash_array: series.stroke_dash_array.clone(),
                         class: line_class,
@@ -2478,7 +2376,7 @@ impl ChartBase {
                     c1.straight_line(StraightLine {
                         points,
                         color: Some(color),
-                        stroke_width: self.series_stroke_width,
+                        stroke_width: self.series.stroke_width,
                         symbol: symbol.clone(),
                         stroke_dash_array: series.stroke_dash_array.clone(),
                         class: line_class,
@@ -2490,8 +2388,9 @@ impl ChartBase {
             }
 
             // The error bars of the points, over the line, in its color.
+            let error_bar_width = SeriesBand::error_bar_width(series.error_bar.as_ref());
             for (x, low, high) in error_bars {
-                render_error_bar(&mut c1, x, (low, high), 4.0, color);
+                render_error_bar(&mut c1, x, (low, high), 4.0, (color, error_bar_width));
             }
 
             // Transparent hit-circles at each data point (the line's own
@@ -2509,7 +2408,7 @@ impl ChartBase {
                     c1.circle(Circle {
                         cx: label.point.x,
                         cy: label.point.y,
-                        r: self.series_stroke_width.max(2.0) + 2.0,
+                        r: self.series.stroke_width.max(2.0) + 2.0,
                         fill: Some(Color::transparent()),
                         title: Some(text.clone()),
                         class: Some("ct-trigger".to_string()),
@@ -2519,9 +2418,10 @@ impl ChartBase {
                     c1.text_unmeasured(Text {
                         text,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(label.point.x),
                         y: Some(label.point.y),
                         dy: Some(-8.0),
@@ -2531,7 +2431,7 @@ impl ChartBase {
                 }
                 // The band points without a line point: a transparent strip
                 // across the band, as wide as the hit-circles above.
-                let half_width = self.series_stroke_width.max(2.0) + 2.0;
+                let half_width = self.series.stroke_width.max(2.0) + 2.0;
                 for tip in band_tips.iter().filter(|tip| tip.series == index) {
                     let (lower, upper) = (format_float(tip.lower), format_float(tip.upper));
                     let text = format!("{}: {lower} – {upper}", series.name);
@@ -2557,9 +2457,10 @@ impl ChartBase {
                     c1.text_unmeasured(Text {
                         text,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(tip.x),
                         y: Some(tip.top),
                         dy: Some(-8.0),
@@ -2586,7 +2487,7 @@ impl ChartBase {
                     let mut dx = None;
                     if let Ok(value) = measure_text_width_family(
                         &self.font_family,
-                        self.series_label_font_size,
+                        self.series.label.font.size,
                         &label.text,
                     ) {
                         dx = Some(-value.width() / 2.0 + 1.0);
@@ -2602,7 +2503,7 @@ impl ChartBase {
                         dx,
                         font_color: Some(font_color),
                         font_family: Some(self.font_family.clone()),
-                        font_size: Some(self.series_label_font_size),
+                        font_size: Some(self.series.label.font.size),
                         x: Some(label.point.x),
                         y: Some(y - r * 0.5 + 2.0),
                         ..Default::default()

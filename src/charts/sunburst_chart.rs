@@ -116,7 +116,7 @@ struct RingLayout<'a> {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SunburstChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -219,7 +219,7 @@ impl SunburstChart {
             let delta = node_total / total * span;
             let color = node.color.unwrap_or_else(|| {
                 if depth == 0 {
-                    get_color(&self.series_colors, i)
+                    get_color(&self.series.colors, i)
                 } else {
                     lighten(base_color, depth as f32 * 0.16)
                 }
@@ -238,7 +238,7 @@ impl SunburstChart {
                     (None, None)
                 };
                 let percentage = node_total / l.grand_total;
-                let tooltip_text = self.tooltip_show.then(|| {
+                let tooltip_text = self.tooltip.show.then(|| {
                     LabelOption {
                         series_name: node.name.clone(),
                         category_name: node.name.clone(),
@@ -283,9 +283,10 @@ impl SunburstChart {
                     c.text(Text {
                         text,
                         class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series_label_font_color),
-                        font_size: Some(self.series_label_font_size),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                         x: Some(p.x),
                         y: Some(p.y),
                         text_anchor: Some("middle".to_string()),
@@ -330,7 +331,7 @@ impl SunburstChart {
         l: &RingLayout,
     ) {
         // {a}/{b}: node name, {c}: value, {d}: percentage of the grand total.
-        let text = if self.series_label_formatter.is_empty() {
+        let text = if self.series.label.formatter.is_empty() {
             node.name.clone()
         } else {
             LabelOption {
@@ -342,14 +343,14 @@ impl SunburstChart {
                 } else {
                     0.0
                 },
-                formatter: self.series_label_formatter.clone(),
+                formatter: self.series.label.formatter.clone(),
             }
             .format()
         };
         if text.is_empty() || thickness < 12.0 {
             return;
         }
-        let font_size = self.series_label_font_size.max(10.0);
+        let font_size = self.series.label.font.size.max(10.0);
         let mid_angle = start_angle + delta / 2.0;
         let mid_r = inner_r + thickness / 2.0;
         let point = get_pie_point(l.cx, l.cy, mid_r, mid_angle);
@@ -497,7 +498,7 @@ impl SunburstChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -558,7 +559,7 @@ mod tests {
     #[test]
     fn sunburst_chart_label_formatter() {
         let mut chart = make_sunburst();
-        chart.series_label_formatter = "{b}: {c} ({d})".to_string();
+        chart.series.label.formatter = "{b}: {c} ({d})".to_string();
         let svg = chart.svg().unwrap();
         // "Me" leaf: value 40 of grand total 130 -> 30.8%
         assert!(

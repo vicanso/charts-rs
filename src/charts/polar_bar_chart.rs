@@ -116,12 +116,12 @@ pub(crate) fn outward(angle: f32) -> (f32, f32) {
 /// With the categories on the radius axis every category gets a ring and
 /// its bars run around the circle — a radial bar chart.
 ///
-/// The categories are `x_axis_data`; series are drawn side by side within a
+/// The categories are `x_axis.data`; series are drawn side by side within a
 /// category, or on top of each other when they share a `stack` name.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PolarBarChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     /// Configuration of the value axis: its range, split number and label
     /// format.
@@ -175,7 +175,7 @@ impl PolarBarChart {
             ..Default::default()
         };
         c.series_list = series_list;
-        c.x_axis_data = x_axis_data;
+        c.x_axis.data = x_axis_data;
         c.base.fill_theme(get_theme(theme), &mut c.y_axis_configs);
         c
     }
@@ -291,11 +291,11 @@ impl PolarBarChart {
 
         // The categories are the x axis data, as in a bar chart; without
         // any, the longest series tells how many there are.
-        let category_count = if self.x_axis_data.is_empty() {
+        let category_count = if self.x_axis.data.is_empty() {
             let longest = self.series_list.iter().map(|s| s.data.len()).max();
             longest.unwrap_or(0)
         } else {
-            self.x_axis_data.len()
+            self.x_axis.data.len()
         };
         if category_count == 0 || self.has_no_data() {
             self.render_empty_text(c.child(Box::default()));
@@ -314,7 +314,7 @@ impl PolarBarChart {
         let values = get_axis_values(params);
         let range = (values.max - values.min).max(f32::MIN_POSITIVE);
         let fraction = |value: f32| ((value - values.min) / range).clamp(0.0, 1.0);
-        let formatter = config.axis_formatter.clone().unwrap_or_default();
+        let formatter = config.formatter.clone().unwrap_or_default();
         let ticks: Vec<String> = values
             .data
             .iter()
@@ -333,7 +333,8 @@ impl PolarBarChart {
             }
         };
         let category = |index: usize| -> &str {
-            self.x_axis_data
+            self.x_axis
+                .data
                 .get(index)
                 .map(String::as_str)
                 .unwrap_or("")
@@ -347,17 +348,17 @@ impl PolarBarChart {
         // The labels around the plot: the categories, or the value ticks.
         let (outer_hidden, outer_font_size, outer_font_color, outer_font_weight) = if on_angle {
             (
-                self.x_axis_hidden,
-                self.x_axis_font_size,
-                self.x_axis_font_color,
-                self.x_axis_font_weight.clone(),
+                self.x_axis.hidden,
+                self.x_axis.font.size,
+                self.x_axis.font.color,
+                self.x_axis.font.weight.clone(),
             )
         } else {
             (
                 self.y_axis_hidden,
-                config.axis_font_size,
-                config.axis_font_color,
-                config.axis_font_weight.clone(),
+                config.font.size,
+                config.font.color,
+                config.font.weight.clone(),
             )
         };
         let outer_labels: Vec<(f32, &str)> = if outer_hidden {
@@ -383,7 +384,7 @@ impl PolarBarChart {
         // Data labels of bars that grow outwards sit past their ends: keep
         // a ring free for them between the plot and the labels around it.
         let label_room = if on_angle && self.series_list.iter().any(|s| s.label_show) {
-            measure("0", self.series_label_font_size).1 + SIDE_LABEL_GAP
+            measure("0", self.series.label.font.size).1 + SIDE_LABEL_GAP
         } else {
             0.0
         };
@@ -421,9 +422,9 @@ impl PolarBarChart {
         let ring = |c: &mut canvas::Canvas, radius: f32| {
             if radius > 0.0 {
                 c.circle(Circle {
-                    stroke_color: Some(self.grid_stroke_color),
+                    stroke_color: Some(self.grid.stroke_color),
                     fill: None,
-                    stroke_width: self.grid_stroke_width,
+                    stroke_width: self.grid.stroke_width,
                     cx,
                     cy,
                     r: radius,
@@ -437,8 +438,8 @@ impl PolarBarChart {
                 get_pie_point(cx, cy, r, angle),
             );
             c.line(Line {
-                color: Some(self.grid_stroke_color),
-                stroke_width: self.grid_stroke_width,
+                color: Some(self.grid.stroke_color),
+                stroke_width: self.grid.stroke_width,
                 left: from.x,
                 top: from.y,
                 right: to.x,
@@ -504,15 +505,16 @@ impl PolarBarChart {
                 .as_ref()
                 .and_then(|colors| colors.get(bar.index).copied().flatten())
                 .unwrap_or_else(|| {
-                    get_color(&self.series_colors, series.index.unwrap_or(bar.series))
+                    get_color(&self.series.colors, series.index.unwrap_or(bar.series))
                 });
-            let label = if series.label_show || self.tooltip_show {
+            let label = if series.label_show || self.tooltip.show {
                 self.format_series_label(series, bar.category, bar.value)
             } else {
                 String::new()
             };
             let tooltip_text = self
-                .tooltip_show
+                .tooltip
+                .show
                 .then(|| format!("{}: {}", series.name, label));
             let mut classes: Vec<&str> = vec![];
             if self.animation.is_some() {
@@ -543,9 +545,10 @@ impl PolarBarChart {
                 c.text_unmeasured(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(self.series_label_font_color),
-                    font_size: Some(self.series_label_font_size),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
                     x: Some(middle.x),
                     y: Some(middle.y),
                     text_anchor: Some("middle".to_string()),
@@ -573,16 +576,16 @@ impl PolarBarChart {
         let (ray_hidden, ray_font_size, ray_font_color, ray_font_weight) = if on_angle {
             (
                 self.y_axis_hidden,
-                config.axis_font_size,
-                config.axis_font_color,
-                config.axis_font_weight.clone(),
+                config.font.size,
+                config.font.color,
+                config.font.weight.clone(),
             )
         } else {
             (
-                self.x_axis_hidden,
-                self.x_axis_font_size,
-                self.x_axis_font_color,
-                self.x_axis_font_weight.clone(),
+                self.x_axis.hidden,
+                self.x_axis.font.size,
+                self.x_axis.font.color,
+                self.x_axis.font.weight.clone(),
             )
         };
         if !ray_hidden {
@@ -689,9 +692,9 @@ impl PolarBarChart {
         }
 
         // The data labels, over everything else.
-        let mut boxes = LabelBoxes::new(self.series_label_hide_overlap);
+        let mut boxes = LabelBoxes::new(self.series.label.hide_overlap);
         for (point, direction, text) in labels {
-            let (width, height) = measure(&text, self.series_label_font_size);
+            let (width, height) = measure(&text, self.series.label.font.size);
             let at = Beside::new(point, direction, SIDE_LABEL_GAP + cap, height);
             if !boxes.try_place(at.left(width), at.y - height / 2.0, width, height) {
                 continue;
@@ -699,9 +702,9 @@ impl PolarBarChart {
             c.text_unmeasured(Text {
                 text,
                 font_family: Some(self.font_family.clone()),
-                font_size: Some(self.series_label_font_size),
-                font_color: Some(self.series_label_font_color),
-                font_weight: self.series_label_font_weight.clone(),
+                font_size: Some(self.series.label.font.size),
+                font_color: Some(self.series.label.font.color),
+                font_weight: self.series.label.font.weight.clone(),
                 x: Some(at.x),
                 y: Some(at.y),
                 text_anchor: Some(at.anchor.to_string()),
@@ -721,7 +724,7 @@ impl PolarBarChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
@@ -826,7 +829,7 @@ mod tests {
             ],
             categories(),
         );
-        chart.title_text = "Visits".to_string();
+        chart.title.text = "Visits".to_string();
         assert_snapshot!("polar_bar_chart/basic.svg", chart.svg().unwrap());
     }
 
@@ -844,7 +847,7 @@ mod tests {
         chart.category_axis = PolarAxis::Radius;
         chart.round_cap = true;
         chart.series_list[0].label_show = true;
-        chart.y_axis_configs[0].axis_max = Some(100.0);
+        chart.y_axis_configs[0].max = Some(100.0);
         assert_snapshot!("polar_bar_chart/radial.svg", chart.svg().unwrap());
     }
 }

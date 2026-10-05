@@ -179,7 +179,7 @@ fn squarify(items: &[TmItem], x: f32, y: f32, w: f32, h: f32, out: &mut Vec<TmRe
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TreemapChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
-    /// directly on the chart through `Deref`, e.g. `chart.title_text`.
+    /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
     y_axis_configs: Vec<YAxisConfig>,
 
@@ -270,7 +270,7 @@ impl TreemapChart {
                 .iter()
                 .enumerate()
                 .filter_map(|(i, data)| {
-                    TmNode::from_data(data, get_color(&self.series_colors, i), 0)
+                    TmNode::from_data(data, get_color(&self.series.colors, i), 0)
                 })
                 .collect()
         } else {
@@ -285,7 +285,7 @@ impl TreemapChart {
                     Some(TmNode {
                         name: s.name.clone(),
                         value: v,
-                        color: get_color(&self.series_colors, s.index.unwrap_or(i)),
+                        color: get_color(&self.series.colors, s.index.unwrap_or(i)),
                         children: vec![],
                     })
                 })
@@ -295,7 +295,7 @@ impl TreemapChart {
             return c.svg();
         }
         let grand_total: f32 = nodes.iter().map(|n| n.value).sum();
-        let formatter = &self.series_label_formatter;
+        let formatter = &self.series.label.formatter;
         let value_label = |name: &str, value: f32| -> String {
             if formatter.is_empty() {
                 format_float(value)
@@ -385,8 +385,8 @@ impl TreemapChart {
         );
 
         let half_gap = self.item_gap / 2.0;
-        let font_size = self.series_label_font_size.max(10.0);
-        let font_color = self.series_label_font_color;
+        let font_size = self.series.label.font.size.max(10.0);
+        let font_color = self.series.label.font.color;
         let anim_class = self.animation.as_ref().map(|_| "treemap-anim".to_string());
 
         for r in &rects {
@@ -399,7 +399,8 @@ impl TreemapChart {
             }
 
             let tooltip_text = self
-                .tooltip_show
+                .tooltip
+                .show
                 .then(|| format!("{}: {}", r.name, r.value_str));
             let mut class = anim_class.clone();
             if tooltip_text.is_some() {
@@ -426,9 +427,10 @@ impl TreemapChart {
                 content_c.text(Text {
                     text,
                     class: Some("ct-tip".to_string()),
+                    font_weight: self.tooltip.font.weight.clone(),
                     font_family: Some(self.font_family.clone()),
-                    font_color: Some(font_color),
-                    font_size: Some(font_size),
+                    font_color: Some(self.tooltip_font_color(font_color)),
+                    font_size: Some(self.tooltip_font_size(font_size)),
                     x: Some(rx + rw / 2.0),
                     y: Some(ry + rh / 2.0),
                     text_anchor: Some("middle".to_string()),
@@ -511,7 +513,7 @@ impl TreemapChart {
                 anim.safe_easing()
             ));
         }
-        if self.tooltip_show {
+        if self.tooltip.show {
             css.push_str(TOOLTIP_STYLE);
         }
         if css.is_empty() {
