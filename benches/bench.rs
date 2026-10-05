@@ -1,9 +1,9 @@
-#[cfg(feature = "png")]
-use charts_rs::svg_to_png;
 use charts_rs::{
     BarChart, Box, DEFAULT_FONT_FAMILY, LegendCategory, LineChart, PieChart, SankeyChart,
     SeriesCategory, TableChart, measure_text_width_family,
 };
+#[cfg(feature = "png")]
+use charts_rs::{svg_to_png, svg_to_png_with_size};
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::hint::black_box;
 
@@ -149,6 +149,10 @@ fn svg_benchmarks(c: &mut Criterion) {
     c.bench_function("bar chart svg", |b| {
         b.iter(|| black_box(&bar).svg().unwrap())
     });
+    let line_100 = make_line_chart(100, false);
+    c.bench_function("line chart svg (100 points, smooth+fill)", |b| {
+        b.iter(|| black_box(&line_100).svg().unwrap())
+    });
     let line_1k = make_line_chart(1_000, true);
     c.bench_function("line chart svg (1k points, smooth+fill+tooltip)", |b| {
         b.iter(|| black_box(&line_1k).svg().unwrap())
@@ -179,11 +183,30 @@ fn svg_benchmarks(c: &mut Criterion) {
     });
 }
 
+/// From a finished SVG to the bytes of a PNG: parsing, rasterizing and
+/// encoding. The charts are 600 × 400 pixels; these are the numbers of the
+/// "Benchmark" section of the README.
 #[cfg(feature = "png")]
 fn png_benchmark(c: &mut Criterion) {
-    let svg = make_bar_chart().svg().unwrap();
+    let bar = make_bar_chart().svg().unwrap();
     c.bench_function("bar chart png", |b| {
-        b.iter(|| svg_to_png(black_box(&svg)).unwrap())
+        b.iter(|| svg_to_png(black_box(&bar)).unwrap())
+    });
+    let line = make_line_chart(100, false).svg().unwrap();
+    c.bench_function("line chart png (100 points, smooth+fill)", |b| {
+        b.iter(|| svg_to_png(black_box(&line)).unwrap())
+    });
+    let pie = make_pie_chart().svg().unwrap();
+    c.bench_function("pie chart png", |b| {
+        b.iter(|| svg_to_png(black_box(&pie)).unwrap())
+    });
+    let sankey = make_sankey_chart().svg().unwrap();
+    c.bench_function("sankey chart png", |b| {
+        b.iter(|| svg_to_png(black_box(&sankey)).unwrap())
+    });
+    // Twice as large each way: 1200 × 800 pixels.
+    c.bench_function("bar chart png (1200 x 800)", |b| {
+        b.iter(|| svg_to_png_with_size(black_box(&bar), Some(1200), None).unwrap())
     });
 }
 

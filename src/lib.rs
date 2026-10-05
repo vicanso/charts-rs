@@ -421,15 +421,16 @@
 //!
 //! # Compatibility
 //!
-//! Guarantees that hold across all 1.x releases:
+//! Guarantees that hold across all 2.x releases:
 //!
 //! - Missing data points are `None` in `Series::data` (`Vec<Option<f32>>`)
 //!   and are skipped instead of drawn as zero. Flat `Vec<f32>` input and
 //!   JSON keep accepting the legacy [`NIL_VALUE`] sentinel (= `f32::MIN`),
 //!   which maps to a missing point; JSON `null` does too.
-//! - Chart structs keep their public fields, and new optional fields may be
-//!   added in minor releases. Construct charts via `new(…)`, `from_json`, or
-//!   functional update syntax (`..Default::default()`); exhaustive struct
+//! - Chart structs and the option structs they are made of (`TitleConfig`,
+//!   `XAxisConfig`, …) keep their public fields, and new optional fields may
+//!   be added in minor releases. Construct them via `new(…)`, `from_json`,
+//!   or functional update syntax (`..Default::default()`); exhaustive struct
 //!   literals are not covered by the compatibility guarantee.
 //! - [`Error`] is `#[non_exhaustive]`; keep a wildcard arm when matching.
 

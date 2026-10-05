@@ -50,7 +50,7 @@
 
 ```toml
 [dependencies]
-charts-rs = "1"
+charts-rs = "2"
 ```
 
 默认构建即可生成 SVG。若需导出位图格式（`png`、`jpeg`、`webp`、`avif`），即下文用到的
@@ -58,7 +58,7 @@ charts-rs = "1"
 
 ```toml
 [dependencies]
-charts-rs = { version = "1", features = ["png"] }
+charts-rs = { version = "2", features = ["png"] }
 ```
 
 ## 示例
@@ -303,7 +303,7 @@ charts-rs = { version = "1", features = ["png"] }
 
 ## 最低 Rust 版本
 
-charts-rs 1.x 需要 Rust 1.88 及以上（edition 2024）。
+charts-rs 2.x 需要 Rust 1.88 及以上（edition 2024）。
 
 ## Rust 示例
 
@@ -663,6 +663,20 @@ add_fonts(&[&buf]).unwrap();
 未注册的 `font_family` 仍会写入 SVG（由查看器解析），但文字宽度按默认字体测量。
 
 字体只保留原始字节，字形在测量文字时按需读取，因此加载大体积的中文字体也只占用字体文件本身大小的内存。
+
+## 性能
+
+生成一张图表的 SVG 远低于 1 毫秒；转成 PNG 需要几毫秒，时间花在解析 SVG、光栅化和编码上。以下为 600 × 400 像素的图表，Apple M4 Pro 单线程，Rust 1.99：
+
+| 图表 | SVG | PNG（由该 SVG 生成） |
+|------|----:|--------------------:|
+| 柱状图：4 个系列各 7 个值，其中一个系列为折线，带数据标签 | 41 µs | 1.7 ms |
+| 折线图：2 个系列各 100 个点，平滑并填充 | 158 µs | 3.4 ms |
+| 饼图：12 个扇区 | 52 µs | 1.4 ms |
+| 桑基图：8 个节点、10 条连线 | 71 µs | 1.2 ms |
+| 上面的柱状图，输出为 1200 × 800 像素 | 41 µs | 3.4 ms |
+
+数据来自 `cargo bench --features png`（[`benches/bench.rs`](./benches/bench.rs)，其中还有更多图表的 SVG 基准），具体数值取决于机器。
 
 ## 开源协议声明
 

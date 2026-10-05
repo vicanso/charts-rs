@@ -69,7 +69,7 @@ Add `charts-rs` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-charts-rs = "1"
+charts-rs = "2"
 ```
 
 SVG output works with the default build. Raster export is opt-in, one
@@ -79,14 +79,14 @@ feature per format: `png`, `jpeg`, `webp` and `avif` enable `svg_to_png`,
 
 ```toml
 [dependencies]
-charts-rs = { version = "1", features = ["png"] }
+charts-rs = { version = "2", features = ["png"] }
 ```
 
 `image-encoder` is the umbrella feature that turns on all four formats.
 
 ### Minimum supported Rust version
 
-charts-rs 1.x builds with Rust 1.88 or newer (edition 2024). The MSRV may
+charts-rs 2.x builds with Rust 1.88 or newer (edition 2024). The MSRV may
 rise in a minor release; the change is noted in the changelog.
 
 ## Demo
@@ -773,6 +773,25 @@ grid lines and ticks merged into single paths, shared attributes hoisted onto
 groups, defaults and long hex colors dropped. The picture is the same and the
 file is typically 20–30% smaller. The same rewrite is available as
 `charts_rs::compact_svg(&svg)` for output you already have.
+
+## Benchmark
+
+The SVG of a chart is generated in well under a millisecond. Turning it into
+a PNG takes a few milliseconds: parsing the SVG, rasterizing and encoding
+it. Charts of 600 × 400 pixels, on one thread of an Apple M4 Pro, with Rust
+1.99:
+
+| Chart | SVG | PNG, from the SVG |
+|-------|----:|------------------:|
+| Bar: 4 series of 7 values, one of them a line, with labels | 41 µs | 1.7 ms |
+| Line: 2 series of 100 points, smooth and filled | 158 µs | 3.4 ms |
+| Pie: 12 slices | 52 µs | 1.4 ms |
+| Sankey: 8 nodes, 10 links | 71 µs | 1.2 ms |
+| The bar chart at 1200 × 800 pixels | 41 µs | 3.4 ms |
+
+These are the numbers of `cargo bench --features png`
+([`benches/bench.rs`](./benches/bench.rs)), which measures the SVG of more
+charts as well. They depend on the machine.
 
 ## Snapshot tests
 

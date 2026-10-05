@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## 2.0.0
+
+The options of a chart are grouped into structs of their own, and text is
+measured without `fontdue`: the breaking changes below are the migration
+guide from 1.x. The keys of a JSON document are unchanged, and every SVG
+snapshot of 1.3.0 is byte-identical. The compatibility policy of 1.x (see
+1.0.0) carries over to 2.x, the option structs included.
 
 ### Breaking changes
 
@@ -54,8 +60,8 @@ its own (`radius`, `series_label_position`, …).
   derive read another format, and only three of the 27 charts had it.
 - `HeatmapChart::series` is `heatmap_series`: `series` is the group of the
   options of the series, on every chart.
-- `MarkLine`, `MarkArea`, `SeriesBand` and the components `Grid`, `Axis` and
-  `Rect` have new fields: a struct literal of one needs
+- `MarkLine`, `MarkArea`, `SeriesBand` and the components `Grid`, `Axis`,
+  `Rect` and `Circle` have new fields: a struct literal of one needs
   `..Default::default()`.
 
 #### Fonts
@@ -67,9 +73,10 @@ its own (`radius`, `series_label_position`, …).
   byte-identical. They were checked against `fontdue` for every character of
   the embedded font and of over 300 other fonts (TrueType, CFF, collections,
   variable).
-- A character is looked up in the Unicode tables of a font only. `fontdue`
-  also read the legacy tables (Mac Roman, Big5, GB 2312, symbol) and, in
-  fonts that have them, measured some characters as the glyph of another.
+- A character is looked up in the Unicode tables of a font, or in the
+  symbol table of a symbol font. `fontdue` also read the other legacy
+  tables (Mac Roman, Big5, GB 2312) and, in fonts that have them, measured
+  some characters as the glyph of another.
 - `Error::ParseFont` carries the message of `ttf-parser`.
 - A font is registered under the names of its family (see "Added"), which
   `get_font_families` lists: more names than before. Of several faces of a
@@ -85,80 +92,12 @@ its own (`radius`, `series_label_position`, …).
 - A scatter or box plot chart with a logarithmic y axis and no values no
   longer panics (`index out of bounds`): the axis has no label to take its
   width from.
-- `TableChart` takes the title and the sub-title of its theme whole, as the
-  other charts do: the weight of the sub-title, and whatever else a custom
-  theme sets there, used to be left out.
-- The zero line of a `WaterfallChart` with negative values is as wide as
-  its x axis (`x_axis_stroke_width`).
 - `TreeChart`: `orient` is read whatever its case, as it is checked:
   `"tb"` was accepted and then drawn as `LR`.
 - `PieChart`: the label of a slice whose angle runs past a full turn (with a
   `start_angle`) or below zero is put on the side of the pie it is on.
 - A series with a `start_index` near `usize::MAX` and more than one value no
   longer overflows in bar and line charts.
-- `ScatterChart`: an object in `series_symbols` (`{"type": "triangle"}`) is
-  drawn as that shape, like the bare string; it was always a circle.
-- A data label on a point at the edge of the plot is moved inside the canvas
-  instead of being cut off.
-- A scatter point with a missing coordinate is skipped instead of being drawn
-  at a bogus position.
-- Builds cleanly with Rust 1.99 (`pie_chart.rs` no longer resolves `f32::MAX`
-  to the deprecated module constant).
-- Bar and horizontal bar charts draw negative values from the 0 line instead
-  of the axis bottom; stacked negatives no longer produce negative `height`
-  attributes, and an axis that crosses 0 now puts 0 on a tick (an all-negative
-  range extends up to 0).
-- `animation.easing` is sanitized in the treemap, sunburst and sankey charts
-  too, closing a `<style>` breakout with untrusted JSON.
-- `BarChart` keeps the right y axis scale when `y_axis_hidden` is set, so
-  series bound to `y_axis_index: 1` are no longer drawn with zero height.
-- `MultiChart::from_json` no longer fails when neither the top level nor a
-  child sets `theme`; an unknown child `type` is rejected instead of being
-  rendered as a bar chart.
-- Waterfall total bars label the running sum instead of `0`.
-- Horizontal bar charts place a shorter series on the rows of its own
-  categories instead of shifting it.
-- Mark points skip missing (`null`) points when locating the min/max label.
-- Panics on extreme input: tick rounding of values beyond `i32` range, an
-  empty x axis with `x_boundary_gap: false`, a table with an empty
-  `body_background_colors`, and a stacked series with a huge `start_index`.
-- NaN/inf never reach the SVG: non-finite series values are treated as
-  missing, pie totals and candlesticks skip missing points, and a single
-  point without boundary gap no longer divides by zero.
-- Opacity is written with two decimals, so alphas below 13/255 are no longer
-  rounded down to fully transparent (snapshots updated accordingly).
-- Table sub titles honour `sub_title_align`; gauge labels show the raw value
-  while only the needle is clamped to the dial.
-- Negative numbers get thousands separators with the `{t}` formatter.
-- `x_axis_name_rotate` is documented as radians, which is what it always was.
-
-### Changed
-
-- `TableChart::from_json` rejects `font_color`, `font_weight` and `indexes`
-  at the top level like any other unknown key: they are keys of the
-  `cell_styles` items, and were accepted and ignored next to them.
-- `from_json` validates its input: an unknown key (with a "did you mean"
-  hint), a value of the wrong type, an unknown enum value (matched
-  case-insensitively), a non-positive `width`/`height`, a split count above
-  1000 or an index above 1 000 000 is an `Error::Params` instead of being
-  silently ignored. `type` and `quality` (the web editor's envelope keys) are
-  still accepted. A multi chart child is validated by its own chart type.
-- `axis_min` / `axis_max` are exact bounds, as documented: data beyond them is
-  clipped rather than extending the axis.
-- The horizontal bar chart honours `x_axis_height` (the theme default, 30)
-  instead of a hard-coded 25.
-- Mark line labels are drawn inside the plot area, above the line's right
-  end, so they are no longer clipped without a right y axis.
-- Vertical axes skip labels when there are more than fit, like the x axis.
-- An empty series in JSON is kept (with its legend entry) instead of being
-  dropped.
-- Compact output no longer merges adjacent paths that carry `data-*`
-  attributes, so every shape that stands for a piece of data stays an element
-  of its own (no output of the existing charts changes).
-- Bars, line points (with tooltips), pie slices, scatter symbols, funnel
-  stages, treemap cells, candles, waterfall bars, box plots, graph nodes and
-  theme river streams carry `data-*` attributes (`data-series`,
-  `data-category`, `data-value`, …) like the heatmap and calendar cells.
 
 ### Added
 
@@ -171,18 +110,17 @@ its own (`radius`, `series_label_position`, …).
 - Fonts whose names are in Mac Roman only (`Helvetica.ttc`, `Menlo.ttc`,
   `STHeiti`) are registered; `add_fonts` used to return `Ok` and skip them.
 - Symbol fonts (Wingdings), which have no table of Unicode characters, are
-  measured by their symbol table — as the rasterizer shapes their text —
-  instead of every character as the missing glyph.
-- `grid_stroke_dash_array` also dashes the web of a radar chart, the rings
-  and spokes of a polar bar chart, the lines of a punch card and the axes
-  of a parallel chart.
+  measured by their symbol table, as the rasterizer shapes their text.
 - Style options for what used to be fixed values. Left out, each of them is
   that value, and no output changes:
   - `series_fill_opacity`: how opaque the fill of an area is (0.39 under a
     line, 0.2 in a radar chart).
-  - `grid_stroke_dash_array`: dashed grid lines.
+  - `grid_stroke_dash_array`: dashed grid lines — the grid of a chart with
+    an x and a y axis, of a gantt, radar and polar bar chart, the lines of a
+    punch card and the axes of a parallel chart.
   - `x_axis_stroke_width`, and `axis_stroke_width` in `y_axis_configs`: the
-    width of the axis lines and ticks.
+    width of the axis lines and ticks (and of the zero line of a waterfall
+    chart).
   - `tooltip_font_size`, `tooltip_font_color`, `tooltip_font_weight`: the
     font of the hover tooltips, which is otherwise that of the data labels.
   - `color`, `stroke_width` and `stroke_dash_array` of a mark line; `color`
@@ -193,7 +131,8 @@ its own (`radius`, `series_label_position`, …).
   - `TableChart`: `border_width`.
   - `WaterfallChart`: `connector_line_dash_array`.
 - A theme can hold any shared option, not only the colors and sizes it had
-  fields for (see the breaking changes).
+  fields for (see the breaking changes); a `TableChart` takes the title and
+  the sub-title of its theme whole as well.
 - `SankeyChart`: `orient` `vertical` runs the flows from top to bottom, the
   columns of nodes becoming rows.
 - `HeatmapChart`: `series.symbol` (`heatmap_series.symbol` in Rust)
@@ -270,6 +209,40 @@ its own (`radius`, `series_label_position`, …).
   axis and the largest at the bottom, as a ranking (bump chart) wants it.
   Lines, areas, bars, mark lines and bands follow; also the value axis of a
   horizontal bar chart and both axes of a scatter chart.
+
+### Performance
+
+- A font costs the memory of its file. `fontdue` read the outline of every
+  glyph when a font was added and kept them all: 3.5 MB for the embedded
+  Roboto and 255 MB for a 22 MB CJK font, next to its bytes. A glyph is now
+  read when it is first measured, and only its box is kept, so adding that
+  font no longer takes 200 ms of parsing either. Wrapping the text of a
+  table is about 30% faster.
+
+## 1.3.0
+
+### Fixed
+
+- `ScatterChart`: an object in `series_symbols` (`{"type": "triangle"}`) is
+  drawn as that shape, like the bare string; it was always a circle.
+- A data label on a point at the edge of the plot is moved inside the canvas
+  instead of being cut off.
+- A scatter point with a missing coordinate is skipped instead of being drawn
+  at a bogus position.
+- Builds cleanly with Rust 1.99 (`pie_chart.rs` no longer resolves `f32::MAX`
+  to the deprecated module constant).
+
+### Changed
+
+- `TableChart::from_json` rejects `font_color`, `font_weight` and `indexes`
+  at the top level like any other unknown key: they are keys of the
+  `cell_styles` items, and were accepted and ignored next to them.
+- Compact output no longer merges adjacent paths that carry `data-*`
+  attributes, so every shape that stands for a piece of data stays an element
+  of its own (no output of the existing charts changes).
+
+### Added
+
 - JSON options reference: [`docs/json.md`](./docs/json.md) (and
   [`docs/json-zh.md`](./docs/json-zh.md)) lists every key `from_json`
   accepts, for every chart, with its type, its default and what it does, and
@@ -335,6 +308,82 @@ its own (`radius`, `series_label_position`, …).
   `bubble_min_size` and `bubble_max_size`.
 - `series_label_hide_overlap` drops a data label that would overlap one
   already drawn (line, bar and horizontal bar charts).
+
+## 1.2.0
+
+### Added
+
+- Compact output: `compact: true` on every chart (and `MultiChart`) or
+  `charts_rs::compact_svg()` rewrites the SVG like an optimizer would —
+  no whitespace, relative path data, merged grid lines, hoisted shared
+  attributes, dropped defaults — for the same picture in ~20–30% fewer
+  bytes.
+
+### Performance
+
+- Path coordinates are written from a stack buffer straight into the SVG.
+  A line series formats labels and `data-*` attributes only when they are
+  shown, and a non-stacked line no longer allocates a zero-filled
+  accumulator. Glyph-measurement hits no longer allocate a cache key, a
+  horizontal axis remembers the width of its joined labels, and graph node
+  names are indexed in a `HashMap`. The rendered SVG is unchanged.
+
+## 1.1.0
+
+### Fixed
+
+- Bar and horizontal bar charts draw negative values from the 0 line instead
+  of the axis bottom; stacked negatives no longer produce negative `height`
+  attributes, and an axis that crosses 0 now puts 0 on a tick (an all-negative
+  range extends up to 0).
+- `animation.easing` is sanitized in the treemap, sunburst and sankey charts
+  too, closing a `<style>` breakout with untrusted JSON.
+- `BarChart` keeps the right y axis scale when `y_axis_hidden` is set, so
+  series bound to `y_axis_index: 1` are no longer drawn with zero height.
+- `MultiChart::from_json` no longer fails when neither the top level nor a
+  child sets `theme`; an unknown child `type` is rejected instead of being
+  rendered as a bar chart.
+- Waterfall total bars label the running sum instead of `0`.
+- Horizontal bar charts place a shorter series on the rows of its own
+  categories instead of shifting it.
+- Mark points skip missing (`null`) points when locating the min/max label.
+- Panics on extreme input: tick rounding of values beyond `i32` range, an
+  empty x axis with `x_boundary_gap: false`, a table with an empty
+  `body_background_colors`, and a stacked series with a huge `start_index`.
+- NaN/inf never reach the SVG: non-finite series values are treated as
+  missing, pie totals and candlesticks skip missing points, and a single
+  point without boundary gap no longer divides by zero.
+- Opacity is written with two decimals, so alphas below 13/255 are no longer
+  rounded down to fully transparent (snapshots updated accordingly).
+- Table sub titles honour `sub_title_align`; gauge labels show the raw value
+  while only the needle is clamped to the dial.
+- Negative numbers get thousands separators with the `{t}` formatter.
+- `x_axis_name_rotate` is documented as radians, which is what it always was.
+
+### Changed
+
+- `from_json` validates its input: an unknown key (with a "did you mean"
+  hint), a value of the wrong type, an unknown enum value (matched
+  case-insensitively), a non-positive `width`/`height`, a split count above
+  1000 or an index above 1 000 000 is an `Error::Params` instead of being
+  silently ignored. `type` and `quality` (the web editor's envelope keys) are
+  still accepted. A multi chart child is validated by its own chart type.
+- `axis_min` / `axis_max` are exact bounds, as documented: data beyond them is
+  clipped rather than extending the axis.
+- The horizontal bar chart honours `x_axis_height` (the theme default, 30)
+  instead of a hard-coded 25.
+- Mark line labels are drawn inside the plot area, above the line's right
+  end, so they are no longer clipped without a right y axis.
+- Vertical axes skip labels when there are more than fit, like the x axis.
+- An empty series in JSON is kept (with its legend entry) instead of being
+  dropped.
+- Bars, line points (with tooltips), pie slices, scatter symbols, funnel
+  stages, treemap cells, candles, waterfall bars, box plots, graph nodes and
+  theme river streams carry `data-*` attributes (`data-series`,
+  `data-category`, `data-value`, …) like the heatmap and calendar cells.
+
+### Added
+
 - `series_label_formatter` templates (`{a}` series, `{b}` category, `{c}`
   value, `{t}` thousands) work on bar, line, horizontal bar, radar and heatmap
   charts; precision-only formatters keep their meaning.
@@ -351,11 +400,6 @@ its own (`radius`, `series_label_position`, …).
   bar charts; horizontal bar charts also draw `mark_lines`.
 - Tooltips and `data-*` attributes on sunburst arcs, tree nodes and sankey
   nodes and links.
-- Compact output: `compact: true` on every chart (and `MultiChart`) or
-  `charts_rs::compact_svg()` rewrites the SVG like an optimizer would —
-  no whitespace, relative path data, merged grid lines, hoisted shared
-  attributes, dropped defaults — for the same picture in ~20–30% fewer
-  bytes.
 - Titles wider than the canvas are cut with an ellipsis.
 - Horizontal bar charts: stacking, per-bar `colors`, `x_axis_hidden` /
   `y_axis_hidden`, animation, and the value axis honours `axis_min`,
@@ -402,13 +446,7 @@ its own (`radius`, `series_label_position`, …).
   lines and an axis' ticks sits on their `<g>` instead of on every element;
   a circle without a stroke no longer carries a `stroke-width`. The SVG is
   smaller and the snapshots changed accordingly.
-- A font costs the memory of its file. `fontdue` read the outline of every
-  glyph when a font was added and kept them all: 3.5 MB for the embedded
-  Roboto and 255 MB for a 22 MB CJK font, next to its bytes. A glyph is now
-  read when it is first measured, and only its box is kept, so adding that
-  font no longer takes 200 ms of parsing either. Wrapping the text of a
-  table is about 30% faster.
-- Font bytes are shared between the font registry and the raster `fontdb`
+- Font bytes are shared between the fontdue registry and the raster `fontdb`
   (`Arc`), so adding fonts no longer deep-copies every registered font, and
   the embedded default font is referenced in place.
 - The SVG document is written once: the `<svg>` header is streamed ahead of
@@ -417,12 +455,6 @@ its own (`radius`, `series_label_position`, …).
   into the output without per-point strings.
 - Axis labels are measured through the per-thread cache; bar labels and
   tooltips are only formatted when they are shown.
-- Path coordinates are written from a stack buffer straight into the SVG.
-  A line series formats labels and `data-*` attributes only when they are
-  shown, and a non-stacked line no longer allocates a zero-filled
-  accumulator. Glyph-measurement hits no longer allocate a cache key, a
-  horizontal axis remembers the width of its joined labels, and graph node
-  names are indexed in a `HashMap`. The rendered SVG is unchanged.
 
 ### Documentation
 
