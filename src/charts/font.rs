@@ -17,7 +17,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock};
 use ttf_parser::{Face, GlyphId, Language, OutlineBuilder, PlatformId, name_id};
 
 // Crate-level error/result (see `error.rs`); re-exported to keep `font::Error`.
@@ -490,6 +490,11 @@ pub fn add_fonts(fonts: &[&[u8]]) -> Result<()> {
     if datas.is_empty() {
         return Ok(());
     }
+    // One call at a time from here on. The fonts of the rasterizer are built
+    // again from the registry as this call leaves it: were two calls to do
+    // that at once, the one that ends last could put an older set back.
+    static REGISTERING: Mutex<()> = Mutex::new(());
+    let _registering = REGISTERING.lock().unwrap_or_else(|e| e.into_inner());
     cell.rcu(|current| {
         let mut fonts = current.fonts.clone();
         for (family, (_, font)) in chosen.iter() {

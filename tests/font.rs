@@ -266,3 +266,18 @@ fn the_regular_face_of_a_family_is_measured_with() {
     add_fonts(&[&bold("Onlybd")]).unwrap();
     assert!(width("Onlybd", "Hello World!") > regular * 1.9);
 }
+
+#[test]
+fn fonts_added_at_the_same_time_are_all_registered() {
+    let names: Vec<String> = (0..8).map(|i| format!("Same0{i}")).collect();
+    std::thread::scope(|scope| {
+        for name in names.iter() {
+            scope.spawn(move || add_fonts(&[&renamed(name)]).unwrap());
+        }
+    });
+    let families = get_font_families().unwrap();
+    for name in names.iter() {
+        assert!(families.contains(name), "{name}: {families:?}");
+        assert_eq!(width("Roboto", "Hello World!"), width(name, "Hello World!"));
+    }
+}

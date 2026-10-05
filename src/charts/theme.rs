@@ -1120,9 +1120,14 @@ static THEME_MAP: LazyLock<ArcSwap<Themes>> = LazyLock::new(|| {
 
 /// Add theme of charts
 pub fn add_theme(name: &str, data: Theme) {
-    let mut m: Themes = (**THEME_MAP.load()).clone();
-    m.insert(name.to_string(), Arc::new(data));
-    THEME_MAP.store(Arc::new(m));
+    let data = Arc::new(data);
+    // Added to the themes as they are when the new set is swapped in: one
+    // added from another thread at the same time is kept, not written over.
+    THEME_MAP.rcu(|themes| {
+        let mut m: Themes = (**themes).clone();
+        m.insert(name.to_string(), data.clone());
+        m
+    });
 }
 
 /// Get the theme of charts

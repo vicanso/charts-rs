@@ -312,3 +312,23 @@ fn a_table_takes_the_title_of_its_theme() {
     assert_eq!(Align::Right, from_json.title.align);
     assert!(from_json.svg().unwrap().contains("font-weight=\"bold\""));
 }
+
+#[test]
+fn themes_added_at_the_same_time_are_all_kept() {
+    let names: Vec<String> = (0..32)
+        .map(|i| format!("options-test-together-{i}"))
+        .collect();
+    std::thread::scope(|scope| {
+        for name in names.iter() {
+            scope.spawn(move || {
+                let mut theme = theme_from("light");
+                theme.title.align = Align::Right;
+                add_theme(name, theme);
+            });
+        }
+    });
+    // A theme that is not there is the light one, with its title centered.
+    for name in names.iter() {
+        assert_eq!(Align::Right, get_theme(name).title.align, "{name}");
+    }
+}

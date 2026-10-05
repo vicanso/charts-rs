@@ -78,6 +78,10 @@ its own (`radius`, `series_label_position`, …).
 
 ### Fixed
 
+- `add_theme` from several threads at once keeps every theme: it read the
+  themes, added its own and wrote them back, so that one of two calls at
+  the same time could write over the theme of the other. `add_fonts` is
+  guarded the same way for the fonts of the rasterizer.
 - A scatter or box plot chart with a logarithmic y axis and no values no
   longer panics (`index out of bounds`): the axis has no label to take its
   width from.
