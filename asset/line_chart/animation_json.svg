@@ -5,54 +5,54 @@
 Line Chart with Animation
 </text>
 <g>
-<line stroke-width="2" x1="129" y1="15" x2="154" y2="15" stroke="#5470C6"/>
-<circle cx="141.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="157" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="129" y1="50" x2="154" y2="50" stroke="#5470C6"/>
+<circle cx="141.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="157" y="54" font-family="Roboto" fill="#464646">
 Email
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="198" y1="15" x2="223" y2="15" stroke="#91CC75"/>
-<circle cx="210.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<text font-size="14" x="226" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="198" y1="50" x2="223" y2="50" stroke="#91CC75"/>
+<circle cx="210.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="226" y="54" font-family="Roboto" fill="#464646">
 Union Ads
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="298" y1="15" x2="323" y2="15" stroke="#FAC858"/>
-<circle cx="310.5" cy="15" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<text font-size="14" x="326" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="298" y1="50" x2="323" y2="50" stroke="#FAC858"/>
+<circle cx="310.5" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="326" y="54" font-family="Roboto" fill="#464646">
 Direct
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="371" y1="15" x2="396" y2="15" stroke="#EE6666"/>
-<circle cx="383.5" cy="15" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<text font-size="14" x="399" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="371" y1="50" x2="396" y2="50" stroke="#EE6666"/>
+<circle cx="383.5" cy="50" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="399" y="54" font-family="Roboto" fill="#464646">
 Search Engine
 </text>
 </g>
 <g stroke="#E0E6F2" stroke-width="1">
-<line x1="34" y1="40" x2="625" y2="40"/><line x1="34" y1="95.8" x2="625" y2="95.8"/><line x1="34" y1="151.7" x2="625" y2="151.7"/><line x1="34" y1="207.5" x2="625" y2="207.5"/><line x1="34" y1="263.3" x2="625" y2="263.3"/><line x1="34" y1="319.2" x2="625" y2="319.2"/>
+<line x1="34" y1="62" x2="625" y2="62"/><line x1="34" y1="114.2" x2="625" y2="114.2"/><line x1="34" y1="166.3" x2="625" y2="166.3"/><line x1="34" y1="218.5" x2="625" y2="218.5"/><line x1="34" y1="270.7" x2="625" y2="270.7"/><line x1="34" y1="322.8" x2="625" y2="322.8"/>
 </g>
 <g>
 
-<text font-size="14" x="2" y="45" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="67" font-family="Roboto" fill="#6E7079">
 420
 </text>
-<text font-size="14" x="2" y="100.8" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="119.2" font-family="Roboto" fill="#6E7079">
 350
 </text>
-<text font-size="14" x="2" y="156.7" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="171.3" font-family="Roboto" fill="#6E7079">
 280
 </text>
-<text font-size="14" x="2" y="212.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="223.5" font-family="Roboto" fill="#6E7079">
 210
 </text>
-<text font-size="14" x="2" y="268.3" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="275.7" font-family="Roboto" fill="#6E7079">
 140
 </text>
-<text font-size="14" x="10" y="324.2" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="10" y="327.8" font-family="Roboto" fill="#6E7079">
 70
 </text>
 <text font-size="14" x="18" y="380" font-family="Roboto" fill="#6E7079">
@@ -94,51 +94,51 @@ Sun
 </text>
 </g>
 <g>
-<path d="M 76.2 279.3 L 160.6 269.7 L 245.1 294.4 L 329.5 268.1 L 413.9 303.2 L 498.4 191.5 L 582.8 207.5" stroke-width="2" fill="none" stroke="#5470C6" pathLength="1" class="line-anim-0"/>
+<path d="M 76.2 285.6 L 160.6 276.6 L 245.1 299.7 L 329.5 275.1 L 413.9 307.9 L 498.4 203.6 L 582.8 218.5" stroke-width="2" fill="none" stroke="#5470C6" pathLength="1" class="line-anim-0"/>
 <g stroke-width="2" stroke="#5470C6" fill="#FFFFFF">
-<circle cx="76.2" cy="279.3" r="2"/>
-<circle cx="160.6" cy="269.7" r="2"/>
-<circle cx="245.1" cy="294.4" r="2"/>
-<circle cx="329.5" cy="268.1" r="2"/>
-<circle cx="413.9" cy="303.2" r="2"/>
-<circle cx="498.4" cy="191.5" r="2"/>
-<circle cx="582.8" cy="207.5" r="2"/>
+<circle cx="76.2" cy="285.6" r="2"/>
+<circle cx="160.6" cy="276.6" r="2"/>
+<circle cx="245.1" cy="299.7" r="2"/>
+<circle cx="329.5" cy="275.1" r="2"/>
+<circle cx="413.9" cy="307.9" r="2"/>
+<circle cx="498.4" cy="203.6" r="2"/>
+<circle cx="582.8" cy="218.5" r="2"/>
 </g>
 </g>
 <g>
-<path d="M 76.2 199.5 L 160.6 229.8 L 245.1 222.7 L 329.5 188.4 L 413.9 143.7 L 498.4 111.8 L 582.8 127.7" stroke-width="2" fill="none" stroke="#91CC75" pathLength="1" class="line-anim-1"/>
+<path d="M 76.2 211 L 160.6 239.4 L 245.1 232.7 L 329.5 200.6 L 413.9 158.9 L 498.4 129.1 L 582.8 144" stroke-width="2" fill="none" stroke="#91CC75" pathLength="1" class="line-anim-1"/>
 <g stroke-width="2" stroke="#91CC75" fill="#FFFFFF">
-<circle cx="76.2" cy="199.5" r="2"/>
-<circle cx="160.6" cy="229.8" r="2"/>
-<circle cx="245.1" cy="222.7" r="2"/>
-<circle cx="329.5" cy="188.4" r="2"/>
-<circle cx="413.9" cy="143.7" r="2"/>
-<circle cx="498.4" cy="111.8" r="2"/>
-<circle cx="582.8" cy="127.7" r="2"/>
+<circle cx="76.2" cy="211" r="2"/>
+<circle cx="160.6" cy="239.4" r="2"/>
+<circle cx="245.1" cy="232.7" r="2"/>
+<circle cx="329.5" cy="200.6" r="2"/>
+<circle cx="413.9" cy="158.9" r="2"/>
+<circle cx="498.4" cy="129.1" r="2"/>
+<circle cx="582.8" cy="144" r="2"/>
 </g>
 </g>
 <g>
-<path d="M 76.2 255.4 L 160.6 190 L 245.1 214.7 L 329.5 252.2 L 413.9 223.5 L 498.4 111.8 L 582.8 48" stroke-width="2" fill="none" stroke="#FAC858" pathLength="1" class="line-anim-2"/>
+<path d="M 76.2 263.2 L 160.6 202.1 L 245.1 225.2 L 329.5 260.2 L 413.9 233.4 L 498.4 129.1 L 582.8 69.5" stroke-width="2" fill="none" stroke="#FAC858" pathLength="1" class="line-anim-2"/>
 <g stroke-width="2" stroke="#FAC858" fill="#FFFFFF">
-<circle cx="76.2" cy="255.4" r="2"/>
-<circle cx="160.6" cy="190" r="2"/>
-<circle cx="245.1" cy="214.7" r="2"/>
-<circle cx="329.5" cy="252.2" r="2"/>
-<circle cx="413.9" cy="223.5" r="2"/>
-<circle cx="498.4" cy="111.8" r="2"/>
-<circle cx="582.8" cy="48" r="2"/>
+<circle cx="76.2" cy="263.2" r="2"/>
+<circle cx="160.6" cy="202.1" r="2"/>
+<circle cx="245.1" cy="225.2" r="2"/>
+<circle cx="329.5" cy="260.2" r="2"/>
+<circle cx="413.9" cy="233.4" r="2"/>
+<circle cx="498.4" cy="129.1" r="2"/>
+<circle cx="582.8" cy="69.5" r="2"/>
 </g>
 </g>
 <g>
-<path d="M 76.2 119.8 L 160.6 110.2 L 245.1 134.9 L 329.5 108.6 L 413.9 63.9 L 498.4 111.8 L 582.8 119.8" stroke-width="2" fill="none" stroke="#EE6666" pathLength="1" class="line-anim-3"/>
+<path d="M 76.2 136.5 L 160.6 127.6 L 245.1 150.7 L 329.5 126.1 L 413.9 84.4 L 498.4 129.1 L 582.8 136.5" stroke-width="2" fill="none" stroke="#EE6666" pathLength="1" class="line-anim-3"/>
 <g stroke-width="2" stroke="#EE6666" fill="#FFFFFF">
-<circle cx="76.2" cy="119.8" r="2"/>
-<circle cx="160.6" cy="110.2" r="2"/>
-<circle cx="245.1" cy="134.9" r="2"/>
-<circle cx="329.5" cy="108.6" r="2"/>
-<circle cx="413.9" cy="63.9" r="2"/>
-<circle cx="498.4" cy="111.8" r="2"/>
-<circle cx="582.8" cy="119.8" r="2"/>
+<circle cx="76.2" cy="136.5" r="2"/>
+<circle cx="160.6" cy="127.6" r="2"/>
+<circle cx="245.1" cy="150.7" r="2"/>
+<circle cx="329.5" cy="126.1" r="2"/>
+<circle cx="413.9" cy="84.4" r="2"/>
+<circle cx="498.4" cy="129.1" r="2"/>
+<circle cx="582.8" cy="136.5" r="2"/>
 </g>
 </g>
 </svg>

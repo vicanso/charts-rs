@@ -804,7 +804,8 @@ impl ChartBase {
         });
     }
     /// Renders background, title and legend, returning the top offset
-    /// for the plotting area (the greater of the title and legend heights).
+    /// for the plotting area: the greater of the title and legend heights
+    /// where they share a row, their sum where the legend is below the title.
     pub(crate) fn render_header(&self, c: &mut Canvas) -> f32 {
         self.render_background(c.child(Box::default()));
         c.margin = self.margin;
@@ -841,6 +842,15 @@ impl ChartBase {
                 title_height
             }
             _ => {
+                // Beside the title where there is room for both on a row;
+                // below it where they would be written over each other.
+                if self.legend_meets_title(c.width(), title_height) {
+                    let legend_height = self.render_legend(c.child(Box {
+                        top: title_height,
+                        ..Default::default()
+                    }));
+                    return title_height + legend_height;
+                }
                 let legend_height = self.render_legend(c.child(Box::default()));
                 // get the max height of title and legend
                 legend_height.max(title_height)
@@ -918,24 +928,7 @@ impl ChartBase {
 
         if !self.title.text.is_empty() {
             let title_margin = self.title.margin.unwrap_or_default();
-            // A title wider than the canvas is cut with an ellipsis rather
-            // than pushed to a negative x and clipped.
-            let title_text = text_ellipsis(
-                &self.font_family,
-                self.title.font.size,
-                &self.title.text,
-                c.width() - title_margin.left - title_margin.right,
-            );
-            let mut x = 0.0;
-            if let Ok(title_box) =
-                measure_text_width_family(&self.font_family, self.title.font.size, &title_text)
-            {
-                x = match self.title.align {
-                    Align::Center => (c.width() - title_box.width()) / 2.0,
-                    Align::Right => c.width() - title_box.width(),
-                    _ => 0.0,
-                }
-            }
+            let (title_text, x, _) = self.title_text(&self.title, c.width());
             let title_margin_bottom = title_margin.bottom;
             let b = c.child(title_margin).text(Text {
                 text: title_text,
@@ -951,24 +944,7 @@ impl ChartBase {
         }
         if !self.sub_title.text.is_empty() {
             let mut sub_title_margin = self.sub_title.margin.unwrap_or_default();
-            let sub_title_text = text_ellipsis(
-                &self.font_family,
-                self.sub_title.font.size,
-                &self.sub_title.text,
-                c.width() - sub_title_margin.left - sub_title_margin.right,
-            );
-            let mut x = 0.0;
-            if let Ok(sub_title_box) = measure_text_width_family(
-                &self.font_family,
-                self.sub_title.font.size,
-                &sub_title_text,
-            ) {
-                x = match self.sub_title.align {
-                    Align::Center => (c.width() - sub_title_box.width()) / 2.0,
-                    Align::Right => c.width() - sub_title_box.width(),
-                    _ => 0.0,
-                }
-            }
+            let (sub_title_text, x, _) = self.title_text(&self.sub_title, c.width());
             let sub_title_margin_bottom = sub_title_margin.bottom;
             sub_title_margin.top += self.title.height;
             let b = c.child(sub_title_margin).text(Text {
@@ -984,6 +960,82 @@ impl ChartBase {
             title_height = b.outer_height() + sub_title_margin_bottom;
         }
         title_height
+    }
+    /// Where a title or a sub-title is written on a canvas `width` wide: its
+    /// text, cut to fit, the x it starts at and how wide it is.
+    fn title_text(&self, title: &TitleConfig, width: f32) -> (String, f32, f32) {
+        let margin = title.margin.unwrap_or_default();
+        // A title wider than the canvas is cut with an ellipsis rather
+        // than pushed to a negative x and clipped.
+        let text = text_ellipsis(
+            &self.font_family,
+            title.font.size,
+            &title.text,
+            width - margin.left - margin.right,
+        );
+        let (mut x, mut text_width) = (0.0, 0.0);
+        if let Ok(b) = measure_text_width_family(&self.font_family, title.font.size, &text) {
+            text_width = b.width();
+            x = match title.align {
+                Align::Center => (width - b.width()) / 2.0,
+                Align::Right => width - b.width(),
+                _ => 0.0,
+            }
+        }
+        (text, x, text_width)
+    }
+    /// Whether a legend across the top of a canvas `width` wide would be
+    /// written over the title or the sub-title, which are `title_height`
+    /// high together: both across and down they have to meet. A legend
+    /// with a top margin has been put where it is wanted, and is left
+    /// there.
+    fn legend_meets_title(&self, width: f32, title_height: f32) -> bool {
+        // Less than this between them is as good as meeting.
+        const GAP: f32 = 10.0;
+        let entries = self.legend_entries();
+        let margin = self.legend.margin.unwrap_or_default();
+        if entries.is_empty() || title_height <= 0.0 || margin.top != 0.0 {
+            return false;
+        }
+        let legends: Vec<&str> = entries.iter().map(|(name, _)| *name).collect();
+        let legend_width = width - margin.left - margin.right;
+        let rows = wrap_legends_to_rows(
+            &self.font_family,
+            self.legend.font.size,
+            &legends,
+            legend_width,
+        );
+        let (mut left, mut right) = (f32::MAX, f32::MIN);
+        for (row_width, _) in rows.iter() {
+            let row_left = match self.legend.align {
+                Align::Right => legend_width - row_width,
+                Align::Left => 0.0,
+                Align::Center => (legend_width - row_width) / 2.0,
+            }
+            .max(0.0)
+                + margin.left;
+            left = left.min(row_left);
+            right = right.max(row_left + row_width);
+        }
+        let (top, bottom) = (
+            margin.top,
+            margin.top + (self.legend.font.size + LEGEND_MARGIN) * rows.len() as f32,
+        );
+        // The title on its row, the sub-title on the one below.
+        [
+            (&self.title, 0.0, self.title.height),
+            (&self.sub_title, self.title.height, title_height),
+        ]
+        .into_iter()
+        .filter(|(title, _, _)| !title.text.is_empty())
+        .any(|(title, title_top, title_bottom)| {
+            let (_, x, text_width) = self.title_text(title, width);
+            let title_left = title.margin.unwrap_or_default().left + x;
+            left < title_left + text_width + GAP
+                && right > title_left - GAP
+                && top < title_bottom
+                && bottom > title_top
+        })
     }
     /// Renders legend widget for canvas.
     pub(crate) fn render_legend(&self, c: Canvas) -> f32 {

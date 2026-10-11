@@ -13,6 +13,17 @@
 - A `MultiChart` has `texts` over the whole picture (and a `font_family` to
   write them in), and a `Theme` has `texts` that every chart of it carries.
 
+### Fixed
+
+- A legend at the top is no longer written over the title. Both are centered
+  by default, so a chart with a title and nothing else set had one on top of
+  the other; the legend now goes below the title and the sub-title where it
+  would meet them, and the plot starts below the legend. Where there is room
+  for both on a row — a title on the left and a legend on the right — they
+  share it as before, and a legend with a top margin (`legend_margin`) stays
+  where the margin puts it. Charts that had the overlap are drawn
+  differently; no other chart changes.
+
 ## 2.0.0
 
 The options of a chart are grouped into structs of their own, and text is

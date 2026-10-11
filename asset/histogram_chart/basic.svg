@@ -4,33 +4,33 @@
 Heights
 </text>
 <g>
-<line stroke-width="2" x1="264.5" y1="15" x2="289.5" y2="15" stroke="#5470C6"/>
-<circle cx="277" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="292.5" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="264.5" y1="50" x2="289.5" y2="50" stroke="#5470C6"/>
+<circle cx="277" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="292.5" y="54" font-family="Roboto" fill="#464646">
 Height
 </text>
 </g>
 <g stroke="#E0E6F2" stroke-width="1">
-<line x1="26" y1="40" x2="595" y2="40"/><line x1="26" y1="94.2" x2="595" y2="94.2"/><line x1="26" y1="148.3" x2="595" y2="148.3"/><line x1="26" y1="202.5" x2="595" y2="202.5"/><line x1="26" y1="256.7" x2="595" y2="256.7"/><line x1="26" y1="310.8" x2="595" y2="310.8"/>
+<line x1="26" y1="62" x2="595" y2="62"/><line x1="26" y1="112.5" x2="595" y2="112.5"/><line x1="26" y1="163" x2="595" y2="163"/><line x1="26" y1="213.5" x2="595" y2="213.5"/><line x1="26" y1="264" x2="595" y2="264"/><line x1="26" y1="314.5" x2="595" y2="314.5"/>
 </g>
 <g>
 
-<text font-size="14" x="2" y="45" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="67" font-family="Roboto" fill="#6E7079">
 36
 </text>
-<text font-size="14" x="2" y="99.2" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="117.5" font-family="Roboto" fill="#6E7079">
 30
 </text>
-<text font-size="14" x="2" y="153.3" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="168" font-family="Roboto" fill="#6E7079">
 24
 </text>
-<text font-size="14" x="2" y="207.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="218.5" font-family="Roboto" fill="#6E7079">
 18
 </text>
-<text font-size="14" x="2" y="261.7" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="269" font-family="Roboto" fill="#6E7079">
 12
 </text>
-<text font-size="14" x="10" y="315.8" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="10" y="319.5" font-family="Roboto" fill="#6E7079">
 6
 </text>
 <text font-size="14" x="10" y="370" font-family="Roboto" fill="#6E7079">
@@ -78,36 +78,36 @@ Height
 190
 </text>
 </g>
-<rect x="26.5" y="328.9" width="70.1" height="36.1" fill="#5470C6" data-series="Height" data-from="150" data-to="155" data-value="4"/>
-<rect x="97.6" y="265.7" width="70.1" height="99.3" fill="#5470C6" data-series="Height" data-from="155" data-to="160" data-value="11"/>
-<rect x="168.8" y="265.7" width="70.1" height="99.3" fill="#5470C6" data-series="Height" data-from="160" data-to="165" data-value="11"/>
-<rect x="239.9" y="76.1" width="70.1" height="288.9" fill="#5470C6" data-series="Height" data-from="165" data-to="170" data-value="32"/>
-<rect x="311" y="94.2" width="70.1" height="270.8" fill="#5470C6" data-series="Height" data-from="170" data-to="175" data-value="30"/>
-<rect x="382.1" y="130.3" width="70.1" height="234.7" fill="#5470C6" data-series="Height" data-from="175" data-to="180" data-value="26"/>
-<rect x="453.2" y="319.9" width="70.1" height="45.1" fill="#5470C6" data-series="Height" data-from="180" data-to="185" data-value="5"/>
-<rect x="524.4" y="356" width="70.1" height="9" fill="#5470C6" data-series="Height" data-from="185" data-to="190" data-value="1"/>
-<text font-size="14" x="61.6" y="328.9" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
+<rect x="26.5" y="331.3" width="70.1" height="33.7" fill="#5470C6" data-series="Height" data-from="150" data-to="155" data-value="4"/>
+<rect x="97.6" y="272.4" width="70.1" height="92.6" fill="#5470C6" data-series="Height" data-from="155" data-to="160" data-value="11"/>
+<rect x="168.8" y="272.4" width="70.1" height="92.6" fill="#5470C6" data-series="Height" data-from="160" data-to="165" data-value="11"/>
+<rect x="239.9" y="95.7" width="70.1" height="269.3" fill="#5470C6" data-series="Height" data-from="165" data-to="170" data-value="32"/>
+<rect x="311" y="112.5" width="70.1" height="252.5" fill="#5470C6" data-series="Height" data-from="170" data-to="175" data-value="30"/>
+<rect x="382.1" y="146.2" width="70.1" height="218.8" fill="#5470C6" data-series="Height" data-from="175" data-to="180" data-value="26"/>
+<rect x="453.2" y="322.9" width="70.1" height="42.1" fill="#5470C6" data-series="Height" data-from="180" data-to="185" data-value="5"/>
+<rect x="524.4" y="356.6" width="70.1" height="8.4" fill="#5470C6" data-series="Height" data-from="185" data-to="190" data-value="1"/>
+<text font-size="14" x="61.6" y="331.3" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
 4
 </text>
-<text font-size="14" x="132.7" y="265.7" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="132.7" y="272.4" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
 11
 </text>
-<text font-size="14" x="203.8" y="265.7" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="203.8" y="272.4" dx="-6.5" dy="-8" font-family="Roboto" fill="#464646">
 11
 </text>
-<text font-size="14" x="274.9" y="76.1" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="274.9" y="95.7" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
 32
 </text>
-<text font-size="14" x="346.1" y="94.2" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="346.1" y="112.5" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
 30
 </text>
-<text font-size="14" x="417.2" y="130.3" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="417.2" y="146.2" dx="-8" dy="-8" font-family="Roboto" fill="#464646">
 26
 </text>
-<text font-size="14" x="488.3" y="319.9" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="488.3" y="322.9" dx="-4" dy="-8" font-family="Roboto" fill="#464646">
 5
 </text>
-<text font-size="14" x="559.4" y="356" dx="-2.5" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="559.4" y="356.6" dx="-2.5" dy="-8" font-family="Roboto" fill="#464646">
 1
 </text>
 </svg>

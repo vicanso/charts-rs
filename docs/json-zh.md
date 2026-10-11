@@ -79,13 +79,13 @@
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `legend_show` | 布尔 |  | 是否显示图例。默认显示，饼图、主题河流图和瀑布图默认隐藏。 |
-| `legend_position` | `"top"` / `"bottom"` / `"left"` / `"right"` | `"top"` | 图例位置：顶部标题旁（默认）、底部，或在绘图区左侧 / 右侧纵向排列。 |
+| `legend_position` | `"top"` / `"bottom"` / `"left"` / `"right"` | `"top"` | 图例位置：顶部（默认）、底部，或在绘图区左侧 / 右侧纵向排列。位于顶部时，若与标题互不遮挡（例如标题居左、图例居右）则与标题同一行；若会压在标题或副标题上，则自动排到它们下方。 |
 | `legend_align` | `"left"` / `"center"` / `"right"` | `"center"` | 图例的水平对齐方式。 |
 | `legend_category` | `"normal"` / `"rect"` / `"round_rect"` / `"circle"` | `"normal"` | 图例标记的形状：带圆点的线段（`normal`）、矩形、圆角矩形或圆形。 |
 | `legend_font_size` | 数字 | `14` | 图例字号。 |
 | `legend_font_color` | 颜色 | 主题 | 图例字体颜色。 |
 | `legend_font_weight` | 字符串 |  | 图例字重，例如 `"bold"`。 |
-| `legend_margin` | 边距 |  | 图例四周的边距。 |
+| `legend_margin` | 边距 |  | 图例四周的边距。顶部图例设置了 `top` 边距时，位置以该边距为准，不会再自动移到标题下方。 |
 
 ### X 轴
 

@@ -487,14 +487,17 @@ pub struct LegendConfig {
     pub font: FontConfig,
     /// Horizontal alignment of the legend.
     pub align: Align,
-    /// Margin around the legend block.
+    /// Margin around the legend block. A legend at the top with a top
+    /// margin is placed by it, and is not moved below the title.
     pub margin: Option<Box>,
     /// Marker shape (normal, rect or round rect).
     pub category: LegendCategory,
     /// Shows or hides the legend; `None` follows the chart's default.
     pub show: Option<bool>,
-    /// Where the legend goes: top (the default, beside the title), bottom,
-    /// or stacked vertically on the left / right of the plot.
+    /// Where the legend goes: top (the default), bottom, or stacked
+    /// vertically on the left / right of the plot. At the top it shares the
+    /// row of the title where there is room for both, and goes below the
+    /// title and the sub-title where it would be written over them.
     pub position: Option<Position>,
 }
 

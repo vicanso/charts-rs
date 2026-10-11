@@ -4,54 +4,54 @@
 Stacked Area Chart
 </text>
 <g>
-<line stroke-width="2" x1="129" y1="15" x2="154" y2="15" stroke="#5470C6"/>
-<circle cx="141.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
-<text font-size="14" x="157" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="129" y1="50" x2="154" y2="50" stroke="#5470C6"/>
+<circle cx="141.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="157" y="54" font-family="Roboto" fill="#464646">
 Email
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="198" y1="15" x2="223" y2="15" stroke="#91CC75"/>
-<circle cx="210.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
-<text font-size="14" x="226" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="198" y1="50" x2="223" y2="50" stroke="#91CC75"/>
+<circle cx="210.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="226" y="54" font-family="Roboto" fill="#464646">
 Union Ads
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="298" y1="15" x2="323" y2="15" stroke="#FAC858"/>
-<circle cx="310.5" cy="15" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
-<text font-size="14" x="326" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="298" y1="50" x2="323" y2="50" stroke="#FAC858"/>
+<circle cx="310.5" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="326" y="54" font-family="Roboto" fill="#464646">
 Direct
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="371" y1="15" x2="396" y2="15" stroke="#EE6666"/>
-<circle cx="383.5" cy="15" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
-<text font-size="14" x="399" y="19" font-family="Roboto" fill="#464646">
+<line stroke-width="2" x1="371" y1="50" x2="396" y2="50" stroke="#EE6666"/>
+<circle cx="383.5" cy="50" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="399" y="54" font-family="Roboto" fill="#464646">
 Search Engine
 </text>
 </g>
 <g stroke="#E0E6F2" stroke-width="1">
-<line x1="38" y1="40" x2="625" y2="40"/><line x1="38" y1="95.8" x2="625" y2="95.8"/><line x1="38" y1="151.7" x2="625" y2="151.7"/><line x1="38" y1="207.5" x2="625" y2="207.5"/><line x1="38" y1="263.3" x2="625" y2="263.3"/><line x1="38" y1="319.2" x2="625" y2="319.2"/>
+<line x1="38" y1="62" x2="625" y2="62"/><line x1="38" y1="114.2" x2="625" y2="114.2"/><line x1="38" y1="166.3" x2="625" y2="166.3"/><line x1="38" y1="218.5" x2="625" y2="218.5"/><line x1="38" y1="270.7" x2="625" y2="270.7"/><line x1="38" y1="322.8" x2="625" y2="322.8"/>
 </g>
 <g>
 
-<text font-size="14" x="2" y="45" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="2" y="67" font-family="Roboto" fill="#6E7079">
 1.3k
 </text>
-<text font-size="14" x="14" y="100.8" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="14" y="119.2" font-family="Roboto" fill="#6E7079">
 1k
 </text>
-<text font-size="14" x="6" y="156.7" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="6" y="171.3" font-family="Roboto" fill="#6E7079">
 840
 </text>
-<text font-size="14" x="6" y="212.5" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="6" y="223.5" font-family="Roboto" fill="#6E7079">
 630
 </text>
-<text font-size="14" x="6" y="268.3" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="6" y="275.7" font-family="Roboto" fill="#6E7079">
 420
 </text>
-<text font-size="14" x="6" y="324.2" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="6" y="327.8" font-family="Roboto" fill="#6E7079">
 210
 </text>
 <text font-size="14" x="22" y="380" font-family="Roboto" fill="#6E7079">
@@ -92,56 +92,56 @@ Sat
 Sun
 </text>
 </g>
-<polygon points="79.9,343.1 163.8,339.9 247.6,348.1 331.5,339.4 415.4,351.1 499.2,313.8 583.1,319.2 583.1,375 499.2,375 415.4,375 331.5,375 247.6,375 163.8,375 79.9,375" fill="#5470C6" fill-opacity="0.39"/>
+<polygon points="79.9,345.2 163.8,342.2 247.6,349.9 331.5,341.7 415.4,352.6 499.2,317.9 583.1,322.8 583.1,375 499.2,375 415.4,375 331.5,375 247.6,375 163.8,375 79.9,375" fill="#5470C6" fill-opacity="0.39"/>
 <g>
-<path d="M 79.9 343.1 L 163.8 339.9 L 247.6 348.1 L 331.5 339.4 L 415.4 351.1 L 499.2 313.8 L 583.1 319.2" stroke-width="2" fill="none" stroke="#5470C6"/>
+<path d="M 79.9 345.2 L 163.8 342.2 L 247.6 349.9 L 331.5 341.7 L 415.4 352.6 L 499.2 317.9 L 583.1 322.8" stroke-width="2" fill="none" stroke="#5470C6"/>
 <g stroke-width="2" stroke="#5470C6" fill="#FFFFFF">
-<circle cx="79.9" cy="343.1" r="2"/>
-<circle cx="163.8" cy="339.9" r="2"/>
-<circle cx="247.6" cy="348.1" r="2"/>
-<circle cx="331.5" cy="339.4" r="2"/>
-<circle cx="415.4" cy="351.1" r="2"/>
-<circle cx="499.2" cy="313.8" r="2"/>
-<circle cx="583.1" cy="319.2" r="2"/>
+<circle cx="79.9" cy="345.2" r="2"/>
+<circle cx="163.8" cy="342.2" r="2"/>
+<circle cx="247.6" cy="349.9" r="2"/>
+<circle cx="331.5" cy="341.7" r="2"/>
+<circle cx="415.4" cy="352.6" r="2"/>
+<circle cx="499.2" cy="317.9" r="2"/>
+<circle cx="583.1" cy="322.8" r="2"/>
 </g>
 </g>
-<polygon points="79.9,284.6 163.8,291.5 247.6,297.4 331.5,277.2 415.4,274 499.2,226.1 583.1,236.7 583.1,319.2 499.2,313.8 415.4,351.1 331.5,339.4 247.6,348.1 163.8,339.9 79.9,343.1" fill="#91CC75" fill-opacity="0.39"/>
+<polygon points="79.9,290.5 163.8,297 247.6,302.5 331.5,283.6 415.4,280.6 499.2,235.9 583.1,245.8 583.1,322.8 499.2,317.9 415.4,352.6 331.5,341.7 247.6,349.9 163.8,342.2 79.9,345.2" fill="#91CC75" fill-opacity="0.39"/>
 <g>
-<path d="M 79.9 284.6 L 163.8 291.5 L 247.6 297.4 L 331.5 277.2 L 415.4 274 L 499.2 226.1 L 583.1 236.7" stroke-width="2" fill="none" stroke="#91CC75"/>
+<path d="M 79.9 290.5 L 163.8 297 L 247.6 302.5 L 331.5 283.6 L 415.4 280.6 L 499.2 235.9 L 583.1 245.8" stroke-width="2" fill="none" stroke="#91CC75"/>
 <g stroke-width="2" stroke="#91CC75" fill="#FFFFFF">
-<circle cx="79.9" cy="284.6" r="2"/>
-<circle cx="163.8" cy="291.5" r="2"/>
-<circle cx="247.6" cy="297.4" r="2"/>
-<circle cx="331.5" cy="277.2" r="2"/>
-<circle cx="415.4" cy="274" r="2"/>
-<circle cx="499.2" cy="226.1" r="2"/>
-<circle cx="583.1" cy="236.7" r="2"/>
+<circle cx="79.9" cy="290.5" r="2"/>
+<circle cx="163.8" cy="297" r="2"/>
+<circle cx="247.6" cy="302.5" r="2"/>
+<circle cx="331.5" cy="283.6" r="2"/>
+<circle cx="415.4" cy="280.6" r="2"/>
+<circle cx="499.2" cy="235.9" r="2"/>
+<circle cx="583.1" cy="245.8" r="2"/>
 </g>
 </g>
-<polygon points="79.9,244.7 163.8,229.8 247.6,243.9 331.5,236.2 415.4,223.5 499.2,138.4 583.1,127.7 583.1,236.7 499.2,226.1 415.4,274 331.5,277.2 247.6,297.4 163.8,291.5 79.9,284.6" fill="#FAC858" fill-opacity="0.39"/>
+<polygon points="79.9,253.3 163.8,239.4 247.6,252.5 331.5,245.3 415.4,233.4 499.2,153.9 583.1,144 583.1,245.8 499.2,235.9 415.4,280.6 331.5,283.6 247.6,302.5 163.8,297 79.9,290.5" fill="#FAC858" fill-opacity="0.39"/>
 <g>
-<path d="M 79.9 244.7 L 163.8 229.8 L 247.6 243.9 L 331.5 236.2 L 415.4 223.5 L 499.2 138.4 L 583.1 127.7" stroke-width="2" fill="none" stroke="#FAC858"/>
+<path d="M 79.9 253.3 L 163.8 239.4 L 247.6 252.5 L 331.5 245.3 L 415.4 233.4 L 499.2 153.9 L 583.1 144" stroke-width="2" fill="none" stroke="#FAC858"/>
 <g stroke-width="2" stroke="#FAC858" fill="#FFFFFF">
-<circle cx="79.9" cy="244.7" r="2"/>
-<circle cx="163.8" cy="229.8" r="2"/>
-<circle cx="247.6" cy="243.9" r="2"/>
-<circle cx="331.5" cy="236.2" r="2"/>
-<circle cx="415.4" cy="223.5" r="2"/>
-<circle cx="499.2" cy="138.4" r="2"/>
-<circle cx="583.1" cy="127.7" r="2"/>
+<circle cx="79.9" cy="253.3" r="2"/>
+<circle cx="163.8" cy="239.4" r="2"/>
+<circle cx="247.6" cy="252.5" r="2"/>
+<circle cx="331.5" cy="245.3" r="2"/>
+<circle cx="415.4" cy="233.4" r="2"/>
+<circle cx="499.2" cy="153.9" r="2"/>
+<circle cx="583.1" cy="144" r="2"/>
 </g>
 </g>
-<polygon points="79.9,159.6 163.8,141.6 247.6,163.9 331.5,147.4 415.4,119.8 499.2,50.6 583.1,42.7 583.1,127.7 499.2,138.4 415.4,223.5 331.5,236.2 247.6,243.9 163.8,229.8 79.9,244.7" fill="#EE6666" fill-opacity="0.39"/>
+<polygon points="79.9,173.8 163.8,156.9 247.6,177.8 331.5,162.4 415.4,136.5 499.2,71.9 583.1,64.5 583.1,144 499.2,153.9 415.4,233.4 331.5,245.3 247.6,252.5 163.8,239.4 79.9,253.3" fill="#EE6666" fill-opacity="0.39"/>
 <g>
-<path d="M 79.9 159.6 L 163.8 141.6 L 247.6 163.9 L 331.5 147.4 L 415.4 119.8 L 499.2 50.6 L 583.1 42.7" stroke-width="2" fill="none" stroke="#EE6666"/>
+<path d="M 79.9 173.8 L 163.8 156.9 L 247.6 177.8 L 331.5 162.4 L 415.4 136.5 L 499.2 71.9 L 583.1 64.5" stroke-width="2" fill="none" stroke="#EE6666"/>
 <g stroke-width="2" stroke="#EE6666" fill="#FFFFFF">
-<circle cx="79.9" cy="159.6" r="2"/>
-<circle cx="163.8" cy="141.6" r="2"/>
-<circle cx="247.6" cy="163.9" r="2"/>
-<circle cx="331.5" cy="147.4" r="2"/>
-<circle cx="415.4" cy="119.8" r="2"/>
-<circle cx="499.2" cy="50.6" r="2"/>
-<circle cx="583.1" cy="42.7" r="2"/>
+<circle cx="79.9" cy="173.8" r="2"/>
+<circle cx="163.8" cy="156.9" r="2"/>
+<circle cx="247.6" cy="177.8" r="2"/>
+<circle cx="331.5" cy="162.4" r="2"/>
+<circle cx="415.4" cy="136.5" r="2"/>
+<circle cx="499.2" cy="71.9" r="2"/>
+<circle cx="583.1" cy="64.5" r="2"/>
 </g>
 </g>
 </svg>

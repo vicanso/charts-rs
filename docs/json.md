@@ -79,13 +79,13 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `legend_show` | boolean |  | Shows or hides the legend. It is shown by default, except in pie, theme river and waterfall charts. |
-| `legend_position` | `"top"` / `"bottom"` / `"left"` / `"right"` | `"top"` | Where the legend goes: at the top beside the title (the default), at the bottom, or stacked vertically on the left or right of the plot. |
+| `legend_position` | `"top"` / `"bottom"` / `"left"` / `"right"` | `"top"` | Where the legend goes: at the top (the default), at the bottom, or stacked vertically on the left or right of the plot. At the top it shares the row of the title where there is room for both — a title on the left and a legend on the right, say — and goes below the title and the sub-title where it would be written over them. |
 | `legend_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the legend. |
 | `legend_category` | `"normal"` / `"rect"` / `"round_rect"` / `"circle"` | `"normal"` | Shape of the legend markers: a line with a dot (`normal`), a rectangle, a rounded rectangle or a circle. |
 | `legend_font_size` | number | `14` | Legend font size. |
 | `legend_font_color` | color | theme | Legend font color. |
 | `legend_font_weight` | string |  | Legend font weight, e.g. `"bold"`. |
-| `legend_margin` | margin |  | Margin around the legend. |
+| `legend_margin` | margin |  | Margin around the legend. A legend at the top with a `top` margin is placed by it, and is not moved below the title. |
 
 ### X axis
 
