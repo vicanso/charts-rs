@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::base::ChartBase;
+use super::base::{ChartBase, reserved_margin};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -409,8 +409,11 @@ impl CalendarChart {
 
     fn auto_width(&self) -> f32 {
         let step = self.cell_size + self.cell_gap;
+        let reserved = reserved_margin(&self.texts, &self.font_family);
         self.margin.left
             + self.margin.right
+            + reserved.left
+            + reserved.right
             + self.week_label_width
             + self.num_weeks() as f32 * step
     }
@@ -427,7 +430,14 @@ impl CalendarChart {
         } else {
             0.0
         };
-        self.margin.top + self.margin.bottom + title_h + self.month_label_height + 7.0 * step
+        let reserved = reserved_margin(&self.texts, &self.font_family);
+        self.margin.top
+            + self.margin.bottom
+            + reserved.top
+            + reserved.bottom
+            + title_h
+            + self.month_label_height
+            + 7.0 * step
     }
 
     /// Renders the calendar heatmap to an SVG string.
@@ -456,9 +466,7 @@ impl CalendarChart {
 
         let mut c = self.new_canvas();
         self.render_background(c.child(Box::default()));
-        c.margin = self.margin;
-
-        let top_offset = self.render_title(c.child(Box::default()));
+        let top_offset = self.render_title_in_margin(&mut c);
 
         // Canvas region below the title
         let mut grid_c = c.child(Box {

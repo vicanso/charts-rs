@@ -92,7 +92,8 @@ pub struct ChartBase {
     pub series: SeriesConfig,
     /// The hover tooltips.
     pub tooltip: TooltipConfig,
-    /// Texts written over the chart: a copyright line, a watermark.
+    /// Texts written over the chart: a copyright line, a watermark. One
+    /// that is to have room of its own asks for it with `reserve`.
     pub texts: Vec<TextConfig>,
 }
 
@@ -283,9 +284,7 @@ pub(crate) fn overlay_texts(
         .filter(|text| !text.text.is_empty())
         .map(|text| {
             let mut config = text.clone();
-            if config.font.size.is_nan() || config.font.size <= 0.0 {
-                config.font.size = 12.0;
-            }
+            config.font.size = overlay_font_size(text);
             if config.font.color.is_zero() {
                 config.font.color = if color.is_zero() {
                     Color::black()
@@ -299,6 +298,64 @@ pub(crate) fn overlay_texts(
             }
         })
         .collect()
+}
+
+/// The font size a text over a chart is written in: 12 where it has none.
+fn overlay_font_size(text: &TextConfig) -> f32 {
+    if text.font.size.is_nan() || text.font.size <= 0.0 {
+        12.0
+    } else {
+        text.font.size
+    }
+}
+
+/// The room the texts that `reserve` it take at the edges of a chart, which
+/// is drawn in what they leave. A text placed from the top or the bottom
+/// takes a band across there, as far in as it reaches; one placed from the
+/// left or the right only, a band down that side. Turned, it reaches as far
+/// as its turned box does. Two at an edge take the room of the one that
+/// reaches further, and a text in the middle takes none.
+pub(crate) fn reserved_margin(texts: &[TextConfig], font_family: &str) -> Box {
+    let mut reserved = Box::default();
+    for text in texts.iter().filter(|text| text.reserve) {
+        let size = overlay_font_size(text);
+        // Neither of these is written.
+        if text.text.is_empty() || !size.is_finite() {
+            continue;
+        }
+        let width = measure_text_width_family(font_family, size, &text.text)
+            .map(|b| b.width())
+            .unwrap_or_default();
+        // The box of the text about the point it is placed by: as high as
+        // its font size, and from that point, up to it or about it.
+        let (start, end) = match (text.left, text.right) {
+            (Some(_), _) => (0.0, width),
+            (None, Some(_)) => (-width, 0.0),
+            (None, None) => (-width / 2.0, width / 2.0),
+        };
+        let half = size / 2.0;
+        let (sin, cos) = if text.rotate.is_finite() {
+            text.rotate.to_radians().sin_cos()
+        } else {
+            (0.0, 1.0)
+        };
+        let corners = [(start, -half), (end, -half), (start, half), (end, half)];
+        let xs = corners.map(|(x, y)| x * cos - y * sin);
+        let ys = corners.map(|(x, y)| x * sin + y * cos);
+        let least = |values: [f32; 4]| values.into_iter().fold(f32::MAX, f32::min);
+        let most = |values: [f32; 4]| values.into_iter().fold(f32::MIN, f32::max);
+        let (edge, room) = match (text.top, text.bottom, text.left, text.right) {
+            (Some(top), ..) => (&mut reserved.top, top + half + most(ys)),
+            (None, Some(bottom), ..) => (&mut reserved.bottom, bottom + half - least(ys)),
+            (None, None, Some(left), _) => (&mut reserved.left, left + most(xs)),
+            (None, None, None, Some(right)) => (&mut reserved.right, right - least(xs)),
+            (None, None, None, None) => continue,
+        };
+        if room.is_finite() && room > *edge {
+            *edge = room;
+        }
+    }
+    reserved
 }
 
 /// Draws an error bar on `c`: a line at `x` between the two ends, with a
@@ -808,9 +865,7 @@ impl ChartBase {
     /// where they share a row, their sum where the legend is below the title.
     pub(crate) fn render_header(&self, c: &mut Canvas) -> f32 {
         self.render_background(c.child(Box::default()));
-        c.margin = self.margin;
-
-        let title_height = self.render_title(c.child(Box::default()));
+        let title_height = self.render_title_in_margin(c);
 
         match self.legend.position {
             Some(Position::Bottom) => {
@@ -921,6 +976,27 @@ impl ChartBase {
             top += unit_height;
         }
         max_width + margin_width + LEGEND_MARGIN
+    }
+    /// Sets the margin of the canvas of a chart — its own, and around that
+    /// the room its texts reserve — and renders the title within it. The
+    /// height it returns is that of the title in a chart whose texts
+    /// reserve nothing: what is below the title is as far below it then.
+    pub(crate) fn render_title_in_margin(&self, c: &mut Canvas) -> f32 {
+        let reserved = reserved_margin(&self.texts, &self.font_family);
+        c.margin = Box {
+            left: self.margin.left + reserved.left,
+            top: self.margin.top + reserved.top,
+            right: self.margin.right + reserved.right,
+            bottom: self.margin.bottom + reserved.bottom,
+        };
+        let title_height = self.render_title(c.child(Box::default()));
+        // A title counts its height from the top of the canvas, and the
+        // room reserved up there is none of its own.
+        if title_height > 0.0 {
+            title_height - reserved.top
+        } else {
+            title_height
+        }
     }
     /// Render title widget for canvas.
     pub(crate) fn render_title(&self, c: Canvas) -> f32 {
@@ -1370,7 +1446,8 @@ impl ChartBase {
                 ),
             }
         }
-        let max_height = c.height() - x_axis_height;
+        // As `axis_height`: none where the canvas has no room for a plot.
+        let max_height = (c.height() - x_axis_height).max(0.0);
         let x_count = if x.is_some() {
             self.x_count()
         } else {
@@ -1829,10 +1906,13 @@ impl ChartBase {
 
         // A band per category, or on a continuous axis as wide as the
         // smallest gap between two x values.
+        // None where the canvas has no room for a plot: a bar is never of
+        // a negative width.
         let unit_width = match x_scale {
             Some(scale) => scale.band_width,
             None => c1.width() / series_data_count as f32,
-        };
+        }
+        .max(0.0);
         let bar_chart_margin = 5.0_f32;
         let bar_chart_gap = 3.0_f32;
         let bar_chart_min_width = 1.0_f32;

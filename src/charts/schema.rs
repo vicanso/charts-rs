@@ -182,6 +182,7 @@ static TEXT_FIELDS: &[Field] = &[
     f("font_color", Kind::Color),
     f("font_weight", Kind::String),
     f("rotate", Kind::Number),
+    f("reserve", Kind::Bool),
 ];
 
 static ANIMATION_FIELDS: &[Field] = &[

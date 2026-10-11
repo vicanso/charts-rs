@@ -276,7 +276,7 @@ The same two lists as a band: a point has an error bar where both of its bounds 
 <!-- keys: table.texts = base.texts -->
 <!-- keys: multi.texts = base.texts -->
 
-A text is placed by its distances from the edges of the chart, in pixels. With a `left` it starts there, with a `right` it ends there, and with neither it is centered; `top` and `bottom` do the same from above and from below. It is written last, over everything else.
+A text is placed by its distances from the edges of the chart, in pixels. With a `left` it starts there, with a `right` it ends there, and with neither it is centered; `top` and `bottom` do the same from above and from below. It is written last, over everything else — and over a part of the chart, where it is put on one. A text that is to have room of its own, such as a line of sources below the axis, asks for it with `reserve`.
 
 | Key | Type | Default | Description |
 |---|---|---|---|
@@ -289,11 +289,12 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 | `font_color` | color | theme | Font color of the text; by default that of the sub-title. A watermark wants a color with an alpha, e.g. `"#00000020"`. |
 | `font_weight` | string |  | Font weight of the text, e.g. `"bold"`. |
 | `rotate` | number | `0` | Degrees the text is turned by, clockwise, about the point it is placed by: its start, its end or, centered, its middle. |
+| `reserve` | boolean | `false` | Makes room for the text at the edge it is placed from, instead of writing it over the chart: the chart is drawn in what is left, with its `margin` inside of that. A text with a `top` or a `bottom` takes a band across there, as far in as it reaches (`bottom` and its font size, say); one with a `left` or a `right` only takes a band down that side, as wide as it is. Two at an edge take the room of the one that reaches further in. A text in the middle has no edge to take room at. A table, a calendar and a multi chart, which are as large as what is in them, are larger by the room. |
 
 ```json
 {
   "texts": [
-    { "text": "© 2026 ACME Inc.", "right": 10, "bottom": 6 },
+    { "text": "© 2026 ACME Inc.", "right": 10, "bottom": 6, "reserve": true },
     { "text": "CONFIDENTIAL", "font_size": 56, "font_color": "#00000018", "rotate": -25 }
   ]
 }
@@ -1301,7 +1302,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `background_color` | color |  | Background color of the whole composition; without one only the children draw their backgrounds. |
 | `child_charts` | array |  | The charts, drawn one below the other: each one the options of its chart type, plus the keys below. |
 | `compact` | boolean | `false` | Emits compact SVG for the composition and every child. |
-| `texts` | object[] |  | Texts written over the whole composition: a copyright line, a watermark. See [`texts[]`](#texts). A child has `texts` of its own, over itself. |
+| `texts` | object[] |  | Texts written over the whole composition: a copyright line, a watermark. See [`texts[]`](#texts). A child has `texts` of its own, over itself. The room a text reserves is around the `margin`: the children start inside of it, but for those placed by `x` and `y`, which stay where they are put. |
 
 ### `child_charts[]`
 

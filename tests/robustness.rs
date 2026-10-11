@@ -3,9 +3,9 @@
 mod common;
 
 use charts_rs::{
-    Align, BarChart, CandlestickChart, Color, GaugeChart, HorizontalBarChart, LineChart, MarkPoint,
-    MarkPointCategory, MultiChart, NIL_VALUE, PieChart, SankeyChart, Series, SunburstChart,
-    TableChart, TreemapChart,
+    Align, BarChart, CandlestickChart, Color, GaugeChart, HistogramChart, HorizontalBarChart,
+    LineChart, MarkPoint, MarkPointCategory, MultiChart, NIL_VALUE, PieChart, SankeyChart, Series,
+    SunburstChart, TableChart, TreemapChart,
 };
 
 fn attr(tag: &str, name: &str) -> f32 {
@@ -219,6 +219,39 @@ fn extreme_inputs_do_not_panic() {
         .unwrap()
         .svg()
         .unwrap();
+}
+
+#[test]
+fn a_chart_without_room_for_a_plot_does_not_panic() {
+    // Margins that leave nothing of the chart, on one side or between two,
+    // and a chart smaller than its axes: the plot had a negative size, which
+    // the bars, the lines and the axis labels were then fitted into.
+    let series = r#""x_axis_data": ["a", "b"], "series_list": [{"name": "s", "data": [1, -2]}]"#;
+    let candles = r#""x_axis_data": ["a"], "series_list": [{"name": "k", "data": [1, 3, 0, 4]}]"#;
+    let values = r#""series_list": [{"name": "s", "data": [1, 2, 2, 3]}]"#;
+    for options in [
+        r#""margin": {"bottom": 380}"#,
+        r#""margin": {"top": 200, "bottom": 200}"#,
+        r#""margin": {"left": 590}"#,
+        r#""margin": {"left": 300, "right": 300}"#,
+        r#""margin": {"left": 5000, "top": 5000, "right": 5000, "bottom": 5000}"#,
+        r#""margin": 1e30"#,
+        r#""width": 20, "height": 20"#,
+        r#""width": 1, "height": 1, "title_text": "T", "legend_position": "bottom""#,
+    ] {
+        macro_rules! draw {
+            ($chart:ty, $data:expr) => {{
+                let json = format!("{{{}, {options}}}", $data);
+                let svg = <$chart>::from_json(&json).unwrap().svg().unwrap();
+                assert_valid_numbers(&svg);
+            }};
+        }
+        draw!(BarChart, series);
+        draw!(LineChart, series);
+        draw!(HorizontalBarChart, series);
+        draw!(CandlestickChart, candles);
+        draw!(HistogramChart, values);
+    }
 }
 
 #[test]

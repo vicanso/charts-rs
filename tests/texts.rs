@@ -8,6 +8,7 @@ use charts_rs::{
     HorizontalBarChart, LineChart, MapChart, MultiChart, ParallelChart, PieChart, PolarBarChart,
     RadarChart, SankeyChart, ScatterChart, Series, SunburstChart, TableChart, TextConfig,
     ThemeRiverChart, TreeChart, TreemapChart, WaterfallChart, add_theme, get_theme,
+    measure_text_width_family,
 };
 
 /// The `<text>` tag the given text is written in, without its content.
@@ -181,6 +182,127 @@ fn texts_are_written_last_and_as_text() {
     }
 }
 
+const SERIES: &str = r#""x_axis_data": ["a", "b"], "series_list": [{"name": "s", "data": [1, 2]}]"#;
+
+/// Every chart there is but the one of charts, each with `$chart!`: its
+/// name, its type and the options it is drawn from. With data and without:
+/// a chart of nothing still has what is around it.
+macro_rules! every_chart {
+    ($chart:ident) => {
+        $chart!("bar", BarChart, "", SERIES);
+        $chart!("horizontal bar", HorizontalBarChart, "", SERIES);
+        $chart!("line", LineChart, "", SERIES);
+        $chart!("pie", PieChart, "", SERIES);
+        $chart!(
+            "radar",
+            RadarChart,
+            "",
+            r#""indicators": [{"name": "a", "max": 5}, {"name": "b", "max": 5}, {"name": "c", "max": 5}], "series_list": [{"name": "s", "data": [1, 2, 3]}]"#
+        );
+        $chart!(
+            "scatter",
+            ScatterChart,
+            "",
+            r#""series_list": [{"name": "s", "data": [1, 2, 3, 4]}]"#
+        );
+        $chart!(
+            "candlestick",
+            CandlestickChart,
+            "",
+            r#""x_axis_data": ["a"], "series_list": [{"name": "k", "data": [1, 3, 0, 4]}]"#
+        );
+        $chart!(
+            "heatmap",
+            HeatmapChart,
+            "",
+            r#""x_axis_data": ["a", "b"], "y_axis_data": ["p"], "series": {"data": [[0, 1], [1, 5]]}"#
+        );
+        $chart!("funnel", FunnelChart, "", SERIES);
+        $chart!(
+            "waterfall",
+            WaterfallChart,
+            "",
+            r#""x_axis_data": ["a", "b"], "data": [3, -1]"#
+        );
+        $chart!(
+            "calendar",
+            CalendarChart,
+            "",
+            r#""data": [["2024-02-05", 3]]"#
+        );
+        $chart!(
+            "gauge",
+            GaugeChart,
+            "",
+            r#""series_list": [{"name": "s", "data": [40]}]"#
+        );
+        $chart!(
+            "treemap",
+            TreemapChart,
+            "",
+            r#""series_data": [{"name": "n", "value": 1}]"#
+        );
+        $chart!(
+            "box plot",
+            BoxPlotChart,
+            "",
+            r#""x_axis_data": ["a"], "box_series": [{"name": "b", "data": [[1, 2, 3, 4, 5]]}]"#
+        );
+        $chart!(
+            "sunburst",
+            SunburstChart,
+            "",
+            r#""series_data": [{"name": "n", "value": 1}]"#
+        );
+        $chart!(
+            "sankey",
+            SankeyChart,
+            "",
+            r#""links": [{"source": "a", "target": "b", "value": 1}]"#
+        );
+        $chart!(
+            "tree",
+            TreeChart,
+            "",
+            r#""series_data": [{"name": "n", "children": [{"name": "m"}]}]"#
+        );
+        $chart!(
+            "graph",
+            GraphChart,
+            "",
+            r#""nodes": [{"name": "a"}, {"name": "b"}], "links": [{"source": "a", "target": "b"}]"#
+        );
+        $chart!("parallel", ParallelChart, "", SERIES);
+        $chart!("theme river", ThemeRiverChart, "", SERIES);
+        $chart!(
+            "histogram",
+            HistogramChart,
+            "",
+            r#""series_list": [{"name": "s", "data": [1, 2, 2, 3]}]"#
+        );
+        $chart!("polar bar", PolarBarChart, "", SERIES);
+        $chart!(
+            "chord",
+            ChordChart,
+            "",
+            r#""links": [{"source": "a", "target": "b", "value": 1}]"#
+        );
+        $chart!(
+            "gantt",
+            GanttChart,
+            "",
+            r#""x_axis_type": "value", "tasks": [{"name": "t", "start": 1, "end": 5}]"#
+        );
+        $chart!(
+            "map",
+            MapChart,
+            "",
+            r#""data": [["a", 3]], "geo_json": {"type": "Feature", "properties": {"name": "a"}, "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1]]]}}"#
+        );
+        $chart!("table", TableChart, r#""data": [["Name"], ["A"]]"#);
+    };
+}
+
 #[test]
 fn every_chart_writes_its_texts() {
     let texts = r#""texts": [{"text": "© ACME", "right": 10, "bottom": 6}]"#;
@@ -191,8 +313,6 @@ fn every_chart_writes_its_texts() {
             format!("{{{json}, {texts}}}")
         }
     };
-    // With data and without: a chart of nothing still says whose it is.
-    let series = r#""x_axis_data": ["a", "b"], "series_list": [{"name": "s", "data": [1, 2]}]"#;
     let mut svgs: Vec<(&str, String)> = vec![];
     // Some charts are none without their data: what counts is that every
     // chart that is drawn has the text.
@@ -204,117 +324,7 @@ fn every_chart_writes_its_texts() {
             })+
         };
     }
-    chart!("bar", BarChart, "", series);
-    chart!("horizontal bar", HorizontalBarChart, "", series);
-    chart!("line", LineChart, "", series);
-    chart!("pie", PieChart, "", series);
-    chart!(
-        "radar",
-        RadarChart,
-        "",
-        r#""indicators": [{"name": "a", "max": 5}, {"name": "b", "max": 5}, {"name": "c", "max": 5}], "series_list": [{"name": "s", "data": [1, 2, 3]}]"#
-    );
-    chart!(
-        "scatter",
-        ScatterChart,
-        "",
-        r#""series_list": [{"name": "s", "data": [1, 2, 3, 4]}]"#
-    );
-    chart!(
-        "candlestick",
-        CandlestickChart,
-        "",
-        r#""x_axis_data": ["a"], "series_list": [{"name": "k", "data": [1, 3, 0, 4]}]"#
-    );
-    chart!(
-        "heatmap",
-        HeatmapChart,
-        "",
-        r#""x_axis_data": ["a", "b"], "y_axis_data": ["p"], "series": {"data": [[0, 1], [1, 5]]}"#
-    );
-    chart!("funnel", FunnelChart, "", series);
-    chart!(
-        "waterfall",
-        WaterfallChart,
-        "",
-        r#""x_axis_data": ["a", "b"], "data": [3, -1]"#
-    );
-    chart!(
-        "calendar",
-        CalendarChart,
-        "",
-        r#""data": [["2024-02-05", 3]]"#
-    );
-    chart!(
-        "gauge",
-        GaugeChart,
-        "",
-        r#""series_list": [{"name": "s", "data": [40]}]"#
-    );
-    chart!(
-        "treemap",
-        TreemapChart,
-        "",
-        r#""series_data": [{"name": "n", "value": 1}]"#
-    );
-    chart!(
-        "box plot",
-        BoxPlotChart,
-        "",
-        r#""x_axis_data": ["a"], "box_series": [{"name": "b", "data": [[1, 2, 3, 4, 5]]}]"#
-    );
-    chart!(
-        "sunburst",
-        SunburstChart,
-        "",
-        r#""series_data": [{"name": "n", "value": 1}]"#
-    );
-    chart!(
-        "sankey",
-        SankeyChart,
-        "",
-        r#""links": [{"source": "a", "target": "b", "value": 1}]"#
-    );
-    chart!(
-        "tree",
-        TreeChart,
-        "",
-        r#""series_data": [{"name": "n", "children": [{"name": "m"}]}]"#
-    );
-    chart!(
-        "graph",
-        GraphChart,
-        "",
-        r#""nodes": [{"name": "a"}, {"name": "b"}], "links": [{"source": "a", "target": "b"}]"#
-    );
-    chart!("parallel", ParallelChart, "", series);
-    chart!("theme river", ThemeRiverChart, "", series);
-    chart!(
-        "histogram",
-        HistogramChart,
-        "",
-        r#""series_list": [{"name": "s", "data": [1, 2, 2, 3]}]"#
-    );
-    chart!("polar bar", PolarBarChart, "", series);
-    chart!(
-        "chord",
-        ChordChart,
-        "",
-        r#""links": [{"source": "a", "target": "b", "value": 1}]"#
-    );
-    chart!(
-        "gantt",
-        GanttChart,
-        "",
-        r#""x_axis_type": "value", "tasks": [{"name": "t", "start": 1, "end": 5}]"#
-    );
-    chart!(
-        "map",
-        MapChart,
-        "",
-        r#""data": [["a", 3]], "geo_json": {"type": "Feature", "properties": {"name": "a"}, "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1]]]}}"#
-    );
-    chart!("table", TableChart, r#""data": [["Name"], ["A"]]"#);
+    every_chart!(chart);
     // All 26 of them, most of them empty as well.
     let mut names: Vec<&str> = svgs.iter().map(|(name, _)| *name).collect();
     names.dedup();
@@ -508,4 +518,586 @@ fn texts_in_rust_and_in_a_theme() {
     .svg()
     .unwrap();
     assert!(!none.contains("© Theme"));
+}
+
+/// The chart with texts that reserve nothing, and this much more margin
+/// instead: left, top, right and bottom.
+macro_rules! margined {
+    ($chart:expr, $room:expr) => {{
+        let mut chart = $chart.clone();
+        for text in chart.texts.iter_mut() {
+            text.reserve = false;
+        }
+        let (left, top, right, bottom): (f32, f32, f32, f32) = $room;
+        chart.margin.left += left;
+        chart.margin.top += top;
+        chart.margin.right += right;
+        chart.margin.bottom += bottom;
+        chart.svg()
+    }};
+}
+
+/// How wide "note" is, 12 pixels high.
+fn note_width() -> f32 {
+    measure_text_width_family("Roboto", 12.0, "note")
+        .unwrap()
+        .width()
+}
+
+#[test]
+fn a_text_that_reserves_takes_room_at_its_edge() {
+    let width = note_width();
+    assert!(width > 20.0 && width < 30.0, "{width}");
+    // What a text takes is what a margin of that much more leaves: as far
+    // in as the text reaches, on the side it is placed from.
+    for (texts, room) in [
+        // Across the bottom and across the top, 12 pixels high or 10.
+        (
+            r#"{"text": "note", "bottom": 6, "reserve": true}"#.to_string(),
+            (0.0, 0.0, 0.0, 18.0),
+        ),
+        (
+            r#"{"text": "note", "top": 4, "font_size": 10, "reserve": true}"#.to_string(),
+            (0.0, 14.0, 0.0, 0.0),
+        ),
+        // Down a side for one placed from there only: as wide as it is.
+        (
+            r#"{"text": "note", "left": 8, "reserve": true}"#.to_string(),
+            (8.0 + width, 0.0, 0.0, 0.0),
+        ),
+        (
+            r#"{"text": "note", "right": 8, "reserve": true}"#.to_string(),
+            (0.0, 0.0, 8.0 + width, 0.0),
+        ),
+        // In a corner it is the top or the bottom that it takes.
+        (
+            r#"{"text": "note", "right": 10, "bottom": 6, "reserve": true}"#.to_string(),
+            (0.0, 0.0, 0.0, 18.0),
+        ),
+        (
+            r#"{"text": "note", "left": 10, "top": 6, "reserve": true}"#.to_string(),
+            (0.0, 18.0, 0.0, 0.0),
+        ),
+        // The top and the left win, as they do in placing it.
+        (
+            r#"{"text": "note", "top": 6, "bottom": 30, "reserve": true}"#.to_string(),
+            (0.0, 18.0, 0.0, 0.0),
+        ),
+        (
+            r#"{"text": "note", "left": 8, "right": 30, "reserve": true}"#.to_string(),
+            (8.0 + width, 0.0, 0.0, 0.0),
+        ),
+        // Two at an edge are placed one by one: the room is that of the
+        // one further in, not that of both.
+        (
+            r#"{"text": "note", "left": 10, "bottom": 6, "reserve": true},
+               {"text": "more", "right": 10, "bottom": 6, "reserve": true},
+               {"text": "above", "bottom": 22, "reserve": true}"#
+                .to_string(),
+            (0.0, 0.0, 0.0, 34.0),
+        ),
+        // One at each edge.
+        (
+            r#"{"text": "note", "left": 8, "reserve": true},
+               {"text": "note", "top": 4, "font_size": 10, "reserve": true},
+               {"text": "note", "right": 8, "reserve": true},
+               {"text": "note", "bottom": 6, "reserve": true}"#
+                .to_string(),
+            (8.0 + width, 14.0, 8.0 + width, 18.0),
+        ),
+        // Only those that ask for it.
+        (
+            r#"{"text": "note", "bottom": 6, "reserve": true},
+               {"text": "over", "bottom": 60},
+               {"text": "over", "top": 80, "reserve": false},
+               {"text": "MARK", "font_size": 60, "rotate": -30}"#
+                .to_string(),
+            (0.0, 0.0, 0.0, 18.0),
+        ),
+        // In the middle there is no edge to take room at.
+        (
+            r#"{"text": "MARK", "font_size": 60, "rotate": -30, "reserve": true}"#.to_string(),
+            (0.0, 0.0, 0.0, 0.0),
+        ),
+        // Turned to read upwards or downwards, it is its height that is
+        // across: half of it to each side of where it is placed.
+        (
+            r#"{"text": "note", "left": 14, "rotate": -90, "reserve": true}"#.to_string(),
+            (20.0, 0.0, 0.0, 0.0),
+        ),
+        (
+            r#"{"text": "note", "right": 14, "rotate": 90, "reserve": true}"#.to_string(),
+            (0.0, 0.0, 20.0, 0.0),
+        ),
+        // Outside of the chart there is nothing to make room for.
+        (
+            r#"{"text": "note", "bottom": -40, "reserve": true}"#.to_string(),
+            (0.0, 0.0, 0.0, 0.0),
+        ),
+    ] {
+        let chart = BarChart::from_json(&format!(r#"{{{DATA}, "texts": [{texts}]}}"#)).unwrap();
+        assert!(chart.texts.iter().any(|text| text.reserve), "{texts}");
+        let svg = chart.svg().unwrap();
+        assert_eq!(margined!(chart, room).unwrap(), svg, "{texts}");
+        // Which is another chart than the one without the room, where
+        // there is any.
+        let over = margined!(chart, (0.0, 0.0, 0.0, 0.0)).unwrap();
+        assert_eq!(room == (0.0, 0.0, 0.0, 0.0), over == svg, "{texts}");
+    }
+
+    // A text turned by less reaches as far as its turned box does: here
+    // from 6 above the bottom, about its middle.
+    let turned = BarChart::from_json(&format!(
+        r#"{{{DATA}, "texts": [{{"text": "note", "bottom": 6, "rotate": 45, "reserve": true}}]}}"#
+    ))
+    .unwrap();
+    let plain = BarChart::from_json(&format!("{{{DATA}}}")).unwrap();
+    let reach = 12.0 + (width / 2.0 + 6.0) * 45_f32.to_radians().sin();
+    let moved = number(tag_of(&plain.svg().unwrap(), "a"), "y")
+        - number(tag_of(&turned.svg().unwrap(), "a"), "y");
+    assert!((moved - reach).abs() < 0.2, "{moved} {reach}");
+}
+
+#[test]
+fn a_title_is_below_the_room_at_the_top() {
+    let chart = |options: &str| -> String {
+        BarChart::from_json(&format!(
+            r#"{{{DATA}, "title_text": "Title", "sub_title_text": "Sub"{options}}}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    let y = |svg: &str, text: &str| number(tag_of(svg, text), "y");
+    let plain = chart("");
+    // All of the chart is 14 pixels further down, and ends where it did.
+    let above =
+        chart(r#", "texts": [{"text": "note", "top": 4, "font_size": 10, "reserve": true}]"#);
+    assert_eq!(9.0, y(&above, "note"));
+    for text in ["Title", "Sub", "s"] {
+        assert_eq!(y(&plain, text) + 14.0, y(&above, text), "{text}");
+    }
+    assert_eq!(y(&plain, "a"), y(&above, "a"));
+    // The plot starts as far below the title as it does without the text.
+    let top = |svg: &str| -> f32 {
+        svg.split("<text")
+            .filter(|tag| tag.contains("text-anchor=\"end\""))
+            .map(|tag| number(tag, "y"))
+            .fold(f32::MAX, f32::min)
+    };
+    assert_eq!(top(&plain) + 14.0, top(&above));
+
+    // And below, all of it ends 18 pixels higher and starts where it did.
+    let below = chart(r#", "texts": [{"text": "note", "bottom": 6, "reserve": true}]"#);
+    for text in ["Title", "Sub", "s"] {
+        assert_eq!(y(&plain, text), y(&below, text), "{text}");
+    }
+    assert_eq!(top(&plain), top(&below));
+    assert_eq!(y(&plain, "a") - 18.0, y(&below, "a"));
+    // So does a legend at the bottom: above the text, not under it.
+    let legend = |options: &str| {
+        y(
+            &chart(&format!(r#", "legend_position": "bottom"{options}"#)),
+            "s",
+        )
+    };
+    assert_eq!(
+        legend("") - 18.0,
+        legend(r#", "texts": [{"text": "note", "bottom": 6, "reserve": true}]"#)
+    );
+}
+
+#[test]
+fn every_chart_makes_room_for_its_texts() {
+    // 12 pixels high and 6 from the edge: 18 across the top or the bottom,
+    // 6 and its width down a side.
+    let width = measure_text_width_family("Roboto", 12.0, "© ACME")
+        .unwrap()
+        .width();
+    let places = [
+        (r#""bottom": 6"#, (0.0, 0.0, 0.0, 18.0)),
+        (r#""top": 6"#, (0.0, 18.0, 0.0, 0.0)),
+        (r#""left": 6"#, (6.0 + width, 0.0, 0.0, 0.0)),
+        (r#""right": 6"#, (0.0, 0.0, 6.0 + width, 0.0)),
+    ];
+    let (mut names, mut moved): (Vec<&str>, Vec<&str>) = (vec![], vec![]);
+    let mut drawn = 0;
+    macro_rules! chart {
+        ($name:literal, $chart:ty, $($json:expr),+) => {
+            $(for (place, room) in places {
+                let texts = format!(r#""texts": [{{"text": "© ACME", {place}, "reserve": true}}]"#);
+                let json = if $json.is_empty() {
+                    format!("{{{texts}}}")
+                } else {
+                    format!("{{{}, {texts}}}", $json)
+                };
+                let chart = <$chart>::from_json(&json).unwrap();
+                assert!(chart.texts[0].reserve, "{}", $name);
+                // A table has no margin, and is looked at below.
+                if $name == "table" {
+                    continue;
+                }
+                match (chart.svg(), margined!(chart, room)) {
+                    (Ok(reserved), Ok(margined)) => {
+                        // A heatmap makes its y axis wider by its left
+                        // margin as well, which the room is none of.
+                        if $name != "heatmap" || room.0 == 0.0 {
+                            assert_eq!(margined, reserved, "{}: {place}", $name);
+                        }
+                        // Which is another picture than with the text
+                        // over the chart, where the chart has anything
+                        // that is in the way.
+                        if margined!(chart, (0.0, 0.0, 0.0, 0.0)).unwrap() != reserved {
+                            moved.push($name);
+                        }
+                        names.push($name);
+                        drawn += 1;
+                    }
+                    (reserved, margined) => assert!(
+                        $json.is_empty() && reserved.is_err() && margined.is_err(),
+                        "{}: {place}",
+                        $name
+                    ),
+                }
+            })+
+        };
+    }
+    every_chart!(chart);
+    names.dedup();
+    assert_eq!(25, names.len(), "{names:?}");
+    assert!(drawn > 160, "{drawn}");
+    moved.dedup();
+    assert_eq!(names, moved);
+}
+
+/// The width and the height of the picture.
+fn size(svg: &str) -> (f32, f32) {
+    let head = &svg[..svg.find('>').unwrap()];
+    (number(head, "width"), number(head, "height"))
+}
+
+#[test]
+fn a_table_makes_room_around_its_rows() {
+    let table = |texts: &str| -> String {
+        TableChart::from_json(&format!(
+            r#"{{"title_text": "Prices", "data": [["Name", "Price"], ["A", "1"]], "texts": [{texts}]}}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    let at = |svg: &str, text: &str| -> (f32, f32) {
+        let tag = tag_of(svg, text);
+        (number(tag, "x"), number(tag, "y"))
+    };
+    let width = note_width();
+    // A table is as high as its rows, and a text is over the last of them.
+    let over = table(r#"{"text": "note", "bottom": 6}"#);
+    let (wide, high) = size(&over);
+    assert!(at(&over, "note").1 < at(&over, "A").1 + 40.0);
+    assert!(!over.contains(&format!(r#"height="{high}" fill"#)));
+
+    // With room for it the table is higher by that, and the text is under
+    // the last row: in the background of the table, which is behind all.
+    let below = table(r#"{"text": "note", "bottom": 6, "reserve": true}"#);
+    assert_eq!((wide, high + 18.0), size(&below));
+    assert_eq!(high + 6.0, at(&below, "note").1);
+    for text in ["Prices", "Name", "Price", "A", "1"] {
+        assert_eq!(at(&over, text), at(&below, text), "{text}");
+    }
+    assert!(below.contains(&format!(
+        "\">\n<rect x=\"0\" y=\"0\" width=\"600\" height=\"{}\" fill=\"#FFFFFF\"/>\n<rect",
+        high + 18.0
+    )));
+
+    // Above, the title and the rows are that much further down.
+    let above = table(r#"{"text": "note", "top": 6, "reserve": true}"#);
+    assert_eq!((wide, high + 18.0), size(&above));
+    assert_eq!(12.0, at(&above, "note").1);
+    for text in ["Prices", "Name", "Price", "A", "1"] {
+        let (x, y) = at(&over, text);
+        assert_eq!((x, y + 18.0), at(&above, text), "{text}");
+    }
+    // Below a sub-title as well, and without a title.
+    for head in [r#""sub_title_text": "per unit", "#, r#""title_text": "", "#] {
+        let table = |texts: &str| -> String {
+            TableChart::from_json(&format!(
+                r#"{{"title_text": "Prices", {head}"data": [["Name"], ["A"]], "texts": [{texts}]}}"#
+            ))
+            .unwrap()
+            .svg()
+            .unwrap()
+        };
+        let over = table(r#"{"text": "note", "top": 6}"#);
+        let above = table(r#"{"text": "note", "top": 6, "reserve": true}"#);
+        assert_eq!(size(&over).1 + 18.0, size(&above).1, "{head}");
+        for text in ["Name", "A"] {
+            assert_eq!(at(&over, text).1 + 18.0, at(&above, text).1, "{head}");
+        }
+    }
+
+    // At a side the columns share what is left of the width.
+    let room = 8.0 + width;
+    let left = table(r#"{"text": "note", "left": 8, "reserve": true}"#);
+    assert_eq!((wide, high), size(&left));
+    assert_eq!(at(&over, "Name").0 + room, at(&left, "Name").0);
+    assert_eq!(at(&over, "Price").0 + room / 2.0, at(&left, "Price").0);
+    assert_eq!(at(&over, "Prices").0 + room / 2.0, at(&left, "Prices").0);
+    let right = table(r#"{"text": "note", "right": 8, "reserve": true}"#);
+    assert_eq!((wide, high), size(&right));
+    assert_eq!(at(&over, "Name").0, at(&right, "Name").0);
+    assert_eq!(at(&over, "Price").0 - room / 2.0, at(&right, "Price").0);
+    assert!(right.contains(&format!(r#"width="{}" height="40""#, wide - room)));
+
+    // Nothing of this without a text that asks for it.
+    assert_eq!(
+        table(r#"{"text": "note", "bottom": 6}"#),
+        table(r#"{"text": "note", "bottom": 6, "reserve": false}"#)
+    );
+}
+
+#[test]
+fn a_calendar_is_larger_by_the_room() {
+    let calendar = |options: &str| -> String {
+        CalendarChart::from_json(&format!(
+            r#"{{"title_text": "Days", "start_date": "2024-02-01", "end_date": "2024-03-31",
+                "data": [["2024-02-05", 3]]{options}}}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    let at = |svg: &str, text: &str| -> (f32, f32) {
+        let tag = tag_of(svg, text);
+        (number(tag, "x"), number(tag, "y"))
+    };
+    let width = note_width();
+    // A calendar is as large as its days are: with room for a text, it is
+    // larger by that, and its days are as large as they were.
+    let plain = calendar("");
+    let (wide, high) = size(&plain);
+    let cells = |svg: &str| svg.matches("<rect").count();
+    for (place, (left, top, right, bottom)) in [
+        (r#""bottom": 6"#, (0.0, 0.0, 0.0, 18.0)),
+        (r#""top": 6"#, (0.0, 18.0, 0.0, 0.0)),
+        (r#""left": 8"#, (8.0 + width, 0.0, 0.0, 0.0)),
+        (r#""right": 8"#, (0.0, 0.0, 8.0 + width, 0.0)),
+    ] {
+        let svg = calendar(&format!(
+            r#", "texts": [{{"text": "note", {place}, "reserve": true}}]"#
+        ));
+        assert_eq!(
+            (wide + left + right, high + top + bottom),
+            size(&svg),
+            "{place}"
+        );
+        assert_eq!(cells(&plain), cells(&svg), "{place}");
+        // The days start below and beside the room, and so does the title.
+        let (x, y) = at(&plain, "Mon");
+        assert_eq!((x + left, y + top), at(&svg, "Mon"), "{place}");
+        assert_eq!(at(&plain, "Days").1 + top, at(&svg, "Days").1, "{place}");
+        // Over the days, the calendar is as large as without the text.
+        let over = calendar(&format!(r#", "texts": [{{"text": "note", {place}}}]"#));
+        assert_eq!((wide, high), size(&over), "{place}");
+    }
+}
+
+#[test]
+fn a_multi_chart_makes_room_around_its_children() {
+    let multi = |texts: &str, place: &str| -> String {
+        MultiChart::from_json(&format!(
+            r#"{{"margin": 10, "gap": 10, "texts": [{texts}],
+                "child_charts": [{{{DATA}{place}}}, {{{DATA}, "height": 200}}]}}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap()
+    };
+    // Where the children are: the x and the y of their pictures.
+    let children = |svg: &str| -> Vec<(f32, f32)> {
+        svg.split("<svg")
+            .skip(2)
+            .map(|tag| {
+                let head = &tag[..tag.find('>').unwrap()];
+                (number(head, "x"), number(head, "y"))
+            })
+            .collect()
+    };
+    let width = note_width();
+    let over = multi(r#"{"text": "note", "bottom": 6}"#, "");
+    let (wide, high) = size(&over);
+    assert_eq!((620.0, 630.0), (wide, high));
+    assert_eq!(vec![(10.0, 10.0), (10.0, 420.0)], children(&over));
+
+    for (place, (left, top, right, bottom)) in [
+        (r#""bottom": 6"#, (0.0, 0.0, 0.0, 18.0)),
+        (r#""top": 6"#, (0.0, 18.0, 0.0, 0.0)),
+        (r#""left": 8"#, (8.0 + width, 0.0, 0.0, 0.0)),
+        (r#""right": 8"#, (0.0, 0.0, 8.0 + width, 0.0)),
+    ] {
+        let text = format!(r#"{{"text": "note", {place}, "reserve": true}}"#);
+        // The picture is larger by the room, which is around its margin.
+        let svg = multi(&text, "");
+        assert_eq!(
+            (wide + left + right, high + top + bottom),
+            size(&svg),
+            "{place}"
+        );
+        assert_eq!(
+            vec![(10.0 + left, 10.0 + top), (10.0 + left, 420.0 + top)],
+            children(&svg),
+            "{place}"
+        );
+        // The text is placed on all of it, as it is without the room.
+        let tag = tag_of(&svg, "note");
+        if bottom > 0.0 {
+            assert_eq!(high + bottom - 12.0, number(tag, "y"), "{place}");
+        }
+        if right > 0.0 {
+            assert_eq!(wide + right - 8.0, number(tag, "x"), "{place}");
+        }
+        // A child placed by hand stays where it is put: the room at the
+        // top and at the left is for those that are not.
+        let placed = multi(&text, r#", "x": 3, "y": 2"#);
+        assert_eq!((3.0, 2.0), children(&placed)[0], "{place}");
+    }
+
+    // In Rust.
+    let mut multi = MultiChart::new();
+    multi.add(ChildChart::Bar(
+        BarChart::new(
+            vec![("s", vec![1.0, 2.0]).into()],
+            vec!["a".to_string(), "b".to_string()],
+        ),
+        None,
+    ));
+    let plain = size(&multi.svg().unwrap());
+    multi.texts = vec![TextConfig {
+        text: "mine".to_string(),
+        bottom: Some(6.0),
+        reserve: true,
+        ..Default::default()
+    }];
+    let svg = multi.svg().unwrap();
+    assert_eq!((plain.0, plain.1 + 18.0), size(&svg));
+    assert_eq!(plain.1 + 6.0, number(tag_of(&svg, "mine"), "y"));
+}
+
+#[test]
+fn room_for_texts_in_rust_and_in_a_theme() {
+    let series = || -> Vec<Series> { vec![("s", vec![1.0, 3.0, 2.0]).into()] };
+    let labels = || -> Vec<String> { vec!["a".into(), "b".into(), "c".into()] };
+    let note = |reserve: bool| TextConfig {
+        text: "note".to_string(),
+        bottom: Some(6.0),
+        reserve,
+        ..Default::default()
+    };
+    // The same in Rust as from JSON, and nothing where it is not asked for.
+    let from_json = BarChart::from_json(&format!(
+        r#"{{{DATA}, "texts": [{{"text": "note", "bottom": 6, "reserve": true}}]}}"#
+    ))
+    .unwrap();
+    assert_eq!(vec![note(true)], from_json.texts);
+    let mut chart = BarChart::new(series(), labels());
+    chart.texts = vec![note(true)];
+    assert_eq!(from_json.svg().unwrap(), chart.svg().unwrap());
+    let y = |svg: &str| number(tag_of(svg, "a"), "y");
+    let reserved = y(&chart.svg().unwrap());
+    chart.texts = vec![note(false)];
+    assert_eq!(reserved + 18.0, y(&chart.svg().unwrap()));
+    assert!(!TextConfig::default().reserve);
+
+    // The texts of a theme make room on every chart of it.
+    let mut theme = (*get_theme("light")).clone();
+    theme.texts = vec![note(true)];
+    add_theme("texts-reserve-test", theme);
+    let themed = BarChart::new_with_theme(series(), labels(), "texts-reserve-test");
+    assert_eq!(reserved, y(&themed.svg().unwrap()));
+    let table = |theme: &str| {
+        let data = vec![vec!["Name".to_string()], vec!["A".to_string()]];
+        size(&TableChart::new_with_theme(data, theme).svg().unwrap())
+    };
+    assert_eq!(table("light").1 + 18.0, table("texts-reserve-test").1);
+
+    // Numbers that are none make no room, and break nothing.
+    for text in [
+        TextConfig {
+            bottom: Some(f32::NAN),
+            ..note(true)
+        },
+        TextConfig {
+            bottom: Some(f32::INFINITY),
+            ..note(true)
+        },
+        TextConfig {
+            font: FontConfig {
+                size: f32::INFINITY,
+                ..Default::default()
+            },
+            ..note(true)
+        },
+        TextConfig {
+            text: String::new(),
+            bottom: Some(90.0),
+            ..note(true)
+        },
+    ] {
+        let mut chart = BarChart::new(series(), labels());
+        chart.texts = vec![text];
+        let svg = chart.svg().unwrap();
+        assert_eq!(reserved + 18.0, y(&svg));
+        assert!(!svg.contains("NaN") && !svg.contains("inf"));
+    }
+    // A turn that is none is no turn.
+    let mut chart = BarChart::new(series(), labels());
+    chart.texts = vec![TextConfig {
+        rotate: f32::NAN,
+        ..note(true)
+    }];
+    assert_eq!(reserved, y(&chart.svg().unwrap()));
+}
+
+#[test]
+fn room_for_more_than_there_is_breaks_no_chart() {
+    // More room than the chart has, at each edge and at all of them: what
+    // is left of the chart is nothing, and it is drawn as that.
+    let texts = [
+        r#"{"text": "far", "bottom": 5000, "reserve": true}"#.to_string(),
+        r#"{"text": "far", "top": 1e30, "reserve": true}"#.to_string(),
+        r#"{"text": "far", "left": 5000, "reserve": true}"#.to_string(),
+        r#"{"text": "far", "right": 1e30, "reserve": true}"#.to_string(),
+        r#"{"text": "large", "left": 0, "font_size": 4000, "reserve": true}"#.to_string(),
+        r#"{"text": "turned", "bottom": 0, "rotate": 1e30, "reserve": true}"#.to_string(),
+        ["top", "bottom", "left", "right"]
+            .map(|edge| format!(r#"{{"text": "all", "{edge}": 390, "reserve": true}}"#))
+            .join(", "),
+    ];
+    let mut drawn = 0;
+    macro_rules! chart {
+        ($name:literal, $chart:ty, $($json:expr),+) => {
+            $(for texts in texts.iter() {
+                let json = if $json.is_empty() {
+                    format!(r#"{{"title_text": "T", "texts": [{texts}]}}"#)
+                } else {
+                    format!(r#"{{{}, "title_text": "T", "texts": [{texts}]}}"#, $json)
+                };
+                if let Ok(svg) = <$chart>::from_json(&json).unwrap().svg() {
+                    assert!(!svg.contains("NaN") && !svg.contains("inf"), "{}: {texts}", $name);
+                    drawn += 1;
+                }
+            })+
+        };
+    }
+    every_chart!(chart);
+    assert!(drawn > 200, "{drawn}");
+    for texts in texts.iter() {
+        let svg = MultiChart::from_json(&format!(
+            r#"{{"texts": [{texts}], "child_charts": [{{{DATA}}}]}}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap();
+        assert!(!svg.contains("NaN") && !svg.contains("inf"), "{texts}");
+    }
 }

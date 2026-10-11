@@ -499,6 +499,7 @@ pub(crate) fn get_texts_from_value(
                     weight: get_string_from_value(item, "font_weight"),
                 },
                 rotate: get_f32_from_value(item, "rotate").unwrap_or_default(),
+                reserve: get_bool_from_value(item, "reserve").unwrap_or_default(),
             })
         })
         .collect();

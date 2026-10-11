@@ -255,8 +255,8 @@ asked for.
 ```json
 {
   "texts": [
-    { "text": "Source: web analytics", "left": 10, "bottom": 6 },
-    { "text": "© 2026 Example Inc.", "right": 10, "bottom": 6 },
+    { "text": "Source: web analytics", "left": 10, "bottom": 6, "reserve": true },
+    { "text": "© 2026 Example Inc.", "right": 10, "bottom": 6, "reserve": true },
     { "text": "DRAFT", "font_size": 72, "font_color": "#00000014", "font_weight": "bold", "rotate": -25 }
   ]
 }
@@ -270,8 +270,13 @@ asked for.
 - `font_size` (12 by default), `font_color` (that of the sub-title) and
   `font_weight` are its font, and `rotate` turns it by so many degrees. A
   watermark wants a color with an alpha, such as `"#00000014"`.
-- The texts are written last, over everything else; a chart leaves no room
-  for them, so give it a `margin` at the bottom for a line below the plot.
+- The texts are written last, over everything else, and a chart leaves no
+  room for them: a watermark is meant to be over the plot. A line that is to
+  be below the axis, or above the title, says `"reserve": true`, and the
+  chart is drawn in what is left: a text with a `top` or a `bottom` takes a
+  band across there, one with a `left` or a `right` only a band down that
+  side. A table, a calendar and a multi chart are larger by that room
+  instead.
 - In a `MultiChart` the `texts` at the top are over the whole picture, and
   those of a child over that child.
 - A theme can have `texts` too: register one with your copyright line and
@@ -289,6 +294,8 @@ chart.texts.push(TextConfig {
     text: "© 2026 Example Inc.".to_string(),
     right: Some(10.0),
     bottom: Some(6.0),
+    // below the axis, not over its labels
+    reserve: true,
     ..Default::default()
 });
 let svg = chart.svg().unwrap();

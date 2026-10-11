@@ -11,7 +11,7 @@
 // limitations under the License.
 
 use super::Canvas;
-use super::base::ChartBase;
+use super::base::{ChartBase, reserved_margin};
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -385,7 +385,9 @@ impl TableChart {
                 x: Some(x),
                 ..Default::default()
             });
-            title_height = b.outer_height() + sub_title_margin_bottom;
+            // Down to the bottom of the sub-title from the top of the
+            // table, which is below the room its texts reserve.
+            title_height = b.outer_height() - c.margin.top + sub_title_margin_bottom;
         }
         title_height
     }
@@ -417,6 +419,10 @@ impl TableChart {
         }
 
         let mut c = self.new_canvas();
+        // A table has no margin of its own: the room its texts reserve is
+        // all there is around it.
+        let reserved = reserved_margin(&self.texts, &self.font_family);
+        c.margin = reserved;
 
         if !self.title.text.is_empty() {
             let mut title_height = self.title.height;
@@ -430,7 +436,7 @@ impl TableChart {
                 fill: Some(self.background_color.into()),
                 left: 0.0,
                 top: 0.0,
-                width: self.width,
+                width: c.width(),
                 height: title_height,
                 ..Default::default()
             });
@@ -642,8 +648,23 @@ impl TableChart {
                 ..Default::default()
             });
         }
-        c.height = c.margin.top + top;
+        c.height = c.margin.top + top + reserved.bottom;
         let height = c.height;
+        // The reserved room is in the background of the table, below
+        // everything else: the rows have only filled what is theirs.
+        if reserved != Box::default() {
+            c.components.borrow_mut().insert(
+                0,
+                Component::Rect(Rect {
+                    fill: Some(self.background_color.into()),
+                    left: 0.0,
+                    top: 0.0,
+                    width: self.width,
+                    height,
+                    ..Default::default()
+                }),
+            );
+        }
 
         Ok((c.svg()?, height))
     }

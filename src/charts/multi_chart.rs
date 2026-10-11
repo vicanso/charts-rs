@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::base::overlay_texts;
+use super::base::{overlay_texts, reserved_margin};
 use super::canvas;
 use super::common::TextConfig;
 use super::component::Rect;
@@ -104,6 +104,9 @@ pub struct MultiChart {
     pub compact: bool,
     /// Texts written over the composed chart: a copyright line, a
     /// watermark. A child chart has `texts` of its own, over itself.
+    /// The room a text reserves is around the margin: the composition is
+    /// larger by it, and the children start inside of it — but for those
+    /// placed by hand, which stay where they are put.
     pub texts: Vec<TextConfig>,
     /// Font family of the texts; the default font where it is empty.
     pub font_family: String,
@@ -253,8 +256,16 @@ impl MultiChart {
         let mut arr = vec![];
         let mut y = 0.0;
         let mut x = 0.0;
-        let margin_top = self.margin.top;
-        let margin_left = self.margin.left;
+        let font_family = if self.font_family.is_empty() {
+            DEFAULT_FONT_FAMILY
+        } else {
+            &self.font_family
+        };
+        // The room the texts reserve is around the margin: the children
+        // that are not placed by hand start inside of it.
+        let reserved = reserved_margin(&self.texts, font_family);
+        let margin_top = self.margin.top + reserved.top;
+        let margin_left = self.margin.left + reserved.left;
         // Places a child chart on a local clone: an explicit position wins,
         // otherwise charts stack vertically with `gap` between them.
         macro_rules! place_child {
@@ -334,8 +345,8 @@ impl MultiChart {
             }
             arr.push(result.svg);
         }
-        x += self.margin.right;
-        y += self.margin.bottom;
+        x += self.margin.right + reserved.right;
+        y += self.margin.bottom + reserved.bottom;
 
         if let Some(background_color) = self.background_color {
             arr.insert(
@@ -353,11 +364,6 @@ impl MultiChart {
         }
 
         // The texts go over the children, placed on the whole picture.
-        let font_family = if self.font_family.is_empty() {
-            DEFAULT_FONT_FAMILY
-        } else {
-            &self.font_family
-        };
         let color = get_theme(&get_default_theme_name()).sub_title.font.color;
         for text in overlay_texts(&self.texts, font_family, color) {
             if let Some(text) = text.text(x, y) {

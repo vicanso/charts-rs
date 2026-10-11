@@ -647,6 +647,10 @@ pub struct SeriesLabelConfig {
 /// It is placed by its distances from the edges of the chart. With a `left`
 /// it starts there, with a `right` it ends there, and with neither it is
 /// centered; `top` and `bottom` do the same from above and from below.
+///
+/// A text is over the chart, and may be over a part of it. One that is to
+/// have room of its own, a line of sources below the axis, asks for it with
+/// `reserve`.
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 #[serde(default)]
 pub struct TextConfig {
@@ -669,6 +673,13 @@ pub struct TextConfig {
     /// Degrees the text is turned by, clockwise, about the point it is
     /// placed by: its start, its end or, centered, its middle.
     pub rotate: f32,
+    /// Makes room for the text at the edge it is placed from, instead of
+    /// writing it over the chart: the chart is drawn in what is left, its
+    /// margin inside of that. A text placed from the top or the bottom takes
+    /// a band across there, as far in as the text reaches; one placed from
+    /// the left or the right only, a band down that side. A text in the
+    /// middle has no edge to take room at, and stays over the chart.
+    pub reserve: bool,
 }
 
 /// The hover tooltips of a chart.

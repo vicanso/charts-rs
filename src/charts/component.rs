@@ -2395,15 +2395,19 @@ impl Axis {
                     total_measure_width *= name_rotate_rad.sin().abs();
                 }
                 // 位置不够
+                // An axis of no length has room for one label, not for a
+                // count of them that overflows.
                 if total_measure_width > axis_length {
-                    text_unit_count += (total_measure_width / axis_length).ceil() as usize;
+                    text_unit_count = text_unit_count
+                        .saturating_add((total_measure_width / axis_length).ceil() as usize);
                 }
             } else {
                 // Vertical axes: labels stack by their line height, so skip
                 // every n-th one when there are more than fit.
                 let total_height = self.data.len() as f32 * font_size * 1.2;
                 if total_height > axis_length {
-                    text_unit_count += (total_height / axis_length).ceil() as usize;
+                    text_unit_count = text_unit_count
+                        .saturating_add((total_height / axis_length).ceil() as usize);
                 }
             }
         }

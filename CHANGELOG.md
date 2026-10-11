@@ -10,6 +10,13 @@
   `bottom`; centered without them), has its font (`font_size`, `font_color`,
   `font_weight`) and can be turned (`rotate`). In Rust: `chart.texts`, a
   list of `TextConfig`.
+- A text is over the chart, and over a part of it where it is put on one. With
+  `"reserve": true` it has room of its own instead: the chart is drawn in
+  what is left, its margin inside of that, so that a line of sources below
+  the axis needs no `margin` worked out by hand. A text with a `top` or a
+  `bottom` takes a band across there, one with a `left` or a `right` only a
+  band down that side; a table, a calendar and a multi chart are larger by
+  the room.
 - A `MultiChart` has `texts` over the whole picture (and a `font_family` to
   write them in), and a `Theme` has `texts` that every chart of it carries.
 
@@ -23,6 +30,10 @@
   share it as before, and a legend with a top margin (`legend_margin`) stays
   where the margin puts it. Charts that had the overlap are drawn
   differently; no other chart changes.
+- A bar, line, horizontal bar, candlestick or histogram chart with no room
+  for a plot — margins that add up to the size of the chart, or a chart
+  smaller than its own axes — panicked, or drew bars of a negative size. It
+  is drawn without a plot now.
 
 ## 2.0.0
 

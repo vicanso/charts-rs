@@ -225,8 +225,8 @@ let series: Series = ("销售额", vec![Some(120.0), None, Some(101.0)]).into();
 ```json
 {
   "texts": [
-    { "text": "数据来源：网站统计", "left": 10, "bottom": 6 },
-    { "text": "© 2026 示例公司", "right": 10, "bottom": 6 },
+    { "text": "数据来源：网站统计", "left": 10, "bottom": 6, "reserve": true },
+    { "text": "© 2026 示例公司", "right": 10, "bottom": 6, "reserve": true },
     { "text": "草稿", "font_size": 72, "font_color": "#00000014", "font_weight": "bold", "rotate": -25 }
   ]
 }
@@ -234,7 +234,7 @@ let series: Series = ("销售额", vec![Some(120.0), None, Some(101.0)]).into();
 
 - 文字按它到图表各边的距离（像素）定位：给出 `left` 时从该处开始，给出 `right` 时在该处结束，两者都不给则水平居中；`top` 与 `bottom` 在垂直方向同理。四个都不给时位于正中央，适合放水印。
 - `font_size`（默认 12）、`font_color`（默认与副标题相同）、`font_weight` 设置字体，`rotate` 设置旋转角度。水印建议使用带透明度的颜色，例如 `"#00000014"`。
-- 文字最后绘制，位于其它内容之上。图表不会为它预留空间，所以想在图表下方放一行文字时，记得把底部的 `margin` 调大一些。
+- 文字最后绘制，位于其它内容之上，默认不占空间——水印本来就是要叠在图上的。想放在坐标轴下方或标题上方的一行文字，加上 `"reserve": true`，图表就会画在剩下的区域里：给了 `top` 或 `bottom` 的文字占用上方或下方的一条，只给了 `left` 或 `right` 的文字占用那一侧的一条。表格、日历图和组合图则是相应变大。
 - `MultiChart` 顶层的 `texts` 叠加在整张图上，子图表的 `texts` 叠加在该子图表上。
 - 主题也可以带 `texts`：注册一个带版权声明的主题，使用该主题的所有图表都会带上它。图表自己的 `texts` 会取代主题中的（`"texts": []` 表示不要）。
 
@@ -249,6 +249,8 @@ chart.texts.push(TextConfig {
     text: "© 2026 示例公司".to_string(),
     right: Some(10.0),
     bottom: Some(6.0),
+    // 放在坐标轴下方，而不是压在轴标签上
+    reserve: true,
     ..Default::default()
 });
 let svg = chart.svg().unwrap();

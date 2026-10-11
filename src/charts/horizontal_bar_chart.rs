@@ -284,11 +284,12 @@ impl HorizontalBarChart {
                 bottom: x_axis_height,
                 ..Default::default()
             });
-            let max_width = c1.width();
+            // None where the canvas has no room for a plot.
+            let max_width = c1.width().max(0.0);
             // Row count is the number of categories (the y-axis ticks use
             // `x_axis_data.len()`), not the first series' length: a short/empty
             // first series must not divide by zero or misplace every bar.
-            let unit_height = c1.height() / category_count as f32;
+            let unit_height = c1.height().max(0.0) / category_count as f32;
             let bar_chart_margin = 5.0_f32;
             let bar_chart_gap = 3.0_f32;
             let bar_chart_min_height = 1.0_f32;
@@ -510,8 +511,8 @@ impl HorizontalBarChart {
                 bottom: x_axis_height,
                 ..Default::default()
             });
-            let max_width = c1.width();
-            let max_height = c1.height();
+            let max_width = c1.width().max(0.0);
+            let max_height = c1.height().max(0.0);
             for (index, series) in self.series_list.iter().enumerate() {
                 if series.mark_lines.is_empty() && series.mark_areas.is_empty() {
                     continue;
