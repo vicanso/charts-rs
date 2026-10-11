@@ -15,6 +15,7 @@ use super::canvas;
 use super::color::*;
 use super::common::*;
 use super::component::*;
+use super::font::text_ellipsis;
 use super::params::*;
 use super::sunburst_chart::{SunburstData, parse_node};
 use super::theme::{get_default_theme_name, get_theme};
@@ -168,6 +169,69 @@ fn radial_curve(center: (f32, f32), from: (f32, f32), to: (f32, f32)) -> Vec<Poi
         .collect()
 }
 
+/// The name of a node of a tree around its root, as it is written: along
+/// the spoke of the node, from `at` the way of `along` and `length` far.
+struct SpokeName {
+    text: String,
+    at: Point,
+    along: (f32, f32),
+    length: f32,
+    turn: f32,
+    anchor: &'static str,
+}
+
+impl SpokeName {
+    /// The line through the middle of the name, `length` long.
+    fn line(&self, length: f32) -> (Point, Point) {
+        let end = Point {
+            x: self.at.x + self.along.0 * length,
+            y: self.at.y + self.along.1 * length,
+        };
+        (self.at, end)
+    }
+}
+
+/// How far apart two lines are, each from one point to another.
+fn line_distance(a: (Point, Point), b: (Point, Point)) -> f32 {
+    let sub = |p: Point, q: Point| (p.x - q.x, p.y - q.y);
+    let dot = |u: (f32, f32), v: (f32, f32)| u.0 * v.0 + u.1 * v.1;
+    let (d1, d2, between) = (sub(a.1, a.0), sub(b.1, b.0), sub(a.0, b.0));
+    let (len1, len2, f) = (dot(d1, d1), dot(d2, d2), dot(d2, between));
+    // The points of the two that are the nearest to each other: `s` of the
+    // way along the one, `t` of the way along the other.
+    let (s, t) = if len1 <= f32::EPSILON && len2 <= f32::EPSILON {
+        (0.0, 0.0)
+    } else if len1 <= f32::EPSILON {
+        (0.0, (f / len2).clamp(0.0, 1.0))
+    } else {
+        let c = dot(d1, between);
+        if len2 <= f32::EPSILON {
+            ((-c / len1).clamp(0.0, 1.0), 0.0)
+        } else {
+            let b = dot(d1, d2);
+            let denominator = len1 * len2 - b * b;
+            let s = if denominator > f32::EPSILON {
+                ((b * f - c * len2) / denominator).clamp(0.0, 1.0)
+            } else {
+                0.0
+            };
+            let t = (b * s + f) / len2;
+            if t < 0.0 {
+                ((-c / len1).clamp(0.0, 1.0), 0.0)
+            } else if t > 1.0 {
+                (((b - c) / len1).clamp(0.0, 1.0), 1.0)
+            } else {
+                (s, t)
+            }
+        }
+    };
+    let (p, q) = (
+        (a.0.x + d1.0 * s, a.0.y + d1.1 * s),
+        (b.0.x + d2.0 * t, b.0.y + d2.1 * t),
+    );
+    (p.0 - q.0).hypot(p.1 - q.1)
+}
+
 // ── TreeChart ────────────────────────────────────────────────────────────────
 
 /// A tree diagram of hierarchical data as linked nodes.
@@ -189,7 +253,11 @@ pub struct TreeChart {
     pub symbol_size: f32,
     /// `"orthogonal"` (the default) lays the levels out side by side, by
     /// `orient`; `"radial"` puts the root in the middle and every level on
-    /// a circle around it.
+    /// a circle around it. Around the root a name is cut with an ellipsis
+    /// where there is no room for it — before a node, before another name
+    /// and at the edge of the chart — and left out where there is room for
+    /// no two letters of it; the tooltips (`tooltip.show`) have the names
+    /// in full.
     pub layout: Option<String>,
     /// Shape of the links: `"curve"` (the default) or `"polyline"`, with
     /// square corners.
@@ -379,13 +447,24 @@ impl TreeChart {
         let center = (cw / 2.0, ch / 2.0);
         let roots = nodes.iter().filter(|n| n.depth == 0).count();
         let polar: Vec<(f32, f32)> = if radial {
-            let outer = (cw.min(ch) / 2.0 - leaf_label - gap - r).max(10.0);
             // Several roots share a ring of their own around the middle.
             let (inner, levels) = if roots > 1 {
                 (1.0, depth_span + 1.0)
             } else {
                 (0.0, depth_span)
             };
+            // The ring of the leaves is as far out as their names leave room
+            // for. Where that is too little for a tree to be read, it is the
+            // names that give way and are cut: the levels are a node and a
+            // gap apart at the least, and the leaves a line of text, as far
+            // as that leaves room for a name of a few letters.
+            let half = cw.min(ch) / 2.0;
+            let wanted = (levels * (2.0 * r + gap))
+                .max(num_leaves * font_size / std::f32::consts::TAU - gap);
+            let most = half - gap - r - 3.0 * font_size;
+            let outer = (half - leaf_label - gap - r)
+                .max(wanted.min(most))
+                .max(10.0);
             nodes
                 .iter()
                 .map(|n| {
@@ -501,17 +580,201 @@ impl TreeChart {
         }
 
         // ── Labels ────────────────────────────────────────────────────────────
+        // Around the root the names run along the spokes. Each has its place
+        // there, and is cut with an ellipsis where it would go on over a
+        // node, over a name that is written or off the chart: the names of
+        // the leaves first, those nearer to the root giving way to them.
+        let mut middle_name: Option<String> = None;
+        let spoke_names: Vec<Option<SpokeName>> = if radial {
+            let mut names: Vec<Option<(SpokeName, bool)>> = nodes
+                .iter()
+                .enumerate()
+                .map(|(i, n)| {
+                    let (angle, radius) = polar[i];
+                    // The node in the very middle has its name above it.
+                    if n.label.is_empty() || radius <= 0.0 {
+                        return None;
+                    }
+                    // Along the spoke of the node, upright: on its outside, or
+                    // (a node with children) towards the middle where there is
+                    // room for its name before the ring of its parent.
+                    let parent_radius = n.parent.map(|p| polar[p].1).unwrap_or(0.0);
+                    let length = measure(&n.label);
+                    let needed = length + 2.0 * gap + r;
+                    // The name of the node in the very middle is above it: the
+                    // spokes that point up stay clear of it.
+                    let below_name = parent_radius <= 0.0 && angle.to_radians().cos() > 0.0;
+                    let clear = if below_name { font_size + gap } else { 0.0 };
+                    let inwards = !n.is_leaf && radius - parent_radius >= needed + clear;
+                    let out = if inwards { -gap } else { gap };
+                    let at = get_pie_point(center.0, center.1, radius + out, angle);
+                    let right = angle.rem_euclid(360.0) < 180.0;
+                    let (sin, cos) = angle.to_radians().sin_cos();
+                    // A child on the spoke itself, and no room for the name
+                    // before it: the name goes beside the spoke, on the side
+                    // the child is not, rather than over it.
+                    let blocking = nodes
+                        .iter()
+                        .enumerate()
+                        .filter(|(child, c)| {
+                            c.parent == Some(i) && polar[*child].1 - radius < needed
+                        })
+                        .map(|(child, _)| (polar[child].0 - angle).to_radians() * polar[child].1)
+                        .find(|across| across.abs() < font_size * 0.5);
+                    let at = match blocking {
+                        Some(across) if !inwards => {
+                            let aside = if across > 0.0 { -1.0 } else { 1.0 } * (font_size + 2.0);
+                            Point {
+                                x: at.x + aside * cos,
+                                y: at.y + aside * sin,
+                            }
+                        }
+                        _ => at,
+                    };
+                    let (turn, anchor) = match (right, !inwards) {
+                        (true, true) => (angle - 90.0, "start"),
+                        (true, false) => (angle - 90.0, "end"),
+                        (false, true) => (angle + 90.0, "end"),
+                        (false, false) => (angle + 90.0, "start"),
+                    };
+                    let way = if inwards { -1.0 } else { 1.0 };
+                    let name = SpokeName {
+                        text: n.label.clone(),
+                        at,
+                        along: (sin * way, -cos * way),
+                        length,
+                        turn,
+                        anchor,
+                    };
+                    Some((name, inwards))
+                })
+                .collect();
+            // What a name is kept clear of, each a line and how far from
+            // it: the nodes, from which it is as far as they are large and
+            // it is high, and the names that are written, from which it is
+            // a line of text. A name is about four fifths of its font high.
+            let height = font_size * 0.8;
+            let mut obstacles: Vec<(usize, (Point, Point), f32)> = positions
+                .iter()
+                .enumerate()
+                .map(|(i, (x, y))| {
+                    let at = Point { x: *x, y: *y };
+                    (i, (at, at), r + height / 2.0)
+                })
+                .collect();
+            // How far a name of node `i` reaches before the first of them,
+            // `room` at the most: `line` is the line of the name that far.
+            let reach = |obstacles: &[(usize, (Point, Point), f32)],
+                         i: usize,
+                         room: f32,
+                         line: &dyn Fn(f32) -> (Point, Point)| {
+                let mut room = room.max(0.0);
+                for (of, obstacle, apart) in obstacles.iter() {
+                    let near = |length: f32| line_distance(line(length), *obstacle) < *apart;
+                    if *of == i || !near(room) {
+                        continue;
+                    }
+                    let (mut clear, mut over) = (0.0, room);
+                    for _ in 0..12 {
+                        let middle = (clear + over) / 2.0;
+                        if near(middle) {
+                            over = middle;
+                        } else {
+                            clear = middle;
+                        }
+                    }
+                    // Not clear of it from its first letter: not written.
+                    room = if near(0.0) { 0.0 } else { clear };
+                }
+                room
+            };
+            // What is left of a name with that much room: with an ellipsis,
+            // and nothing where that leaves no two letters of it.
+            let cut = |text: &str, length: f32, room: f32| -> Option<String> {
+                if room >= length {
+                    return Some(text.to_string());
+                }
+                let cut = text_ellipsis(&self.font_family, font_size, text, room);
+                (room > 0.0 && cut.chars().count() > 2).then_some(cut)
+            };
+
+            // The name above the node in the very middle comes first: both
+            // of its ends give way alike, to the nodes around it.
+            if let Some((i, n)) = nodes
+                .iter()
+                .enumerate()
+                .find(|(i, n)| polar[*i].1 <= 0.0 && !n.label.is_empty())
+            {
+                let (x, y) = positions[i];
+                let y = y - gap - font_size * 0.5;
+                let line = |half: f32| (Point { x: x - half, y }, Point { x: x + half, y });
+                let full = measure(&n.label) / 2.0;
+                let half = reach(&obstacles, i, full.min(x).min(cw - x), &line);
+                middle_name = cut(&n.label, full * 2.0, half * 2.0);
+                if let Some(text) = &middle_name {
+                    obstacles.push((i, line(measure(text) / 2.0), height));
+                }
+            }
+            // The names towards the middle have been given the room they
+            // need, and are written wherever the others go.
+            obstacles.extend(names.iter().enumerate().filter_map(|(i, name)| {
+                let (name, inwards) = name.as_ref()?;
+                inwards.then(|| (i, name.line(name.length), height))
+            }));
+            // Then the names of the leaves, from the outermost ones on, and
+            // after them those of the nodes they hang from.
+            let mut order: Vec<usize> = (0..nodes.len())
+                .filter(|i| matches!(names[*i], Some((_, false))))
+                .collect();
+            order.sort_by_key(|i| (!nodes[*i].is_leaf, std::cmp::Reverse(nodes[*i].depth)));
+            for i in order {
+                let Some((name, _)) = names[i].as_mut() else {
+                    continue;
+                };
+                // As far as the edge of the chart, and as far as it is clear
+                // of everything else.
+                let mut room = name.length;
+                for (from, way, size) in
+                    [(name.at.x, name.along.0, cw), (name.at.y, name.along.1, ch)]
+                {
+                    if way > 0.0 {
+                        room = room.min((size - from) / way);
+                    } else if way < 0.0 {
+                        room = room.min(-from / way);
+                    }
+                }
+                let room = reach(&obstacles, i, room, &|length| name.line(length));
+                match cut(&name.text, name.length, room) {
+                    Some(text) => {
+                        if text != name.text {
+                            name.length = measure(&text);
+                            name.text = text;
+                        }
+                        obstacles.push((i, name.line(name.length), height));
+                    }
+                    None => names[i] = None,
+                }
+            }
+            names
+                .into_iter()
+                .map(|name| name.map(|(name, _)| name))
+                .collect()
+        } else {
+            vec![]
+        };
         for (i, n) in nodes.iter().enumerate() {
             if n.label.is_empty() {
                 continue;
             }
             let (x, y) = positions[i];
             if radial {
-                let (angle, radius) = polar[i];
                 // The node in the very middle: its name above it.
-                if radius <= 0.0 {
+                if polar[i].1 <= 0.0 {
+                    let Some(text) = middle_name.clone() else {
+                        continue;
+                    };
                     content.text(Text {
-                        text: n.label.clone(),
+                        text,
                         font_family: Some(self.font_family.clone()),
                         font_color: Some(self.series.label.font.color),
                         font_size: Some(font_size),
@@ -524,60 +787,24 @@ impl TreeChart {
                     });
                     continue;
                 }
-                // Along the spoke of the node, upright: on its outside, or
-                // (a node with children) towards the middle where there is
-                // room for its name before the ring of its parent.
-                let parent_radius = n.parent.map(|p| polar[p].1).unwrap_or(0.0);
-                let needed = measure(&n.label) + 2.0 * gap + r;
-                // The name of the node in the very middle is above it: the
-                // spokes that point up stay clear of it.
-                let below_name = parent_radius <= 0.0 && angle.to_radians().cos() > 0.0;
-                let clear = if below_name { font_size + gap } else { 0.0 };
-                let inwards = !n.is_leaf && radius - parent_radius >= needed + clear;
-                let out = if inwards { -gap } else { gap };
-                let at = get_pie_point(center.0, center.1, radius + out, angle);
-                let right = angle.rem_euclid(360.0) < 180.0;
-                // A child on the spoke itself, and no room for the name
-                // before it: the name goes beside the spoke, on the side
-                // the child is not, rather than over it.
-                let blocking = nodes
-                    .iter()
-                    .enumerate()
-                    .filter(|(child, c)| c.parent == Some(i) && polar[*child].1 - radius < needed)
-                    .map(|(child, _)| (polar[child].0 - angle).to_radians() * polar[child].1)
-                    .find(|across| across.abs() < font_size * 0.5);
-                let at = match blocking {
-                    Some(across) if !inwards => {
-                        let aside = if across > 0.0 { -1.0 } else { 1.0 } * (font_size + 2.0);
-                        let (sin, cos) = angle.to_radians().sin_cos();
-                        Point {
-                            x: at.x + aside * cos,
-                            y: at.y + aside * sin,
-                        }
-                    }
-                    _ => at,
-                };
-                let (turn, anchor) = match (right, !inwards) {
-                    (true, true) => (angle - 90.0, "start"),
-                    (true, false) => (angle - 90.0, "end"),
-                    (false, true) => (angle + 90.0, "end"),
-                    (false, false) => (angle + 90.0, "start"),
+                let Some(name) = &spoke_names[i] else {
+                    continue;
                 };
                 content.text(Text {
-                    text: n.label.clone(),
+                    text: name.text.clone(),
                     font_family: Some(self.font_family.clone()),
                     font_color: Some(self.series.label.font.color),
                     font_size: Some(font_size),
                     font_weight: self.series.label.font.weight.clone(),
-                    x: Some(at.x),
-                    y: Some(at.y),
+                    x: Some(name.at.x),
+                    y: Some(name.at.y),
                     transform: Some(format!(
                         "rotate({} {} {})",
-                        format_float(turn),
-                        format_float(at.x + content.margin.left),
-                        format_float(at.y + content.margin.top)
+                        format_float(name.turn),
+                        format_float(name.at.x + content.margin.left),
+                        format_float(name.at.y + content.margin.top)
                     )),
-                    text_anchor: Some(anchor.to_string()),
+                    text_anchor: Some(name.anchor.to_string()),
                     dominant_baseline: Some("central".to_string()),
                     ..Default::default()
                 });
@@ -620,7 +847,8 @@ impl TreeChart {
 
 #[cfg(test)]
 mod tests {
-    use super::{TreeChart, TreeData};
+    use super::{TreeChart, TreeData, line_distance};
+    use crate::Point;
 
     fn leaf(name: &str, value: f32) -> TreeData {
         TreeData {
@@ -682,6 +910,35 @@ mod tests {
         // Root total = 1 + 1 + 2 = 4; leaf A1 = 1.
         assert!(svg.contains("root: 4"), "missing formatted root label");
         assert!(svg.contains("A1: 1"), "missing formatted leaf label");
+    }
+
+    #[test]
+    fn lines_are_as_far_apart_as_their_nearest_points() {
+        let line = |a: (f32, f32), b: (f32, f32)| -> (Point, Point) { (a.into(), b.into()) };
+        let apart = |a, b| {
+            let distance = line_distance(a, b);
+            // Whichever of the two is asked about first.
+            assert!((distance - line_distance(b, a)).abs() < 1e-4);
+            distance
+        };
+        let across = line((0.0, 0.0), (10.0, 0.0));
+        // Crossing, and touching at an end.
+        assert_eq!(0.0, apart(across, line((5.0, -5.0), (5.0, 5.0))));
+        assert_eq!(0.0, apart(across, line((10.0, 0.0), (10.0, 5.0))));
+        // Side by side, and one after the other on the same line.
+        assert_eq!(3.0, apart(across, line((2.0, 3.0), (8.0, 3.0))));
+        assert_eq!(3.0, apart(across, line((-20.0, 3.0), (30.0, 3.0))));
+        assert_eq!(4.0, apart(across, line((14.0, 0.0), (20.0, 0.0))));
+        // From the end of the one to the end of the other, and to its side.
+        assert_eq!(5.0, apart(across, line((13.0, 4.0), (20.0, 9.0))));
+        assert_eq!(2.0, apart(across, line((5.0, 2.0), (5.0, 9.0))));
+        // A point is a line of no length: a node, and a name not yet begun.
+        assert_eq!(5.0, apart(across, line((13.0, 4.0), (13.0, 4.0))));
+        assert_eq!(7.0, apart(across, line((4.0, -7.0), (4.0, -7.0))));
+        assert_eq!(
+            5.0,
+            apart(line((0.0, 0.0), (0.0, 0.0)), line((3.0, 4.0), (3.0, 4.0)))
+        );
     }
 
     #[test]

@@ -40,6 +40,15 @@
   had no font at all and were left to the viewer, which wrote them in its
   own — black, on a dark theme as well. A scatter chart with `tooltip_show`
   is written differently; without it, nothing changes.
+- A tree around its root (`"layout": "radial"`) on a small chart was a knot
+  of nodes ten pixels across, under names written over each other: the
+  names had all the room they wanted, and the tree what they left. Now the
+  tree is as large as it has to be to be read — its levels a node and a gap
+  apart, its leaves a line of text — and the names give way: one is cut
+  with an ellipsis before it would be written over a node, over another
+  name or off the chart, and left out where no two letters of it fit. The
+  names of the leaves come first. With `tooltip_show` the tooltips have
+  every name in full. A tree with room for its names is drawn as before.
 
 ## 2.0.0
 

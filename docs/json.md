@@ -940,7 +940,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `series_data` | object[] |  | The roots of the hierarchy; several roots are laid out side by side. |
 | `orient` | `"LR"` / `"RL"` / `"TB"` / `"BT"` | `"LR"` | Where the root is, and which way the tree grows: root on the left (`LR`), on the right (`RL`), at the top (`TB`) or at the bottom (`BT`). |
 | `symbol_size` | number | `6` | Radius of the node circles in pixels. |
-| `layout` | `"orthogonal"` / `"radial"` | `"orthogonal"` | `orthogonal` lays the levels out side by side, by `orient`; `radial` puts the root in the middle and every level on a circle around it. |
+| `layout` | `"orthogonal"` / `"radial"` | `"orthogonal"` | `orthogonal` lays the levels out side by side, by `orient`; `radial` puts the root in the middle and every level on a circle around it. Around the root the names run along the spokes, and a small chart has no room for all of them: a name is cut with an ellipsis before it would be written over a node, over another name or off the chart, and left out where no two letters of it fit. The names of the leaves come first, and those of the nodes they hang from give way to them. With `tooltip_show` every node has its name in full in its tooltip. |
 | `edge_shape` | `"curve"` / `"polyline"` | `"curve"` | Shape of the links: curves, or lines with square corners (straight lines in a radial tree). |
 
 ### `series_data[]`

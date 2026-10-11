@@ -940,7 +940,7 @@
 | `series_data` | 对象数组 |  | 层级结构的根节点；多个根节点并排布局。 |
 | `orient` | `"LR"` / `"RL"` / `"TB"` / `"BT"` | `"LR"` | 根节点的位置和树的生长方向：根在左侧（`LR`）、右侧（`RL`）、顶部（`TB`）或底部（`BT`）。 |
 | `symbol_size` | 数字 | `6` | 节点圆的半径（像素）。 |
-| `layout` | `"orthogonal"` / `"radial"` | `"orthogonal"` | `orthogonal` 按 `orient` 把各层并排布局；`radial` 把根节点放在中心，每一层排在围绕它的一个圆上。 |
+| `layout` | `"orthogonal"` / `"radial"` | `"orthogonal"` | `orthogonal` 按 `orient` 把各层并排布局；`radial` 把根节点放在中心，每一层排在围绕它的一个圆上。径向布局的名称沿辐条方向书写，画布较小时放不下全部名称：名称在会压到节点、其它名称或超出图表之前截断并加省略号，连两个字符都放不下时不显示。叶子节点的名称优先，上层节点的名称为其让位。开启 `tooltip_show` 后，每个节点的完整名称都在它的悬停提示里。 |
 | `edge_shape` | `"curve"` / `"polyline"` | `"curve"` | 连线的形状：曲线，或直角折线（径向布局下为直线）。 |
 
 ### `series_data[]`
