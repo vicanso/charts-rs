@@ -34,6 +34,12 @@
   for a plot — margins that add up to the size of the chart, or a chart
   smaller than its own axes — panicked, or drew bars of a negative size. It
   is drawn without a plot now.
+- The tooltips of a scatter chart are written as those of every other chart:
+  in the font of the chart, as large as the data labels and in their color,
+  where `tooltip_font_size` and `tooltip_font_color` say nothing else. They
+  had no font at all and were left to the viewer, which wrote them in its
+  own — black, on a dark theme as well. A scatter chart with `tooltip_show`
+  is written differently; without it, nothing changes.
 
 ## 2.0.0
 

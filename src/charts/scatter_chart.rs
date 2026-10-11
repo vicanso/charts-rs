@@ -312,12 +312,12 @@ fn render_scatter_symbol(
     cy: f32,
     r: f32,
     color: Color,
-    title: Option<String>,
-    tip_font: &FontConfig,
+    tip: Option<Text>,
     dataset: Vec<(String, String)>,
 ) {
     // When a tooltip is present the symbol is the hover trigger; a hidden
     // `.ct-tip` label is drawn right after it (adjacent-sibling reveal).
+    let title = tip.as_ref().map(|tip| tip.text.clone());
     let class = title.as_ref().map(|_| "ct-trigger".to_string());
     match symbol {
         Symbol::Circle(_, fill_override) => {
@@ -376,19 +376,14 @@ fn render_scatter_symbol(
         }
         Symbol::None => return,
     }
-    if let Some(text) = title {
-        // What the font of the tooltips leaves unset is left to the viewer.
+    if let Some(tip) = tip {
         canvas.text_unmeasured(Text {
-            text,
             class: Some("ct-tip".to_string()),
-            font_size: (tip_font.size > 0.0).then_some(tip_font.size),
-            font_color: (!tip_font.color.is_zero()).then_some(tip_font.color),
-            font_weight: tip_font.weight.clone(),
             x: Some(cx),
             y: Some(cy),
             dy: Some(-8.0),
             text_anchor: Some("middle".to_string()),
-            ..Default::default()
+            ..tip
         });
     }
 }
@@ -727,8 +722,11 @@ impl ScatterChart {
                     );
                     render_error_bar(&mut content_canvas, cx, ends, 4.0, stroke);
                 }
-                let title = if self.tooltip.show {
-                    Some(match bubble_size {
+                // Written as the tooltips of the other charts are: in the
+                // font of the chart, as large as the labels and in their
+                // color where the tooltips have neither of their own.
+                let tip = self.tooltip.show.then(|| Text {
+                    text: match bubble_size {
                         Some(v) => format!(
                             "{}: ({}, {}, {})",
                             series.name,
@@ -742,10 +740,13 @@ impl ScatterChart {
                             format_float(x_value),
                             format_float(y_value)
                         ),
-                    })
-                } else {
-                    None
-                };
+                    },
+                    font_family: Some(self.font_family.clone()),
+                    font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
+                    font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                    font_weight: self.tooltip.font.weight.clone(),
+                    ..Default::default()
+                });
                 let mut dataset = vec![
                     ("series".to_string(), series.name.clone()),
                     ("x".to_string(), format_float(x_value)),
@@ -765,8 +766,7 @@ impl ScatterChart {
                     cy,
                     radius,
                     color,
-                    title,
-                    &self.tooltip.font,
+                    tip,
                     dataset,
                 );
             }

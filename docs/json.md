@@ -150,8 +150,8 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `tooltip_show` | boolean | `false` | Gives every data shape a tooltip that shows on hover (plain CSS, no script), and a `<title>` for assistive tools. Not available in calendar, gauge, parallel, radar and theme river charts. |
-| `tooltip_font_size` | number |  | Font size of the tooltips. Default: that of the data labels (`series_label_font_size`); a scatter chart leaves it to the viewer. |
-| `tooltip_font_color` | color |  | Font color of the tooltips. Default: that of the data labels (`series_label_font_color`); a scatter chart leaves it to the viewer. |
+| `tooltip_font_size` | number |  | Font size of the tooltips. Default: that of the data labels (`series_label_font_size`). |
+| `tooltip_font_color` | color |  | Font color of the tooltips. Default: that of the data labels (`series_label_font_color`). |
 | `tooltip_font_weight` | string |  | Font weight of the tooltips, e.g. `"bold"`. None by default. |
 | `texts` | object[] |  | Texts written over the chart, each wherever it is asked for: a copyright line, a watermark. See [`texts[]`](#texts). A theme may have texts as well; these stand in for them. |
 | `animation` | object |  | Animates the chart as it appears; `{}` uses the defaults. Supported by the bar, horizontal bar, line, pie, funnel, sunburst, treemap, sankey, histogram, polar bar and chord charts. |

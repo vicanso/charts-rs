@@ -692,8 +692,7 @@ pub struct TooltipConfig {
     /// and theme river charts. Default: false; output is unchanged when off.
     pub show: bool,
     /// Font of the tooltips. A size of 0 and a color of nothing are those of
-    /// the data labels (a scatter chart writes neither, and leaves them to
-    /// the viewer); without a weight the tooltips have none.
+    /// the data labels; without a weight the tooltips have none.
     pub font: FontConfig,
 }
 

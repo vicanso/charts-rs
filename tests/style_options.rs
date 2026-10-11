@@ -275,13 +275,56 @@ fn tooltips_have_a_font_of_their_own() {
             );
         }
     }
-    // A scatter chart leaves the font of its tooltips to the viewer until
-    // it is given one.
-    let scatter = ScatterChart::from_json(&json(r#", "tooltip_show": true"#))
-        .unwrap()
-        .svg()
-        .unwrap();
-    assert!(tips(&scatter).iter().all(|tip| !tip.contains("font-size")));
+    // Without one of their own they are written as the labels are, in the
+    // font of the chart: those of a scatter chart as those of the others,
+    // and in the color of the theme, which is a light one on a dark theme.
+    for (theme, color) in [("light", "#464646"), ("dark", "#EEEEEE")] {
+        let options = format!(r#", "tooltip_show": true, "theme": "{theme}""#);
+        let scatter = ScatterChart::from_json(&json(&options))
+            .unwrap()
+            .svg()
+            .unwrap();
+        let line = LineChart::from_json(&json(&options))
+            .unwrap()
+            .svg()
+            .unwrap();
+        let font = |tip: &str| -> Vec<String> {
+            ["font-family", "font-size", "fill", "font-weight"]
+                .iter()
+                .filter_map(|name| {
+                    let start = tip.find(&format!(" {name}=\""))?;
+                    let end = start + name.len() + 3;
+                    Some(tip[start..end + tip[end..].find('"')?].to_string())
+                })
+                .collect()
+        };
+        let expected = vec![
+            " font-family=\"Roboto".to_string(),
+            " font-size=\"14".to_string(),
+            format!(" fill=\"{color}"),
+        ];
+        for svg in [&scatter, &line] {
+            let tips = tips(svg);
+            assert!(!tips.is_empty(), "{theme}");
+            for tip in tips {
+                assert_eq!(expected, font(&tip), "{theme}: {tip}");
+            }
+        }
+    }
+    // The size of the labels is the size of the tooltips of a scatter chart.
+    let scatter = ScatterChart::from_json(&json(
+        r##", "tooltip_show": true, "series_label_font_size": 11,
+            "series_label_font_color": "#123456""##,
+    ))
+    .unwrap()
+    .svg()
+    .unwrap();
+    for tip in tips(&scatter) {
+        assert!(
+            tip.contains("font-size=\"11\"") && tip.contains("fill=\"#123456\""),
+            "{tip}"
+        );
+    }
 
     // Only the size, in Rust: the color stays that of the labels.
     let mut chart = BarChart::from_json(&json(r#", "tooltip_show": true"#)).unwrap();
