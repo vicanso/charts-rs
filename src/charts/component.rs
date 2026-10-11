@@ -2225,6 +2225,12 @@ pub struct Axis {
     pub tick_positions: Option<Vec<f32>>,
     /// Stroke width of the axis line and the ticks.
     pub stroke_width: f32,
+    /// The left and the right edge the labels of a horizontal axis are kept
+    /// between: one that would be written beyond an edge, as the label of a
+    /// tick at the end of the axis is where there is no margin for half of
+    /// it, is moved in to the edge. A canvas keeps the labels of its axes
+    /// within itself; an axis on its own has no edges (`None`).
+    pub label_bounds: Option<(f32, f32)>,
 }
 impl Default for Axis {
     fn default() -> Self {
@@ -2251,9 +2257,14 @@ impl Default for Axis {
             label_overflow: AxisLabelOverflow::Thin,
             tick_positions: None,
             stroke_width: 1.0,
+            label_bounds: None,
         }
     }
 }
+
+/// The least there is between two labels of an axis where one of them was
+/// moved in from the edge of the chart.
+const AXIS_LABEL_GAP: f32 = 2.0;
 
 /// A `<line>` with only its end points, for use inside a stroked `<g>`.
 fn bare_line((left, top, right, bottom): (f32, f32, f32, f32)) -> String {
@@ -2497,6 +2508,9 @@ impl Axis {
                 data_len -= 1;
             }
             let unit = axis_length / data_len.max(1) as f32;
+            // Where the last label ends, and whether it was moved in from
+            // an edge to be there.
+            let mut written: Option<(f32, bool)> = None;
 
             for index in 0..self.data.len() {
                 if index % text_unit_count != 0 {
@@ -2545,6 +2559,30 @@ impl Axis {
                 // of the axis; keep it inside.
                 if explicit.is_some() && is_horizontal {
                     values.0 = values.0.min(left + width - text_width).max(left);
+                }
+                // The label of a tick at an end of the axis is half beyond
+                // it, and off the chart where there is no margin for that:
+                // it is moved in rather than cut. Where that is over the
+                // label next to it, the one further in is the one left out.
+                if let Some((min, max)) = self.label_bounds
+                    && is_horizontal
+                    && name_rotate_rad == 0.0
+                {
+                    let inside = values.0.min(max - text_width).max(min);
+                    let moved = inside != values.0;
+                    values.0 = inside;
+                    if let Some((end, before)) = written
+                        && (moved || before)
+                        && inside < end + AXIS_LABEL_GAP
+                    {
+                        // The first label keeps its place at the start; the
+                        // last one takes that of the label before it.
+                        if before || text_data.is_empty() {
+                            continue;
+                        }
+                        text_data.pop();
+                    }
+                    written = Some((inside + text_width, moved));
                 }
                 let mut transform = None;
                 let mut x = Some(values.0);

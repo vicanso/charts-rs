@@ -430,6 +430,8 @@ impl Canvas {
         let mut c = axis;
         c.left += self.margin.left;
         c.top += self.margin.top;
+        // The labels of the axis are kept on the canvas.
+        c.label_bounds.get_or_insert((0.0, self.width));
         let b = Box {
             left: c.left,
             top: c.top,

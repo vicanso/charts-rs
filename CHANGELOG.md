@@ -19,6 +19,9 @@
   the room.
 - A `MultiChart` has `texts` over the whole picture (and a `font_family` to
   write them in), and a `Theme` has `texts` that every chart of it carries.
+- `Axis` has `label_bounds`, the edges its labels are kept between (see
+  Fixed). A `Canvas` sets them to its own; a struct literal of an `Axis`
+  needs `..Default::default()`.
 
 ### Fixed
 
@@ -49,6 +52,16 @@
   name or off the chart, and left out where no two letters of it fit. The
   names of the leaves come first. With `tooltip_show` the tooltips have
   every name in full. A tree with room for its names is drawn as before.
+- The label of a tick at the end of a horizontal axis is no longer cut by
+  the edge of the chart. Half of it is beyond the axis, and with the default
+  margin of 5 pixels most of that half was off the chart: the last label of
+  the value axis of a horizontal bar or a scatter chart read `1.6` for
+  `1.6G`, and those at both ends of a category axis without a gap
+  (`x_boundary_gap: false`) lost their first and last letters. Such a label
+  is moved in to the edge now; where that brings it over the label next to
+  it, the one further in is left out. Charts whose labels were cut are
+  written differently — only the `x` of those labels — and no other chart
+  changes; turned labels and those of the axes at the sides are as before.
 
 ## 2.0.0
 
