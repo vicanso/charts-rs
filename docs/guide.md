@@ -11,7 +11,8 @@ a word of explanation, fonts and output. Every JSON key is listed in the
   [from JSON](#from-json), [the same options on both paths](#options-in-rust-and-in-json)
 - [Output](#output): [images](#images), [compact SVG](#compact-svg)
 - [Data and labels](#data-and-labels): [null points](#null-data-points),
-  [label formatters](#label-formatters), [overlapping labels](#overlapping-data-labels)
+  [label formatters](#label-formatters), [overlapping labels](#overlapping-data-labels),
+  [copyright lines and watermarks](#copyright-lines-and-watermarks)
 - [Axes](#axes): [value and time x axes](#value-and-time-x-axes), [titles](#axis-titles)
 - [Charts](#charts): [band around a line](#band-around-a-line),
   [bubble](#bubble-chart), [histogram](#histogram), [polar bar](#polar-bar-chart),
@@ -241,6 +242,57 @@ Formatters are supported in `series_label_formatter`, `axis_formatter`, and `val
 
 `"series_label_hide_overlap": true` drops a data label that would be printed
 over another one.
+
+### Copyright lines and watermarks
+
+Every chart takes `texts`: lines of text written over it, wherever they are
+asked for.
+
+<p align="center">
+  <img src="../asset/image/texts.png" width="60%" alt="A chart with a source, a copyright line and a watermark">
+</p>
+
+```json
+{
+  "texts": [
+    { "text": "Source: web analytics", "left": 10, "bottom": 6 },
+    { "text": "© 2026 Example Inc.", "right": 10, "bottom": 6 },
+    { "text": "DRAFT", "font_size": 72, "font_color": "#00000014", "font_weight": "bold", "rotate": -25 }
+  ]
+}
+```
+
+- A text is placed by its distances from the edges of the chart, in pixels:
+  with a `left` it starts there, with a `right` it ends there, and with
+  neither it is centered; `top` and `bottom` do the same from above and from
+  below. Without any of them it is in the very middle, where a watermark
+  goes.
+- `font_size` (12 by default), `font_color` (that of the sub-title) and
+  `font_weight` are its font, and `rotate` turns it by so many degrees. A
+  watermark wants a color with an alpha, such as `"#00000014"`.
+- The texts are written last, over everything else; a chart leaves no room
+  for them, so give it a `margin` at the bottom for a line below the plot.
+- In a `MultiChart` the `texts` at the top are over the whole picture, and
+  those of a child over that child.
+- A theme can have `texts` too: register one with your copyright line and
+  every chart of that theme carries it. The `texts` of a chart stand in for
+  those of its theme (`"texts": []` for none).
+
+```rust
+use charts_rs::{BarChart, TextConfig};
+
+let mut chart = BarChart::new(
+    vec![("Email", vec![120.0, 132.0, 101.0]).into()],
+    ["Mon", "Tue", "Wed"].map(String::from).to_vec(),
+);
+chart.texts.push(TextConfig {
+    text: "© 2026 Example Inc.".to_string(),
+    right: Some(10.0),
+    bottom: Some(6.0),
+    ..Default::default()
+});
+let svg = chart.svg().unwrap();
+```
 
 ## Axes
 

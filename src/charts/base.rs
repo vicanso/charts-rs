@@ -92,6 +92,8 @@ pub struct ChartBase {
     pub series: SeriesConfig,
     /// The hover tooltips.
     pub tooltip: TooltipConfig,
+    /// Texts written over the chart: a copyright line, a watermark.
+    pub texts: Vec<TextConfig>,
 }
 
 /// Gets y axis config by index.
@@ -268,6 +270,37 @@ struct BandTip {
     upper: f32,
 }
 
+/// The texts over a chart as its canvas writes them: in the font family of
+/// the chart, and where they do not say otherwise 12 pixels high and in
+/// `color` (that of the sub-title, or black where a chart has none).
+pub(crate) fn overlay_texts(
+    texts: &[TextConfig],
+    font_family: &str,
+    color: Color,
+) -> Vec<canvas::OverlayText> {
+    texts
+        .iter()
+        .filter(|text| !text.text.is_empty())
+        .map(|text| {
+            let mut config = text.clone();
+            if config.font.size.is_nan() || config.font.size <= 0.0 {
+                config.font.size = 12.0;
+            }
+            if config.font.color.is_zero() {
+                config.font.color = if color.is_zero() {
+                    Color::black()
+                } else {
+                    color
+                };
+            }
+            canvas::OverlayText {
+                config,
+                font_family: font_family.to_string(),
+            }
+        })
+        .collect()
+}
+
 /// Draws an error bar on `c`: a line at `x` between the two ends, with a
 /// cap `cap` wide to both sides at each of them. `stroke` is its color and
 /// its width.
@@ -343,6 +376,7 @@ impl ChartBase {
         *y_axis_configs = vec![t.y_axis.clone()];
         self.grid = t.grid.clone();
         self.series = t.series.clone();
+        self.texts = t.texts.clone();
         if self.series.symbol.is_none() {
             self.series.symbol = Some(Symbol::Circle(
                 self.series.stroke_width,
@@ -644,6 +678,10 @@ impl ChartBase {
         }
         if let Some(v) = get_bool_from_value(&data, "tooltip_show") {
             self.tooltip.show = v;
+        }
+        // The texts of the options stand in for those of the theme.
+        if let Some(texts) = get_texts_from_value(&data, "texts") {
+            self.texts = texts;
         }
         if let Some(size) = get_f32_from_value(&data, "tooltip_font_size") {
             self.tooltip.font.size = size;
@@ -1304,6 +1342,11 @@ impl ChartBase {
     pub(crate) fn new_canvas(&self) -> Canvas {
         let mut c = Canvas::new_width_xy(self.width, self.height, self.x, self.y);
         c.compact = self.compact;
+        c.set_texts(overlay_texts(
+            &self.texts,
+            &self.font_family,
+            self.sub_title.font.color,
+        ));
         c
     }
     /// Turns the values of the stacked series into their shares of the

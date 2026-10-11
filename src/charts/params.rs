@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::common::{LineStep, MarkArea, SeriesBand};
+use super::common::{FontConfig, LineStep, MarkArea, SeriesBand, TextConfig};
 use super::{Align, Box, Color, LegendCategory, Series, SeriesCategory, Theme, YAxisConfig};
 use crate::{
     AxisScale, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory, NIL_VALUE, Position,
@@ -475,6 +475,34 @@ pub(crate) fn get_symbol_from_object(v: &serde_json::Value) -> Symbol {
         "diamond" => Symbol::Diamond(size, color),
         _ => Symbol::Circle(size, color),
     }
+}
+
+/// Gets the texts written over a chart; `None` where the key is not given.
+pub(crate) fn get_texts_from_value(
+    value: &serde_json::Value,
+    key: &str,
+) -> Option<Vec<TextConfig>> {
+    let items = value.get(key)?.as_array()?;
+    let texts = items
+        .iter()
+        .filter_map(|item| {
+            let text = get_string_from_value(item, "text").filter(|text| !text.is_empty())?;
+            Some(TextConfig {
+                text,
+                left: get_f32_from_value(item, "left"),
+                top: get_f32_from_value(item, "top"),
+                right: get_f32_from_value(item, "right"),
+                bottom: get_f32_from_value(item, "bottom"),
+                font: FontConfig {
+                    size: get_f32_from_value(item, "font_size").unwrap_or_default(),
+                    color: get_color_from_value(item, "font_color").unwrap_or_default(),
+                    weight: get_string_from_value(item, "font_weight"),
+                },
+                rotate: get_f32_from_value(item, "rotate").unwrap_or_default(),
+            })
+        })
+        .collect();
+    Some(texts)
 }
 
 fn get_mark_lines(value: &serde_json::Value, key: &str) -> Vec<MarkLine> {

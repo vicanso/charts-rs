@@ -15,6 +15,7 @@ every option is described in the [JSON reference](./json.md).
 
 <p align="center">
   <img src="../asset/image/bar-error-bar.png" width="49%" alt="Bar">
+  <img src="../asset/image/texts.png" width="49%" alt="Bar">
 </p>
 
 ## Horizontal bar

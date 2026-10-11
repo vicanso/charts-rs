@@ -94,7 +94,7 @@ pub use common::{
     Align, AnimationConfig, AxisLabelOverflow, AxisScale, AxisType, Fill, FontConfig, GridConfig,
     LegendConfig, LineStep, MarkArea, MarkLine, MarkLineCategory, MarkPoint, MarkPointCategory,
     Position, Series, SeriesBand, SeriesCategory, SeriesConfig, SeriesLabel, SeriesLabelConfig,
-    Symbol, TitleConfig, TooltipConfig, XAxisConfig, YAxisConfig,
+    Symbol, TextConfig, TitleConfig, TooltipConfig, XAxisConfig, YAxisConfig,
 };
 pub use compact::compact_svg;
 pub use component::{

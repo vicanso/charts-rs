@@ -1,0 +1,16 @@
+{
+    "title_text": "Weekly visits",
+    "title_align": "left",
+    "legend_align": "right",
+    "margin": {"left": 10, "top": 8, "right": 10, "bottom": 26},
+    "x_axis_data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "series_list": [
+        {"name": "Email", "data": [120, 132, 101, 134, 90, 230, 210]},
+        {"name": "Search", "data": [220, 182, 191, 234, 290, 330, 310]}
+    ],
+    "texts": [
+        {"text": "Source: web analytics", "left": 10, "bottom": 6},
+        {"text": "© 2026 Example Inc.", "right": 10, "bottom": 6},
+        {"text": "DRAFT", "font_size": 72, "font_color": "#00000014", "font_weight": "bold", "rotate": -25}
+    ]
+}

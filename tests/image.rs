@@ -1204,6 +1204,13 @@ fn generate_image() {
             .svg()
             .unwrap(),
         ),
+        (
+            "texts",
+            BarChart::from_json(include_str!("../asset/bar_chart/texts.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
         // variants of the charts above
         (
             "pie-half",

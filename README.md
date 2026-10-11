@@ -134,7 +134,8 @@ std::fs::write("visits.png", png).unwrap();
 - **Axes**: categories, values, time and logarithmic scales, with titles and
   label formats.
 - **Looks**: themes, gradients, a legend on any side, labels that keep out
-  of each other's way, SVG animation, hover tooltips.
+  of each other's way, SVG animation, hover tooltips, a copyright line or a
+  watermark anywhere on the chart.
 - **Output**: SVG — compact on request, 20–30% smaller — and PNG, JPEG, WebP
   or AVIF at any size.
 

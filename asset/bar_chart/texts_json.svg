@@ -1,0 +1,104 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="10" y="8" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Weekly visits
+</text>
+<g>
+<line stroke-width="2" x1="445" y1="18" x2="470" y2="18" stroke="#5470C6"/>
+<circle cx="457.5" cy="18" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="473" y="22" font-family="Roboto" fill="#464646">
+Email
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="514" y1="18" x2="539" y2="18" stroke="#91CC75"/>
+<circle cx="526.5" cy="18" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="542" y="22" font-family="Roboto" fill="#464646">
+Search
+</text>
+</g>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="39" y1="46" x2="590" y2="46"/><line x1="39" y1="95.7" x2="590" y2="95.7"/><line x1="39" y1="145.3" x2="590" y2="145.3"/><line x1="39" y1="195" x2="590" y2="195"/><line x1="39" y1="244.7" x2="590" y2="244.7"/><line x1="39" y1="294.3" x2="590" y2="294.3"/>
+</g>
+<g>
+
+<text font-size="14" x="7" y="51" font-family="Roboto" fill="#6E7079">
+360
+</text>
+<text font-size="14" x="7" y="100.7" font-family="Roboto" fill="#6E7079">
+300
+</text>
+<text font-size="14" x="7" y="150.3" font-family="Roboto" fill="#6E7079">
+240
+</text>
+<text font-size="14" x="7" y="200" font-family="Roboto" fill="#6E7079">
+180
+</text>
+<text font-size="14" x="7" y="249.7" font-family="Roboto" fill="#6E7079">
+120
+</text>
+<text font-size="14" x="15" y="299.3" font-family="Roboto" fill="#6E7079">
+60
+</text>
+<text font-size="14" x="23" y="349" font-family="Roboto" fill="#6E7079">
+0
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="39" y1="344" x2="590" y2="344"/>
+<line x1="39" y1="344" x2="39" y2="349"/>
+<line x1="117.7" y1="344" x2="117.7" y2="349"/>
+<line x1="196.4" y1="344" x2="196.4" y2="349"/>
+<line x1="275.1" y1="344" x2="275.1" y2="349"/>
+<line x1="353.9" y1="344" x2="353.9" y2="349"/>
+<line x1="432.6" y1="344" x2="432.6" y2="349"/>
+<line x1="511.3" y1="344" x2="511.3" y2="349"/>
+<line x1="590" y1="344" x2="590" y2="349"/>
+</g>
+<text font-size="14" x="64.4" y="363" font-family="Roboto" fill="#6E7079">
+Mon
+</text>
+<text font-size="14" x="145.1" y="363" font-family="Roboto" fill="#6E7079">
+Tue
+</text>
+<text font-size="14" x="221.8" y="363" font-family="Roboto" fill="#6E7079">
+Wed
+</text>
+<text font-size="14" x="302.5" y="363" font-family="Roboto" fill="#6E7079">
+Thu
+</text>
+<text font-size="14" x="385.2" y="363" font-family="Roboto" fill="#6E7079">
+Fri
+</text>
+<text font-size="14" x="460.9" y="363" font-family="Roboto" fill="#6E7079">
+Sat
+</text>
+<text font-size="14" x="538.6" y="363" font-family="Roboto" fill="#6E7079">
+Sun
+</text>
+</g>
+<rect x="44" y="244.7" width="32.9" height="99.3" fill="#5470C6" data-series="Email" data-category="Mon" data-value="120"/>
+<rect x="122.7" y="234.7" width="32.9" height="109.3" fill="#5470C6" data-series="Email" data-category="Tue" data-value="132"/>
+<rect x="201.4" y="260.4" width="32.9" height="83.6" fill="#5470C6" data-series="Email" data-category="Wed" data-value="101"/>
+<rect x="280.1" y="233.1" width="32.9" height="110.9" fill="#5470C6" data-series="Email" data-category="Thu" data-value="134"/>
+<rect x="358.9" y="269.5" width="32.9" height="74.5" fill="#5470C6" data-series="Email" data-category="Fri" data-value="90"/>
+<rect x="437.6" y="153.6" width="32.9" height="190.4" fill="#5470C6" data-series="Email" data-category="Sat" data-value="230"/>
+<rect x="516.3" y="170.2" width="32.9" height="173.8" fill="#5470C6" data-series="Email" data-category="Sun" data-value="210"/>
+<rect x="79.9" y="161.9" width="32.9" height="182.1" fill="#91CC75" data-series="Search" data-category="Mon" data-value="220"/>
+<rect x="158.6" y="193.3" width="32.9" height="150.7" fill="#91CC75" data-series="Search" data-category="Tue" data-value="182"/>
+<rect x="237.3" y="185.9" width="32.9" height="158.1" fill="#91CC75" data-series="Search" data-category="Wed" data-value="191"/>
+<rect x="316" y="150.3" width="32.9" height="193.7" fill="#91CC75" data-series="Search" data-category="Thu" data-value="234"/>
+<rect x="394.7" y="103.9" width="32.9" height="240.1" fill="#91CC75" data-series="Search" data-category="Fri" data-value="290"/>
+<rect x="473.4" y="70.8" width="32.9" height="273.2" fill="#91CC75" data-series="Search" data-category="Sat" data-value="330"/>
+<rect x="552.1" y="87.4" width="32.9" height="256.6" fill="#91CC75" data-series="Search" data-category="Sun" data-value="310"/>
+<text font-size="12" x="10" y="388" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Source: web analytics
+</text>
+<text font-size="12" x="590" y="388" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+© 2026 Example Inc.
+</text>
+<text font-size="72" x="300" y="200" font-weight="bold" transform="rotate(-25 300 200)" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#000000" fill-opacity="0.08">
+DRAFT
+</text>
+</svg>

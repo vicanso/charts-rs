@@ -16,6 +16,7 @@ use super::component::{
     StraightLineFill, Text, write_svg_close, write_svg_open,
 };
 
+use super::common::TextConfig;
 use super::{measure_text_width_family, util::*};
 use std::cell::RefCell;
 use std::collections::HashSet;
@@ -43,6 +44,61 @@ pub struct Canvas {
     pub margin: Box,
     /// Emit compact SVG (see [`compact_svg`](crate::compact_svg)).
     pub compact: bool,
+    // The texts written over the components when the canvas is turned into
+    // SVG: placed then, as a table is only as high as its rows by then.
+    texts: Rc<Vec<OverlayText>>,
+}
+
+/// A text written over the components of a canvas, and the font family it is
+/// written in.
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) struct OverlayText {
+    pub(crate) config: TextConfig,
+    pub(crate) font_family: String,
+}
+
+impl OverlayText {
+    /// The text as a component on a canvas of the given size, or nothing
+    /// where it has no place of finite numbers.
+    pub(crate) fn text(&self, width: f32, height: f32) -> Option<Text> {
+        let config = &self.config;
+        let font_size = config.font.size;
+        let (x, anchor) = match (config.left, config.right) {
+            (Some(left), _) => (left, "start"),
+            (None, Some(right)) => (width - right, "end"),
+            (None, None) => (width / 2.0, "middle"),
+        };
+        // As high as its font size, and written about the middle of that.
+        let y = match (config.top, config.bottom) {
+            (Some(top), _) => top + font_size / 2.0,
+            (None, Some(bottom)) => height - bottom - font_size / 2.0,
+            (None, None) => height / 2.0,
+        };
+        if config.text.is_empty() || !x.is_finite() || !y.is_finite() || !font_size.is_finite() {
+            return None;
+        }
+        let turned = config.rotate.is_finite() && config.rotate != 0.0;
+        Some(Text {
+            text: config.text.clone(),
+            font_family: Some(self.font_family.clone()),
+            font_size: Some(font_size),
+            font_color: Some(config.font.color),
+            font_weight: config.font.weight.clone(),
+            x: Some(x),
+            y: Some(y),
+            text_anchor: Some(anchor.to_string()),
+            dominant_baseline: Some("central".to_string()),
+            transform: turned.then(|| {
+                format!(
+                    "rotate({} {} {})",
+                    format_float(config.rotate),
+                    format_float(x),
+                    format_float(y)
+                )
+            }),
+            ..Default::default()
+        })
+    }
 }
 
 impl Canvas {
@@ -60,7 +116,12 @@ impl Canvas {
             components: Rc::new(RefCell::new(vec![])),
             margin: Box::default(),
             compact: false,
+            texts: Rc::new(vec![]),
         }
+    }
+    /// Sets the texts that are written over the components.
+    pub(crate) fn set_texts(&mut self, texts: Vec<OverlayText>) {
+        self.texts = Rc::new(texts);
     }
     /// Gets the width of canvas.
     pub fn width(&self) -> f32 {
@@ -83,6 +144,7 @@ impl Canvas {
             x: self.x,
             y: self.y,
             compact: self.compact,
+            texts: Rc::clone(&self.texts),
         }
     }
     /// Creates a child canvas.
@@ -100,6 +162,7 @@ impl Canvas {
             x: self.x,
             y: self.y,
             compact: self.compact,
+            texts: Rc::clone(&self.texts),
         }
     }
     /// Appends arrow widget to canvas.
@@ -428,6 +491,17 @@ impl Canvas {
                 out.push('\n');
             }
             write_component(c, &mut out, &mut grad_seen)?;
+        }
+        // The texts over the chart come last, on top of everything else.
+        let mut written = !components.is_empty() || !prefix.is_empty();
+        for text in self.texts.iter() {
+            if let Some(text) = text.text(self.width, self.height) {
+                if written {
+                    out.push('\n');
+                }
+                text.write_svg(&mut out);
+                written = true;
+            }
         }
         write_svg_close(&mut out);
         if self.compact {

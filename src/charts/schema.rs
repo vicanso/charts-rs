@@ -172,6 +172,18 @@ pub(crate) static Y_AXIS_FIELDS: &[Field] = &[
     f("axis_inverse", Kind::Bool),
 ];
 
+static TEXT_FIELDS: &[Field] = &[
+    f("text", Kind::String),
+    f("left", Kind::Number),
+    f("top", Kind::Number),
+    f("right", Kind::Number),
+    f("bottom", Kind::Number),
+    f("font_size", Kind::Number),
+    f("font_color", Kind::Color),
+    f("font_weight", Kind::String),
+    f("rotate", Kind::Number),
+];
+
 static ANIMATION_FIELDS: &[Field] = &[
     f("duration", Kind::Uint),
     f("easing", Kind::String),
@@ -262,6 +274,7 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("tooltip_font_size", Kind::Number),
     f("tooltip_font_color", Kind::Color),
     f("tooltip_font_weight", Kind::String),
+    f("texts", Kind::ArrayOf(TEXT_FIELDS)),
     f("series_list", Kind::ArrayOf(SERIES_FIELDS)),
 ];
 
@@ -546,6 +559,7 @@ pub(crate) static TABLE_FIELDS: &[Field] = &[
     f("body_background_colors", Kind::ColorArray),
     f("outlined", Kind::Bool),
     f("cell_styles", Kind::ArrayOf(CELL_STYLE_FIELDS)),
+    f("texts", Kind::ArrayOf(TEXT_FIELDS)),
     f("compact", Kind::Bool),
 ];
 
@@ -582,6 +596,7 @@ pub(crate) static MULTI_FIELDS: &[Field] = &[
     f("background_color", Kind::Color),
     f("child_charts", Kind::Array),
     f("compact", Kind::Bool),
+    f("texts", Kind::ArrayOf(TEXT_FIELDS)),
 ];
 
 /// Fields a multi chart child carries on top of its own chart's fields.
@@ -1037,6 +1052,7 @@ mod tests {
             }
             "mark_lines" => vec![json!({"category": "average"}), json!({"category": "value"})],
             "mark_points" => vec![json!({"category": "max"})],
+            "texts" => vec![json!({"text": "t"})],
             "mark_areas" => vec![json!({"from": 1, "to": 2})],
             "band" => vec![json!({"lower": [1, 2], "upper": [3, 4]})],
             "nodes" => vec![json!({"name": "a"})],

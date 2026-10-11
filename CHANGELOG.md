@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `texts`, on every chart: lines of text written over it, wherever they are
+  asked for — a copyright line in a corner, a watermark across the middle.
+  A text is placed by its distances from the edges (`left`, `top`, `right`,
+  `bottom`; centered without them), has its font (`font_size`, `font_color`,
+  `font_weight`) and can be turned (`rotate`). In Rust: `chart.texts`, a
+  list of `TextConfig`.
+- A `MultiChart` has `texts` over the whole picture (and a `font_family` to
+  write them in), and a `Theme` has `texts` that every chart of it carries.
+
 ## 2.0.0
 
 The options of a chart are grouped into structs of their own, and text is

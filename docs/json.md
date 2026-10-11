@@ -153,6 +153,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `tooltip_font_size` | number |  | Font size of the tooltips. Default: that of the data labels (`series_label_font_size`); a scatter chart leaves it to the viewer. |
 | `tooltip_font_color` | color |  | Font color of the tooltips. Default: that of the data labels (`series_label_font_color`); a scatter chart leaves it to the viewer. |
 | `tooltip_font_weight` | string |  | Font weight of the tooltips, e.g. `"bold"`. None by default. |
+| `texts` | object[] |  | Texts written over the chart, each wherever it is asked for: a copyright line, a watermark. See [`texts[]`](#texts). A theme may have texts as well; these stand in for them. |
 | `animation` | object |  | Animates the chart as it appears; `{}` uses the defaults. Supported by the bar, horizontal bar, line, pie, funnel, sunburst, treemap, sankey, histogram, polar bar and chord charts. |
 
 ### `series_list[]`
@@ -268,6 +269,35 @@ The same two lists as a band: a point has an error bar where both of its bounds 
 | `axis_scale` | scale | `"linear"` | Scale of the axis: linear or logarithmic. |
 | `axis_title` | string |  | Title of the axis, written along it. |
 | `axis_inverse` | boolean | `false` | Turns the axis upside down: the smallest value at the top, the largest at the bottom (a ranking, where 1 is the best place). |
+
+### `texts[]`
+
+<!-- keys: base.texts -->
+<!-- keys: table.texts = base.texts -->
+<!-- keys: multi.texts = base.texts -->
+
+A text is placed by its distances from the edges of the chart, in pixels. With a `left` it starts there, with a `right` it ends there, and with neither it is centered; `top` and `bottom` do the same from above and from below. It is written last, over everything else.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `text` | string |  | The text, on one line. An entry without text is left out. |
+| `left` | number |  | Distance of the start of the text from the left edge. |
+| `top` | number |  | Distance of the top of the text from the top edge. |
+| `right` | number |  | Distance of the end of the text from the right edge. `left` wins where both are given. |
+| `bottom` | number |  | Distance of the bottom of the text from the bottom edge. `top` wins where both are given. |
+| `font_size` | number | `12` | Font size of the text. |
+| `font_color` | color | theme | Font color of the text; by default that of the sub-title. A watermark wants a color with an alpha, e.g. `"#00000020"`. |
+| `font_weight` | string |  | Font weight of the text, e.g. `"bold"`. |
+| `rotate` | number | `0` | Degrees the text is turned by, clockwise, about the point it is placed by: its start, its end or, centered, its middle. |
+
+```json
+{
+  "texts": [
+    { "text": "© 2026 ACME Inc.", "right": 10, "bottom": 6 },
+    { "text": "CONFIDENTIAL", "font_size": 56, "font_color": "#00000018", "rotate": -25 }
+  ]
+}
+```
 
 ### `animation`
 
@@ -527,6 +557,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `body_background_colors` | color[] | theme | Background colors of the body rows, taken in turn. |
 | `outlined` | boolean | `false` | Draws a border around the table. |
 | `cell_styles` | object[] |  | Styles of single cells. |
+| `texts` | object[] |  | Texts written over the table: a copyright line, a watermark. See [`texts[]`](#texts). |
 | `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
 
 ### `cell_styles[]`
@@ -1270,6 +1301,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `background_color` | color |  | Background color of the whole composition; without one only the children draw their backgrounds. |
 | `child_charts` | array |  | The charts, drawn one below the other: each one the options of its chart type, plus the keys below. |
 | `compact` | boolean | `false` | Emits compact SVG for the composition and every child. |
+| `texts` | object[] |  | Texts written over the whole composition: a copyright line, a watermark. See [`texts[]`](#texts). A child has `texts` of its own, over itself. |
 
 ### `child_charts[]`
 

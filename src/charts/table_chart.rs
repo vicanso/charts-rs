@@ -271,6 +271,9 @@ impl TableChart {
         if let Some(border_width) = get_f32_from_value(&data, "border_width") {
             self.border_width = Some(border_width);
         }
+        if let Some(texts) = get_texts_from_value(&data, "texts") {
+            self.texts = texts;
+        }
         if let Some(outlined) = get_bool_from_value(&data, "outlined") {
             self.outlined = outlined;
         }
@@ -313,6 +316,7 @@ impl TableChart {
             ..t.title.clone()
         };
         self.sub_title = t.sub_title.clone();
+        self.texts = t.texts.clone();
 
         self.header.font.size = t.sub_title.font.size;
         self.header.font.color = t.sub_title.font.color;

@@ -638,6 +638,36 @@ pub struct SeriesLabelConfig {
     pub hide_overlap: bool,
 }
 
+/// A text written over a chart, wherever it is asked for: a copyright line
+/// in a corner, a watermark across the middle.
+///
+/// It is placed by its distances from the edges of the chart. With a `left`
+/// it starts there, with a `right` it ends there, and with neither it is
+/// centered; `top` and `bottom` do the same from above and from below.
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(default)]
+pub struct TextConfig {
+    /// The text, on one line. An entry without text is left out.
+    pub text: String,
+    /// Distance of the start of the text from the left edge.
+    pub left: Option<f32>,
+    /// Distance of the top of the text from the top edge.
+    pub top: Option<f32>,
+    /// Distance of the end of the text from the right edge. `left` wins
+    /// where both are given.
+    pub right: Option<f32>,
+    /// Distance of the bottom of the text from the bottom edge. `top` wins
+    /// where both are given.
+    pub bottom: Option<f32>,
+    /// Font of the text. A size of 0 is 12, and a color of nothing is that
+    /// of the sub-title; a watermark wants a color with an alpha
+    /// (`#00000020`).
+    pub font: FontConfig,
+    /// Degrees the text is turned by, clockwise, about the point it is
+    /// placed by: its start, its end or, centered, its middle.
+    pub rotate: f32,
+}
+
 /// The hover tooltips of a chart.
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 #[serde(default)]

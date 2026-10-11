@@ -10,12 +10,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::base::overlay_texts;
 use super::canvas;
+use super::common::TextConfig;
 use super::component::Rect;
 use super::component::generate_svg;
+use super::font::DEFAULT_FONT_FAMILY;
 use super::params::{
     get_bool_from_value, get_color_from_value, get_f32_from_value, get_margin_from_value,
+    get_texts_from_value,
 };
+use super::theme::{get_default_theme_name, get_theme};
 use super::{
     BarChart, BoxPlotChart, CalendarChart, CandlestickChart, ChordChart, FunnelChart, GanttChart,
     GaugeChart, GraphChart, HeatmapChart, HistogramChart, HorizontalBarChart, LineChart, MapChart,
@@ -97,6 +102,11 @@ pub struct MultiChart {
     /// Emit compact SVG for the composition and every child; see
     /// [`compact_svg`](crate::compact_svg).
     pub compact: bool,
+    /// Texts written over the composed chart: a copyright line, a
+    /// watermark. A child chart has `texts` of its own, over itself.
+    pub texts: Vec<TextConfig>,
+    /// Font family of the texts; the default font where it is empty.
+    pub font_family: String,
 }
 struct ChildChartResult {
     svg: String,
@@ -124,6 +134,19 @@ impl MultiChart {
         }
         if let Some(compact) = get_bool_from_value(&value, "compact") {
             multi_chart.compact = compact;
+        }
+        // The texts are written in the font of the theme, as those of a
+        // chart are, and in the color of its sub-title.
+        if let Some(mut texts) = get_texts_from_value(&value, "texts") {
+            let name = theme.as_ref().and_then(|t| t.as_str()).unwrap_or_default();
+            let theme = get_theme(name);
+            for text in texts.iter_mut() {
+                if text.font.color.is_zero() {
+                    text.font.color = theme.sub_title.font.color;
+                }
+            }
+            multi_chart.font_family = theme.font_family.clone();
+            multi_chart.texts = texts;
         }
         if let Some(child_charts) = value.get("child_charts")
             && let Some(values) = child_charts.as_array()
@@ -327,6 +350,19 @@ impl MultiChart {
                 }
                 .svg(),
             );
+        }
+
+        // The texts go over the children, placed on the whole picture.
+        let font_family = if self.font_family.is_empty() {
+            DEFAULT_FONT_FAMILY
+        } else {
+            &self.font_family
+        };
+        let color = get_theme(&get_default_theme_name()).sub_title.font.color;
+        for text in overlay_texts(&self.texts, font_family, color) {
+            if let Some(text) = text.text(x, y) {
+                arr.push(text.svg());
+            }
         }
 
         let svg = generate_svg(x, y, 0.0, 0.0, arr.join("\n"));

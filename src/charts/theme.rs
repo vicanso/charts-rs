@@ -12,8 +12,8 @@
 
 use super::color::Color;
 use super::common::{
-    Align, FontConfig, GridConfig, LegendConfig, SeriesConfig, SeriesLabelConfig, TitleConfig,
-    XAxisConfig, YAxisConfig,
+    Align, FontConfig, GridConfig, LegendConfig, SeriesConfig, SeriesLabelConfig, TextConfig,
+    TitleConfig, XAxisConfig, YAxisConfig,
 };
 use super::font::DEFAULT_FONT_FAMILY;
 use super::util::Box;
@@ -109,6 +109,11 @@ pub struct Theme {
     /// Defaults of the series. Without a `symbol`, the points of a line are
     /// circles of the stroke width, filled with the background color.
     pub series: SeriesConfig,
+
+    /// Texts written over every chart of the theme: a copyright line, a
+    /// watermark. The `texts` of a chart's options stand in for them.
+    #[serde(default)]
+    pub texts: Vec<TextConfig>,
 
     /// Default table header background color.
     pub table_header_color: Color,
@@ -210,6 +215,7 @@ static LIGHT_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: (242, 243, 245).into(),
         table_body_colors: vec![(255, 255, 255).into()],
         table_border_color: (229, 230, 235).into(),
@@ -310,6 +316,7 @@ static DARK_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: bg_color,
         table_body_colors: vec![bg_color.with_alpha(230)],
         table_border_color: (100, 100, 100).into(),
@@ -408,6 +415,7 @@ static ANT_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: (250, 250, 250).into(),
         table_body_colors: vec![(255, 255, 255).into()],
         table_border_color: (239, 239, 244).into(),
@@ -508,6 +516,7 @@ static VINTAGE_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: (250, 250, 250).into(),
         table_body_colors: vec![(255, 255, 255).into()],
         table_border_color: (239, 239, 244).into(),
@@ -606,6 +615,7 @@ static SHINE_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: (250, 250, 250).into(),
         table_body_colors: vec![(255, 255, 255).into()],
         table_border_color: (239, 239, 244).into(),
@@ -702,6 +712,7 @@ static WALDEN_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: (250, 250, 250).into(),
         table_body_colors: vec![(255, 255, 255).into()],
         table_border_color: (239, 239, 244).into(),
@@ -798,6 +809,7 @@ static WESTEROS_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: (250, 250, 250).into(),
         table_body_colors: vec![(255, 255, 255).into()],
         table_border_color: (239, 239, 244).into(),
@@ -897,6 +909,7 @@ static CHALK_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: bg_color,
         table_body_colors: vec![bg_color.with_alpha(230)],
         table_border_color: (100, 100, 100).into(),
@@ -996,6 +1009,7 @@ static GRAFANA_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: bg_color,
         table_body_colors: vec![bg_color.with_alpha(230)],
         table_border_color: (239, 239, 244).into(),
@@ -1095,6 +1109,7 @@ static SHADCN_THEME: LazyLock<Theme> = LazyLock::new(|| {
             ],
             ..Default::default()
         },
+        texts: vec![],
         table_header_color: bg_color.with_alpha(230),
         table_body_colors: vec![bg_color],
         table_border_color: (39, 39, 42).into(),
