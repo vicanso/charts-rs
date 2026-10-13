@@ -22,6 +22,13 @@
   what the highest of them needs, where that was over the title, the legend
   or the edge of the chart. A chart whose markers are on the plot is laid
   out as before.
+- A node of a sunburst chart whose arc is too short for its label along it
+  is no longer without one: the label runs along the radius instead, where
+  the ring is thick enough for it and the node as wide as a line of text.
+  It reads from the middle outwards on the right half of the chart and
+  towards the middle on the left, so that it is never upside down. Labels
+  that fit along their arcs are where they were, and one that fits neither
+  way is left out as before.
 
 ## 2.1.0
 

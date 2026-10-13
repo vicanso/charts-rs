@@ -28,7 +28,10 @@ use crate::charts::measure_text_width_family;
 /// its children's values.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SunburstData {
-    /// Name of the node, shown as its label.
+    /// Name of the node, shown as its label: along the arc of the node
+    /// where that is long enough for it, along the radius where the arc is
+    /// too short and the ring thick enough, and not at all where it fits
+    /// neither way.
     pub name: String,
     /// Value of the node when it is a leaf.
     pub value: f32,
@@ -358,24 +361,39 @@ impl SunburstChart {
         let name_w = measure_text_width_family(&self.font_family, font_size, &text)
             .map(|b| b.width())
             .unwrap_or(text.len() as f32 * font_size * 0.6);
-        // Labels are drawn tangentially (along the arc). Skip the label when
-        // the slice's arc length cannot hold the text — this keeps the text
-        // inside its own ring band instead of overflowing onto neighbours.
+        // Labels are drawn tangentially (along the arc) where the arc of the
+        // slice is long enough to hold the text. A slice too narrow for that
+        // has its label along the radius instead, where the ring is thick
+        // enough for it and the slice, at the end of the text nearer to the
+        // middle, as wide as a line of text is high. A label that fits
+        // neither way is skipped: it stays inside its own slice instead of
+        // overflowing onto its neighbours.
         let arc_len = delta.to_radians() * mid_r;
-        if name_w + 6.0 > arc_len {
+        let along_arc = name_w + 6.0 <= arc_len;
+        let along_radius =
+            name_w + 6.0 <= thickness && delta.to_radians() * (mid_r - name_w / 2.0) >= font_size;
+        if !along_arc && !along_radius {
             return;
         }
 
-        // Tangential rotation: chart angle 0 points up and increases clockwise,
-        // which matches the SVG `rotate` convention, so the tangent at
-        // `mid_angle` is `rotate(mid_angle)`. Flip text on the bottom half so it
-        // stays upright rather than upside-down.
+        // Chart angle 0 points up and increases clockwise, which matches the
+        // SVG `rotate` convention, so the tangent at `mid_angle` is
+        // `rotate(mid_angle)` and the radius a quarter turn from it. Either
+        // way the text is flipped on the half of the chart where it would be
+        // upside-down: the bottom half along the arc, the left half along
+        // the radius.
         let mut deg = mid_angle % 360.0;
         if deg < 0.0 {
             deg += 360.0;
         }
-        if deg > 90.0 && deg < 270.0 {
-            deg -= 180.0;
+        if along_arc {
+            if deg > 90.0 && deg < 270.0 {
+                deg -= 180.0;
+            }
+        } else if deg < 180.0 {
+            deg -= 90.0;
+        } else {
+            deg += 90.0;
         }
         // The transform is emitted verbatim, so bake in the canvas offset that
         // `Canvas::text` adds to x / y.

@@ -863,7 +863,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `name` | string |  | Name of the node, shown as its label. |
+| `name` | string |  | Name of the node, shown as its label. The label is written along the arc of the node where the arc is long enough for it. Where it is too short, the label is turned to run along the radius instead, if the ring is thick enough for it and the node as wide as a line of text; a label that fits neither way is left out. |
 | `value` | number |  | Value of a leaf; a node with children is as large as their sum. |
 | `color` | color |  | Color of the node; by default taken from the palette. |
 | `children` | object[] |  | The child nodes, each with the same keys. |
