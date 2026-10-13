@@ -170,7 +170,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `category` | `"line"` / `"bar"` |  | In a bar chart: draws this series as a line (`line`) instead of bars. |
 | `start_index` | integer ≥ 0 | `0` | Index of the category the first value belongs to. |
 | `mark_lines` | object[] |  | Lines across the plot at a statistic of the series or at a fixed value. |
-| `mark_points` | object[] |  | Markers on the smallest or largest point of the series. |
+| `mark_points` | object[] |  | Markers on points of the series, each with the value of its point in it: on the smallest, on the largest, or on any one by its index. A series that is drawn as a line has them. |
 | `mark_areas` | object[] |  | Shaded bands across the plot between two values. |
 | `colors` | color[] |  | A color for each data point (bar, horizontal bar and polar bar charts); `null` keeps the color of the series. |
 | `stroke_dash_array` | string |  | Dash pattern of a line series, e.g. `"4 2"`. |
@@ -202,7 +202,19 @@ These keys are accepted by every chart except the table and the multi chart. A c
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `category` | `"min"` / `"max"` |  | The point that is marked. |
+| `category` | `"min"` / `"max"` / `"index"` |  | The point that is marked: the smallest value of the series, the largest, or the one whose `index` is given. |
+| `index` | integer |  | With the `"index"` category, which point: its place in the `data` of the series, the first one being 0. A point without a value has no marker. |
+
+A marker is above its point and as large as the value in it; the plot starts lower where one would reach above it. Two peaks of a day are the largest value and one more point:
+
+```json
+{
+  "mark_points": [
+    { "category": "max" },
+    { "category": "index", "index": 28 }
+  ]
+}
+```
 
 #### `series_list[].mark_areas[]`
 

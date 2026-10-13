@@ -73,12 +73,12 @@ Search Engine
 <circle cx="511.1" cy="323.6" r="2"/>
 </g>
 </g>
-<path d="M 345.7,289.4 A 15,15 0,0,1 340.4,278 A 15,15 0,0,1 370.4,278 A 15,15 0,0,1 365,289.4 L 355.4,300.5 Z" fill="#FAC858"/>
-<text font-size="14" x="355.4" y="272.5" dx="-11" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<path d="M 345.1,288.7 A 16,16 0,0,1 339.3,276.4 A 16,16 0,0,1 371.4,276.4 A 16,16 0,0,1 365.7,288.7 L 355.4,300.5 Z" fill="#FAC858"/>
+<text font-size="14" x="355.4" y="276.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 390
 </text>
 <path d="M 190,309.3 A 15,15 0,0,1 184.6,297.8 A 15,15 0,0,1 214.6,297.8 A 15,15 0,0,1 209.3,309.3 L 199.6,320.3 Z" fill="#FAC858"/>
-<text font-size="14" x="199.6" y="292.3" dx="-9.5" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="199.6" y="297.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 301
 </text>
 <g>

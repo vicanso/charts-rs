@@ -131,12 +131,12 @@ Sun
 <circle cx="513.8" cy="297.9" r="2"/>
 </g>
 </g>
-<path d="M 359.3,265.8 A 15,15 0,0,1 353.9,254.3 A 15,15 0,0,1 383.9,254.3 A 15,15 0,0,1 378.6,265.8 L 368.9,276.8 Z" fill="#FAC858"/>
-<text font-size="14" x="368.9" y="248.8" dx="-11" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<path d="M 358.6,265 A 16,16 0,0,1 352.9,252.7 A 16,16 0,0,1 384.9,252.7 A 16,16 0,0,1 379.2,265 L 368.9,276.8 Z" fill="#FAC858"/>
+<text font-size="14" x="368.9" y="252.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 390
 </text>
 <path d="M 214.4,283 A 15,15 0,0,1 209.1,271.5 A 15,15 0,0,1 239.1,271.5 A 15,15 0,0,1 233.7,283 L 224.1,294 Z" fill="#FAC858"/>
-<text font-size="14" x="224.1" y="266" dx="-9.5" dy="7.5" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="224.1" y="271.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 301
 </text>
 <g>

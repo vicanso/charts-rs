@@ -158,7 +158,13 @@ impl CandlestickChart {
         let c = self.new_canvas();
         // Candles sit in evenly spaced slots (trading days), never on a
         // continuous axis.
-        let layout = self.layout_cartesian(c, &self.y_axis_configs, XAxisMode::Category);
+        // The lines drawn over the candles, which may have markers.
+        let lines: Vec<&Series> = self
+            .series_list
+            .iter()
+            .filter(|series| series.category == Some(SeriesCategory::Line))
+            .collect();
+        let layout = self.layout_cartesian(c, &self.y_axis_configs, XAxisMode::Category, &lines);
         let c = layout.canvas.clone();
         let left_y_axis_width = layout.left_width;
         let left_y_axis_values = &layout.left;

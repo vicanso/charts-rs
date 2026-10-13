@@ -4,6 +4,29 @@
 
 ### Added
 
+- A mark point is on any point of a series, not only on its smallest and
+  its largest: `{"category": "index", "index": 28}` marks the point with
+  that index in the `data` of the series, so that the second of two peaks
+  has its value over it as the first has. In Rust:
+  `MarkPointCategory::Index(28)`; a `match` on the category needs an arm
+  for it. A point has one marker however often it is asked for.
+
+### Changed
+
+- The marker of a point is read: it is as large as the value in it (a value
+  of four figures was wider than its marker, and ran out of it on both
+  sides), and the value is written in white on a dark marker — it was a
+  light grey — and in the middle of it, by `text-anchor` and no longer by a
+  measured offset. A marker of up to two figures is the size it was.
+- A plot leaves room for the markers that reach above it: it starts lower by
+  what the highest of them needs, where that was over the title, the legend
+  or the edge of the chart. A chart whose markers are on the plot is laid
+  out as before.
+
+## 2.1.0
+
+### Added
+
 - `texts`, on every chart: lines of text written over it, wherever they are
   asked for — a copyright line in a corner, a watermark across the middle.
   A text is placed by its distances from the edges (`left`, `top`, `right`,

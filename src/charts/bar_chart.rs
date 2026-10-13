@@ -122,13 +122,6 @@ impl BarChart {
         } else {
             XAxisMode::Points
         };
-        let layout = self.layout_cartesian(c, &self.y_axis_configs, x_mode);
-        let c = layout.canvas.clone();
-        let (left_y_axis_values, right_y_axis_values) = (&layout.left, &layout.right);
-        let axis_height = layout.axis_height;
-
-        // bar point
-        let max_height = layout.max_height;
         let mut bar_series_list = vec![];
         let mut line_series_list = vec![];
         // filter line and bar series points
@@ -141,6 +134,13 @@ impl BarChart {
             }
             bar_series_list.push(item);
         });
+        let layout = self.layout_cartesian(c, &self.y_axis_configs, x_mode, &line_series_list);
+        let c = layout.canvas.clone();
+        let (left_y_axis_values, right_y_axis_values) = (&layout.left, &layout.right);
+        let axis_height = layout.axis_height;
+
+        // bar point
+        let max_height = layout.max_height;
 
         let y_axis_values_list = vec![left_y_axis_values, right_y_axis_values];
         let mut bar_series_labels_list = self.render_bar(

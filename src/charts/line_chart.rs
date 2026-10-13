@@ -82,14 +82,19 @@ impl LineChart {
             return chart.svg();
         }
         let c = self.new_canvas();
-        let layout = self.layout_cartesian(c, &self.y_axis_configs, XAxisMode::Points);
+        let line_series_list: Vec<&Series> = self.series_list.iter().collect();
+        let layout = self.layout_cartesian(
+            c,
+            &self.y_axis_configs,
+            XAxisMode::Points,
+            &line_series_list,
+        );
         let c = layout.canvas.clone();
         let axis_height = layout.axis_height;
 
         // line point
         let y_axis_values_list = layout.y_axis_values();
         let max_height = layout.max_height;
-        let line_series_list: Vec<&Series> = self.series_list.iter().collect();
         let series_labels_list = self.render_line(
             layout.plot(),
             &line_series_list,

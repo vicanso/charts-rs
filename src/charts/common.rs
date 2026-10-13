@@ -170,7 +170,7 @@ pub enum AxisLabelOverflow {
     Ellipsis,
 }
 
-/// The statistic a mark point highlights.
+/// The point of a series a mark point is on.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub enum MarkPointCategory {
     #[default]
@@ -178,6 +178,11 @@ pub enum MarkPointCategory {
     Min,
     /// The series maximum.
     Max,
+    /// The point with this index in the data of the series, the first one
+    /// being 0: any point that is to be pointed at, such as the second of
+    /// two peaks, which is the maximum of neither. There is no marker for
+    /// an index the series has no value at.
+    Index(usize),
 }
 
 /// A horizontal reference line at a series statistic (average, min or max).
@@ -209,10 +214,12 @@ impl MarkLine {
     }
 }
 
-/// A marker highlighting a series statistic (min or max) on its data point.
+/// A marker on a point of a series, with the value of the point in it: the
+/// minimum, the maximum, or the point with a given index. A series may have
+/// several, one for each point that is marked.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug, Default)]
 pub struct MarkPoint {
-    /// The statistic the marker highlights.
+    /// The point the marker is on.
     pub category: MarkPointCategory,
 }
 

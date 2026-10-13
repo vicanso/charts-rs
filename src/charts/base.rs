@@ -300,6 +300,9 @@ pub(crate) fn overlay_texts(
         .collect()
 }
 
+/// How far the tip of the marker of a point is above the point.
+const MARK_POINT_GAP: f32 = 7.5;
+
 /// The font size a text over a chart is written in: 12 where it has none.
 fn overlay_font_size(text: &TextConfig) -> f32 {
     if text.font.size.is_nan() || text.font.size <= 0.0 {
@@ -445,6 +448,83 @@ impl ChartBase {
     /// the one the chart fills with when there is none.
     pub(crate) fn fill_alpha(&self, default: u8) -> u8 {
         self.series.fill_opacity.map_or(default, opacity_alpha)
+    }
+    /// The radius of the marker of a point with `text` in it: as large as
+    /// the text needs, its corners 3 pixels inside of the rim, and 15 at
+    /// the least.
+    pub(crate) fn mark_point_radius(&self, text: &str) -> f32 {
+        let font_size = self.series.label.font.size;
+        let width = measure_text_width_family(&self.font_family, font_size, text)
+            .map(|b| b.width())
+            .unwrap_or_default();
+        ((width / 2.0).hypot(font_size * 0.36) + 3.0).max(15.0)
+    }
+    /// How much lower a plot `height` high has to start for the markers of
+    /// `lines` to be on it: a marker reaches `MARK_POINT_GAP` and two and a
+    /// half of its radius above its point. `axes` are the left axis and the
+    /// right one, where there is one.
+    pub(crate) fn mark_point_room(
+        &self,
+        lines: &[&Series],
+        axes: (&AxisValues, Option<&AxisValues>),
+        height: f32,
+    ) -> f32 {
+        let mut room = 0.0_f32;
+        for series in lines.iter().filter(|s| !s.mark_points.is_empty()) {
+            let values = match axes.1 {
+                Some(right) if series.y_axis_index != 0 => right,
+                _ => axes.0,
+            };
+            // The points that are marked: the first of the smallest and of
+            // the largest values, and those with the indexes asked for.
+            let present = || {
+                series
+                    .iter_values()
+                    .enumerate()
+                    .filter(|(_, value)| *value != NIL_VALUE)
+            };
+            let largest = present().fold(
+                None,
+                |found: Option<(usize, f32)>, (i, value)| match found {
+                    Some((_, most)) if most >= value => found,
+                    _ => Some((i, value)),
+                },
+            );
+            let smallest =
+                present().fold(
+                    None,
+                    |found: Option<(usize, f32)>, (i, value)| match found {
+                        Some((_, least)) if least <= value => found,
+                        _ => Some((i, value)),
+                    },
+                );
+            for mark_point in series.mark_points.iter() {
+                let point = match mark_point.category {
+                    MarkPointCategory::Max => largest,
+                    MarkPointCategory::Min => smallest,
+                    MarkPointCategory::Index(index) => present().find(|(i, _)| *i == index),
+                };
+                let Some((i, value)) = point else {
+                    continue;
+                };
+                let text =
+                    self.format_series_label(series, i.saturating_add(series.start_index), value);
+                let reach = self.mark_point_radius(&text) * 2.5 + MARK_POINT_GAP;
+                // How far down the plot the point is, as a share of it. A
+                // stacked one is on top of the series below it, wherever
+                // that is: at the very top, for all that is known here.
+                let down = if series.stack.is_some() || height <= 0.0 {
+                    0.0
+                } else {
+                    (values.get_offset_height(value, height) / height).clamp(0.0, 1.0)
+                };
+                if down < 1.0 {
+                    room = room.max((reach - down * height) / (1.0 - down));
+                }
+            }
+        }
+        // Not more than half of the plot, however small that is.
+        room.clamp(0.0, (height / 2.0).max(0.0))
     }
     /// The size the tooltips are written in: their own, or that of the
     /// labels they stand in for.
@@ -1201,11 +1281,14 @@ impl ChartBase {
     }
     /// Draws the header, grid, y axes and x axis of a cartesian chart whose
     /// value ranges come from `series_list`, and returns the plot frame.
+    /// `lines` are the series that are drawn as lines, which may have
+    /// markers above their points: the plot leaves room for those.
     pub(crate) fn layout_cartesian(
         &self,
         c: Canvas,
         y_axis_configs: &[YAxisConfig],
         x_mode: XAxisMode,
+        lines: &[&Series],
     ) -> CartesianLayout {
         let mut c = c;
         let axis_top = self.render_header(&mut c);
@@ -1215,7 +1298,7 @@ impl ChartBase {
         } else {
             None
         };
-        self.layout_cartesian_with(c, y_axis_configs, axis_top, left, right, x_mode)
+        self.layout_cartesian_with(c, y_axis_configs, axis_top, left, right, x_mode, lines)
     }
     /// Takes the space the axis titles need off the edges of `c`: the x
     /// title below the x axis, the y titles beside the y axes. Call it once
@@ -1329,6 +1412,7 @@ impl ChartBase {
     /// [`Self::layout_cartesian`] with precomputed value ranges (and their
     /// axis widths), for charts whose data does not live in `series_list`.
     /// `axis_top` is the height the header took.
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn layout_cartesian_with(
         &self,
         c: Canvas,
@@ -1337,11 +1421,13 @@ impl ChartBase {
         left: (AxisValues, f32),
         right: Option<(AxisValues, f32)>,
         x_mode: XAxisMode,
+        lines: &[&Series],
     ) -> CartesianLayout {
         let mut c = c;
         let titles =
             self.reserve_axis_titles(&mut c, y_axis_configs, &self.x_axis.title, right.is_some());
         let (left_values, mut left_width) = left;
+        let has_right = right.is_some();
         let (right_values, mut right_width) = right.unwrap_or_default();
         // The value ranges are still needed to place the series when the
         // axes are hidden; only their space is dropped.
@@ -1373,6 +1459,15 @@ impl ChartBase {
             None => self.x_axis_height_for(c.width() - left_width - right_width),
         };
         let axis_height = (c.height() - x_axis_height - axis_top).max(0.0);
+        // A marker is above its point, and above the plot where the point
+        // is near the top of it: the plot starts that much lower, below
+        // what is written above it.
+        let room = self.mark_point_room(
+            lines,
+            (&left_values, has_right.then_some(&right_values)),
+            axis_height,
+        );
+        let (axis_top, axis_height) = (axis_top + room, axis_height - room);
         self.render_axis_titles(
             &titles,
             y_axis_configs,
@@ -2349,6 +2444,18 @@ impl ChartBase {
             let mut min_actual_i = 0;
             let mut max_raw = 0.0_f32;
             let mut min_raw = 0.0_f32;
+            // The points that are marked by their index: for each its
+            // index, where it is among the labels, and what its label is
+            // made of.
+            let marked: Vec<usize> = series
+                .mark_points
+                .iter()
+                .filter_map(|mark_point| match mark_point.category {
+                    MarkPointCategory::Index(index) => Some(index),
+                    _ => None,
+                })
+                .collect();
+            let mut indexed: Vec<(usize, usize, usize, f32)> = vec![];
 
             for (i, value) in series.iter_values().enumerate() {
                 let actual_i = match x_scale {
@@ -2392,6 +2499,9 @@ impl ChartBase {
                         min_index = series_labels.len();
                         min_actual_i = actual_i;
                         min_raw = value;
+                    }
+                    if marked.contains(&i) {
+                        indexed.push((i, series_labels.len(), actual_i, value));
                     }
                 }
 
@@ -2459,7 +2569,8 @@ impl ChartBase {
                 floor_points_list.push(floor_points);
             }
 
-            // Mark points only need the min and max labels, not one per point.
+            // Mark points only need the labels of the points they are on,
+            // not one per point.
             if track_points && !format_every_label {
                 if let Some(label) = series_labels.get_mut(max_index) {
                     label.text = self.format_series_label(series, max_actual_i, max_raw);
@@ -2468,6 +2579,13 @@ impl ChartBase {
                     && let Some(label) = series_labels.get_mut(min_index)
                 {
                     label.text = self.format_series_label(series, min_actual_i, min_raw);
+                }
+                for (_, label_index, actual_i, raw) in indexed.iter() {
+                    if let Some(label) = series_labels.get_mut(*label_index)
+                        && label.text.is_empty()
+                    {
+                        label.text = self.format_series_label(series, *actual_i, *raw);
+                    }
                 }
             }
 
@@ -2645,42 +2763,49 @@ impl ChartBase {
                 }
             }
 
+            // One marker for a point, however often it is asked for.
+            let mut marked_labels: Vec<usize> = vec![];
             for mark_point in series.mark_points.iter() {
                 let mp_index = match mark_point.category {
-                    MarkPointCategory::Max => max_index,
-                    MarkPointCategory::Min => min_index,
+                    MarkPointCategory::Max => Some(max_index),
+                    MarkPointCategory::Min => Some(min_index),
+                    MarkPointCategory::Index(index) => indexed
+                        .iter()
+                        .find(|(i, ..)| *i == index)
+                        .map(|(_, label_index, ..)| *label_index),
                 };
+                let Some(mp_index) = mp_index.filter(|index| !marked_labels.contains(index)) else {
+                    continue;
+                };
+                marked_labels.push(mp_index);
                 if let Some(label) = series_labels.get(mp_index) {
-                    let r = 15.0;
-                    let y = label.point.y - r * 2.0;
+                    // As large as the value in it needs, its tip above the
+                    // point.
+                    let r = self.mark_point_radius(&label.text);
+                    let y = label.point.y - r * 1.5 - MARK_POINT_GAP;
                     c1.bubble(Bubble {
                         x: label.point.x,
                         y,
                         r,
                         fill: color,
                     });
-                    let mut dx = None;
-                    if let Ok(value) = measure_text_width_family(
-                        &self.font_family,
-                        self.series.label.font.size,
-                        &label.text,
-                    ) {
-                        dx = Some(-value.width() / 2.0 + 1.0);
-                    }
+                    // In the middle of it, in white on a dark marker and in
+                    // a dark grey on a light one.
                     let font_color = if color.is_light() {
                         "#464646".into()
                     } else {
-                        "#D8D9DA".into()
+                        Color::white()
                     };
                     c1.text(Text {
                         text: label.text.clone(),
-                        line_height: Some(r),
-                        dx,
                         font_color: Some(font_color),
                         font_family: Some(self.font_family.clone()),
                         font_size: Some(self.series.label.font.size),
+                        font_weight: self.series.label.font.weight.clone(),
                         x: Some(label.point.x),
-                        y: Some(y - r * 0.5 + 2.0),
+                        y: Some(y),
+                        text_anchor: Some("middle".to_string()),
+                        dominant_baseline: Some("central".to_string()),
                         ..Default::default()
                     });
                 }

@@ -115,7 +115,10 @@ static MARK_LINE_FIELDS: &[Field] = &[
     f("stroke_width", Kind::Number),
     f("stroke_dash_array", Kind::String),
 ];
-static MARK_POINT_FIELDS: &[Field] = &[f("category", Kind::Enum(&["min", "max"]))];
+static MARK_POINT_FIELDS: &[Field] = &[
+    f("category", Kind::Enum(&["min", "max", "index"])),
+    f("index", Kind::Index),
+];
 static MARK_AREA_FIELDS: &[Field] = &[
     f("from", Kind::MarkValue),
     f("to", Kind::MarkValue),
@@ -1052,7 +1055,7 @@ mod tests {
                 vec![json!({"type": "circle"}), json!({"type": "rect"})]
             }
             "mark_lines" => vec![json!({"category": "average"}), json!({"category": "value"})],
-            "mark_points" => vec![json!({"category": "max"})],
+            "mark_points" => vec![json!({"category": "max"}), json!({"category": "index"})],
             "texts" => vec![json!({"text": "t"})],
             "mark_areas" => vec![json!({"from": 1, "to": 2})],
             "band" => vec![json!({"lower": [1, 2], "upper": [3, 4]})],

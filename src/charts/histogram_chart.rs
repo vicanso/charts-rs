@@ -283,6 +283,8 @@ impl HistogramChart {
                 max: bins.end(),
                 tick: bins.width,
             },
+            // No lines, and so no markers above their points.
+            &[],
         );
         let c = layout.canvas.clone();
         let Some(scale) = layout.x.as_ref() else {

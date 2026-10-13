@@ -578,6 +578,12 @@ fn get_mark_points(value: &serde_json::Value, key: &str) -> Vec<MarkPoint> {
             if let Some(value) = item.get("category") {
                 let category = match value.as_str().unwrap_or_default().to_lowercase().as_str() {
                     "max" => MarkPointCategory::Max,
+                    // Which point it is is in `index`: without one there
+                    // is none to mark.
+                    "index" => match get_usize_from_value(item, "index") {
+                        Some(index) => MarkPointCategory::Index(index),
+                        None => continue,
+                    },
                     _ => MarkPointCategory::Min,
                 };
                 mark_points.push(MarkPoint { category })
