@@ -1269,6 +1269,13 @@ fn generate_image() {
                 .unwrap(),
         ),
         (
+            "scatter-contour",
+            ScatterChart::from_json(include_str!("../asset/scatter_chart/contour.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
             "heatmap-scale",
             HeatmapChart::from_json(include_str!("../asset/heatmap_chart/scale.json"))
                 .unwrap()

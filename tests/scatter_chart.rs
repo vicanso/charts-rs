@@ -473,3 +473,260 @@ fn scatter_marginal_snapshot() {
         ScatterChart::from_json(include_str!("../asset/scatter_chart/marginal.json")).unwrap();
     common::assert_snapshot!("scatter_chart/marginal.svg", chart.svg().unwrap());
 }
+
+struct ContourLine {
+    level: usize,
+    closed: bool,
+    points: Vec<(f32, f32)>,
+    opacity: String,
+}
+
+fn attr_str(tag: &str, name: &str) -> String {
+    let key = format!(" {name}=\"");
+    let start = tag.find(&key).unwrap() + key.len();
+    tag[start..start + tag[start..].find('"').unwrap()].to_string()
+}
+
+/// The density lines of the svg, in the order they were drawn.
+fn contour_lines(svg: &str) -> Vec<ContourLine> {
+    svg.split("<path")
+        .skip(1)
+        .filter(|tag| tag[..tag.find("/>").unwrap()].contains("ct-contour"))
+        .map(|tag| {
+            let head = &tag[..tag.find("/>").unwrap()];
+            let d = attr_str(head, "d");
+            let closed = d.ends_with(" Z");
+            let mut points = Vec::new();
+            let mut tokens = d.trim_end_matches(" Z").split_whitespace();
+            while let Some(command) = tokens.next() {
+                let (Some(x), Some(y)) = (tokens.next(), tokens.next()) else {
+                    break;
+                };
+                assert!(command == "M" || command == "L", "{command}");
+                points.push((x.parse().unwrap(), y.parse().unwrap()));
+            }
+            let class = attr_str(head, "class");
+            let level = class
+                .split_whitespace()
+                .find_map(|token| token.strip_prefix('l'))
+                .unwrap()
+                .parse()
+                .unwrap();
+            ContourLine {
+                level,
+                closed,
+                points,
+                opacity: attr_str(head, "stroke-opacity"),
+            }
+        })
+        .collect()
+}
+
+fn contour_paths(svg: &str) -> Vec<String> {
+    contour_lines(svg)
+        .into_iter()
+        .map(|line| {
+            line.points
+                .iter()
+                .map(|(x, y)| format!("{x},{y}"))
+                .collect()
+        })
+        .collect()
+}
+
+/// Even-odd test. The line is closed by the caller, the way the svg `Z` is.
+fn encloses(points: &[(f32, f32)], x: f32, y: f32) -> bool {
+    let mut crossings = 0;
+    for index in 0..points.len() {
+        let (x1, y1) = points[index];
+        let (x2, y2) = points[(index + 1) % points.len()];
+        if (y1 > y) != (y2 > y) {
+            let at = x1 + (y - y1) * (x2 - x1) / (y2 - y1);
+            if x < at {
+                crossings += 1;
+            }
+        }
+    }
+    crossings % 2 == 1
+}
+
+fn contour_chart(extra: &str, data: &str) -> String {
+    ScatterChart::from_json(&format!(
+        r#"{{
+            "width": 420,
+            "height": 320,
+            "x_axis_config": {{"axis_min": 0, "axis_max": 10}},
+            "y_axis_configs": [{{"axis_min": 0, "axis_max": 10}}],
+            "series_symbol_sizes": [4, 4],
+            "series_symbols": ["circle", "circle"],
+            {extra}
+            "series_list": [{data}]
+        }}"#
+    ))
+    .unwrap()
+    .svg()
+    .unwrap()
+}
+
+const CLUSTER: &str = "4.6, 5.2, 5.1, 4.7, 5.4, 5.0, 4.8, 5.5, 5.2, 4.4, 4.9, 5.3, 5.5, 4.8, 4.7, 5.1, 5.0, 4.6, 5.3, 5.4";
+
+#[test]
+fn scatter_contour_lines_sit_under_the_points() {
+    let svg = contour_chart(
+        r#""contour": {},"#,
+        &format!(r#"{{"name": "A", "data": [{CLUSTER}]}}"#),
+    );
+    let lines = contour_lines(&svg);
+    let tag = svg
+        .split("<path")
+        .find(|tag| tag.contains("ct-contour"))
+        .unwrap();
+    assert!(tag.contains("stroke-width=\"1.5\""));
+    assert!(tag.contains("fill=\"none\""));
+    assert!(lines.iter().all(|line| line.opacity == "0.82"));
+    let mut levels: Vec<_> = lines.iter().map(|line| line.level).collect();
+    levels.sort_unstable();
+    levels.dedup();
+    assert_eq!(vec![1, 2, 3, 4], levels);
+    // The lines are written before the points.
+    assert!(svg.find("ct-contour").unwrap() < svg.find("data-series=\"").unwrap());
+    let outer = lines
+        .iter()
+        .find(|line| line.level == 1 && line.closed)
+        .unwrap();
+    for point in circles(&svg, "A") {
+        assert!(encloses(&outer.points, point.0, point.1), "{point:?}");
+    }
+
+    let overlaid = contour_chart(
+        r#""contour": {},"#,
+        &format!(
+            r#"{{"name": "A", "data": [{CLUSTER}]}}, {{"name": "B", "data": [1.2, 1.4, 1.5, 1.1, 1.8, 1.6, 1.3, 1.9, 1.6, 1.2, 1.4, 1.7, 1.1, 1.5, 1.7, 1.3, 1.9, 1.8, 1.2, 1.6]}}"#
+        ),
+    );
+    assert!(
+        contour_lines(&overlaid)
+            .iter()
+            .all(|line| line.opacity == "0.55")
+    );
+
+    // A second series too small to draw leaves the first at full strength.
+    let single = contour_chart(
+        r#""contour": {},"#,
+        &format!(r#"{{"name": "A", "data": [{CLUSTER}]}}, {{"name": "B", "data": [1, 1, 2, 2]}}"#),
+    );
+    assert!(
+        contour_lines(&single)
+            .iter()
+            .all(|line| line.opacity == "0.82")
+    );
+}
+
+#[test]
+fn scatter_contour_skips_what_is_not_on_the_axes() {
+    let bare = contour_chart("", &format!(r#"{{"name": "A", "data": [{CLUSTER}]}}"#));
+    assert!(!bare.contains("ct-contour"));
+
+    // Seven points on the axes, plus a missing one and one outside it.
+    let seven = "4.6, 5.2, 5.1, 4.7, 5.4, 5.0, 4.8, 5.5, 5.2, 4.4, 4.9, 5.3, 5.5, 4.8";
+    let short = contour_chart(
+        r#""contour": {},"#,
+        &format!(r#"{{"name": "A", "data": [{seven}, null, null, 30, 30]}}"#),
+    );
+    assert!(!short.contains("ct-contour"));
+
+    let plain = contour_chart(
+        r#""contour": {"grid_size": 32},"#,
+        &format!(r#"{{"name": "A", "data": [{CLUSTER}]}}"#),
+    );
+    let junk = contour_chart(
+        r#""contour": {"grid_size": 32},"#,
+        &format!(r#"{{"name": "A", "data": [{CLUSTER}, null, 1, 30, 30, null, null]}}"#),
+    );
+    assert_eq!(contour_paths(&plain), contour_paths(&junk));
+
+    let triples: Vec<String> = CLUSTER
+        .split(", ")
+        .collect::<Vec<_>>()
+        .chunks(2)
+        .enumerate()
+        .map(|(i, pair)| format!("{}, {}, {}", pair[0], pair[1], 10 + i * 17))
+        .collect();
+    let bubbles = contour_chart(
+        r#""bubble": true, "contour": {"grid_size": 32},"#,
+        &format!(r#"{{"name": "A", "data": [{}]}}"#, triples.join(", ")),
+    );
+    assert_eq!(contour_paths(&plain), contour_paths(&bubbles));
+}
+
+#[test]
+fn scatter_contour_follows_the_scale() {
+    let data = "8, 9, 9, 11, 10, 10, 12, 8, 11, 12, 8, 10, 10, 9, 12, 11, 9, 8, 11, 10";
+    for (scale, inverse, min, max) in [
+        ("linear", true, 0, 20),
+        ("log", false, 1, 100),
+        ("log", true, 1, 100),
+    ] {
+        let svg = ScatterChart::from_json(&format!(
+            r#"{{
+                "width": 420,
+                "height": 320,
+                "x_axis_config": {{"axis_min": {min}, "axis_max": {max}, "axis_scale": "{scale}", "axis_inverse": {inverse}}},
+                "y_axis_configs": [{{"axis_min": {min}, "axis_max": {max}, "axis_scale": "{scale}", "axis_inverse": {inverse}}}],
+                "contour": {{}},
+                "series_symbol_sizes": [4],
+                "series_list": [{{"name": "A", "data": [{data}]}}]
+            }}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap();
+        let outer = contour_lines(&svg)
+            .into_iter()
+            .find(|line| line.level == 1 && line.closed)
+            .unwrap_or_else(|| panic!("{scale} inverse={inverse} has no outer line"));
+        let point = svg
+            .split("<circle")
+            .skip(1)
+            .find(|tag| tag.contains("data-x=\"10\"") && tag.contains("data-y=\"10\""))
+            .unwrap();
+        let (x, y): (f32, f32) = (
+            attr_str(point, "cx").parse().unwrap(),
+            attr_str(point, "cy").parse().unwrap(),
+        );
+        assert!(
+            encloses(&outer.points, x, y),
+            "{scale} inverse={inverse}: (10, 10) at ({x}, {y}) is outside the contour"
+        );
+    }
+}
+
+#[test]
+fn scatter_contour_options_and_unknown_keys() {
+    let chart =
+        ScatterChart::from_json(r#"{"contour": {"levels": 0, "grid_size": 0}, "series_list": []}"#)
+            .unwrap();
+    let contour = chart.contour.unwrap();
+    assert_eq!(4, contour.levels);
+    assert_eq!(64, contour.grid_size);
+
+    let chart = ScatterChart::from_json(
+        r#"{"contour": {"levels": 100, "grid_size": 3}, "series_list": []}"#,
+    )
+    .unwrap();
+    let contour = chart.contour.unwrap();
+    assert_eq!(8, contour.levels);
+    assert_eq!(16, contour.grid_size);
+
+    let message = ScatterChart::from_json(r#"{"contour": {"bandwidth": 1}, "series_list": []}"#)
+        .unwrap_err()
+        .to_string();
+    assert!(message.contains("contour.bandwidth"), "{message}");
+}
+
+#[test]
+fn scatter_contour_snapshot() {
+    let chart =
+        ScatterChart::from_json(include_str!("../asset/scatter_chart/contour.json")).unwrap();
+    common::assert_snapshot!("scatter_chart/contour.svg", chart.svg().unwrap());
+}

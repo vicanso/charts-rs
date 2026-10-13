@@ -130,7 +130,7 @@ std::fs::write("visits.png", png).unwrap();
   canvas.
 - **Series**: stacked and 100% stacked, bars mixed with lines, two y axes,
   smooth and step lines, areas, bands and error bars, mark lines, points and
-  areas, regression curves, marginal histograms, missing values.
+  areas, regression curves, marginal histograms, density contours, missing values.
 - **Axes**: categories, values, time and logarithmic scales, with titles and
   label formats.
 - **Looks**: themes, gradients, a legend on any side, labels that keep out

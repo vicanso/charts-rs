@@ -131,7 +131,7 @@ pub use pie_chart::PieChart;
 pub use polar_bar_chart::{PolarAxis, PolarBarChart};
 pub use radar_chart::{RadarChart, RadarIndicator};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
-pub use scatter_chart::{MarginalHistogram, Regression, ScatterChart};
+pub use scatter_chart::{DensityContour, MarginalHistogram, Regression, ScatterChart};
 pub use sunburst_chart::{SunburstChart, SunburstData};
 pub use table_chart::{TableBodyConfig, TableCellStyle, TableChart, TableHeaderConfig};
 pub use theme::Theme;

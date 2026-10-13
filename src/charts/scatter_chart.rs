@@ -48,6 +48,22 @@ const DEFAULT_MARGINAL_SIZE: f32 = 64.0;
 /// Pixels kept between a marginal bar and the plot, so the bar does not
 /// cover the axis it grows from.
 const MARGINAL_PLOT_GAP: f32 = 1.0;
+/// A series with fewer points than this has no density worth a line.
+const MIN_CONTOUR_POINTS: usize = 8;
+/// Lines drawn when `levels` is 0: at 20%, 40%, 60% and 80% of the peak.
+const DEFAULT_CONTOUR_LEVELS: usize = 4;
+/// More lines than this crowd the same peak.
+const MAX_CONTOUR_LEVELS: usize = 8;
+/// Cells along each axis of the density grid when `grid_size` is 0.
+const DEFAULT_CONTOUR_GRID: usize = 64;
+/// The grid stays inside this range: coarser than 16 misses the shape,
+/// finer than 128 only lengthens the same lines.
+const MIN_CONTOUR_GRID: usize = 16;
+const MAX_CONTOUR_GRID: usize = 128;
+/// Width of a contour line.
+const CONTOUR_STROKE: f32 = 1.5;
+/// A kernel sample beyond this many bandwidths is left out of a node.
+const KERNEL_REACH: f64 = 4.0;
 
 /// A curve fitted to points by least squares.
 #[derive(Clone, Debug, PartialEq)]
@@ -376,6 +392,441 @@ impl MarginalSeries {
     }
 }
 
+/// Unfilled density contours of each scatter series. The density is a
+/// Gaussian kernel estimate of that series' own points, and the lines sit
+/// at even fractions of its highest density. `None` on the chart draws the
+/// points alone.
+#[derive(Clone, Debug, PartialEq)]
+pub struct DensityContour {
+    /// How many lines to draw. They fall at `k / (levels + 1)` of the
+    /// highest density, so 4 (the default) is 20%, 40%, 60% and 80%.
+    /// `0` is those four. Never more than 8.
+    pub levels: usize,
+    /// Cells along each axis of the grid the density is estimated on.
+    /// `0` is 64, the default. Clamped to 16..=128.
+    pub grid_size: usize,
+}
+
+impl Default for DensityContour {
+    fn default() -> Self {
+        Self {
+            levels: DEFAULT_CONTOUR_LEVELS,
+            grid_size: DEFAULT_CONTOUR_GRID,
+        }
+    }
+}
+
+impl DensityContour {
+    /// The line count and the grid the chart actually draws with.
+    fn resolved(&self) -> (usize, usize) {
+        let levels = if self.levels == 0 {
+            DEFAULT_CONTOUR_LEVELS
+        } else {
+            self.levels.min(MAX_CONTOUR_LEVELS)
+        };
+        let grid_size = if self.grid_size == 0 {
+            DEFAULT_CONTOUR_GRID
+        } else {
+            self.grid_size.clamp(MIN_CONTOUR_GRID, MAX_CONTOUR_GRID)
+        };
+        (levels, grid_size)
+    }
+}
+
+/// One contour line, in the scale coordinates of the axes: a linear value,
+/// or the logarithm of a value on a log axis.
+#[derive(Debug)]
+struct ContourLine {
+    points: Vec<(f64, f64)>,
+    closed: bool,
+    /// 1-based. `1` is the lowest line, the widest ring around the peak.
+    level: usize,
+}
+
+/// The axis, as the coordinate the kernel is estimated in. `None` when the
+/// axis has no span.
+fn scale_span(axis: &AxisValues) -> Option<(f64, f64)> {
+    let (min, max) = match axis.scale {
+        AxisScale::Linear => (f64::from(axis.min), f64::from(axis.max)),
+        AxisScale::Log(base) => {
+            let base = f64::from(base);
+            if base <= 0.0 || (base - 1.0).abs() < 1e-9 {
+                return None;
+            }
+            let min = f64::from(axis.min.max(f32::MIN_POSITIVE)).log(base);
+            let max = f64::from(axis.max.max(f32::MIN_POSITIVE)).log(base);
+            (min, max)
+        }
+    };
+    (min.is_finite() && max.is_finite() && max > min).then_some((min, max))
+}
+
+/// `value` in the same coordinate as [`scale_span`]. A missing value, a
+/// non-positive value on a log axis, and a value outside the axis are left
+/// out.
+fn to_scale(axis: &AxisValues, value: f32) -> Option<f64> {
+    let (min, max) = scale_span(axis)?;
+    let scaled = match axis.scale {
+        AxisScale::Linear => f64::from(value),
+        AxisScale::Log(base) => {
+            if value <= 0.0 {
+                return None;
+            }
+            f64::from(value).log(f64::from(base))
+        }
+    };
+    if !scaled.is_finite() {
+        return None;
+    }
+    let slack = (max - min) * 1e-9;
+    (scaled >= min - slack && scaled <= max + slack).then_some(scaled.clamp(min, max))
+}
+
+/// The value whose scale coordinate is `scaled`, ready for the axis.
+fn from_scale(axis: &AxisValues, scaled: f64) -> f32 {
+    match axis.scale {
+        AxisScale::Linear => scaled as f32,
+        AxisScale::Log(base) => f64::from(base).powf(scaled) as f32,
+    }
+}
+
+/// Points of `series` that land on both axes. A bubble's size is skipped:
+/// it is not a coordinate.
+fn contour_samples(
+    series: &Series,
+    bubble: bool,
+    x_axis: &AxisValues,
+    y_axis: &AxisValues,
+) -> Vec<(f64, f64)> {
+    let mut coords = series.iter_values();
+    let mut samples = Vec::new();
+    while let (Some(x), Some(y)) = (coords.next(), coords.next()) {
+        if bubble {
+            coords.next();
+        }
+        if x == NIL_VALUE || y == NIL_VALUE {
+            continue;
+        }
+        let (Some(x), Some(y)) = (to_scale(x_axis, x), to_scale(y_axis, y)) else {
+            continue;
+        };
+        samples.push((x, y));
+    }
+    samples
+}
+
+/// Scott's rule for two dimensions: `σ · n^(-1/6)`, with the sample standard
+/// deviation. A line of points has `σ` of 0 on one axis; the bandwidth is
+/// then at least one cell of the grid, so the line still grows a thin contour.
+fn bandwidth(values: &[f64], span: f64, cells: usize) -> f64 {
+    let n = values.len();
+    let mean = values.iter().sum::<f64>() / n as f64;
+    let variance = values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / (n - 1) as f64;
+    let scott = variance.sqrt() * (n as f64).powf(-1.0 / 6.0);
+    scott.max(span / cells as f64)
+}
+
+/// Density of `samples` on the `(cells + 1)²` nodes of the grid that spans
+/// `x` and `y`. The constant in front of the kernel is left out: the lines
+/// are fractions of whatever the highest node is.
+fn density_grid(samples: &[(f64, f64)], x: (f64, f64), y: (f64, f64), cells: usize) -> Vec<f64> {
+    let nodes = cells + 1;
+    let mut grid = vec![0.0; nodes * nodes];
+    let xs: Vec<f64> = samples.iter().map(|p| p.0).collect();
+    let ys: Vec<f64> = samples.iter().map(|p| p.1).collect();
+    let hx = bandwidth(&xs, x.1 - x.0, cells);
+    let hy = bandwidth(&ys, y.1 - y.0, cells);
+    let dx = (x.1 - x.0) / cells as f64;
+    let dy = (y.1 - y.0) / cells as f64;
+    let reach_x = KERNEL_REACH * hx;
+    let reach_y = KERNEL_REACH * hy;
+    for &(px, py) in samples {
+        let i0 = node_index(px - reach_x, x.0, dx, cells, true);
+        let i1 = node_index(px + reach_x, x.0, dx, cells, false);
+        let j0 = node_index(py - reach_y, y.0, dy, cells, true);
+        let j1 = node_index(py + reach_y, y.0, dy, cells, false);
+        for j in j0..=j1 {
+            let gy = y.0 + dy * j as f64;
+            let dy2 = ((gy - py) / hy).powi(2);
+            if dy2 > KERNEL_REACH * KERNEL_REACH {
+                continue;
+            }
+            for i in i0..=i1 {
+                let gx = x.0 + dx * i as f64;
+                let dx2 = ((gx - px) / hx).powi(2);
+                if dx2 + dy2 > KERNEL_REACH * KERNEL_REACH {
+                    continue;
+                }
+                grid[j * nodes + i] += (-0.5 * (dx2 + dy2)).exp();
+            }
+        }
+    }
+    grid
+}
+
+/// The node index of `position` along an axis. `low` rounds down, so a
+/// point's window includes the nodes on either side of it.
+fn node_index(position: f64, origin: f64, step: f64, cells: usize, low: bool) -> usize {
+    let t = (position - origin) / step;
+    let t = if low { t.floor() } else { t.ceil() };
+    if t <= 0.0 {
+        0
+    } else if t >= cells as f64 {
+        cells
+    } else {
+        t as usize
+    }
+}
+
+/// Where a line at `threshold` crosses an edge, as a fraction from the
+/// first corner to the second. An edge whose ends are equal is crossed
+/// in the middle.
+fn edge_fraction(start: f64, end: f64, threshold: f64) -> f64 {
+    let span = end - start;
+    if span.abs() < 1e-15 {
+        0.5
+    } else {
+        ((threshold - start) / span).clamp(0.0, 1.0)
+    }
+}
+
+/// The two edges a cell of this mask connects. Bits, from the low corner:
+/// `1` at `(i, j)`, `2` at `(i+1, j)`, `4` at `(i+1, j+1)`, `8` at `(i, j+1)`.
+/// Sides of the pair are `0` south, `1` east, `2` north, `3` west.
+/// A saddle (`5` and `10`) joins its two high corners when their average
+/// with the low ones is itself over the line.
+fn cell_segments(mask: u8, joined: bool) -> &'static [(u8, u8)] {
+    match mask {
+        0 | 15 => &[],
+        1 | 14 => &[(0, 3)],
+        2 | 13 => &[(0, 1)],
+        3 | 12 => &[(3, 1)],
+        4 | 11 => &[(2, 1)],
+        5 => {
+            if joined {
+                &[(0, 1), (3, 2)]
+            } else {
+                &[(0, 3), (2, 1)]
+            }
+        }
+        6 | 9 => &[(0, 2)],
+        7 | 8 => &[(3, 2)],
+        10 => {
+            if joined {
+                &[(0, 3), (2, 1)]
+            } else {
+                &[(0, 1), (3, 2)]
+            }
+        }
+        _ => &[],
+    }
+}
+
+/// Index of one side of the cell `(i, j)` on a grid of `cells` cells.
+/// Horizontal edges come first, then vertical ones, so an edge shared by
+/// two cells has one index.
+fn edge_index(cells: usize, i: usize, j: usize, side: u8) -> usize {
+    let horizontal = cells * (cells + 1);
+    match side {
+        0 => j * cells + i,
+        1 => horizontal + j * (cells + 1) + i + 1,
+        2 => (j + 1) * cells + i,
+        _ => horizontal + j * (cells + 1) + i,
+    }
+}
+
+/// The two nodes of `edge`, each `(column, row)`.
+fn edge_nodes(cells: usize, edge: usize) -> ((usize, usize), (usize, usize)) {
+    let horizontal = cells * (cells + 1);
+    if edge < horizontal {
+        let row = edge / cells;
+        let column = edge % cells;
+        ((column, row), (column + 1, row))
+    } else {
+        let vertical = edge - horizontal;
+        let row = vertical / (cells + 1);
+        let column = vertical % (cells + 1);
+        ((column, row), (column, row + 1))
+    }
+}
+
+/// Lines of one threshold. An edge is the pair of grid nodes it joins, so
+/// the two cells that share it meet on the same point. A line that reaches
+/// the boundary of the grid stays open; one that comes back to its start
+/// is closed.
+fn trace_threshold(
+    grid: &[f64],
+    cells: usize,
+    threshold: f64,
+    x: (f64, f64),
+    y: (f64, f64),
+) -> Vec<(Vec<(f64, f64)>, bool)> {
+    let stride = cells + 1;
+    let at = |column: usize, row: usize| grid[row * stride + column];
+    let edge_count = 2 * cells * (cells + 1);
+    let mut segments: Vec<(usize, usize)> = Vec::new();
+    let mut crossing = vec![None; edge_count];
+    let dx = (x.1 - x.0) / cells as f64;
+    let dy = (y.1 - y.0) / cells as f64;
+    let point_on = |edge: usize, fraction: f64| -> (f64, f64) {
+        let (a, b) = edge_nodes(cells, edge);
+        let column = a.0 as f64 + fraction * (b.0 as f64 - a.0 as f64);
+        let row = a.1 as f64 + fraction * (b.1 as f64 - a.1 as f64);
+        (x.0 + dx * column, y.0 + dy * row)
+    };
+    for row in 0..cells {
+        for column in 0..cells {
+            let (sw, se, ne, nw) = (
+                at(column, row),
+                at(column + 1, row),
+                at(column + 1, row + 1),
+                at(column, row + 1),
+            );
+            let mut mask = 0_u8;
+            if sw >= threshold {
+                mask |= 1;
+            }
+            if se >= threshold {
+                mask |= 2;
+            }
+            if ne >= threshold {
+                mask |= 4;
+            }
+            if nw >= threshold {
+                mask |= 8;
+            }
+            let joined = (sw + se + ne + nw) / 4.0 >= threshold;
+            for &(side_a, side_b) in cell_segments(mask, joined) {
+                let a = edge_index(cells, column, row, side_a);
+                let b = edge_index(cells, column, row, side_b);
+                if crossing[a].is_none() {
+                    let (start, end) = edge_nodes(cells, a);
+                    let fraction = edge_fraction(at(start.0, start.1), at(end.0, end.1), threshold);
+                    crossing[a] = Some(point_on(a, fraction));
+                }
+                if crossing[b].is_none() {
+                    let (start, end) = edge_nodes(cells, b);
+                    let fraction = edge_fraction(at(start.0, start.1), at(end.0, end.1), threshold);
+                    crossing[b] = Some(point_on(b, fraction));
+                }
+                segments.push((a, b));
+            }
+        }
+    }
+    chain_edges(&segments, &crossing)
+}
+
+/// Walks the segments into polylines. Each edge records the segments that
+/// end on it; an edge of the grid boundary has one, an edge between two
+/// cells has two.
+fn chain_edges(
+    segments: &[(usize, usize)],
+    crossing: &[Option<(f64, f64)>],
+) -> Vec<(Vec<(f64, f64)>, bool)> {
+    let mut adjacent: Vec<Vec<usize>> = vec![Vec::new(); crossing.len()];
+    for (index, &(a, b)) in segments.iter().enumerate() {
+        adjacent[a].push(index);
+        adjacent[b].push(index);
+    }
+    let degrees: Vec<usize> = adjacent.iter().map(Vec::len).collect();
+    let mut used = vec![false; segments.len()];
+    let step = |current: usize, used: &mut [bool]| -> Option<usize> {
+        for &segment in &adjacent[current] {
+            if used[segment] {
+                continue;
+            }
+            used[segment] = true;
+            let (a, b) = segments[segment];
+            return Some(if a == current { b } else { a });
+        }
+        None
+    };
+    let walk = |start: usize, closed: bool, used: &mut [bool]| -> Option<Vec<(f64, f64)>> {
+        if adjacent[start].iter().all(|&segment| used[segment]) {
+            return None;
+        }
+        let mut edges = vec![start];
+        let mut current = start;
+        for _ in 0..=segments.len() {
+            let Some(next) = step(current, used) else {
+                break;
+            };
+            if next == start {
+                break;
+            }
+            edges.push(next);
+            current = next;
+        }
+        let mut points = Vec::with_capacity(edges.len());
+        for edge in edges {
+            let Some(point) = crossing[edge] else {
+                continue;
+            };
+            if points.last() == Some(&point) {
+                continue;
+            }
+            points.push(point);
+        }
+        if closed && points.len() > 1 && points.first() == points.last() {
+            points.pop();
+        }
+        let enough = if closed { 3 } else { 2 };
+        (points.len() >= enough).then_some(points)
+    };
+    let mut lines = Vec::new();
+    for (start, degree) in degrees.iter().enumerate() {
+        if *degree != 1 {
+            continue;
+        }
+        if let Some(points) = walk(start, false, &mut used) {
+            lines.push((points, false));
+        }
+    }
+    for (start, degree) in degrees.iter().enumerate() {
+        if *degree != 2 {
+            continue;
+        }
+        if let Some(points) = walk(start, true, &mut used) {
+            lines.push((points, true));
+        }
+    }
+    lines
+}
+
+/// The contour lines of `samples`, over the rectangle `x` × `y`, in that
+/// same coordinate. `levels` lines, the first the lowest.
+fn density_lines(
+    samples: &[(f64, f64)],
+    x: (f64, f64),
+    y: (f64, f64),
+    cells: usize,
+    levels: usize,
+) -> Vec<ContourLine> {
+    if samples.len() < MIN_CONTOUR_POINTS || cells < 2 || levels == 0 {
+        return Vec::new();
+    }
+    if !(x.1 > x.0 && y.1 > y.0) {
+        return Vec::new();
+    }
+    let grid = density_grid(samples, x, y, cells);
+    let peak = grid.iter().copied().fold(0.0_f64, f64::max);
+    if peak <= 0.0 {
+        return Vec::new();
+    }
+    let mut lines = Vec::new();
+    for level in 1..=levels {
+        let threshold = peak * level as f64 / (levels as f64 + 1.0);
+        for (points, closed) in trace_threshold(&grid, cells, threshold, x, y) {
+            lines.push(ContourLine {
+                points,
+                closed,
+                level,
+            });
+        }
+    }
+    lines
+}
+
 /// A scatter chart of (x, y) point pairs.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ScatterChart {
@@ -424,6 +875,9 @@ pub struct ScatterChart {
     /// Histograms of the points, above the plot and to its right. `None`
     /// (the default) draws the scatter chart alone.
     pub marginal: Option<MarginalHistogram>,
+    /// Density contours of the points, drawn under them in the color of
+    /// each series. `None` (the default) draws the points alone.
+    pub contour: Option<DensityContour>,
 }
 
 impl std::ops::Deref for ScatterChart {
@@ -586,6 +1040,16 @@ impl ScatterChart {
             }
             s.marginal = Some(histogram);
         }
+        if let Some(contour) = value.get("contour") {
+            let mut density = DensityContour::default();
+            if let Some(levels) = get_usize_from_value(contour, "levels") {
+                density.levels = levels;
+            }
+            if let Some(grid_size) = get_usize_from_value(contour, "grid_size") {
+                density.grid_size = grid_size;
+            }
+            s.contour = Some(density);
+        }
         s.fill_default();
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
@@ -631,6 +1095,11 @@ impl ScatterChart {
             if marginal.bar_gap < 0.0 {
                 marginal.bar_gap = 0.0;
             }
+        }
+        if let Some(contour) = &mut self.contour {
+            let (levels, grid_size) = contour.resolved();
+            contour.levels = levels;
+            contour.grid_size = grid_size;
         }
     }
     /// The band the marginal histograms take off the plot, or 0 when they
@@ -753,6 +1222,65 @@ impl ScatterChart {
                         ..Default::default()
                     });
                 }
+            }
+        }
+    }
+    /// Draws the density contours of every series that has enough points on
+    /// the axes. `canvas` is the plot, and the lines use the same placement
+    /// as the points.
+    fn draw_contours(
+        &self,
+        canvas: &mut Canvas,
+        x_axis: &AxisValues,
+        y_axis: &AxisValues,
+        width: f32,
+        height: f32,
+    ) {
+        let Some(contour) = &self.contour else {
+            return;
+        };
+        let (Some(x_span), Some(y_span)) = (scale_span(x_axis), scale_span(y_axis)) else {
+            return;
+        };
+        let (levels, cells) = contour.resolved();
+        // (series position, series, points on the axes)
+        type Prepared<'a> = (usize, &'a Series, Vec<(f64, f64)>);
+        let prepared: Vec<Prepared> = self
+            .series_list
+            .iter()
+            .enumerate()
+            .filter_map(|(index, series)| {
+                let samples = contour_samples(series, self.bubble, x_axis, y_axis);
+                (samples.len() >= MIN_CONTOUR_POINTS).then_some((index, series, samples))
+            })
+            .collect();
+        if prepared.is_empty() {
+            return;
+        }
+        // Several series share the plot, so each is drawn lighter.
+        let alpha = if prepared.len() > 1 { 140 } else { 210 };
+        for (index, series, samples) in prepared {
+            let series_idx = series.index.unwrap_or(index);
+            let color = get_color(&self.series.colors, series_idx).with_alpha(alpha);
+            for line in density_lines(&samples, x_span, y_span, cells, levels) {
+                let points = line
+                    .points
+                    .iter()
+                    .map(|(x, y)| {
+                        let px = width - x_axis.get_offset_height(from_scale(x_axis, *x), width);
+                        let py = y_axis.get_offset_height(from_scale(y_axis, *y), height);
+                        (px, py).into()
+                    })
+                    .collect();
+                canvas.straight_line(StraightLine {
+                    color: Some(color),
+                    points,
+                    stroke_width: CONTOUR_STROKE,
+                    symbol: None,
+                    close: line.closed,
+                    class: Some(format!("ct-contour l{}", line.level)),
+                    ..Default::default()
+                });
             }
         }
     }
@@ -946,6 +1474,14 @@ impl ScatterChart {
             top: marginal_size,
             ..Default::default()
         });
+        // The contours go down first, so the points are drawn over them.
+        self.draw_contours(
+            &mut content_canvas,
+            &x_axis_values,
+            &y_axis_values,
+            content_width,
+            content_height,
+        );
         let default_symbol_size = 10.0_f32;
         // Where the formulas of the fitted curves are written.
         let mut formula_boxes = LabelBoxes::new(true);
@@ -1411,5 +1947,178 @@ mod tests {
         let off_svg = off.svg().unwrap();
         assert!(!off_svg.contains("<title>"));
         assert!(!off_svg.contains("ct-tip"));
+    }
+
+    fn near(found: (f64, f64), wanted: (f64, f64)) -> bool {
+        (found.0 - wanted.0).abs() < 1e-6 && (found.1 - wanted.1).abs() < 1e-6
+    }
+
+    fn has_point(points: &[(f64, f64)], wanted: (f64, f64)) -> bool {
+        points.iter().any(|point| near(*point, wanted))
+    }
+
+    /// Even-odd ray cast. A point on the boundary is not what the tests ask.
+    fn encloses(points: &[(f64, f64)], x: f64, y: f64) -> bool {
+        let mut crossings = 0;
+        for index in 0..points.len() {
+            let (x1, y1) = points[index];
+            let (x2, y2) = points[(index + 1) % points.len()];
+            if (y1 > y) != (y2 > y) {
+                let at = x1 + (y - y1) * (x2 - x1) / (y2 - y1);
+                if x < at {
+                    crossings += 1;
+                }
+            }
+        }
+        crossings % 2 == 1
+    }
+
+    #[test]
+    fn marching_squares_rings_a_peak_and_skips_a_flat_cell() {
+        // A single high node in the middle of a 3×3 grid. The four cells
+        // around it share their edges and come back to one diamond.
+        let mut grid = vec![0.0; 9];
+        grid[4] = 1.0;
+        let lines = super::trace_threshold(&grid, 2, 0.5, (0.0, 2.0), (0.0, 2.0));
+        assert_eq!(1, lines.len(), "{lines:?}");
+        assert!(lines[0].1);
+        for point in [(1.0, 0.5), (0.5, 1.0), (1.0, 1.5), (1.5, 1.0)] {
+            assert!(
+                has_point(&lines[0].0, point),
+                "{point:?} missing from {lines:?}"
+            );
+        }
+        assert!(encloses(&lines[0].0, 1.0, 1.0));
+        assert!(!encloses(&lines[0].0, 0.0, 0.0));
+
+        // Over the peak there is nothing to cross, and a cell that is high
+        // in every corner has no edge to cross either.
+        assert!(super::trace_threshold(&grid, 2, 2.0, (0.0, 2.0), (0.0, 2.0)).is_empty());
+        let flat = vec![1.0; 9];
+        assert!(super::trace_threshold(&flat, 2, 0.5, (0.0, 2.0), (0.0, 2.0)).is_empty());
+    }
+
+    #[test]
+    fn marching_squares_splits_a_saddle_by_its_middle() {
+        // The two high corners are diagonal. The middle of the cell is the
+        // average of the four corners.
+        //   0 -- 1
+        //   |    |
+        //   1 -- 0
+        let grid = vec![1.0, 0.0, 0.0, 1.0];
+        let joined = super::trace_threshold(&grid, 1, 0.5, (0.0, 1.0), (0.0, 1.0));
+        assert_eq!(2, joined.len(), "{joined:?}");
+        assert!(joined.iter().all(|line| !line.1));
+        assert!(
+            joined
+                .iter()
+                .any(|line| has_point(&line.0, (0.5, 0.0)) && has_point(&line.0, (1.0, 0.5)))
+        );
+        assert!(
+            joined
+                .iter()
+                .any(|line| has_point(&line.0, (0.0, 0.5)) && has_point(&line.0, (0.5, 1.0)))
+        );
+
+        // A higher line leaves the two high corners separate.
+        let separate = super::trace_threshold(&grid, 1, 0.6, (0.0, 1.0), (0.0, 1.0));
+        assert_eq!(2, separate.len(), "{separate:?}");
+        assert!(
+            separate
+                .iter()
+                .any(|line| has_point(&line.0, (0.4, 0.0)) && has_point(&line.0, (0.0, 0.4)))
+        );
+        assert!(
+            separate
+                .iter()
+                .any(|line| has_point(&line.0, (0.6, 1.0)) && has_point(&line.0, (1.0, 0.6)))
+        );
+    }
+
+    fn bounds_of(lines: &[super::ContourLine], level: usize) -> (f64, f64, f64, f64) {
+        let mut bounds = (f64::MAX, f64::MAX, f64::MIN, f64::MIN);
+        for line in lines
+            .iter()
+            .filter(|line| line.level == level && line.closed)
+        {
+            for (x, y) in &line.points {
+                bounds.0 = bounds.0.min(*x);
+                bounds.1 = bounds.1.min(*y);
+                bounds.2 = bounds.2.max(*x);
+                bounds.3 = bounds.3.max(*y);
+            }
+        }
+        bounds
+    }
+
+    #[test]
+    fn density_lines_ring_a_cluster_and_nest() {
+        let samples: Vec<(f64, f64)> = (0..24)
+            .map(|i| {
+                let t = i as f64;
+                (0.12 * (t * 1.3).sin(), 0.12 * (t * 0.7).cos())
+            })
+            .collect();
+        let lines = super::density_lines(&samples, (-8.0, 8.0), (-8.0, 8.0), 32, 4);
+        let outer: Vec<_> = lines
+            .iter()
+            .filter(|line| line.level == 1 && line.closed)
+            .collect();
+        assert_eq!(
+            1,
+            outer.len(),
+            "levels: {:?}",
+            lines.iter().map(|l| l.level).collect::<Vec<_>>()
+        );
+        for (x, y) in &samples {
+            assert!(
+                encloses(&outer[0].points, *x, *y),
+                "({x}, {y}) is outside the outer line"
+            );
+        }
+        assert!(!encloses(&outer[0].points, -8.0, -8.0));
+        let (outer_box, inner_box) = (bounds_of(&lines, 1), bounds_of(&lines, 4));
+        assert!(outer_box.0 < inner_box.0 && inner_box.2 < outer_box.2);
+        assert!(outer_box.1 < inner_box.1 && inner_box.3 < outer_box.3);
+    }
+
+    #[test]
+    fn density_lines_split_two_clusters_at_the_high_line() {
+        let mut samples = Vec::new();
+        for i in 0..20 {
+            let t = i as f64 * 0.2;
+            samples.push((-6.0 + 0.05 * t.sin(), 0.05 * t.cos()));
+            samples.push((6.0 + 0.05 * t.sin(), 0.05 * t.cos()));
+        }
+        let lines = super::density_lines(&samples, (-12.0, 12.0), (-8.0, 8.0), 48, 4);
+        let high: Vec<_> = lines
+            .iter()
+            .filter(|line| line.level == 4 && line.closed)
+            .collect();
+        assert_eq!(2, high.len(), "{high:?}");
+        assert!(high.iter().any(|line| encloses(&line.points, -6.0, 0.0)));
+        assert!(high.iter().any(|line| encloses(&line.points, 6.0, 0.0)));
+        assert!(high.iter().all(|line| !encloses(&line.points, 0.0, 0.0)));
+    }
+
+    #[test]
+    fn density_lines_of_a_straight_row_stay_finite() {
+        // A short row in the middle of the axes: the contour stays off the
+        // boundary, where it would be an open line.
+        let samples: Vec<(f64, f64)> = (0..16).map(|i| (i as f64 * 0.2 - 1.5, 0.0)).collect();
+        let lines = super::density_lines(&samples, (-8.0, 8.0), (-8.0, 8.0), 16, 4);
+        assert!(!lines.is_empty());
+        for line in &lines {
+            assert!(
+                line.points
+                    .iter()
+                    .all(|p| p.0.is_finite() && p.1.is_finite())
+            );
+        }
+        let outer = lines
+            .iter()
+            .find(|line| line.level == 1 && line.closed)
+            .unwrap();
+        assert!(encloses(&outer.points, 0.0, 0.0));
     }
 }

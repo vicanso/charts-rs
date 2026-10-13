@@ -10,6 +10,14 @@
   counts. `marginal.size` (default 64) is the band they take, and
   `marginal.bin_count` sets the bins — at most 40, and `0` derives them.
   In Rust: `chart.marginal = Some(MarginalHistogram::default())`.
+- A scatter chart draws unfilled density contours of its own points.
+  `"contour": {}` estimates each series with a Gaussian kernel and traces
+  the lines at 20%, 40%, 60% and 80% of the highest density, under the
+  points and in the color of the series. `contour.levels` sets how many
+  lines (at most 8; `0` is the four above) and `contour.grid_size` the
+  density grid (default 64, from 16 to 128). A series with fewer than 8
+  points on the axes draws none. In Rust:
+  `chart.contour = Some(DensityContour::default())`.
 - A mark point is on any point of a series, not only on its smallest and
   its largest: `{"category": "index", "index": 28}` marks the point with
   that index in the `data` of the series, so that the second of two peaks

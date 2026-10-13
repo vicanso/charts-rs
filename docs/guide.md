@@ -16,6 +16,7 @@ a word of explanation, fonts and output. Every JSON key is listed in the
 - [Axes](#axes): [value and time x axes](#value-and-time-x-axes), [titles](#axis-titles)
 - [Charts](#charts): [band around a line](#band-around-a-line),
   [bubble](#bubble-chart), [marginal histograms](#marginal-histograms),
+  [density contours](#density-contours),
   [histogram](#histogram), [polar bar](#polar-bar-chart),
   [chord](#chord-chart), [gantt](#gantt-chart), [map](#map-chart)
 - [Fonts](#fonts)
@@ -432,6 +433,47 @@ let _svg = chart.svg().unwrap();
   of the series. Each side is scaled to its own tallest bar.
 - A bubble is one point: its size is not a value on either axis. A missing
   coordinate is left out, and so is a point that falls outside the axis.
+
+### Density contours
+
+`"contour": {}` on a scatter chart draws unfilled density lines of its own
+points. Each series is estimated with a Gaussian kernel, and the lines are
+traced under the points in the color of the series. The contours use this
+chart's axes and its points.
+
+```rust
+use charts_rs::{DensityContour, ScatterChart};
+
+let mut chart = ScatterChart::new(vec![(
+    "A",
+    vec![
+        1.0, 2.1, 1.4, 1.8, 0.8, 2.4, 1.6, 2.0, 1.1, 1.7, 0.9, 2.2, 1.3, 2.5, 1.2, 1.9,
+    ],
+)
+.into()]);
+chart.contour = Some(DensityContour::default());
+let _svg = chart.svg().unwrap();
+```
+
+```json
+{
+  "contour": { "levels": 4, "grid_size": 48 },
+  "series_list": [
+    {"name": "A", "data": [1, 2.1, 1.4, 1.8, 0.8, 2.4, 1.6, 2, 1.1, 1.7, 0.9, 2.2, 1.3, 2.5, 1.2, 1.9]}
+  ]
+}
+```
+
+- `levels` of `4` (the default) draws the lines at 20%, 40%, 60% and 80% of
+  the highest density. `0` is those four, and there are never more than 8.
+- `grid_size` is the number of cells along each axis of the density grid
+  (default 64, from 16 to 128).
+- The bandwidth follows the spread of the points on each axis (Scott's
+  rule). A series with fewer than 8 points on the axes draws no line.
+- A bubble is one point: its size is not a coordinate. A missing coordinate
+  is left out, and so is a point that falls outside the axis. On a
+  logarithmic axis the density is estimated in the log of the values, so
+  the lines stay over the points.
 
 ### Histogram
 

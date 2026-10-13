@@ -62,6 +62,7 @@ every option is described in the [JSON reference](./json.md).
 
 <p align="center">
   <img src="../asset/image/scatter-marginal.png" width="49%" alt="Scatter with marginal histograms">
+  <img src="../asset/image/scatter-contour.png" width="49%" alt="Scatter with density contours">
 </p>
 
 ## Candlestick

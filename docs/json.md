@@ -479,6 +479,7 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 | `regression_order` | integer 0–1000 | `2` | Order of a `polynomial` regression, from 1 to 6. |
 | `regression_label_show` | boolean | `false` | Writes the formula of each fitted curve at its end, e.g. `y = 1.5x + 2`. |
 | `marginal` | object |  | Histograms of the points of this chart: the distribution of x above the plot and the distribution of y to its right. The bins span the axes, so a bar sits over the points it counts. `{}` turns them on. |
+| `contour` | object |  | Unfilled density contours of the points. Each series is estimated with a Gaussian kernel, and the lines are drawn under the points in the color of the series. `{}` turns them on. |
 
 ### `marginal`
 
@@ -489,6 +490,15 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 | `size` | number | `64` | Height of the top histogram and width of the right one, in pixels. The plot keeps at least 40 pixels; a chart too small for that draws neither. |
 | `bin_count` | integer 0–1000 | `0` | Bins along each axis. `0` derives the number from the points. Never more than 40. |
 | `bar_gap` | number | `1` | Gap between adjacent bars, in pixels. |
+
+### `contour`
+
+<!-- keys: scatter.contour -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `levels` | integer 0–1000 | `4` | How many lines to draw, at `k / (levels + 1)` of the highest density. `4` is 20%, 40%, 60% and 80%. `0` is those four. Never more than 8. |
+| `grid_size` | integer 0–1000 | `64` | Cells along each axis of the grid the density is estimated on. `0` is 64. Clamped to 16..=128. |
 
 ### `x_axis_config`
 

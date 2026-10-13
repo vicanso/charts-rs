@@ -491,6 +491,7 @@ static MARGINAL_FIELDS: &[Field] = &[
     f("bin_count", Kind::Count),
     f("bar_gap", Kind::Number),
 ];
+static CONTOUR_FIELDS: &[Field] = &[f("levels", Kind::Count), f("grid_size", Kind::Count)];
 pub(crate) static SCATTER_FIELDS: &[Field] = &[
     f("series_symbol_sizes", Kind::NumberArray),
     f("bubble", Kind::Bool),
@@ -498,6 +499,7 @@ pub(crate) static SCATTER_FIELDS: &[Field] = &[
     f("bubble_max_size", Kind::Number),
     f("series_symbols", Kind::Array),
     f("marginal", Kind::Object(MARGINAL_FIELDS)),
+    f("contour", Kind::Object(CONTOUR_FIELDS)),
     f("x_axis_config", Kind::Object(Y_AXIS_FIELDS)),
     f(
         "regression",
