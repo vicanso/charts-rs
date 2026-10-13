@@ -4,6 +4,12 @@
 
 ### Added
 
+- A scatter chart draws the distribution of its own points. `"marginal": {}`
+  puts a histogram of the x values above the plot and one of the y values
+  to its right. The bins span the axes, so a bar sits over the points it
+  counts. `marginal.size` (default 64) is the band they take, and
+  `marginal.bin_count` sets the bins — at most 40, and `0` derives them.
+  In Rust: `chart.marginal = Some(MarginalHistogram::default())`.
 - A mark point is on any point of a series, not only on its smallest and
   its largest: `{"category": "index", "index": 28}` marks the point with
   that index in the `data` of the series, so that the second of two peaks

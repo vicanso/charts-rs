@@ -486,12 +486,18 @@ pub(crate) static CHORD_FIELDS: &[Field] = &[
     f("link_gradient", Kind::Bool),
 ];
 
+static MARGINAL_FIELDS: &[Field] = &[
+    f("size", Kind::Size),
+    f("bin_count", Kind::Count),
+    f("bar_gap", Kind::Number),
+];
 pub(crate) static SCATTER_FIELDS: &[Field] = &[
     f("series_symbol_sizes", Kind::NumberArray),
     f("bubble", Kind::Bool),
     f("bubble_min_size", Kind::Number),
     f("bubble_max_size", Kind::Number),
     f("series_symbols", Kind::Array),
+    f("marginal", Kind::Object(MARGINAL_FIELDS)),
     f("x_axis_config", Kind::Object(Y_AXIS_FIELDS)),
     f(
         "regression",

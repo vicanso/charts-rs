@@ -60,6 +60,10 @@ every option is described in the [JSON reference](./json.md).
   <img src="../asset/image/scatter-regression.png" width="49%" alt="Scatter">
 </p>
 
+<p align="center">
+  <img src="../asset/image/scatter-marginal.png" width="49%" alt="Scatter with marginal histograms">
+</p>
+
 ## Candlestick
 
 <p align="center">

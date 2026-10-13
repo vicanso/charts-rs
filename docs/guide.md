@@ -15,7 +15,8 @@ a word of explanation, fonts and output. Every JSON key is listed in the
   [copyright lines and watermarks](#copyright-lines-and-watermarks)
 - [Axes](#axes): [value and time x axes](#value-and-time-x-axes), [titles](#axis-titles)
 - [Charts](#charts): [band around a line](#band-around-a-line),
-  [bubble](#bubble-chart), [histogram](#histogram), [polar bar](#polar-bar-chart),
+  [bubble](#bubble-chart), [marginal histograms](#marginal-histograms),
+  [histogram](#histogram), [polar bar](#polar-bar-chart),
   [chord](#chord-chart), [gantt](#gantt-chart), [map](#map-chart)
 - [Fonts](#fonts)
 - [Development](#development)
@@ -391,6 +392,46 @@ triples and scales each circle by its size (`bubble_min_size` /
   "series_list": [{ "name": "Asia", "data": [12, 77, 1400, 40, 84, 125] }]
 }
 ```
+
+### Marginal histograms
+
+`"marginal": {}` on a scatter chart draws the distribution of its own points:
+above the plot, how the x values fall, and to the right, how the y values
+fall. The bins run from the axis minimum to its maximum, so each bar is
+exactly over the points it counts. The histograms use this chart's axes
+and its points.
+
+```rust
+use charts_rs::{MarginalHistogram, ScatterChart};
+
+let mut chart = ScatterChart::new(vec![
+    ("Female", vec![161.2, 51.6, 167.5, 59.0, 159.5, 49.2]).into(),
+    ("Male", vec![174.0, 65.6, 175.3, 71.8, 193.5, 80.7]).into(),
+]);
+chart.marginal = Some(MarginalHistogram {
+    bin_count: 8,
+    ..Default::default()
+});
+let _svg = chart.svg().unwrap();
+```
+
+```json
+{
+  "marginal": { "bin_count": 8, "size": 70 },
+  "series_list": [
+    {"name": "Female", "data": [161.2, 51.6, 167.5, 59, 159.5, 49.2]},
+    {"name": "Male", "data": [174, 65.6, 175.3, 71.8, 193.5, 80.7]}
+  ]
+}
+```
+
+- `size` is the height of the top histogram and the width of the right one,
+  in pixels (default 64). The plot keeps at least 40 pixels.
+- `bin_count` of `0` chooses the number of bins; it is never more than 40.
+- Several series share the bins and are drawn over each other, in the color
+  of the series. Each side is scaled to its own tallest bar.
+- A bubble is one point: its size is not a value on either axis. A missing
+  coordinate is left out, and so is a point that falls outside the axis.
 
 ### Histogram
 

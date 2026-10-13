@@ -1262,6 +1262,13 @@ fn generate_image() {
                 .unwrap(),
         ),
         (
+            "scatter-marginal",
+            ScatterChart::from_json(include_str!("../asset/scatter_chart/marginal.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
             "heatmap-scale",
             HeatmapChart::from_json(include_str!("../asset/heatmap_chart/scale.json"))
                 .unwrap()

@@ -40,6 +40,14 @@ pub enum Regression {
 const MAX_REGRESSION_ORDER: usize = 6;
 /// Number of straight pieces a fitted curve is drawn with.
 const REGRESSION_SEGMENTS: usize = 64;
+/// Most bins a marginal histogram draws. More than this are hairlines
+/// beside the plot, not a distribution.
+const MAX_MARGINAL_BINS: usize = 40;
+/// Default height of the top histogram and width of the right one.
+const DEFAULT_MARGINAL_SIZE: f32 = 64.0;
+/// Pixels kept between a marginal bar and the plot, so the bar does not
+/// cover the axis it grows from.
+const MARGINAL_PLOT_GAP: f32 = 1.0;
 
 /// A curve fitted to points by least squares.
 #[derive(Clone, Debug, PartialEq)]
@@ -246,6 +254,128 @@ impl Fit {
     }
 }
 
+/// Histograms of a scatter chart's own points: the distribution of `x`
+/// above the plot and the distribution of `y` to its right. The bins span
+/// the axes, so a bar sits over the points it counts.
+#[derive(Clone, Debug, PartialEq)]
+pub struct MarginalHistogram {
+    /// Height of the top histogram and width of the right one, in pixels.
+    /// Default: 64. The plot keeps at least 40 pixels; a chart too small
+    /// for that draws neither histogram.
+    pub size: f32,
+    /// Number of bins along each axis. `0` (the default) derives it from
+    /// the number of points. Never more than 40.
+    pub bin_count: usize,
+    /// Gap between adjacent bars, in pixels. Default: 1.
+    pub bar_gap: f32,
+}
+
+impl Default for MarginalHistogram {
+    fn default() -> Self {
+        Self {
+            size: DEFAULT_MARGINAL_SIZE,
+            bin_count: 0,
+            bar_gap: 1.0,
+        }
+    }
+}
+
+/// Equal-width bins from an axis minimum to its maximum.
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MarginalBins {
+    start: f64,
+    width: f64,
+    count: usize,
+}
+
+impl MarginalBins {
+    fn edge(&self, i: usize) -> f64 {
+        self.start + self.width * i as f64
+    }
+    /// The bin `value` falls in. Every bin holds its left edge, and the last
+    /// one its right edge too. A value outside the axis belongs to no bin.
+    fn index(&self, value: f64) -> Option<usize> {
+        let slack = self.width * 1e-9;
+        if value < self.start - slack || value > self.edge(self.count) + slack {
+            return None;
+        }
+        let index = ((value - self.start) / self.width).floor().max(0.0) as usize;
+        Some(index.min(self.count - 1))
+    }
+}
+
+/// Bins spanning `min..=max`. `bin_count` of 0 derives the number from a
+/// sample of `n` points. `None` when the axis has no range to divide.
+fn marginal_bins(min: f32, max: f32, n: usize, bin_count: usize) -> Option<MarginalBins> {
+    let (min, max) = (f64::from(min), f64::from(max));
+    if !min.is_finite() || !max.is_finite() || max <= min {
+        return None;
+    }
+    let count = if bin_count > 0 {
+        bin_count
+    } else {
+        (n.max(1) as f64).log2().ceil() as usize + 1
+    };
+    let count = count.clamp(1, MAX_MARGINAL_BINS);
+    Some(MarginalBins {
+        start: min,
+        width: (max - min) / count as f64,
+        count,
+    })
+}
+
+fn bin_counts(bins: MarginalBins, values: impl Iterator<Item = f32>) -> Vec<u32> {
+    let mut counts = vec![0; bins.count];
+    for value in values {
+        if let Some(index) = bins.index(f64::from(value)) {
+            counts[index] += 1;
+        }
+    }
+    counts
+}
+
+/// Complete `(x, y)` points of a series. A bubble chart stores them as
+/// `x, y, size` triples; the size is not a coordinate.
+fn plotted_point_count(series: &Series, bubble: bool) -> usize {
+    let mut coords = series.iter_values();
+    let mut count = 0;
+    while let (Some(x), Some(y)) = (coords.next(), coords.next()) {
+        if bubble {
+            coords.next();
+        }
+        if x != NIL_VALUE && y != NIL_VALUE {
+            count += 1;
+        }
+    }
+    count
+}
+
+/// Which side of the plot a marginal histogram belongs to.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum MarginalSide {
+    /// The distribution of x, above the plot. Bars grow upwards.
+    X,
+    /// The distribution of y, to the right of the plot. Bars grow rightwards.
+    Y,
+}
+
+/// The counts of one series, in the shared bins of each axis.
+struct MarginalSeries {
+    index: usize,
+    name: String,
+    x: Vec<u32>,
+    y: Vec<u32>,
+}
+
+impl MarginalSeries {
+    fn counts(&self, side: MarginalSide) -> &[u32] {
+        match side {
+            MarginalSide::X => &self.x,
+            MarginalSide::Y => &self.y,
+        }
+    }
+}
+
 /// A scatter chart of (x, y) point pairs.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ScatterChart {
@@ -290,6 +420,10 @@ pub struct ScatterChart {
     pub regression_order: usize,
     /// Writes the formula of each fitted curve at its end.
     pub regression_label_show: bool,
+
+    /// Histograms of the points, above the plot and to its right. `None`
+    /// (the default) draws the scatter chart alone.
+    pub marginal: Option<MarginalHistogram>,
 }
 
 impl std::ops::Deref for ScatterChart {
@@ -439,6 +573,19 @@ impl ScatterChart {
         if let Some(show) = get_bool_from_value(&value, "regression_label_show") {
             s.regression_label_show = show;
         }
+        if let Some(marginal) = value.get("marginal") {
+            let mut histogram = MarginalHistogram::default();
+            if let Some(size) = get_f32_from_value(marginal, "size") {
+                histogram.size = size;
+            }
+            if let Some(count) = get_usize_from_value(marginal, "bin_count") {
+                histogram.bin_count = count;
+            }
+            if let Some(gap) = get_f32_from_value(marginal, "bar_gap") {
+                histogram.bar_gap = gap;
+            }
+            s.marginal = Some(histogram);
+        }
         s.fill_default();
         let theme = get_string_from_value(&value, "theme").unwrap_or_default();
         if let Some(x_axis_config) = value.get("x_axis_config") {
@@ -476,6 +623,137 @@ impl ScatterChart {
         }
         if self.regression_order == 0 {
             self.regression_order = 2;
+        }
+        if let Some(marginal) = &mut self.marginal {
+            if marginal.size <= 0.0 {
+                marginal.size = DEFAULT_MARGINAL_SIZE;
+            }
+            if marginal.bar_gap < 0.0 {
+                marginal.bar_gap = 0.0;
+            }
+        }
+    }
+    /// The band the marginal histograms take off the plot, or 0 when they
+    /// are off or the plot would have nothing left to be read in.
+    fn marginal_band(&self, plot_width: f32, plot_height: f32) -> f32 {
+        let Some(marginal) = &self.marginal else {
+            return 0.0;
+        };
+        // The smaller side of the plot keeps 40 pixels; a band under 8
+        // pixels is not a histogram.
+        let room = plot_width.min(plot_height) - 40.0;
+        if room < 8.0 {
+            0.0
+        } else {
+            marginal.size.min(room)
+        }
+    }
+    /// Draws one marginal histogram into `canvas`, whose origin is the
+    /// corner of the band nearest the top-left of the chart. `place` maps a
+    /// value to a pixel along the axis the bars are counted on, in that
+    /// canvas.
+    fn draw_marginal(
+        &self,
+        canvas: &mut Canvas,
+        bins: MarginalBins,
+        series: &[MarginalSeries],
+        side: MarginalSide,
+        panel: f32,
+        place: impl Fn(f64) -> f32,
+    ) {
+        let max = series
+            .iter()
+            .flat_map(|s| s.counts(side))
+            .copied()
+            .max()
+            .unwrap_or(0);
+        if max == 0 {
+            return;
+        }
+        let overlaid = series
+            .iter()
+            .filter(|s| s.counts(side).iter().any(|n| *n > 0))
+            .count()
+            > 1;
+        let gap = self
+            .marginal
+            .as_ref()
+            .map(|m| m.bar_gap)
+            .unwrap_or(1.0)
+            .max(0.0);
+        // The bars fill the band up to a pixel short of the plot.
+        let room = (panel - MARGINAL_PLOT_GAP).max(0.0);
+        let horizontal = side == MarginalSide::Y;
+        let axis_name = if horizontal { "y" } else { "x" };
+        for series in series {
+            if series.counts(side).iter().all(|n| *n == 0) {
+                continue;
+            }
+            let mut color = get_color(&self.series.colors, series.index);
+            color = color.with_alpha(if overlaid { 140 } else { 210 });
+            for (i, &count) in series.counts(side).iter().enumerate() {
+                if count == 0 {
+                    continue;
+                }
+                let (from, to) = (bins.edge(i), bins.edge(i + 1));
+                let (a, b) = (place(from), place(to));
+                let start = a.min(b);
+                let span = (a - b).abs();
+                let bar_gap = gap.clamp(0.0, span / 4.0);
+                let along = start + bar_gap / 2.0;
+                let thickness = span - bar_gap;
+                if thickness < 0.5 || room <= 0.0 {
+                    continue;
+                }
+                let length = count as f32 / max as f32 * room;
+                let (left, top, width, height) = if horizontal {
+                    (MARGINAL_PLOT_GAP, along, length, thickness)
+                } else {
+                    (along, panel - MARGINAL_PLOT_GAP - length, thickness, length)
+                };
+                let from_text = format_float(from as f32);
+                let to_text = format_float(to as f32);
+                let tooltip_text = self
+                    .tooltip
+                    .show
+                    .then(|| format!("{}: {from_text} – {to_text}: {count}", series.name));
+                let mut classes = vec!["ct-marginal"];
+                if tooltip_text.is_some() {
+                    classes.push("ct-trigger");
+                }
+                canvas.rect(Rect {
+                    fill: Some(color.into()),
+                    left,
+                    top,
+                    width,
+                    height,
+                    class: Some(classes.join(" ")),
+                    title: tooltip_text.clone(),
+                    dataset: vec![
+                        ("series".to_string(), series.name.clone()),
+                        ("axis".to_string(), axis_name.to_string()),
+                        ("from".to_string(), from_text),
+                        ("to".to_string(), to_text),
+                        ("value".to_string(), count.to_string()),
+                    ],
+                    ..Default::default()
+                });
+                if let Some(text) = tooltip_text {
+                    canvas.text_unmeasured(Text {
+                        text,
+                        class: Some("ct-tip".to_string()),
+                        font_weight: self.tooltip.font.weight.clone(),
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
+                        font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
+                        x: Some(left + width / 2.0),
+                        y: Some(top),
+                        dy: Some(-6.0),
+                        text_anchor: Some("middle".to_string()),
+                        ..Default::default()
+                    });
+                }
+            }
         }
     }
     /// Creates a scatter chart with default theme.
@@ -546,14 +824,20 @@ impl ScatterChart {
             }
         };
 
-        let axis_height = c.height() - x_axis_height - axis_top;
-        let axis_width = c.width() - y_axis_width;
+        // The histograms take a band above the plot and one to its right.
+        // Without them the plot is the size it was.
+        let marginal_size = self.marginal_band(
+            c.width() - y_axis_width,
+            c.height() - x_axis_height - axis_top,
+        );
+        let axis_height = c.height() - x_axis_height - axis_top - marginal_size;
+        let axis_width = c.width() - y_axis_width - marginal_size;
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
             &self.x_axis.title,
             y_axis_width,
-            axis_top,
+            axis_top + marginal_size,
             axis_width,
             axis_height,
         );
@@ -569,19 +853,20 @@ impl ScatterChart {
         self.render_grid(
             c.child(Box {
                 left: y_axis_width,
+                top: marginal_size,
                 ..Default::default()
             }),
             &self.y_axis_configs,
             axis_width,
             axis_height,
         );
-        let x_axis_width = c.width() - y_axis_width;
         c.child(Box {
             left: y_axis_width,
+            top: marginal_size,
             ..Default::default()
         })
         .grid(Grid {
-            right: x_axis_width,
+            right: axis_width,
             bottom: axis_height,
             color: Some(self.grid.stroke_color),
             stroke_width: self.grid.stroke_width,
@@ -594,7 +879,10 @@ impl ScatterChart {
         // y axis
         if !self.y_axis_hidden {
             self.render_y_axis(
-                c.child(Box::default()),
+                c.child(Box {
+                    top: marginal_size,
+                    ..Default::default()
+                }),
                 &self.y_axis_configs,
                 y_axis_values.data.clone(),
                 axis_height,
@@ -610,8 +898,24 @@ impl ScatterChart {
             false,
         ));
         let x_axis_formatter = &self.x_axis_config.formatter.clone().unwrap_or_default();
-        let content_width = c.width() - y_axis_width;
+        let content_width = axis_width;
         let content_height = axis_height;
+        let bin_count = self.marginal.as_ref().map(|m| m.bin_count).unwrap_or(0);
+        let (x_bins, y_bins) = if marginal_size > 0.0 {
+            let largest = self
+                .series_list
+                .iter()
+                .map(|series| plotted_point_count(series, self.bubble))
+                .max()
+                .unwrap_or(0);
+            (
+                marginal_bins(x_axis_values.min, x_axis_values.max, largest, bin_count),
+                marginal_bins(y_axis_values.min, y_axis_values.max, largest, bin_count),
+            )
+        } else {
+            (None, None)
+        };
+        let mut marginal_series = Vec::new();
         if !self.x_axis.hidden {
             self.render_x_axis(
                 c.child(Box {
@@ -639,6 +943,7 @@ impl ScatterChart {
         // render dot
         let mut content_canvas = c.child(Box {
             left: y_axis_width,
+            top: marginal_size,
             ..Default::default()
         });
         let default_symbol_size = 10.0_f32;
@@ -685,6 +990,18 @@ impl ScatterChart {
                 if x_value != NIL_VALUE && y_value != NIL_VALUE {
                     points.push((x_value, y_value, bubble_size, error));
                 }
+            }
+            if marginal_size > 0.0 {
+                marginal_series.push(MarginalSeries {
+                    index: series_idx,
+                    name: series.name.clone(),
+                    x: x_bins
+                        .map(|bins| bin_counts(bins, points.iter().map(|p| p.0)))
+                        .unwrap_or_default(),
+                    y: y_bins
+                        .map(|bins| bin_counts(bins, points.iter().map(|p| p.1)))
+                        .unwrap_or_default(),
+                });
             }
             // Large bubbles first, so small ones are not buried under them.
             if self.bubble {
@@ -855,6 +1172,40 @@ impl ScatterChart {
             }
         }
 
+        if marginal_size > 0.0 {
+            if let Some(bins) = x_bins {
+                let mut panel = c.child(Box {
+                    left: y_axis_width,
+                    ..Default::default()
+                });
+                self.draw_marginal(
+                    &mut panel,
+                    bins,
+                    &marginal_series,
+                    MarginalSide::X,
+                    marginal_size,
+                    |value| {
+                        content_width - x_axis_values.get_offset_height(value as f32, content_width)
+                    },
+                );
+            }
+            if let Some(bins) = y_bins {
+                let mut panel = c.child(Box {
+                    left: y_axis_width + content_width,
+                    top: marginal_size,
+                    ..Default::default()
+                });
+                self.draw_marginal(
+                    &mut panel,
+                    bins,
+                    &marginal_series,
+                    MarginalSide::Y,
+                    marginal_size,
+                    |value| y_axis_values.get_offset_height(value as f32, content_height),
+                );
+            }
+        }
+
         if self.tooltip.show {
             c.svg_with_style(TOOLTIP_STYLE)
         } else {
@@ -965,6 +1316,26 @@ mod tests {
                 assert_eq!(None, Fit::new(kind, 2, &points), "{kind:?} {points:?}");
             }
         }
+    }
+
+    #[test]
+    fn marginal_bins_span_the_axis() {
+        // Four equal bins from the axis minimum to its maximum, the last
+        // edge included and a value outside the axis left out.
+        let bins = super::marginal_bins(0.0, 4.0, 100, 4).unwrap();
+        assert_eq!((0.0, 1.0, 4), (bins.start, bins.width, bins.count));
+        assert_eq!(Some(0), bins.index(0.0));
+        assert_eq!(Some(0), bins.index(0.999));
+        assert_eq!(Some(1), bins.index(1.0));
+        assert_eq!(Some(3), bins.index(4.0));
+        assert_eq!(None, bins.index(-0.1));
+        assert_eq!(None, bins.index(4.1));
+        // No range to divide: the points all sit on one value.
+        assert_eq!(None, super::marginal_bins(2.0, 2.0, 10, 4));
+        // Asked for too many, and asked for none: capped, or derived.
+        assert_eq!(40, super::marginal_bins(0.0, 10.0, 5, 1000).unwrap().count);
+        // 20 points → Sturges asks for 6.
+        assert_eq!(6, super::marginal_bins(0.0, 12.0, 20, 0).unwrap().count);
     }
 
     fn make_scatter() -> ScatterChart {

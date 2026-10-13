@@ -478,6 +478,17 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 | `regression` | `"linear"` / `"exponential"` / `"logarithmic"` / `"polynomial"` |  | Draws the curve of this kind that fits the points of each series best (by least squares), in the color of the series. An exponential curve is fitted to the points above 0, a logarithmic one to the points right of 0. |
 | `regression_order` | integer 0–1000 | `2` | Order of a `polynomial` regression, from 1 to 6. |
 | `regression_label_show` | boolean | `false` | Writes the formula of each fitted curve at its end, e.g. `y = 1.5x + 2`. |
+| `marginal` | object |  | Histograms of the points of this chart: the distribution of x above the plot and the distribution of y to its right. The bins span the axes, so a bar sits over the points it counts. `{}` turns them on. |
+
+### `marginal`
+
+<!-- keys: scatter.marginal -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `size` | number | `64` | Height of the top histogram and width of the right one, in pixels. The plot keeps at least 40 pixels; a chart too small for that draws neither. |
+| `bin_count` | integer 0–1000 | `0` | Bins along each axis. `0` derives the number from the points. Never more than 40. |
+| `bar_gap` | number | `1` | Gap between adjacent bars, in pixels. |
 
 ### `x_axis_config`
 

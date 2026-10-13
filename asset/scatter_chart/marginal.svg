@@ -1,0 +1,168 @@
+<svg width="630" height="420" viewBox="0 0 630 420" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="630" height="420" fill="#FFFFFF"/>
+<text font-size="18" x="10" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Height and weight
+</text>
+<text font-size="14" x="10" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+The histograms count the points on each axis
+</text>
+<g>
+<line stroke-width="2" x1="476" y1="15" x2="501" y2="15" stroke="#5470C6"/>
+<circle cx="488.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="504" y="19" font-family="Roboto" fill="#464646">
+Female
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="557" y1="15" x2="582" y2="15" stroke="#91CC75"/>
+<circle cx="569.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="585" y="19" font-family="Roboto" fill="#464646">
+Male
+</text>
+</g>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="58" y1="132" x2="548" y2="132"/><line x1="58" y1="173.3" x2="548" y2="173.3"/><line x1="58" y1="214.7" x2="548" y2="214.7"/><line x1="58" y1="256" x2="548" y2="256"/><line x1="58" y1="297.3" x2="548" y2="297.3"/><line x1="58" y1="338.7" x2="548" y2="338.7"/>
+</g>
+<g stroke="#E0E6F2" stroke-width="1">
+<line x1="139.7" y1="132" x2="139.7" y2="380"/><line x1="221.3" y1="132" x2="221.3" y2="380"/><line x1="303" y1="132" x2="303" y2="380"/><line x1="384.7" y1="132" x2="384.7" y2="380"/><line x1="466.3" y1="132" x2="466.3" y2="380"/><line x1="548" y1="132" x2="548" y2="380"/>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="58" y1="132" x2="58" y2="380"/>
+<line x1="58" y1="132" x2="53" y2="132"/>
+<line x1="58" y1="173.3" x2="53" y2="173.3"/>
+<line x1="58" y1="214.7" x2="53" y2="214.7"/>
+<line x1="58" y1="256" x2="53" y2="256"/>
+<line x1="58" y1="297.3" x2="53" y2="297.3"/>
+<line x1="58" y1="338.7" x2="53" y2="338.7"/>
+<line x1="58" y1="380" x2="53" y2="380"/>
+</g>
+<text font-size="14" x="7" y="137" font-family="Roboto" fill="#6E7079">
+100 kg
+</text>
+<text font-size="14" x="15" y="178.3" font-family="Roboto" fill="#6E7079">
+90 kg
+</text>
+<text font-size="14" x="15" y="219.7" font-family="Roboto" fill="#6E7079">
+80 kg
+</text>
+<text font-size="14" x="15" y="261" font-family="Roboto" fill="#6E7079">
+70 kg
+</text>
+<text font-size="14" x="15" y="302.3" font-family="Roboto" fill="#6E7079">
+60 kg
+</text>
+<text font-size="14" x="15" y="343.7" font-family="Roboto" fill="#6E7079">
+50 kg
+</text>
+<text font-size="14" x="15" y="385" font-family="Roboto" fill="#6E7079">
+40 kg
+</text>
+</g>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="58" y1="380" x2="548" y2="380"/>
+<line x1="58" y1="380" x2="58" y2="385"/>
+<line x1="139.7" y1="380" x2="139.7" y2="385"/>
+<line x1="221.3" y1="380" x2="221.3" y2="385"/>
+<line x1="303" y1="380" x2="303" y2="385"/>
+<line x1="384.7" y1="380" x2="384.7" y2="385"/>
+<line x1="466.3" y1="380" x2="466.3" y2="385"/>
+<line x1="548" y1="380" x2="548" y2="385"/>
+</g>
+<text font-size="14" x="34" y="399" font-family="Roboto" fill="#6E7079">
+140 cm
+</text>
+<text font-size="14" x="115.7" y="399" font-family="Roboto" fill="#6E7079">
+150 cm
+</text>
+<text font-size="14" x="197.3" y="399" font-family="Roboto" fill="#6E7079">
+160 cm
+</text>
+<text font-size="14" x="279" y="399" font-family="Roboto" fill="#6E7079">
+170 cm
+</text>
+<text font-size="14" x="360.7" y="399" font-family="Roboto" fill="#6E7079">
+180 cm
+</text>
+<text font-size="14" x="442.3" y="399" font-family="Roboto" fill="#6E7079">
+190 cm
+</text>
+<text font-size="14" x="524" y="399" font-family="Roboto" fill="#6E7079">
+200 cm
+</text>
+</g>
+<circle cx="231.1" cy="332.1" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="161.2" data-y="51.6"/>
+<circle cx="282.6" cy="301.5" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="167.5" data-y="59"/>
+<circle cx="217.2" cy="342" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="159.5" data-y="49.2"/>
+<circle cx="196.8" cy="284.9" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="157" data-y="63"/>
+<circle cx="187" cy="323.8" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="155.8" data-y="53.6"/>
+<circle cx="303" cy="301.5" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="170" data-y="59"/>
+<circle cx="214" cy="348.6" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="159.1" data-y="47.6"/>
+<circle cx="270.3" cy="256.8" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="166" data-y="69.8"/>
+<circle cx="353.6" cy="269.2" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="176.2" data-y="66.8"/>
+<circle cx="223" cy="234.5" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="160.2" data-y="75.2"/>
+<circle cx="323.4" cy="317.2" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="172.5" data-y="55.2"/>
+<circle cx="310.3" cy="321.3" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="170.9" data-y="54.2"/>
+<circle cx="326.7" cy="287" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="172.9" data-y="62.5"/>
+<circle cx="167.4" cy="371.7" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="153.4" data-y="42"/>
+<circle cx="221.3" cy="338.7" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="160" data-y="50"/>
+<circle cx="116.8" cy="339.5" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="147.2" data-y="49.8"/>
+<circle cx="288.3" cy="342" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="168.2" data-y="49.2"/>
+<circle cx="343.8" cy="242.8" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="175" data-y="73.2"/>
+<circle cx="196.8" cy="347.8" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="157" data-y="47.8"/>
+<circle cx="283.4" cy="261" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="167.6" data-y="68.8"/>
+<circle cx="217.2" cy="336.2" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="159.5" data-y="50.6"/>
+<circle cx="343.8" cy="204.3" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="175" data-y="82.5"/>
+<circle cx="276.9" cy="308.9" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="166.8" data-y="57.2"/>
+<circle cx="356.1" cy="182.4" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="176.5" data-y="87.8"/>
+<circle cx="304.6" cy="244.4" r="6" fill-opacity="0.82" fill="#5470C6" data-series="Female" data-x="170.2" data-y="72.8"/>
+<polygon points="335.7,268.2 340.9,277.2 330.5,277.2" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="174" data-y="65.6"/>
+<polygon points="346.3,242.6 351.5,251.6 341.1,251.6" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="175.3" data-y="71.8"/>
+<polygon points="494.9,205.8 500.1,214.8 489.7,214.8" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="193.5" data-y="80.7"/>
+<polygon points="437.8,239.3 442.9,248.3 432.6,248.3" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="186.5" data-y="72.6"/>
+<polygon points="443.5,213.6 448.7,222.6 438.3,222.6" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="187.2" data-y="78.8"/>
+<polygon points="396.9,230.2 402.1,239.2 391.7,239.2" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="181.5" data-y="74.8"/>
+<polygon points="417.3,182.2 422.5,191.2 412.1,191.2" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="184" data-y="86.4"/>
+<polygon points="421.4,215.3 426.6,224.3 416.2,224.3" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="184.5" data-y="78.4"/>
+<polygon points="343.8,283.1 349,292.1 338.6,292.1" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="175" data-y="62"/>
+<polygon points="417.3,202.1 422.5,211.1 412.1,211.1" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="184" data-y="81.6"/>
+<polygon points="384.7,222.7 389.9,231.7 379.5,231.7" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="180" data-y="76.6"/>
+<polygon points="366.7,193.8 371.9,202.8 361.5,202.8" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="177.8" data-y="83.6"/>
+<polygon points="482.7,167.3 487.9,176.3 477.5,176.3" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="192" data-y="90"/>
+<polygon points="352,231 357.2,240 346.8,240" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="176" data-y="74.6"/>
+<polygon points="335.7,245.9 340.9,254.9 330.5,254.9" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="174" data-y="71"/>
+<polygon points="417.3,210.3 422.5,219.3 412.1,219.3" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="184" data-y="79.6"/>
+<polygon points="488.4,151.6 493.6,160.6 483.2,160.6" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="192.7" data-y="93.8"/>
+<polygon points="315.2,250 320.4,259 310.1,259" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="171.5" data-y="70"/>
+<polygon points="327.5,240.1 332.7,249.1 322.3,249.1" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="173" data-y="72.4"/>
+<polygon points="352,184.3 357.2,193.3 346.8,193.3" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="176" data-y="85.9"/>
+<polygon points="352,213.6 357.2,222.6 346.8,222.6" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="176" data-y="78.8"/>
+<polygon points="388.8,217.8 393.9,226.8 383.6,226.8" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="180.5" data-y="77.8"/>
+<polygon points="325,265.7 330.2,274.7 319.9,274.7" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="172.7" data-y="66.2"/>
+<polygon points="352,182.2 357.2,191.2 346.8,191.2" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="176" data-y="86.4"/>
+<polygon points="331.6,201.2 336.8,210.2 326.4,210.2" fill="#91CC75" fill-opacity="0.82" data-series="Male" data-x="173.5" data-y="81.8"/>
+<rect x="107.5" y="122.1" width="48" height="8.9" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="x" data-from="146" data-to="152" data-value="1"/>
+<rect x="156.5" y="95.5" width="48" height="35.5" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="x" data-from="152" data-to="158" data-value="4"/>
+<rect x="205.5" y="77.8" width="48" height="53.2" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="x" data-from="158" data-to="164" data-value="6"/>
+<rect x="254.5" y="86.6" width="48" height="44.4" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="x" data-from="164" data-to="170" data-value="5"/>
+<rect x="303.5" y="68.9" width="48" height="62.1" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="x" data-from="170" data-to="176" data-value="7"/>
+<rect x="352.5" y="113.2" width="48" height="17.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="x" data-from="176" data-to="182" data-value="2"/>
+<rect x="303.5" y="60" width="48" height="71" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="x" data-from="170" data-to="176" data-value="8"/>
+<rect x="352.5" y="60" width="48" height="71" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="x" data-from="176" data-to="182" data-value="8"/>
+<rect x="401.5" y="77.8" width="48" height="53.2" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="x" data-from="182" data-to="188" data-value="6"/>
+<rect x="450.5" y="104.4" width="48" height="26.6" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="x" data-from="188" data-to="194" data-value="3"/>
+<rect x="549" y="355.7" width="7.9" height="23.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="y" data-from="40" data-to="46" data-value="1"/>
+<rect x="549" y="330.9" width="63.1" height="23.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="y" data-from="46" data-to="52" data-value="8"/>
+<rect x="549" y="306.1" width="31.6" height="23.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="y" data-from="52" data-to="58" data-value="4"/>
+<rect x="549" y="281.3" width="31.6" height="23.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="y" data-from="58" data-to="64" data-value="4"/>
+<rect x="549" y="256.5" width="23.7" height="23.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="y" data-from="64" data-to="70" data-value="3"/>
+<rect x="549" y="231.7" width="23.7" height="23.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="y" data-from="70" data-to="76" data-value="3"/>
+<rect x="549" y="182.1" width="15.8" height="23.8" fill="#5470C6" fill-opacity="0.55" class="ct-marginal" data-series="Female" data-axis="y" data-from="82" data-to="88" data-value="2"/>
+<rect x="549" y="281.3" width="7.9" height="23.8" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="y" data-from="58" data-to="64" data-value="1"/>
+<rect x="549" y="256.5" width="15.8" height="23.8" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="y" data-from="64" data-to="70" data-value="2"/>
+<rect x="549" y="231.7" width="55.2" height="23.8" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="y" data-from="70" data-to="76" data-value="7"/>
+<rect x="549" y="206.9" width="71" height="23.8" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="y" data-from="76" data-to="82" data-value="9"/>
+<rect x="549" y="182.1" width="31.6" height="23.8" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="y" data-from="82" data-to="88" data-value="4"/>
+<rect x="549" y="157.3" width="15.8" height="23.8" fill="#91CC75" fill-opacity="0.55" class="ct-marginal" data-series="Male" data-axis="y" data-from="88" data-to="94" data-value="2"/>
+</svg>

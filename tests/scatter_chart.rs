@@ -221,3 +221,255 @@ fn scatter_regression() {
         "{message}"
     );
 }
+
+#[derive(Debug)]
+struct MarginalBar {
+    series: String,
+    axis: String,
+    from: f32,
+    to: f32,
+    value: u32,
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+}
+
+fn attr(tag: &str, name: &str) -> String {
+    let key = format!(" {name}=\"");
+    let start = tag.find(&key).unwrap() + key.len();
+    tag[start..start + tag[start..].find('"').unwrap()].to_string()
+}
+
+/// The histogram bars, and the points as `(series, x, y, cx, cy)`.
+fn marginal_bars(svg: &str) -> Vec<MarginalBar> {
+    svg.split("<rect")
+        .skip(1)
+        .filter(|tag| tag.contains("ct-marginal"))
+        .map(|tag| MarginalBar {
+            series: attr(tag, "data-series"),
+            axis: attr(tag, "data-axis"),
+            from: attr(tag, "data-from").parse().unwrap(),
+            to: attr(tag, "data-to").parse().unwrap(),
+            value: attr(tag, "data-value").parse().unwrap(),
+            x: attr(tag, "x").parse().unwrap(),
+            y: attr(tag, "y").parse().unwrap(),
+            w: attr(tag, "width").parse().unwrap(),
+            h: attr(tag, "height").parse().unwrap(),
+        })
+        .collect()
+}
+
+fn scatter_points(svg: &str) -> Vec<(String, f32, f32, f32, f32)> {
+    svg.split("<circle")
+        .skip(1)
+        .filter(|tag| tag.contains("data-series="))
+        .map(|tag| {
+            (
+                attr(tag, "data-series"),
+                attr(tag, "data-x").parse().unwrap(),
+                attr(tag, "data-y").parse().unwrap(),
+                attr(tag, "cx").parse().unwrap(),
+                attr(tag, "cy").parse().unwrap(),
+            )
+        })
+        .collect()
+}
+
+fn marginal_svg() -> String {
+    ScatterChart::from_json(
+        r#"{
+            "width": 420,
+            "height": 320,
+            "x_axis_config": {"axis_min": 0, "axis_max": 4},
+            "y_axis_configs": [{"axis_min": 0, "axis_max": 4}],
+            "marginal": {"bin_count": 4, "bar_gap": 0, "size": 60},
+            "series_symbols": ["circle", "circle"],
+            "series_symbol_sizes": [4, 4],
+            "series_list": [
+                {"name": "A", "data": [0.5, 0.5, 0.6, 0.7, 1.5, 1.5, 2.5, 2.5, 3.5, 3.5]},
+                {"name": "B", "data": [0.5, 3.5]}
+            ]
+        }"#,
+    )
+    .unwrap()
+    .svg()
+    .unwrap()
+}
+
+/// The bar of `series` on `axis` whose bin holds `value`.
+fn bar_over<'a>(bars: &'a [MarginalBar], series: &str, axis: &str, value: f32) -> &'a MarginalBar {
+    bars.iter()
+        .find(|bar| bar.series == series && bar.axis == axis && bar.from < value && value < bar.to)
+        .unwrap_or_else(|| panic!("{series} {axis} has no bar over {value}: {bars:?}"))
+}
+
+#[test]
+fn scatter_marginal_histogram() {
+    let svg = marginal_svg();
+    let bars = marginal_bars(&svg);
+    let points = scatter_points(&svg);
+    assert_eq!(6, points.len(), "{points:?}");
+
+    // Each point sits in the bar that counts it, on both axes.
+    for (series, x, y, cx, cy) in &points {
+        let across = bar_over(&bars, series, "x", *x);
+        let up = bar_over(&bars, series, "y", *y);
+        assert!(
+            cx + 0.6 >= across.x && *cx <= across.x + across.w + 0.6,
+            "{series} ({x}, {y}) at {cx} is outside its x bar {across:?}"
+        );
+        assert!(
+            cy + 0.6 >= up.y && *cy <= up.y + up.h + 0.6,
+            "{series} ({x}, {y}) at {cy} is outside its y bar {up:?}"
+        );
+    }
+
+    // The x bars are above the plot and the y bars are to its right.
+    let above = bars
+        .iter()
+        .filter(|bar| bar.axis == "x")
+        .map(|bar| bar.y + bar.h)
+        .fold(0.0_f32, f32::max);
+    let beside = bars
+        .iter()
+        .filter(|bar| bar.axis == "y")
+        .map(|bar| bar.x)
+        .fold(f32::MAX, f32::min);
+    for (_, _, _, cx, cy) in &points {
+        assert!(
+            *cy + 0.6 >= above,
+            "point {cy} is above the histogram {above}"
+        );
+        assert!(
+            *cx <= beside + 0.6,
+            "point {cx} is right of the histogram {beside}"
+        );
+    }
+
+    // A's first x bin holds two points, B's holds one, and the bars share
+    // a scale, so A's bar is twice as tall.
+    let tall = bars
+        .iter()
+        .find(|bar| bar.series == "A" && bar.axis == "x" && bar.value == 2)
+        .unwrap();
+    let short = bars
+        .iter()
+        .find(|bar| bar.series == "B" && bar.axis == "x" && bar.value == 1)
+        .unwrap();
+    assert!(
+        (tall.h / short.h - 2.0).abs() < 0.05,
+        "{} {}",
+        tall.h,
+        short.h
+    );
+    // Two series are drawn over each other.
+    assert!(svg.contains(r#"fill-opacity="0.55""#), "{svg}");
+}
+
+#[test]
+fn scatter_marginal_ignores_what_is_not_a_point() {
+    // A coordinate past the axis, a missing one, and a bubble's size.
+    let outside = ScatterChart::from_json(
+        r#"{
+            "x_axis_config": {"axis_min": 0, "axis_max": 4},
+            "y_axis_configs": [{"axis_min": 0, "axis_max": 4}],
+            "marginal": {"bin_count": 4, "bar_gap": 0},
+            "series_list": [
+                {"name": "C", "data": [10, 0.5, 1.5, null]},
+                {"name": "D", "data": [null, 1, 2.5, 2.5]}
+            ]
+        }"#,
+    )
+    .unwrap()
+    .svg()
+    .unwrap();
+    let bars = marginal_bars(&outside);
+    let values = |series: &str, axis: &str| -> u32 {
+        bars.iter()
+            .filter(|bar| bar.series == series && bar.axis == axis)
+            .map(|bar| bar.value)
+            .sum()
+    };
+    // 10 is outside the x axis; the following pair is missing its y.
+    assert_eq!(0, values("C", "x"));
+    assert_eq!(1, values("C", "y"));
+    // The missing x leaves one point.
+    assert_eq!(1, values("D", "x"));
+    assert_eq!(1, values("D", "y"));
+
+    let bubbles = ScatterChart::from_json(
+        r#"{
+            "bubble": true,
+            "x_axis_config": {"axis_min": 0, "axis_max": 4},
+            "y_axis_configs": [{"axis_min": 0, "axis_max": 4}],
+            "marginal": {"bin_count": 4, "bar_gap": 0},
+            "series_list": [{"name": "A", "data": [0.5, 0.5, 100, 1.5, 1.5, 1]}]
+        }"#,
+    )
+    .unwrap()
+    .svg()
+    .unwrap();
+    let bars = marginal_bars(&bubbles);
+    let counted: u32 = bars
+        .iter()
+        .filter(|bar| bar.axis == "x")
+        .map(|bar| bar.value)
+        .sum();
+    assert_eq!(2, counted, "{bars:?}");
+}
+
+#[test]
+fn scatter_marginal_follows_the_scale() {
+    for (scale, inverse) in [("linear", true), ("log", false)] {
+        let svg = ScatterChart::from_json(&format!(
+            r#"{{
+                "x_axis_config": {{"axis_min": 1, "axis_max": 100, "axis_scale": "{scale}", "axis_inverse": {inverse}}},
+                "y_axis_configs": [{{"axis_min": 1, "axis_max": 100, "axis_scale": "{scale}", "axis_inverse": {inverse}}}],
+                "marginal": {{"bin_count": 2, "bar_gap": 0, "size": 50}},
+                "series_symbol_sizes": [4],
+                "series_list": [{{"name": "A", "data": [2, 3, 80, 60]}}]
+            }}"#
+        ))
+        .unwrap()
+        .svg()
+        .unwrap();
+        let bars = marginal_bars(&svg);
+        for (series, x, y, cx, cy) in scatter_points(&svg) {
+            let across = bar_over(&bars, &series, "x", x);
+            let up = bar_over(&bars, &series, "y", y);
+            assert!(
+                cx + 0.6 >= across.x && cx <= across.x + across.w + 0.6,
+                "{scale} inverse={inverse}: {x} at {cx} outside {across:?}"
+            );
+            assert!(
+                cy + 0.6 >= up.y && cy <= up.y + up.h + 0.6,
+                "{scale} inverse={inverse}: {y} at {cy} outside {up:?}"
+            );
+        }
+    }
+}
+
+#[test]
+fn scatter_marginal_small_chart_draws_none() {
+    let svg = ScatterChart::from_json(
+        r#"{"width": 30, "height": 30, "marginal": {}, "series_list": [{"name": "a", "data": [1, 2, 3, 4]}]}"#,
+    )
+    .unwrap()
+    .svg()
+    .unwrap();
+    assert!(!svg.contains("ct-marginal"), "{svg}");
+    assert!(svg.starts_with("<svg"));
+
+    let message = ScatterChart::from_json(r#"{"marginal": {"bins": 4}, "series_list": []}"#)
+        .unwrap_err()
+        .to_string();
+    assert!(message.contains("marginal.bins"), "{message}");
+}
+
+#[test]
+fn scatter_marginal_snapshot() {
+    let chart =
+        ScatterChart::from_json(include_str!("../asset/scatter_chart/marginal.json")).unwrap();
+    common::assert_snapshot!("scatter_chart/marginal.svg", chart.svg().unwrap());
+}
