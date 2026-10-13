@@ -531,6 +531,42 @@ GeoJSON that comes with the options — the library has no map data of its own:
 
 In Rust: `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`.
 
+**Where to get the regions.** A real map needs a GeoJSON file of its
+regions, which the library does not come with. Some places that have them:
+
+| Source | What it has | Terms |
+|---|---|---|
+| [Natural Earth](https://www.naturalearthdata.com/) | The countries of the world and their states and provinces, at three levels of detail (1:10m, 1:50m, 1:110m); as GeoJSON in the `geojson` folder of [its repository](https://github.com/nvkelso/natural-earth-vector). | Public domain. |
+| [geoBoundaries](https://www.geoboundaries.org/) | The administrative divisions of every country, level by level; as GeoJSON, simplified as well. | CC BY 4.0: say where the boundaries are from. |
+| [GADM](https://gadm.org/) | The administrative areas of every country, several levels deep; in GeoJSON among other formats. | Free for academic and other non-commercial use; redistribution and commercial use need permission. |
+| [DataV.GeoAtlas](https://datav.aliyun.com/portal/school/atlas/area_selector) | The provinces, cities and districts of China, as GeoJSON. The provinces and the cities of each are in this repository as downloaded, in [`asset/geo/china`](../asset/geo/china/README.md), with how they were got. | See the terms of the site. |
+
+Before a file is used, it is worth a look:
+
+- **Format.** What is read is GeoJSON with longitudes and latitudes in
+  degrees, as its standard has them. A Shapefile or a TopoJSON file has to be
+  converted, and coordinates in the metres of a projection turned back into
+  degrees; [mapshaper](https://mapshaper.org/) does both.
+- **Size.** Every point of every border is written into the SVG, so a file
+  of several megabytes makes a picture of several megabytes. Simplify it to
+  what a chart of a few hundred pixels can show:
+
+  ```bash
+  mapshaper provinces.shp -simplify 10% -o precision=0.001 provinces.geojson
+  ```
+
+- **Names.** `data` finds a region by its name, written exactly as in the
+  file. Which property of a feature holds the name differs from source to
+  source — `name`, `NAME`, `NAME_1`, `shapeName` — so look at the
+  `properties` of a feature and give that key as `name_property`.
+- **Terms.** The sources have terms of their own, as the table says. One
+  that asks to be named can be, in a line of
+  [`texts`](#copyright-lines-and-watermarks).
+- **Borders.** Sources draw disputed borders differently, and some countries
+  have rules for the maps that are published in them: in China a map for the
+  public has to pass an official review. Check what applies before a map is
+  published.
+
 ## Fonts
 
 ```rust,no_run

@@ -422,6 +422,28 @@ Rust 中使用 `GanttChart::new(vec![("调研", start, end).into()])`，时间�
 
 Rust 中使用 `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`。
 
+**区域数据从哪里来。** 画真实的地图需要一份对应区域的 GeoJSON 文件，库本身不提供。常见的来源：
+
+| 来源 | 内容 | 使用条款 |
+|---|---|---|
+| [Natural Earth](https://www.naturalearthdata.com/) | 全球各国及其一级行政区（州、省），有 1:10m、1:50m、1:110m 三种精度；GeoJSON 在[它的仓库](https://github.com/nvkelso/natural-earth-vector)的 `geojson` 目录下。 | 公有领域。 |
+| [geoBoundaries](https://www.geoboundaries.org/) | 各国各级行政区划，提供 GeoJSON，也有简化版。 | CC BY 4.0：需注明数据来源。 |
+| [GADM](https://gadm.org/) | 各国多级行政区划，提供 GeoJSON 等多种格式。 | 学术及其它非商业用途免费；再分发和商用需事先获得许可。 |
+| [DataV.GeoAtlas](https://datav.aliyun.com/portal/school/atlas/area_selector) | 中国的省、市、区县，GeoJSON 格式。全国各省及各省下属市的数据已下载到本仓库的 [`asset/geo/china`](../asset/geo/china/README.md)，其中说明了获取方法。 | 见该站点的使用说明。 |
+
+拿到文件后，使用前留意几点：
+
+- **格式**：读取的是经纬度（单位为度）的 GeoJSON，这也是 GeoJSON 标准的规定。Shapefile、TopoJSON 需要先转换，投影坐标（单位为米）需要先转回经纬度；[mapshaper](https://mapshaper.org/) 两样都能做。
+- **大小**：边界上的每个点都会写进 SVG，几 MB 的文件会生成几 MB 的图。先简化到几百像素的图表能表现的精度：
+
+  ```bash
+  mapshaper provinces.shp -simplify 10% -o precision=0.001 provinces.geojson
+  ```
+
+- **名称**：`data` 按名称查找区域，写法要与文件中的完全一致。名称存在 feature 的哪个属性里因来源而异——`name`、`NAME`、`NAME_1`、`shapeName` 等——先看一下 feature 的 `properties`，再把对应的键传给 `name_property`。
+- **条款**：各来源的使用条款不同，见上表。要求注明来源的，可以用 [`texts`](#版权声明与水印) 加一行说明。
+- **边界画法**：不同来源对有争议边界的画法不同，一些国家对公开发布的地图另有规定：在中国，向社会公开的地图须经审核。发布前请确认适用的要求。
+
 ## 字体
 
 ```rust

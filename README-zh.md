@@ -133,6 +133,7 @@ std::fs::write("visits.png", png).unwrap();
 | [JSON 参数参考](./docs/json-zh.md) | 每种图表的每个参数：类型、默认值、作用 |
 | [图表一览](./docs/gallery.md) | 所有图表类型及其变体 |
 | [主题](./theme.md) | 十种内置主题 |
+| [中国地图数据](./asset/geo/china/README.md) | 全国各省及各省下属市的 GeoJSON，可直接用于 `MapChart`；仅在仓库中，不随 crate 发布 |
 | [示例](./examples) | `cargo run --example bar` 等 11 个可运行示例 |
 | [API 文档](https://docs.rs/charts-rs) | docs.rs 上的 Rust API |
 | [更新日志](./CHANGELOG.md) | 版本变更，以及从 1.x 迁移到 2.0 的说明 |

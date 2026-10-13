@@ -147,6 +147,7 @@ std::fs::write("visits.png", png).unwrap();
 | [JSON reference](./docs/json.md) | Every option of every chart: its type, its default, what it does |
 | [Gallery](./docs/gallery.md) | Every chart type and its variants |
 | [Themes](./theme.md) | The ten built-in themes |
+| [Maps of China](./asset/geo/china/README.md) | GeoJSON of the provinces of China and of the cities of each, ready for a `MapChart` — in the repository, not in the crate |
 | [Examples](./examples) | `cargo run --example bar`, and ten more |
 | [API docs](https://docs.rs/charts-rs) | The Rust API on docs.rs |
 | [Changelog](./CHANGELOG.md) | What changed, and how to move from 1.x to 2.0 |
