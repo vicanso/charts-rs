@@ -20,12 +20,16 @@ use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
 
-/// One radar axis: its name and maximum value.
+/// One radar axis: its name and the values at the center and the rim.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RadarIndicator {
     /// Name of the indicator axis.
     pub name: String,
-    /// Maximum value of the indicator.
+    /// Value at the center of this axis. A value below it is drawn at the
+    /// center. Default 0, so an axis that only sets `max` is unchanged.
+    pub min: f32,
+    /// Value at the outer end of this axis. Raised to the largest finite
+    /// value of the data when that is larger.
     pub max: f32,
 }
 impl From<(&str, f32)> for RadarIndicator {
@@ -33,8 +37,19 @@ impl From<(&str, f32)> for RadarIndicator {
         RadarIndicator {
             name: val.0.to_string(),
             max: val.1,
+            min: 0.0,
         }
     }
+}
+
+/// The web of a radar chart.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum RadarShape {
+    /// Concentric polygons, one side per indicator.
+    #[default]
+    Polygon,
+    /// Concentric circles. The spokes stay straight lines.
+    Circle,
 }
 
 fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<RadarIndicator>> {
@@ -45,8 +60,9 @@ fn get_radar_indicator_list_from_value(value: &serde_json::Value) -> Option<Vec<
         for item in arr.iter() {
             let name = get_string_from_value(item, "name").unwrap_or_default();
             let max = get_f32_from_value(item, "max").unwrap_or_default();
+            let min = get_f32_from_value(item, "min").unwrap_or_default();
             if !name.is_empty() {
-                indicators.push(RadarIndicator { name, max });
+                indicators.push(RadarIndicator { name, max, min });
             }
         }
         return Some(indicators);
@@ -75,6 +91,8 @@ pub struct RadarChart {
     pub indicators: Vec<RadarIndicator>,
     /// Number of concentric rings of the web; 0 means the default of 5.
     pub split_number: usize,
+    /// `polygon` (the default) or `circle`.
+    pub shape: RadarShape,
 }
 
 impl std::ops::Deref for RadarChart {
@@ -103,6 +121,11 @@ impl RadarChart {
         }
         if let Some(split_number) = get_usize_from_value(&data, "split_number") {
             r.split_number = split_number;
+        }
+        if get_string_from_value(&data, "shape")
+            .is_some_and(|shape| shape.eq_ignore_ascii_case("circle"))
+        {
+            r.shape = RadarShape::Circle;
         }
         if data.get("series_fill").is_none() {
             r.series.fill = true;
@@ -149,7 +172,8 @@ impl RadarChart {
         let mut max_values: Vec<f32> = vec![0.0; self.indicators.len()];
         for series in self.series_list.iter() {
             for (index, item) in series.iter_values().enumerate() {
-                if index < max_values.len() && item > max_values[index] {
+                // A missing point is `NIL_VALUE` and must not become the max.
+                if index < max_values.len() && item != NIL_VALUE && item > max_values[index] {
                     max_values[index] = item
                 }
             }
@@ -176,19 +200,31 @@ impl RadarChart {
         };
         for i in 1..=round_count {
             let ir = r / round_count as f32 * i as f32;
-            let mut points = vec![];
-            for index in 0..indicators.len() {
-                points.push(get_pie_point(cx, cy, ir, angle * index as f32));
+            if self.shape == RadarShape::Circle {
+                c.circle(Circle {
+                    stroke_color: Some(self.grid.stroke_color),
+                    stroke_width: self.grid.stroke_width,
+                    stroke_dash_array: self.grid.stroke_dash_array.clone(),
+                    cx,
+                    cy,
+                    r: ir,
+                    ..Default::default()
+                });
+            } else {
+                let mut points = vec![];
+                for index in 0..indicators.len() {
+                    points.push(get_pie_point(cx, cy, ir, angle * index as f32));
+                }
+                c.straight_line(StraightLine {
+                    color: Some(self.grid.stroke_color),
+                    points,
+                    stroke_width: self.grid.stroke_width,
+                    stroke_dash_array: self.grid.stroke_dash_array.clone(),
+                    symbol: None,
+                    close: true,
+                    ..Default::default()
+                });
             }
-            c.straight_line(StraightLine {
-                color: Some(self.grid.stroke_color),
-                points,
-                stroke_width: self.grid.stroke_width,
-                stroke_dash_array: self.grid.stroke_dash_array.clone(),
-                symbol: None,
-                close: true,
-                ..Default::default()
-            });
         }
         for (index, item) in indicators.iter().enumerate() {
             let current_angle = angle * index as f32;
@@ -248,16 +284,7 @@ impl RadarChart {
             let color = get_color(&self.series.colors, series.index.unwrap_or(index));
             let mut points = vec![];
             for (i, (item, value)) in indicators.iter().zip(series.iter_values()).enumerate() {
-                // Treat a missing point (`NIL_VALUE`) or a non-positive
-                // indicator max as the center, so the sentinel `f32::MIN`
-                // cannot leak into the polygon as a huge coordinate.
-                let mut ir = if item.max <= 0.0 || value == NIL_VALUE {
-                    0.0
-                } else {
-                    value / item.max * r
-                };
-
-                ir = ir.clamp(0.0, r);
+                let ir = indicator_radius(item.min, item.max, value, r);
                 let p = get_pie_point(cx, cy, ir, angle * i as f32);
                 if series.label_show {
                     let label = format_series_label(
@@ -270,7 +297,7 @@ impl RadarChart {
                 }
                 points.push(p);
             }
-            let fill = if self.series.fill {
+            let fill = if series.fill.unwrap_or(self.series.fill) {
                 Some(color.with_alpha(self.fill_alpha(50)))
             } else {
                 None
@@ -308,6 +335,18 @@ impl RadarChart {
         }
 
         c.svg()
+    }
+}
+
+/// Radius of one value. The center is `min` and the rim is `max`. A missing
+/// value, a range that does not open upwards, or a value below `min` sits at
+/// the center; a value above `max` sits on the rim.
+fn indicator_radius(min: f32, max: f32, value: f32, radius: f32) -> f32 {
+    let span = max - min;
+    if span <= 0.0 || value == NIL_VALUE {
+        0.0
+    } else {
+        ((value - min) / span).clamp(0.0, 1.0) * radius
     }
 }
 
@@ -473,5 +512,109 @@ mod tests {
             }
         }
         assert!(max_run < 7, "overflowed radar coordinate leaked into SVG");
+    }
+
+    #[test]
+    fn circle_web_scales_from_min_and_fill_is_per_series() {
+        let chart = RadarChart::from_json(
+            r###"{
+                "shape": "circle",
+                "indicators": [
+                    {"name": "Sales", "min": 1000, "max": 6500},
+                    {"name": "Administration", "max": 16000},
+                    {"name": "Information Technology", "max": 30000},
+                    {"name": "Customer Support", "max": 38000},
+                    {"name": "Development", "max": 52000}
+                ],
+                "series_list": [
+                    {
+                        "name": "Allocated Budget",
+                        "data": [4200.0, 3000.0, 20000.0, 35000.0, 50000.0],
+                        "label_show": true
+                    },
+                    {
+                        "name": "Actual Spending",
+                        "data": [5000.0, 14000.0, 28000.0, 26000.0, 42000.0],
+                        "fill": false,
+                        "label_show": true
+                    }
+                ]
+            }"###,
+        )
+        .unwrap();
+        assert_eq!(super::RadarShape::Circle, chart.shape);
+        assert_eq!(5, chart.indicators.len());
+        assert_eq!(1000.0, chart.indicators[0].min);
+        assert_eq!(0.0, chart.indicators[1].min);
+
+        let svg = chart.svg().unwrap();
+        let grid_circles = |svg: &str| {
+            svg.lines()
+                .filter(|line| line.starts_with("<circle") && line.contains("stroke=\"#E0E6F2\""))
+                .count()
+        };
+        assert_eq!(5, grid_circles(&svg), "{svg}");
+        let mut polygon = chart.clone();
+        polygon.shape = super::RadarShape::Polygon;
+        assert_eq!(0, grid_circles(&polygon.svg().unwrap()));
+
+        // Five axes, so each series polygon has five vertices. Sales starts
+        // at 1000 rather than 0, and the outline series is not filled.
+        let vertices = |path: &str| path.split(" L ").count();
+        let paths: Vec<&str> = svg.split("<path ").skip(1).collect();
+        assert_eq!(2, paths.len(), "{svg}");
+        assert_eq!(5, vertices(paths[0]), "{}", paths[0]);
+        assert!(paths[0].contains("fill-opacity"), "{}", paths[0]);
+        assert_eq!(5, vertices(paths[1]), "{}", paths[1]);
+        assert!(paths[1].contains("fill=\"none\""), "{}", paths[1]);
+        assert!(!paths[1].contains("fill-opacity"), "{}", paths[1]);
+        // Sales is the top spoke. 4200 on a scale from 1000 to 6500 is not
+        // the same place as 4200 on a scale from 0.
+        let spoke = svg
+            .lines()
+            .find(|line| line.starts_with("<line") && line.contains("stroke=\"#E0E6F2\""))
+            .unwrap();
+        let attr = |name: &str| {
+            let key = format!("{name}=\"");
+            let start = spoke.find(&key).unwrap() + key.len();
+            let end = start + spoke[start..].find('"').unwrap();
+            spoke[start..end].parse::<f32>().unwrap()
+        };
+        let (y1, y2) = (attr("y1"), attr("y2"));
+        let vertex_y = paths[0]
+            .split_whitespace()
+            .nth(2)
+            .unwrap()
+            .parse::<f32>()
+            .unwrap();
+        let ratio = (y2 - vertex_y) / (y2 - y1);
+        let expected = (4200.0 - 1000.0) / (6500.0 - 1000.0);
+        assert!(
+            (ratio - expected).abs() < 0.02,
+            "sales vertex ratio {ratio}, expected {expected}"
+        );
+        for value in [
+            "4200", "3000", "20000", "35000", "50000", "5000", "14000", "28000", "26000", "42000",
+        ] {
+            assert!(
+                svg.contains(&format!("\n{value}\n")),
+                "missing label {value}"
+            );
+        }
+
+        let mut unfilled = chart.clone();
+        unfilled.series.fill = false;
+        let unfilled = unfilled.svg().unwrap();
+        let paths: Vec<&str> = unfilled.split("<path ").skip(1).collect();
+        assert!(paths[0].contains("fill=\"none\""), "{}", paths[0]);
+
+        assert_eq!(
+            0.0,
+            super::indicator_radius(0.0, 10.0, super::NIL_VALUE, 40.0)
+        );
+        assert_eq!(0.0, super::indicator_radius(5.0, 5.0, 5.0, 40.0));
+        assert_eq!(20.0, super::indicator_radius(0.0, 10.0, 5.0, 40.0));
+
+        assert_snapshot!("radar_chart/circle.svg", svg);
     }
 }

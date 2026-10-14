@@ -129,7 +129,7 @@ pub use parallel_chart::ParallelChart;
 pub use path::{QuadraticBezier, SmoothCurve};
 pub use pie_chart::PieChart;
 pub use polar_bar_chart::{PolarAxis, PolarBarChart};
-pub use radar_chart::{RadarChart, RadarIndicator};
+pub use radar_chart::{RadarChart, RadarIndicator, RadarShape};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
 pub use scatter_chart::{DensityContour, MarginalHistogram, Regression, ScatterChart};
 pub use sunburst_chart::{SunburstChart, SunburstData};

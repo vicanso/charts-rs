@@ -368,14 +368,17 @@ fn node_chart_options() {
             RadarIndicator {
                 name: "x".into(),
                 max: 5.0,
+                min: 0.0,
             },
             RadarIndicator {
                 name: "y".into(),
                 max: 5.0,
+                min: 0.0,
             },
             RadarIndicator {
                 name: "z".into(),
                 max: 5.0,
+                min: 0.0,
             },
         ],
     );

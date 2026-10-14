@@ -427,7 +427,7 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 
 ## Radar
 
-`RadarChart::from_json` — Every series is a polygon over the `indicators`, with one value for each of them.
+`RadarChart::from_json` — Every series is a polygon over the `indicators`, with one value for each of them. The polygons are filled unless `series_fill` is `false`; a series can override that with its own `fill`. `"shape": "circle"` draws the rings as circles. The spokes are lines either way.
 
 <!-- keys: radar -->
 
@@ -435,6 +435,7 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 |---|---|---|---|
 | `indicators` | object[] |  | The axes of the radar; every series has one value for each. |
 | `split_number` | integer 0–1000 | `5` | Number of rings of the web; `0` means 5. |
+| `shape` | `"polygon"` / `"circle"` | `"polygon"` | `polygon` draws a straight-sided web. `circle` draws concentric circles. The spokes are lines either way. |
 
 ### `indicators[]`
 
@@ -443,7 +444,8 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `name` | string |  | Name of the indicator. |
-| `max` | number |  | Value at the outer end of the axis; raised to the largest value of the data when that is larger. |
+| `min` | number | `0` | Value at the center of this axis. A value below it is drawn at the center. |
+| `max` | number |  | Value at the outer ring. Raised to the largest value of the data when that is larger. |
 
 <!-- example: radar -->
 

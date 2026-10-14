@@ -4,6 +4,13 @@
 
 ### Added
 
+- A radar chart draws circular rings as well as the straight-sided web:
+  `"shape": "circle"` (in Rust, `chart.shape = RadarShape::Circle`). Each
+  indicator has a `min`, default 0, the value at the center; the outer ring
+  is `max`, still raised when a value is larger. A value below `min` sits at
+  the center. A series sets `fill` to be filled or only an outline, and the
+  polygons stay filled unless `series_fill` is `false`. A chart that leaves
+  `shape` and `min` unset is drawn as before.
 - A scatter chart draws the distribution of its own points. `"marginal": {}`
   puts a histogram of the x values above the plot and one of the y values
   to its right. The bins span the axes, so a bar sits over the points it

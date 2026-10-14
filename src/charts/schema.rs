@@ -457,10 +457,15 @@ pub(crate) static PIE_FIELDS: &[Field] = &[
     f("ring_gap", Kind::Number),
 ];
 
-static INDICATOR_FIELDS: &[Field] = &[f("name", Kind::String), f("max", Kind::Number)];
+static INDICATOR_FIELDS: &[Field] = &[
+    f("name", Kind::String),
+    f("min", Kind::Number),
+    f("max", Kind::Number),
+];
 pub(crate) static RADAR_FIELDS: &[Field] = &[
     f("indicators", Kind::ArrayOf(INDICATOR_FIELDS)),
     f("split_number", Kind::Count),
+    f("shape", Kind::Enum(&["polygon", "circle"])),
 ];
 
 static SANKEY_NODE_FIELDS: &[Field] = &[f("name", Kind::String), f("color", Kind::Color)];

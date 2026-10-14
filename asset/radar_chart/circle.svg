@@ -1,0 +1,92 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<g>
+<line stroke-width="2" x1="158" y1="15" x2="183" y2="15" stroke="#5470C6"/>
+<circle cx="170.5" cy="15" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="186" y="19" font-family="Roboto" fill="#464646">
+Allocated Budget
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="304" y1="15" x2="329" y2="15" stroke="#91CC75"/>
+<circle cx="316.5" cy="15" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="332" y="19" font-family="Roboto" fill="#464646">
+Actual Spending
+</text>
+</g>
+<circle cx="300" cy="211" r="28.8" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="211" r="57.6" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="211" r="86.4" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="211" r="115.2" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<circle cx="300" cy="211" r="144" stroke-width="1" stroke="#E0E6F2" fill="none"/>
+<text font-size="14" x="282" y="62" font-family="Roboto" fill="#464646">
+Sales
+</text>
+<line stroke-width="1" x1="300" y1="67" x2="300" y2="211" stroke="#E0E6F2"/>
+<text font-size="14" x="440" y="166.5" font-family="Roboto" fill="#464646">
+Administration
+</text>
+<line stroke-width="1" x1="437" y1="166.5" x2="300" y2="211" stroke="#E0E6F2"/>
+<text font-size="14" x="387.6" y="335.1" font-family="Roboto" fill="#464646">
+Information Technology
+</text>
+<line stroke-width="1" x1="384.6" y1="327.5" x2="300" y2="211" stroke="#E0E6F2"/>
+<text font-size="14" x="92.4" y="335.1" font-family="Roboto" fill="#464646">
+Customer Support
+</text>
+<line stroke-width="1" x1="215.4" y1="327.5" x2="300" y2="211" stroke="#E0E6F2"/>
+<text font-size="14" x="73" y="166.5" font-family="Roboto" fill="#464646">
+Development
+</text>
+<line stroke-width="1" x1="163" y1="166.5" x2="300" y2="211" stroke="#E0E6F2"/>
+<g>
+<path d="M 300 127.2 L 325.7 202.7 L 356.4 288.7 L 222 318.3 L 168.3 168.2 Z" stroke-width="2" fill="#5470C6" fill-opacity="0.2" stroke="#5470C6"/>
+<g stroke-width="2" stroke="#5470C6" fill="none">
+<circle cx="300" cy="127.2" r="2"/>
+<circle cx="325.7" cy="202.7" r="2"/>
+<circle cx="356.4" cy="288.7" r="2"/>
+<circle cx="222" cy="318.3" r="2"/>
+<circle cx="168.3" cy="168.2" r="2"/>
+</g>
+</g>
+<g>
+<path d="M 300 106.3 L 419.8 172.1 L 379 319.7 L 242.1 290.7 L 189.4 175.1 Z" stroke-width="2" fill="none" stroke="#91CC75"/>
+<g stroke-width="2" stroke="#91CC75" fill="none">
+<circle cx="300" cy="106.3" r="2"/>
+<circle cx="419.8" cy="172.1" r="2"/>
+<circle cx="379" cy="319.7" r="2"/>
+<circle cx="242.1" cy="290.7" r="2"/>
+<circle cx="189.4" cy="175.1" r="2"/>
+</g>
+</g>
+<text font-size="14" x="300" y="127.2" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+4200
+</text>
+<text font-size="14" x="325.7" y="202.7" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+3000
+</text>
+<text font-size="14" x="356.4" y="288.7" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+20000
+</text>
+<text font-size="14" x="222" y="318.3" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+35000
+</text>
+<text font-size="14" x="168.3" y="168.2" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+50000
+</text>
+<text font-size="14" x="300" y="106.3" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+5000
+</text>
+<text font-size="14" x="419.8" y="172.1" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+14000
+</text>
+<text font-size="14" x="379" y="319.7" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+28000
+</text>
+<text font-size="14" x="242.1" y="290.7" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+26000
+</text>
+<text font-size="14" x="189.4" y="175.1" dx="-20" dy="-8" font-family="Roboto" fill="#464646">
+42000
+</text>
+</svg>
