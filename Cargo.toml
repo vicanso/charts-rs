@@ -18,6 +18,7 @@ exclude = [
     ".github/*",
     "CLAUDE.md",
     "Makefile",
+    "cliff.toml",
     # Pages of pictures, which are in `asset` and not in the package.
     "theme.md",
     "docs/gallery.md",

@@ -8,3 +8,5 @@ udeps:
 	cargo +nightly udeps
 bench:
 	cargo bench --features "image-encoder"
+changelog:
+	git cliff --config cliff.toml --output CHANGELOG.md
