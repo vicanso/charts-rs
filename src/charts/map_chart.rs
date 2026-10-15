@@ -90,7 +90,7 @@ fn ring_from_value(value: &serde_json::Value) -> Ring {
 }
 
 /// The regions of a GeoJSON document that is already parsed.
-fn regions_from_value(value: &serde_json::Value, name_property: &str) -> Vec<MapRegion> {
+pub(crate) fn regions_from_value(value: &serde_json::Value, name_property: &str) -> Vec<MapRegion> {
     let features: Vec<&serde_json::Value> = match value.get("features").and_then(|f| f.as_array()) {
         Some(features) => features.iter().collect(),
         // A single feature is a map of one region.

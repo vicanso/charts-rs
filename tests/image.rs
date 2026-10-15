@@ -1312,6 +1312,13 @@ fn generate_image() {
             chart.height = 680.0;
             chart.svg().unwrap()
         }),
+        (
+            "lines",
+            charts_rs::LinesChart::from_json(include_str!("../asset/lines_chart/flows.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
         ("sankey-vertical", {
             let mut chart = charts_rs::SankeyChart::from_json(include_str!(
                 "../asset/sankey_chart/integration.json"

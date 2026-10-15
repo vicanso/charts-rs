@@ -23,7 +23,7 @@ cargo fmt
 
 ## Architecture
 
-**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 27 chart types and 10 built-in themes, with an API inspired by Apache ECharts.
+**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 28 chart types and 10 built-in themes, with an API inspired by Apache ECharts.
 
 ### Chart Types
 `BarChart`, `HorizontalBarChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, `CandlestickChart`, `TableChart`, `HeatmapChart`, `FunnelChart`, `WaterfallChart`, `MultiChart`, `CalendarChart`, `GaugeChart`, `TreemapChart`, `BoxPlotChart`, `SunburstChart`, `SankeyChart`, `TreeChart`, `GraphChart`, `ParallelChart`, `ThemeRiverChart`, `HistogramChart`, `PolarBarChart`, `ChordChart`, `GanttChart`, `MapChart`

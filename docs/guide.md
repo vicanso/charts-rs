@@ -18,7 +18,8 @@ a word of explanation, fonts and output. Every JSON key is listed in the
   [bubble](#bubble-chart), [marginal histograms](#marginal-histograms),
   [density contours](#density-contours),
   [histogram](#histogram), [polar bar](#polar-bar-chart),
-  [chord](#chord-chart), [gantt](#gantt-chart), [map](#map-chart)
+  [chord](#chord-chart), [gantt](#gantt-chart), [map](#map-chart),
+  [lines](#lines-chart)
 - [Fonts](#fonts)
 - [Development](#development)
 
@@ -649,6 +650,28 @@ Before a file is used, it is worth a look:
   have rules for the maps that are published in them: in China a map for the
   public has to pass an official review. Check what applies before a map is
   published.
+
+### Lines chart
+
+A `LinesChart` draws flows from one point to another. The width of a line
+is its value, between `min_width` and `max_width`. `curveness` bends each
+line (`0` is straight); an arrow at the end shows the direction.
+
+Without `geo_json` the points are on a plane. With it they are longitude
+and latitude, projected like a map, and the regions are drawn underneath.
+
+```json
+{
+  "curveness": 0.3,
+  "lines": [
+    {"name": "North", "value": 80, "from": [0, 0], "to": [40, 30]}
+  ]
+}
+```
+
+In Rust: `LinesChart::new(vec![((0.0, 0.0), (40.0, 30.0), 80.0).into()])`.
+A fuller picture, sixteen flows over the sample country, is
+`asset/lines_chart/flows.json`.
 
 ## Fonts
 

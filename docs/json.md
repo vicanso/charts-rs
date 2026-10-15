@@ -134,7 +134,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `series_list` | object[] |  | The data series of the chart. |
 | `series_colors` | color[] | theme | The color palette: a series takes the color at its position, starting over when the palette runs out. |
 | `series_stroke_width` | number | `2` | Stroke width of the series lines. |
-| `series_symbol` | object |  | Marker drawn on the data points of every line; `null` draws none. Default: a circle as large as `series_stroke_width`, filled with the background color. |
+| `series_symbol` | object |  | Marker drawn on the data points of every line, and on the vertices of a radar polygon; `null` draws none. On a line the default is a circle as large as `series_stroke_width`, filled with the background color. A radar chart that leaves this and every series `symbol` unset keeps a circle of radius 2 on each vertex. |
 | `series_smooth` | boolean | `false` | Draws line series as smooth curves. |
 | `series_fill` | boolean | `false` | Fills the area under line series. |
 | `series_fill_opacity` | number |  | How opaque the fill of an area is, from 0 to 1. Default: `0.39` under a line, `0.2` in a radar chart. |
@@ -173,11 +173,11 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `mark_points` | object[] |  | Markers on points of the series, each with the value of its point in it: on the smallest, on the largest, or on any one by its index. A series that is drawn as a line has them. |
 | `mark_areas` | object[] |  | Shaded bands across the plot between two values. |
 | `colors` | color[] |  | A color for each data point (bar, horizontal bar and polar bar charts); `null` keeps the color of the series. |
-| `stroke_dash_array` | string |  | Dash pattern of a line series, e.g. `"4 2"`. |
+| `stroke_dash_array` | string |  | Dash pattern of a line series, and of a radar polygon, e.g. `"4 2"`. |
 | `stack` | string |  | Name of a stack: series with the same name (and y axis) are piled on top of each other. |
 | `smooth` | boolean |  | Overrides `series_smooth` for this series. |
 | `fill` | boolean |  | Overrides `series_fill` for this series. |
-| `symbol` | object |  | Overrides `series_symbol` for this series; `null` draws no marker. |
+| `symbol` | object |  | Overrides `series_symbol` for this series; `null` draws no marker. Used by line series and radar polygons. |
 | `x_values` | x value[] |  | The x value of each data point, for a series that is not sampled at the chart’s `x_axis_values`. |
 | `band` | object |  | A filled band around the line: a lower and an upper bound for each data point. |
 | `step` | `"start"` / `"middle"` / `"end"` |  | Draws the line as steps: level between two points, changing to the next value at the point itself (`start`), half way to the next one (`middle`) or at the next point (`end`). Wins over `smooth`. |
@@ -1262,6 +1262,36 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
     },
     {"name": "Sign-off", "category": "Build", "start": "2024-03-22"},
     {"name": "Launch", "category": "Plan", "start": "2024-03-25", "end": "2024-03-29"}
+  ]
+}
+```
+
+## Lines
+
+`LinesChart::from_json` — Flows from one point to another, straight or bent into an arc. The width of a line is its value. Without `geo_json` the points are on a plane, y growing upwards. With it they are longitudes and latitudes, and the regions are drawn under the lines. It takes no `series_list`.
+
+<!-- keys: lines -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `lines` | array |  | The flows. Each is `{ "from": [x, y], "to": [x, y], "value": number, "name": "" }`, or `{ "coords": [[x, y], [x, y]], "value": number }`. On a map, `x` is longitude and `y` is latitude. |
+| `curveness` | number | `0` | How far a line bends, as a fraction of its length, to the left of the direction it travels. `0` is straight. Clamped to -1…1. |
+| `min_width` | number | `1` | Width of the smallest value. `0` means 1. |
+| `max_width` | number | `6` | Width of the largest value. `0` means 6. |
+| `arrow` | boolean | `true` | Draws an arrow at the end of each line. |
+| `geo_json` | object |  | The regions under the lines: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries. Without it the chart is a plane. |
+| `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region. |
+| `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane, the same way as a map. Ignored when there is no `geo_json`. |
+
+<!-- example: lines -->
+
+```json
+{
+  "curveness": 0.3,
+  "lines": [
+    {"name": "North", "value": 80, "from": [0, 0], "to": [40, 30]},
+    {"name": "East", "value": 20, "from": [0, 0], "to": [50, -10]},
+    {"name": "South", "value": 50, "from": [10, 20], "to": [30, -20]}
   ]
 }
 ```

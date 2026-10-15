@@ -134,7 +134,7 @@
 | `series_list` | 对象数组 |  | 图表的数据系列。 |
 | `series_colors` | 颜色数组 | 主题 | 调色板：每个系列按顺序取色，用完后循环。 |
 | `series_stroke_width` | 数字 | `2` | 系列线条的宽度。 |
-| `series_symbol` | 对象 |  | 所有折线数据点上的标记；设为 `null` 则不绘制。默认：半径等于 `series_stroke_width`、以背景色填充的圆。 |
+| `series_symbol` | 对象 |  | 折线数据点上、以及雷达图多边形顶点上的标记；设为 `null` 则不绘制。折线的默认是半径等于 `series_stroke_width`、以背景色填充的圆。雷达图在此项和每个系列的 `symbol` 都未设置时，每个顶点仍是半径 2 的圆。 |
 | `series_smooth` | 布尔 | `false` | 折线系列绘制为平滑曲线。 |
 | `series_fill` | 布尔 | `false` | 填充折线系列下方的区域。 |
 | `series_fill_opacity` | 数字 |  | 面积填充的不透明度，0 到 1。默认折线下方为 `0.39`，雷达图为 `0.2`。 |
@@ -173,11 +173,11 @@
 | `mark_points` | 对象数组 |  | 标记系列中的点，气泡里显示该点的数值：最小点、最大点，或按下标指定的任意点。以折线绘制的系列支持。 |
 | `mark_areas` | 对象数组 |  | 横跨绘图区、介于两个值之间的阴影带。 |
 | `colors` | 颜色数组 |  | 每个数据点各自的颜色（柱状图、条形图、极坐标柱状图）；`null` 保持系列颜色。 |
-| `stroke_dash_array` | 字符串 |  | 折线系列的虚线样式，例如 `"4 2"`。 |
+| `stroke_dash_array` | 字符串 |  | 折线系列和雷达图多边形的虚线样式，例如 `"4 2"`。 |
 | `stack` | 字符串 |  | 堆叠分组名：名称相同（且 y 轴相同）的系列会堆叠。 |
 | `smooth` | 布尔 |  | 覆盖图表级的 `series_smooth`。 |
 | `fill` | 布尔 |  | 覆盖图表级的 `series_fill`。 |
-| `symbol` | 对象 |  | 覆盖图表级的 `series_symbol`；`null` 表示不绘制标记。 |
+| `symbol` | 对象 |  | 覆盖图表级的 `series_symbol`；`null` 表示不绘制标记。用于折线系列和雷达图多边形。 |
 | `x_values` | x 值数组 |  | 该系列每个数据点的 x 值，用于采样位置与图表 `x_axis_values` 不同的系列。 |
 | `band` | 对象 |  | 折线周围的填充区间带：每个数据点一个下界和一个上界。 |
 | `step` | `"start"` / `"middle"` / `"end"` |  | 把折线绘制为阶梯线：两点之间保持水平，在当前点（`start`）、两点中间（`middle`）或下一个点（`end`）处变为下一个值。优先于 `smooth`。 |
@@ -1262,6 +1262,36 @@
     },
     {"name": "Sign-off", "category": "Build", "start": "2024-03-22"},
     {"name": "Launch", "category": "Plan", "start": "2024-03-25", "end": "2024-03-29"}
+  ]
+}
+```
+
+## Lines
+
+`LinesChart::from_json` — 流向线：从一点到另一点，直线或弧线，线宽表示流量。没有 `geo_json` 时点在平面上，y 向上。有 `geo_json` 时点是经纬度，区域画在线的下面。不使用 `series_list`。
+
+<!-- keys: lines -->
+
+| 键 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `lines` | 数组 |  | 各条流向。每条是 `{ "from": [x, y], "to": [x, y], "value": 数字, "name": "" }`，或 `{ "coords": [[x, y], [x, y]], "value": 数字 }`。在地图上 `x` 是经度，`y` 是纬度。 |
+| `curveness` | 数字 | `0` | 线向行进方向的左侧弯曲的程度，按长度的比例。`0` 是直线。限制在 -1 到 1。 |
+| `min_width` | 数字 | `1` | 最小流量的线宽。`0` 表示 1。 |
+| `max_width` | 数字 | `6` | 最大流量的线宽。`0` 表示 6。 |
+| `arrow` | 布尔 | `true` | 在每条线的终点画箭头。 |
+| `geo_json` | 对象 |  | 线下面的区域：GeoJSON `FeatureCollection`（或单个 `Feature`），几何类型为 `Polygon` 或 `MultiPolygon`。没有它时图表是平面。 |
+| `name_property` | 字符串 | `"name"` | GeoJSON 要素里作为区域名的属性。 |
+| `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | 经纬度铺到平面上的方式，与地图相同。没有 `geo_json` 时忽略。 |
+
+<!-- example: lines -->
+
+```json
+{
+  "curveness": 0.3,
+  "lines": [
+    {"name": "North", "value": 80, "from": [0, 0], "to": [40, 30]},
+    {"name": "East", "value": 20, "from": [0, 0], "to": [50, -10]},
+    {"name": "South", "value": 50, "from": [10, 20], "to": [30, -20]}
   ]
 }
 ```

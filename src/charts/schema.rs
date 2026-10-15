@@ -425,6 +425,17 @@ pub(crate) static MAP_FIELDS: &[Field] = &[
     f("visual_map_show", Kind::Bool),
 ];
 
+pub(crate) static LINES_FIELDS: &[Field] = &[
+    f("lines", Kind::Array),
+    f("curveness", Kind::Number),
+    f("min_width", Kind::Number),
+    f("max_width", Kind::Number),
+    f("arrow", Kind::Bool),
+    f("geo_json", Kind::Any),
+    f("name_property", Kind::String),
+    f("projection", Kind::Enum(&["mercator", "equirectangular"])),
+];
+
 pub(crate) static HISTOGRAM_FIELDS: &[Field] = &[
     f("bin_count", Kind::Count),
     f("bin_width", Kind::Size),
@@ -993,6 +1004,7 @@ mod tests {
                 HORIZONTAL_BAR_FIELDS
             ),
             chart!("line", LineChart, BASE_FIELDS),
+            chart!("lines", LinesChart, BASE_FIELDS, LINES_FIELDS),
             chart!("map", MapChart, BASE_FIELDS, MAP_FIELDS),
             chart!("parallel", ParallelChart, BASE_FIELDS),
             chart!("pie", PieChart, BASE_FIELDS, PIE_FIELDS),
@@ -1030,6 +1042,9 @@ mod tests {
             ("box_plot", "box_series.data") => json!([[[2, 3, 4, 5, 6]]]),
             ("heatmap", "series.data") => json!([[[0, 1], [1, 5]]]),
             ("scatter", "series_symbols") => json!([["triangle", "diamond"]]),
+            ("lines", "lines") => json!([[{"from": [0, 0], "to": [1, 1], "value": 2}]]),
+            ("lines", "geo_json") => json!([{"type": "Feature", "properties": {"name": "a"},
+                "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1]]]}}]),
             ("map", "data") => json!([[["a", 3]]]),
             ("map", "geo_json") => json!([{"type": "Feature", "properties": {"name": "a"},
                 "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1]]]}}]),
@@ -1151,6 +1166,7 @@ mod tests {
                 "calendar: height",
                 "scatter: x_boundary_gap",
                 "map: name_property",
+                "lines: name_property",
             ]
             .contains(&key.as_str())
         });

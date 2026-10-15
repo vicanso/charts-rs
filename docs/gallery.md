@@ -204,3 +204,9 @@ every option is described in the [JSON reference](./json.md).
 <p align="center">
   <img src="../asset/image/map.png" width="49%" alt="Map">
 </p>
+
+## Lines
+
+<p align="center">
+  <img src="../asset/image/lines.png" width="49%" alt="Lines">
+</p>

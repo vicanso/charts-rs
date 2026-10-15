@@ -130,6 +130,16 @@ impl RadarChart {
         if data.get("series_fill").is_none() {
             r.series.fill = true;
         }
+        // `fill_theme` installs the line-chart marker when a theme names
+        // none. A radar chart keeps its own circle of radius 2 unless the
+        // theme or this document sets `series_symbol`.
+        if data.get("series_symbol").is_none() {
+            let theme_name =
+                get_string_from_value(&data, "theme").unwrap_or_else(get_default_theme_name);
+            if get_theme(&theme_name).series.symbol.is_none() {
+                r.series.symbol = None;
+            }
+        }
         Ok(r)
     }
     /// Creates a radar chart with custom theme.
@@ -144,8 +154,12 @@ impl RadarChart {
         };
         r.series_list = series_list;
         let theme = get_theme(theme);
+        let theme_symbol = theme.series.symbol.clone();
         r.base.fill_theme(theme, &mut r.y_axis_configs);
         r.series.fill = true;
+        if theme_symbol.is_none() {
+            r.series.symbol = None;
+        }
         r
     }
     /// Creates a radar chart with default theme.
@@ -302,11 +316,21 @@ impl RadarChart {
             } else {
                 None
             };
+            // A series symbol wins, then the chart-wide one. `Symbol::None`
+            // draws nothing. With neither set, each vertex keeps the circle
+            // of radius 2 the radar has always drawn.
+            let symbol = series
+                .symbol
+                .clone()
+                .or_else(|| self.series.symbol.clone())
+                .unwrap_or(Symbol::Circle(2.0, None));
             c.straight_line(StraightLine {
                 color: Some(color),
                 fill,
                 points,
                 stroke_width: self.series.stroke_width,
+                symbol: Some(symbol),
+                stroke_dash_array: series.stroke_dash_array.clone(),
                 close: true,
                 ..Default::default()
             });
@@ -616,5 +640,43 @@ mod tests {
         assert_eq!(20.0, super::indicator_radius(0.0, 10.0, 5.0, 40.0));
 
         assert_snapshot!("radar_chart/circle.svg", svg);
+    }
+
+    #[test]
+    fn radar_symbol_and_dash_follow_the_series() {
+        let mut chart = RadarChart::new(
+            vec![
+                ("Filled", vec![1.0, 2.0, 3.0]).into(),
+                ("Line", vec![3.0, 2.0, 1.0]).into(),
+            ],
+            vec![("x", 5.0).into(), ("y", 5.0).into(), ("z", 5.0).into()],
+        );
+        chart.legend.show = Some(false);
+        let plain = chart.svg().unwrap();
+        assert_eq!(6, plain.matches("r=\"2\"").count(), "{plain}");
+
+        chart.series.symbol = Some(super::Symbol::None);
+        let bare = chart.svg().unwrap();
+        assert!(!bare.contains("r=\"2\""), "{bare}");
+
+        chart.series.symbol = None;
+        chart.series_list[0].symbol = Some(super::Symbol::Circle(6.0, None));
+        chart.series_list[1].symbol = Some(super::Symbol::None);
+        chart.series_list[1].stroke_dash_array = Some("4,2".into());
+        let svg = chart.svg().unwrap();
+        assert_eq!(3, svg.matches("r=\"6\"").count(), "{svg}");
+        assert!(!svg.contains("r=\"2\""), "{svg}");
+        let paths: Vec<&str> = svg
+            .split("<path ")
+            .skip(1)
+            .filter(|path| path.contains("stroke-width=\"2\""))
+            .collect();
+        assert_eq!(2, paths.len(), "{svg}");
+        assert!(!paths[0].contains("stroke-dasharray"), "{}", paths[0]);
+        assert!(
+            paths[1].contains("stroke-dasharray=\"4,2\""),
+            "{}",
+            paths[1]
+        );
     }
 }

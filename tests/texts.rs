@@ -5,9 +5,9 @@ mod common;
 use charts_rs::{
     Align, BarChart, BoxPlotChart, CalendarChart, CandlestickChart, ChildChart, ChordChart,
     FontConfig, FunnelChart, GanttChart, GaugeChart, GraphChart, HeatmapChart, HistogramChart,
-    HorizontalBarChart, LineChart, MapChart, MultiChart, ParallelChart, PieChart, PolarBarChart,
-    RadarChart, SankeyChart, ScatterChart, Series, SunburstChart, TableChart, TextConfig,
-    ThemeRiverChart, TreeChart, TreemapChart, WaterfallChart, add_theme, get_theme,
+    HorizontalBarChart, LineChart, LinesChart, MapChart, MultiChart, ParallelChart, PieChart,
+    PolarBarChart, RadarChart, SankeyChart, ScatterChart, Series, SunburstChart, TableChart,
+    TextConfig, ThemeRiverChart, TreeChart, TreemapChart, WaterfallChart, add_theme, get_theme,
     measure_text_width_family,
 };
 
@@ -294,6 +294,12 @@ macro_rules! every_chart {
             r#""x_axis_type": "value", "tasks": [{"name": "t", "start": 1, "end": 5}]"#
         );
         $chart!(
+            "lines",
+            LinesChart,
+            "",
+            r#""lines": [{"from": [0, 0], "to": [1, 1], "value": 2}]"#
+        );
+        $chart!(
             "map",
             MapChart,
             "",
@@ -328,7 +334,7 @@ fn every_chart_writes_its_texts() {
     // All 26 of them, most of them empty as well.
     let mut names: Vec<&str> = svgs.iter().map(|(name, _)| *name).collect();
     names.dedup();
-    assert_eq!(26, names.len(), "{names:?}");
+    assert_eq!(27, names.len(), "{names:?}");
     assert!(svgs.len() > 40, "{}", svgs.len());
 
     for (name, svg) in svgs.iter() {
@@ -764,7 +770,7 @@ fn every_chart_makes_room_for_its_texts() {
     }
     every_chart!(chart);
     names.dedup();
-    assert_eq!(25, names.len(), "{names:?}");
+    assert_eq!(26, names.len(), "{names:?}");
     assert!(drawn > 160, "{drawn}");
     moved.dedup();
     assert_eq!(names, moved);

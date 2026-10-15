@@ -14,7 +14,7 @@
 #![warn(missing_docs)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-//! Charts supports twenty-seven chart types: bar, horizontal bar, line, pie,
+//! Charts supports twenty-eight chart types: bar, horizontal bar, line, lines, pie,
 //! radar, scatter, candlestick, table, heatmap, funnel, waterfall, multi
 //! chart, calendar, gauge, treemap, box plot, sunburst, sankey, tree, graph,
 //! parallel, theme river, histogram, polar bar, chord, gantt and map.

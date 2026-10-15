@@ -64,6 +64,7 @@ mod heatmap_chart;
 mod histogram_chart;
 mod horizontal_bar_chart;
 mod line_chart;
+mod lines_chart;
 mod map_chart;
 mod multi_chart;
 mod parallel_chart;
@@ -120,6 +121,7 @@ pub use heatmap_chart::{HeatmapChart, HeatmapData, HeatmapSeries, HeatmapSymbol}
 pub use histogram_chart::HistogramChart;
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
+pub use lines_chart::{FlowLine, LinesChart};
 pub use map_chart::{MapChart, MapProjection, MapRegion};
 pub use multi_chart::{ChildChart, MultiChart};
 pub use parallel_chart::ParallelChart;
@@ -186,6 +188,7 @@ impl_chart!(
     HistogramChart,
     HorizontalBarChart,
     LineChart,
+    LinesChart,
     MapChart,
     MultiChart,
     ParallelChart,
