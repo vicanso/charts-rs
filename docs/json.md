@@ -14,7 +14,7 @@ Every chart can be created from a JSON document with its `from_json`, e.g. `BarC
 
 - [Value types](#value-types)
 - [Common options](#common-options)
-- Charts: [Bar](#bar), [Horizontal bar](#horizontal-bar), [Line](#line), [Pie](#pie), [Radar](#radar), [Scatter](#scatter), [Candlestick](#candlestick), [Table](#table), [Heatmap](#heatmap), [Funnel](#funnel), [Waterfall](#waterfall), [Calendar](#calendar), [Gauge](#gauge), [Treemap](#treemap), [Box plot](#box-plot), [Sunburst](#sunburst), [Sankey](#sankey), [Tree](#tree), [Graph](#graph), [Parallel](#parallel), [Theme river](#theme-river), [Histogram](#histogram), [Polar bar](#polar-bar), [Chord](#chord), [Gantt](#gantt), [Map](#map), [Multi chart](#multi-chart)
+- Charts: [Bar](#bar), [Horizontal bar](#horizontal-bar), [Line](#line), [Pie](#pie), [Radar](#radar), [Scatter](#scatter), [Candlestick](#candlestick), [Table](#table), [Heatmap](#heatmap), [Funnel](#funnel), [Waterfall](#waterfall), [Calendar](#calendar), [Gauge](#gauge), [Bullet](#bullet), [Treemap](#treemap), [Box plot](#box-plot), [Sunburst](#sunburst), [Sankey](#sankey), [Tree](#tree), [Graph](#graph), [Parallel](#parallel), [Theme river](#theme-river), [Histogram](#histogram), [Polar bar](#polar-bar), [Chord](#chord), [Gantt](#gantt), [Lines](#lines), [Map](#map), [Multi chart](#multi-chart)
 - [Keys for tools](#keys-for-tools)
 
 ## Value types
@@ -234,7 +234,7 @@ A marker is above its point and as large as the value in it; the plot starts low
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `type` | `"circle"` / `"rect"` / `"square"` / `"triangle"` / `"diamond"` |  | Shape of the marker (`square` is the same as `rect`). |
+| `type` | `"circle"` / `"rect"` / `"square"` / `"triangle"` / `"diamond"` / `"none"` |  | Shape of the marker (`square` is the same as `rect`); `"none"` draws no marker, as `null` does. |
 | `size` | number |  | Size of the marker: its radius, or half its side. |
 | `radius` | number |  | The same as `size`, which wins when both are set. |
 | `color` | color |  | Fill color of the marker; without one the marker is hollow. |
@@ -574,9 +574,11 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `sub_title_margin` | margin |  | Margin around the sub-title. |
 | `sub_title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the sub-title. |
 | `sub_title_height` | number | `20` | Height reserved for the sub-title row. |
-| `data` | array |  | The rows of the table, each an array of strings; the first row is the header. |
+| `data` | array |  | The rows of the table, each an array of cells; the first row is the header. A cell is a string, a number (written as it is) or `null` (empty); an array of numbers is a sparkline, drawn in place of text: a small line of the values, from the lowest at the bottom of the cell to the highest at the top, with a dot on the last of them. A `null` in it leaves a gap. |
 | `spans` | number[] |  | Width of each column: values below 1 are shares of the table width, larger ones pixels; the other columns share the rest. |
 | `text_aligns` | string[] |  | Alignment of the text of each column: `"left"`, `"center"` or `"right"`. |
+| `sparkline_type` | `"line"` / `"bar"` | `"line"` | What the sparklines are drawn as: a line, or a bar for each value, from 0. |
+| `sparkline_color` | color |  | Color of the sparklines; by default the first color of the palette of the theme. |
 | `border_color` | color | theme | Color of the lines between the rows. |
 | `border_width` | number | `1` | Width of the lines between the rows, and of the outer border. |
 | `header_row_padding` | margin | `{left: 10, top: 8, right: 10, bottom: 8}` | Padding of the header row. |
@@ -789,6 +791,47 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
   "value_formatter": "{c}%",
   "series_list": [
     {"name": "CPU", "data": [72]}
+  ]
+}
+```
+
+## Bullet
+
+`BulletChart::from_json` — Measures against their targets, a row each: a bar for the value, a line across it for the target, and bands behind them for what is poor, fair and good, every row on a scale of its own. Several fit where one gauge would. It takes no `series_list`.
+
+<!-- keys: bullet -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bullets` | object[] |  | The measures, one row each, from the top down. See [`bullets[]`](#bullets). |
+| `range_colors` | color[] |  | Colors of the bands, from the first one on. Without them the bands are shades of the text color, the first one the darkest. A measure for which less is better, a waiting time, wants them the other way round. |
+| `target_color` | color |  | Color of the target lines; by default that of the title. |
+| `label_show` | boolean | `false` | Writes the value of each row to the right of it, in the format of `series_label_formatter`: `{c}` is the value and `{b}` the name. |
+
+The names are written in the font of the x axis, and the scale below each row in the font, the color and the format (`axis_formatter`) of the first of `y_axis_configs`, as the value axis of a horizontal bar chart is; `x_axis_hidden` leaves the scales out. The ticks of a scale are round numbers that the chart picks: `axis_split_number` is not used. With `tooltip_show` a bar tells its name and value on hover.
+
+### `bullets[]`
+
+<!-- keys: bullet.bullets -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the measure, written to the left of its row; cut with an ellipsis where it is wider than a third of the chart. |
+| `value` | number |  | The value, drawn as a bar from 0, or from the start of the scale where 0 is not on it. Without one the row has no bar. |
+| `target` | number |  | The value aimed at, drawn as a line across the bar. |
+| `ranges` | number[] |  | Where the bands behind the bar end: the first reaches from the start of the scale to the first of them, the next from there to the second, and so on. Without them there is one band, all along. |
+| `min` | number |  | The start of the scale. Default: 0, or a round number below the smallest value where that is below 0. |
+| `max` | number |  | The end of the scale. Default: the first round number from the largest of the value, the target and the ranges on. |
+| `color` | color |  | Color of the bar; by default the first color of the palette. |
+
+<!-- example: bullet -->
+
+```json
+{
+  "label_show": true,
+  "bullets": [
+    {"name": "Done in time (%)", "value": 92, "target": 95, "ranges": [80, 90, 100], "max": 100},
+    {"name": "Wait (min)", "value": 12, "target": 10, "ranges": [10, 20, 30]}
   ]
 }
 ```
@@ -1375,7 +1418,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `type` | string |  | Type of the child: `bar` (the default), `line`, `horizontal_bar`, `pie`, `radar`, `table`, `scatter`, `candlestick`, `heatmap`, `funnel`, `waterfall`, `calendar`, `gauge`, `treemap`, `box_plot`, `sunburst`, `sankey`, `tree`, `graph`, `parallel`, `theme_river`, `histogram`, `polar_bar`, `chord`, `gantt` or `map`. |
+| `type` | string |  | Type of the child: `bar` (the default), `line`, `horizontal_bar`, `pie`, `radar`, `table`, `scatter`, `candlestick`, `heatmap`, `funnel`, `waterfall`, `calendar`, `gauge`, `treemap`, `box_plot`, `sunburst`, `sankey`, `tree`, `graph`, `parallel`, `theme_river`, `histogram`, `polar_bar`, `chord`, `gantt`, `map`, `lines` or `bullet`. |
 | `x` | number |  | Horizontal position of the child; with `x` or `y` set, the child is placed there instead of below the previous one. |
 | `y` | number |  | Vertical position of the child. |
 

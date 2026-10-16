@@ -1,0 +1,73 @@
+<svg width="600" height="251" viewBox="0 0 600 251" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="45" fill="#FFFFFF"/>
+<text font-size="18" x="268.5" y="0" dy="22.5" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Servers
+</text>
+<rect x="0" y="45" width="600" height="46" fill="#F2F3F5"/>
+<line stroke-width="1" x1="0" y1="45" x2="600" y2="45" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Server
+</text>
+<text font-size="14" x="190" y="53" dx="60" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+CPU
+</text>
+<text font-size="14" x="298" y="53" dx="27" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Requests
+</text>
+<text font-size="14" x="406" y="53" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Last 24 hours
+</text>
+<rect x="0" y="91" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="91" x2="600" y2="91" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="96" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+api-1
+</text>
+<text font-size="14" x="190" y="96" dx="62" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+72%
+</text>
+<text font-size="14" x="298" y="96" dx="48" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+18230
+</text>
+<polyline fill="none" stroke-width="1.5" points="406,121.5 422.7,119.5 439.5,115.6 456.2,117.6 472.9,109.7 489.6,105.8 506.4,107.7 523.1,102.5 539.8,103.8 556.5,100.5 573.3,103.1 590,101.8" stroke="#5470C6"/>
+<circle cx="590" cy="101.8" r="2" fill="#5470C6"/>
+<rect x="0" y="131" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="131" x2="600" y2="131" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="136" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+api-2
+</text>
+<text font-size="14" x="190" y="136" dx="62" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+38%
+</text>
+<text font-size="14" x="298" y="136" dx="56" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+9120
+</text>
+<polyline fill="none" stroke-width="1.5" points="406,159.8 422.7,152.8 439.5,158 456.2,161.5 472.9,151 489.6,140.5 506.4,145.8 523.1,149.2" stroke="#5470C6"/>
+<polyline fill="none" stroke-width="1.5" points="573.3,147.5 590,145.8" stroke="#5470C6"/>
+<circle cx="590" cy="145.8" r="2" fill="#5470C6"/>
+<rect x="0" y="171" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="171" x2="600" y2="171" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="176" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+worker-1
+</text>
+<text font-size="14" x="190" y="176" dx="62" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+91%
+</text>
+<text font-size="14" x="298" y="176" dx="56" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+4410
+</text>
+<polyline fill="none" stroke-width="1.5" points="406,201.5 422.7,198.2 439.5,193.2 456.2,189.9 472.9,187.7 489.6,185.5 506.4,183.3 523.1,184.4 539.8,182.2 556.5,180.5 573.3,182.7 590,181.6" stroke="#5470C6"/>
+<circle cx="590" cy="181.6" r="2" fill="#5470C6"/>
+<rect x="0" y="211" width="600" height="40" fill="#FFFFFF"/>
+<line stroke-width="1" x1="0" y1="211" x2="600" y2="211" stroke="#E5E6EB"/>
+<text font-size="14" x="10" y="216" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+db-1
+</text>
+<text font-size="14" x="190" y="216" dx="62" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+24%
+</text>
+<text font-size="14" x="298" y="216" dx="48" dy="15" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+26980
+</text>
+<polyline fill="none" stroke-width="1.5" points="406,225.8 422.7,231 439.5,236.2 456.2,220.5 472.9,231 489.6,241.5 506.4,236.2 523.1,225.8 539.8,231 556.5,236.2 573.3,241.5 590,236.2" stroke="#5470C6"/>
+<circle cx="590" cy="236.2" r="2" fill="#5470C6"/>
+</svg>

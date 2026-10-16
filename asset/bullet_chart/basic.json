@@ -1,0 +1,12 @@
+{
+    "title_text": "Service level",
+    "sub_title_text": "This month, against the targets",
+    "label_show": true,
+    "bullets": [
+        {"name": "Done in time (%)", "value": 92, "target": 95, "ranges": [80, 90, 100], "max": 100},
+        {"name": "Satisfaction", "value": 4.6, "target": 4.5, "ranges": [3.5, 4.2, 5], "max": 5},
+        {"name": "Wait (min)", "value": 12, "target": 10, "ranges": [10, 20, 30]},
+        {"name": "Handled", "value": 1820, "target": 2000, "ranges": [1200, 1800, 2400]},
+        {"name": "Online (%)", "value": 64, "target": 60, "ranges": [40, 60, 100], "max": 100}
+    ]
+}

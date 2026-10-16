@@ -2,7 +2,7 @@
 
 [中文](./README-zh.md)
 
-**Charts for Rust, without a browser.** `charts-rs` draws 28 kinds of charts
+**Charts for Rust, without a browser.** `charts-rs` draws 29 kinds of charts
 as SVG — and as PNG, JPEG, WebP or AVIF — from a few lines of Rust or from a
 JSON document, in the manner of Apache ECharts.
 
@@ -34,7 +34,7 @@ JSON document, in the manner of Apache ECharts.
 </p>
 
 <p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>All 28 chart types →</b></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>All 29 chart types →</b></a>
   &nbsp;·&nbsp;
   <a href="https://charts.npmtrend.com/"><b>Try it in the browser →</b></a>
 </p>
@@ -46,7 +46,7 @@ JSON document, in the manner of Apache ECharts.
   and dashboards that are rendered on a server.
 - **Fast.** An SVG in well under a millisecond, a PNG in a few milliseconds
   ([benchmark](#benchmark)).
-- **28 chart types**, from bars, lines and pies to candlesticks, heatmaps,
+- **29 chart types**, from bars, lines and pies to candlesticks, heatmaps,
   sankey, gantt charts and maps — and several of them in one picture.
 - **Rust or JSON.** A typed API, or a JSON document with the same options.
   Every key is [documented](./docs/json.md) and checked: a typo is an error
@@ -126,7 +126,7 @@ std::fs::write("visits.png", png).unwrap();
 - **Charts**: bar, horizontal bar, line, pie, radar, scatter and bubble,
   candlestick, table, heatmap, funnel, waterfall, calendar, gauge, treemap,
   box plot, sunburst, sankey, tree, graph, parallel, theme river, histogram,
-  polar bar, chord, gantt, map, lines — and `MultiChart`, which puts several on one
+  polar bar, chord, gantt, map, lines, bullet — and `MultiChart`, which puts several on one
   canvas.
 - **Series**: stacked and 100% stacked, bars mixed with lines, two y axes,
   smooth and step lines, areas, bands and error bars, mark lines, points and

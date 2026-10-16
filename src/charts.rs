@@ -44,6 +44,7 @@ pub(crate) fn save_test_asset(path: &str, data: &[u8]) {
 mod bar_chart;
 mod base;
 mod box_plot_chart;
+mod bullet_chart;
 mod calendar_chart;
 mod candlestick_chart;
 mod canvas;
@@ -89,6 +90,7 @@ mod x_axis;
 pub use bar_chart::BarChart;
 pub use base::ChartBase;
 pub use box_plot_chart::{BoxPlotChart, BoxPlotSeries};
+pub use bullet_chart::{Bullet, BulletChart};
 pub use canvas::Canvas;
 pub use color::Color;
 pub use common::{
@@ -135,7 +137,9 @@ pub use radar_chart::{RadarChart, RadarIndicator, RadarShape};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
 pub use scatter_chart::{DensityContour, MarginalHistogram, Regression, ScatterChart};
 pub use sunburst_chart::{SunburstChart, SunburstData};
-pub use table_chart::{TableBodyConfig, TableCellStyle, TableChart, TableHeaderConfig};
+pub use table_chart::{
+    SparklineType, TableBodyConfig, TableCellStyle, TableChart, TableHeaderConfig, TableSparkline,
+};
 pub use theme::Theme;
 pub use theme::{
     THEME_ANT, THEME_CHALK, THEME_DARK, THEME_GRAFANA, THEME_LIGHT, THEME_SHADCN, THEME_SHINE,
@@ -177,6 +181,7 @@ macro_rules! impl_chart {
 impl_chart!(
     BarChart,
     BoxPlotChart,
+    BulletChart,
     CalendarChart,
     CandlestickChart,
     ChordChart,

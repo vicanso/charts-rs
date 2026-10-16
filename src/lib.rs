@@ -14,10 +14,10 @@
 #![warn(missing_docs)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-//! Charts supports twenty-eight chart types: bar, horizontal bar, line, lines, pie,
+//! Charts supports twenty-nine chart types: bar, horizontal bar, line, lines, pie,
 //! radar, scatter, candlestick, table, heatmap, funnel, waterfall, multi
-//! chart, calendar, gauge, treemap, box plot, sunburst, sankey, tree, graph,
-//! parallel, theme river, histogram, polar bar, chord, gantt and map.
+//! chart, calendar, gauge, bullet, treemap, box plot, sunburst, sankey, tree,
+//! graph, parallel, theme river, histogram, polar bar, chord, gantt and map.
 //!
 //! It supports ten built-in themes and is very easy to use.
 //! Each attribute can be customized, it can be saved as svg, png, jpeg,

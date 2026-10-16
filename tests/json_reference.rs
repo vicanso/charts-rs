@@ -22,6 +22,7 @@ fn render(chart: &str, json: &str) -> Result<String> {
         "horizontal_bar" => HorizontalBarChart::from_json(json)?.svg(),
         "line" => LineChart::from_json(json)?.svg(),
         "lines" => LinesChart::from_json(json)?.svg(),
+        "bullet" => BulletChart::from_json(json)?.svg(),
         "pie" => PieChart::from_json(json)?.svg(),
         "radar" => RadarChart::from_json(json)?.svg(),
         "scatter" => ScatterChart::from_json(json)?.svg(),
@@ -57,11 +58,11 @@ fn reference_examples_render() {
         ("docs/json-zh.md", include_str!("../docs/json-zh.md")),
     ] {
         let examples = examples(page);
-        // One for each of the 28 chart types.
+        // One for each of the 29 chart types.
         let mut charts: Vec<&str> = examples.iter().map(|(chart, _)| *chart).collect();
         charts.sort_unstable();
         charts.dedup();
-        assert_eq!(28, charts.len(), "{name}: {charts:?}");
+        assert_eq!(29, charts.len(), "{name}: {charts:?}");
         for (chart, json) in examples {
             let svg = render(chart, json).unwrap_or_else(|e| panic!("{name}: {chart}: {e}"));
             assert!(

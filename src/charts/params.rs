@@ -448,7 +448,8 @@ fn get_line_step_from_value(value: &serde_json::Value, key: &str) -> Option<Line
 
 /// Gets series symbol value from serde json.
 /// Accepts `null` (→ None marker), or an object with optional fields:
-/// `type` ("circle"|"rect"|"triangle"|"diamond"), `size`/`radius`, `color`.
+/// `type` ("circle"|"rect"|"triangle"|"diamond", or "none" for no marker),
+/// `size`/`radius`, `color`.
 pub(crate) fn get_series_symbol_from_value(value: &serde_json::Value, key: &str) -> Option<Symbol> {
     let v = value.get(key)?;
     if v.is_null() {
@@ -470,6 +471,7 @@ pub(crate) fn get_symbol_from_object(v: &serde_json::Value) -> Symbol {
         .unwrap_or("circle")
         .to_lowercase();
     match symbol_type.as_str() {
+        "none" => Symbol::None,
         "rect" | "square" => Symbol::Rect(size, color),
         "triangle" => Symbol::Triangle(size, color),
         "diamond" => Symbol::Diamond(size, color),

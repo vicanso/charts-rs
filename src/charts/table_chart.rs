@@ -23,6 +23,29 @@ use super::util::*;
 use crate::charts::measure_text_width_family;
 use std::sync::Arc;
 
+/// What the sparklines of a table are drawn as.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub enum SparklineType {
+    /// A line through the values, with a dot on the last of them.
+    #[default]
+    Line,
+    /// A bar for each value, from 0.
+    Bar,
+}
+
+/// A small chart in a cell of a table, in place of its text: the trend of
+/// its values, as wide as the cell and as high as a line of its text, with
+/// no axes. Its values run from the lowest point of the cell to the highest
+/// (from 0, for bars).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct TableSparkline {
+    /// The cell, as `[row, column]`; the header is row 0.
+    pub indexes: Vec<usize>,
+    /// The values, from the first to the last. `NIL_VALUE`, or a value that
+    /// is not a number, leaves a gap in the line and has no bar.
+    pub values: Vec<f32>,
+}
+
 /// A style override for a single table cell, addressed by `indexes`.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TableCellStyle {
@@ -91,6 +114,13 @@ pub struct TableChart {
 
     /// Per-cell style overrides.
     pub cell_styles: Vec<TableCellStyle>,
+    /// Small charts in cells, in place of their text. From JSON, a cell of
+    /// `data` that is an array of numbers is one.
+    pub sparklines: Vec<TableSparkline>,
+    /// What the sparklines are drawn as: a line (the default) or bars.
+    pub sparkline_type: SparklineType,
+    /// Color of the sparklines; without one, the first color of the palette.
+    pub sparkline_color: Option<Color>,
 }
 
 impl std::ops::Deref for TableChart {
@@ -206,18 +236,49 @@ impl TableChart {
             && let Some(arr) = data.as_array()
         {
             let mut data_list = vec![];
-            for items in arr.iter() {
+            let mut sparklines = vec![];
+            for (row, items) in arr.iter().enumerate() {
                 let mut list = vec![];
                 if let Some(sub_arr) = items.as_array() {
-                    for item in sub_arr.iter() {
-                        if let Some(str) = item.as_str() {
-                            list.push(str.to_string());
-                        }
+                    for (column, item) in sub_arr.iter().enumerate() {
+                        // A cell keeps its place whatever it holds: a number
+                        // is written as it is, `null` is an empty cell, and
+                        // an array of numbers is a sparkline.
+                        let text = match item {
+                            serde_json::Value::String(text) => text.clone(),
+                            serde_json::Value::Number(number) => number.to_string(),
+                            serde_json::Value::Bool(value) => value.to_string(),
+                            serde_json::Value::Array(values) => {
+                                sparklines.push(TableSparkline {
+                                    indexes: vec![row, column],
+                                    values: values
+                                        .iter()
+                                        .map(|value| {
+                                            value.as_f64().map_or(NIL_VALUE, |value| value as f32)
+                                        })
+                                        .collect(),
+                                });
+                                String::new()
+                            }
+                            _ => String::new(),
+                        };
+                        list.push(text);
                     }
                 }
                 data_list.push(list);
             }
             self.data = data_list;
+            self.sparklines = sparklines;
+        }
+        if let Some(value) = get_string_from_value(&data, "sparkline_type") {
+            self.sparkline_type = if value.eq_ignore_ascii_case("bar") {
+                SparklineType::Bar
+            } else {
+                SparklineType::Line
+            };
+        }
+        if let Some(color) = get_color_from_value(&data, "sparkline_color") {
+            self.sparkline_color = Some(color);
         }
         if let Some(spans) = get_f32_slice_from_value(&data, "spans") {
             self.spans = spans;
@@ -317,6 +378,8 @@ impl TableChart {
         };
         self.sub_title = t.sub_title.clone();
         self.texts = t.texts.clone();
+        // The palette, for the sparklines.
+        self.series.colors.clone_from(&t.series.colors);
 
         self.header.font.size = t.sub_title.font.size;
         self.header.font.color = t.sub_title.font.color;
@@ -390,6 +453,109 @@ impl TableChart {
             title_height = b.outer_height() - c.margin.top + sub_title_margin_bottom;
         }
         title_height
+    }
+    /// Draws a sparkline in `area` of `c`.
+    fn render_sparkline(&self, c: &mut Canvas, sparkline: &TableSparkline, area: Box) {
+        let (width, height) = (area.right - area.left, area.bottom - area.top);
+        let present = |value: &f32| value.is_finite() && *value != NIL_VALUE;
+        let (lowest, highest) = sparkline
+            .values
+            .iter()
+            .filter(|value| present(value))
+            .fold((f32::MAX, f32::MIN), |(a, b), v| (a.min(*v), b.max(*v)));
+        if width <= 0.0 || height <= 0.0 || lowest > highest {
+            return;
+        }
+        let color = self
+            .sparkline_color
+            .unwrap_or_else(|| get_color(&self.series.colors, 0));
+        let count = sparkline.values.len();
+        match self.sparkline_type {
+            SparklineType::Line => {
+                // From the lowest point of the area to the highest; a line
+                // of values that are all the same through the middle.
+                let x_of = |index: usize| {
+                    if count > 1 {
+                        area.left + width * index as f32 / (count - 1) as f32
+                    } else {
+                        area.left + width / 2.0
+                    }
+                };
+                let y_of = |value: f32| {
+                    if highest > lowest {
+                        area.bottom - (value - lowest) / (highest - lowest) * height
+                    } else {
+                        area.top + height / 2.0
+                    }
+                };
+                let mut pieces: Vec<Vec<Point>> = vec![vec![]];
+                for (index, value) in sparkline.values.iter().enumerate() {
+                    if present(value) {
+                        pieces
+                            .last_mut()
+                            .unwrap()
+                            .push((x_of(index), y_of(*value)).into());
+                    } else if !pieces.last().unwrap().is_empty() {
+                        pieces.push(vec![]);
+                    }
+                }
+                for points in pieces.iter().filter(|points| points.len() > 1) {
+                    c.polyline(Polyline {
+                        color: Some(color),
+                        stroke_width: 1.5,
+                        points: points.clone(),
+                    });
+                }
+                // A dot on the last value, and on a value that stands alone
+                // (the last one may be both).
+                let last = pieces
+                    .iter()
+                    .rev()
+                    .find(|points| !points.is_empty())
+                    .filter(|points| points.len() > 1)
+                    .and_then(|points| points.last());
+                for point in pieces
+                    .iter()
+                    .filter(|points| points.len() == 1)
+                    .flatten()
+                    .chain(last)
+                {
+                    c.circle(Circle {
+                        fill: Some(color),
+                        cx: point.x,
+                        cy: point.y,
+                        r: 2.0,
+                        ..Default::default()
+                    });
+                }
+            }
+            SparklineType::Bar => {
+                // From 0, up for a value above it and down for one below.
+                let (lowest, highest) = (lowest.min(0.0), highest.max(0.0));
+                let span = if highest > lowest {
+                    highest - lowest
+                } else {
+                    1.0
+                };
+                let y_of = |value: f32| area.bottom - (value - lowest) / span * height;
+                let slot = width / count as f32;
+                let bar = (slot * 0.7).max(1.0).min(slot);
+                for (index, value) in sparkline.values.iter().enumerate() {
+                    if !present(value) {
+                        continue;
+                    }
+                    let (zero, y) = (y_of(0.0), y_of(*value));
+                    c.rect(Rect {
+                        fill: Some(color.into()),
+                        left: area.left + slot * index as f32 + (slot - bar) / 2.0,
+                        top: zero.min(y),
+                        width: bar,
+                        height: (zero - y).abs().max(0.5),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
     }
     /// Converts table chart to svg. The table sizes itself to its content;
     /// the rendered height is the `height` attribute of the returned svg.
@@ -599,7 +765,29 @@ impl TableChart {
                     }
                 }
 
+                // A sparkline is in the first line of its cell, in place of
+                // the text: a little inside it, as the text is.
+                let sparkline = self
+                    .sparklines
+                    .iter()
+                    .find(|s| s.indexes.len() == 2 && s.indexes[0] == i && s.indexes[1] == j);
+                if let Some(sparkline) = sparkline {
+                    let top = top + row_padding.top;
+                    self.render_sparkline(
+                        &mut c,
+                        sparkline,
+                        Box {
+                            left: left + row_padding.left,
+                            top: top + line_height * 0.15,
+                            right: left + span_width - row_padding.right,
+                            bottom: top + line_height * 0.85,
+                        },
+                    );
+                }
                 for (index, item) in content_list.iter().enumerate() {
+                    if sparkline.is_some() {
+                        break;
+                    }
                     let mut dx = None;
                     if let Ok(measurement) =
                         measure_text_width_family(&self.font_family, font_size, item)

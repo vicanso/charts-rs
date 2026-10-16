@@ -503,6 +503,54 @@ Rust 中使用 `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`。
 Rust：`LinesChart::new(vec![((0.0, 0.0), (40.0, 30.0), 80.0).into()])`。
 更完整的一张，十六条流向叠在示例国家上，见 `asset/lines_chart/flows.json`。
 
+### 子弹图
+
+`BulletChart` 把各项指标与目标对比，每个指标一行：横条是实际值，横穿它的短线是目标值，背后的色带表示差、中、良等区间。五个指标只占一个仪表盘的位置，适合放进 KPI 报表。
+
+<p align="center">
+  <img src="../asset/image/bullet.png" width="60%" alt="五个指标的子弹图">
+</p>
+
+```json
+{
+  "label_show": true,
+  "bullets": [
+    {"name": "按时办结率 (%)", "value": 92, "target": 95, "ranges": [80, 90, 100], "max": 100},
+    {"name": "平均等待 (分钟)", "value": 12, "target": 10, "ranges": [10, 20, 30]}
+  ]
+}
+```
+
+- 每行有自己的刻度：从 0（有负值时从其下方）到最大值之后的第一个整数值，可以用 `min`、`max` 指定。刻度值都是整数值。
+- 色带默认取文字颜色的深浅变化，第一段最深；`range_colors` 可以指定颜色。越小越好的指标（如等待时间）通常要把颜色反过来设置。
+- `label_show` 在每行右侧写出数值，格式取 `series_label_formatter`；刻度使用 `y_axis_configs` 第一项的格式（`axis_formatter`），`x_axis_hidden` 可以隐藏刻度。
+
+Rust：`BulletChart::new(vec![("CPU", 72.0, 80.0).into()])`，三个值依次是名称、实际值和目标值；`Bullet` 还可以设置色带、刻度范围和颜色。
+
+### 表格中的迷你图
+
+`TableChart` 中值为数字数组的单元格会画成迷你图：代替文字画一条反映这组数值走势的小折线，最小值在单元格底部、最大值在顶部，最后一个值上有圆点。
+
+<p align="center">
+  <img src="../asset/image/table-sparkline.png" width="60%" alt="带走势迷你图的服务器表格">
+</p>
+
+```json
+{
+  "data": [
+    ["服务器", "CPU", "近 24 小时"],
+    ["api-1", "72%", [42, 45, 51, 48, 60, 66, 63, 71, 69, 74, 70, 72]],
+    ["api-2", "38%", [30, 34, 31, 29, 35, 41, null, null, 37, 38]]
+  ]
+}
+```
+
+- 每个迷你图有自己的刻度：它表现的是这组数值的走势，不用于和其它行比较大小。
+- `null` 会让折线断开。`"sparkline_type": "bar"` 改为每个值一根从 0 开始的柱子；`sparkline_color` 设置颜色。
+- 单元格里的数字原样显示，`null` 为空单元格。
+
+Rust：`table.sparklines.push(TableSparkline { indexes: vec![1, 2], values: vec![42.0, 45.0, 51.0] })`，`indexes` 依次是行和列。
+
 ## 字体
 
 ```rust

@@ -408,6 +408,12 @@ fn generate_image() {
     let buf = svg_to_avif(&table_chart.svg().unwrap()).unwrap();
     common::save_asset("image/table.avif", &buf);
 
+    let sparkline =
+        charts_rs::TableChart::from_json(include_str!("../asset/table_chart/sparkline.json"))
+            .unwrap();
+    let buf = svg_to_png(&sparkline.svg().unwrap()).unwrap();
+    common::save_asset("image/table-sparkline.png", &buf);
+
     let multi_chart_json = r###"{
             "type": "multi_chart",
             "margin": {
@@ -1315,6 +1321,13 @@ fn generate_image() {
         (
             "lines",
             charts_rs::LinesChart::from_json(include_str!("../asset/lines_chart/flows.json"))
+                .unwrap()
+                .svg()
+                .unwrap(),
+        ),
+        (
+            "bullet",
+            charts_rs::BulletChart::from_json(include_str!("../asset/bullet_chart/basic.json"))
                 .unwrap()
                 .svg()
                 .unwrap(),

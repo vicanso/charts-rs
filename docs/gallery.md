@@ -76,6 +76,7 @@ every option is described in the [JSON reference](./json.md).
 
 <p align="center">
   <img src="../asset/image/table.avif" width="49%" alt="Table">
+  <img src="../asset/image/table-sparkline.png" width="49%" alt="Table with sparklines">
 </p>
 
 ## Heatmap
@@ -116,6 +117,12 @@ every option is described in the [JSON reference](./json.md).
 
 <p align="center">
   <img src="../asset/image/gauge-rings.png" width="49%" alt="Gauge">
+</p>
+
+## Bullet
+
+<p align="center">
+  <img src="../asset/image/bullet.png" width="49%" alt="Bullet">
 </p>
 
 ## Treemap

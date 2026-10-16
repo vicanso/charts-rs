@@ -22,10 +22,10 @@ use super::params::{
 };
 use super::theme::{get_default_theme_name, get_theme};
 use super::{
-    BarChart, BoxPlotChart, CalendarChart, CandlestickChart, ChordChart, FunnelChart, GanttChart,
-    GaugeChart, GraphChart, HeatmapChart, HistogramChart, HorizontalBarChart, LineChart,
-    LinesChart, MapChart, ParallelChart, PieChart, PolarBarChart, RadarChart, SankeyChart,
-    ScatterChart, SunburstChart, TableChart, ThemeRiverChart, TreeChart, TreemapChart,
+    BarChart, BoxPlotChart, BulletChart, CalendarChart, CandlestickChart, ChordChart, FunnelChart,
+    GanttChart, GaugeChart, GraphChart, HeatmapChart, HistogramChart, HorizontalBarChart,
+    LineChart, LinesChart, MapChart, ParallelChart, PieChart, PolarBarChart, RadarChart,
+    SankeyChart, ScatterChart, SunburstChart, TableChart, ThemeRiverChart, TreeChart, TreemapChart,
     WaterfallChart,
 };
 use super::{Box, Color};
@@ -89,6 +89,8 @@ pub enum ChildChart {
     Map(MapChart, Option<(f32, f32)>),
     /// A lines chart child.
     Lines(LinesChart, Option<(f32, f32)>),
+    /// A bullet chart child.
+    Bullet(BulletChart, Option<(f32, f32)>),
 }
 /// Several charts composed into one SVG: children are stacked vertically
 /// with `gap` between them, or placed at an explicit position.
@@ -232,6 +234,7 @@ impl MultiChart {
                     "gantt" => child!(GanttChart, Gantt),
                     "map" => child!(MapChart, Map),
                     "lines" => child!(LinesChart, Lines),
+                    "bullet" => child!(BulletChart, Bullet),
                     other => {
                         return Err(canvas::Error::Params {
                             message: format!("unsupported child chart type: {other}"),
@@ -331,6 +334,7 @@ impl MultiChart {
                 ChildChart::Gantt(c, position) => render!(c, position),
                 ChildChart::Map(c, position) => render!(c, position),
                 ChildChart::Lines(c, position) => render!(c, position),
+                ChildChart::Bullet(c, position) => render!(c, position),
                 ChildChart::Table(c, position) => {
                     let c = place_child!(c, position);
                     // the height is recomputed by the table itself

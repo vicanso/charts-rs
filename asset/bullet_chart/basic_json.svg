@@ -1,0 +1,172 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="248" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Service level
+</text>
+<text font-size="14" x="197" y="35" dy="10" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+This month, against the targets
+</text>
+<rect x="123" y="66" width="345.6" height="28" fill="#6E7079" fill-opacity="0.33"/>
+<rect x="468.6" y="66" width="43.2" height="28" fill="#6E7079" fill-opacity="0.23"/>
+<rect x="511.8" y="66" width="43.2" height="28" fill="#6E7079" fill-opacity="0.13"/>
+<rect x="123" y="75.3" width="397.4" height="9.3" fill="#5470C6" data-name="Done in time (%)" data-value="92" data-target="95"/>
+<line stroke-width="2.2" x1="533.4" y1="70.2" x2="533.4" y2="89.8" stroke="#464646"/>
+<text font-size="14" x="113" y="80" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Done in time (%)
+</text>
+<text font-size="14" x="563" y="80" dominant-baseline="central" font-family="Roboto" fill="#464646">
+92
+</text>
+<g>
+
+<text font-size="14" x="119" y="116" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="201.4" y="116" font-family="Roboto" fill="#6E7079">
+20
+</text>
+<text font-size="14" x="287.8" y="116" font-family="Roboto" fill="#6E7079">
+40
+</text>
+<text font-size="14" x="374.2" y="116" font-family="Roboto" fill="#6E7079">
+60
+</text>
+<text font-size="14" x="460.6" y="116" font-family="Roboto" fill="#6E7079">
+80
+</text>
+<text font-size="14" x="543" y="116" font-family="Roboto" fill="#6E7079">
+100
+</text>
+</g>
+<rect x="123" y="133" width="302.4" height="28" fill="#6E7079" fill-opacity="0.33"/>
+<rect x="425.4" y="133" width="60.5" height="28" fill="#6E7079" fill-opacity="0.23"/>
+<rect x="485.9" y="133" width="69.1" height="28" fill="#6E7079" fill-opacity="0.13"/>
+<rect x="123" y="142.3" width="397.4" height="9.3" fill="#5470C6" data-name="Satisfaction" data-value="4.6" data-target="4.5"/>
+<line stroke-width="2.2" x1="511.8" y1="137.2" x2="511.8" y2="156.8" stroke="#464646"/>
+<text font-size="14" x="113" y="147" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Satisfaction
+</text>
+<text font-size="14" x="563" y="147" dominant-baseline="central" font-family="Roboto" fill="#464646">
+4.6
+</text>
+<g>
+
+<text font-size="14" x="119" y="183" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="206.9" y="183" font-family="Roboto" fill="#6E7079">
+1
+</text>
+<text font-size="14" x="291.8" y="183" font-family="Roboto" fill="#6E7079">
+2
+</text>
+<text font-size="14" x="378.7" y="183" font-family="Roboto" fill="#6E7079">
+3
+</text>
+<text font-size="14" x="464.6" y="183" font-family="Roboto" fill="#6E7079">
+4
+</text>
+<text font-size="14" x="551" y="183" font-family="Roboto" fill="#6E7079">
+5
+</text>
+</g>
+<rect x="123" y="200" width="144" height="28" fill="#6E7079" fill-opacity="0.33"/>
+<rect x="267" y="200" width="144" height="28" fill="#6E7079" fill-opacity="0.23"/>
+<rect x="411" y="200" width="144" height="28" fill="#6E7079" fill-opacity="0.13"/>
+<rect x="123" y="209.3" width="172.8" height="9.3" fill="#5470C6" data-name="Wait (min)" data-value="12" data-target="10"/>
+<line stroke-width="2.2" x1="267" y1="204.2" x2="267" y2="223.8" stroke="#464646"/>
+<text font-size="14" x="113" y="214" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Wait (min)
+</text>
+<text font-size="14" x="563" y="214" dominant-baseline="central" font-family="Roboto" fill="#464646">
+12
+</text>
+<g>
+
+<text font-size="14" x="119" y="250" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="191" y="250" font-family="Roboto" fill="#6E7079">
+5
+</text>
+<text font-size="14" x="259" y="250" font-family="Roboto" fill="#6E7079">
+10
+</text>
+<text font-size="14" x="331" y="250" font-family="Roboto" fill="#6E7079">
+15
+</text>
+<text font-size="14" x="403" y="250" font-family="Roboto" fill="#6E7079">
+20
+</text>
+<text font-size="14" x="475" y="250" font-family="Roboto" fill="#6E7079">
+25
+</text>
+<text font-size="14" x="547" y="250" font-family="Roboto" fill="#6E7079">
+30
+</text>
+</g>
+<rect x="123" y="267" width="207.4" height="28" fill="#6E7079" fill-opacity="0.33"/>
+<rect x="330.4" y="267" width="103.7" height="28" fill="#6E7079" fill-opacity="0.23"/>
+<rect x="434" y="267" width="103.7" height="28" fill="#6E7079" fill-opacity="0.13"/>
+<rect x="123" y="276.3" width="314.5" height="9.3" fill="#5470C6" data-name="Handled" data-value="1820" data-target="2000"/>
+<line stroke-width="2.2" x1="468.6" y1="271.2" x2="468.6" y2="290.8" stroke="#464646"/>
+<text font-size="14" x="113" y="281" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Handled
+</text>
+<text font-size="14" x="563" y="281" dominant-baseline="central" font-family="Roboto" fill="#464646">
+1820
+</text>
+<g>
+
+<text font-size="14" x="119" y="317" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="197.4" y="317" font-family="Roboto" fill="#6E7079">
+500
+</text>
+<text font-size="14" x="287.8" y="317" font-family="Roboto" fill="#6E7079">
+1k
+</text>
+<text font-size="14" x="368.2" y="317" font-family="Roboto" fill="#6E7079">
+1.5k
+</text>
+<text font-size="14" x="460.6" y="317" font-family="Roboto" fill="#6E7079">
+2k
+</text>
+<text font-size="14" x="541" y="317" font-family="Roboto" fill="#6E7079">
+2.5k
+</text>
+</g>
+<rect x="123" y="334" width="172.8" height="28" fill="#6E7079" fill-opacity="0.33"/>
+<rect x="295.8" y="334" width="86.4" height="28" fill="#6E7079" fill-opacity="0.23"/>
+<rect x="382.2" y="334" width="172.8" height="28" fill="#6E7079" fill-opacity="0.13"/>
+<rect x="123" y="343.3" width="276.5" height="9.3" fill="#5470C6" data-name="Online (%)" data-value="64" data-target="60"/>
+<line stroke-width="2.2" x1="382.2" y1="338.2" x2="382.2" y2="357.8" stroke="#464646"/>
+<text font-size="14" x="113" y="348" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Online (%)
+</text>
+<text font-size="14" x="563" y="348" dominant-baseline="central" font-family="Roboto" fill="#464646">
+64
+</text>
+<g>
+
+<text font-size="14" x="119" y="384" font-family="Roboto" fill="#6E7079">
+0
+</text>
+<text font-size="14" x="201.4" y="384" font-family="Roboto" fill="#6E7079">
+20
+</text>
+<text font-size="14" x="287.8" y="384" font-family="Roboto" fill="#6E7079">
+40
+</text>
+<text font-size="14" x="374.2" y="384" font-family="Roboto" fill="#6E7079">
+60
+</text>
+<text font-size="14" x="460.6" y="384" font-family="Roboto" fill="#6E7079">
+80
+</text>
+<text font-size="14" x="543" y="384" font-family="Roboto" fill="#6E7079">
+100
+</text>
+</g>
+</svg>
