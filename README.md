@@ -124,10 +124,11 @@ std::fs::write("visits.png", png).unwrap();
 ## Features
 
 - **Charts**: bar, horizontal bar, line, pie, radar, scatter and bubble,
-  candlestick, table, heatmap, funnel, waterfall, calendar, gauge, treemap,
-  box plot, sunburst, sankey, tree, graph, parallel, theme river, histogram,
-  polar bar, chord, gantt, map, lines, bullet — and `MultiChart`, which puts several on one
-  canvas.
+  candlestick, table (with sparklines in its cells), heatmap, funnel,
+  waterfall, calendar, gauge, treemap, box plot, sunburst, sankey, tree,
+  graph, parallel, theme river, histogram, polar bar, chord, gantt, map,
+  lines, bullet — and `MultiChart`, which puts several on one canvas, their
+  plots lined up one above the other.
 - **Series**: stacked and 100% stacked, bars mixed with lines, two y axes,
   smooth and step lines, areas, bands and error bars, mark lines, points and
   areas, regression curves, marginal histograms, density contours, missing values.

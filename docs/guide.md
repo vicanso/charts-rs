@@ -19,7 +19,9 @@ a word of explanation, fonts and output. Every JSON key is listed in the
   [density contours](#density-contours),
   [histogram](#histogram), [polar bar](#polar-bar-chart),
   [chord](#chord-chart), [gantt](#gantt-chart), [map](#map-chart),
-  [lines](#lines-chart)
+  [lines](#lines-chart), [bullet](#bullet-chart),
+  [sparklines in a table](#sparklines-in-a-table),
+  [charts one above the other](#charts-one-above-the-other)
 - [Fonts](#fonts)
 - [Development](#development)
 

@@ -4,7 +4,7 @@ Every chart type of `charts-rs`, with its variants. The JSON these pictures
 are made of is under [`asset/`](../asset) and in [`tests/image.rs`](../tests/image.rs);
 every option is described in the [JSON reference](./json.md).
 
-[Bar](#bar) · [Horizontal bar](#horizontal-bar) · [Line](#line) · [Pie](#pie) · [Radar](#radar) · [Scatter](#scatter) · [Candlestick](#candlestick) · [Table](#table) · [Heatmap](#heatmap) · [Funnel](#funnel) · [Waterfall](#waterfall) · [Calendar](#calendar) · [Gauge](#gauge) · [Treemap](#treemap) · [Box plot](#box-plot) · [Sunburst](#sunburst) · [Multi chart](#multi-chart) · [Sankey](#sankey) · [Tree](#tree) · [Graph](#graph) · [Parallel](#parallel) · [Theme River](#theme-river) · [Histogram](#histogram) · [Polar bar](#polar-bar) · [Chord](#chord) · [Gantt](#gantt) · [Map](#map)
+[Bar](#bar) · [Horizontal bar](#horizontal-bar) · [Line](#line) · [Pie](#pie) · [Radar](#radar) · [Scatter](#scatter) · [Candlestick](#candlestick) · [Table](#table) · [Heatmap](#heatmap) · [Funnel](#funnel) · [Waterfall](#waterfall) · [Calendar](#calendar) · [Gauge](#gauge) · [Bullet](#bullet) · [Treemap](#treemap) · [Box plot](#box-plot) · [Sunburst](#sunburst) · [Multi chart](#multi-chart) · [Sankey](#sankey) · [Tree](#tree) · [Graph](#graph) · [Parallel](#parallel) · [Theme River](#theme-river) · [Histogram](#histogram) · [Polar bar](#polar-bar) · [Chord](#chord) · [Gantt](#gantt) · [Map](#map) · [Lines](#lines)
 
 ## Bar
 
