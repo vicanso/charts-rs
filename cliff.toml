@@ -54,6 +54,8 @@ commit_parsers = [
     { message = "^fix", group = "Fixed" },
     { message = "^perf", group = "Performance" },
     { message = "^refactor", group = "Changed" },
+    # The changelog itself is no change to the library.
+    { message = "^docs: update changelog", skip = true },
     { message = "^docs", group = "Documentation" },
     { message = "^chore", skip = true },
     { message = "^style", skip = true },
