@@ -551,6 +551,32 @@ Rust：`BulletChart::new(vec![("CPU", 72.0, 80.0).into()])`，三个值依次是
 
 Rust：`table.sparklines.push(TableSparkline { indexes: vec![1, 2], values: vec![42.0, 45.0, 51.0] })`，`indexes` 依次是行和列。
 
+### 上下排列的图表
+
+`MultiChart` 把子图表上下排列；每个子图表画自己的坐标轴，绘图区从各自 y 轴标签之后开始——股票成交量的标签就比价格的宽。开启 `align_plots` 后绘图区会对齐：都从最靠右的左边缘开始、到最靠左的右边缘结束，同一天在每个子图表里都在同一位置。
+
+<p align="center">
+  <img src="../asset/image/multi-aligned.png" width="60%" alt="对齐的一个月价格、成交量和 MACD">
+</p>
+
+```json
+{
+  "align_plots": true,
+  "child_charts": [
+    {"type": "candlestick", "height": 300, "x_axis_hidden": true, "x_axis_data": ["10-01", "10-02"],
+     "series_list": [{"name": "日 K", "data": [100, 101.5, 99.2, 102.1, 101.5, 99.8, 99.1, 102.4]}]},
+    {"type": "bar", "height": 120, "legend_show": false, "x_axis_data": ["10-01", "10-02"],
+     "series_list": [{"name": "成交量", "data": [1830000, 2240000]}]}
+  ]
+}
+```
+
+- 作用于上下排列的柱状图、折线图、蜡烛图、直方图、散点图、箱线图和瀑布图子图表；用 `x`、`y` 指定了位置的子图表保持各自的绘图区。
+- 它是通过这些图表都支持的 `grid_left`、`grid_right` 实现的：绘图区左右边缘离图表边缘的最小距离。分开绘制的图表也可以用它对齐，例如同一页面上的两个 SVG。
+- 子图表自己设置了更大的 `grid_left` 时以它为准，其它子图表跟着对齐。
+
+图库中的完整示例见 `asset/multi_chart/aligned.json`：一个月的价格和均线、下方的成交量、再下方的 MACD。成交量柱和 MACD 柱按当天涨跌着红色或绿色（系列的 `colors`，每根柱一个颜色），调色板第一个颜色（图例里 K 线和柱子用的颜色）设为灰色。
+
 ## 字体
 
 ```rust

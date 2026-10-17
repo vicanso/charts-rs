@@ -305,9 +305,11 @@ impl WaterfallChart {
         if self.y_axis_hidden {
             y_axis_width = 0.0;
         }
+        // Further in, where the plot is to line up with others.
+        let (y_axis_width, right) = self.fit_plot(&c, y_axis_width, 0.0);
 
         let axis_height = c.height() - x_axis_height - axis_top;
-        let axis_width = c.width() - y_axis_width;
+        let axis_width = c.width() - y_axis_width - right;
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,
@@ -336,7 +338,8 @@ impl WaterfallChart {
             axis_height,
         );
 
-        if y_axis_width > 0.0 {
+        // A hidden axis may still have room, where the plot lines up.
+        if !self.y_axis_hidden {
             self.render_y_axis(
                 c.child(Box::default()),
                 &self.y_axis_configs,

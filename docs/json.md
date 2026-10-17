@@ -126,6 +126,8 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `grid_stroke_color` | color | theme | Color of the grid lines. |
 | `grid_stroke_width` | number | `1` | Width of the grid lines. |
 | `grid_stroke_dash_array` | string |  | Dashes of the grid lines, as the `stroke-dasharray` of SVG takes them (e.g. `"4,2"`). Solid lines by default. Applies to the grid of the charts with an x and a y axis, to those of the gantt, radar and polar bar charts, to the lines of a punch card and to the axes of a parallel chart. |
+| `grid_left` | number |  | How far from the left edge of the chart the plot starts, at the least: further in than the y axis puts it, so that the plots of charts one above the other line up (see `align_plots` of a multi chart). Where the axis needs more the plot starts where the axis puts it. In bar, line, candlestick, histogram, scatter, box plot and waterfall charts; the histogram to the right of the plot of a scatter chart stays against the plot. |
+| `grid_right` | number |  | How far from the right edge of the chart the plot ends, at the least, as `grid_left` does on the other side. |
 
 ### Series
 
@@ -1411,6 +1413,7 @@ The names are written in the font of the x axis, and the scale below each row in
 | `child_charts` | array |  | The charts, drawn one below the other: each one the options of its chart type, plus the keys below. |
 | `compact` | boolean | `false` | Emits compact SVG for the composition and every child. |
 | `texts` | object[] |  | Texts written over the whole composition: a copyright line, a watermark. See [`texts[]`](#texts). A child has `texts` of its own, over itself. The room a text reserves is around the `margin`: the children start inside of it, but for those placed by `x` and `y`, which stay where they are put. |
+| `align_plots` | boolean | `false` | Lines up the plots of the children one above the other: they start where the one that starts furthest from the left starts and end where the one that ends furthest from the right ends, whatever their axes take — a candlestick chart and the bars of its volume below it share their x positions. It sets `grid_left` and `grid_right` of the bar, line, candlestick, histogram, scatter, box plot and waterfall children that are not placed by `x` and `y`. |
 
 ### `child_charts[]`
 

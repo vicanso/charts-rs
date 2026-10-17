@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::base::{overlay_texts, reserved_margin};
+use super::base::{overlay_texts, reserved_margin, with_plot_edges};
 use super::canvas;
 use super::common::TextConfig;
 use super::component::Rect;
@@ -115,6 +115,15 @@ pub struct MultiChart {
     pub texts: Vec<TextConfig>,
     /// Font family of the texts; the default font where it is empty.
     pub font_family: String,
+    /// Lines up the plots of the children one above the other: they start
+    /// where the one that starts furthest from the left starts, and end
+    /// where the one that ends furthest from the right ends, whatever their
+    /// axes take — so that a candlestick chart and the bars of its volume
+    /// below it share their x positions. It is done by `grid.left` and
+    /// `grid.right` of the children: those of bar, line, candlestick,
+    /// histogram, scatter, box plot and waterfall charts, which are not
+    /// placed by hand.
+    pub align_plots: bool,
 }
 struct ChildChartResult {
     svg: String,
@@ -142,6 +151,9 @@ impl MultiChart {
         }
         if let Some(compact) = get_bool_from_value(&value, "compact") {
             multi_chart.compact = compact;
+        }
+        if let Some(align) = get_bool_from_value(&value, "align_plots") {
+            multi_chart.align_plots = align;
         }
         // The texts are written in the font of the theme, as those of a
         // chart are, and in the color of its sub-title.
@@ -273,6 +285,41 @@ impl MultiChart {
         let reserved = reserved_margin(&self.texts, font_family);
         let margin_top = self.margin.top + reserved.top;
         let margin_left = self.margin.left + reserved.left;
+        // Where the plots of the children are to be when they line up: from
+        // the left edge that is furthest in to the right edge that is.
+        macro_rules! measure {
+            ($chart:expr) => {{
+                let x = $chart.x.max(margin_left);
+                let (_, edges) = with_plot_edges(|| $chart.svg());
+                // A child that wants its plot further in still has it there.
+                edges.map(|(left, right)| {
+                    let left = left.max($chart.grid.left.unwrap_or_default());
+                    let right = right.max($chart.grid.right.unwrap_or_default());
+                    (x + left, x + $chart.width - right)
+                })
+            }};
+        }
+        let frame = if self.align_plots {
+            let mut frame: Option<(f32, f32)> = None;
+            for item in self.charts.iter() {
+                let edges = match item {
+                    ChildChart::Bar(c, None) => measure!(c),
+                    ChildChart::Line(c, None) => measure!(c),
+                    ChildChart::Candlestick(c, None) => measure!(c),
+                    ChildChart::Histogram(c, None) => measure!(c),
+                    ChildChart::Scatter(c, None) => measure!(c),
+                    ChildChart::BoxPlot(c, None) => measure!(c),
+                    ChildChart::Waterfall(c, None) => measure!(c),
+                    _ => None,
+                };
+                if let Some((left, right)) = edges {
+                    frame = Some(frame.map_or((left, right), |(l, r)| (l.max(left), r.min(right))));
+                }
+            }
+            frame
+        } else {
+            None
+        };
         // Places a child chart on a local clone: an explicit position wins,
         // otherwise charts stack vertically with `gap` between them.
         macro_rules! place_child {
@@ -292,6 +339,10 @@ impl MultiChart {
                 }
                 if $position.is_none() {
                     c.x = c.x.max(margin_left);
+                    if let Some((left, right)) = frame {
+                        c.grid.left = Some(left - c.x);
+                        c.grid.right = Some(c.x + c.width - right);
+                    }
                 }
                 c
             }};

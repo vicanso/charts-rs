@@ -736,6 +736,45 @@ bottom of the cell to the highest at the top, with a dot on the last one.
 In Rust: `table.sparklines.push(TableSparkline { indexes: vec![1, 2],
 values: vec![42.0, 45.0, 51.0] })`, `indexes` being the row and the column.
 
+### Charts one above the other
+
+A `MultiChart` stacks its children; each draws its own axes, and the plot
+of each starts after the labels of its y axis — wider for the volumes of a
+stock than for its prices. With `align_plots` the plots line up: they start
+where the one that starts furthest in starts and end where the one that
+ends furthest in ends, so that a day is in the same place in each.
+
+<p align="center">
+  <img src="../asset/image/multi-aligned.png" width="60%" alt="Prices, volumes and MACD of a month, lined up">
+</p>
+
+```json
+{
+  "align_plots": true,
+  "child_charts": [
+    {"type": "candlestick", "height": 300, "x_axis_hidden": true, "x_axis_data": ["10-01", "10-02"],
+     "series_list": [{"name": "Day", "data": [100, 101.5, 99.2, 102.1, 101.5, 99.8, 99.1, 102.4]}]},
+    {"type": "bar", "height": 120, "legend_show": false, "x_axis_data": ["10-01", "10-02"],
+     "series_list": [{"name": "Volume", "data": [1830000, 2240000]}]}
+  ]
+}
+```
+
+- It works on the bar, line, candlestick, histogram, scatter, box plot and
+  waterfall children that stack; one placed by `x` and `y` keeps its plot
+  where its axes put it.
+- It is done with `grid_left` and `grid_right`, which every one of those
+  charts takes: how far in its plot starts and ends at the least. They line
+  up charts that are drawn apart, too — two SVGs on one page.
+- A child that wants its plot further in (its own `grid_left`) has it
+  there, and the others line up with it.
+
+The example of the gallery is `asset/multi_chart/aligned.json`: a month of
+prices with their moving averages, the volumes below them and the MACD
+below those. The bars of the volumes and of the MACD are red or green with
+the day (`colors` of a series, a color for each bar), and the first color
+of the palette, that of the candles and the bars in the legend, is a grey.
+
 ## Fonts
 
 ```rust,no_run

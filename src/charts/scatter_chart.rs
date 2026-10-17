@@ -1358,8 +1358,11 @@ impl ScatterChart {
             c.width() - y_axis_width,
             c.height() - x_axis_height - axis_top,
         );
+        // Further in, where the plot is to line up with others: the plot
+        // without the histogram to the right of it, which stays against it.
+        let (y_axis_width, right) = self.fit_plot(&c, y_axis_width, marginal_size);
         let axis_height = c.height() - x_axis_height - axis_top - marginal_size;
-        let axis_width = c.width() - y_axis_width - marginal_size;
+        let axis_width = c.width() - y_axis_width - right;
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,

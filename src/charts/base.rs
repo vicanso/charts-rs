@@ -17,6 +17,7 @@
 //! methods — compiled once, lint-covered and debuggable, replacing the old
 //! `#[derive(Chart)]` proc-macro expansion.
 
+use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
@@ -300,6 +301,25 @@ pub(crate) fn overlay_texts(
         .collect()
 }
 
+thread_local! {
+    /// Where the plot of a chart is, while a multi chart finds that out to
+    /// line its children up: `None` when nobody asks, `Some(None)` before a
+    /// chart with a plot that lines up has been laid out.
+    static PLOT_EDGES: Cell<Option<Option<(f32, f32)>>> = const { Cell::new(None) };
+}
+
+/// Runs `draw`, and gives back what it gives with where the plot of the
+/// chart it lays out is, as the plot is without `grid.left` and
+/// `grid.right`: how far its left edge is from that of the chart, and its
+/// right edge from that of the chart. `None` for a chart whose plot does not
+/// line up.
+pub(crate) fn with_plot_edges<T>(draw: impl FnOnce() -> T) -> (T, Option<(f32, f32)>) {
+    PLOT_EDGES.with(|edges| edges.set(Some(None)));
+    let drawn = draw();
+    let edges = PLOT_EDGES.with(|edges| edges.replace(None)).flatten();
+    (drawn, edges)
+}
+
 /// How far the tip of the marker of a point is above the point.
 const MARK_POINT_GAP: f32 = 7.5;
 
@@ -448,6 +468,30 @@ impl ChartBase {
     /// the one the chart fills with when there is none.
     pub(crate) fn fill_alpha(&self, default: u8) -> u8 {
         self.series.fill_opacity.map_or(default, opacity_alpha)
+    }
+    /// The room on `c` to the left of the plot and to the right of it, made
+    /// more where `grid.left` or `grid.right` want the plot further in.
+    /// `left` and `right` are what the axes take: from the left edge of `c`
+    /// to the plot, and from the plot to the right edge of `c`.
+    pub(crate) fn fit_plot(&self, c: &Canvas, left: f32, right: f32) -> (f32, f32) {
+        let edges = (
+            c.margin.left + left,
+            self.width - (c.margin.left + c.width() - right),
+        );
+        PLOT_EDGES.with(|found| {
+            if found.get().is_some() {
+                found.set(Some(Some(edges)));
+            }
+        });
+        let more = |wanted: Option<f32>, edge: f32| {
+            wanted
+                .filter(|wanted| wanted.is_finite())
+                .map_or(0.0, |wanted| (wanted - edge).max(0.0))
+        };
+        (
+            left + more(self.grid.left, edges.0),
+            right + more(self.grid.right, edges.1),
+        )
     }
     /// The radius of the marker of a point with `text` in it: as large as
     /// the text needs, its corners 3 pixels inside of the rim, and 15 at
@@ -750,6 +794,12 @@ impl ChartBase {
         }
         if let Some(grid_stroke_width) = get_f32_from_value(&data, "grid_stroke_width") {
             self.grid.stroke_width = grid_stroke_width;
+        }
+        if let Some(left) = get_f32_from_value(&data, "grid_left") {
+            self.grid.left = Some(left);
+        }
+        if let Some(right) = get_f32_from_value(&data, "grid_right") {
+            self.grid.right = Some(right);
         }
         if let Some(dash) = get_string_from_value(&data, "grid_stroke_dash_array") {
             self.grid.stroke_dash_array = Some(dash);
@@ -1435,6 +1485,8 @@ impl ChartBase {
             left_width = 0.0;
             right_width = 0.0;
         }
+        // Further in, where the plot is to line up with others.
+        let (left_width, right_width) = self.fit_plot(&c, left_width, right_width);
         // A canvas too small for the header and the x axis has no plot
         // area left; clamp instead of emitting negative sizes.
         let axis_width = (c.width() - left_width - right_width).max(0.0);

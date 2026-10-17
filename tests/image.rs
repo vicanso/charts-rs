@@ -906,6 +906,10 @@ fn generate_image() {
     let buf = svg_to_webp(&multi_chart.svg().unwrap()).unwrap();
     common::save_asset("image/multi-chart.webp", &buf);
 
+    let aligned = MultiChart::from_json(include_str!("../asset/multi_chart/aligned.json")).unwrap();
+    let buf = svg_to_png(&aligned.svg().unwrap()).unwrap();
+    common::save_asset("image/multi-aligned.png", &buf);
+
     // theme preview image for shadcn
     let shadcn_chart = MultiChart::from_json(
         &multi_chart_json.replace(r###""theme": "grafana""###, r###""theme": "shadcn""###),

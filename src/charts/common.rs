@@ -610,6 +610,16 @@ pub struct GridConfig {
     /// y axis, of a gantt, radar and polar bar chart, the lines of a punch
     /// card and the axes of a parallel chart.
     pub stroke_dash_array: Option<String>,
+    /// How far from the left edge of the chart its plot starts, at the
+    /// least: further in than its y axis puts it, so that the plots of
+    /// charts one above the other line up. A plot whose axis needs more
+    /// starts where the axis puts it. In bar, line, candlestick, histogram,
+    /// scatter, box plot and waterfall charts; the histogram of a scatter
+    /// chart to the right of its plot stays against the plot.
+    pub left: Option<f32>,
+    /// How far from the right edge of the chart its plot ends, at the
+    /// least, as `left` does on the other side.
+    pub right: Option<f32>,
 }
 
 /// How the series of a chart are drawn, where a series does not say so

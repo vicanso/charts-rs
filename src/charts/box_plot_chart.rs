@@ -182,8 +182,10 @@ impl BoxPlotChart {
                 .unwrap_or(DEFAULT_Y_AXIS_WIDTH)
         };
 
+        // Further in, where the plot is to line up with others.
+        let (y_axis_width, right) = self.fit_plot(&c, y_axis_width, 0.0);
         let axis_height = c.height() - x_axis_height - axis_top;
-        let axis_width = c.width() - y_axis_width;
+        let axis_width = c.width() - y_axis_width - right;
         self.render_axis_titles(
             &titles,
             &self.y_axis_configs,

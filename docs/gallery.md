@@ -147,6 +147,7 @@ every option is described in the [JSON reference](./json.md).
 
 <p align="center">
   <img src="../asset/image/multi-chart.webp" width="49%" alt="Multi chart">
+  <img src="../asset/image/multi-aligned.png" width="49%" alt="Multi chart with its plots lined up">
 </p>
 
 ## Sankey

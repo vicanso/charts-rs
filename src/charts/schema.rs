@@ -254,6 +254,8 @@ pub(crate) static BASE_FIELDS: &[Field] = &[
     f("grid_stroke_color", Kind::Color),
     f("grid_stroke_width", Kind::Number),
     f("grid_stroke_dash_array", Kind::String),
+    f("grid_left", Kind::Number),
+    f("grid_right", Kind::Number),
     f("series_stroke_width", Kind::Number),
     f("series_label_font_color", Kind::Color),
     f("series_label_font_size", Kind::Number),
@@ -644,6 +646,7 @@ pub(crate) static MULTI_FIELDS: &[Field] = &[
     f("child_charts", Kind::Array),
     f("compact", Kind::Bool),
     f("texts", Kind::ArrayOf(TEXT_FIELDS)),
+    f("align_plots", Kind::Bool),
 ];
 
 /// Fields a multi chart child carries on top of its own chart's fields.
