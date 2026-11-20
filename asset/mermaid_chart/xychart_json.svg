@@ -1,0 +1,97 @@
+<svg width="640" height="400" viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="640" height="400" fill="#1F1D1D"/>
+<text font-size="18" x="202.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+Quarterly Revenue &amp; Growth
+</text>
+<g>
+<line stroke-width="2" x1="254" y1="50" x2="279" y2="50" stroke="#7EB26D"/>
+<circle cx="266.5" cy="50" r="5.5" stroke-width="2" stroke="#7EB26D" fill="#7EB26D"/>
+<text font-size="14" x="282" y="54" font-family="Roboto" fill="#D8D9DA">
+Bar 1
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="318" y1="50" x2="343" y2="50" stroke="#EAB839"/>
+<circle cx="330.5" cy="50" r="5.5" stroke-width="2" stroke="#EAB839" fill="#EAB839"/>
+<text font-size="14" x="346" y="54" font-family="Roboto" fill="#D8D9DA">
+Line 1
+</text>
+</g>
+<text font-size="14" transform="translate(16.9,213.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
+Revenue ($k)
+</text>
+<g stroke="#444343" stroke-width="1">
+<line x1="54" y1="62" x2="635" y2="62"/><line x1="54" y1="112.5" x2="635" y2="112.5"/><line x1="54" y1="163" x2="635" y2="163"/><line x1="54" y1="213.5" x2="635" y2="213.5"/><line x1="54" y1="264" x2="635" y2="264"/><line x1="54" y1="314.5" x2="635" y2="314.5"/>
+</g>
+<g>
+
+<text font-size="14" x="22" y="67" font-family="Roboto" fill="#B9B8CE">
+120
+</text>
+<text font-size="14" x="22" y="117.5" font-family="Roboto" fill="#B9B8CE">
+100
+</text>
+<text font-size="14" x="30" y="168" font-family="Roboto" fill="#B9B8CE">
+80
+</text>
+<text font-size="14" x="30" y="218.5" font-family="Roboto" fill="#B9B8CE">
+60
+</text>
+<text font-size="14" x="30" y="269" font-family="Roboto" fill="#B9B8CE">
+40
+</text>
+<text font-size="14" x="30" y="319.5" font-family="Roboto" fill="#B9B8CE">
+20
+</text>
+<text font-size="14" x="38" y="370" font-family="Roboto" fill="#B9B8CE">
+0
+</text>
+</g>
+<g>
+<g stroke="#B9B8CE" stroke-width="1">
+<line x1="54" y1="365" x2="635" y2="365"/>
+<line x1="54" y1="365" x2="54" y2="370"/>
+<line x1="150.8" y1="365" x2="150.8" y2="370"/>
+<line x1="247.7" y1="365" x2="247.7" y2="370"/>
+<line x1="344.5" y1="365" x2="344.5" y2="370"/>
+<line x1="441.3" y1="365" x2="441.3" y2="370"/>
+<line x1="538.2" y1="365" x2="538.2" y2="370"/>
+<line x1="635" y1="365" x2="635" y2="370"/>
+</g>
+<text font-size="14" x="94.9" y="384" font-family="Roboto" fill="#B9B8CE">
+Q1
+</text>
+<text font-size="14" x="190.2" y="384" font-family="Roboto" fill="#B9B8CE">
+Q2
+</text>
+<text font-size="14" x="287.6" y="384" font-family="Roboto" fill="#B9B8CE">
+Q3
+</text>
+<text font-size="14" x="383.9" y="384" font-family="Roboto" fill="#B9B8CE">
+Q4
+</text>
+<text font-size="14" x="480.8" y="384" font-family="Roboto" fill="#B9B8CE">
+Q5
+</text>
+<text font-size="14" x="577.6" y="384" font-family="Roboto" fill="#B9B8CE">
+Q6
+</text>
+</g>
+<rect x="59" y="259" width="86.8" height="106" fill="#7EB26D" data-series="Bar 1" data-category="Q1" data-value="42"/>
+<rect x="155.8" y="218.6" width="86.8" height="146.4" fill="#7EB26D" data-series="Bar 1" data-category="Q2" data-value="58"/>
+<rect x="252.7" y="198.3" width="86.8" height="166.7" fill="#7EB26D" data-series="Bar 1" data-category="Q3" data-value="66"/>
+<rect x="349.5" y="152.9" width="86.8" height="212.1" fill="#7EB26D" data-series="Bar 1" data-category="Q4" data-value="84"/>
+<rect x="446.3" y="125.1" width="86.8" height="239.9" fill="#7EB26D" data-series="Bar 1" data-category="Q5" data-value="95"/>
+<rect x="543.2" y="82.2" width="86.8" height="282.8" fill="#7EB26D" data-series="Bar 1" data-category="Q6" data-value="112"/>
+<g>
+<path d="M 102.4 276.6 L 199.2 238.8 L 296.1 208.5 L 392.9 173.1 L 489.8 140.3 L 586.6 92.3" stroke-width="2" fill="none" stroke="#EAB839"/>
+<g stroke-width="2" stroke="#EAB839" fill="#1F1D1D">
+<circle cx="102.4" cy="276.6" r="2"/>
+<circle cx="199.2" cy="238.8" r="2"/>
+<circle cx="296.1" cy="208.5" r="2"/>
+<circle cx="392.9" cy="173.1" r="2"/>
+<circle cx="489.8" cy="140.3" r="2"/>
+<circle cx="586.6" cy="92.3" r="2"/>
+</g>
+</g>
+</svg>

@@ -4,7 +4,7 @@ Every chart type of `charts-rs`, with its variants. The JSON these pictures
 are made of is under [`asset/`](../asset) and in [`tests/image.rs`](../tests/image.rs);
 every option is described in the [JSON reference](./json.md).
 
-[Bar](#bar) · [Horizontal bar](#horizontal-bar) · [Line](#line) · [Pie](#pie) · [Radar](#radar) · [Scatter](#scatter) · [Candlestick](#candlestick) · [Table](#table) · [Heatmap](#heatmap) · [Funnel](#funnel) · [Waterfall](#waterfall) · [Calendar](#calendar) · [Gauge](#gauge) · [Bullet](#bullet) · [Treemap](#treemap) · [Box plot](#box-plot) · [Sunburst](#sunburst) · [Multi chart](#multi-chart) · [Sankey](#sankey) · [Tree](#tree) · [Graph](#graph) · [Parallel](#parallel) · [Theme River](#theme-river) · [Histogram](#histogram) · [Polar bar](#polar-bar) · [Chord](#chord) · [Gantt](#gantt) · [Map](#map) · [Lines](#lines)
+[Bar](#bar) · [Horizontal bar](#horizontal-bar) · [Line](#line) · [Pie](#pie) · [Radar](#radar) · [Scatter](#scatter) · [Candlestick](#candlestick) · [Table](#table) · [Heatmap](#heatmap) · [Funnel](#funnel) · [Waterfall](#waterfall) · [Calendar](#calendar) · [Gauge](#gauge) · [Bullet](#bullet) · [Treemap](#treemap) · [Box plot](#box-plot) · [Sunburst](#sunburst) · [Multi chart](#multi-chart) · [Sankey](#sankey) · [Tree](#tree) · [Graph](#graph) · [Parallel](#parallel) · [Theme River](#theme-river) · [Histogram](#histogram) · [Polar bar](#polar-bar) · [Chord](#chord) · [Gantt](#gantt) · [Map](#map) · [Lines](#lines) · [Mermaid](#mermaid)
 
 ## Bar
 
@@ -217,4 +217,40 @@ every option is described in the [JSON reference](./json.md).
 
 <p align="center">
   <img src="../asset/image/lines.png" width="49%" alt="Lines">
+</p>
+
+## Mermaid
+
+<p align="center">
+  <img src="../asset/image/mermaid-flowchart.png" width="49%" alt="Mermaid flowchart">
+  <img src="../asset/image/mermaid-sequence.png" width="49%" alt="Mermaid sequence diagram">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-pie.png" width="49%" alt="Mermaid pie chart">
+  <img src="../asset/image/mermaid-gantt.png" width="49%" alt="Mermaid gantt chart">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-sankey.png" width="49%" alt="Mermaid sankey diagram">
+  <img src="../asset/image/mermaid-xychart.png" width="49%" alt="Mermaid xychart">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-state.png" width="49%" alt="Mermaid state diagram">
+  <img src="../asset/image/mermaid-class.png" width="49%" alt="Mermaid class diagram">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-er.png" width="49%" alt="Mermaid ER diagram">
+  <img src="../asset/image/mermaid-mindmap.png" width="49%" alt="Mermaid mindmap">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-quadrant.png" width="49%" alt="Mermaid quadrant chart">
+  <img src="../asset/image/mermaid-radar.png" width="49%" alt="Mermaid radar chart">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-treemap.png" width="49%" alt="Mermaid treemap">
 </p>

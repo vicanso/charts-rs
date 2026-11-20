@@ -2271,6 +2271,7 @@ impl ChartBase {
                     dataset,
                     color: None,
                     stroke_width: None,
+                    ..Default::default()
                 });
 
                 // CSS hover tooltip: a hidden label drawn immediately

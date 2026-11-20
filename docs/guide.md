@@ -21,7 +21,8 @@ a word of explanation, fonts and output. Every JSON key is listed in the
   [chord](#chord-chart), [gantt](#gantt-chart), [map](#map-chart),
   [lines](#lines-chart), [bullet](#bullet-chart),
   [sparklines in a table](#sparklines-in-a-table),
-  [charts one above the other](#charts-one-above-the-other)
+  [charts one above the other](#charts-one-above-the-other),
+  [Mermaid diagrams](#mermaid-diagrams)
 - [Fonts](#fonts)
 - [Development](#development)
 
@@ -159,6 +160,7 @@ cargo run --example polar_bar  # polar bars: stacked around the circle, and ring
 cargo run --example chord      # chord diagram of the flows between nodes (gradient ribbons)
 cargo run --example gantt      # gantt chart: a project plan with progress, milestones and today
 cargo run --example map        # map of regions (GeoJSON) colored by value, in classes
+cargo run --example mermaid --features mermaid  # Mermaid diagrams (flowchart, sequenceDiagram)
 ```
 
 ## Output
@@ -777,6 +779,45 @@ below those. The bars of the volumes and of the MACD are red or green with
 the day (`colors` of a series, a color for each bar), and the first color
 of the palette, that of the candles and the bars in the legend, is a grey.
 
+### Mermaid diagrams
+
+Enable the optional `mermaid` feature in `Cargo.toml` to render Mermaid diagrams
+(`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`,
+`classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`,
+`pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta` / `radar`, and
+`treemap-beta` / `treemap`) to pure SVG without a browser:
+
+```toml
+[dependencies]
+charts-rs = { version = "2", features = ["mermaid"] }
+```
+
+```rust
+# #[cfg(feature = "mermaid")]
+# {
+use charts_rs::{mermaid_to_svg, MermaidChart, THEME_DARK};
+
+let svg = mermaid_to_svg("flowchart LR\n  A[Start] --> B{Ready?}\n  B -->|Yes| C((Done))").unwrap();
+assert!(svg.starts_with("<svg"));
+
+let mut chart = MermaidChart::new_with_theme(
+    "sequenceDiagram\n  Alice->>Bob: Hello!\n  Bob-->>Alice: Hi!",
+    THEME_DARK,
+);
+chart.width = 720.0;
+let _themed_svg = chart.svg().unwrap();
+# }
+```
+
+- `flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`, and
+  `mindmap` size automatically to fit the diagram when `width` and `height` are
+  `0.0`; setting either scales proportionally via `viewBox`.
+- Styling inherits from the active `charts-rs` theme (`THEME_DARK`, `THEME_SHADCN`, …)
+  and supports Mermaid `style`, `classDef`, `class`, `:::`, `linkStyle`, YAML
+  frontmatter `title` and `%%{init: ...}%%`.
+- `MermaidChart` implements [`Chart`](https://docs.rs/charts-rs) and can be
+  composed inside `MultiChart` (`"type": "mermaid"`).
+
 ## Fonts
 
 ```rust,no_run
@@ -803,5 +844,6 @@ intentional rendering change, regenerate them and review the diff:
 
 ```bash
 UPDATE_SNAPSHOTS=1 cargo test --features image-encoder
+UPDATE_SNAPSHOTS=1 cargo test --features "mermaid,image-encoder" --test mermaid
 git diff --stat asset/
 ```

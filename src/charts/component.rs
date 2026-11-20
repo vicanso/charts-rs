@@ -190,16 +190,24 @@ pub fn generate_svg(width: f32, height: f32, x: f32, y: f32, data: String) -> St
     out
 }
 
-/// Writes the opening `<svg …>` tag (and the newline after it) so a chart
-/// can stream its components right behind it.
-pub(crate) fn write_svg_open(out: &mut String, width: f32, height: f32, x: f32, y: f32) {
+/// Writes the opening `<svg …>` tag (and the newline after it) with an optional
+/// logical `viewBox` size independent of the viewport `width`/`height`.
+pub(crate) fn write_svg_open_with_view_box(
+    out: &mut String,
+    width: f32,
+    height: f32,
+    x: f32,
+    y: f32,
+    view_box: Option<(f32, f32)>,
+) {
+    let (vb_w, vb_h) = view_box.unwrap_or((width, height));
     let _ = write!(
         out,
         "<svg width=\"{}\" height=\"{}\" viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\"",
         format_float(width),
         format_float(height),
-        format_float(width),
-        format_float(height)
+        format_float(vb_w),
+        format_float(vb_h)
     );
     if x != 0.0 {
         let _ = write!(out, " x=\"{}\"", format_float(x));
@@ -208,6 +216,12 @@ pub(crate) fn write_svg_open(out: &mut String, width: f32, height: f32, x: f32, 
         let _ = write!(out, " y=\"{}\"", format_float(y));
     }
     out.push_str(">\n");
+}
+
+/// Writes the opening `<svg …>` tag (and the newline after it) so a chart
+/// can stream its components right behind it.
+pub(crate) fn write_svg_open(out: &mut String, width: f32, height: f32, x: f32, y: f32) {
+    write_svg_open_with_view_box(out, width, height, x, y, None);
 }
 
 /// Writes the closing `</svg>` tag.
@@ -465,6 +479,66 @@ pub enum Component {
     Ribbon(Ribbon),
     /// A filled shape of several outlines.
     Shape(Shape),
+    /// An arbitrary SVG path element (used by Mermaid diagrams).
+    #[cfg(feature = "mermaid")]
+    RawPath(RawPath),
+}
+
+/// An arbitrary SVG path element (used internally by Mermaid diagrams).
+#[cfg(feature = "mermaid")]
+#[derive(Clone, PartialEq, Debug, Default)]
+pub struct RawPath {
+    pub(crate) d: String,
+    pub(crate) fill: Option<Color>,
+    pub(crate) stroke: Option<Color>,
+    pub(crate) stroke_width: f32,
+    pub(crate) stroke_dash_array: Option<String>,
+    pub(crate) stroke_linecap: Option<&'static str>,
+    pub(crate) stroke_linejoin: Option<&'static str>,
+    pub(crate) offset: (f32, f32),
+}
+
+#[cfg(feature = "mermaid")]
+impl RawPath {
+    pub(crate) fn write_svg(&self, out: &mut String) {
+        if self.d.is_empty() {
+            return;
+        }
+        let mut w = TagWriter::open(out, TAG_PATH);
+        w.raw(ATTR_D, &self.d);
+        if self.offset != (0.0, 0.0) {
+            let transform = format!(
+                "translate({},{})",
+                format_float(self.offset.0),
+                format_float(self.offset.1)
+            );
+            w.raw(ATTR_TRANSFORM, &transform);
+        }
+        match self.fill {
+            Some(c) if !c.is_transparent() => {
+                w.raw(ATTR_FILL, &c.hex())
+                    .raw(ATTR_FILL_OPACITY, &convert_opacity(&c));
+            }
+            _ => {
+                w.raw(ATTR_FILL, "none");
+            }
+        }
+        if self.stroke.is_some() && self.stroke_width > 0.0 {
+            w.float(ATTR_STROKE_WIDTH, self.stroke_width)
+                .color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.stroke)
+                .opt_text(
+                    ATTR_STROKE_DASH_ARRAY,
+                    self.stroke_dash_array.as_ref().filter(|d| !d.is_empty()),
+                );
+            if let Some(cap) = self.stroke_linecap {
+                w.raw("stroke-linecap", cap);
+            }
+            if let Some(join) = self.stroke_linejoin {
+                w.raw("stroke-linejoin", join);
+            }
+        }
+        w.close();
+    }
 }
 #[derive(Clone, PartialEq, Debug)]
 
@@ -561,6 +635,8 @@ pub struct Rect {
     pub style: Option<String>,
     /// Optional native `<title>` child (hover tooltip / accessible name).
     pub title: Option<String>,
+    /// SVG stroke dash array.
+    pub stroke_dash_array: Option<String>,
     /// `data-*` attributes for the SVG element: `("date", "2026-01-05")` is
     /// written as `data-date="2026-01-05"`. Keys are limited to ASCII letters,
     /// digits, `-` and `_`; anything else is skipped, as are empty values.
@@ -581,7 +657,11 @@ impl Rect {
         let mut w = TagWriter::open(out, TAG_RECT);
         self.write_geometry(&mut w);
         w.color(ATTR_STROKE, ATTR_STROKE_OPACITY, self.color)
-            .opt_float(ATTR_STROKE_WIDTH, self.stroke_width);
+            .opt_float(ATTR_STROKE_WIDTH, self.stroke_width)
+            .opt_text(
+                ATTR_STROKE_DASH_ARRAY,
+                self.stroke_dash_array.as_ref().filter(|d| !d.is_empty()),
+            );
         if let Some(fill) = &self.fill {
             let fill_attr = fill_svg_attr(fill);
             w.raw(ATTR_FILL, &fill_attr);

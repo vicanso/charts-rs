@@ -1,0 +1,3 @@
+{
+  "source": "radar-beta\n  title Runtime Profile Comparison\n  axis perf[\"Latency\"], mem[\"Memory\"], eco[\"Ecosystem\"], dx[\"DX\"], sec[\"Safety\"]\n  curve rust[\"Rust\"]{96, 95, 78, 80, 97}\n  curve go[\"Go\"]{mem: 82, perf: 86, eco: 88, dx: 90, sec: 84}\n  curve ts[\"TypeScript\"]{70, 62, 96, 93, 76}\n  graticule polygon\n  min 0\n  max 100\n  ticks 5\n  showLegend true"
+}

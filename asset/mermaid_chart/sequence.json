@@ -1,0 +1,4 @@
+{
+  "theme": "dark",
+  "source": "sequenceDiagram\n  autonumber\n  title Order Checkout\n  box rgba(59, 130, 246, 0.14) Edge\n    actor User\n    participant Web\n  end\n  participant API\n  participant DB\n  User->>+Web: Place order\n  Web->>+API: POST /orders\n  API->>+DB: INSERT order\n  alt Payment OK\n    DB-->>-API: order_id\n    Note over API: Emit OrderCreated\n    API-->>-Web: 201 Created\n  else Declined\n    API-->>Web: 402 Payment Required\n  end\n  Web-->>-User: Show receipt"
+}

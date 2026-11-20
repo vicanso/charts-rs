@@ -3,7 +3,8 @@
 [中文](./README-zh.md)
 
 **Charts for Rust, without a browser.** `charts-rs` draws 29 kinds of charts
-as SVG — and as PNG, JPEG, WebP or AVIF — from a few lines of Rust or from a
+— plus 13 Mermaid diagram types with the optional `mermaid` feature —
+as SVG, and as PNG, JPEG, WebP or AVIF, from a few lines of Rust or from a
 JSON document, in the manner of Apache ECharts.
 
 [![Crates.io][crates-badge]][crates-url]
@@ -34,7 +35,7 @@ JSON document, in the manner of Apache ECharts.
 </p>
 
 <p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>All 29 chart types →</b></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>All 29 chart types &amp; Mermaid diagrams →</b></a>
   &nbsp;·&nbsp;
   <a href="https://charts.npmtrend.com/"><b>Try it in the browser →</b></a>
 </p>
@@ -46,8 +47,10 @@ JSON document, in the manner of Apache ECharts.
   and dashboards that are rendered on a server.
 - **Fast.** An SVG in well under a millisecond, a PNG in a few milliseconds
   ([benchmark](#benchmark)).
-- **29 chart types**, from bars, lines and pies to candlesticks, heatmaps,
-  sankey, gantt charts and maps — and several of them in one picture.
+- **29 chart types + 13 Mermaid diagrams**, from bars, lines and pies to
+  candlesticks, heatmaps, sankey, gantt charts and maps — plus pure-Rust,
+  zero-dependency Mermaid rendering under the optional `mermaid` feature — and
+  several of them in one picture.
 - **Rust or JSON.** A typed API, or a JSON document with the same options.
   Every key is [documented](./docs/json.md) and checked: a typo is an error
   with a hint, not a chart that silently ignores it.
@@ -121,6 +124,24 @@ let png = svg_to_png(&chart.svg().unwrap()).unwrap();
 std::fs::write("visits.png", png).unwrap();
 ```
 
+Or render a Mermaid diagram without a browser (with the `mermaid` feature; see
+[Guide](./docs/guide.md#mermaid-diagrams)):
+
+```toml
+[dependencies]
+charts-rs = { version = "2", features = ["mermaid"] }
+```
+
+```rust
+# #[cfg(feature = "mermaid")]
+# {
+use charts_rs::mermaid_to_svg;
+
+let svg = mermaid_to_svg("flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]").unwrap();
+assert!(svg.starts_with("<svg"));
+# }
+```
+
 ## Features
 
 - **Charts**: bar, horizontal bar, line, pie, radar, scatter and bubble,
@@ -129,6 +150,12 @@ std::fs::write("visits.png", png).unwrap();
   graph, parallel, theme river, histogram, polar bar, chord, gantt, map,
   lines, bullet — and `MultiChart`, which puts several on one canvas, their
   plots lined up one above the other.
+- **Mermaid** (optional `mermaid` feature): pure-Rust, zero-extra-dependency
+  SVG rendering for 13 diagram types (`flowchart` / `graph`, `sequenceDiagram`,
+  `stateDiagram` / `stateDiagram-v2`, `classDiagram` / `classDiagram-v2`,
+  `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta`,
+  `xychart-beta`, `radar-beta` / `radar`, `treemap-beta` / `treemap`),
+  inheriting the active `charts-rs` theme and composable in `MultiChart`.
 - **Series**: stacked and 100% stacked, bars mixed with lines, two y axes,
   smooth and step lines, areas, bands and error bars, mark lines, points and
   areas, regression curves, marginal histograms, density contours, missing values.
@@ -149,7 +176,7 @@ std::fs::write("visits.png", png).unwrap();
 | [Gallery](./docs/gallery.md) | Every chart type and its variants |
 | [Themes](./theme.md) | The ten built-in themes |
 | [Maps of China](./asset/geo/china/README.md) | GeoJSON of the provinces of China and of the cities of each, ready for a `MapChart` — in the repository, not in the crate |
-| [Examples](./examples) | `cargo run --example bar`, and ten more |
+| [Examples](./examples) | `cargo run --example bar`, `cargo run --example mermaid --features mermaid`, and ten more |
 | [API docs](https://docs.rs/charts-rs) | The Rust API on docs.rs |
 | [Changelog](./CHANGELOG.md) | What changed, and how to move from 1.x to 2.0 |
 | [Web demo](https://charts.npmtrend.com/) | Edit the JSON, see the chart ([source](https://github.com/vicanso/charts-rs-web)) |

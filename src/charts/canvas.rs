@@ -10,10 +10,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "mermaid")]
+use super::component::RawPath;
 use super::component::{
     Arrow, Axis, Bubble, Circle, Component, Grid, LEGEND_WIDTH, Legend, Line, Pie, Polygon,
     Polyline, Rect, Ribbon, Sector, Shape, SmoothBand, SmoothLine, SmoothLineFill, StraightLine,
-    StraightLineFill, Text, write_svg_close, write_svg_open,
+    StraightLineFill, Text, write_svg_close, write_svg_open_with_view_box,
 };
 
 use super::common::TextConfig;
@@ -44,6 +46,8 @@ pub struct Canvas {
     pub margin: Box,
     /// Emit compact SVG (see [`compact_svg`](crate::compact_svg)).
     pub compact: bool,
+    /// Logical `viewBox` dimensions when viewport `width`/`height` are scaled.
+    pub(crate) view_box: Option<(f32, f32)>,
     // The texts written over the components when the canvas is turned into
     // SVG: placed then, as a table is only as high as its rows by then.
     texts: Rc<Vec<OverlayText>>,
@@ -116,6 +120,7 @@ impl Canvas {
             components: Rc::new(RefCell::new(vec![])),
             margin: Box::default(),
             compact: false,
+            view_box: None,
             texts: Rc::new(vec![]),
         }
     }
@@ -144,6 +149,7 @@ impl Canvas {
             x: self.x,
             y: self.y,
             compact: self.compact,
+            view_box: self.view_box,
             texts: Rc::clone(&self.texts),
         }
     }
@@ -162,6 +168,7 @@ impl Canvas {
             x: self.x,
             y: self.y,
             compact: self.compact,
+            view_box: self.view_box,
             texts: Rc::clone(&self.texts),
         }
     }
@@ -471,6 +478,13 @@ impl Canvas {
         self.append(Component::Bubble(c));
         b
     }
+    /// Appends a raw SVG path component to the canvas.
+    #[cfg(feature = "mermaid")]
+    pub(crate) fn raw_path(&mut self, mut path: RawPath) {
+        path.offset.0 += self.margin.left;
+        path.offset.1 += self.margin.top;
+        self.append(Component::RawPath(path));
+    }
     /// Appends a component to the canvas.
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
@@ -485,7 +499,14 @@ impl Canvas {
     fn svg_with_prefix(&self, prefix: &str) -> Result<String> {
         let components = self.components.borrow();
         let mut out = String::with_capacity(components.len() * 128 + prefix.len() + 160);
-        write_svg_open(&mut out, self.width, self.height, self.x, self.y);
+        write_svg_open_with_view_box(
+            &mut out,
+            self.width,
+            self.height,
+            self.x,
+            self.y,
+            self.view_box,
+        );
         out.push_str(prefix);
         let mut grad_seen = HashSet::new();
         for (i, c) in components.iter().enumerate() {
@@ -495,9 +516,10 @@ impl Canvas {
             write_component(c, &mut out, &mut grad_seen)?;
         }
         // The texts over the chart come last, on top of everything else.
+        let (vb_w, vb_h) = self.view_box.unwrap_or((self.width, self.height));
         let mut written = !components.is_empty() || !prefix.is_empty();
         for text in self.texts.iter() {
-            if let Some(text) = text.text(self.width, self.height) {
+            if let Some(text) = text.text(vb_w, vb_h) {
                 if written {
                     out.push('\n');
                 }
@@ -543,6 +565,8 @@ fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<Stri
         Component::Sector(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
         Component::Ribbon(c) => out.push_str(&c.svg_with_grad_seen(Some(grad_seen))),
         Component::Shape(c) => c.write_svg(out),
+        #[cfg(feature = "mermaid")]
+        Component::RawPath(c) => c.write_svg(out),
     }
     Ok(())
 }

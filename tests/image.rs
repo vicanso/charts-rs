@@ -1349,3 +1349,65 @@ fn generate_image() {
         common::save_asset(&format!("image/{name}.png"), &buf);
     }
 }
+
+#[test]
+#[cfg(all(feature = "mermaid", feature = "png"))]
+fn generate_mermaid_image() {
+    use charts_rs::{MermaidChart, svg_to_png};
+
+    for (name, json) in [
+        (
+            "mermaid-flowchart",
+            include_str!("../asset/mermaid_chart/flowchart.json"),
+        ),
+        (
+            "mermaid-sequence",
+            include_str!("../asset/mermaid_chart/sequence.json"),
+        ),
+        (
+            "mermaid-pie",
+            include_str!("../asset/mermaid_chart/pie.json"),
+        ),
+        (
+            "mermaid-gantt",
+            include_str!("../asset/mermaid_chart/gantt.json"),
+        ),
+        (
+            "mermaid-sankey",
+            include_str!("../asset/mermaid_chart/sankey.json"),
+        ),
+        (
+            "mermaid-xychart",
+            include_str!("../asset/mermaid_chart/xychart.json"),
+        ),
+        (
+            "mermaid-state",
+            include_str!("../asset/mermaid_chart/state.json"),
+        ),
+        (
+            "mermaid-class",
+            include_str!("../asset/mermaid_chart/class.json"),
+        ),
+        ("mermaid-er", include_str!("../asset/mermaid_chart/er.json")),
+        (
+            "mermaid-mindmap",
+            include_str!("../asset/mermaid_chart/mindmap.json"),
+        ),
+        (
+            "mermaid-quadrant",
+            include_str!("../asset/mermaid_chart/quadrant.json"),
+        ),
+        (
+            "mermaid-radar",
+            include_str!("../asset/mermaid_chart/radar.json"),
+        ),
+        (
+            "mermaid-treemap",
+            include_str!("../asset/mermaid_chart/treemap.json"),
+        ),
+    ] {
+        let svg = MermaidChart::from_json(json).unwrap().svg().unwrap();
+        let buf = svg_to_png(&svg).unwrap();
+        common::save_asset(&format!("image/{name}.png"), &buf);
+    }
+}

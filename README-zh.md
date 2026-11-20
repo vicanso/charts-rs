@@ -2,7 +2,7 @@
 
 [English](./README.md)
 
-**不依赖浏览器的 Rust 图表库。** 几行 Rust 代码或一份 JSON，就能生成 29 种图表的 SVG，也可以导出 PNG、JPEG、WebP、AVIF，风格参考 Apache ECharts。
+**不依赖浏览器的 Rust 图表库。** 几行 Rust 代码或一份 JSON，就能生成 29 种图表的 SVG（开启可选 `mermaid` feature 后还可纯 Rust 渲染 13 种 Mermaid 图表），也可以导出 PNG、JPEG、WebP、AVIF，风格参考 Apache ECharts。
 
 [![Crates.io][crates-badge]][crates-url]
 [![Apache licensed][apache-badge]][apache-url]
@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>查看全部 29 种图表 →</b></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>查看全部图表与 Mermaid 示例 →</b></a>
   &nbsp;·&nbsp;
   <a href="https://charts.npmtrend.com/"><b>在线试用 →</b></a>
 </p>
@@ -41,7 +41,7 @@
 
 - **只需要一个 crate。** 不用无头浏览器，也不用 Node.js：生成图表就是一次函数调用，返回 SVG。适合在服务端生成报表、邮件、机器人消息和看板。
 - **快。** 生成 SVG 远低于 1 毫秒，生成 PNG 只需几毫秒（见[性能](#性能)）。
-- **29 种图表**，从柱状图、折线图、饼图，到蜡烛图、热力图、桑基图、甘特图、地图和流向线，还可以把多个图表拼在一张图里。
+- **29 种图表 + 13 种 Mermaid 图表**，从柱状图、折线图、饼图，到蜡烛图、热力图、桑基图、甘特图、地图和流向线；开启可选 `mermaid` feature 即可零额外依赖纯 SVG 渲染 Mermaid，还可以把多个图表拼在一张图里。
 - **Rust 或 JSON。** 可以用类型化的 API，也可以传入参数相同的 JSON。每个参数都有[文档](./docs/json-zh.md)并经过校验：写错参数名会报错并给出提示，而不是悄悄被忽略。
 - **主题与字体。** 内置十种主题，可自定义；支持加载自己的字体（TTF、OTF、TTC），包括中日韩字体，占用的内存只有字体文件本身大小。
 
@@ -117,9 +117,23 @@ std::fs::write("visits.png", png).unwrap();
 
 字体的加载与命名规则见[使用指南的字体一节](./docs/guide-zh.md#字体)。
 
+也可以开启 `mermaid` feature，在无浏览器环境下直接渲染 Mermaid 图表（用法见[使用指南的 Mermaid 一节](./docs/guide-zh.md#mermaid-图表)）：
+
+```toml
+[dependencies]
+charts-rs = { version = "2", features = ["mermaid"] }
+```
+
+```rust
+use charts_rs::mermaid_to_svg;
+
+let svg = mermaid_to_svg("flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]").unwrap();
+```
+
 ## 功能一览
 
 - **图表**：柱状图、条形图、折线图、饼图、雷达图、散点图与气泡图、蜡烛图、表格（单元格可内嵌迷你图）、热力图、漏斗图、瀑布图、日历图、仪表盘、矩形树图、箱线图、旭日图、桑基图、树图、关系图、平行坐标图、主题河流图、直方图、极坐标柱状图、和弦图、甘特图、地图、流向线、子弹图，以及把多个图表拼在同一画布上、绘图区上下对齐的 `MultiChart`。
+- **Mermaid**（可选 `mermaid` feature）：零额外依赖、纯 Rust SVG 渲染 13 种 Mermaid 图表（`flowchart` / `graph`、`sequenceDiagram`、`stateDiagram` / `stateDiagram-v2`、`classDiagram` / `classDiagram-v2`、`erDiagram`、`mindmap`、`quadrantChart`、`pie`、`gantt`、`sankey-beta`、`xychart-beta`、`radar-beta` / `radar`、`treemap-beta` / `treemap`），自动继承当前主题并可嵌入 `MultiChart`。
 - **系列**：堆叠与百分比堆叠、柱线混合、双 y 轴、平滑线与阶梯线、面积、区间带与误差线、标记线 / 标记点 / 标记区域、回归曲线、边际直方图、密度等高线、空值。
 - **坐标轴**：类目轴、数值轴、时间轴和对数轴，支持轴标题与标签格式化。
 - **外观**：主题、渐变填充、图例可放在任意一侧、数据标签自动避让、SVG 动画、悬停提示，以及可放在任意位置的版权声明与水印。
@@ -132,9 +146,10 @@ std::fs::write("visits.png", png).unwrap();
 | [使用指南](./docs/guide-zh.md) | 用 Rust 和 JSON 创建图表，坐标轴、标签、字体、图片输出 |
 | [JSON 参数参考](./docs/json-zh.md) | 每种图表的每个参数：类型、默认值、作用 |
 | [图表一览](./docs/gallery.md) | 所有图表类型及其变体 |
+| [Mermaid 架构设计](./docs/mermaid-design.md) | 纯 Rust Mermaid 引擎的架构方案、13 类图表支持范围与分期设计 |
 | [主题](./theme.md) | 十种内置主题 |
 | [中国地图数据](./asset/geo/china/README.md) | 全国各省及各省下属市的 GeoJSON，可直接用于 `MapChart`；仅在仓库中，不随 crate 发布 |
-| [示例](./examples) | `cargo run --example bar` 等 11 个可运行示例 |
+| [示例](./examples) | `cargo run --example bar`、`cargo run --example mermaid --features mermaid` 等 12 个可运行示例 |
 | [API 文档](https://docs.rs/charts-rs) | docs.rs 上的 Rust API |
 | [更新日志](./CHANGELOG.md) | 版本变更，以及从 1.x 迁移到 2.0 的说明 |
 | [在线示例](https://charts.npmtrend.com/) | 修改 JSON 即时查看图表（[源码](https://github.com/vicanso/charts-rs-web)） |

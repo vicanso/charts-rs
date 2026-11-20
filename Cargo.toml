@@ -53,6 +53,15 @@ webp = ["raster", "image/webp"]
 avif = ["raster", "image/avif"]
 # Backwards-compatible umbrella enabling every raster format.
 image-encoder = ["png", "jpeg", "webp", "avif"]
+# Pure-Rust Mermaid diagram rendering (flowchart, sequenceDiagram,
+# stateDiagram-v2, classDiagram, erDiagram, mindmap, quadrantChart, pie,
+# gantt, sankey-beta, xychart-beta, radar-beta, treemap-beta).
+# Zero extra dependencies.
+mermaid = []
+
+[[example]]
+name = "mermaid"
+required-features = ["mermaid"]
 
 [dev-dependencies]
 criterion = "0.8.2"

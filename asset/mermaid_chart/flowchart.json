@@ -1,0 +1,4 @@
+{
+  "title_text": "Request Pipeline",
+  "source": "flowchart LR\n  Client([Client]) --> GW[API Gateway]\n  GW --> Auth{JWT Valid?}\n  Auth -->|Yes| Cache[(Redis Cache)]\n  Auth -. No .-> Reject([401 Unauthorized])\n  subgraph Core [Backend Services]\n    Cache -->|Miss| DB[(Primary DB)]\n    Cache ==>|Hit| Resp[JSON Response]\n    DB --> Resp\n  end\n  style Client fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E\n  style Reject fill:#FEE2E2,stroke:#DC2626,color:#7F1D1D\n  classDef ok fill:#DCFCE7,stroke:#16A34A,color:#14532D\n  class Resp ok"
+}

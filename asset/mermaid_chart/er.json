@@ -1,0 +1,4 @@
+{
+  "title_text": "E-Commerce Schema",
+  "source": "erDiagram\n  CUSTOMER[\"Customer\"] {\n    uuid id PK\n    varchar email UK \"unique login\"\n    varchar name\n  }\n  ORDER {\n    uuid id PK\n    uuid customer_id FK\n    decimal total\n    varchar status\n  }\n  ORDER_ITEM {\n    uuid order_id PK,FK\n    uuid product_id PK,FK\n    int quantity\n  }\n  PRODUCT {\n    uuid id PK\n    varchar sku UK\n    decimal unit_price\n  }\n  CUSTOMER ||--o{ ORDER : places\n  ORDER ||--|{ ORDER_ITEM : contains\n  PRODUCT ||--o{ ORDER_ITEM : \"referenced by\""
+}

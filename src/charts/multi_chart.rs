@@ -10,6 +10,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "mermaid")]
+use super::MermaidChart;
 use super::base::{overlay_texts, reserved_margin, with_plot_edges};
 use super::canvas;
 use super::common::TextConfig;
@@ -91,6 +93,9 @@ pub enum ChildChart {
     Lines(LinesChart, Option<(f32, f32)>),
     /// A bullet chart child.
     Bullet(BulletChart, Option<(f32, f32)>),
+    /// A Mermaid diagram child (requires the `mermaid` feature).
+    #[cfg(feature = "mermaid")]
+    Mermaid(MermaidChart, Option<(f32, f32)>),
 }
 /// Several charts composed into one SVG: children are stacked vertically
 /// with `gap` between them, or placed at an explicit position.
@@ -247,6 +252,8 @@ impl MultiChart {
                     "map" => child!(MapChart, Map),
                     "lines" => child!(LinesChart, Lines),
                     "bullet" => child!(BulletChart, Bullet),
+                    #[cfg(feature = "mermaid")]
+                    "mermaid" => child!(MermaidChart, Mermaid),
                     other => {
                         return Err(canvas::Error::Params {
                             message: format!("unsupported child chart type: {other}"),
@@ -393,6 +400,16 @@ impl MultiChart {
                     ChildChartResult {
                         svg,
                         right: c.x + c.width,
+                        bottom: c.y + height,
+                    }
+                }
+                #[cfg(feature = "mermaid")]
+                ChildChart::Mermaid(c, position) => {
+                    let c = place_child!(c, position);
+                    let (svg, width, height) = c.render()?;
+                    ChildChartResult {
+                        svg,
+                        right: c.x + width,
                         bottom: c.y + height,
                     }
                 }

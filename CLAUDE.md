@@ -17,16 +17,20 @@ cargo test --features "image-encoder" <test_name>
 # Lint
 cargo clippy --features=image-encoder --all-targets --all -- --deny=warnings
 
+# Run tests and lint with Mermaid enabled
+cargo test --features "mermaid,image-encoder"
+cargo clippy --all-features --all-targets --all -- --deny=warnings
+
 # Format
 cargo fmt
 ```
 
 ## Architecture
 
-**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 29 chart types and 10 built-in themes, with an API inspired by Apache ECharts.
+**charts-rs** is a Rust library that generates SVG charts (optionally rendered to PNG/JPEG/WebP/AVIF). It supports 29 chart types (plus 13 Mermaid diagram types behind the optional `mermaid` feature) and 10 built-in themes, with an API inspired by Apache ECharts.
 
 ### Chart Types
-`BarChart`, `HorizontalBarChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, `CandlestickChart`, `TableChart`, `HeatmapChart`, `FunnelChart`, `WaterfallChart`, `MultiChart`, `CalendarChart`, `GaugeChart`, `TreemapChart`, `BoxPlotChart`, `SunburstChart`, `SankeyChart`, `TreeChart`, `GraphChart`, `ParallelChart`, `ThemeRiverChart`, `HistogramChart`, `PolarBarChart`, `ChordChart`, `GanttChart`, `MapChart`, `LinesChart`, `BulletChart`
+`BarChart`, `HorizontalBarChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, `CandlestickChart`, `TableChart`, `HeatmapChart`, `FunnelChart`, `WaterfallChart`, `MultiChart`, `CalendarChart`, `GaugeChart`, `TreemapChart`, `BoxPlotChart`, `SunburstChart`, `SankeyChart`, `TreeChart`, `GraphChart`, `ParallelChart`, `ThemeRiverChart`, `HistogramChart`, `PolarBarChart`, `ChordChart`, `GanttChart`, `MapChart`, `LinesChart`, `BulletChart`, plus `MermaidChart` (when `mermaid` feature is enabled)
 
 ### Two Creation Paths
 
@@ -64,6 +68,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 | `src/charts/color.rs` | `Color` type with hex parsing (`"#345"`, `"#ffcc00"`) and opacity |
 | `src/charts/font.rs` | Font registry and text measurement via `ttf-parser` (glyphs are read lazily from the font bytes); custom TTF/OTF loading; default: embedded `Roboto.ttf` |
 | `src/charts/encoder.rs` | Raster image encoding via `resvg` + `image` (gated on `image-encoder` feature) |
+| `src/charts/mermaid/` | `MermaidChart`, preprocessor, pure-SVG engines (Sugiyama flowchart/state/class/ER, sequence, mindmap, quadrant), and adapters (`pie`, `gantt`, `sankey`, `xychart`, `radar`, `treemap`), gated on `mermaid` feature |
 | `src/charts/base.rs` | `ChartBase` — the shared chart options, grouped by element (`title`, `sub_title`, `legend`, `x_axis`, `grid`, `series`, `tooltip`), plus `fill_theme()`/`fill_option()`/`render_header()`/`render_bar()`/`render_line()` etc.; every chart embeds it and exposes it via `Deref`/`DerefMut` (`chart.title.text` works directly) |
 
 ### Important Conventions
@@ -74,6 +79,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 - **Colors**: hex strings `"#345"` or `"#ffcc00"`; parsed in `color.rs`
 - **Box margins**: `left, top, right, bottom` (CSS-like padding/margin fields)
 - **`image-encoder` feature**: optional; enables PNG/JPEG/WebP/AVIF export
+- **`mermaid` feature**: optional (zero extra dependencies); enables pure-Rust SVG rendering for 13 Mermaid diagram types via `MermaidChart`, `mermaid_to_svg`, and `mermaid_to_svg_with_theme`
 - **Docs layout**: `README.md` / `README-zh.md` are the landing pages — nine thumbnails, the selling points, a quick start, the benchmark; keep them short. How-to detail goes into `docs/guide.md` (its Rust snippets are compiled as doctests with the README's) and `docs/guide-zh.md`, every picture into `docs/gallery.md`, every JSON key into `docs/json.md` / `docs/json-zh.md`
 - **Options in Rust and JSON**: a JSON key is the Rust field path joined with `_` (`title_font_size` ↔ `title.font.size`); the exceptions are `x_boundary_gap` (`x_axis.boundary_gap`), `x_axis_type` (`x_axis.kind`), the `axis_` prefix of y axis keys, which the Rust fields leave out, and the `series` object of a heatmap (`heatmap_series`). JSON keys never change with the Rust structs
 

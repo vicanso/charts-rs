@@ -19,6 +19,14 @@
 //! chart, calendar, gauge, bullet, treemap, box plot, sunburst, sankey, tree,
 //! graph, parallel, theme river, histogram, polar bar, chord, gantt and map.
 //!
+//! With the optional `mermaid` feature enabled (zero extra dependencies), it
+//! also renders 13 Mermaid diagram types (`flowchart` / `graph`,
+//! `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`, `classDiagram` /
+//! `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`,
+//! `sankey-beta`, `xychart-beta`, `radar-beta` / `radar`, and
+//! `treemap-beta` / `treemap`) to pure SVG via `MermaidChart`, `mermaid_to_svg`,
+//! and `mermaid_to_svg_with_theme`.
+//!
 //! It supports ten built-in themes and is very easy to use.
 //! Each attribute can be customized, it can be saved as svg, png, jpeg,
 //! webp or avif.
@@ -417,6 +425,20 @@
 //!     ..Default::default()
 //! }]);
 //! println!("{}", tree_chart.svg().unwrap());
+//! ```
+//!
+//! # Mermaid diagrams
+//!
+//! With the optional `mermaid` feature enabled (`charts-rs = { version = "2", features = ["mermaid"] }`),
+//! `mermaid_to_svg`, `mermaid_to_svg_with_theme`, and `MermaidChart` render 13 Mermaid
+//! diagram types directly to pure SVG:
+//! ```rust
+//! # #[cfg(feature = "mermaid")]
+//! # {
+//! use charts_rs::mermaid_to_svg;
+//! let svg = mermaid_to_svg("flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]").unwrap();
+//! assert!(svg.starts_with("<svg"));
+//! # }
 //! ```
 //!
 //! # Compatibility

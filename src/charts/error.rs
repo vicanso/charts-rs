@@ -74,6 +74,15 @@ pub enum Error {
         /// The underlying encoding error.
         source: image::ImageError,
     },
+
+    /// Invalid or unsupported Mermaid diagram input.
+    #[cfg(feature = "mermaid")]
+    Mermaid {
+        /// 1-based source line number where the error occurred, if known.
+        line: Option<usize>,
+        /// What was invalid or unsupported.
+        message: String,
+    },
 }
 
 impl fmt::Display for Error {
@@ -93,6 +102,11 @@ impl fmt::Display for Error {
             Error::Parse { source } => write!(f, "Error to parse: {source}"),
             #[cfg(feature = "raster")]
             Error::Image { source } => write!(f, "Encode fail: {source}"),
+            #[cfg(feature = "mermaid")]
+            Error::Mermaid { line, message } => match line {
+                Some(line) => write!(f, "Mermaid error at line {line}: {message}"),
+                None => write!(f, "Mermaid error: {message}"),
+            },
         }
     }
 }

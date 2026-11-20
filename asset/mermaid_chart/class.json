@@ -1,0 +1,4 @@
+{
+  "title_text": "Order Domain Model",
+  "source": "classDiagram\n  namespace Commerce {\n    class Payable {\n      <<interface>>\n      +pay(amount Decimal) bool*\n    }\n    class Order {\n      +UUID id\n      -OrderStatus status\n      +create()$ Order\n      +total() Decimal\n    }\n    class OrderItem {\n      +String sku\n      +int qty\n      +Decimal price\n    }\n  }\n  class PaymentService {\n    <<service>>\n    +pay(amount Decimal) bool\n    +refund(orderId UUID) void\n  }\n  Payable <|.. PaymentService : implements\n  Order \"1\" *-- \"1..*\" OrderItem : contains\n  Order ..> PaymentService : uses\n  note for Order \"Aggregate root\""
+}

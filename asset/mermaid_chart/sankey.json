@@ -1,0 +1,4 @@
+{
+  "title_text": "Energy Flow",
+  "source": "sankey-beta\nSolar,Electricity,45\nWind,Electricity,35\nGas,Electricity,20\nGas,Heat,30\nElectricity,Industry,40\nElectricity,Residential,38\nElectricity,Transport,22\nHeat,Residential,18\nHeat,Industry,12"
+}

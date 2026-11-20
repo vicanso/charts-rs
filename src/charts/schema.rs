@@ -612,6 +612,37 @@ pub(crate) static TABLE_FIELDS: &[Field] = &[
     f("compact", Kind::Bool),
 ];
 
+/// The Mermaid chart does not use `series_list` / axes from `ChartBase`, so
+/// this is its full JSON field set.
+#[cfg_attr(not(feature = "mermaid"), allow(dead_code))]
+pub(crate) static MERMAID_FIELDS: &[Field] = &[
+    f("source", Kind::String),
+    f("theme", Kind::String),
+    f("width", Kind::Size),
+    f("height", Kind::Size),
+    f("x", Kind::Number),
+    f("y", Kind::Number),
+    f("margin", Kind::Margin),
+    f("font_family", Kind::String),
+    f("background_color", Kind::Color),
+    f("title_text", Kind::String),
+    f("title_font_size", Kind::Number),
+    f("title_font_color", Kind::Color),
+    f("title_font_weight", Kind::String),
+    f("title_margin", Kind::Margin),
+    f("title_align", Kind::Enum(ALIGN)),
+    f("title_height", Kind::Number),
+    f("sub_title_text", Kind::String),
+    f("sub_title_font_size", Kind::Number),
+    f("sub_title_font_color", Kind::Color),
+    f("sub_title_font_weight", Kind::String),
+    f("sub_title_margin", Kind::Margin),
+    f("sub_title_align", Kind::Enum(ALIGN)),
+    f("sub_title_height", Kind::Number),
+    f("texts", Kind::ArrayOf(TEXT_FIELDS)),
+    f("compact", Kind::Bool),
+];
+
 pub(crate) static THEME_RIVER_FIELDS: &[Field] = &[f("stream_opacity", Kind::Number)];
 
 pub(crate) static TREE_FIELDS: &[Field] = &[
@@ -1046,6 +1077,8 @@ mod tests {
             chart!("tree", TreeChart, BASE_FIELDS, TREE_FIELDS),
             chart!("treemap", TreemapChart, BASE_FIELDS, TREEMAP_FIELDS),
             chart!("waterfall", WaterfallChart, BASE_FIELDS, WATERFALL_FIELDS),
+            #[cfg(feature = "mermaid")]
+            chart!("mermaid", MermaidChart, MERMAID_FIELDS),
         ]
     }
 
@@ -1295,6 +1328,14 @@ mod tests {
                     check_reference(&reference, chart, &own, &mut seen, &mut errors);
                 }
             }
+            #[cfg(not(feature = "mermaid"))]
+            check_reference(
+                &reference,
+                "mermaid",
+                MERMAID_FIELDS,
+                &mut seen,
+                &mut errors,
+            );
             check_reference(&reference, "multi", MULTI_FIELDS, &mut seen, &mut errors);
             check_reference(
                 &reference,

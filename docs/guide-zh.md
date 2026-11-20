@@ -8,7 +8,7 @@
 - [输出](#输出)：[图片](#图片)、[精简 SVG](#精简-svg)
 - [数据与标签](#数据与标签)：[空值](#空值数据点)、[标签格式化](#标签格式化占位符)、[标签防重叠](#数据标签防重叠)、[版权声明与水印](#版权声明与水印)
 - [坐标轴](#坐标轴)：[数值轴与时间轴](#数值轴与时间轴)、[坐标轴标题](#坐标轴标题)
-- [图表](#图表)：[折线区间带](#折线区间带)、[气泡图](#气泡图)、[边际直方图](#边际直方图)、[密度等高线](#密度等高线)、[直方图](#直方图)、[极坐标柱状图](#极坐标柱状图)、[和弦图](#和弦图)、[甘特图](#甘特图)、[地图](#地图)、[流向线](#流向线)、[子弹图](#子弹图)、[表格中的迷你图](#表格中的迷你图)、[上下排列的图表](#上下排列的图表)
+- [图表](#图表)：[折线区间带](#折线区间带)、[气泡图](#气泡图)、[边际直方图](#边际直方图)、[密度等高线](#密度等高线)、[直方图](#直方图)、[极坐标柱状图](#极坐标柱状图)、[和弦图](#和弦图)、[甘特图](#甘特图)、[地图](#地图)、[流向线](#流向线)、[子弹图](#子弹图)、[表格中的迷你图](#表格中的迷你图)、[上下排列的图表](#上下排列的图表)、[Mermaid 图表](#mermaid-图表)
 - [字体](#字体)
 
 ## 创建图表
@@ -136,6 +136,7 @@ cargo run --example polar_bar  # 极坐标柱状图：环绕堆叠的柱，以�
 cargo run --example chord      # 和弦图：节点之间的流量（渐变色带）
 cargo run --example gantt      # 甘特图：带进度、里程碑和当前日期的项目计划
 cargo run --example map        # 地图：区域（GeoJSON）按数值分段着色
+cargo run --example mermaid --features mermaid  # Mermaid 图表（flowchart、sequenceDiagram 等）
 ```
 
 ## 输出
@@ -576,6 +577,31 @@ Rust：`table.sparklines.push(TableSparkline { indexes: vec![1, 2], values: vec!
 - 子图表自己设置了更大的 `grid_left` 时以它为准，其它子图表跟着对齐。
 
 图库中的完整示例见 `asset/multi_chart/aligned.json`：一个月的价格和均线、下方的成交量、再下方的 MACD。成交量柱和 MACD 柱按当天涨跌着红色或绿色（系列的 `colors`，每根柱一个颜色），调色板第一个颜色（图例里 K 线和柱子用的颜色）设为灰色。
+
+### Mermaid 图表
+
+在 `Cargo.toml` 中开启可选 feature `mermaid`，即可无浏览器纯 Rust 渲染 Mermaid 图表（支持 `flowchart` / `graph`、`sequenceDiagram`、`stateDiagram` / `stateDiagram-v2`、`classDiagram` / `classDiagram-v2`、`erDiagram`、`mindmap`、`quadrantChart`、`pie`、`gantt`、`sankey-beta`、`xychart-beta`、`radar-beta` / `radar` 与 `treemap-beta` / `treemap`）：
+
+```toml
+[dependencies]
+charts-rs = { version = "2", features = ["mermaid"] }
+```
+
+```rust
+use charts_rs::{mermaid_to_svg, MermaidChart, THEME_DARK};
+
+let svg = mermaid_to_svg("flowchart LR\n  A[Start] --> B{Ready?}\n  B -->|Yes| C((Done))").unwrap();
+let mut chart = MermaidChart::new_with_theme(
+    "sequenceDiagram\n  Alice->>Bob: Hello!\n  Bob-->>Alice: Hi!",
+    THEME_DARK,
+);
+chart.width = 720.0;
+let _themed_svg = chart.svg().unwrap();
+```
+
+- `flowchart`、`sequenceDiagram`、`stateDiagram`、`classDiagram`、`erDiagram` 与 `mindmap` 在 `width`/`height` 为 `0` 时按内容自适应大小；显式设置宽高时通过 `viewBox` 等比缩放。
+- 默认继承 `charts-rs` 当前主题配色，同时支持 Mermaid 的 `style`、`classDef`、`class`、`:::`、`linkStyle`、YAML frontmatter `title` 与 `%%{init: ...}%%`。
+- `MermaidChart` 实现了 `Chart` trait，并可直接作为 `"type": "mermaid"` 嵌入 `MultiChart`。
 
 ## 字体
 

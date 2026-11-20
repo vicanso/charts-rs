@@ -1,0 +1,65 @@
+<svg width="640" height="500" viewBox="0 0 640 500" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="640" height="500" fill="#FFFFFF"/>
+<text font-size="18" x="165.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
+Feature Impact vs Engineering Effort
+</text>
+<rect x="334" y="49" width="277" height="202" fill="#ECEFF9"/>
+<text font-size="13" x="472.5" y="67" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#747474">
+Major Bets
+</text>
+<rect x="57" y="49" width="277" height="202" fill="#F3F9F0"/>
+<text font-size="13" x="195.5" y="67" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#747474">
+Quick Wins
+</text>
+<rect x="57" y="251" width="277" height="202" fill="#FEF9ED"/>
+<text font-size="13" x="195.5" y="269" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#747474">
+Fill-Ins
+</text>
+<rect x="334" y="251" width="277" height="202" fill="#FDEEEE"/>
+<text font-size="13" x="472.5" y="269" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#747474">
+Defer
+</text>
+<line stroke-width="1.3" x1="334" y1="49" x2="334" y2="453" stroke="#7D8FC6" stroke-dasharray="4,4"/>
+<line stroke-width="1.3" x1="57" y1="251" x2="611" y2="251" stroke="#7D8FC6" stroke-dasharray="4,4"/>
+<rect x="57" y="49" width="554" height="404" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<text font-size="13" x="195.5" y="475" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Low Effort
+</text>
+<text font-size="13" x="472.5" y="475" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+High Effort
+</text>
+<text font-size="13" x="33" y="352" font-weight="bold" transform="rotate(-90 33 352)" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Low Impact
+</text>
+<text font-size="13" x="33" y="150" font-weight="bold" transform="rotate(-90 33 150)" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+High Impact
+</text>
+<circle cx="190" cy="105.6" r="9" stroke-width="2" stroke="#FFFFFF" fill="#E11D48"/>
+<text font-size="12" x="190" y="129.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PNG Rasterizer
+</text>
+<circle cx="250.9" cy="137.9" r="9" stroke-width="2" stroke="#FFFFFF" fill="#E11D48"/>
+<text font-size="12" x="250.9" y="161.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Mindmap Engine
+</text>
+<circle cx="178.9" cy="202.5" r="6.5" stroke-width="1.8" stroke="#FFFFFF" fill="#2563EB"/>
+<text font-size="12" x="178.9" y="181.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Quadrant Matrix
+</text>
+<circle cx="433.7" cy="121.7" r="8" stroke-width="1.8" stroke="#FFFFFF" fill="#059669"/>
+<text font-size="12" x="433.7" y="99.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Dark Theme Polish
+</text>
+<circle cx="478" cy="356" r="6.5" stroke-width="1.8" stroke="#FFFFFF" fill="#64748B"/>
+<text font-size="12" x="478" y="335" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Legacy Export
+</text>
+<circle cx="223.2" cy="315.6" r="6.5" stroke-width="1.8" stroke="#FFFFFF" fill="#D97706"/>
+<text font-size="12" x="223.2" y="294.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+CLI Benchmark
+</text>
+<circle cx="522.4" cy="178.3" r="6.5" stroke-width="1.8" stroke="#FFFFFF" fill="#7C3AED"/>
+<text font-size="12" x="522.4" y="157.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Interactive JS Bridge
+</text>
+</svg>

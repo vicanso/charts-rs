@@ -1,0 +1,55 @@
+<svg width="700" height="480" viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="700" height="480" fill="#FFFFFF"/>
+<text font-size="18" x="211" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Monthly Cloud Spend Breakdown
+</text>
+<rect x="7" y="42" width="405.4" height="202.3" fill="#6D85CE" data-series="API Cluster" data-value="420"/>
+<text font-size="14" x="209.7" y="134.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+API Cluster
+</text>
+<text font-size="11.9" x="209.7" y="153" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+420
+</text>
+<rect x="7" y="246.3" width="249.4" height="226.7" fill="#6D85CE" data-series="Worker Nodes" data-value="290"/>
+<text font-size="14" x="131.7" y="351.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Worker Nodes
+</text>
+<text font-size="11.9" x="131.7" y="369.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+290
+</text>
+<rect x="258.4" y="246.3" width="154" height="226.7" fill="#0EA5E9" data-series="GPU Inference" data-value="180"/>
+<text font-size="14" x="335.4" y="351.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+GPU Inference
+</text>
+<text font-size="11.9" x="335.4" y="369.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+180
+</text>
+<rect x="416.4" y="42" width="162.8" height="249.2" fill="#A1D389" data-series="Object Store" data-value="210"/>
+<text font-size="14" x="497.8" y="158.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Object Store
+</text>
+<text font-size="11.9" x="497.8" y="176.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+210
+</text>
+<rect x="581.2" y="42" width="111.8" height="249.2" fill="#A1D389" data-series="Block Volumes" data-value="145"/>
+<text font-size="14" x="637.1" y="158.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Block Volumes
+</text>
+<text font-size="11.9" x="637.1" y="176.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+145
+</text>
+<rect x="416.4" y="295.2" width="178.3" height="177.8" fill="#FAD071" data-series="CDN Edge" data-value="165"/>
+<text font-size="14" x="505.5" y="375.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+CDN Edge
+</text>
+<text font-size="11.9" x="505.5" y="393.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+165
+</text>
+<rect x="596.7" y="295.2" width="96.3" height="177.8" fill="#FAD071" data-series="Egress" data-value="90"/>
+<text font-size="14" x="644.8" y="375.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Egress
+</text>
+<text font-size="11.9" x="644.8" y="393.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+90
+</text>
+</svg>

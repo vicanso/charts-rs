@@ -1,0 +1,113 @@
+<svg width="781" height="534" viewBox="0 0 781 534" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="781" height="534" fill="#FFFFFF"/>
+<text font-size="18" x="304" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
+Order Domain Model
+</text>
+<rect x="230" y="59" width="522" height="446" rx="6" ry="6" stroke="#57648F" stroke-width="1.2" fill="#F7F9FC"/>
+<text font-size="13" x="491" y="80" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Commerce
+</text>
+<line stroke-width="1.2" x1="623" y1="166.5" x2="605" y2="166.5" stroke="#A97D20" stroke-dasharray="4,3"/>
+<path d="M301.6 172 L156.5 351" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M301.6 172 L298.5 186.2 L288.4 178 Z" transform="translate(5,35)" fill="#FFFFFF" stroke-width="1.7" stroke="#5C5D62" stroke-linejoin="round"/>
+<rect x="195.1" y="285" width="78" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="234.1" y="296.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+implements
+</text>
+<path d="M549.1 199 L591.6 349" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M549.1 199 L556.5 204.7 L553.2 213.4 L545.9 207.7 Z" transform="translate(5,35)" fill="#5C5D62" stroke-width="1.2" stroke="#5C5D62" stroke-linejoin="round"/>
+<rect x="567.2" y="244" width="12" height="19" rx="3" ry="3" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="11" x="573.2" y="253.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+1
+</text>
+<rect x="564.6" y="355" width="26" height="19" rx="3" ry="3" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="11" x="577.6" y="364.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+1..*
+</text>
+<rect x="545.4" y="297.5" width="60" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="575.4" y="309" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+contains
+</text>
+<path d="M460 177.1 L193 351" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M198.4 340.9 L193 351 L204.4 350.2" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="312" y="287.5" width="39" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="331.5" y="299" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+uses
+</text>
+<rect x="248" y="126" width="183" height="81" rx="4" ry="4" fill="#EAEEF8"/>
+<rect x="248" y="126" width="183" height="51" rx="4" ry="4" fill="#D5DCEE"/>
+<rect x="248" y="173" width="183" height="4" fill="#D5DCEE"/>
+<text font-size="11.5" x="339.5" y="141" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#4B5573">
+&lt;&lt;interface&gt;&gt;
+</text>
+<text font-size="13.5" x="339.5" y="160.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Payable
+</text>
+<line stroke-width="1" x1="248" y1="177" x2="431" y2="177" stroke="#526AB3"/>
+<text font-size="12" x="262" y="192" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#4B5677">
++pay(amount Decimal) bool
+</text>
+<rect x="248" y="126" width="183" height="81" rx="4" ry="4" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="465" y="99" width="140" height="135" rx="4" ry="4" fill="#EAEEF8"/>
+<rect x="465" y="99" width="140" height="35" rx="4" ry="4" fill="#D5DCEE"/>
+<rect x="465" y="130" width="140" height="4" fill="#D5DCEE"/>
+<text font-size="13.5" x="535" y="116.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Order
+</text>
+<line stroke-width="1" x1="465" y1="134" x2="605" y2="134" stroke="#526AB3"/>
+<text font-size="12" x="479" y="149" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++UUID id
+</text>
+<text font-size="12" x="479" y="169" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+-OrderStatus status
+</text>
+<line stroke-width="1" x1="465" y1="184" x2="605" y2="184" stroke="#526AB3"/>
+<text font-size="12" x="479" y="199" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++create() Order
+</text>
+<line stroke-width="1" x1="479" y1="204.8" x2="564.4" y2="204.8" stroke="#464646"/>
+<text font-size="12" x="479" y="219" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++total() Decimal
+</text>
+<rect x="465" y="99" width="140" height="135" rx="4" ry="4" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="555.5" y="384" width="112" height="105" rx="4" ry="4" fill="#EAEEF8"/>
+<rect x="555.5" y="384" width="112" height="35" rx="4" ry="4" fill="#D5DCEE"/>
+<rect x="555.5" y="415" width="112" height="4" fill="#D5DCEE"/>
+<text font-size="13.5" x="611.5" y="401.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+OrderItem
+</text>
+<line stroke-width="1" x1="555.5" y1="419" x2="667.5" y2="419" stroke="#526AB3"/>
+<text font-size="12" x="569.5" y="434" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++String sku
+</text>
+<text font-size="12" x="569.5" y="454" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++int qty
+</text>
+<text font-size="12" x="569.5" y="474" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++Decimal price
+</text>
+<rect x="555.5" y="384" width="112" height="105" rx="4" ry="4" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="29" y="386" width="183" height="101" rx="4" ry="4" fill="#EAEEF8"/>
+<rect x="29" y="386" width="183" height="51" rx="4" ry="4" fill="#D5DCEE"/>
+<rect x="29" y="433" width="183" height="4" fill="#D5DCEE"/>
+<text font-size="11.5" x="120.5" y="401" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#4B5573">
+&lt;&lt;service&gt;&gt;
+</text>
+<text font-size="13.5" x="120.5" y="420.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PaymentService
+</text>
+<line stroke-width="1" x1="29" y1="437" x2="212" y2="437" stroke="#526AB3"/>
+<text font-size="12" x="43" y="452" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++pay(amount Decimal) bool
+</text>
+<text font-size="12" x="43" y="472" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++refund(orderId UUID) void
+</text>
+<rect x="29" y="386" width="183" height="101" rx="4" ry="4" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<path d="M618 114.5 L719 114.5 L729 124.5 L729 148.5 L618 148.5 Z" transform="translate(5,35)" fill="#FEF5D0" stroke-width="1.2" stroke="#A97D20" stroke-linejoin="round"/>
+<line stroke-width="1" x1="724" y1="149.5" x2="724" y2="159.5" stroke="#A97D20"/>
+<line stroke-width="1" x1="724" y1="159.5" x2="734" y2="159.5" stroke="#A97D20"/>
+<text font-size="12" x="678.5" y="166.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Aggregate root
+</text>
+</svg>

@@ -14,7 +14,7 @@ Every chart can be created from a JSON document with its `from_json`, e.g. `BarC
 
 - [Value types](#value-types)
 - [Common options](#common-options)
-- Charts: [Bar](#bar), [Horizontal bar](#horizontal-bar), [Line](#line), [Pie](#pie), [Radar](#radar), [Scatter](#scatter), [Candlestick](#candlestick), [Table](#table), [Heatmap](#heatmap), [Funnel](#funnel), [Waterfall](#waterfall), [Calendar](#calendar), [Gauge](#gauge), [Bullet](#bullet), [Treemap](#treemap), [Box plot](#box-plot), [Sunburst](#sunburst), [Sankey](#sankey), [Tree](#tree), [Graph](#graph), [Parallel](#parallel), [Theme river](#theme-river), [Histogram](#histogram), [Polar bar](#polar-bar), [Chord](#chord), [Gantt](#gantt), [Lines](#lines), [Map](#map), [Multi chart](#multi-chart)
+- Charts: [Bar](#bar), [Horizontal bar](#horizontal-bar), [Line](#line), [Pie](#pie), [Radar](#radar), [Scatter](#scatter), [Candlestick](#candlestick), [Table](#table), [Heatmap](#heatmap), [Funnel](#funnel), [Waterfall](#waterfall), [Calendar](#calendar), [Gauge](#gauge), [Bullet](#bullet), [Treemap](#treemap), [Box plot](#box-plot), [Sunburst](#sunburst), [Sankey](#sankey), [Tree](#tree), [Graph](#graph), [Parallel](#parallel), [Theme river](#theme-river), [Histogram](#histogram), [Polar bar](#polar-bar), [Chord](#chord), [Gantt](#gantt), [Lines](#lines), [Map](#map), [Mermaid](#mermaid), [Multi chart](#multi-chart)
 - [Keys for tools](#keys-for-tools)
 
 ## Value types
@@ -288,6 +288,7 @@ The same two lists as a band: a point has an error bar where both of its bounds 
 
 <!-- keys: base.texts -->
 <!-- keys: table.texts = base.texts -->
+<!-- keys: mermaid.texts = base.texts -->
 <!-- keys: multi.texts = base.texts -->
 
 A text is placed by its distances from the edges of the chart, in pixels. With a `left` it starts there, with a `right` it ends there, and with neither it is centered; `top` and `bottom` do the same from above and from below. It is written last, over everything else — and over a part of the chart, where it is put on one. A text that is to have room of its own, such as a line of sources below the axis, asks for it with `reserve`.
@@ -1398,6 +1399,49 @@ The names are written in the font of the x axis, and the scale below each row in
 }
 ```
 
+## Mermaid
+
+`MermaidChart::from_json` (requires the `mermaid` feature) — A Mermaid diagram (`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`, `classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta` or `treemap-beta`). It does not use `series_list` or `x_axis_data`: the keys below are all it accepts.
+
+<!-- keys: mermaid -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `source` | string |  | Mermaid diagram source text. |
+| `theme` | string | `"light"` | Name of the theme: `light`, `dark`, `ant`, `vintage`, `shine`, `walden`, `westeros`, `chalk`, `grafana`, `shadcn`, or one registered with `add_theme`. |
+| `width` | number > 0 | auto | Target width in pixels; when omitted, graph and diagram engines (`flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`, `mindmap`) size automatically to the diagram content. |
+| `height` | number > 0 | auto | Target height in pixels; when omitted, graph and diagram engines (`flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`, `mindmap`) size automatically to the diagram content. |
+| `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
+| `y` | number | `0` | Vertical offset of the chart inside the SVG. |
+| `margin` | margin | theme | Margin around the diagram. |
+| `font_family` | string | `"Roboto"` | Font family of every text. |
+| `background_color` | color | theme | Background color of the diagram. |
+| `title_text` | string |  | Title text; overrides any frontmatter or diagram title. |
+| `title_font_size` | number | `18` | Title font size. |
+| `title_font_color` | color | theme | Title font color. |
+| `title_font_weight` | string | `"bold"` | Title font weight. |
+| `title_margin` | margin |  | Margin around the title. |
+| `title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the title. |
+| `title_height` | number | `45` | Height reserved for the title row. |
+| `sub_title_text` | string |  | Sub-title text, drawn under the title. |
+| `sub_title_font_size` | number | `14` | Sub-title font size. |
+| `sub_title_font_color` | color | theme | Sub-title font color. |
+| `sub_title_font_weight` | string |  | Sub-title font weight. |
+| `sub_title_margin` | margin |  | Margin around the sub-title. |
+| `sub_title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the sub-title. |
+| `sub_title_height` | number | `20` | Height reserved for the sub-title row. |
+| `texts` | object[] |  | Texts written over the diagram: a copyright line, a watermark. See [`texts[]`](#texts). |
+| `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
+
+<!-- example: mermaid -->
+
+```json
+{
+  "title_text": "Request Flow",
+  "source": "flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(Database)]"
+}
+```
+
 ## Multi chart
 
 `MultiChart::from_json` — Several charts in one SVG, one below the other or at positions of their own. It does not take the common options.
@@ -1421,7 +1465,7 @@ The names are written in the font of the x axis, and the scale below each row in
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `type` | string |  | Type of the child: `bar` (the default), `line`, `horizontal_bar`, `pie`, `radar`, `table`, `scatter`, `candlestick`, `heatmap`, `funnel`, `waterfall`, `calendar`, `gauge`, `treemap`, `box_plot`, `sunburst`, `sankey`, `tree`, `graph`, `parallel`, `theme_river`, `histogram`, `polar_bar`, `chord`, `gantt`, `map`, `lines` or `bullet`. |
+| `type` | string |  | Type of the child: `bar` (the default), `line`, `horizontal_bar`, `pie`, `radar`, `table`, `scatter`, `candlestick`, `heatmap`, `funnel`, `waterfall`, `calendar`, `gauge`, `treemap`, `box_plot`, `sunburst`, `sankey`, `tree`, `graph`, `parallel`, `theme_river`, `histogram`, `polar_bar`, `chord`, `gantt`, `map`, `lines`, `bullet` or `mermaid` (with the `mermaid` feature). |
 | `x` | number |  | Horizontal position of the child; with `x` or `y` set, the child is placed there instead of below the previous one. |
 | `y` | number |  | Vertical position of the child. |
 

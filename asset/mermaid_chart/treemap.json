@@ -1,0 +1,3 @@
+{
+  "source": "treemap-beta\n  title Monthly Cloud Spend Breakdown\n  \"Compute\"\n    \"API Cluster\": 420\n    \"Worker Nodes\": 290\n    \"GPU Inference\": 180:::highlight\n  \"Storage\"\n    \"Object Store\": 210\n    \"Block Volumes\": 145\n  \"Networking\"\n    \"CDN Edge\": 165\n    \"Egress\": 90\n  classDef highlight fill:#0ea5e9"
+}

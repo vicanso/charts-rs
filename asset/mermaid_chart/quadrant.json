@@ -1,0 +1,3 @@
+{
+  "source": "quadrantChart\n  title Feature Impact vs Engineering Effort\n  x-axis Low Effort --> High Effort\n  y-axis Low Impact --> High Impact\n  quadrant-1 Major Bets\n  quadrant-2 Quick Wins\n  quadrant-3 Fill-Ins\n  quadrant-4 Defer\n  classDef priority color:#e11d48,radius:9,stroke-color:#ffffff,stroke-width:2px\n  PNG Rasterizer:::priority: [0.24, 0.86]\n  Mindmap Engine:::priority: [0.35, 0.78]\n  Quadrant Matrix: [0.22, 0.62] color:#2563eb\n  Dark Theme Polish: [0.68, 0.82] color:#059669,radius:8\n  Legacy Export: [0.76, 0.24] color:#64748b\n  CLI Benchmark: [0.30, 0.34] color:#d97706\n  Interactive JS Bridge: [0.84, 0.68] color:#7c3aed"
+}

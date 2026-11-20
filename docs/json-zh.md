@@ -14,7 +14,7 @@
 
 - [值类型](#值类型)
 - [通用参数](#通用参数)
-- 图表：[Bar](#bar)、[Horizontal bar](#horizontal-bar)、[Line](#line)、[Pie](#pie)、[Radar](#radar)、[Scatter](#scatter)、[Candlestick](#candlestick)、[Table](#table)、[Heatmap](#heatmap)、[Funnel](#funnel)、[Waterfall](#waterfall)、[Calendar](#calendar)、[Gauge](#gauge)、[Bullet](#bullet)、[Treemap](#treemap)、[Box plot](#box-plot)、[Sunburst](#sunburst)、[Sankey](#sankey)、[Tree](#tree)、[Graph](#graph)、[Parallel](#parallel)、[Theme river](#theme-river)、[Histogram](#histogram)、[Polar bar](#polar-bar)、[Chord](#chord)、[Gantt](#gantt)、[Lines](#lines)、[Map](#map)、[Multi chart](#multi-chart)
+- 图表：[Bar](#bar)、[Horizontal bar](#horizontal-bar)、[Line](#line)、[Pie](#pie)、[Radar](#radar)、[Scatter](#scatter)、[Candlestick](#candlestick)、[Table](#table)、[Heatmap](#heatmap)、[Funnel](#funnel)、[Waterfall](#waterfall)、[Calendar](#calendar)、[Gauge](#gauge)、[Bullet](#bullet)、[Treemap](#treemap)、[Box plot](#box-plot)、[Sunburst](#sunburst)、[Sankey](#sankey)、[Tree](#tree)、[Graph](#graph)、[Parallel](#parallel)、[Theme river](#theme-river)、[Histogram](#histogram)、[Polar bar](#polar-bar)、[Chord](#chord)、[Gantt](#gantt)、[Lines](#lines)、[Map](#map)、[Mermaid](#mermaid)、[Multi chart](#multi-chart)
 - [供工具使用的键](#供工具使用的键)
 
 ## 值类型
@@ -288,6 +288,7 @@
 
 <!-- keys: base.texts -->
 <!-- keys: table.texts = base.texts -->
+<!-- keys: mermaid.texts = base.texts -->
 <!-- keys: multi.texts = base.texts -->
 
 文字按它到图表各边的距离（像素）定位。给出 `left` 时从该处开始，给出 `right` 时在该处结束，两者都不给则水平居中；`top` 与 `bottom` 在垂直方向同理。文字最后绘制，位于其它内容之上——放在图表内容所在的位置时，会盖住那部分内容。需要独占空间的文字（例如坐标轴下方的一行数据来源），用 `reserve` 让图表为它让出位置。
@@ -1398,6 +1399,49 @@
 }
 ```
 
+## Mermaid
+
+`MermaidChart::from_json`（需启用 `mermaid` feature）— 渲染 Mermaid 图表（`flowchart` / `graph`、`sequenceDiagram`、`stateDiagram` / `stateDiagram-v2`、`classDiagram` / `classDiagram-v2`、`erDiagram`、`mindmap`、`quadrantChart`、`pie`、`gantt`、`sankey-beta`、`xychart-beta`、`radar-beta`、`treemap-beta`）。它不使用 `series_list` 与 `x_axis_data`，下面列出的就是它接受的全部键。
+
+<!-- keys: mermaid -->
+
+| 键 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `source` | 字符串 |  | Mermaid 图表源码文本。 |
+| `theme` | 字符串 | `"light"` | 主题名称：`light`、`dark`、`ant`、`vintage`、`shine`、`walden`、`westeros`、`chalk`、`grafana`、`shadcn`，或通过 `add_theme` 注册的主题。 |
+| `width` | 正数 | 自动 | 目标宽度（像素）；不设置时图结构与树形引擎（`flowchart`、`sequenceDiagram`、`stateDiagram`、`classDiagram`、`erDiagram`、`mindmap`）按内容自动计算宽度。 |
+| `height` | 正数 | 自动 | 目标高度（像素）；不设置时图结构与树形引擎（`flowchart`、`sequenceDiagram`、`stateDiagram`、`classDiagram`、`erDiagram`、`mindmap`）按内容自动计算高度。 |
+| `x` | 数字 | `0` | 图表在 SVG 中的水平偏移。 |
+| `y` | 数字 | `0` | 图表在 SVG 中的垂直偏移。 |
+| `margin` | 边距 | 主题 | 图表四周的外边距。 |
+| `font_family` | 字符串 | `"Roboto"` | 所有文字使用的字体。 |
+| `background_color` | 颜色 | 主题 | 图表背景色。 |
+| `title_text` | 字符串 |  | 标题文字；会覆盖源码 frontmatter 或内部声明的标题。 |
+| `title_font_size` | 数字 | `18` | 标题字号。 |
+| `title_font_color` | 颜色 | 主题 | 标题字体颜色。 |
+| `title_font_weight` | 字符串 | `"bold"` | 标题字重。 |
+| `title_margin` | 边距 |  | 标题四周的边距。 |
+| `title_align` | `"left"` / `"center"` / `"right"` | `"center"` | 标题的水平对齐方式。 |
+| `title_height` | 数字 | `45` | 标题行占用的高度。 |
+| `sub_title_text` | 字符串 |  | 副标题文字，显示在标题下方。 |
+| `sub_title_font_size` | 数字 | `14` | 副标题字号。 |
+| `sub_title_font_color` | 颜色 | 主题 | 副标题字体颜色。 |
+| `sub_title_font_weight` | 字符串 |  | 副标题字重。 |
+| `sub_title_margin` | 边距 |  | 副标题四周的边距。 |
+| `sub_title_align` | `"left"` / `"center"` / `"right"` | `"center"` | 副标题的水平对齐方式。 |
+| `sub_title_height` | 数字 | `20` | 副标题行占用的高度。 |
+| `texts` | 对象数组 |  | 叠加在图表上的文字：版权声明、水印等。见 [`texts[]`](#texts)。 |
+| `compact` | 布尔 | `false` | 输出精简的 SVG：画面相同，体积通常小 20–30%。 |
+
+<!-- example: mermaid -->
+
+```json
+{
+  "title_text": "请求链路",
+  "source": "flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(Database)]"
+}
+```
+
 ## Multi chart
 
 `MultiChart::from_json` — 把多个图表合并到一张 SVG 中，自上而下排列或各自指定位置。它不使用通用参数。
@@ -1421,7 +1465,7 @@
 
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `type` | 字符串 |  | 子图表类型：`bar`（默认）、`line`、`horizontal_bar`、`pie`、`radar`、`table`、`scatter`、`candlestick`、`heatmap`、`funnel`、`waterfall`、`calendar`、`gauge`、`treemap`、`box_plot`、`sunburst`、`sankey`、`tree`、`graph`、`parallel`、`theme_river`、`histogram`、`polar_bar`、`chord`、`gantt`、`map`、`lines` 或 `bullet`。 |
+| `type` | 字符串 |  | 子图表类型：`bar`（默认）、`line`、`horizontal_bar`、`pie`、`radar`、`table`、`scatter`、`candlestick`、`heatmap`、`funnel`、`waterfall`、`calendar`、`gauge`、`treemap`、`box_plot`、`sunburst`、`sankey`、`tree`、`graph`、`parallel`、`theme_river`、`histogram`、`polar_bar`、`chord`、`gantt`、`map`、`lines`、`bullet` 或 `mermaid`（需启用 `mermaid` feature）。 |
 | `x` | 数字 |  | 子图表的水平位置；设置了 `x` 或 `y` 后，子图表放在指定位置而不是排在上一个下方。 |
 | `y` | 数字 |  | 子图表的垂直位置。 |
 

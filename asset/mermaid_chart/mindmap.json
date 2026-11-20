@@ -1,0 +1,4 @@
+{
+  "title_text": "charts-rs Roadmap",
+  "source": "mindmap\n  root((charts-rs<br/>Roadmap))\n    {{Render Engines}}\n      [Flow & Sequence]\n      (State, Class & ER)\n      )Cloud-free Pure SVG(\n    Backend Core\n      \"`Zero **External** Deps`\"\n      Theme Palette\n    Analytics Charts\n      [Radar & Quadrant]\n      ((Treemap))\n    Quality Gates\n      ))Zero Warnings((:::accent\n      ::icon(fa fa-check)\n      Snapshot PNG Diff\n  classDef accent fill:#ef4444,color:#ffffff,stroke:#b91c1c"
+}

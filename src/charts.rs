@@ -67,6 +67,8 @@ mod horizontal_bar_chart;
 mod line_chart;
 mod lines_chart;
 mod map_chart;
+#[cfg(feature = "mermaid")]
+mod mermaid;
 mod multi_chart;
 mod parallel_chart;
 mod params;
@@ -125,6 +127,8 @@ pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use lines_chart::{FlowLine, LinesChart};
 pub use map_chart::{MapChart, MapProjection, MapRegion};
+#[cfg(feature = "mermaid")]
+pub use mermaid::{MermaidChart, mermaid_to_svg, mermaid_to_svg_with_theme};
 pub use multi_chart::{ChildChart, MultiChart};
 pub use parallel_chart::ParallelChart;
 // Drawing helpers: public for compatibility, but not part of the documented
@@ -209,3 +213,13 @@ impl_chart!(
     TreemapChart,
     WaterfallChart,
 );
+
+#[cfg(feature = "mermaid")]
+impl Chart for MermaidChart {
+    fn svg(&self) -> Result<String> {
+        MermaidChart::svg(self)
+    }
+    fn from_json(json: &str) -> Result<Self> {
+        MermaidChart::from_json(json)
+    }
+}

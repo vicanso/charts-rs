@@ -1,0 +1,4 @@
+{
+  "theme": "grafana",
+  "source": "xychart-beta\n  title \"Quarterly Revenue & Growth\"\n  x-axis [Q1, Q2, Q3, Q4, Q5, Q6]\n  y-axis \"Revenue ($k)\" 0 --> 120\n  bar [42, 58, 66, 84, 95, 112]\n  line [35, 50, 62, 76, 89, 108]"
+}

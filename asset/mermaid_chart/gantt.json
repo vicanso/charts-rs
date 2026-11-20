@@ -1,0 +1,3 @@
+{
+  "source": "gantt\n  title Release 2.4 Roadmap\n  dateFormat YYYY-MM-DD\n  section Planning\n    Architecture RFC :done, rfc, 2026-04-01, 4d\n    API Review       :done, rev, after rfc, 3d\n  section Implementation\n    Core Engine      :active, eng, after rev, 8d\n    SVG Renderer     :crit, svg, after rev, 6d\n    Integration Tests: tests, after eng, 4d\n  section Launch\n    Release 2.4      :milestone, rel, after tests, 0d"
+}

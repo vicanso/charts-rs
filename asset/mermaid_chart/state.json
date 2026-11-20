@@ -1,0 +1,5 @@
+{
+  "theme": "dark",
+  "title_text": "Order Lifecycle",
+  "source": "stateDiagram-v2\n  [*] --> Pending\n  Pending --> Validating : submit\n  state Validating <<choice>>\n  Validating --> Processing : valid\n  Validating --> Cancelled : invalid\n  state Processing {\n    [*] --> Authorizing\n    Authorizing --> Captured : paid\n    --\n    [*] --> Reserving\n    Reserving --> Allocated : in stock\n  }\n  Processing --> Shipped : ready\n  Shipped --> [*]\n  Cancelled --> [*]\n  note right of Pending : Awaits customer confirmation\n  classDef ok fill:#14532D,stroke:#22C55E,color:#DCFCE7\n  class Shipped ok"
+}
