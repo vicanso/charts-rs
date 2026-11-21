@@ -454,6 +454,7 @@ pub(crate) fn render(
 
     let mut radar = RadarChart::new_with_theme(series_list, indicators, theme_name);
     radar.shape = parsed.shape;
+    radar.visual_center = true;
     if let Some(t) = parsed.ticks {
         radar.split_number = t;
     }

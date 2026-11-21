@@ -24,59 +24,59 @@ Go
 TypeScript
 </text>
 </g>
-<path d="M 350 235.2 L 381.7 258.2 L 369.6 295.4 L 330.4 295.4 L 318.3 258.2 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
-<path d="M 350 201.9 L 413.3 247.9 L 389.1 322.4 L 310.9 322.4 L 286.7 247.9 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
-<path d="M 350 168.6 L 445 237.6 L 408.7 349.3 L 291.3 349.3 L 255 237.6 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
-<path d="M 350 135.3 L 476.7 227.3 L 428.3 376.3 L 271.7 376.3 L 223.3 227.3 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
-<path d="M 350 102 L 508.4 217 L 447.9 403.2 L 252.1 403.2 L 191.6 217 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
-<text font-size="14" x="324" y="97" font-family="Roboto" fill="#464646">
+<path d="M 350 257.1 L 381.7 280.1 L 369.6 317.3 L 330.4 317.3 L 318.3 280.1 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 350 223.8 L 413.3 269.8 L 389.1 344.3 L 310.9 344.3 L 286.7 269.8 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 350 190.5 L 445 259.5 L 408.7 371.2 L 291.3 371.2 L 255 259.5 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 350 157.2 L 476.7 249.2 L 428.3 398.2 L 271.7 398.2 L 223.3 249.2 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<path d="M 350 123.9 L 508.4 238.9 L 447.9 425.1 L 252.1 425.1 L 191.6 238.9 Z" stroke-width="1" fill="none" stroke="#E0E6F2"/>
+<text font-size="14" x="324" y="118.9" font-family="Roboto" fill="#464646">
 Latency
 </text>
-<line stroke-width="1" x1="350" y1="102" x2="350" y2="268.5" stroke="#E0E6F2"/>
-<text font-size="14" x="511.4" y="217" font-family="Roboto" fill="#464646">
+<line stroke-width="1" x1="350" y1="123.9" x2="350" y2="290.4" stroke="#E0E6F2"/>
+<text font-size="14" x="511.4" y="238.9" font-family="Roboto" fill="#464646">
 Memory
 </text>
-<line stroke-width="1" x1="508.4" y1="217" x2="350" y2="268.5" stroke="#E0E6F2"/>
-<text font-size="14" x="450.9" y="410.8" font-family="Roboto" fill="#464646">
+<line stroke-width="1" x1="508.4" y1="238.9" x2="350" y2="290.4" stroke="#E0E6F2"/>
+<text font-size="14" x="450.9" y="432.7" font-family="Roboto" fill="#464646">
 Ecosystem
 </text>
-<line stroke-width="1" x1="447.9" y1="403.2" x2="350" y2="268.5" stroke="#E0E6F2"/>
-<text font-size="14" x="230.1" y="409.4" font-family="Roboto" fill="#464646">
+<line stroke-width="1" x1="447.9" y1="425.1" x2="350" y2="290.4" stroke="#E0E6F2"/>
+<text font-size="14" x="230.1" y="431.3" font-family="Roboto" fill="#464646">
 DX
 </text>
-<line stroke-width="1" x1="252.1" y1="403.2" x2="350" y2="268.5" stroke="#E0E6F2"/>
-<text font-size="14" x="146.6" y="217" font-family="Roboto" fill="#464646">
+<line stroke-width="1" x1="252.1" y1="425.1" x2="350" y2="290.4" stroke="#E0E6F2"/>
+<text font-size="14" x="146.6" y="238.9" font-family="Roboto" fill="#464646">
 Safety
 </text>
-<line stroke-width="1" x1="191.6" y1="217" x2="350" y2="268.5" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="191.6" y1="238.9" x2="350" y2="290.4" stroke="#E0E6F2"/>
 <g>
-<path d="M 350 108.7 L 500.4 219.6 L 426.3 373.6 L 271.7 376.3 L 196.4 218.6 Z" stroke-width="2" fill="#5470C6" fill-opacity="0.2" stroke="#5470C6"/>
+<path d="M 350 130.6 L 500.4 241.5 L 426.3 395.5 L 271.7 398.2 L 196.4 240.5 Z" stroke-width="2" fill="#5470C6" fill-opacity="0.2" stroke="#5470C6"/>
 <g stroke-width="2" stroke="#5470C6" fill="none">
-<circle cx="350" cy="108.7" r="2"/>
-<circle cx="500.4" cy="219.6" r="2"/>
-<circle cx="426.3" cy="373.6" r="2"/>
-<circle cx="271.7" cy="376.3" r="2"/>
-<circle cx="196.4" cy="218.6" r="2"/>
+<circle cx="350" cy="130.6" r="2"/>
+<circle cx="500.4" cy="241.5" r="2"/>
+<circle cx="426.3" cy="395.5" r="2"/>
+<circle cx="271.7" cy="398.2" r="2"/>
+<circle cx="196.4" cy="240.5" r="2"/>
 </g>
 </g>
 <g>
-<path d="M 350 125.3 L 479.8 226.3 L 436.1 387 L 261.9 389.7 L 217 225.3 Z" stroke-width="2" fill="#91CC75" fill-opacity="0.2" stroke="#91CC75"/>
+<path d="M 350 147.2 L 479.8 248.2 L 436.1 408.9 L 261.9 411.6 L 217 247.2 Z" stroke-width="2" fill="#91CC75" fill-opacity="0.2" stroke="#91CC75"/>
 <g stroke-width="2" stroke="#91CC75" fill="none">
-<circle cx="350" cy="125.3" r="2"/>
-<circle cx="479.8" cy="226.3" r="2"/>
-<circle cx="436.1" cy="387" r="2"/>
-<circle cx="261.9" cy="389.7" r="2"/>
-<circle cx="217" cy="225.3" r="2"/>
+<circle cx="350" cy="147.2" r="2"/>
+<circle cx="479.8" cy="248.2" r="2"/>
+<circle cx="436.1" cy="408.9" r="2"/>
+<circle cx="261.9" cy="411.6" r="2"/>
+<circle cx="217" cy="247.2" r="2"/>
 </g>
 </g>
 <g>
-<path d="M 350 152 L 448.2 236.6 L 444 397.8 L 259 393.8 L 229.7 229.4 Z" stroke-width="2" fill="#FAC858" fill-opacity="0.2" stroke="#FAC858"/>
+<path d="M 350 173.8 L 448.2 258.5 L 444 419.7 L 259 415.7 L 229.7 251.3 Z" stroke-width="2" fill="#FAC858" fill-opacity="0.2" stroke="#FAC858"/>
 <g stroke-width="2" stroke="#FAC858" fill="none">
-<circle cx="350" cy="152" r="2"/>
-<circle cx="448.2" cy="236.6" r="2"/>
-<circle cx="444" cy="397.8" r="2"/>
-<circle cx="259" cy="393.8" r="2"/>
-<circle cx="229.7" cy="229.4" r="2"/>
+<circle cx="350" cy="173.8" r="2"/>
+<circle cx="448.2" cy="258.5" r="2"/>
+<circle cx="444" cy="419.7" r="2"/>
+<circle cx="259" cy="415.7" r="2"/>
+<circle cx="229.7" cy="251.3" r="2"/>
 </g>
 </g>
 </svg>

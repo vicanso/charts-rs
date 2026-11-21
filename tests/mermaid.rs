@@ -1138,3 +1138,45 @@ fn m12_sankey_margin_and_reduced_crossings() {
         residential_y
     );
 }
+
+#[test]
+fn m13_radar_polygon_vertical_centering() {
+    let radar =
+        MermaidChart::from_json(include_str!("../asset/mermaid_chart/radar.json")).unwrap();
+    let svg = radar.svg().unwrap();
+    assert_valid_svg(&svg);
+
+    // Find the outer pentagon grid ring (`stroke-width="1" fill="none"`)
+    // and check that its visual top/bottom whitespace in the plot area is balanced.
+    let grid_paths: Vec<&str> = svg
+        .lines()
+        .filter(|l| {
+            l.starts_with("<path d=\"M ")
+                && l.contains(" Z\"")
+                && l.contains("fill=\"none\"")
+                && l.contains("stroke-width=\"1\"")
+        })
+        .collect();
+    assert!(!grid_paths.is_empty(), "expected radar grid polygons: {svg}");
+    let outer = grid_paths.last().unwrap();
+    let d_attr = outer.split("d=\"").nth(1).unwrap().split('"').next().unwrap();
+    let mut min_y = f32::INFINITY;
+    let mut max_y = f32::NEG_INFINITY;
+    for seg in d_attr.split(['M', 'L', 'Z']) {
+        let mut nums = seg.split_whitespace();
+        if let (Some(_x), Some(y_str)) = (nums.next(), nums.next())
+            && let Ok(y) = y_str.parse::<f32>()
+        {
+            min_y = min_y.min(y);
+            max_y = max_y.max(y);
+        }
+    }
+    // Plot area sits below title+legend (~62px) and above bottom margin (475px).
+    // Top visual extent includes ~19px top axis label; bottom includes ~7px bottom label.
+    let top_space = (min_y - 19.0) - 62.0;
+    let bottom_space = 475.0 - (max_y + 7.0);
+    assert!(
+        (top_space - bottom_space).abs() <= 10.0,
+        "radar vertical whitespace should be balanced (<=10px delta): top={top_space}, bottom={bottom_space}"
+    );
+}

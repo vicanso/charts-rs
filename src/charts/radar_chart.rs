@@ -93,6 +93,11 @@ pub struct RadarChart {
     pub split_number: usize,
     /// `polygon` (the default) or `circle`.
     pub shape: RadarShape,
+    /// When `true`, shifts the vertical center so the actual polygon + axis
+    /// label bounding box is vertically centered (compensating for odd-sided
+    /// polygons like pentagons whose bottom edge is closer than `r`).
+    /// Default: false.
+    pub visual_center: bool,
 }
 
 impl std::ops::Deref for RadarChart {
@@ -206,7 +211,34 @@ impl RadarChart {
         let r = (c.width().min(c.height()) / 2.0 - offset).max(1.0);
         let angle = 360.0 / indicators.len() as f32;
         let cx = c.width() / 2.0;
-        let cy = c.height() / 2.0;
+        let cy = if self.visual_center {
+            let label_h = self.series.label.font.size.max(12.0);
+            let (mut min_dy, mut max_dy) = if self.shape == RadarShape::Circle {
+                (-r, r)
+            } else {
+                (f32::INFINITY, f32::NEG_INFINITY)
+            };
+            for index in 0..indicators.len() {
+                let current_angle = angle * index as f32;
+                let dy = get_pie_point(0.0, 0.0, r, current_angle).y;
+                min_dy = min_dy.min(dy);
+                max_dy = max_dy.max(dy);
+                if current_angle < 10.0 || (360.0 - current_angle) < 10.0 {
+                    min_dy = min_dy.min(dy - 5.0 - label_h);
+                } else if (current_angle - 180.0).abs() < 10.0 {
+                    max_dy = max_dy.max(dy + label_h);
+                } else if dy > 0.0 {
+                    max_dy = max_dy.max(dy + label_h * 0.5);
+                }
+            }
+            if min_dy.is_finite() && max_dy.is_finite() {
+                c.height() / 2.0 - (min_dy + max_dy) / 2.0
+            } else {
+                c.height() / 2.0
+            }
+        } else {
+            c.height() / 2.0
+        };
         let round_count = if self.split_number == 0 {
             5
         } else {
