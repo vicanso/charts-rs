@@ -641,6 +641,7 @@ pub(crate) static MERMAID_FIELDS: &[Field] = &[
     f("sub_title_height", Kind::Number),
     f("texts", Kind::ArrayOf(TEXT_FIELDS)),
     f("compact", Kind::Bool),
+    f("allow_links", Kind::Bool),
 ];
 
 pub(crate) static THEME_RIVER_FIELDS: &[Field] = &[f("stream_opacity", Kind::Number)];

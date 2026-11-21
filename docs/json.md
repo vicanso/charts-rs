@@ -1432,6 +1432,7 @@ The names are written in the font of the x axis, and the scale below each row in
 | `sub_title_height` | number | `20` | Height reserved for the sub-title row. |
 | `texts` | object[] |  | Texts written over the diagram: a copyright line, a watermark. See [`texts[]`](#texts). |
 | `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
+| `allow_links` | boolean | `true` | When `true`, safe `click` / `link` directives wrap nodes in SVG `<a href="...">` elements (allowing `http://`, `https://`, `mailto:`, and relative URLs; blocking `javascript:` / `data:`). Set to `false` to disable all emitted hyperlinks for untrusted input. |
 
 <!-- example: mermaid -->
 

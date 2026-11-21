@@ -1432,6 +1432,7 @@
 | `sub_title_height` | 数字 | `20` | 副标题行占用的高度。 |
 | `texts` | 对象数组 |  | 叠加在图表上的文字：版权声明、水印等。见 [`texts[]`](#texts)。 |
 | `compact` | 布尔 | `false` | 输出精简的 SVG：画面相同，体积通常小 20–30%。 |
+| `allow_links` | 布尔 | `true` | 为 `true` 时，安全的 `click` / `link` 指令会将节点包裹在 SVG `<a href="...">` 元素中（仅允许 `http://`、`https://`、`mailto:` 与相对路径，自动拦截 `javascript:` / `data:`）；渲染不可信输入时可设为 `false` 禁用全部超链接。 |
 
 <!-- example: mermaid -->
 

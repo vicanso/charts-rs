@@ -156,6 +156,9 @@ impl MermaidChart {
         if let Some(compact) = get_bool_from_value(&value, "compact") {
             chart.compact = compact;
         }
+        if let Some(allow_links) = get_bool_from_value(&value, "allow_links") {
+            chart.allow_links = allow_links;
+        }
 
         apply_title_json(&value, "title", &mut chart.title);
         apply_title_json(&value, "sub_title", &mut chart.sub_title);

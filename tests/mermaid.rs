@@ -1485,6 +1485,38 @@ flowchart LR
         "allow_links=false must suppress all <a> elements: {disabled_svg}"
     );
 
+    // JSON API: allow_links: false suppresses links; allow_links: true emits them.
+    let json_false = serde_json::json!({
+        "source": fc,
+        "allow_links": false
+    })
+    .to_string();
+    let json_false_chart = MermaidChart::from_json(&json_false).unwrap();
+    assert!(!json_false_chart.allow_links);
+    let json_false_svg = json_false_chart.svg().unwrap();
+    assert_valid_svg(&json_false_svg);
+    assert!(
+        !json_false_svg.contains("<a href="),
+        "JSON allow_links=false must suppress all <a> elements: {json_false_svg}"
+    );
+
+    let json_true = serde_json::json!({
+        "source": fc,
+        "allow_links": true
+    })
+    .to_string();
+    let json_true_chart = MermaidChart::from_json(&json_true).unwrap();
+    assert!(json_true_chart.allow_links);
+    let json_true_svg = json_true_chart.svg().unwrap();
+    assert_valid_svg(&json_true_svg);
+    assert!(
+        json_true_svg.contains(
+            "<a href=\"https://example.com/docs?a=1&amp;b=2\" target=\"_blank\"><title>Open Docs</title>"
+        ),
+        "JSON allow_links=true must emit safe <a> elements: {json_true_svg}"
+    );
+    assert!(!json_true_svg.contains("javascript:"));
+
     // Class diagram click + link directives.
     let cls = r#"
 classDiagram
