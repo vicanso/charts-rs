@@ -974,3 +974,80 @@ sequenceDiagram
         loop_x + loop_w
     );
 }
+
+#[test]
+fn m06_flowchart_subgraph_collision_and_title_clearance() {
+    let src = r#"
+flowchart BT
+  subgraph Outer
+    subgraph Inner
+      a1 --> a2
+    end
+    b1 --> a1
+  end
+  c1 --> Inner
+  a2 --> d1
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("Outer"));
+    assert!(svg.contains("Inner"));
+    assert!(svg.contains("c1"));
+    assert!(svg.contains("d1"));
+
+    let parse_rect = |line: &str| -> (f32, f32, f32, f32) {
+        let get = |k: &str| -> f32 {
+            let pat = format!("{k}=\"");
+            let s = line.find(&pat).unwrap() + pat.len();
+            let e = s + line[s..].find('"').unwrap();
+            line[s..e].parse().unwrap()
+        };
+        (get("x"), get("y"), get("width"), get("height"))
+    };
+
+    // Subgraph rects have `rx="6" ry="6"`; Outer is drawn first (depth 0).
+    let sg_rects: Vec<(f32, f32, f32, f32)> = svg
+        .lines()
+        .filter(|l| l.starts_with("<rect ") && l.contains("rx=\"6\""))
+        .map(parse_rect)
+        .collect();
+    assert_eq!(sg_rects.len(), 2, "expected Outer and Inner subgraph rects: {svg}");
+    let (ox, oy, ow, oh) = sg_rects[0];
+
+    // Find c1's <text> position and verify it lies strictly outside Outer's bounding box.
+    let lines: Vec<&str> = svg.lines().collect();
+    let c1_idx = lines.iter().position(|l| *l == "c1").unwrap();
+    let c1_text_line = lines[c1_idx - 1];
+    let get_attr = |line: &str, k: &str| -> f32 {
+        let pat = format!("{k}=\"");
+        let s = line.find(&pat).unwrap() + pat.len();
+        let e = s + line[s..].find('"').unwrap();
+        line[s..e].parse().unwrap()
+    };
+    let c1_x = get_attr(c1_text_line, "x");
+    let c1_y = get_attr(c1_text_line, "y");
+    let inside_outer = c1_x >= ox && c1_x <= ox + ow && c1_y >= oy && c1_y <= oy + oh;
+    assert!(
+        !inside_outer,
+        "external node c1 ({c1_x}, {c1_y}) must not overlap Outer ({ox}..{}, {oy}..{})",
+        ox + ow,
+        oy + oh
+    );
+
+    // Titles `Outer` and `Inner` should shift off-center (`text-anchor="start"` or `"end"`)
+    // to stay clear of the vertical `a2 --> d1` edge.
+    let inner_idx = lines.iter().position(|l| *l == "Inner").unwrap();
+    let outer_idx = lines.iter().position(|l| *l == "Outer").unwrap();
+    assert!(
+        lines[inner_idx - 1].contains("text-anchor=\"start\"")
+            || lines[inner_idx - 1].contains("text-anchor=\"end\""),
+        "Inner title should shift clear of crossing edge: {}",
+        lines[inner_idx - 1]
+    );
+    assert!(
+        lines[outer_idx - 1].contains("text-anchor=\"start\"")
+            || lines[outer_idx - 1].contains("text-anchor=\"end\""),
+        "Outer title should shift clear of crossing edge: {}",
+        lines[outer_idx - 1]
+    );
+}

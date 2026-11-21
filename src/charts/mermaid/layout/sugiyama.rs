@@ -739,6 +739,15 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
         if !any {
             continue;
         }
+        let mut max_nested_depth = 0usize;
+        for (other_idx, _) in graph.subgraphs.iter().enumerate() {
+            if other_idx != sg_idx && root_subgraph(&graph.subgraphs, Some(other_idx)) == Some(sg_idx)
+            {
+                let d = subgraph_depth(&graph.subgraphs, Some(other_idx));
+                max_nested_depth = max_nested_depth.max(d.saturating_sub(1));
+            }
+        }
+        let nested_pad = max_nested_depth as f32 * SUBGRAPH_PAD_X;
         let (pad_before, pad_after) = if is_horizontal {
             let title_extra = if sg_in.title_height > 0.0 {
                 sg_in.title_height + SUBGRAPH_TITLE_GAP
@@ -746,11 +755,14 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
                 0.0
             };
             (
-                SUBGRAPH_PAD_TOP + title_extra + 18.0,
-                SUBGRAPH_PAD_BOTTOM + 18.0,
+                SUBGRAPH_PAD_TOP + title_extra + nested_pad + 18.0,
+                SUBGRAPH_PAD_BOTTOM + nested_pad + 18.0,
             )
         } else {
-            (SUBGRAPH_PAD_X + 18.0, SUBGRAPH_PAD_X + 18.0)
+            (
+                SUBGRAPH_PAD_X + nested_pad + 18.0,
+                SUBGRAPH_PAD_X + nested_pad + 18.0,
+            )
         };
         let sg_mid = (sg_min_cx + sg_max_cx) * 0.5;
         for r_items in &ranks[r_min..=r_max] {
@@ -890,7 +902,19 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
                 let y = min_y - SUBGRAPH_PAD_TOP - title_extra;
                 let mut w = (max_x - min_x) + SUBGRAPH_PAD_X * 2.0;
                 let h = (max_y - min_y) + SUBGRAPH_PAD_TOP + title_extra + SUBGRAPH_PAD_BOTTOM;
-                let min_title_w = sg_in.title_width + SUBGRAPH_PAD_X * 2.0;
+                let has_cross_edge = !is_horizontal
+                    && graph.edges.iter().any(|e| {
+                        e.from < n
+                            && e.to < n
+                            && in_subgraph(graph.nodes[e.from].subgraph, sg_idx)
+                                != in_subgraph(graph.nodes[e.to].subgraph, sg_idx)
+                    });
+                let min_title_w = if has_cross_edge && sg_in.title_width > 0.0 {
+                    (sg_in.title_width + SUBGRAPH_PAD_X * 2.0)
+                        .max((sg_in.title_width + 20.0) * 2.0)
+                } else {
+                    sg_in.title_width + SUBGRAPH_PAD_X * 2.0
+                };
                 if w < min_title_w {
                     x -= (min_title_w - w) * 0.5;
                     w = min_title_w;
@@ -902,6 +926,45 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
                     height: h,
                     visible: true,
                 };
+            }
+        }
+
+        // Screen-space collision resolution: push any non-member node whose
+        // bounding box overlaps a root subgraph's final padded box strictly
+        // outside that subgraph (with clearance margin).
+        let clearance = 16.0_f32;
+        for (sg_idx, sg_in) in graph.subgraphs.iter().enumerate() {
+            if sg_in.parent.is_some() || !sg_boxes[sg_idx].visible {
+                continue;
+            }
+            let b = sg_boxes[sg_idx];
+            let sg_cx = b.x + b.width * 0.5;
+            let sg_cy = b.y + b.height * 0.5;
+            for (u, node) in graph.nodes.iter().enumerate() {
+                if in_subgraph(node.subgraph, sg_idx) {
+                    continue;
+                }
+                let id = real_to_item[u];
+                let (nx, ny) = screen_pos[id];
+                let hw = node.width * 0.5;
+                let hh = node.height * 0.5;
+                let overlap_x = (nx + hw) > (b.x - clearance)
+                    && (nx - hw) < (b.x + b.width + clearance);
+                let overlap_y = (ny + hh) > (b.y - clearance)
+                    && (ny - hh) < (b.y + b.height + clearance);
+                if overlap_x && overlap_y {
+                    if !is_horizontal {
+                        if nx < sg_cx {
+                            screen_pos[id].0 = nx.min(b.x - clearance - hw);
+                        } else {
+                            screen_pos[id].0 = nx.max(b.x + b.width + clearance + hw);
+                        }
+                    } else if ny < sg_cy {
+                        screen_pos[id].1 = ny.min(b.y - clearance - hh);
+                    } else {
+                        screen_pos[id].1 = ny.max(b.y + b.height + clearance + hh);
+                    }
+                }
             }
         }
     }

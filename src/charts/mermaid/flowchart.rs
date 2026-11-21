@@ -1039,6 +1039,48 @@ fn node_box_size(shape: NodeShape, label: &FormattedText) -> (f32, f32) {
     }
 }
 
+/// Returns `true` if the line segment `p0 -> p1` intersects the axis-aligned
+/// rectangle `[rx0, rx1] x [ry0, ry1]`.
+fn segment_intersects_rect(
+    p0: super::super::util::Point,
+    p1: super::super::util::Point,
+    rx0: f32,
+    ry0: f32,
+    rx1: f32,
+    ry1: f32,
+) -> bool {
+    let dx = p1.x - p0.x;
+    let dy = p1.y - p0.y;
+    let mut t0 = 0.0_f32;
+    let mut t1 = 1.0_f32;
+    for (p, q) in [
+        (-dx, p0.x - rx0),
+        (dx, rx1 - p0.x),
+        (-dy, p0.y - ry0),
+        (dy, ry1 - p0.y),
+    ] {
+        if p.abs() < 1e-6 {
+            if q < 0.0 {
+                return false;
+            }
+        } else {
+            let r = q / p;
+            if p < 0.0 {
+                if r > t1 {
+                    return false;
+                }
+                t0 = t0.max(r);
+            } else {
+                if r < t0 {
+                    return false;
+                }
+                t1 = t1.min(r);
+            }
+        }
+    }
+    t0 <= t1
+}
+
 pub(crate) fn render(
     chart: &MermaidChart,
     theme_name: &str,
@@ -1240,15 +1282,39 @@ pub(crate) fn render(
 
         let title_ft = &sg_labels[sg_idx];
         if !title_ft.lines.is_empty() {
+            let ty = b.y + 12.0 + title_ft.height * 0.5;
+            let title_intersects_edges = |tx_left: f32, tx_right: f32| -> bool {
+                let ry0 = ty - title_ft.height * 0.5 - 4.0;
+                let ry1 = ty + title_ft.height * 0.5 + 4.0;
+                layout.edges.iter().any(|re| {
+                    re.waypoints.windows(2).any(|w| {
+                        segment_intersects_rect(w[0], w[1], tx_left, ry0, tx_right, ry1)
+                    })
+                })
+            };
+            let cx = b.x + b.width * 0.5;
+            let half_tw = title_ft.width * 0.5 + 6.0;
+            let (tx, anchor) = if !title_intersects_edges(cx - half_tw, cx + half_tw) {
+                (cx, "middle")
+            } else if !title_intersects_edges(b.x + 8.0, b.x + 12.0 + title_ft.width + 6.0) {
+                (b.x + 12.0, "start")
+            } else if !title_intersects_edges(
+                b.x + b.width - 12.0 - title_ft.width - 6.0,
+                b.x + b.width - 8.0,
+            ) {
+                (b.x + b.width - 12.0, "end")
+            } else {
+                (b.x + 12.0, "start")
+            };
             draw_multiline_text(
                 &mut content_canvas,
-                b.x + b.width * 0.5,
-                b.y + 12.0 + title_ft.height * 0.5,
+                tx,
+                ty,
                 title_ft,
                 &font_family,
                 sg_font_size,
                 text_color,
-                "middle",
+                anchor,
                 true,
             );
         }
