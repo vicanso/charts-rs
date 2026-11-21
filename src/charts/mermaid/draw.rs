@@ -567,8 +567,8 @@ pub(crate) fn draw_edge_marker(
             });
         }
         EdgeMarker::Cross => {
-            let size = 4.5;
-            let center = pt_at(size, 0.0);
+            let size = 7.5;
+            let center = pt_at(size + 1.0, 0.0);
             let d1x = (ux + px) * size * 0.7;
             let d1y = (uy + py) * size * 0.7;
             let d2x = (ux - px) * size * 0.7;
@@ -576,7 +576,7 @@ pub(crate) fn draw_edge_marker(
             for (ax, ay) in [(d1x, d1y), (d2x, d2y)] {
                 c.line(Line {
                     color: Some(color),
-                    stroke_width: stroke_width.max(1.6),
+                    stroke_width: stroke_width.max(1.8),
                     left: center.x - ax,
                     top: center.y - ay,
                     right: center.x + ax,

@@ -900,3 +900,27 @@ classDiagram
     assert!(svg.contains("+create() Shape"));
     assert!(svg.contains("+area() double"));
 }
+
+#[test]
+fn m19_m21_strip_fa_icons_and_larger_cross_marker() {
+    let src = r#"
+flowchart LR
+  A["fa:fa-car Car"] --x B["fab:fa-github Repo: main"]
+  B --x C["fas:fa-check Done"]
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("\nCar\n"), "fa:fa-car should be stripped: {svg}");
+    assert!(
+        svg.contains("\nRepo: main\n"),
+        "fab:fa-github stripped while preserving colon: {svg}"
+    );
+    assert!(svg.contains("\nDone\n"), "fas:fa-check should be stripped: {svg}");
+    assert!(!svg.contains("fa:fa-"), "raw fa:fa-* token leaked: {svg}");
+    assert!(!svg.contains("fab:fa-"), "raw fab:fa-* token leaked: {svg}");
+    assert!(!svg.contains("fas:fa-"), "raw fas:fa-* token leaked: {svg}");
+
+    // Cross markers (--x): 2 edges x 2 diagonal lines = 4 <line> elements, each spanning ~10.5px.
+    let cross_lines: Vec<&str> = svg.lines().filter(|l| l.starts_with("<line ")).collect();
+    assert_eq!(cross_lines.len(), 4, "expected 4 cross-marker lines: {svg}");
+}

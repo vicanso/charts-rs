@@ -158,6 +158,49 @@ fn is_inline_html_tag(tag_name: &str) -> bool {
     )
 }
 
+fn is_fa_icon_token(tok: &str) -> bool {
+    let Some((prefix, rest)) = tok.split_once(':') else {
+        return false;
+    };
+    let valid_prefix = matches!(
+        prefix.to_ascii_lowercase().as_str(),
+        "fa" | "fas" | "fab" | "far" | "fal" | "fad"
+    );
+    if !valid_prefix {
+        return false;
+    }
+    let lower_rest = rest.to_ascii_lowercase();
+    let Some(name) = lower_rest.strip_prefix("fa-") else {
+        return false;
+    };
+    !name.is_empty()
+        && name
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
+}
+
+/// Strips Font Awesome icon tokens (`fa:fa-car`, `fab:fa-github`, etc.) from a
+/// decoded label line while leaving normal text and colons untouched.
+fn strip_fa_icon_tokens(text: String) -> String {
+    if !text.contains(':') {
+        return text;
+    }
+    let mut any_stripped = false;
+    let mut kept = Vec::new();
+    for tok in text.split_whitespace() {
+        if is_fa_icon_token(tok) {
+            any_stripped = true;
+        } else {
+            kept.push(tok);
+        }
+    }
+    if any_stripped {
+        kept.join(" ")
+    } else {
+        text
+    }
+}
+
 /// Strips inline HTML tags (`<b>`, `<i>`, `<span ...>`) while keeping `<` in
 /// expressions such as `a < b` and generic types such as `List<T>` intact.
 fn strip_inline_html(line: &str, bold_state: &mut bool, italic_state: &mut bool) -> FormattedLine {
@@ -205,7 +248,7 @@ fn strip_inline_html(line: &str, bold_state: &mut bool, italic_state: &mut bool)
         i += 1;
     }
     FormattedLine {
-        text: decode_entities(&out),
+        text: strip_fa_icon_tokens(decode_entities(&out)),
         bold: line_bold,
         italic: line_italic,
     }
