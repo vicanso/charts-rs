@@ -128,7 +128,7 @@ pub use line_chart::LineChart;
 pub use lines_chart::{FlowLine, LinesChart};
 pub use map_chart::{MapChart, MapProjection, MapRegion};
 #[cfg(feature = "mermaid")]
-pub use mermaid::{MermaidChart, mermaid_to_svg, mermaid_to_svg_with_theme};
+pub use mermaid::{MermaidChart, mermaid_to_svg, mermaid_to_svg_with_theme, mermaid_validate};
 pub use multi_chart::{ChildChart, MultiChart};
 pub use parallel_chart::ParallelChart;
 // Drawing helpers: public for compatibility, but not part of the documented

@@ -479,6 +479,16 @@ fn inject_svg_accessibility(
     out
 }
 
+/// Validates a Mermaid diagram source string without returning the SVG output.
+///
+/// Runs preprocessing, syntax parsing, and semantic checks (such as cycle
+/// detection in Sankey diagrams or all-zero Pie charts) for all 13 supported
+/// diagram types, returning a line-numbered [`Error::Mermaid`] on failure.
+#[cfg_attr(docsrs, doc(cfg(feature = "mermaid")))]
+pub fn mermaid_validate(source: &str) -> Result<()> {
+    MermaidChart::new(source).render().map(|_| ())
+}
+
 /// Renders a Mermaid diagram source string directly to SVG using the default theme.
 #[cfg_attr(docsrs, doc(cfg(feature = "mermaid")))]
 pub fn mermaid_to_svg(source: &str) -> Result<String> {

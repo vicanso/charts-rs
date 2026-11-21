@@ -479,7 +479,9 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
             let dir = match parts.next() {
                 Some(tok) => Direction::from_token(tok).ok_or_else(|| Error::Mermaid {
                     line: Some(first.line_no),
-                    message: format!("unknown flowchart direction `{tok}`"),
+                    message: format!(
+                        "unknown flowchart direction `{tok}` (expected one of: TB, TD, BT, LR, RL)"
+                    ),
                 })?,
                 None => Direction::TopBottom,
             };
@@ -549,9 +551,12 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
             DiagramKind::XyChart { horizontal }
         }
         _ => {
+            let hint = suggest_diagram_kind(keyword)
+                .map(|s| format!(" (did you mean `{s}`?)"))
+                .unwrap_or_default();
             return Err(Error::Mermaid {
                 line: Some(first.line_no),
-                message: format!("unsupported Mermaid diagram type `{keyword}`"),
+                message: format!("unsupported Mermaid diagram type `{keyword}`{hint}"),
             });
         }
     };
@@ -646,6 +651,64 @@ fn extract_accessibility(
     }
 
     Ok((out, acc_title, acc_descr))
+}
+
+fn edit_distance(a: &str, b: &str) -> usize {
+    let a: Vec<char> = a.chars().collect();
+    let b: Vec<char> = b.chars().collect();
+    let mut prev: Vec<usize> = (0..=b.len()).collect();
+    let mut curr = vec![0usize; b.len() + 1];
+    for (i, &ca) in a.iter().enumerate() {
+        curr[0] = i + 1;
+        for (j, &cb) in b.iter().enumerate() {
+            let cost = usize::from(ca != cb);
+            curr[j + 1] = (prev[j + 1] + 1).min(curr[j] + 1).min(prev[j] + cost);
+        }
+        std::mem::swap(&mut prev, &mut curr);
+    }
+    prev[b.len()]
+}
+
+fn suggest_diagram_kind(keyword: &str) -> Option<&'static str> {
+    const KNOWN: &[&str] = &[
+        "flowchart",
+        "graph",
+        "sequenceDiagram",
+        "stateDiagram",
+        "stateDiagram-v2",
+        "classDiagram",
+        "classDiagram-v2",
+        "erDiagram",
+        "mindmap",
+        "quadrantChart",
+        "radar-beta",
+        "treemap-beta",
+        "pie",
+        "gantt",
+        "sankey-beta",
+        "xychart-beta",
+    ];
+    let lower = keyword.to_ascii_lowercase();
+    if lower.is_empty() {
+        return None;
+    }
+    // Check prefix match for common shorthand (e.g. `sequence`, `quadrant`).
+    if lower.len() >= 4 {
+        for &cand in KNOWN {
+            if cand.to_ascii_lowercase().starts_with(&lower) {
+                return Some(cand);
+            }
+        }
+    }
+    let max_dist = (lower.len() / 2).clamp(1, 3);
+    let mut best: Option<(&'static str, usize)> = None;
+    for &cand in KNOWN {
+        let d = edit_distance(&lower, &cand.to_ascii_lowercase());
+        if d <= max_dist && best.is_none_or(|(_, bd)| d < bd) {
+            best = Some((cand, d));
+        }
+    }
+    best.map(|(cand, _)| cand)
 }
 
 #[cfg(test)]

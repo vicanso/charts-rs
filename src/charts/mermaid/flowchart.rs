@@ -800,6 +800,15 @@ impl<'a> StmtScanner<'a> {
                 self.pos += 1;
                 dash_count += 1;
             }
+            if self.rest().starts_with(">>") {
+                let arrow = format!("{}{}", "-".repeat(dash_count), ">>");
+                return Err(Error::Mermaid {
+                    line: Some(self.line_no),
+                    message: format!(
+                        "invalid flowchart arrow `{arrow}` (hint: `{arrow}` is sequenceDiagram syntax; use `-->` in flowchart)"
+                    ),
+                });
+            }
             let end_marker = if self.rest().starts_with('>') {
                 self.pos += 1;
                 Some(EdgeMarker::Arrow)

@@ -1512,3 +1512,61 @@ stateDiagram-v2
     assert!(st_svg.contains("<a href=\"./active.html\"><title>Active state</title>"));
     assert!(!st_svg.contains("data:text/html"));
 }
+
+#[test]
+fn e12_mermaid_validate_and_typo_hints() {
+    use charts_rs::mermaid_validate;
+
+    // Valid diagrams across multiple types pass validation.
+    for valid in [
+        "flowchart LR\n  A --> B",
+        "sequenceDiagram\n  Alice->>Bob: Hi",
+        "classDiagram\n  class Order",
+        "pie\n  \"A\" : 10\n  \"B\" : 20",
+        "gantt\n  dateFormat YYYY-MM-DD\n  Task : 2025-01-01, 3d",
+        "sankey-beta\n  A,B,10",
+    ] {
+        assert!(
+            mermaid_validate(valid).is_ok(),
+            "expected valid diagram to pass mermaid_validate: {valid}"
+        );
+    }
+
+    // Invalid semantic diagram (Sankey cycle) fails validation.
+    assert!(mermaid_validate("sankey-beta\n  A,B,10\n  B,A,5").is_err());
+
+    // Near-miss diagram type suggestions.
+    let err_state = mermaid_validate("stateDiagram-v3\n  [*] --> A")
+        .unwrap_err()
+        .to_string();
+    assert!(
+        err_state.contains("did you mean `stateDiagram-v2`?"),
+        "expected stateDiagram-v2 suggestion: {err_state}"
+    );
+    let err_fc = mermaid_validate("flowchar LR\n  A --> B")
+        .unwrap_err()
+        .to_string();
+    assert!(
+        err_fc.contains("did you mean `flowchart`?"),
+        "expected flowchart suggestion: {err_fc}"
+    );
+
+    // Invalid flowchart direction lists valid options.
+    let err_dir = mermaid_validate("flowchart TOP\n  A --> B")
+        .unwrap_err()
+        .to_string();
+    assert!(
+        err_dir.contains("TB, TD, BT, LR, RL"),
+        "expected valid direction list: {err_dir}"
+    );
+
+    // Sequence arrow `->>` / `-->>` in flowchart produces actionable hint.
+    let err_arrow = mermaid_validate("flowchart LR\n  A ->> B")
+        .unwrap_err()
+        .to_string();
+    assert!(err_arrow.contains("line 2"), "expected line 2: {err_arrow}");
+    assert!(
+        err_arrow.contains("sequenceDiagram") && err_arrow.contains("-->"),
+        "expected sequenceDiagram arrow hint: {err_arrow}"
+    );
+}
