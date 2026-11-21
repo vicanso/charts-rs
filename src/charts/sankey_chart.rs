@@ -139,6 +139,10 @@ pub struct SankeyChart {
     /// Direction of the flows: `"horizontal"` (the default, from left to
     /// right) or `"vertical"` (from top to bottom).
     pub orient: Option<String>,
+    /// When `true`, reorders nodes within each column by weighted neighbor
+    /// barycenter before vertical relaxation to reduce link crossings.
+    /// Default: false.
+    pub sort_by_barycenter: bool,
 }
 
 impl std::ops::Deref for SankeyChart {
@@ -427,22 +431,40 @@ impl SankeyChart {
             link.width = link.value * ky;
         }
 
+        // Optional weighted-barycenter column ordering to minimize link crossings
+        // before vertical relaxation.
+        if self.sort_by_barycenter {
+            order_layers_by_barycenter(&nodes, &links, &mut layers_nodes);
+        }
+
         // Initial stacking: index within column, then resolve overlaps.
         for layer in &layers_nodes {
             for (i, &ni) in layer.iter().enumerate() {
                 nodes[ni].y = i as f32;
             }
         }
-        resolve_collisions(&mut nodes, &layers_nodes, ch, self.node_gap);
+        resolve_collisions(&mut nodes, &layers_nodes, ch, self.node_gap, false);
 
         // Relaxation to reduce crossings (deterministic, fixed iterations).
         let mut alpha = 1.0_f32;
         for _ in 0..RELAX_ITERATIONS {
             alpha *= 0.99;
             relax(&mut nodes, &links, &layers_nodes, alpha, true);
-            resolve_collisions(&mut nodes, &layers_nodes, ch, self.node_gap);
+            resolve_collisions(
+                &mut nodes,
+                &layers_nodes,
+                ch,
+                self.node_gap,
+                self.sort_by_barycenter,
+            );
             relax(&mut nodes, &links, &layers_nodes, alpha, false);
-            resolve_collisions(&mut nodes, &layers_nodes, ch, self.node_gap);
+            resolve_collisions(
+                &mut nodes,
+                &layers_nodes,
+                ch,
+                self.node_gap,
+                self.sort_by_barycenter,
+            );
         }
 
         // Stack link bands within each node, ordered by the opposite endpoint's
@@ -767,6 +789,71 @@ impl SankeyChart {
     }
 }
 
+/// Reorders nodes within each column by the flow-weighted average position of
+/// their connected neighbors (4 forward/backward sweeps).
+fn order_layers_by_barycenter(
+    nodes: &[LayoutNode],
+    links: &[LayoutLink],
+    layers_nodes: &mut [Vec<usize>],
+) {
+    let n = nodes.len();
+    let mut pos = vec![0.0_f32; n];
+    let update_pos = |layers: &[Vec<usize>], pos: &mut [f32]| {
+        for layer in layers {
+            for (rank, &ni) in layer.iter().enumerate() {
+                pos[ni] = rank as f32;
+            }
+        }
+    };
+    update_pos(layers_nodes, &mut pos);
+
+    for sweep in 0..4 {
+        let forward = sweep % 2 == 0;
+        let indices: Vec<usize> = if forward {
+            (1..layers_nodes.len()).collect()
+        } else {
+            (0..layers_nodes.len().saturating_sub(1)).rev().collect()
+        };
+        for layer_idx in indices {
+            let mut scored: Vec<(usize, f32, usize)> = layers_nodes[layer_idx]
+                .iter()
+                .enumerate()
+                .map(|(orig_ord, &ni)| {
+                    let link_ids = if forward {
+                        &nodes[ni].in_links
+                    } else {
+                        &nodes[ni].out_links
+                    };
+                    let mut sum_w = 0.0_f32;
+                    let mut sum_pos = 0.0_f32;
+                    for &li in link_ids {
+                        let other = if forward {
+                            links[li].source
+                        } else {
+                            links[li].target
+                        };
+                        sum_pos += pos[other] * links[li].value;
+                        sum_w += links[li].value;
+                    }
+                    let bary = if sum_w > 0.0 {
+                        sum_pos / sum_w
+                    } else {
+                        pos[ni]
+                    };
+                    (ni, bary, orig_ord)
+                })
+                .collect();
+            scored.sort_by(|a, b| {
+                a.1.partial_cmp(&b.1)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+                    .then_with(|| a.2.cmp(&b.2))
+            });
+            layers_nodes[layer_idx] = scored.into_iter().map(|(ni, _, _)| ni).collect();
+            update_pos(layers_nodes, &mut pos);
+        }
+    }
+}
+
 /// Vertical center of a node.
 fn center(node: &LayoutNode) -> f32 {
     node.y + node.dy / 2.0
@@ -832,6 +919,7 @@ fn resolve_collisions(
     layers_nodes: &[Vec<usize>],
     height: f32,
     node_gap: f32,
+    by_center: bool,
 ) {
     for layer in layers_nodes {
         if layer.is_empty() {
@@ -839,10 +927,9 @@ fn resolve_collisions(
         }
         let mut order = layer.clone();
         order.sort_by(|&a, &b| {
-            nodes[a]
-                .y
-                .partial_cmp(&nodes[b].y)
-                .unwrap_or(std::cmp::Ordering::Equal)
+            let ka = if by_center { center(&nodes[a]) } else { nodes[a].y };
+            let kb = if by_center { center(&nodes[b]) } else { nodes[b].y };
+            ka.partial_cmp(&kb).unwrap_or(std::cmp::Ordering::Equal)
         });
 
         // Push down from the top.

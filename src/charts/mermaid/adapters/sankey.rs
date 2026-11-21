@@ -188,7 +188,13 @@ pub(crate) fn render(
 
     let links: Vec<SankeyLink> = entries.into_iter().map(|(l, _)| l).collect();
     let mut sankey = SankeyChart::new_with_theme(vec![], links, theme_name);
+    sankey.sort_by_barycenter = true;
     apply_base_options(chart, &mut sankey.base, fm_title, 640.0, 420.0);
+    // Ensure comfortable default canvas padding so edge nodes never touch the SVG border.
+    sankey.margin.left = sankey.margin.left.max(12.0);
+    sankey.margin.right = sankey.margin.right.max(12.0);
+    sankey.margin.top = sankey.margin.top.max(12.0);
+    sankey.margin.bottom = sankey.margin.bottom.max(14.0);
     let (w, h) = (sankey.width, sankey.height);
     Ok((sankey.svg()?, w, h))
 }

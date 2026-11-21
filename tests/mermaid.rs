@@ -1096,3 +1096,45 @@ erDiagram
         my + mh
     );
 }
+
+#[test]
+fn m12_sankey_margin_and_reduced_crossings() {
+    let sankey =
+        MermaidChart::from_json(include_str!("../asset/mermaid_chart/sankey.json")).unwrap();
+    let svg = sankey.svg().unwrap();
+    assert_valid_svg(&svg);
+
+    // Every node rect (has `data-name=`) must keep >= 12px margin from left/right/bottom edges
+    // of the 640x420 canvas.
+    let get_attr = |line: &str, k: &str| -> f32 {
+        let pat = format!("{k}=\"");
+        let s = line.find(&pat).unwrap() + pat.len();
+        let e = s + line[s..].find('"').unwrap();
+        line[s..e].parse().unwrap()
+    };
+    let mut transport_y = None;
+    let mut residential_y = None;
+    for line in svg.lines().filter(|l| l.starts_with("<rect ") && l.contains("data-name=")) {
+        let x = get_attr(line, "x");
+        let y = get_attr(line, "y");
+        let w = get_attr(line, "width");
+        let h = get_attr(line, "height");
+        assert!(x >= 12.0, "sankey node touches left edge: x={x}");
+        assert!(x + w <= 628.0, "sankey node touches right edge: right={}", x + w);
+        assert!(y + h <= 406.5, "sankey node touches bottom edge: bottom={}", y + h);
+        if line.contains("data-name=\"Transport\"") {
+            transport_y = Some(y);
+        }
+        if line.contains("data-name=\"Residential\"") {
+            residential_y = Some(y);
+        }
+    }
+    // Barycenter ordering places `Transport` (only fed by top `Electricity`) above `Residential`
+    // (fed by both `Electricity` and bottom `Heat`), avoiding unnecessary crossings.
+    assert!(
+        transport_y.unwrap() < residential_y.unwrap(),
+        "expected Transport ({:?}) above Residential ({:?}) after barycenter ordering",
+        transport_y,
+        residential_y
+    );
+}
