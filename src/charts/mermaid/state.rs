@@ -1206,7 +1206,8 @@ pub(crate) fn render(
         }
     }
 
-    // 3. Transitions.
+    // 3. Transitions (pass 1: paths & markers; pass 2: labels).
+    let mut deferred_edge_labels: Vec<(Point, FormattedText)> = Vec::new();
     for (edge_idx, e) in st.edges.iter().enumerate() {
         let routed = &layout.edges[edge_layout_slot[edge_idx]];
         if routed.waypoints.len() < 2 {
@@ -1289,16 +1290,19 @@ pub(crate) fn render(
             && !lbl.is_empty()
         {
             let ft = format_and_measure(lbl, &font_family, edge_font_size);
-            draw_edge_label(
-                &mut cc,
-                mid,
-                &ft,
-                &palette,
-                palette.text_color,
-                &font_family,
-                edge_font_size,
-            );
+            deferred_edge_labels.push((mid, ft));
         }
+    }
+    for (mid, ft) in deferred_edge_labels {
+        draw_edge_label(
+            &mut cc,
+            mid,
+            &ft,
+            &palette,
+            palette.text_color,
+            &font_family,
+            edge_font_size,
+        );
     }
 
     // 4. State nodes, pseudo-states, and note cards.

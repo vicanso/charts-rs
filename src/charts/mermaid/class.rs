@@ -1055,7 +1055,9 @@ pub(crate) fn render(
         }
     }
 
-    // 3. UML relationships.
+    // 3. UML relationships (pass 1: paths & markers; pass 2: cardinality & edge labels).
+    let mut deferred_cards: Vec<(Point, (f32, f32), &str)> = Vec::new();
+    let mut deferred_labels: Vec<(Point, FormattedText)> = Vec::new();
     for (rel_idx, r) in cd.relations.iter().enumerate() {
         let routed = &layout.edges[rel_idx];
         if routed.waypoints.len() < 2 {
@@ -1107,41 +1109,38 @@ pub(crate) fn render(
             1.7,
         );
         if let Some(ref cl) = r.card_left {
-            draw_cardinality_label(
-                &mut cc,
-                pts[0],
-                (-start_dir.0, -start_dir.1),
-                cl,
-                &palette,
-                palette.text_color,
-                &font_family,
-                card_font_size,
-            );
+            deferred_cards.push((pts[0], (-start_dir.0, -start_dir.1), cl.as_str()));
         }
         if let Some(ref cr) = r.card_right {
-            draw_cardinality_label(
-                &mut cc,
-                *pts.last().unwrap(),
-                end_dir,
-                cr,
-                &palette,
-                palette.text_color,
-                &font_family,
-                card_font_size,
-            );
+            deferred_cards.push((*pts.last().unwrap(), end_dir, cr.as_str()));
         }
         if let Some(ref lbl) = r.label {
             let ft = format_and_measure(lbl, &font_family, edge_font_size);
-            draw_edge_label(
-                &mut cc,
-                mid,
-                &ft,
-                &palette,
-                palette.text_color,
-                &font_family,
-                edge_font_size,
-            );
+            deferred_labels.push((mid, ft));
         }
+    }
+    for (pt, dir, card) in deferred_cards {
+        draw_cardinality_label(
+            &mut cc,
+            pt,
+            dir,
+            card,
+            &palette,
+            palette.text_color,
+            &font_family,
+            card_font_size,
+        );
+    }
+    for (mid, ft) in deferred_labels {
+        draw_edge_label(
+            &mut cc,
+            mid,
+            &ft,
+            &palette,
+            palette.text_color,
+            &font_family,
+            edge_font_size,
+        );
     }
 
     // 4. Class boxes and Note cards.

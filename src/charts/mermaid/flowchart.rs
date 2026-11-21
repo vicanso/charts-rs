@@ -1264,7 +1264,8 @@ pub(crate) fn render(
         }
     }
 
-    // 2. Edges.
+    // 2. Edges (pass 1: paths & markers; pass 2: labels).
+    let mut deferred_edge_labels = Vec::new();
     for (edge_idx, e) in fc.edges.iter().enumerate() {
         if e.stroke == EdgeStroke::Invisible {
             continue;
@@ -1370,16 +1371,19 @@ pub(crate) fn render(
         {
             let ft = format_and_measure(lbl, &font_family, edge_font_size);
             let txt_color = style.color.unwrap_or(palette.text_color);
-            draw_edge_label(
-                &mut content_canvas,
-                mid,
-                &ft,
-                &palette,
-                txt_color,
-                &font_family,
-                edge_font_size,
-            );
+            deferred_edge_labels.push((mid, ft, txt_color));
         }
+    }
+    for (mid, ft, txt_color) in deferred_edge_labels {
+        draw_edge_label(
+            &mut content_canvas,
+            mid,
+            &ft,
+            &palette,
+            txt_color,
+            &font_family,
+            edge_font_size,
+        );
     }
 
     // 3. Nodes.

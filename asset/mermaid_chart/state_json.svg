@@ -14,48 +14,48 @@ Processing
 <polygon points="128.5,174 131.9,162.7 139.2,169.1" fill="#D1D0DC"/>
 <path d="M120.8 176 L209.7 299.8" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="214.7,334.8 204.4,329 212.4,323.3" fill="#D1D0DC"/>
-<rect x="144.7" y="261.4" width="51" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="170.2" y="272.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
-submit
-</text>
 <path d="M208.9 315.4 L201.7 387" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="206.7,422 202.9,410.9 212.6,411.8" fill="#D1D0DC"/>
-<rect x="191.8" y="374.7" width="37" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="210.3" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
-valid
-</text>
 <path d="M222.3 315.2 C254.5 348.9,315.1 390.2,351 450 C386.9 509.8,364.4 500.1,366 554.5 C367.6 608.9,378.3 605.1,357.5 667.5 C336.7 729.9,301.4 769.9,282.6 804" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="287.6,839 288.5,827.3 297.1,832" fill="#D1D0DC"/>
-<rect x="347.5" y="578" width="47" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="371" y="589.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
-invalid
-</text>
 <path d="M91.5 458.8 L106.8 536" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="111.8,571 105,561.5 114.5,559.6" fill="#D1D0DC"/>
 <path d="M110.7 573 L111.3 649" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="116.3,684 111.4,673.3 121.1,673.3" fill="#D1D0DC"/>
-<rect x="98.5" y="634.5" width="35" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="116" y="646" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
-paid
-</text>
 <path d="M245.5 458.8 L260.8 536" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="265.8,571 259,561.5 268.5,559.6" fill="#D1D0DC"/>
 <path d="M263.3 573 L258.2 649" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="263.2,684 259.1,673 268.8,673.6" fill="#D1D0DC"/>
-<rect x="237.2" y="634.5" width="57" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="265.8" y="646" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
-in stock
-</text>
 <path d="M165.1 718 L154.7 804" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="159.7,839 156.2,827.8 165.9,829" fill="#D1D0DC"/>
-<rect x="142.9" y="784.5" width="44" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="164.9" y="796" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
-ready
-</text>
 <path d="M161.7 841 L210.2 938.3" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="215.2,973.3 206,965.9 214.7,961.5" fill="#D1D0DC"/>
 <path d="M264.2 841 L220.4 938.1" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="225.4,973.1 225.4,961.3 234.3,965.3" fill="#D1D0DC"/>
+<rect x="144.7" y="261.4" width="51" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="170.2" y="272.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+submit
+</text>
+<rect x="191.8" y="374.7" width="37" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="210.3" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+valid
+</text>
+<rect x="347.5" y="578" width="47" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="371" y="589.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+invalid
+</text>
+<rect x="98.5" y="634.5" width="35" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="116" y="646" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+paid
+</text>
+<rect x="237.2" y="634.5" width="57" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="265.8" y="646" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+in stock
+</text>
+<rect x="142.9" y="784.5" width="44" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="164.9" y="796" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+ready
+</text>
 <path d="M215.5 294 L229.5 308 L215.5 322 L201.5 308 Z" transform="translate(5,35)" fill="#1F224C" stroke-width="1.6" stroke="#768DD1" stroke-linejoin="round"/>
 <rect x="72.5" y="174" width="80" height="37" rx="6" ry="6" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
 <text font-size="13.5" x="112.5" y="192.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">

@@ -10,12 +10,10 @@ Commerce
 <line stroke-width="1.2" x1="623" y1="166.5" x2="605" y2="166.5" stroke="#A97D20" stroke-dasharray="4,3"/>
 <path d="M301.6 172 L156.5 351" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M301.6 172 L298.5 186.2 L288.4 178 Z" transform="translate(5,35)" fill="#FFFFFF" stroke-width="1.7" stroke="#5C5D62" stroke-linejoin="round"/>
-<rect x="195.1" y="285" width="78" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
-<text font-size="12" x="234.1" y="296.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
-implements
-</text>
 <path d="M549.1 199 L591.6 349" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M549.1 199 L556.5 204.7 L553.2 213.4 L545.9 207.7 Z" transform="translate(5,35)" fill="#5C5D62" stroke-width="1.2" stroke="#5C5D62" stroke-linejoin="round"/>
+<path d="M460 177.1 L193 351" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M198.4 340.9 L193 351 L204.4 350.2" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="567.2" y="244" width="12" height="19" rx="3" ry="3" fill="#FFFFFF" fill-opacity="0.91"/>
 <text font-size="11" x="573.2" y="253.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 1
@@ -24,12 +22,14 @@ implements
 <text font-size="11" x="577.6" y="364.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 1..*
 </text>
+<rect x="195.1" y="285" width="78" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="234.1" y="296.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+implements
+</text>
 <rect x="545.4" y="297.5" width="60" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
 <text font-size="12" x="575.4" y="309" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 contains
 </text>
-<path d="M460 177.1 L193 351" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M198.4 340.9 L193 351 L204.4 350.2" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="312" y="287.5" width="39" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
 <text font-size="12" x="331.5" y="299" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 uses

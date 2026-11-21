@@ -1010,7 +1010,10 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
             pts.reverse();
         }
 
-        // Bow parallel edges or back-edges slightly apart.
+        // Bow parallel edges or back-edges apart using a canonical normal
+        // derived from `(min(u, v), max(u, v))` so opposite-direction edges
+        // (e.g. `A -> B` and `B -> A`) bow to opposite sides rather than
+        // cancelling signs and overlapping.
         let key = (e.from.min(e.to), e.from.max(e.to));
         let group = &pair_groups[&key];
         if group.len() > 1
@@ -1020,8 +1023,10 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
             if offset_idx.abs() > 1e-3 && pts.len() >= 2 {
                 let first = pts[0];
                 let last = *pts.last().unwrap();
-                let dx = last.x - first.x;
-                let dy = last.y - first.y;
+                let canon_start = nodes[key.0];
+                let canon_end = nodes[key.1];
+                let dx = canon_end.cx - canon_start.cx;
+                let dy = canon_end.cy - canon_start.cy;
                 let len = dx.hypot(dy).max(1.0);
                 let (nx, ny) = (-dy / len, dx / len);
                 let bow = offset_idx * 26.0;

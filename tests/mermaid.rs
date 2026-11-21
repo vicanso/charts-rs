@@ -729,3 +729,62 @@ gantt
     assert_valid_svg(&inc_svg);
     assert!(inc_svg.contains("Work"));
 }
+
+#[test]
+fn m05_parallel_edges_and_two_pass_labels() {
+    // Class diagram: opposite-direction parallel relations (`Fish --> Zebra : eats` and `Zebra -- Fish`).
+    let class_src = r#"
+classDiagram
+  class Fish
+  class Zebra
+  Fish --> Zebra : eats
+  Zebra -- Fish
+"#;
+    let class_svg = mermaid_to_svg(class_src).unwrap();
+    assert_valid_svg(&class_svg);
+    assert!(class_svg.contains("eats"));
+    // Extract the two curved edge <path d="..."> attributes (ignoring the open-arrow marker <path>)
+    // and confirm they are distinct separated curves.
+    let class_paths: Vec<&str> = class_svg
+        .split("<path d=\"")
+        .skip(1)
+        .filter_map(|s| s.split('"').next())
+        .filter(|d| d.contains(" C"))
+        .collect();
+    assert_eq!(
+        class_paths.len(),
+        2,
+        "expected 2 curved relationship paths in class diagram: {class_svg}"
+    );
+    assert_ne!(
+        class_paths[0], class_paths[1],
+        "parallel opposite-direction edges must produce distinct paths: {:?}",
+        class_paths
+    );
+    // Two-pass rendering: the label `eats` must appear AFTER both `<path` elements.
+    let last_path_pos = class_svg.rfind("<path ").unwrap();
+    let label_pos = class_svg.find("eats").unwrap();
+    assert!(
+        label_pos > last_path_pos,
+        "edge label must render after all edge paths (two-pass): {class_svg}"
+    );
+
+    // Flowchart: bidirectional parallel edges (`A --> B` and `B --> A`).
+    let fc_src = "flowchart LR\n  A -->|req| B\n  B -->|res| A";
+    let fc_svg = mermaid_to_svg(fc_src).unwrap();
+    assert_valid_svg(&fc_svg);
+    let fc_paths: Vec<&str> = fc_svg
+        .split("<path d=\"")
+        .skip(1)
+        .filter_map(|s| s.split('"').next())
+        .collect();
+    assert_eq!(fc_paths.len(), 2, "expected 2 edge paths: {fc_svg}");
+    assert_ne!(
+        fc_paths[0], fc_paths[1],
+        "bidirectional flowchart edges must separate: {:?}",
+        fc_paths
+    );
+    let fc_last_path = fc_svg.rfind("<path ").unwrap();
+    assert!(fc_svg.find("req").unwrap() > fc_last_path);
+    assert!(fc_svg.find("res").unwrap() > fc_last_path);
+}

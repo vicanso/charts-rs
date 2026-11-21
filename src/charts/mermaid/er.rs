@@ -619,7 +619,8 @@ pub(crate) fn render(
         bottom: chart.base.margin.bottom,
     });
 
-    // 1. Relationship lines and Crow's Foot markers.
+    // 1. Relationship lines and Crow's Foot markers (pass 1: paths & markers; pass 2: labels).
+    let mut deferred_labels = Vec::new();
     for (idx, r) in er.relations.iter().enumerate() {
         let routed = &layout.edges[idx];
         if routed.waypoints.len() < 2 {
@@ -672,16 +673,19 @@ pub(crate) fn render(
         );
         if let Some(ref lbl) = r.label {
             let ft = format_and_measure(lbl, &font_family, edge_font_size);
-            draw_edge_label(
-                &mut cc,
-                mid,
-                &ft,
-                &palette,
-                palette.text_color,
-                &font_family,
-                edge_font_size,
-            );
+            deferred_labels.push((mid, ft));
         }
+    }
+    for (mid, ft) in deferred_labels {
+        draw_edge_label(
+            &mut cc,
+            mid,
+            &ft,
+            &palette,
+            palette.text_color,
+            &font_family,
+            edge_font_size,
+        );
     }
 
     // 2. Entity cards and multi-column aligned attribute tables.
