@@ -135,10 +135,17 @@ charts-rs = { version = "2", features = ["mermaid"] }
 ```rust
 # #[cfg(feature = "mermaid")]
 # {
-use charts_rs::mermaid_to_svg;
+use charts_rs::{MermaidChart, mermaid_to_svg, mermaid_validate};
 
-let svg = mermaid_to_svg("flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]").unwrap();
+let src = "flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]";
+mermaid_validate(src).unwrap();
+let svg = mermaid_to_svg(src).unwrap();
 assert!(svg.starts_with("<svg"));
+
+// Disable SVG <a> links for untrusted Mermaid input:
+let mut safe_chart = MermaidChart::new(src);
+safe_chart.allow_links = false;
+assert!(safe_chart.svg().unwrap().starts_with("<svg"));
 # }
 ```
 
@@ -151,11 +158,15 @@ assert!(svg.starts_with("<svg"));
   lines, bullet — and `MultiChart`, which puts several on one canvas, their
   plots lined up one above the other.
 - **Mermaid** (optional `mermaid` feature): pure-Rust, zero-extra-dependency
-  SVG rendering for 13 diagram types (`flowchart` / `graph`, `sequenceDiagram`,
-  `stateDiagram` / `stateDiagram-v2`, `classDiagram` / `classDiagram-v2`,
-  `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta`,
-  `xychart-beta`, `radar-beta` / `radar`, `treemap-beta` / `treemap`),
-  inheriting the active `charts-rs` theme and composable in `MultiChart`.
+  SVG rendering and syntax validation (`mermaid_validate`) for 13 diagram types
+  (`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`,
+  `classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`,
+  `pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta` / `radar`,
+  `treemap-beta` / `treemap`), inheriting the active `charts-rs` theme and
+  composable in `MultiChart`. Supports YAML frontmatter / `%%{init}%%` config
+  passthrough, `accTitle` / `accDescr` SVG accessibility metadata,
+  protocol-allowlisted `click` links (`allow_links`), v11 `@{ shape }` nodes,
+  multiline Markdown labels, and gantt `excludes` / `includes` / `vert`.
 - **Series**: stacked and 100% stacked, bars mixed with lines, two y axes,
   smooth and step lines, areas, bands and error bars, mark lines, points and
   areas, regression curves, marginal histograms, density contours, missing values.

@@ -25,7 +25,11 @@
 //! `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`,
 //! `sankey-beta`, `xychart-beta`, `radar-beta` / `radar`, and
 //! `treemap-beta` / `treemap`) to pure SVG via `MermaidChart`, `mermaid_to_svg`,
-//! and `mermaid_to_svg_with_theme`.
+//! `mermaid_to_svg_with_theme`, and `mermaid_validate`. It supports YAML
+//! frontmatter / `%%{init}%%` configuration passthrough, `accTitle` /
+//! `accDescr` SVG accessibility metadata, safe `click` hyperlinks (controllable
+//! via `MermaidChart.allow_links`), v11 `@{ shape }` node syntax, and multiline
+//! Markdown strings.
 //!
 //! It supports ten built-in themes and is very easy to use.
 //! Each attribute can be customized, it can be saved as svg, png, jpeg,
@@ -430,14 +434,24 @@
 //! # Mermaid diagrams
 //!
 //! With the optional `mermaid` feature enabled (`charts-rs = { version = "2", features = ["mermaid"] }`),
-//! `mermaid_to_svg`, `mermaid_to_svg_with_theme`, and `MermaidChart` render 13 Mermaid
-//! diagram types directly to pure SVG:
+//! `mermaid_to_svg`, `mermaid_to_svg_with_theme`, `mermaid_validate`, and `MermaidChart` render
+//! and validate 13 Mermaid diagram types directly to pure SVG — including YAML frontmatter /
+//! `%%{init}%%` config passthrough (`fontFamily`, `flowchart.{curve,nodeSpacing,rankSpacing}`,
+//! `sequence.{mirrorActors,showSequenceNumbers}`, `xyChart.showLegend`), `accTitle` / `accDescr`
+//! accessibility tags, protocol-allowlisted `click` links (toggleable with
+//! `MermaidChart.allow_links`), v11 `@{ shape }` nodes, and multiline Markdown strings:
 //! ```rust
 //! # #[cfg(feature = "mermaid")]
 //! # {
-//! use charts_rs::mermaid_to_svg;
-//! let svg = mermaid_to_svg("flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]").unwrap();
+//! use charts_rs::{MermaidChart, mermaid_to_svg, mermaid_validate};
+//! let src = "flowchart LR\n  A[Client] --> B@{ shape: diam, label: \"Gateway\" }\n  B -->|OK| C[(DB)]";
+//! mermaid_validate(src).unwrap();
+//! let svg = mermaid_to_svg(src).unwrap();
 //! assert!(svg.starts_with("<svg"));
+//!
+//! let mut chart = MermaidChart::new(src);
+//! chart.allow_links = false; // disable emitted <a> links for untrusted input
+//! assert!(chart.svg().unwrap().starts_with("<svg"));
 //! # }
 //! ```
 //!

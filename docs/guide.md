@@ -795,10 +795,33 @@ charts-rs = { version = "2", features = ["mermaid"] }
 ```rust
 # #[cfg(feature = "mermaid")]
 # {
-use charts_rs::{mermaid_to_svg, MermaidChart, THEME_DARK};
+use charts_rs::{MermaidChart, THEME_DARK, mermaid_to_svg, mermaid_validate};
 
-let svg = mermaid_to_svg("flowchart LR\n  A[Start] --> B{Ready?}\n  B -->|Yes| C((Done))").unwrap();
+let flow = r#"
+---
+title: Checkout Pipeline
+config:
+  flowchart:
+    curve: linear
+    nodeSpacing: 60
+---
+flowchart LR
+  accTitle: Checkout Pipeline
+  accDescr: Validates cart and writes to the database
+  A["`**Client** _app_`"] --> B@{ shape: diam, label: "Gateway" }
+  B -->|OK| C@{ shape: doc, label: "Receipt" }
+  click A href "https://example.com/docs" "Open docs" _blank
+"#;
+
+// Validate syntax and semantics (with line numbers and typo hints) before rendering.
+mermaid_validate(flow).unwrap();
+let svg = mermaid_to_svg(flow).unwrap();
 assert!(svg.starts_with("<svg"));
+
+// Disable emitted <a> links when rendering untrusted input (also supported in JSON via `"allow_links": false`).
+let mut safe_chart = MermaidChart::new(flow);
+safe_chart.allow_links = false;
+assert!(!safe_chart.svg().unwrap().contains("<a href="));
 
 let mut chart = MermaidChart::new_with_theme(
     "sequenceDiagram\n  Alice->>Bob: Hello!\n  Bob-->>Alice: Hi!",
@@ -809,14 +832,35 @@ let _themed_svg = chart.svg().unwrap();
 # }
 ```
 
-- `flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`, and
-  `mindmap` size automatically to fit the diagram when `width` and `height` are
-  `0.0`; setting either scales proportionally via `viewBox`.
-- Styling inherits from the active `charts-rs` theme (`THEME_DARK`, `THEME_SHADCN`, …)
-  and supports Mermaid `style`, `classDef`, `class`, `:::`, `linkStyle`, YAML
-  frontmatter `title` and `%%{init: ...}%%`.
-- `MermaidChart` implements [`Chart`](https://docs.rs/charts-rs) and can be
-  composed inside `MultiChart` (`"type": "mermaid"`).
+- **Auto-sizing & scaling**: `flowchart`, `sequenceDiagram`, `stateDiagram`,
+  `classDiagram`, `erDiagram`, and `mindmap` size automatically to fit the
+  diagram when `width` and `height` are `0.0`; setting either scales
+  proportionally via `viewBox`.
+- **Validation & diagnostics**: `mermaid_validate(source)` runs preprocessing,
+  syntax parsing, and semantic checks (such as Sankey cycle detection and
+  all-zero Pie validation) across all 13 diagram types, returning line-numbered
+  `Error::Mermaid` diagnostics with typo suggestions (e.g. `stateDiagram-v3` ->
+  `stateDiagram-v2`, or `->>` inside a flowchart).
+- **Frontmatter & `%%{init}%%` config passthrough**: supports `title`,
+  `config.theme`, `config.fontFamily`, `config.flowchart.{curve, nodeSpacing,
+  rankSpacing}` (`basis` / `linear` / `step`), `config.sequence.{mirrorActors,
+  showSequenceNumbers}`, and `config.xyChart.showLegend`. Explicit Rust / JSON
+  API options take precedence over frontmatter and `%%{init}%%`.
+- **Accessibility & safe links**: `accTitle:` and `accDescr:` / `accDescr { ... }`
+  emit `role="img"`, `aria-labelledby`, `aria-describedby`, `<title>`, and
+  `<desc>` on the root `<svg>`. `click` / `link` directives in `flowchart`,
+  `classDiagram`, and `stateDiagram` wrap nodes in `<a href="...">` using a
+  strict protocol allowlist (`http://`, `https://`, `mailto:`, and relative
+  URLs; `javascript:` / `data:` are blocked), and can be disabled globally via
+  `chart.allow_links = false` or JSON `"allow_links": false`.
+- **Rich syntax**: styling inherits from the active `charts-rs` theme
+  (`THEME_DARK`, `THEME_SHADCN`, …) and supports `style`, `classDef`, `class`,
+  `:::`, `linkStyle`, v11 `A@{ shape: doc, label: "..." }` node shapes,
+  multiline Markdown strings (`` "`...`" `` with `**bold**` and `*italic*`),
+  and `gantt` `excludes` / `includes` / `weekday` / `tickInterval` / `vert`
+  markers.
+- **Composition**: `MermaidChart` implements [`Chart`](https://docs.rs/charts-rs)
+  and can be composed inside `MultiChart` (`"type": "mermaid"`).
 
 ## Fonts
 

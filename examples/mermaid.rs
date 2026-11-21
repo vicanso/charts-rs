@@ -1,18 +1,36 @@
-use charts_rs::{MermaidChart, THEME_DARK, mermaid_to_svg};
+use charts_rs::{MermaidChart, THEME_DARK, mermaid_to_svg, mermaid_validate};
 
 fn main() {
     let flow = r#"
+---
+title: Service Request Flow
+config:
+  flowchart:
+    curve: linear
+    nodeSpacing: 55
+---
 flowchart LR
-    A[Client] --> B{Gateway}
+    accTitle: Service Request Flow
+    accDescr: Routes authenticated requests to PostgreSQL or Redis
+    A["`**Client** _app_`"] --> B@{ shape: diam, label: "Gateway" }
     B -->|Auth OK| C[(Primary DB)]
     B -->|Cache Hit| D([Redis])
     subgraph Backend
         C
         D
     end
+    click A href "https://example.com/client" "Client docs" _blank
 "#;
+    mermaid_validate(flow).expect("validate flowchart");
     let flow_svg = mermaid_to_svg(flow).expect("render flowchart");
     println!("flowchart svg bytes: {}", flow_svg.len());
+
+    // Untrusted input: disable emitted <a> hyperlinks via `allow_links = false`.
+    let mut safe_chart = MermaidChart::new(flow);
+    safe_chart.allow_links = false;
+    let safe_svg = safe_chart.svg().expect("render flowchart without links");
+    assert!(!safe_svg.contains("<a href="));
+    println!("flowchart (allow_links=false) svg bytes: {}", safe_svg.len());
 
     let seq = r#"
 sequenceDiagram

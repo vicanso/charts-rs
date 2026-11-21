@@ -3,6 +3,8 @@
 > 本文档记录 `charts-rs` 新增纯 Rust Mermaid 渲染能力的完整架构设计、模块划分与分阶段实施规划。
 >
 > **当前状态（v3 已封版）**：已完成全部三期共 **13 类** Mermaid 图表的纯 Rust 渲染支持（v1：`flowchart`/`graph`、`sequenceDiagram`、`pie`、`gantt`、`sankey-beta`、`xychart-beta`；v2：`stateDiagram`/`stateDiagram-v2`、`classDiagram`/`classDiagram-v2`、`erDiagram`；v3：`mindmap`、`quadrantChart`、`radar-beta`/`radar`、`treemap-beta`/`treemap`），零新增外部依赖，见文末第七、八节。
+>
+> **已知问题与改进计划**：见 [mermaid-issues.md](./mermaid-issues.md)。
 
 ## 一、背景与可行性分析
 

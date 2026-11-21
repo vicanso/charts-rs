@@ -588,9 +588,33 @@ charts-rs = { version = "2", features = ["mermaid"] }
 ```
 
 ```rust
-use charts_rs::{mermaid_to_svg, MermaidChart, THEME_DARK};
+use charts_rs::{MermaidChart, THEME_DARK, mermaid_to_svg, mermaid_validate};
 
-let svg = mermaid_to_svg("flowchart LR\n  A[Start] --> B{Ready?}\n  B -->|Yes| C((Done))").unwrap();
+let flow = r#"
+---
+title: 结账流程
+config:
+  flowchart:
+    curve: linear
+    nodeSpacing: 60
+---
+flowchart LR
+  accTitle: 结账流程
+  accDescr: 校验购物车并写入数据库
+  A["`**Client** _app_`"] --> B@{ shape: diam, label: "Gateway" }
+  B -->|OK| C@{ shape: doc, label: "Receipt" }
+  click A href "https://example.com/docs" "查看文档" _blank
+"#;
+
+// 渲染前校验语法与语义（带行号与拼写提示）
+mermaid_validate(flow).unwrap();
+let svg = mermaid_to_svg(flow).unwrap();
+
+// 渲染不可信输入时关闭 SVG <a> 链接（JSON 中对应 `"allow_links": false`）
+let mut safe_chart = MermaidChart::new(flow);
+safe_chart.allow_links = false;
+let _safe_svg = safe_chart.svg().unwrap();
+
 let mut chart = MermaidChart::new_with_theme(
     "sequenceDiagram\n  Alice->>Bob: Hello!\n  Bob-->>Alice: Hi!",
     THEME_DARK,
@@ -599,9 +623,12 @@ chart.width = 720.0;
 let _themed_svg = chart.svg().unwrap();
 ```
 
-- `flowchart`、`sequenceDiagram`、`stateDiagram`、`classDiagram`、`erDiagram` 与 `mindmap` 在 `width`/`height` 为 `0` 时按内容自适应大小；显式设置宽高时通过 `viewBox` 等比缩放。
-- 默认继承 `charts-rs` 当前主题配色，同时支持 Mermaid 的 `style`、`classDef`、`class`、`:::`、`linkStyle`、YAML frontmatter `title` 与 `%%{init: ...}%%`。
-- `MermaidChart` 实现了 `Chart` trait，并可直接作为 `"type": "mermaid"` 嵌入 `MultiChart`。
+- **自适应尺寸与缩放**：`flowchart`、`sequenceDiagram`、`stateDiagram`、`classDiagram`、`erDiagram` 与 `mindmap` 在 `width`/`height` 为 `0` 时按内容自适应大小；显式设置宽高时通过 `viewBox` 等比缩放。
+- **语法校验与诊断**：`mermaid_validate(source)` 覆盖全部 13 类图表的预处理、语法与语义校验（如 Sankey 环检测、Pie 全零值校验），出错时返回带行号及拼写提示的 `Error::Mermaid`（如 `stateDiagram-v3` 提示 `stateDiagram-v2`，flowchart 中误用 `->>` 提示改用 `-->`）。
+- **Frontmatter 与 `%%{init}%%` 配置透传**：支持 `title`、`config.theme`、`config.fontFamily`、`config.flowchart.{curve, nodeSpacing, rankSpacing}`（`basis` / `linear` / `step`）、`config.sequence.{mirrorActors, showSequenceNumbers}` 与 `config.xyChart.showLegend`。Rust / JSON API 显式传入的选项优先级高于源码配置。
+- **无障碍与安全超链接**：`accTitle:` 与 `accDescr:` / `accDescr { ... }` 会在根 `<svg>` 上输出 `role="img"`、`aria-labelledby`、`aria-describedby`、`<title>` 与 `<desc>`。`flowchart` / `classDiagram` / `stateDiagram` 中的 `click` / `link` 指令会按协议白名单（仅允许 `http://`、`https://`、`mailto:` 和相对路径，拦截 `javascript:` / `data:`）输出 `<a href="...">`，可通过 `chart.allow_links = false` 或 JSON `"allow_links": false` 全局关闭。
+- **语法与样式**：默认继承 `charts-rs` 当前主题配色，支持 `style`、`classDef`、`class`、`:::`、`linkStyle`、v11 `A@{ shape: doc, label: "..." }` 节点语法、多行 Markdown 富文本标签（`` "`...`" ``，支持 `**粗体**` / `*斜体*`），以及甘特图 `excludes` / `includes` / `weekday` / `tickInterval` / `vert` 纵向参考线。
+- **组合图表**：`MermaidChart` 实现了 `Chart` trait，并可直接作为 `"type": "mermaid"` 嵌入 `MultiChart`。
 
 ## 字体
 
