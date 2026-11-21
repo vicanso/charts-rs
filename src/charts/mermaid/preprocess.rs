@@ -86,6 +86,8 @@ fn leading_indent(s: &str) -> usize {
 pub(crate) struct Preprocessed {
     pub(crate) kind: DiagramKind,
     pub(crate) title: Option<String>,
+    pub(crate) acc_title: Option<String>,
+    pub(crate) acc_descr: Option<String>,
     pub(crate) init_theme: Option<String>,
     pub(crate) lines: Vec<SourceLine>,
 }
@@ -453,17 +455,21 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
         None => (first.text.as_str(), None),
     };
 
-    let mut body: Vec<SourceLine> = Vec::with_capacity(lines.len());
+    let mut raw_body: Vec<SourceLine> = Vec::with_capacity(lines.len());
     if let Some(t) = trailing
         && !t.is_empty()
     {
-        body.push(SourceLine {
+        raw_body.push(SourceLine {
             line_no: first.line_no,
             indent: 0,
             text: t.to_string(),
         });
     }
-    body.extend(lines.into_iter().skip(1));
+    raw_body.extend(lines.into_iter().skip(1));
+
+    // Extract accessibility directives (`accTitle:`, `accDescr:`, `accDescr { ... }`)
+    // centrally so every diagram engine inherits SVG `<title>`/`<desc>` support.
+    let (body, acc_title, acc_descr) = extract_accessibility(raw_body)?;
 
     let mut parts = header_text.split_whitespace();
     let keyword = parts.next().unwrap_or_default();
@@ -553,9 +559,93 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
     Ok(Preprocessed {
         kind,
         title: fm_title,
+        acc_title,
+        acc_descr,
         init_theme,
         lines: body,
     })
+}
+
+fn extract_accessibility(
+    lines: Vec<SourceLine>,
+) -> Result<(Vec<SourceLine>, Option<String>, Option<String>)> {
+    let mut out = Vec::with_capacity(lines.len());
+    let mut acc_title: Option<String> = None;
+    let mut acc_descr: Option<String> = None;
+    let mut in_descr_block = false;
+    let mut descr_start_line = 0usize;
+    let mut descr_parts: Vec<String> = Vec::new();
+
+    for sl in lines {
+        let trimmed = sl.text.trim();
+        if in_descr_block {
+            if let Some(before_close) = trimmed.strip_suffix('}') {
+                let piece = before_close.trim();
+                if !piece.is_empty() {
+                    descr_parts.push(piece.to_string());
+                }
+                let joined = descr_parts.join("\n");
+                if !joined.is_empty() {
+                    acc_descr = Some(joined);
+                }
+                descr_parts.clear();
+                in_descr_block = false;
+            } else if !trimmed.is_empty() {
+                descr_parts.push(trimmed.to_string());
+            }
+            continue;
+        }
+
+        if let Some(rest) = trimmed.strip_prefix("accTitle") {
+            let after = rest.trim_start();
+            if let Some(val) = after.strip_prefix(':') {
+                let t = val.trim();
+                if !t.is_empty() {
+                    acc_title = Some(t.to_string());
+                }
+                continue;
+            }
+        }
+
+        if let Some(rest) = trimmed.strip_prefix("accDescr") {
+            let after = rest.trim_start();
+            if let Some(val) = after.strip_prefix(':') {
+                let d = val.trim();
+                if !d.is_empty() {
+                    acc_descr = Some(d.to_string());
+                }
+                continue;
+            }
+            if let Some(after_brace) = after.strip_prefix('{') {
+                let inner = after_brace.trim();
+                if let Some(before_close) = inner.strip_suffix('}') {
+                    let d = before_close.trim();
+                    if !d.is_empty() {
+                        acc_descr = Some(d.to_string());
+                    }
+                } else {
+                    in_descr_block = true;
+                    descr_start_line = sl.line_no;
+                    descr_parts.clear();
+                    if !inner.is_empty() {
+                        descr_parts.push(inner.to_string());
+                    }
+                }
+                continue;
+            }
+        }
+
+        out.push(sl);
+    }
+
+    if in_descr_block {
+        return Err(Error::Mermaid {
+            line: Some(descr_start_line),
+            message: "unclosed `accDescr { ... }` block".to_string(),
+        });
+    }
+
+    Ok((out, acc_title, acc_descr))
 }
 
 #[cfg(test)]

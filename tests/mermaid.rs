@@ -1390,3 +1390,61 @@ flowchart LR
         "expected unknown shape diagnostic: {err}"
     );
 }
+
+#[test]
+fn e04_accessibility_acc_title_and_descr() {
+    // Single-line accTitle + accDescr with XML special characters.
+    let fc = r#"
+flowchart LR
+    accTitle: Auth <Flow> & "Tokens"
+    accDescr: Validates A < B & issues JWTs
+    A[Client] --> B[Server]
+"#;
+    let svg = mermaid_to_svg(fc).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("role=\"img\""), "missing role=img: {svg}");
+    assert!(
+        svg.contains("aria-labelledby=\"mermaid-title\""),
+        "missing aria-labelledby: {svg}"
+    );
+    assert!(
+        svg.contains("aria-describedby=\"mermaid-desc\""),
+        "missing aria-describedby: {svg}"
+    );
+    assert!(
+        svg.contains("<title id=\"mermaid-title\">Auth &lt;Flow&gt; &amp; &quot;Tokens&quot;</title>"),
+        "missing escaped <title>: {svg}"
+    );
+    assert!(
+        svg.contains("<desc id=\"mermaid-desc\">Validates A &lt; B &amp; issues JWTs</desc>"),
+        "missing escaped <desc>: {svg}"
+    );
+
+    // Multiline accDescr { ... } on an adapter diagram (pie).
+    let pie = r#"
+pie title Budget
+    accTitle: Quarterly Budget
+    accDescr {
+        Engineering 60%
+        Operations 40%
+    }
+    "Engineering" : 60
+    "Operations" : 40
+"#;
+    let pie_svg = mermaid_to_svg(pie).unwrap();
+    assert_valid_svg(&pie_svg);
+    assert!(pie_svg.contains("<title id=\"mermaid-title\">Quarterly Budget</title>"));
+    assert!(pie_svg.contains("<desc id=\"mermaid-desc\">Engineering 60%\nOperations 40%</desc>"));
+
+    // Unclosed accDescr { returns a line-numbered error.
+    let bad = "flowchart TD\n  accDescr {\n    missing close\n  A --> B";
+    let err = mermaid_to_svg(bad).unwrap_err().to_string();
+    assert!(err.contains("line 2"), "expected line 2 in error: {err}");
+    assert!(err.contains("unclosed"), "expected unclosed diagnostic: {err}");
+
+    // Diagram without accTitle/accDescr must not emit accessibility metadata.
+    let plain = mermaid_to_svg("flowchart LR\n  A --> B").unwrap();
+    assert!(!plain.contains("role=\"img\""));
+    assert!(!plain.contains("<title"));
+    assert!(!plain.contains("<desc"));
+}

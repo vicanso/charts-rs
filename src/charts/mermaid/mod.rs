@@ -170,7 +170,7 @@ impl MermaidChart {
         };
         check_theme_name(&effective_theme)?;
 
-        match prep.kind {
+        let (svg, w, h) = match prep.kind {
             DiagramKind::Flowchart(dir) => flowchart::render(
                 self,
                 &effective_theme,
@@ -229,7 +229,13 @@ impl MermaidChart {
                 horizontal,
                 &prep.lines,
             ),
-        }
+        }?;
+        let svg = inject_svg_accessibility(
+            svg,
+            prep.acc_title.as_deref(),
+            prep.acc_descr.as_deref(),
+        );
+        Ok((svg, w, h))
     }
 
     pub(crate) fn has_custom_background(&self) -> bool {
@@ -255,6 +261,68 @@ impl MermaidChart {
             DEFAULT_FONT_FAMILY.to_string()
         }
     }
+}
+
+fn escape_xml_text(raw: &str) -> String {
+    let mut out = String::with_capacity(raw.len());
+    for ch in raw.chars() {
+        match ch {
+            '&' => out.push_str("&amp;"),
+            '<' => out.push_str("&lt;"),
+            '>' => out.push_str("&gt;"),
+            '"' => out.push_str("&quot;"),
+            '\'' => out.push_str("&apos;"),
+            _ => out.push(ch),
+        }
+    }
+    out
+}
+
+fn inject_svg_accessibility(
+    svg: String,
+    acc_title: Option<&str>,
+    acc_descr: Option<&str>,
+) -> String {
+    let title = acc_title.filter(|s| !s.is_empty());
+    let descr = acc_descr.filter(|s| !s.is_empty());
+    if title.is_none() && descr.is_none() {
+        return svg;
+    }
+    let Some(svg_start) = svg.find("<svg") else {
+        return svg;
+    };
+    let Some(rel_end) = svg[svg_start..].find('>') else {
+        return svg;
+    };
+    let tag_end = svg_start + rel_end;
+
+    let mut attrs = String::from(" role=\"img\"");
+    if title.is_some() {
+        attrs.push_str(" aria-labelledby=\"mermaid-title\"");
+    }
+    if descr.is_some() {
+        attrs.push_str(" aria-describedby=\"mermaid-desc\"");
+    }
+
+    let mut children = String::new();
+    if let Some(t) = title {
+        children.push_str("<title id=\"mermaid-title\">");
+        children.push_str(&escape_xml_text(t));
+        children.push_str("</title>");
+    }
+    if let Some(d) = descr {
+        children.push_str("<desc id=\"mermaid-desc\">");
+        children.push_str(&escape_xml_text(d));
+        children.push_str("</desc>");
+    }
+
+    let mut out = String::with_capacity(svg.len() + attrs.len() + children.len());
+    out.push_str(&svg[..tag_end]);
+    out.push_str(&attrs);
+    out.push('>');
+    out.push_str(&children);
+    out.push_str(&svg[tag_end + 1..]);
+    out
 }
 
 /// Renders a Mermaid diagram source string directly to SVG using the default theme.
