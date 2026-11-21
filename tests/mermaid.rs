@@ -1362,3 +1362,31 @@ fn m17_m22_markdown_strings_bold_italic_and_multiline() {
         "expected italic tspan in mindmap: {mm_svg}"
     );
 }
+
+#[test]
+fn m18_flowchart_v11_shape_syntax() {
+    let src = r#"
+flowchart LR
+  S@{ shape: sm-circ } --> A@{ shape: doc, label: "Spec, v1" }
+  A --> B@{ shape: docs, label: "Reports" }
+  B --> C@{ shape: delay, label: "Wait" }
+  C --> D@{ shape: tri, label: "Extract" }
+  D --> E@{ shape: flag, label: "Signal" }
+  E --> J@{ shape: f-circ }
+  J --> T@{ shape: text, label: "Plain Note" }
+  J --> DB@{ shape: cyl, label: "Store", icon: "fa:database" }
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    for lbl in ["Spec, v1", "Reports", "Wait", "Extract", "Signal", "Plain Note", "Store"] {
+        assert!(svg.contains(lbl), "missing v11 node label `{lbl}`: {svg}");
+    }
+    // Unknown shape returns a clear line-numbered Error::Mermaid.
+    let bad = "flowchart TD\n  A@{ shape: nonexistent, label: \"Oops\" }";
+    let err = mermaid_to_svg(bad).unwrap_err().to_string();
+    assert!(err.contains("line 2"), "expected line 2 in error: {err}");
+    assert!(
+        err.contains("unknown flowchart v11 shape"),
+        "expected unknown shape diagnostic: {err}"
+    );
+}

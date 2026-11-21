@@ -26,7 +26,7 @@ use super::layout::{
     LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, sugiyama,
 };
 use super::preprocess::{Direction, SourceLine};
-use super::style::{MermaidPalette, StyleProps, parse_style_props};
+use super::style::{MermaidPalette, StyleProps, parse_style_props, unquote_text};
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 
 #[derive(Clone, Debug)]
@@ -329,6 +329,114 @@ impl<'a> StmtScanner<'a> {
         })
     }
 
+    fn read_v11_shape_block(&mut self) -> Result<(Option<NodeShape>, Option<String>)> {
+        let open_pos = self.pos;
+        self.pos += 2; // consume `@{`
+        let start = self.pos;
+        let bytes = self.src.as_bytes();
+        let mut in_quote: Option<u8> = None;
+        let mut depth = 1usize;
+        let mut end = None;
+        while self.pos < bytes.len() {
+            let b = bytes[self.pos];
+            if let Some(q) = in_quote {
+                if b == b'\\' && self.pos + 1 < bytes.len() {
+                    self.pos += 2;
+                    continue;
+                }
+                if b == q {
+                    in_quote = None;
+                }
+                self.pos += 1;
+                continue;
+            }
+            match b {
+                b'"' | b'\'' => in_quote = Some(b),
+                b'{' => depth += 1,
+                b'}' => {
+                    depth -= 1;
+                    if depth == 0 {
+                        end = Some(self.pos);
+                        self.pos += 1;
+                        break;
+                    }
+                }
+                _ => {}
+            }
+            self.pos += 1;
+        }
+        let Some(end_pos) = end else {
+            return Err(Error::Mermaid {
+                line: Some(self.line_no),
+                message: format!("unclosed v11 shape block starting near `{}`", &self.src[open_pos..]),
+            });
+        };
+        let body = &self.src[start..end_pos];
+        let mut shape: Option<NodeShape> = None;
+        let mut label: Option<String> = None;
+
+        // Split top-level comma-separated `key: value` pairs outside quotes.
+        let mut entries = Vec::new();
+        let mut cur_start = 0usize;
+        let mut q: Option<u8> = None;
+        let bbody = body.as_bytes();
+        let mut i = 0;
+        while i < bbody.len() {
+            let b = bbody[i];
+            if let Some(quote) = q {
+                if b == b'\\' && i + 1 < bbody.len() {
+                    i += 2;
+                    continue;
+                }
+                if b == quote {
+                    q = None;
+                }
+                i += 1;
+                continue;
+            }
+            if b == b'"' || b == b'\'' {
+                q = Some(b);
+            } else if b == b',' {
+                entries.push(body[cur_start..i].trim());
+                cur_start = i + 1;
+            }
+            i += 1;
+        }
+        let tail = body[cur_start..].trim();
+        if !tail.is_empty() {
+            entries.push(tail);
+        }
+
+        for entry in entries {
+            if entry.is_empty() {
+                continue;
+            }
+            let Some((raw_k, raw_v)) = entry.split_once(':') else {
+                return Err(Error::Mermaid {
+                    line: Some(self.line_no),
+                    message: format!("invalid v11 node property `{entry}` (expected `key: value`)"),
+                });
+            };
+            let key = unquote_text(raw_k.trim()).to_ascii_lowercase();
+            let val = unquote_text(raw_v.trim());
+            match key.as_str() {
+                "shape" => {
+                    shape = Some(parse_v11_shape(&val, self.line_no)?);
+                }
+                "label" => {
+                    label = Some(val);
+                }
+                _ => {}
+            }
+        }
+        if matches!(shape, Some(NodeShape::SmallCircle | NodeShape::FramedCircle))
+            && label.is_none()
+        {
+            label = Some(String::new());
+        }
+        Ok((shape, label))
+    }
+
     /// Reads `[/...]` or `[\...]` where the closing delimiter may be either
     /// `/]` or `\]` (Parallelogram vs Trapezoid).
     fn read_slash_delimited(&mut self, open: &str) -> Result<(NodeShape, String)> {
@@ -417,7 +525,11 @@ impl<'a> StmtScanner<'a> {
 
         let mut shape = None;
         let mut label = None;
-        if self.rest().starts_with("[/") {
+        if self.rest().starts_with("@{") {
+            let (v11_shape, v11_label) = self.read_v11_shape_block()?;
+            shape = v11_shape;
+            label = v11_label;
+        } else if self.rest().starts_with("[/") {
             let (s, l) = self.read_slash_delimited("[/")?;
             shape = Some(s);
             label = Some(l);
@@ -1005,6 +1117,37 @@ fn parse_flowchart(direction: Direction, lines: &[SourceLine]) -> Result<ParsedF
     Ok(fc)
 }
 
+fn parse_v11_shape(name: &str, line_no: usize) -> Result<NodeShape> {
+    match name.trim().to_ascii_lowercase().as_str() {
+        "rect" | "process" | "rectangle" => Ok(NodeShape::Rect),
+        "rounded" | "event" => Ok(NodeShape::Rounded),
+        "stadium" | "terminal" | "pill" => Ok(NodeShape::Stadium),
+        "subproc" | "fr-rect" | "subprocess" => Ok(NodeShape::Subroutine),
+        "cyl" | "cylinder" | "database" | "db" => Ok(NodeShape::Cylinder),
+        "circle" | "circ" => Ok(NodeShape::Circle),
+        "dbl-circ" | "double-circle" | "doublecircle" => Ok(NodeShape::DoubleCircle),
+        "diam" | "diamond" | "decision" => Ok(NodeShape::Diamond),
+        "hex" | "hexagon" | "prepare" => Ok(NodeShape::Hexagon),
+        "lean-r" | "in-out" => Ok(NodeShape::Parallelogram),
+        "lean-l" | "out-in" => Ok(NodeShape::ParallelogramAlt),
+        "trap-b" | "priority" => Ok(NodeShape::Trapezoid),
+        "trap-t" | "manual" => Ok(NodeShape::TrapezoidAlt),
+        "odd" | "asym" | "asymmetric" => Ok(NodeShape::Asymmetric),
+        "doc" | "document" => Ok(NodeShape::Doc),
+        "docs" | "documents" => Ok(NodeShape::Docs),
+        "delay" | "half-rounded-rectangle" => Ok(NodeShape::Delay),
+        "tri" | "triangle" | "extract" => Ok(NodeShape::Triangle),
+        "flag" | "notch-pent" => Ok(NodeShape::Flag),
+        "sm-circ" | "start" => Ok(NodeShape::SmallCircle),
+        "f-circ" | "junction" => Ok(NodeShape::FramedCircle),
+        "text" => Ok(NodeShape::TextOnly),
+        other => Err(Error::Mermaid {
+            line: Some(line_no),
+            message: format!("unknown flowchart v11 shape `{other}`"),
+        }),
+    }
+}
+
 fn node_box_size(shape: NodeShape, label: &FormattedText) -> (f32, f32) {
     let text_w = label.width.max(16.0);
     let text_h = label.height.max(18.0);
@@ -1024,6 +1167,17 @@ fn node_box_size(shape: NodeShape, label: &FormattedText) -> (f32, f32) {
             let side = side.max(46.0);
             (side, side)
         }
+        NodeShape::SmallCircle => (20.0, 20.0),
+        NodeShape::FramedCircle => (24.0, 24.0),
+        NodeShape::Triangle => (
+            (text_w * 1.6 + 34.0).max(66.0),
+            (text_h * 1.6 + 32.0).max(56.0),
+        ),
+        NodeShape::Doc => ((text_w + 30.0).max(62.0), (text_h + 28.0).max(46.0)),
+        NodeShape::Docs => ((text_w + 38.0).max(70.0), (text_h + 34.0).max(52.0)),
+        NodeShape::Delay => ((text_w + 36.0).max(66.0), (text_h + 20.0).max(38.0)),
+        NodeShape::Flag => ((text_w + 42.0).max(74.0), (text_h + 20.0).max(38.0)),
+        NodeShape::TextOnly => ((text_w + 12.0).max(24.0), (text_h + 10.0).max(24.0)),
         NodeShape::Hexagon => ((text_w + 42.0).max(72.0), (text_h + 22.0).max(40.0)),
         NodeShape::Cylinder => ((text_w + 30.0).max(60.0), (text_h + 32.0).max(48.0)),
         NodeShape::Subroutine => ((text_w + 38.0).max(68.0), (text_h + 20.0).max(38.0)),

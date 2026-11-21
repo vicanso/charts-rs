@@ -20,7 +20,7 @@ use super::super::util::{Point, format_float, write_float};
 use super::style::MermaidPalette;
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 
-/// All 14 Mermaid flowchart node shapes.
+/// Mermaid flowchart node shapes (classic + v11 `@{ shape: ... }` core subset).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub(crate) enum NodeShape {
     #[default]
@@ -38,6 +38,14 @@ pub(crate) enum NodeShape {
     Trapezoid,
     TrapezoidAlt,
     Asymmetric,
+    Doc,
+    Docs,
+    Delay,
+    Triangle,
+    Flag,
+    SmallCircle,
+    FramedCircle,
+    TextOnly,
 }
 
 /// Edge line stroke kind.
@@ -115,6 +123,15 @@ fn polygon_vertices(shape: NodeShape, cx: f32, cy: f32, w: f32, h: f32) -> Optio
             (cx - hw, cy + hh),
             (cx - hw + flag, cy),
         ],
+        NodeShape::Triangle => vec![(cx, cy - hh), (cx + hw, cy + hh), (cx - hw, cy + hh)],
+        NodeShape::Flag => vec![
+            (cx - hw, cy - hh),
+            (cx + hw - flag, cy - hh),
+            (cx + hw, cy),
+            (cx + hw - flag, cy + hh),
+            (cx - hw, cy + hh),
+            (cx - hw + flag * 0.8, cy),
+        ],
         _ => return None,
     };
 
@@ -161,7 +178,10 @@ pub(crate) fn clip_point_to_shape(
     }
 
     match shape {
-        NodeShape::Circle | NodeShape::DoubleCircle => {
+        NodeShape::Circle
+        | NodeShape::DoubleCircle
+        | NodeShape::SmallCircle
+        | NodeShape::FramedCircle => {
             let r = (w.max(h) * 0.5).max(1.0);
             let scale = (r / dist).min(1.0);
             Point::from((cx + dx * scale, cy + dy * scale))
@@ -326,6 +346,117 @@ pub(crate) fn draw_node(
                 });
             }
         }
+        NodeShape::SmallCircle => {
+            let r = (w.min(h) * 0.5).max(6.0);
+            c.circle(Circle {
+                cx,
+                cy,
+                r,
+                fill: Some(stroke),
+                stroke_color: Some(stroke),
+                stroke_width,
+                ..Default::default()
+            });
+        }
+        NodeShape::FramedCircle => {
+            let r = (w.min(h) * 0.5).max(8.0);
+            c.circle(Circle {
+                cx,
+                cy,
+                r,
+                fill: Some(fill),
+                stroke_color: Some(stroke),
+                stroke_width,
+                stroke_dash_array: stroke_dasharray,
+                ..Default::default()
+            });
+            let d = r * 0.68;
+            for (dx, dy) in [(-d, -d), (-d, d)] {
+                c.line(Line {
+                    color: Some(stroke),
+                    stroke_width,
+                    left: cx + dx,
+                    top: cy + dy,
+                    right: cx - dx,
+                    bottom: cy - dy,
+                    ..Default::default()
+                });
+            }
+        }
+        NodeShape::Delay => {
+            let r = (h * 0.5).min(w * 0.45);
+            let right_flat = x + w - r;
+            let d = format!(
+                "M{} {} L{} {} A{} {} 0 0 1 {} {} L{} {} Z",
+                format_float(x),
+                format_float(y),
+                format_float(right_flat),
+                format_float(y),
+                format_float(r),
+                format_float(h * 0.5),
+                format_float(right_flat),
+                format_float(y + h),
+                format_float(x),
+                format_float(y + h),
+            );
+            c.raw_path(RawPath {
+                d,
+                fill: Some(fill),
+                stroke: Some(stroke),
+                stroke_width,
+                stroke_dash_array: stroke_dasharray,
+                stroke_linejoin: Some("round"),
+                ..Default::default()
+            });
+        }
+        NodeShape::Doc | NodeShape::Docs => {
+            let doc_path = |ox: f32, oy: f32, dw: f32, dh: f32| -> String {
+                let wave = (dh * 0.16).clamp(5.0, 9.0);
+                let bot = oy + dh - wave;
+                format!(
+                    "M{} {} L{} {} L{} {} C{} {}, {} {}, {} {} Z",
+                    format_float(ox),
+                    format_float(oy),
+                    format_float(ox + dw),
+                    format_float(oy),
+                    format_float(ox + dw),
+                    format_float(bot),
+                    format_float(ox + dw * 0.65),
+                    format_float(bot - wave * 1.4),
+                    format_float(ox + dw * 0.35),
+                    format_float(oy + dh + wave * 0.6),
+                    format_float(ox),
+                    format_float(bot),
+                )
+            };
+            if shape == NodeShape::Docs {
+                let step = 4.0;
+                let fw = (w - step * 2.0).max(20.0);
+                let fh = (h - step * 2.0).max(20.0);
+                for layer in [2.0_f32, 1.0, 0.0] {
+                    c.raw_path(RawPath {
+                        d: doc_path(x + layer * step, y + (2.0 - layer) * step, fw, fh),
+                        fill: Some(fill),
+                        stroke: Some(stroke),
+                        stroke_width,
+                        stroke_dash_array: stroke_dasharray.clone(),
+                        stroke_linejoin: Some("round"),
+                        ..Default::default()
+                    });
+                }
+            } else {
+                c.raw_path(RawPath {
+                    d: doc_path(x, y, w, h),
+                    fill: Some(fill),
+                    stroke: Some(stroke),
+                    stroke_width,
+                    stroke_dash_array: stroke_dasharray,
+                    stroke_linejoin: Some("round"),
+                    ..Default::default()
+                });
+            }
+        }
+        NodeShape::TextOnly => {}
         _ => {
             if let Some(points) = polygon_vertices(shape, cx, cy, w, h) {
                 if stroke_dasharray.is_some() || (stroke_width - 1.0).abs() > 0.05 {
