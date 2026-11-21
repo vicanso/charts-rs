@@ -3,44 +3,30 @@
 <text font-size="18" x="202.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
 Quarterly Revenue &amp; Growth
 </text>
-<g>
-<line stroke-width="2" x1="254" y1="50" x2="279" y2="50" stroke="#7EB26D"/>
-<circle cx="266.5" cy="50" r="5.5" stroke-width="2" stroke="#7EB26D" fill="#7EB26D"/>
-<text font-size="14" x="282" y="54" font-family="Roboto" fill="#D8D9DA">
-Bar 1
-</text>
-</g>
-<g>
-<line stroke-width="2" x1="318" y1="50" x2="343" y2="50" stroke="#EAB839"/>
-<circle cx="330.5" cy="50" r="5.5" stroke-width="2" stroke="#EAB839" fill="#EAB839"/>
-<text font-size="14" x="346" y="54" font-family="Roboto" fill="#D8D9DA">
-Line 1
-</text>
-</g>
-<text font-size="14" transform="translate(16.9,213.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
+<text font-size="14" transform="translate(16.9,202.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
 Revenue ($k)
 </text>
 <g stroke="#444343" stroke-width="1">
-<line x1="54" y1="62" x2="635" y2="62"/><line x1="54" y1="112.5" x2="635" y2="112.5"/><line x1="54" y1="163" x2="635" y2="163"/><line x1="54" y1="213.5" x2="635" y2="213.5"/><line x1="54" y1="264" x2="635" y2="264"/><line x1="54" y1="314.5" x2="635" y2="314.5"/>
+<line x1="54" y1="40" x2="635" y2="40"/><line x1="54" y1="94.2" x2="635" y2="94.2"/><line x1="54" y1="148.3" x2="635" y2="148.3"/><line x1="54" y1="202.5" x2="635" y2="202.5"/><line x1="54" y1="256.7" x2="635" y2="256.7"/><line x1="54" y1="310.8" x2="635" y2="310.8"/>
 </g>
 <g>
 
-<text font-size="14" x="22" y="67" font-family="Roboto" fill="#B9B8CE">
+<text font-size="14" x="22" y="45" font-family="Roboto" fill="#B9B8CE">
 120
 </text>
-<text font-size="14" x="22" y="117.5" font-family="Roboto" fill="#B9B8CE">
+<text font-size="14" x="22" y="99.2" font-family="Roboto" fill="#B9B8CE">
 100
 </text>
-<text font-size="14" x="30" y="168" font-family="Roboto" fill="#B9B8CE">
+<text font-size="14" x="30" y="153.3" font-family="Roboto" fill="#B9B8CE">
 80
 </text>
-<text font-size="14" x="30" y="218.5" font-family="Roboto" fill="#B9B8CE">
+<text font-size="14" x="30" y="207.5" font-family="Roboto" fill="#B9B8CE">
 60
 </text>
-<text font-size="14" x="30" y="269" font-family="Roboto" fill="#B9B8CE">
+<text font-size="14" x="30" y="261.7" font-family="Roboto" fill="#B9B8CE">
 40
 </text>
-<text font-size="14" x="30" y="319.5" font-family="Roboto" fill="#B9B8CE">
+<text font-size="14" x="30" y="315.8" font-family="Roboto" fill="#B9B8CE">
 20
 </text>
 <text font-size="14" x="38" y="370" font-family="Roboto" fill="#B9B8CE">
@@ -77,21 +63,21 @@ Q5
 Q6
 </text>
 </g>
-<rect x="59" y="259" width="86.8" height="106" fill="#7EB26D" data-series="Bar 1" data-category="Q1" data-value="42"/>
-<rect x="155.8" y="218.6" width="86.8" height="146.4" fill="#7EB26D" data-series="Bar 1" data-category="Q2" data-value="58"/>
-<rect x="252.7" y="198.3" width="86.8" height="166.7" fill="#7EB26D" data-series="Bar 1" data-category="Q3" data-value="66"/>
-<rect x="349.5" y="152.9" width="86.8" height="212.1" fill="#7EB26D" data-series="Bar 1" data-category="Q4" data-value="84"/>
-<rect x="446.3" y="125.1" width="86.8" height="239.9" fill="#7EB26D" data-series="Bar 1" data-category="Q5" data-value="95"/>
-<rect x="543.2" y="82.2" width="86.8" height="282.8" fill="#7EB26D" data-series="Bar 1" data-category="Q6" data-value="112"/>
+<rect x="59" y="251.2" width="86.8" height="113.8" fill="#7EB26D" data-series="Bar 1" data-category="Q1" data-value="42"/>
+<rect x="155.8" y="207.9" width="86.8" height="157.1" fill="#7EB26D" data-series="Bar 1" data-category="Q2" data-value="58"/>
+<rect x="252.7" y="186.2" width="86.8" height="178.8" fill="#7EB26D" data-series="Bar 1" data-category="Q3" data-value="66"/>
+<rect x="349.5" y="137.5" width="86.8" height="227.5" fill="#7EB26D" data-series="Bar 1" data-category="Q4" data-value="84"/>
+<rect x="446.3" y="107.7" width="86.8" height="257.3" fill="#7EB26D" data-series="Bar 1" data-category="Q5" data-value="95"/>
+<rect x="543.2" y="61.7" width="86.8" height="303.3" fill="#7EB26D" data-series="Bar 1" data-category="Q6" data-value="112"/>
 <g>
-<path d="M 102.4 276.6 L 199.2 238.8 L 296.1 208.5 L 392.9 173.1 L 489.8 140.3 L 586.6 92.3" stroke-width="2" fill="none" stroke="#EAB839"/>
+<path d="M 102.4 270.2 L 199.2 229.6 L 296.1 197.1 L 392.9 159.2 L 489.8 124 L 586.6 72.5" stroke-width="2" fill="none" stroke="#EAB839"/>
 <g stroke-width="2" stroke="#EAB839" fill="#1F1D1D">
-<circle cx="102.4" cy="276.6" r="2"/>
-<circle cx="199.2" cy="238.8" r="2"/>
-<circle cx="296.1" cy="208.5" r="2"/>
-<circle cx="392.9" cy="173.1" r="2"/>
-<circle cx="489.8" cy="140.3" r="2"/>
-<circle cx="586.6" cy="92.3" r="2"/>
+<circle cx="102.4" cy="270.2" r="2"/>
+<circle cx="199.2" cy="229.6" r="2"/>
+<circle cx="296.1" cy="197.1" r="2"/>
+<circle cx="392.9" cy="159.2" r="2"/>
+<circle cx="489.8" cy="124" r="2"/>
+<circle cx="586.6" cy="72.5" r="2"/>
 </g>
 </g>
 </svg>

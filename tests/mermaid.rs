@@ -788,3 +788,49 @@ classDiagram
     assert!(fc_svg.find("req").unwrap() > fc_last_path);
     assert!(fc_svg.find("res").unwrap() > fc_last_path);
 }
+
+#[test]
+fn m10_xychart_no_auto_legend_and_clean_numeric_ticks() {
+    let src = r#"
+xychart-beta
+  title "Numeric X"
+  x-axis "Step" 1 --> 10
+  y-axis "Score" 0 --> 100
+  bar [20, 40, 60, 80, 100]
+  line [15, 35, 55, 75, 95]
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("Numeric X"));
+    assert!(svg.contains("Step"), "expected x-axis title: {svg}");
+    assert!(svg.contains("Score"), "expected y-axis title: {svg}");
+    // No anonymous auto-legend `Bar 1` / `Line 1` text elements.
+    assert!(
+        !svg.contains("\nBar 1\n"),
+        "auto-legend Bar 1 should be hidden: {svg}"
+    );
+    assert!(
+        !svg.contains("\nLine 1\n"),
+        "auto-legend Line 1 should be hidden: {svg}"
+    );
+    // Clean numeric ticks (no awkward `3.2` or `7.8`) and no negative bar x-coordinates.
+    assert!(!svg.contains("\n3.2\n"), "unexpected fractional tick 3.2: {svg}");
+    assert!(!svg.contains("\n7.8\n"), "unexpected fractional tick 7.8: {svg}");
+    assert!(
+        !svg.contains("<rect x=\"-"),
+        "bars must not overflow past left edge: {svg}"
+    );
+
+    // Horizontal mode also hides auto-legend and avoids `3.2`/`7.8`.
+    let horiz = r#"
+xychart-beta horizontal
+  x-axis "Step" 1 --> 10
+  y-axis "Score" 0 --> 100
+  bar [20, 40, 60, 80, 100]
+"#;
+    let hsvg = mermaid_to_svg(horiz).unwrap();
+    assert_valid_svg(&hsvg);
+    assert!(!hsvg.contains("\nBar 1\n"));
+    assert!(!hsvg.contains("\n3.2\n"));
+    assert!(!hsvg.contains("\n7.8\n"));
+}

@@ -14,7 +14,7 @@
 //! [`HorizontalBarChart`](crate::HorizontalBarChart).
 
 use super::super::super::bar_chart::BarChart;
-use super::super::super::common::{Series, SeriesCategory};
+use super::super::super::common::{AxisType, Series, SeriesCategory};
 use super::super::super::error::{Error, Result};
 use super::super::super::horizontal_bar_chart::HorizontalBarChart;
 use super::super::MermaidChart;
@@ -221,16 +221,25 @@ pub(crate) fn render(
         });
     }
 
+    let max_series_len = series_list.iter().map(|s| s.data.len()).max().unwrap_or(0);
+    let numeric_x = x_categories.is_empty() && x_range.is_some();
+
     if x_categories.is_empty() {
-        let len = series_list.iter().map(|s| s.data.len()).max().unwrap_or(0);
         if let Some((min, max)) = x_range
-            && len > 1
+            && max_series_len > 1
         {
-            let step = (max - min) / (len - 1) as f32;
-            x_categories = (0..len)
+            let step = (max - min) / (max_series_len - 1) as f32;
+            let endpoints_are_int =
+                (min - min.round()).abs() < 1e-4 && (max - max.round()).abs() < 1e-4;
+            let step_is_int = (step - step.round()).abs() < 1e-4;
+            x_categories = (0..max_series_len)
                 .map(|i| {
                     let v = min + step * i as f32;
                     if (v - v.round()).abs() < 1e-4 {
+                        format!("{}", v.round() as i64)
+                    } else if endpoints_are_int && !step_is_int {
+                        // Avoid awkward fractional ticks like `3.2` / `7.8` on
+                        // integer ranges in horizontal category mode.
                         format!("{}", v.round() as i64)
                     } else {
                         format!("{v:.1}")
@@ -238,12 +247,14 @@ pub(crate) fn render(
                 })
                 .collect();
         } else {
-            x_categories = (1..=len).map(|i| i.to_string()).collect();
+            x_categories = (1..=max_series_len).map(|i| i.to_string()).collect();
         }
     }
 
     if horizontal {
         let mut hbar = HorizontalBarChart::new_with_theme(series_list, x_categories, theme_name);
+        // Mermaid xychart does not render a legend for anonymous `bar`/`line` series by default.
+        hbar.legend.show = Some(false);
         if let Some(xt) = x_title {
             hbar.y_axis_configs[0].title = Some(xt);
         }
@@ -266,6 +277,29 @@ pub(crate) fn render(
     }
 
     let mut bar = BarChart::new_with_theme(series_list, x_categories, theme_name);
+    // Mermaid xychart does not render a legend for anonymous `bar`/`line` series by default.
+    bar.legend.show = Some(false);
+    if numeric_x
+        && let Some((min, max)) = x_range
+        && max > min
+        && max_series_len > 0
+    {
+        bar.x_axis.kind = AxisType::Value;
+        bar.x_axis.values = if max_series_len == 1 {
+            vec![min as f64]
+        } else {
+            let step = (max as f64 - min as f64) / (max_series_len - 1) as f64;
+            (0..max_series_len)
+                .map(|i| min as f64 + step * i as f64)
+                .collect()
+        };
+        // Only pin exact min/max when there are no bars; bar series need the
+        // continuous axis's automatic half-band padding so outer bars aren't clipped.
+        if bar_count == 0 {
+            bar.x_axis.min = Some(min as f64);
+            bar.x_axis.max = Some(max as f64);
+        }
+    }
     if let Some(xt) = x_title {
         bar.x_axis.title = xt;
     }
