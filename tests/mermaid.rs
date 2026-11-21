@@ -1570,3 +1570,105 @@ fn e12_mermaid_validate_and_typo_hints() {
         "expected sequenceDiagram arrow hint: {err_arrow}"
     );
 }
+
+#[test]
+fn e01_frontmatter_and_init_config_passthrough() {
+    // 1. YAML frontmatter flowchart config: linear curve + larger spacing + fontFamily.
+    let fc_linear = r#"
+---
+config:
+  fontFamily: "Courier New"
+  flowchart:
+    curve: linear
+    nodeSpacing: 80
+    rankSpacing: 100
+---
+flowchart TD
+    A --> B
+    A --> C
+    B --> D
+    C --> D
+"#;
+    let fc_default = "flowchart TD\n  A --> B\n  A --> C\n  B --> D\n  C --> D";
+    let svg_linear = mermaid_to_svg(fc_linear).unwrap();
+    let svg_default = mermaid_to_svg(fc_default).unwrap();
+    assert_valid_svg(&svg_linear);
+    assert!(
+        svg_linear.contains("font-family=\"Courier New\""),
+        "expected frontmatter fontFamily: {svg_linear}"
+    );
+    // Linear curve uses L segments instead of cubic C segments for edges.
+    assert!(
+        svg_linear.contains(" L"),
+        "expected linear edge segments: {svg_linear}"
+    );
+    // Explicit Rust API font_family overrides frontmatter fontFamily.
+    let mut override_chart = MermaidChart::new(fc_linear);
+    override_chart.font_family = "Georgia".to_string();
+    let svg_override = override_chart.svg().unwrap();
+    assert!(
+        svg_override.contains("font-family=\"Georgia\""),
+        "expected Rust API font_family to override frontmatter: {svg_override}"
+    );
+    assert!(
+        !svg_override.contains("font-family=\"Courier New\""),
+        "frontmatter fontFamily must not leak over explicit API override"
+    );
+    assert_ne!(svg_linear, svg_default);
+
+    // 2. Step curve via %%{init}%% directive.
+    let fc_step = r#"
+%%{init: {'flowchart': {'curve': 'step'}}}%%
+flowchart LR
+    A --> B
+    A --> C
+    B --> D
+    C --> D
+"#;
+    let svg_step = mermaid_to_svg(fc_step).unwrap();
+    assert_valid_svg(&svg_step);
+
+    // 3. Sequence diagram: mirrorActors: false & showSequenceNumbers: true via %%{init}%%.
+    let seq_src = r#"
+%%{init: {'sequence': {'mirrorActors': false, 'showSequenceNumbers': true}}}%%
+sequenceDiagram
+    Alice->>Bob: Hello
+    Bob-->>Alice: World
+"#;
+    let seq_svg = mermaid_to_svg(seq_src).unwrap();
+    assert_valid_svg(&seq_svg);
+    assert!(
+        seq_svg.contains("1. Hello") && seq_svg.contains("2. World"),
+        "expected showSequenceNumbers autonumbering: {seq_svg}"
+    );
+    // With mirrorActors: false, each participant label appears once (header only, no footer).
+    assert_eq!(
+        seq_svg.matches("Alice").count(),
+        1,
+        "expected Alice footer suppressed when mirrorActors=false: {seq_svg}"
+    );
+    assert_eq!(
+        seq_svg.matches("Bob").count(),
+        1,
+        "expected Bob footer suppressed when mirrorActors=false: {seq_svg}"
+    );
+
+    // 4. xyChart: showLegend: true via frontmatter re-enables legend.
+    let xy_src = r#"
+---
+config:
+  xyChart:
+    showLegend: true
+---
+xychart-beta
+    x-axis [Q1, Q2, Q3]
+    y-axis 0 --> 100
+    bar [30, 50, 70]
+"#;
+    let xy_svg = mermaid_to_svg(xy_src).unwrap();
+    assert_valid_svg(&xy_svg);
+    assert!(
+        xy_svg.contains("Bar 1"),
+        "expected xychart legend when showLegend=true: {xy_svg}"
+    );
+}

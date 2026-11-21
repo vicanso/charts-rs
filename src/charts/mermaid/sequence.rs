@@ -21,7 +21,7 @@ use super::super::error::{Error, Result};
 use super::super::theme::get_theme;
 use super::super::util::{Point, format_float};
 use super::MermaidChart;
-use super::preprocess::SourceLine;
+use super::preprocess::{MermaidInitConfig, SourceLine};
 use super::style::{MermaidPalette, mix_color, parse_css_color};
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 
@@ -868,9 +868,14 @@ pub(crate) fn render(
     chart: &MermaidChart,
     theme_name: &str,
     fm_title: Option<&str>,
+    init_cfg: &MermaidInitConfig,
     lines: &[SourceLine],
 ) -> Result<(String, f32, f32)> {
-    let seq = parse_sequence(lines)?;
+    let mut seq = parse_sequence(lines)?;
+    if init_cfg.sequence_show_numbers == Some(true) {
+        seq.autonumber = true;
+    }
+    let mirror_actors = init_cfg.sequence_mirror_actors.unwrap_or(true);
     if seq.participants.is_empty() {
         return Err(Error::Mermaid {
             line: lines.first().map(|l| l.line_no),
@@ -884,9 +889,15 @@ pub(crate) fn render(
         .then_some(chart.base.background_color);
     let palette = MermaidPalette::from_theme(&theme, bg_override);
     let font_family = chart.resolved_font_family(&theme);
-    let font_size = 13.5_f32;
-    let msg_font_size = 12.5_f32;
-    let note_font_size = 12.0_f32;
+    let font_size = init_cfg.font_size.unwrap_or(13.5_f32);
+    let msg_font_size = init_cfg
+        .font_size
+        .map(|s| (s - 1.0).max(8.0))
+        .unwrap_or(12.5_f32);
+    let note_font_size = init_cfg
+        .font_size
+        .map(|s| (s - 1.5).max(8.0))
+        .unwrap_or(12.0_f32);
 
     let n = seq.participants.len();
     let has_actor = seq
@@ -1376,7 +1387,12 @@ pub(crate) fn render(
         }
     }
 
-    let layout_h = lifeline_bottom + participant_slot_h + CANVAS_PAD;
+    let footer_slot_h = if mirror_actors {
+        participant_slot_h
+    } else {
+        0.0
+    };
+    let layout_h = lifeline_bottom + footer_slot_h + CANVAS_PAD;
     let layout_w = content_w_inner.max(120.0);
 
     let title_text = if !chart.base.title.text.is_empty() {
@@ -1424,7 +1440,7 @@ pub(crate) fn render(
         let bx = min_x - 8.0;
         let bw = (max_x - min_x) + 16.0;
         let by = top_participant_y - box_header_pad;
-        let bh = lifeline_bottom + participant_slot_h + 6.0 - by;
+        let bh = lifeline_bottom + footer_slot_h + 6.0 - by;
         let fill = b.color.unwrap_or_else(|| palette.box_fill());
         content_canvas.rect(Rect {
             left: bx,
@@ -1753,7 +1769,7 @@ pub(crate) fn render(
             &palette,
             (&font_family, font_size),
         );
-        if destroyed_y[i].is_none() {
+        if mirror_actors && destroyed_y[i].is_none() {
             draw_participant_box(
                 &mut content_canvas,
                 p,

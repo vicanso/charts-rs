@@ -124,6 +124,7 @@ pub(crate) fn render(
     theme_name: &str,
     fm_title: Option<&str>,
     horizontal: bool,
+    show_legend: Option<bool>,
     lines: &[SourceLine],
 ) -> Result<(String, f32, f32)> {
     let mut title = fm_title.map(str::to_string);
@@ -254,7 +255,7 @@ pub(crate) fn render(
     if horizontal {
         let mut hbar = HorizontalBarChart::new_with_theme(series_list, x_categories, theme_name);
         // Mermaid xychart does not render a legend for anonymous `bar`/`line` series by default.
-        hbar.legend.show = Some(false);
+        hbar.legend.show = Some(show_legend.unwrap_or(false));
         if let Some(xt) = x_title {
             hbar.y_axis_configs[0].title = Some(xt);
         }
@@ -278,7 +279,7 @@ pub(crate) fn render(
 
     let mut bar = BarChart::new_with_theme(series_list, x_categories, theme_name);
     // Mermaid xychart does not render a legend for anonymous `bar`/`line` series by default.
-    bar.legend.show = Some(false);
+    bar.legend.show = Some(show_legend.unwrap_or(false));
     if numeric_x
         && let Some((min, max)) = x_range
         && max > min

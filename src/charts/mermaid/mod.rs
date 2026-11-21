@@ -67,6 +67,7 @@ pub struct MermaidChart {
     pub allow_links: bool,
     theme_name: Option<String>,
     explicit_background: bool,
+    explicit_font_family: bool,
 }
 
 impl Default for MermaidChart {
@@ -77,6 +78,7 @@ impl Default for MermaidChart {
             allow_links: true,
             theme_name: None,
             explicit_background: false,
+            explicit_font_family: false,
         }
     }
 }
@@ -108,6 +110,7 @@ impl MermaidChart {
             allow_links: true,
             theme_name: (!theme.is_empty()).then(|| theme.to_string()),
             explicit_background: false,
+            explicit_font_family: false,
         };
         let mut y_axis_configs = vec![];
         chart.base.fill_theme(get_theme(theme), &mut y_axis_configs);
@@ -144,6 +147,7 @@ impl MermaidChart {
         }
         if let Some(font_family) = get_string_from_value(&value, "font_family") {
             chart.font_family = font_family;
+            chart.explicit_font_family = true;
         }
         if let Some(bg) = get_color_from_value(&value, "background_color") {
             chart.background_color = bg;
@@ -187,37 +191,53 @@ impl MermaidChart {
         };
         check_theme_name(&effective_theme)?;
 
+        let mut effective_chart = self.clone();
+        if !self.has_custom_font_family()
+            && let Some(ref ff) = prep.init_config.font_family
+        {
+            effective_chart.base.font_family = ff.clone();
+        }
+        let chart_ref = &effective_chart;
+
         let (svg, w, h) = match prep.kind {
             DiagramKind::Flowchart(dir) => flowchart::render(
-                self,
+                chart_ref,
                 &effective_theme,
                 prep.title.as_deref(),
                 dir,
+                &prep.init_config,
                 &prep.lines,
             ),
-            DiagramKind::Sequence => {
-                sequence::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
+            DiagramKind::Sequence => sequence::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.init_config,
+                &prep.lines,
+            ),
             DiagramKind::State => {
-                state::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
+                state::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
             }
             DiagramKind::Class => {
-                class::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
+                class::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
             }
             DiagramKind::Er => {
-                er::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
+                er::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
             }
             DiagramKind::Mindmap => {
-                mindmap::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
+                mindmap::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
             }
             DiagramKind::Quadrant => {
-                quadrant::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
+                quadrant::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
             }
-            DiagramKind::Radar => {
-                adapters::radar::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
+            DiagramKind::Radar => adapters::radar::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
             DiagramKind::Treemap => adapters::treemap::render(
-                self,
+                chart_ref,
                 &effective_theme,
                 prep.title.as_deref(),
                 &prep.lines,
@@ -226,24 +246,31 @@ impl MermaidChart {
                 show_data,
                 inline_title,
             } => adapters::pie::render(
-                self,
+                chart_ref,
                 &effective_theme,
                 prep.title.as_deref(),
                 show_data,
                 inline_title.as_deref(),
                 &prep.lines,
             ),
-            DiagramKind::Gantt => {
-                adapters::gantt::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
-            DiagramKind::Sankey => {
-                adapters::sankey::render(self, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
+            DiagramKind::Gantt => adapters::gantt::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
+            DiagramKind::Sankey => adapters::sankey::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
             DiagramKind::XyChart { horizontal } => adapters::xychart::render(
-                self,
+                chart_ref,
                 &effective_theme,
                 prep.title.as_deref(),
                 horizontal,
+                prep.init_config.xychart_show_legend,
                 &prep.lines,
             ),
         }?;
@@ -267,6 +294,18 @@ impl MermaidChart {
             .map(get_theme)
             .unwrap_or_else(|| get_theme(&get_default_theme_name()));
         self.base.background_color != orig_theme.background_color
+    }
+
+    pub(crate) fn has_custom_font_family(&self) -> bool {
+        if self.explicit_font_family {
+            return true;
+        }
+        let orig_theme = self
+            .theme_name
+            .as_deref()
+            .map(get_theme)
+            .unwrap_or_else(|| get_theme(&get_default_theme_name()));
+        !self.base.font_family.is_empty() && self.base.font_family != orig_theme.font_family
     }
 
     pub(crate) fn resolved_font_family(&self, theme: &Theme) -> String {

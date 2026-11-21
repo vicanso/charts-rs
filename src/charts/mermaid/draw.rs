@@ -503,6 +503,73 @@ pub(crate) fn draw_node(
     );
 }
 
+/// Converts waypoints into an SVG path (`d`) using the requested [`EdgeCurve`],
+/// returning `(path_d, midpoint, start_out_tangent, end_in_tangent)`.
+pub(crate) fn build_edge_path(
+    pts: &[Point],
+    curve: super::preprocess::EdgeCurve,
+) -> (String, Point, (f32, f32), (f32, f32)) {
+    match curve {
+        super::preprocess::EdgeCurve::Smooth => build_smooth_edge_path(pts),
+        super::preprocess::EdgeCurve::Linear => build_linear_edge_path(pts),
+        super::preprocess::EdgeCurve::Step => build_step_edge_path(pts),
+    }
+}
+
+fn build_linear_edge_path(pts: &[Point]) -> (String, Point, (f32, f32), (f32, f32)) {
+    if pts.len() < 2 {
+        return (String::new(), Point::default(), (1.0, 0.0), (1.0, 0.0));
+    }
+    let mut d = String::new();
+    d.push('M');
+    write_float(&mut d, pts[0].x);
+    d.push(' ');
+    write_float(&mut d, pts[0].y);
+    for p in &pts[1..] {
+        d.push_str(" L");
+        write_float(&mut d, p.x);
+        d.push(' ');
+        write_float(&mut d, p.y);
+    }
+    let n = pts.len();
+    let mid = if n % 2 == 1 {
+        pts[n / 2]
+    } else {
+        let a = pts[n / 2 - 1];
+        let b = pts[n / 2];
+        Point::from(((a.x + b.x) * 0.5, (a.y + b.y) * 0.5))
+    };
+    let start_dir = (pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    let end_dir = (pts[n - 1].x - pts[n - 2].x, pts[n - 1].y - pts[n - 2].y);
+    (d, mid, start_dir, end_dir)
+}
+
+fn build_step_edge_path(pts: &[Point]) -> (String, Point, (f32, f32), (f32, f32)) {
+    if pts.len() < 2 {
+        return (String::new(), Point::default(), (1.0, 0.0), (1.0, 0.0));
+    }
+    let mut ortho: Vec<Point> = Vec::with_capacity(pts.len() * 3);
+    ortho.push(pts[0]);
+    for w in pts.windows(2) {
+        let a = w[0];
+        let b = w[1];
+        if (a.x - b.x).abs() < 1e-2 || (a.y - b.y).abs() < 1e-2 {
+            ortho.push(b);
+        } else if (b.x - a.x).abs() >= (b.y - a.y).abs() {
+            let mx = (a.x + b.x) * 0.5;
+            ortho.push(Point::from((mx, a.y)));
+            ortho.push(Point::from((mx, b.y)));
+            ortho.push(b);
+        } else {
+            let my = (a.y + b.y) * 0.5;
+            ortho.push(Point::from((a.x, my)));
+            ortho.push(Point::from((b.x, my)));
+            ortho.push(b);
+        }
+    }
+    build_linear_edge_path(&ortho)
+}
+
 /// Converts waypoints into a smooth cubic Bézier SVG path (`d`), returning
 /// `(path_d, midpoint, start_out_tangent, end_in_tangent)`.
 pub(crate) fn build_smooth_edge_path(pts: &[Point]) -> (String, Point, (f32, f32), (f32, f32)) {

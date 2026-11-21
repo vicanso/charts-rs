@@ -19,13 +19,13 @@ use super::super::error::{Error, Result};
 use super::super::theme::get_theme;
 use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 use super::draw::{
-    EdgeMarker, EdgeStroke, NodeShape, build_smooth_edge_path, clip_point_to_rect,
-    clip_point_to_shape, draw_edge_label, draw_edge_marker, draw_node,
+    EdgeMarker, EdgeStroke, NodeShape, build_edge_path, clip_point_to_rect, clip_point_to_shape,
+    draw_edge_label, draw_edge_marker, draw_node,
 };
 use super::layout::{
     LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, sugiyama,
 };
-use super::preprocess::{Direction, SourceLine};
+use super::preprocess::{Direction, EdgeCurve, MermaidInitConfig, SourceLine};
 use super::style::{MermaidPalette, StyleProps, parse_style_props, unquote_text};
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 
@@ -1257,6 +1257,7 @@ pub(crate) fn render(
     theme_name: &str,
     fm_title: Option<&str>,
     direction: Direction,
+    init_cfg: &MermaidInitConfig,
     lines: &[SourceLine],
 ) -> Result<(String, f32, f32)> {
     let mut fc = parse_flowchart(direction, lines)?;
@@ -1309,9 +1310,16 @@ pub(crate) fn render(
         .then_some(chart.base.background_color);
     let palette = MermaidPalette::from_theme(&theme, bg_override);
     let font_family = chart.resolved_font_family(&theme);
-    let font_size = 14.0_f32;
-    let edge_font_size = 12.0_f32;
-    let sg_font_size = 13.0_f32;
+    let font_size = init_cfg.font_size.unwrap_or(14.0_f32);
+    let edge_font_size = init_cfg
+        .font_size
+        .map(|s| (s - 2.0).max(8.0))
+        .unwrap_or(12.0_f32);
+    let sg_font_size = init_cfg
+        .font_size
+        .map(|s| (s - 1.0).max(9.0))
+        .unwrap_or(13.0_f32);
+    let edge_curve = init_cfg.flowchart_curve.unwrap_or(EdgeCurve::Smooth);
 
     // Measure node labels and subgraph titles.
     let mut node_labels = Vec::with_capacity(fc.nodes.len());
@@ -1369,10 +1377,18 @@ pub(crate) fn render(
         });
     }
 
+    let rank_sep_extra = init_cfg
+        .flowchart_rank_spacing
+        .map(|v| (v - 54.0).max(-40.0))
+        .unwrap_or(0.0);
+    let node_sep_extra = init_cfg
+        .flowchart_node_spacing
+        .map(|v| (v - 34.0).max(-24.0))
+        .unwrap_or(0.0);
     let layout = sugiyama::layout(&LayeredGraph {
         direction: fc.direction,
-        rank_sep_extra: 0.0,
-        node_sep_extra: 0.0,
+        rank_sep_extra,
+        node_sep_extra,
         nodes: layout_nodes,
         edges: layout_edges,
         subgraphs: layout_subgraphs,
@@ -1573,7 +1589,7 @@ pub(crate) fn render(
             .clone()
             .or_else(|| (e.stroke == EdgeStroke::Dotted).then(|| "5,4".to_string()));
 
-        let (d, mid, start_dir, end_dir) = build_smooth_edge_path(&pts);
+        let (d, mid, start_dir, end_dir) = build_edge_path(&pts, edge_curve);
         content_canvas.raw_path(RawPath {
             d,
             fill: None,

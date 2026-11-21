@@ -81,6 +81,32 @@ fn leading_indent(s: &str) -> usize {
     n
 }
 
+/// Edge routing curve style for flowcharts.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) enum EdgeCurve {
+    /// Smooth Catmull-Rom cubic Bézier curve (default).
+    #[default]
+    Smooth,
+    /// Straight polyline segments through waypoints.
+    Linear,
+    /// Orthogonal step segments between waypoints.
+    Step,
+}
+
+/// High-frequency configuration options parsed from YAML frontmatter (`config:`)
+/// or `%%{init: {...}}%%` directives.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub(crate) struct MermaidInitConfig {
+    pub(crate) font_family: Option<String>,
+    pub(crate) font_size: Option<f32>,
+    pub(crate) flowchart_curve: Option<EdgeCurve>,
+    pub(crate) flowchart_node_spacing: Option<f32>,
+    pub(crate) flowchart_rank_spacing: Option<f32>,
+    pub(crate) sequence_mirror_actors: Option<bool>,
+    pub(crate) sequence_show_numbers: Option<bool>,
+    pub(crate) xychart_show_legend: Option<bool>,
+}
+
 /// Result of preprocessing a raw Mermaid document.
 #[derive(Clone, Debug)]
 pub(crate) struct Preprocessed {
@@ -89,6 +115,7 @@ pub(crate) struct Preprocessed {
     pub(crate) acc_title: Option<String>,
     pub(crate) acc_descr: Option<String>,
     pub(crate) init_theme: Option<String>,
+    pub(crate) init_config: MermaidInitConfig,
     pub(crate) lines: Vec<SourceLine>,
 }
 
@@ -184,7 +211,98 @@ fn normalize_directive_json(raw: &str) -> String {
     out
 }
 
-fn parse_directive(body: &str, init_theme: &mut Option<String>) {
+fn parse_edge_curve(raw: &str) -> Option<EdgeCurve> {
+    match raw.trim().to_ascii_lowercase().as_str() {
+        "basis" | "smooth" | "cardinal" | "monotonex" | "monotoney" => Some(EdgeCurve::Smooth),
+        "linear" => Some(EdgeCurve::Linear),
+        "step" | "stepbefore" | "stepafter" => Some(EdgeCurve::Step),
+        _ => None,
+    }
+}
+
+fn parse_config_f32(raw: &str) -> Option<f32> {
+    let cleaned = raw.trim().trim_end_matches("px").trim();
+    cleaned
+        .parse::<f32>()
+        .ok()
+        .filter(|v| v.is_finite() && *v > 0.0)
+}
+
+fn parse_config_bool(raw: &str) -> Option<bool> {
+    match raw.trim().to_ascii_lowercase().as_str() {
+        "true" => Some(true),
+        "false" => Some(false),
+        _ => None,
+    }
+}
+
+fn json_f32(v: &serde_json::Value) -> Option<f32> {
+    v.as_f64()
+        .map(|n| n as f32)
+        .filter(|n| n.is_finite() && *n > 0.0)
+        .or_else(|| v.as_str().and_then(parse_config_f32))
+}
+
+fn apply_config_kv(section: Option<&str>, key: &str, raw_val: &str, cfg: &mut MermaidInitConfig) {
+    let val = unquote_yaml(raw_val);
+    let k = key.trim().to_ascii_lowercase();
+    match section {
+        None | Some("themevariables") => match k.as_str() {
+            "fontfamily" if !val.is_empty() => cfg.font_family = Some(val),
+            "fontsize" => {
+                if let Some(fs) = parse_config_f32(&val) {
+                    cfg.font_size = Some(fs.clamp(6.0, 72.0));
+                }
+            }
+            _ => {}
+        },
+        Some("flowchart") => match k.as_str() {
+            "curve" => {
+                if let Some(c) = parse_edge_curve(&val) {
+                    cfg.flowchart_curve = Some(c);
+                }
+            }
+            "nodespacing" => {
+                if let Some(v) = parse_config_f32(&val) {
+                    cfg.flowchart_node_spacing = Some(v);
+                }
+            }
+            "rankspacing" => {
+                if let Some(v) = parse_config_f32(&val) {
+                    cfg.flowchart_rank_spacing = Some(v);
+                }
+            }
+            _ => {}
+        },
+        Some("sequence") => match k.as_str() {
+            "mirroractors" => {
+                if let Some(b) = parse_config_bool(&val) {
+                    cfg.sequence_mirror_actors = Some(b);
+                }
+            }
+            "showsequencenumbers" => {
+                if let Some(b) = parse_config_bool(&val) {
+                    cfg.sequence_show_numbers = Some(b);
+                }
+            }
+            _ => {}
+        },
+        Some("xychart") => {
+            if k == "showlegend"
+                && let Some(b) = parse_config_bool(&val)
+            {
+                cfg.xychart_show_legend = Some(b);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn parse_directive(
+    body: &str,
+    init_theme: &mut Option<String>,
+    init_config: &mut MermaidInitConfig,
+) {
     let trimmed = body.trim();
     // Accept `{init: {...}}`, `init: {...}`, or `{ "theme": ... }`.
     let inner = trimmed
@@ -203,15 +321,65 @@ fn parse_directive(body: &str, init_theme: &mut Option<String>) {
         trimmed
     };
     let normalized = normalize_directive_json(json_text);
-    if let Ok(val) = serde_json::from_str::<serde_json::Value>(&normalized)
-        && let Some(theme_name) = val.get("theme").and_then(|v| v.as_str()).or_else(|| {
-            val.get("init")
-                .and_then(|i| i.get("theme"))
-                .and_then(|v| v.as_str())
-        })
+    let Ok(val) = serde_json::from_str::<serde_json::Value>(&normalized) else {
+        return;
+    };
+    let root = val.get("init").unwrap_or(&val);
+
+    if let Some(theme_name) = root.get("theme").and_then(|v| v.as_str())
         && let Some(mapped) = map_mermaid_theme(theme_name)
     {
         *init_theme = Some(mapped);
+    }
+
+    if let Some(ff) = root
+        .get("fontFamily")
+        .or_else(|| root.get("themeVariables").and_then(|tv| tv.get("fontFamily")))
+        .and_then(|v| v.as_str())
+        && !ff.trim().is_empty()
+    {
+        init_config.font_family = Some(ff.trim().to_string());
+    }
+    if let Some(fs) = root
+        .get("fontSize")
+        .or_else(|| root.get("themeVariables").and_then(|tv| tv.get("fontSize")))
+        .and_then(json_f32)
+    {
+        init_config.font_size = Some(fs.clamp(6.0, 72.0));
+    }
+
+    if let Some(fc) = root.get("flowchart").and_then(|v| v.as_object()) {
+        if let Some(c) = fc
+            .get("curve")
+            .and_then(|v| v.as_str())
+            .and_then(parse_edge_curve)
+        {
+            init_config.flowchart_curve = Some(c);
+        }
+        if let Some(ns) = fc.get("nodeSpacing").and_then(json_f32) {
+            init_config.flowchart_node_spacing = Some(ns);
+        }
+        if let Some(rs) = fc.get("rankSpacing").and_then(json_f32) {
+            init_config.flowchart_rank_spacing = Some(rs);
+        }
+    }
+
+    if let Some(seq) = root.get("sequence").and_then(|v| v.as_object()) {
+        if let Some(b) = seq.get("mirrorActors").and_then(|v| v.as_bool()) {
+            init_config.sequence_mirror_actors = Some(b);
+        }
+        if let Some(b) = seq.get("showSequenceNumbers").and_then(|v| v.as_bool()) {
+            init_config.sequence_show_numbers = Some(b);
+        }
+    }
+
+    if let Some(xy) = root
+        .get("xyChart")
+        .or_else(|| root.get("xychart"))
+        .and_then(|v| v.as_object())
+        && let Some(b) = xy.get("showLegend").and_then(|v| v.as_bool())
+    {
+        init_config.xychart_show_legend = Some(b);
     }
 }
 
@@ -287,6 +455,7 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
 
     let mut fm_title: Option<String> = None;
     let mut init_theme: Option<String> = None;
+    let mut init_config = MermaidInitConfig::default();
 
     // Optional YAML frontmatter at the very top (`--- ... ---`).
     if idx < raw_lines.len() && raw_lines[idx].1.trim() == "---" {
@@ -294,6 +463,7 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
         idx += 1;
         let mut closed = false;
         let mut in_config = false;
+        let mut sub_section: Option<(String, usize)> = None;
         while idx < raw_lines.len() {
             let line = raw_lines[idx].1;
             let trimmed = line.trim();
@@ -305,9 +475,10 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
             if trimmed.is_empty() || trimmed.starts_with('#') {
                 continue;
             }
-            let indented = line.starts_with(' ') || line.starts_with('\t');
-            if !indented {
+            let indent = leading_indent(line);
+            if indent == 0 {
                 in_config = false;
+                sub_section = None;
                 if let Some((k, v)) = trimmed.split_once(':') {
                     let key = k.trim();
                     let val = v.trim();
@@ -317,12 +488,27 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
                         in_config = true;
                     }
                 }
-            } else if in_config
-                && let Some((k, v)) = trimmed.split_once(':')
-                && k.trim().eq_ignore_ascii_case("theme")
-                && let Some(mapped) = map_mermaid_theme(&unquote_yaml(v))
-            {
-                init_theme = Some(mapped);
+            } else if in_config {
+                if let Some((_, sec_indent)) = &sub_section
+                    && indent <= *sec_indent
+                {
+                    sub_section = None;
+                }
+                if let Some((k, v)) = trimmed.split_once(':') {
+                    let key = k.trim();
+                    let val = v.trim();
+                    if val.is_empty() {
+                        sub_section = Some((key.to_ascii_lowercase(), indent));
+                    } else if let Some((sec_name, _)) = &sub_section {
+                        apply_config_kv(Some(sec_name.as_str()), key, val, &mut init_config);
+                    } else if key.eq_ignore_ascii_case("theme") {
+                        if let Some(mapped) = map_mermaid_theme(&unquote_yaml(val)) {
+                            init_theme = Some(mapped);
+                        }
+                    } else {
+                        apply_config_kv(None, key, val, &mut init_config);
+                    }
+                }
             }
         }
         if !closed {
@@ -366,7 +552,7 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
             if in_directive {
                 if let Some(end) = slice.find("}%%") {
                     directive_buf.push_str(&slice[..end]);
-                    parse_directive(&directive_buf, &mut init_theme);
+                    parse_directive(&directive_buf, &mut init_theme, &mut init_config);
                     directive_buf.clear();
                     in_directive = false;
                     slice = &slice[end + 3..];
@@ -567,6 +753,7 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
         acc_title,
         acc_descr,
         init_theme,
+        init_config,
         lines: body,
     })
 }
