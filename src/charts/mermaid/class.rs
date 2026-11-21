@@ -1256,33 +1256,44 @@ pub(crate) fn render(
                 for (i, member) in members.iter().enumerate() {
                     let cy = top_y + 5.0 + (i as f32 + 0.5) * row_h;
                     let ft = format_and_measure(&member.text, &font_family, member_font_size);
-                    let col = if member.is_abstract {
-                        mix_color(text_color, palette.accent, 0.38)
-                    } else {
-                        text_color
-                    };
-                    draw_multiline_text(
+                    super::text::draw_multiline_text_styled(
                         cc,
                         x + pad_x,
                         cy,
                         &ft,
                         &font_family,
                         member_font_size,
-                        col,
+                        text_color,
                         "start",
                         false,
+                        member.is_abstract,
                     );
-                    if member.is_static && ft.width > 0.0 {
-                        let uy = cy + member_font_size * 0.48;
-                        cc.line(Line {
-                            color: Some(col),
-                            stroke_width: 1.0,
-                            left: x + pad_x,
-                            top: uy,
-                            right: x + pad_x + (ft.width * 0.96).max(0.0),
-                            bottom: uy,
-                            ..Default::default()
-                        });
+                    if member.is_static {
+                        let measured_w = ft
+                            .lines
+                            .first()
+                            .and_then(|l| {
+                                super::super::font::measure_text_width_family(
+                                    &font_family,
+                                    member_font_size,
+                                    &l.text,
+                                )
+                                .ok()
+                                .map(|b| b.width())
+                            })
+                            .unwrap_or(ft.width);
+                        if measured_w > 0.0 {
+                            let uy = cy + member_font_size * 0.48;
+                            cc.line(Line {
+                                color: Some(text_color),
+                                stroke_width: 1.0,
+                                left: x + pad_x,
+                                top: uy,
+                                right: x + pad_x + measured_w,
+                                bottom: uy,
+                                ..Default::default()
+                            });
+                        }
                     }
                 }
             };

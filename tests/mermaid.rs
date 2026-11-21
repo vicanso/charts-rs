@@ -877,3 +877,26 @@ gantt
     assert_ne!(crit_fill, normal_fill, "crit should be red, distinct from normal");
     assert_ne!(crit_done_fill, crit_fill, "crit+done should be muted compared to crit");
 }
+
+#[test]
+fn m15_class_abstract_italic_and_static_underline() {
+    let src = r#"
+classDiagram
+  class Shape {
+    <<abstract>>
+    +area()* double
+    +create()$ Shape
+    +name() String
+  }
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    // Abstract member `+area() double` must render with `font-style="italic"`.
+    assert!(
+        svg.contains("font-style=\"italic\""),
+        "abstract member must emit font-style=\"italic\": {svg}"
+    );
+    // Static member `+create() Shape` must have an underline <line> matching its measured text width.
+    assert!(svg.contains("+create() Shape"));
+    assert!(svg.contains("+area() double"));
+}

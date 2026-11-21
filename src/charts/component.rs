@@ -37,6 +37,7 @@ static ATTR_WIDTH: &str = "width";
 static ATTR_FONT_FAMILY: &str = "font-family";
 static ATTR_FONT_SIZE: &str = "font-size";
 static ATTR_FONT_WEIGHT: &str = "font-weight";
+static ATTR_FONT_STYLE: &str = "font-style";
 static ATTR_TRANSFORM: &str = "transform";
 static ATTR_DOMINANT_BASELINE: &str = "dominant-baseline";
 static ATTR_TEXT_ANCHOR: &str = "text-anchor";
@@ -1063,6 +1064,8 @@ pub struct Text {
     pub dy: Option<f32>,
     /// Font weight, e.g. `"bold"`.
     pub font_weight: Option<String>,
+    /// Font style, e.g. `"italic"`.
+    pub font_style: Option<String>,
     /// SVG transform attribute.
     pub transform: Option<String>,
     /// SVG dominant-baseline attribute.
@@ -1093,6 +1096,7 @@ impl Text {
             .opt_float(ATTR_DX, self.dx)
             .opt_float(ATTR_DY, self.dy)
             .opt_text(ATTR_FONT_WEIGHT, self.font_weight.as_ref())
+            .opt_text(ATTR_FONT_STYLE, self.font_style.as_ref())
             .opt_text(ATTR_TRANSFORM, self.transform.as_ref())
             .opt_text(ATTR_DOMINANT_BASELINE, self.dominant_baseline.as_ref())
             .opt_text(ATTR_TEXT_ANCHOR, self.text_anchor.as_ref())

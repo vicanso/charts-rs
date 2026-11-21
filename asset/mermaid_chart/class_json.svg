@@ -44,7 +44,7 @@ uses
 Payable
 </text>
 <line stroke-width="1" x1="248" y1="177" x2="431" y2="177" stroke="#526AB3"/>
-<text font-size="12" x="262" y="192" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#4B5677">
+<text font-size="12" x="262" y="192" font-style="italic" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 +pay(amount Decimal) bool
 </text>
 <rect x="248" y="126" width="183" height="81" rx="4" ry="4" stroke="#526AB3" stroke-width="1.6" fill="none"/>
@@ -65,7 +65,7 @@ Order
 <text font-size="12" x="479" y="199" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 +create() Order
 </text>
-<line stroke-width="1" x1="479" y1="204.8" x2="564.4" y2="204.8" stroke="#464646"/>
+<line stroke-width="1" x1="479" y1="204.8" x2="568" y2="204.8" stroke="#464646"/>
 <text font-size="12" x="479" y="219" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 +total() Decimal
 </text>

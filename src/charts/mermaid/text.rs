@@ -23,6 +23,7 @@ use super::super::font::measure_text_width_family;
 pub(crate) struct FormattedLine {
     pub(crate) text: String,
     pub(crate) bold: bool,
+    pub(crate) italic: bool,
 }
 
 /// Measured multiline text block ready for SVG emission.
@@ -159,9 +160,10 @@ fn is_inline_html_tag(tag_name: &str) -> bool {
 
 /// Strips inline HTML tags (`<b>`, `<i>`, `<span ...>`) while keeping `<` in
 /// expressions such as `a < b` and generic types such as `List<T>` intact.
-fn strip_inline_html(line: &str, bold_state: &mut bool) -> FormattedLine {
+fn strip_inline_html(line: &str, bold_state: &mut bool, italic_state: &mut bool) -> FormattedLine {
     let mut out = String::with_capacity(line.len());
     let mut line_bold = *bold_state;
+    let mut line_italic = *italic_state;
     let chars: Vec<char> = line.chars().collect();
     let mut i = 0;
     while i < chars.len() {
@@ -186,6 +188,13 @@ fn strip_inline_html(line: &str, bold_state: &mut bool) -> FormattedLine {
                     "/b" | "/strong" => {
                         *bold_state = false;
                     }
+                    "i" | "em" => {
+                        *italic_state = true;
+                        line_italic = true;
+                    }
+                    "/i" | "/em" => {
+                        *italic_state = false;
+                    }
                     _ => {}
                 }
                 i += rel_end + 2;
@@ -198,6 +207,7 @@ fn strip_inline_html(line: &str, bold_state: &mut bool) -> FormattedLine {
     FormattedLine {
         text: decode_entities(&out),
         bold: line_bold,
+        italic: line_italic,
     }
 }
 
@@ -205,12 +215,13 @@ fn strip_inline_html(line: &str, bold_state: &mut bool) -> FormattedLine {
 pub(crate) fn format_and_measure(raw: &str, font_family: &str, font_size: f32) -> FormattedText {
     let raw_lines = split_lines(raw);
     let mut bold_state = false;
+    let mut italic_state = false;
     let mut lines = Vec::with_capacity(raw_lines.len());
     let mut max_width = 0.0_f32;
     let line_height = (font_size * 1.35).ceil();
 
     for raw_line in raw_lines {
-        let formatted = strip_inline_html(&raw_line, &mut bold_state);
+        let formatted = strip_inline_html(&raw_line, &mut bold_state, &mut italic_state);
         if !formatted.text.is_empty() {
             let mut w = measure_text_width_family(font_family, font_size, &formatted.text)
                 .map(|b| b.width())
@@ -250,6 +261,34 @@ pub(crate) fn draw_multiline_text(
     anchor: &str,
     default_bold: bool,
 ) {
+    draw_multiline_text_styled(
+        c,
+        x,
+        cy,
+        ft,
+        font_family,
+        font_size,
+        color,
+        anchor,
+        default_bold,
+        false,
+    );
+}
+
+/// Emits centered/aligned pure-SVG `<text>` elements with optional italic default.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn draw_multiline_text_styled(
+    c: &mut Canvas,
+    x: f32,
+    cy: f32,
+    ft: &FormattedText,
+    font_family: &str,
+    font_size: f32,
+    color: Color,
+    anchor: &str,
+    default_bold: bool,
+    default_italic: bool,
+) {
     if ft.lines.is_empty() {
         return;
     }
@@ -266,6 +305,11 @@ pub(crate) fn draw_multiline_text(
             font_color: Some(color),
             font_weight: if line.bold || default_bold {
                 Some("bold".to_string())
+            } else {
+                None
+            },
+            font_style: if line.italic || default_italic {
+                Some("italic".to_string())
             } else {
                 None
             },
