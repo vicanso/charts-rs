@@ -62,6 +62,7 @@ pub(crate) struct LayeredSubgraphInput {
 pub(crate) struct LayeredGraph {
     pub(crate) direction: LayoutDirection,
     pub(crate) rank_sep_extra: f32,
+    pub(crate) node_sep_extra: f32,
     pub(crate) nodes: Vec<LayeredNodeInput>,
     pub(crate) edges: Vec<LayeredEdgeInput>,
     pub(crate) subgraphs: Vec<LayeredSubgraphInput>,

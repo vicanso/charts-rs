@@ -1051,3 +1051,48 @@ flowchart BT
         lines[outer_idx - 1]
     );
 }
+
+#[test]
+fn m08_er_lr_spacing_and_self_loop_markers() {
+    let src = r#"
+erDiagram
+  direction LR
+  CUSTOMER ||--o{ ORDER : places
+  ORDER ||--|{ LINE-ITEM : contains
+  CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
+  CUSTOMER |o--o| LOYALTY : has
+  EMPLOYEE ||--o{ EMPLOYEE : manages
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    for label in ["places", "contains", "uses", "has", "manages"] {
+        assert!(svg.contains(label), "missing label {label}: {svg}");
+    }
+
+    // Verify `has` and `manages` label boxes do not overlap.
+    let label_box = |label: &str| -> (f32, f32, f32, f32) {
+        let lines: Vec<&str> = svg.lines().collect();
+        let idx = lines.iter().position(|l| *l == label).unwrap();
+        // The pill <rect> immediately precedes the <text> element.
+        let rect_line = lines[idx - 2];
+        let get = |k: &str| -> f32 {
+            let pat = format!("{k}=\"");
+            let s = rect_line.find(&pat).unwrap() + pat.len();
+            let e = s + rect_line[s..].find('"').unwrap();
+            rect_line[s..e].parse().unwrap()
+        };
+        (get("x"), get("y"), get("width"), get("height"))
+    };
+    let (hx, hy, hw, hh) = label_box("has");
+    let (mx, my, mw, mh) = label_box("manages");
+    let overlap_x = hx < mx + mw && mx < hx + hw;
+    let overlap_y = hy < my + mh && my < hy + hh;
+    assert!(
+        !(overlap_x && overlap_y),
+        "`has` ({hx}..{}, {hy}..{}) and `manages` ({mx}..{}, {my}..{}) must not overlap",
+        hx + hw,
+        hy + hh,
+        mx + mw,
+        my + mh
+    );
+}

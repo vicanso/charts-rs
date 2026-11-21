@@ -581,13 +581,28 @@ pub(crate) fn render(
         })
         .collect();
 
+    let is_horizontal = matches!(
+        er.direction,
+        super::layout::LayoutDirection::LeftRight | super::layout::LayoutDirection::RightLeft
+    );
     let layout = sugiyama::layout(&LayeredGraph {
         direction: er.direction,
-        rank_sep_extra: 24.0,
+        rank_sep_extra: if is_horizontal { 48.0 } else { 24.0 },
+        node_sep_extra: if is_horizontal { 24.0 } else { 0.0 },
         nodes: layout_nodes,
         edges: layout_edges,
         subgraphs: vec![],
     });
+
+    // Account for bottom-mounted self-loop clearance (loop depth + label pill).
+    let mut layout_h = layout.height;
+    for r in &er.relations {
+        if r.from == r.to {
+            let p = layout.nodes[r.from];
+            let loop_bottom = p.cy + measured[r.from].h * 0.5 + 44.0 + 28.0;
+            layout_h = layout_h.max(loop_bottom);
+        }
+    }
 
     let title_text = if !chart.base.title.text.is_empty() {
         Some(chart.base.title.text.clone())
@@ -597,7 +612,7 @@ pub(crate) fn render(
     let top_header_h = super::compute_header_height(chart, title_text.as_deref(), &theme);
     let content_w = (layout.width + chart.base.margin.left + chart.base.margin.right).max(1.0);
     let content_h =
-        (layout.height + top_header_h + chart.base.margin.top + chart.base.margin.bottom).max(1.0);
+        (layout_h + top_header_h + chart.base.margin.top + chart.base.margin.bottom).max(1.0);
 
     let (mut canvas, out_w, out_h) = super::create_scaled_canvas(chart, content_w, content_h);
     if !palette.bg.is_transparent() {
@@ -627,7 +642,21 @@ pub(crate) fn render(
             continue;
         }
         let mut pts = routed.waypoints.clone();
-        if !routed.self_loop {
+        if routed.self_loop {
+            // Route ER self-loops perpendicularly out of the bottom edge so
+            // both Crow's Foot cardinality markers sit fully outside the box.
+            let p = layout.nodes[r.from];
+            let m = &measured[r.from];
+            let dx = (m.w * 0.25).clamp(22.0, 34.0);
+            let bottom = p.cy + m.h * 0.5;
+            let loop_y = bottom + 44.0;
+            pts = vec![
+                super::super::util::Point::from((p.cx - dx, bottom)),
+                super::super::util::Point::from((p.cx - dx, loop_y)),
+                super::super::util::Point::from((p.cx + dx, loop_y)),
+                super::super::util::Point::from((p.cx + dx, bottom)),
+            ];
+        } else {
             let n_pts = pts.len();
             let fp = layout.nodes[r.from];
             let tp = layout.nodes[r.to];

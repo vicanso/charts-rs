@@ -1201,6 +1201,7 @@ pub(crate) fn render(
     let layout = sugiyama::layout(&LayeredGraph {
         direction: fc.direction,
         rank_sep_extra: 0.0,
+        node_sep_extra: 0.0,
         nodes: layout_nodes,
         edges: layout_edges,
         subgraphs: layout_subgraphs,

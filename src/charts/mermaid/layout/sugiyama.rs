@@ -540,14 +540,15 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
         rank_y[r + 1] = rank_y[r] + rank_heights[r] * 0.5 + gap + rank_heights[r + 1] * 0.5;
     }
 
+    let node_sep = NODE_SEP + graph.node_sep_extra;
     let item_sep = |a: usize, b: usize| -> f32 {
         let mut sep = if is_attached_pair(a, b) {
             NOTE_SEP
         } else {
             match (&items[a], &items[b]) {
                 (RankItem::Dummy(_), RankItem::Dummy(_)) => DUMMY_SEP,
-                (RankItem::Dummy(_), _) | (_, RankItem::Dummy(_)) => (NODE_SEP + DUMMY_SEP) * 0.5,
-                _ => NODE_SEP,
+                (RankItem::Dummy(_), _) | (_, RankItem::Dummy(_)) => (node_sep + DUMMY_SEP) * 0.5,
+                _ => node_sep,
             }
         };
         let sg_a = item_root_sg(a);
@@ -1139,6 +1140,7 @@ mod tests {
         let g = LayeredGraph {
             direction: LayoutDirection::TopBottom,
             rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
             nodes: vec![
                 LayeredNodeInput {
                     width: 80.0,
