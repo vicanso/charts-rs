@@ -43,6 +43,16 @@ struct TmRect {
     h: f32,
 }
 
+struct TmGroup {
+    name: String,
+    color: Color,
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    header_h: f32,
+}
+
 /// A node of the (possibly nested) treemap data, with the value of a
 /// branch being the sum of its leaves.
 struct TmNode {
@@ -190,6 +200,13 @@ pub struct TreemapChart {
     /// charts); when set it takes precedence over `series_list`, and every
     /// branch is subdivided into its children.
     pub series_data: Vec<SunburstData>,
+    /// When `true`, renders a container border and top header bar for each
+    /// non-leaf group node, insetting its children beneath the header.
+    /// Default: false.
+    pub show_group_header: bool,
+    /// Height in pixels of group header bars when `show_group_header` is
+    /// enabled. Default: 22.0.
+    pub group_header_height: f32,
 }
 
 impl std::ops::Deref for TreemapChart {
@@ -211,6 +228,9 @@ impl TreemapChart {
         }
         if self.item_gap == 0.0 {
             self.item_gap = 2.0;
+        }
+        if self.group_header_height <= 0.0 {
+            self.group_header_height = 22.0;
         }
     }
 
@@ -321,7 +341,9 @@ impl TreemapChart {
             w: f32,
             h: f32,
             gap: f32,
+            header_h: Option<f32>,
             label: &dyn Fn(&str, f32) -> String,
+            groups: &mut Vec<TmGroup>,
             out: &mut Vec<TmRect>,
         ) {
             let mut items: Vec<TmItem> = nodes
@@ -354,6 +376,40 @@ impl TreemapChart {
                 let node = &nodes[r.index];
                 if node.children.is_empty() {
                     out.push(r);
+                } else if let Some(hdr) = header_h {
+                    let gx = r.x + gap / 2.0;
+                    let gy = r.y + gap / 2.0;
+                    let gw = (r.w - gap).max(0.0);
+                    let gh = (r.h - gap).max(0.0);
+                    let actual_hdr = if gh > hdr + 14.0 && gw > 24.0 {
+                        hdr
+                    } else {
+                        0.0
+                    };
+                    groups.push(TmGroup {
+                        name: r.name,
+                        color: r.color,
+                        x: gx,
+                        y: gy,
+                        w: gw,
+                        h: gh,
+                        header_h: actual_hdr,
+                    });
+                    let pad = 3.0_f32;
+                    let inner_w = (gw - pad * 2.0).max(0.0);
+                    let inner_h = (gh - actual_hdr - pad * 2.0).max(0.0);
+                    layout(
+                        &node.children,
+                        gx + pad,
+                        gy + actual_hdr + pad,
+                        inner_w,
+                        inner_h,
+                        gap,
+                        header_h,
+                        label,
+                        groups,
+                        out,
+                    );
                 } else {
                     // Inset by the gap so sibling branches stay separated.
                     let inner_w = (r.w - gap).max(0.0);
@@ -365,14 +421,18 @@ impl TreemapChart {
                         inner_w,
                         inner_h,
                         gap,
+                        None,
                         label,
+                        groups,
                         out,
                     );
                 }
             }
         }
 
+        let mut groups: Vec<TmGroup> = vec![];
         let mut rects: Vec<TmRect> = vec![];
+        let opt_hdr = self.show_group_header.then_some(self.group_header_height);
         layout(
             &nodes,
             0.0,
@@ -380,9 +440,91 @@ impl TreemapChart {
             cw,
             ch,
             self.item_gap,
+            opt_hdr,
             &value_label,
+            &mut groups,
             &mut rects,
         );
+
+        // Render group containers and header bars behind leaves (outer-to-inner).
+        let hdr_font_size = 12.0_f32;
+        for g in &groups {
+            if g.w <= 0.0 || g.h <= 0.0 {
+                continue;
+            }
+            content_c.rect(Rect {
+                fill: Some(g.color.with_alpha(38).into()),
+                color: Some(g.color),
+                stroke_width: Some(1.4),
+                left: g.x,
+                top: g.y,
+                width: g.w,
+                height: g.h,
+                rx: Some(3.0),
+                ry: Some(3.0),
+                ..Default::default()
+            });
+            if g.header_h > 0.0 {
+                content_c.rect(Rect {
+                    fill: Some(g.color.into()),
+                    left: g.x,
+                    top: g.y,
+                    width: g.w,
+                    height: g.header_h,
+                    rx: Some(3.0),
+                    ry: Some(3.0),
+                    ..Default::default()
+                });
+                let max_text_w = (g.w - 12.0).max(0.0);
+                let mut title = g.name.clone();
+                if let Ok(b) = measure_text_width_family(&self.font_family, hdr_font_size, &title)
+                    && b.width() > max_text_w
+                {
+                    let chars: Vec<char> = title.chars().collect();
+                    let mut truncated = String::new();
+                    for ch in chars {
+                        let candidate = format!("{truncated}{ch}…");
+                        let w = measure_text_width_family(
+                            &self.font_family,
+                            hdr_font_size,
+                            &candidate,
+                        )
+                        .map(|m| m.width())
+                        .unwrap_or(f32::MAX);
+                        if w > max_text_w {
+                            break;
+                        }
+                        truncated.push(ch);
+                    }
+                    title = if truncated.is_empty() {
+                        String::new()
+                    } else {
+                        format!("{truncated}…")
+                    };
+                }
+                if !title.is_empty() {
+                    let lum = 0.299 * g.color.r as f32
+                        + 0.587 * g.color.g as f32
+                        + 0.114 * g.color.b as f32;
+                    let hdr_txt_color = if lum > 165.0 {
+                        Color::from((30, 30, 30))
+                    } else {
+                        Color::white()
+                    };
+                    content_c.text_unmeasured(Text {
+                        text: title,
+                        font_family: Some(self.font_family.clone()),
+                        font_color: Some(hdr_txt_color),
+                        font_size: Some(hdr_font_size),
+                        font_weight: Some("bold".to_string()),
+                        x: Some(g.x + 6.0),
+                        y: Some(g.y + g.header_h * 0.5),
+                        dominant_baseline: Some("central".to_string()),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
 
         let half_gap = self.item_gap / 2.0;
         let font_size = self.series.label.font.size.max(10.0);

@@ -1180,3 +1180,40 @@ fn m13_radar_polygon_vertical_centering() {
         "radar vertical whitespace should be balanced (<=10px delta): top={top_space}, bottom={bottom_space}"
     );
 }
+
+#[test]
+fn m09_treemap_group_headers_and_hierarchy() {
+    // Gallery treemap.json: top-level section headers (`Compute`, `Storage`, `Networking`) must render.
+    let tm =
+        MermaidChart::from_json(include_str!("../asset/mermaid_chart/treemap.json")).unwrap();
+    let svg = tm.svg().unwrap();
+    assert_valid_svg(&svg);
+    for section in ["Compute", "Storage", "Networking"] {
+        assert!(
+            svg.contains(section),
+            "expected treemap section header `{section}`: {svg}"
+        );
+    }
+
+    // 4-level nested hierarchy: `Root` -> `A`/`B` -> `B2` -> `B21`.
+    let nested = r#"
+treemap-beta
+"Root"
+  "A"
+    "A1": 10
+    "A2": 20
+  "B"
+    "B1": 5
+    "B2"
+      "B21": 15
+      "B22": 10
+"#;
+    let nsvg = mermaid_to_svg(nested).unwrap();
+    assert_valid_svg(&nsvg);
+    for hdr in ["Root", "A", "B", "B2", "B21", "B22"] {
+        assert!(
+            nsvg.contains(hdr),
+            "expected nested treemap header/leaf `{hdr}`: {nsvg}"
+        );
+    }
+}

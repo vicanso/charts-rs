@@ -286,7 +286,19 @@ pub(crate) fn render(
     }
 
     let mut treemap = TreemapChart::new_with_theme(vec![], theme_name);
+    // If there is a single root container with multiple top-level sections, give
+    // each direct child its own palette color family (unless overridden by classDef).
+    let mut series_data = series_data;
+    if series_data.len() == 1 && series_data[0].children.len() > 1 {
+        let palette = treemap.series.colors.clone();
+        for (i, child) in series_data[0].children.iter_mut().enumerate() {
+            if child.color.is_none() && !palette.is_empty() {
+                child.color = Some(palette[i % palette.len()]);
+            }
+        }
+    }
     treemap.series_data = series_data;
+    treemap.show_group_header = true;
 
     let effective_title = parsed.title.as_deref().or(fm_title);
     apply_base_options(
