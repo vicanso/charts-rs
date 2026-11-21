@@ -14,18 +14,18 @@ Edge
 <rect x="569" y="303" width="10" height="81" rx="2" ry="2" stroke="#768DD1" stroke-width="1.2" fill="#283062"/>
 <rect x="427" y="256" width="10" height="222" rx="2" ry="2" stroke="#768DD1" stroke-width="1.2" fill="#283062"/>
 <rect x="231" y="209" width="10" height="417" rx="2" ry="2" stroke="#768DD1" stroke-width="1.2" fill="#283062"/>
-<rect x="29" y="321" width="613" height="264" stroke="#9FABD6" stroke-width="1.4" fill="none"/>
-<polygon points="29,321 75,321 75,334 68,341 29,341" stroke="#9FABD6" fill="#1B1D44"/>
-<text font-size="12" x="50" y="331" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="206" y="321" width="398" height="264" stroke="#9FABD6" stroke-width="1.4" fill="none"/>
+<polygon points="206,321 252,321 252,334 245,341 206,341" stroke="#9FABD6" fill="#1B1D44"/>
+<text font-size="12" x="227" y="331" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 alt
 </text>
-<rect x="81" y="320.5" width="85" height="21" rx="3" ry="3" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="85" y="331" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+<rect x="258" y="320.5" width="85" height="21" rx="3" ry="3" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="262" y="331" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Payment OK]
 </text>
-<line stroke-width="1.2" x1="29" y1="496" x2="642" y2="496" stroke="#9FABD6" stroke-dasharray="5,4"/>
-<rect x="37" y="497.5" width="64" height="21" rx="3" ry="3" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="41" y="508" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+<line stroke-width="1.2" x1="206" y1="496" x2="604" y2="496" stroke="#9FABD6" stroke-dasharray="5,4"/>
+<rect x="214" y="497.5" width="64" height="21" rx="3" ry="3" fill="#100C2A" fill-opacity="0.91"/>
+<text font-size="12" x="218" y="508" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Declined]
 </text>
 <line stroke-width="1.6" x1="97" y1="209" x2="236" y2="209" stroke="#D1D0DC"/>

@@ -679,6 +679,8 @@ struct LaidOutBlock {
     depth: usize,
     left: f32,
     right: f32,
+    min_x: f32,
+    max_x: f32,
     top: f32,
     bottom: f32,
     dividers: Vec<(f32, String)>,
@@ -1078,6 +1080,13 @@ pub(crate) fn render(
             }
         };
 
+    let expand_blocks = |blocks: &mut [LaidOutBlock], x_lo: f32, x_hi: f32| {
+        for b in blocks.iter_mut() {
+            b.min_x = b.min_x.min(x_lo);
+            b.max_x = b.max_x.max(x_hi);
+        }
+    };
+
     for (ev, ft_opt) in seq.events.iter().zip(measured_events) {
         match ev {
             SeqEvent::BlockStart {
@@ -1096,6 +1105,8 @@ pub(crate) fn render(
                     depth,
                     left,
                     right,
+                    min_x: f32::INFINITY,
+                    max_x: f32::NEG_INFINITY,
                     top: y,
                     bottom: y,
                     dividers: Vec::new(),
@@ -1116,17 +1127,64 @@ pub(crate) fn render(
                 y += 10.0;
                 if let Some(mut b) = active_blocks.pop() {
                     b.bottom = y;
+                    if b.min_x.is_finite() && b.max_x.is_finite() {
+                        let pad = 18.0;
+                        let mut left = (b.min_x - pad).max(CANVAS_PAD);
+                        let mut right = (b.max_x + pad).min(content_w_inner - CANVAS_PAD);
+                        // Ensure header tab + condition label and divider labels fit inside the frame.
+                        let mut min_label_w = 0.0_f32;
+                        if b.kind != BlockKind::Rect {
+                            let kw_ft =
+                                format_and_measure(b.kind.keyword(), &font_family, 12.0);
+                            let tab_w = (kw_ft.width + 20.0).max(46.0);
+                            let hdr_w = if !b.label.is_empty() {
+                                let lbl = format!("[{}]", b.label);
+                                format_and_measure(&lbl, &font_family, 12.0).width + 24.0
+                            } else {
+                                12.0
+                            };
+                            min_label_w = min_label_w.max(tab_w + hdr_w);
+                            for (_, dlbl) in &b.dividers {
+                                if !dlbl.is_empty() {
+                                    let lbl = format!("[{dlbl}]");
+                                    let dw =
+                                        format_and_measure(&lbl, &font_family, 12.0).width + 32.0;
+                                    min_label_w = min_label_w.max(dw);
+                                }
+                            }
+                        }
+                        if right - left < min_label_w {
+                            right = (left + min_label_w).min(content_w_inner - CANVAS_PAD);
+                            if right - left < min_label_w {
+                                left = (right - min_label_w).max(CANVAS_PAD);
+                            }
+                        }
+                        b.left = left;
+                        b.right = right;
+                        // Propagate outer margin to any enclosing parent fragment.
+                        if let Some(parent) = active_blocks.last_mut() {
+                            parent.min_x = parent.min_x.min(left - BLOCK_INSET_X);
+                            parent.max_x = parent.max_x.max(right + BLOCK_INSET_X);
+                        }
+                    }
                     finished_blocks.push(b);
                 }
                 y += 12.0;
             }
             SeqEvent::Activate(p) => {
+                expand_blocks(&mut active_blocks, col_x[*p] - 12.0, col_x[*p] + 12.0);
                 start_act(*p, y, &mut act_stacks);
             }
             SeqEvent::Deactivate(p) => {
+                expand_blocks(&mut active_blocks, col_x[*p] - 12.0, col_x[*p] + 12.0);
                 end_act(*p, y, &mut act_stacks, &mut act_spans);
             }
             SeqEvent::Create(p) => {
+                expand_blocks(
+                    &mut active_blocks,
+                    col_x[*p] - p_widths[*p] * 0.5,
+                    col_x[*p] + p_widths[*p] * 0.5,
+                );
                 if let Some(prev) = pending_create.replace(*p) {
                     let ph = participant_h_of(prev);
                     created_box_top[prev] = Some(y);
@@ -1135,6 +1193,7 @@ pub(crate) fn render(
                 }
             }
             SeqEvent::Destroy(p) => {
+                expand_blocks(&mut active_blocks, col_x[*p] - 12.0, col_x[*p] + 12.0);
                 if let Some(prev) = pending_destroy.replace(*p) {
                     let dy = y + 6.0;
                     destroyed_y[prev] = Some(dy);
@@ -1157,6 +1216,21 @@ pub(crate) fn render(
                     ft_opt.unwrap_or_else(|| format_and_measure("", &font_family, msg_font_size));
                 let creating = pending_create.take();
                 let created_target = creating.filter(|&cp| cp == *to && from != to);
+                if from == to {
+                    expand_blocks(
+                        &mut active_blocks,
+                        col_x[*from] - 12.0,
+                        col_x[*from] + SELF_LOOP_W + ft.width + 12.0,
+                    );
+                } else {
+                    let mut x_lo = col_x[*from].min(col_x[*to]) - 12.0;
+                    let mut x_hi = col_x[*from].max(col_x[*to]) + 12.0;
+                    if let Some(cp) = creating {
+                        x_lo = x_lo.min(col_x[cp] - p_widths[cp] * 0.5);
+                        x_hi = x_hi.max(col_x[cp] + p_widths[cp] * 0.5);
+                    }
+                    expand_blocks(&mut active_blocks, x_lo, x_hi);
+                }
                 if from == to {
                     let msg_y = if let Some(cp) = creating {
                         let cp_h = participant_h_of(cp);
@@ -1247,6 +1321,23 @@ pub(crate) fn render(
             SeqEvent::Note { pos, from, to, .. } => {
                 let ft =
                     ft_opt.unwrap_or_else(|| format_and_measure("", &font_family, note_font_size));
+                let note_w = (ft.width + 24.0).max(60.0);
+                let (nx_lo, nx_hi) = match pos {
+                    NotePos::LeftOf => (col_x[*from] - note_w - 14.0, col_x[*from] - 14.0),
+                    NotePos::RightOf => (col_x[*from] + 14.0, col_x[*from] + 14.0 + note_w),
+                    NotePos::Over => {
+                        let lo = col_x[(*from).min(*to)];
+                        let hi = col_x[(*from).max(*to)];
+                        if from == to {
+                            (lo - note_w * 0.5, lo + note_w * 0.5)
+                        } else {
+                            let w = note_w.max(hi - lo + 30.0);
+                            let cx = (lo + hi) * 0.5;
+                            (cx - w * 0.5, cx + w * 0.5)
+                        }
+                    }
+                };
+                expand_blocks(&mut active_blocks, nx_lo, nx_hi);
                 let note_h = (ft.height + 14.0).max(30.0);
                 positioned_events.push(PositionedEvent::Note {
                     pos: *pos,

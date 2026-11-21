@@ -924,3 +924,53 @@ flowchart LR
     let cross_lines: Vec<&str> = svg.lines().filter(|l| l.starts_with("<line ")).collect();
     assert_eq!(cross_lines.len(), 4, "expected 4 cross-marker lines: {svg}");
 }
+
+#[test]
+fn m16_sequence_fragment_horizontal_bounds() {
+    let src = r#"
+sequenceDiagram
+  participant A
+  participant B
+  participant C
+  participant D
+  A->>B: init
+  loop Retry
+    B->>C: call
+    opt Fallback
+      C-->>B: err
+    end
+  end
+  C->>D: forward
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    // Extract fragment frame rects (stroke-width="1.4" with transparent fill).
+    let frames: Vec<(f32, f32)> = svg
+        .lines()
+        .filter(|l| l.starts_with("<rect ") && l.contains("stroke-width=\"1.4\""))
+        .map(|l| {
+            let get = |k: &str| -> f32 {
+                let pat = format!("{k}=\"");
+                let s = l.find(&pat).unwrap() + pat.len();
+                let e = s + l[s..].find('"').unwrap();
+                l[s..e].parse().unwrap()
+            };
+            (get("x"), get("width"))
+        })
+        .collect();
+    assert_eq!(frames.len(), 2, "expected 2 fragment frames (loop + opt): {svg}");
+    let (loop_x, loop_w) = frames[0];
+    let (opt_x, opt_w) = frames[1];
+    // `loop` covers only B and C (must start well to the right of A's left edge x=29).
+    assert!(
+        loop_x > 100.0,
+        "loop fragment should start near B, not at left edge: x={loop_x}"
+    );
+    // Nested `opt` sits strictly inside `loop`.
+    assert!(
+        opt_x > loop_x && (opt_x + opt_w) < (loop_x + loop_w),
+        "nested opt ({opt_x}..{}) must fit strictly inside loop ({loop_x}..{})",
+        opt_x + opt_w,
+        loop_x + loop_w
+    );
+}
