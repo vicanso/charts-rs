@@ -595,3 +595,38 @@ fn m02_sankey_cycle_and_self_loop_rejected() {
         "cyclic SankeyChart should not draw collapsed ribbons: {svg}"
     );
 }
+
+#[test]
+fn m01_xychart_horizontal_line_series() {
+    let src = r#"
+xychart-beta horizontal
+  title "Sales"
+  x-axis "Month" [jan, feb, mar, apr]
+  y-axis "Units" 0 --> 100
+  bar [20, 50, 75, 90]
+  line [10, 40, 60, 80]
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("Sales"));
+    assert!(svg.contains("Month"));
+    assert!(svg.contains("Units"));
+    // Bar series draws 4 horizontal bars (plus background rect = 5 rects total,
+    // NOT 9 rects which would happen if the line series were drawn as bars).
+    let bar_rect_count = svg.matches("<rect").count();
+    assert_eq!(
+        bar_rect_count, 5,
+        "expected 1 background + 4 bar rects (line must not render as bars), got {bar_rect_count}"
+    );
+    // Line series draws a <path> polyline across the 4 category rows.
+    assert!(
+        svg.contains("<path d=\"M"),
+        "expected line series <path> in horizontal xychart: {svg}"
+    );
+
+    // Line-only horizontal xychart should also render cleanly without bars.
+    let line_only = "xychart-beta horizontal\n  x-axis [A, B, C]\n  y-axis 0 --> 50\n  line [10, 35, 25]";
+    let line_svg = mermaid_to_svg(line_only).unwrap();
+    assert_valid_svg(&line_svg);
+    assert!(line_svg.contains("<path d=\"M"));
+}

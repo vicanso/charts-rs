@@ -158,14 +158,24 @@ impl HorizontalBarChart {
         }
 
         let category_count = self.x_axis.data.len().max(1);
-        // Assign each series a slot: stacked series share one. Positive and
-        // negative values stack separately, away from the 0 line.
+        // Assign each bar series a slot: stacked bar series share one. Line
+        // series (`SeriesCategory::Line`) are drawn over the category centers
+        // and do not occupy bar slots. Positive and negative values stack
+        // separately, away from the 0 line.
         let mut stack_slot_keys: Vec<String> = vec![];
-        let mut series_slot_indices: Vec<usize> = Vec::with_capacity(self.series_list.len());
+        let mut series_slot_indices: Vec<Option<usize>> =
+            Vec::with_capacity(self.series_list.len());
         let mut series_stack_indices: Vec<Option<usize>> =
             Vec::with_capacity(self.series_list.len());
         let mut slot_count = 0_usize;
+        let mut has_line_series = false;
         for series in self.series_list.iter() {
+            if series.category == Some(SeriesCategory::Line) {
+                has_line_series = true;
+                series_slot_indices.push(None);
+                series_stack_indices.push(None);
+                continue;
+            }
             if let Some(ref stack) = series.stack {
                 let key = format!("{}_{}", stack, series.y_axis_index);
                 let pos = stack_slot_keys.iter().position(|k| k == &key);
@@ -173,22 +183,24 @@ impl HorizontalBarChart {
                 if pos.is_none() {
                     stack_slot_keys.push(key);
                 }
-                series_slot_indices.push(stack_index);
+                series_slot_indices.push(Some(stack_index));
                 series_stack_indices.push(Some(stack_index));
             } else {
-                series_slot_indices.push(slot_count);
+                series_slot_indices.push(Some(slot_count));
                 series_stack_indices.push(None);
+                slot_count += 1;
             }
-            slot_count += usize::from(series.stack.is_none());
         }
-        // Stacked slots are numbered first, plain series after them.
+        // Stacked slots are numbered first, plain bar series after them.
         let stack_count = stack_slot_keys.len();
         for (slot, stack) in series_slot_indices
             .iter_mut()
             .zip(series_stack_indices.iter())
         {
-            if stack.is_none() {
-                *slot += stack_count;
+            if let Some(slot_idx) = slot
+                && stack.is_none()
+            {
+                *slot_idx += stack_count;
             }
         }
         slot_count += stack_count;
@@ -277,8 +289,8 @@ impl HorizontalBarChart {
             ..Default::default()
         });
 
-        // horizontal bar
-        if slot_count > 0 {
+        // horizontal bar and optional overlaid line series
+        if slot_count > 0 || has_line_series {
             let mut c1 = c.child(Box {
                 left: y_axis_width,
                 bottom: x_axis_height,
@@ -290,26 +302,6 @@ impl HorizontalBarChart {
             // `x_axis_data.len()`), not the first series' length: a short/empty
             // first series must not divide by zero or misplace every bar.
             let unit_height = c1.height().max(0.0) / category_count as f32;
-            let bar_chart_margin = 5.0_f32;
-            let bar_chart_gap = 3.0_f32;
-            let bar_chart_min_height = 1.0_f32;
-
-            let bar_chart_margin_height = bar_chart_margin * 2.0;
-            let bar_chart_gap_height = bar_chart_gap * (slot_count - 1) as f32;
-            // A narrow band (many categories in a small canvas) has less room
-            // than the fixed margins and gaps need, which would give a negative
-            // bar height. Shrink the margins and gaps together, just enough to
-            // keep each bar `bar_chart_min_height` tall, so the group stays
-            // inside its band. With room to spare `scale` is 1 and the layout
-            // is unchanged.
-            let bar_chart_spacing = bar_chart_margin_height + bar_chart_gap_height;
-            let scale = ((unit_height - bar_chart_min_height * slot_count as f32)
-                / bar_chart_spacing)
-                .clamp(0.0, 1.0);
-            let bar_chart_margin = bar_chart_margin * scale;
-            let bar_chart_gap = bar_chart_gap * scale;
-            let bar_height = (unit_height - bar_chart_spacing * scale) / slot_count as f32;
-            let half_bar_height = bar_height / 2.0;
 
             // Bars grow from the 0 line so negative values extend to the left
             // of it; with a positive `min` there is no 0 and the axis
@@ -324,121 +316,259 @@ impl HorizontalBarChart {
                     max_width - x_axis_values.get_offset_height(value, max_width)
                 }
             };
-            // Running (positive, negative) sums per stack and row.
-            let mut stack_acc: Vec<Vec<(f32, f32)>> =
-                vec![vec![(0.0_f32, 0.0_f32); category_count]; stack_count];
 
             let mut series_labels_list = vec![];
-            for (index, series) in self.series_list.iter().enumerate() {
-                let slot_index = series_slot_indices[index];
-                let stack_index = series_stack_indices[index];
-                let color = get_color(&self.series.colors, series.index.unwrap_or(index));
 
-                let mut series_labels = vec![];
-                for (i, value) in series.iter_values().enumerate() {
-                    if value == NIL_VALUE {
-                        continue;
-                    }
-                    // Rows are categories (bottom-up), shared by every series;
-                    // a shorter series must not shift its bars onto other rows.
-                    let actual_i = i.saturating_add(series.start_index);
-                    if actual_i >= category_count {
-                        continue;
-                    }
-                    let mut top =
-                        unit_height * (category_count - actual_i - 1) as f32 + bar_chart_margin;
-                    top += (bar_height + bar_chart_gap) * slot_index as f32;
+            if slot_count > 0 {
+                let bar_chart_margin = 5.0_f32;
+                let bar_chart_gap = 3.0_f32;
+                let bar_chart_min_height = 1.0_f32;
 
-                    let base = match stack_index {
-                        Some(si) => {
-                            let (pos, neg) = stack_acc[si][actual_i];
-                            if value >= 0.0 { pos } else { neg }
-                        }
-                        None => 0.0,
+                let bar_chart_margin_height = bar_chart_margin * 2.0;
+                let bar_chart_gap_height = bar_chart_gap * (slot_count - 1) as f32;
+                // A narrow band (many categories in a small canvas) has less room
+                // than the fixed margins and gaps need, which would give a negative
+                // bar height. Shrink the margins and gaps together, just enough to
+                // keep each bar `bar_chart_min_height` tall, so the group stays
+                // inside its band. With room to spare `scale` is 1 and the layout
+                // is unchanged.
+                let bar_chart_spacing = bar_chart_margin_height + bar_chart_gap_height;
+                let scale = ((unit_height - bar_chart_min_height * slot_count as f32)
+                    / bar_chart_spacing)
+                    .clamp(0.0, 1.0);
+                let bar_chart_margin = bar_chart_margin * scale;
+                let bar_chart_gap = bar_chart_gap * scale;
+                let bar_height = (unit_height - bar_chart_spacing * scale) / slot_count as f32;
+                let half_bar_height = bar_height / 2.0;
+
+                // Running (positive, negative) sums per stack and row.
+                let mut stack_acc: Vec<Vec<(f32, f32)>> =
+                    vec![vec![(0.0_f32, 0.0_f32); category_count]; stack_count];
+
+                for (index, series) in self.series_list.iter().enumerate() {
+                    let Some(slot_index) = series_slot_indices[index] else {
+                        continue;
                     };
-                    let x_base = value_x(base);
-                    let x = value_x(base + value);
-                    if let Some(si) = stack_index {
-                        let acc = &mut stack_acc[si][actual_i];
-                        if value >= 0.0 {
-                            acc.0 += value;
+                    let stack_index = series_stack_indices[index];
+                    let color = get_color(&self.series.colors, series.index.unwrap_or(index));
+
+                    let mut series_labels = vec![];
+                    for (i, value) in series.iter_values().enumerate() {
+                        if value == NIL_VALUE {
+                            continue;
+                        }
+                        // Rows are categories (bottom-up), shared by every series;
+                        // a shorter series must not shift its bars onto other rows.
+                        let actual_i = i.saturating_add(series.start_index);
+                        if actual_i >= category_count {
+                            continue;
+                        }
+                        let mut top = unit_height * (category_count - actual_i - 1) as f32
+                            + bar_chart_margin;
+                        top += (bar_height + bar_chart_gap) * slot_index as f32;
+
+                        let base = match stack_index {
+                            Some(si) => {
+                                let (pos, neg) = stack_acc[si][actual_i];
+                                if value >= 0.0 { pos } else { neg }
+                            }
+                            None => 0.0,
+                        };
+                        let x_base = value_x(base);
+                        let x = value_x(base + value);
+                        if let Some(si) = stack_index {
+                            let acc = &mut stack_acc[si][actual_i];
+                            if value >= 0.0 {
+                                acc.0 += value;
+                            } else {
+                                acc.1 += value;
+                            }
+                        }
+
+                        let fill_color = series
+                            .colors
+                            .as_ref()
+                            .and_then(|colors| colors.get(i).copied().flatten())
+                            .unwrap_or(color);
+                        let label = self.format_series_label(series, actual_i, value);
+                        let tip = if self.tooltip.show {
+                            Some(format!("{}: {}", series.name, label))
                         } else {
-                            acc.1 += value;
+                            None
+                        };
+                        let mut classes: Vec<&str> = vec![];
+                        if self.animation.is_some() {
+                            classes.push("bar-anim");
+                        }
+                        if tip.is_some() {
+                            classes.push("ct-trigger");
+                        }
+                        let class = if classes.is_empty() {
+                            None
+                        } else {
+                            Some(classes.join(" "))
+                        };
+                        // Negative bars grow leftwards from the 0 line.
+                        let style = self.animation.as_ref().map(|a| {
+                            let origin = if value < 0.0 { "right" } else { "left" };
+                            format!(
+                                "transform-origin:{origin} center;animation-delay:{}ms",
+                                actual_i as u32 * a.delay
+                            )
+                        });
+                        c1.rect(Rect {
+                            fill: Some(fill_color.into()),
+                            left: x.min(x_base),
+                            top,
+                            width: (x - x_base).abs(),
+                            height: bar_height,
+                            title: tip.clone(),
+                            class,
+                            style,
+                            dataset: self.point_dataset(series, actual_i, value),
+                            ..Default::default()
+                        });
+                        if let Some(text) = tip {
+                            c1.text_unmeasured(Text {
+                                text,
+                                class: Some("ct-tip".to_string()),
+                                font_weight: self.tooltip.font.weight.clone(),
+                                font_family: Some(self.font_family.clone()),
+                                font_color: Some(
+                                    self.tooltip_font_color(self.series.label.font.color),
+                                ),
+                                font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
+                                x: Some(x),
+                                y: Some(top + half_bar_height),
+                                dy: Some(-4.0),
+                                text_anchor: Some("end".to_string()),
+                                ..Default::default()
+                            });
+                        }
+                        // A label goes past the end of its bar, or in the
+                        // middle of it.
+                        let label_x = if self.series_label_position == Some(Position::Inside) {
+                            (x_base + x) / 2.0
+                        } else {
+                            x
+                        };
+                        series_labels.push(SeriesLabel {
+                            point: (label_x, top + half_bar_height).into(),
+                            text: label,
+                        })
+                    }
+                    if series.label_show {
+                        series_labels_list.push(series_labels);
+                    }
+                }
+            }
+
+            if has_line_series {
+                for (index, series) in self.series_list.iter().enumerate() {
+                    if series.category != Some(SeriesCategory::Line) {
+                        continue;
+                    }
+                    let color = get_color(&self.series.colors, series.index.unwrap_or(index));
+                    let symbol = series.symbol.clone().or_else(|| self.series.symbol.clone());
+                    let series_smooth = series.smooth.unwrap_or(self.series.smooth);
+                    let mut points_list: Vec<Vec<Point>> = vec![];
+                    let mut points: Vec<Point> = vec![];
+                    let mut series_labels: Vec<SeriesLabel> = vec![];
+                    struct LineTip {
+                        pt: Point,
+                        text: String,
+                        dataset: Vec<(String, String)>,
+                    }
+                    let mut tooltip_points: Vec<LineTip> = vec![];
+
+                    for (i, value) in series.iter_values().enumerate() {
+                        if value == NIL_VALUE {
+                            if !points.is_empty() {
+                                points_list.push(std::mem::take(&mut points));
+                            }
+                            continue;
+                        }
+                        let actual_i = i.saturating_add(series.start_index);
+                        if actual_i >= category_count {
+                            continue;
+                        }
+                        let x = value_x(value);
+                        let y = unit_height * (category_count - actual_i - 1) as f32
+                            + unit_height / 2.0;
+                        let pt: Point = (x, y).into();
+                        points.push(pt);
+
+                        let label = self.format_series_label(series, actual_i, value);
+                        if series.label_show {
+                            series_labels.push(SeriesLabel {
+                                point: pt,
+                                text: label.clone(),
+                            });
+                        }
+                        if self.tooltip.show {
+                            tooltip_points.push(LineTip {
+                                pt,
+                                text: format!("{}: {}", series.name, label),
+                                dataset: self.point_dataset(series, actual_i, value),
+                            });
+                        }
+                    }
+                    if !points.is_empty() {
+                        points_list.push(points);
+                    }
+
+                    for seg in points_list {
+                        if series_smooth {
+                            c1.smooth_line(SmoothLine {
+                                points: seg,
+                                color: Some(color),
+                                stroke_width: self.series.stroke_width,
+                                symbol: symbol.clone(),
+                                stroke_dash_array: series.stroke_dash_array.clone(),
+                                ..Default::default()
+                            });
+                        } else {
+                            c1.straight_line(StraightLine {
+                                points: seg,
+                                color: Some(color),
+                                stroke_width: self.series.stroke_width,
+                                symbol: symbol.clone(),
+                                stroke_dash_array: series.stroke_dash_array.clone(),
+                                ..Default::default()
+                            });
                         }
                     }
 
-                    let fill_color = series
-                        .colors
-                        .as_ref()
-                        .and_then(|colors| colors.get(i).copied().flatten())
-                        .unwrap_or(color);
-                    let label = self.format_series_label(series, actual_i, value);
-                    let tip = if self.tooltip.show {
-                        Some(format!("{}: {}", series.name, label))
-                    } else {
-                        None
-                    };
-                    let mut classes: Vec<&str> = vec![];
-                    if self.animation.is_some() {
-                        classes.push("bar-anim");
-                    }
-                    if tip.is_some() {
-                        classes.push("ct-trigger");
-                    }
-                    let class = if classes.is_empty() {
-                        None
-                    } else {
-                        Some(classes.join(" "))
-                    };
-                    // Negative bars grow leftwards from the 0 line.
-                    let style = self.animation.as_ref().map(|a| {
-                        let origin = if value < 0.0 { "right" } else { "left" };
-                        format!(
-                            "transform-origin:{origin} center;animation-delay:{}ms",
-                            actual_i as u32 * a.delay
-                        )
-                    });
-                    c1.rect(Rect {
-                        fill: Some(fill_color.into()),
-                        left: x.min(x_base),
-                        top,
-                        width: (x - x_base).abs(),
-                        height: bar_height,
-                        title: tip.clone(),
-                        class,
-                        style,
-                        dataset: self.point_dataset(series, actual_i, value),
-                        ..Default::default()
-                    });
-                    if let Some(text) = tip {
+                    for tip in tooltip_points {
+                        c1.circle(Circle {
+                            stroke_color: None,
+                            fill: Some(Color::transparent()),
+                            cx: tip.pt.x,
+                            cy: tip.pt.y,
+                            r: 6.0,
+                            class: Some("ct-trigger".to_string()),
+                            title: Some(tip.text.clone()),
+                            dataset: tip.dataset,
+                            ..Default::default()
+                        });
                         c1.text_unmeasured(Text {
-                            text,
+                            text: tip.text,
                             class: Some("ct-tip".to_string()),
                             font_weight: self.tooltip.font.weight.clone(),
                             font_family: Some(self.font_family.clone()),
                             font_color: Some(self.tooltip_font_color(self.series.label.font.color)),
                             font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
-                            x: Some(x),
-                            y: Some(top + half_bar_height),
-                            dy: Some(-4.0),
-                            text_anchor: Some("end".to_string()),
+                            x: Some(tip.pt.x),
+                            y: Some(tip.pt.y),
+                            dy: Some(-8.0),
+                            text_anchor: Some("middle".to_string()),
                             ..Default::default()
                         });
                     }
-                    // A label goes past the end of its bar, or in the
-                    // middle of it.
-                    let label_x = if self.series_label_position == Some(Position::Inside) {
-                        (x_base + x) / 2.0
-                    } else {
-                        x
-                    };
-                    series_labels.push(SeriesLabel {
-                        point: (label_x, top + half_bar_height).into(),
-                        text: label,
-                    })
-                }
-                if series.label_show {
-                    series_labels_list.push(series_labels);
+
+                    if series.label_show {
+                        series_labels_list.push(series_labels);
+                    }
                 }
             }
 
@@ -505,7 +635,7 @@ impl HorizontalBarChart {
         }
 
         // Mark lines and areas run vertically at their value.
-        if slot_count > 0 {
+        if slot_count > 0 || has_line_series {
             let mut c1 = c.child(Box {
                 left: y_axis_width,
                 bottom: x_axis_height,
