@@ -292,7 +292,6 @@ pub(crate) fn render(
     apply_base_options(
         chart,
         &mut treemap.base,
-        theme_name,
         effective_title,
         700.0,
         480.0,

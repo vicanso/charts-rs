@@ -2,7 +2,7 @@
 mod common;
 
 use charts_rs::{
-    BarChart, Chart, ChildChart, Error, MermaidChart, MultiChart, THEME_DARK, THEME_GRAFANA,
+    BarChart, Chart, ChildChart, MermaidChart, MultiChart, THEME_DARK, THEME_GRAFANA,
     THEME_SHADCN, mermaid_to_svg, mermaid_to_svg_with_theme,
 };
 

@@ -124,7 +124,7 @@ pub(crate) fn render(
     }
 
     let mut sankey = SankeyChart::new_with_theme(vec![], links, theme_name);
-    apply_base_options(chart, &mut sankey.base, theme_name, fm_title, 640.0, 420.0);
+    apply_base_options(chart, &mut sankey.base, fm_title, 640.0, 420.0);
     let (w, h) = (sankey.width, sankey.height);
     Ok((sankey.svg()?, w, h))
 }

@@ -153,7 +153,6 @@ pub(crate) fn render(
     apply_base_options(
         chart,
         &mut pie.base,
-        theme_name,
         title.as_deref(),
         default_width,
         400.0,

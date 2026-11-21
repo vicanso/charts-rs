@@ -273,7 +273,7 @@ impl MermaidChart {
         }
     }
 
-    pub(crate) fn has_custom_background(&self, theme: &Theme) -> bool {
+    pub(crate) fn has_custom_background(&self) -> bool {
         if self.explicit_background {
             return true;
         }
@@ -284,7 +284,6 @@ impl MermaidChart {
             .as_deref()
             .map(get_theme)
             .unwrap_or_else(|| get_theme(&get_default_theme_name()));
-        let _ = theme;
         self.base.background_color != orig_theme.background_color
     }
 

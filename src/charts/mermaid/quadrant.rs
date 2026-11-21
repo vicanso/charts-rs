@@ -227,14 +227,14 @@ fn parse_quadrant(lines: &[SourceLine]) -> Result<ParsedQuadrant> {
         }
 
         let mut handled_quad = false;
-        for idx in 0..4 {
+        for (idx, quad) in q.quadrants.iter_mut().enumerate() {
             let prefix = format!("quadrant-{}", idx + 1);
             if let Some(rest) = trimmed.strip_prefix(&prefix)
                 && (rest.is_empty() || rest.starts_with(char::is_whitespace))
             {
                 let label = unquote_text(rest.trim());
                 if !label.is_empty() {
-                    q.quadrants[idx] = Some(label);
+                    *quad = Some(label);
                 }
                 handled_quad = true;
                 break;
@@ -374,7 +374,7 @@ pub(crate) fn render(
     let q = parse_quadrant(lines)?;
     let theme = get_theme(theme_name);
     let bg_override = chart
-        .has_custom_background(&theme)
+        .has_custom_background()
         .then_some(chart.base.background_color);
     let palette = MermaidPalette::from_theme(&theme, bg_override);
     let font_family = chart.resolved_font_family(&theme);

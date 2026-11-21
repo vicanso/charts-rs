@@ -438,7 +438,7 @@ pub(crate) fn render(
     let mm = parse_mindmap(lines)?;
     let theme = get_theme(theme_name);
     let bg_override = chart
-        .has_custom_background(&theme)
+        .has_custom_background()
         .then_some(chart.base.background_color);
     let palette = MermaidPalette::from_theme(&theme, bg_override);
     let font_family = chart.resolved_font_family(&theme);

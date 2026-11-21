@@ -257,7 +257,6 @@ pub(crate) fn render(
         apply_base_options(
             chart,
             &mut hbar.base,
-            theme_name,
             title.as_deref(),
             640.0,
             400.0,
@@ -280,7 +279,6 @@ pub(crate) fn render(
     apply_base_options(
         chart,
         &mut bar.base,
-        theme_name,
         title.as_deref(),
         640.0,
         400.0,

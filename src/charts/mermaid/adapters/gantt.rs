@@ -535,7 +535,6 @@ pub(crate) fn render(
     apply_base_options(
         chart,
         &mut gantt.base,
-        theme_name,
         title.as_deref(),
         680.0,
         default_height,

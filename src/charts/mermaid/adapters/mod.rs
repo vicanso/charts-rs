@@ -21,7 +21,6 @@ pub(crate) mod treemap;
 pub(crate) mod xychart;
 
 use super::super::base::ChartBase;
-use super::super::theme::get_theme;
 use super::MermaidChart;
 
 /// Copies `MermaidChart`'s shared options (size, position, margins, font,
@@ -30,12 +29,10 @@ use super::MermaidChart;
 pub(crate) fn apply_base_options(
     src: &MermaidChart,
     dst: &mut ChartBase,
-    theme_name: &str,
     parsed_title: Option<&str>,
     default_width: f32,
     default_height: f32,
 ) {
-    let theme = get_theme(theme_name);
     dst.width = if src.base.width > 0.0 {
         src.base.width
     } else {
@@ -54,7 +51,7 @@ pub(crate) fn apply_base_options(
     if !src.base.font_family.is_empty() {
         dst.font_family = src.base.font_family.clone();
     }
-    if src.has_custom_background(&theme) {
+    if src.has_custom_background() {
         dst.background_color = src.base.background_color;
     }
 
