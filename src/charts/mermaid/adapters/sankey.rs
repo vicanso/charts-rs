@@ -12,6 +12,8 @@
 
 //! Mermaid `sankey-beta` diagram adapter -> [`SankeyChart`](crate::SankeyChart).
 
+use std::collections::HashMap;
+
 use super::super::super::error::{Error, Result};
 use super::super::super::sankey_chart::{SankeyChart, SankeyLink};
 use super::super::MermaidChart;
@@ -71,13 +73,69 @@ fn parse_csv_row(line: &str, line_no: usize) -> Result<Vec<String>> {
     Ok(fields)
 }
 
+fn check_no_cycles(entries: &[(SankeyLink, usize)]) -> Result<()> {
+    let mut name_to_idx: HashMap<&str, usize> = HashMap::new();
+    let mut names: Vec<&str> = Vec::new();
+    let mut adj: Vec<Vec<(usize, usize)>> = Vec::new();
+
+    for (link, line_no) in entries {
+        let u = *name_to_idx.entry(link.source.as_str()).or_insert_with(|| {
+            let idx = names.len();
+            names.push(link.source.as_str());
+            adj.push(Vec::new());
+            idx
+        });
+        let v = *name_to_idx.entry(link.target.as_str()).or_insert_with(|| {
+            let idx = names.len();
+            names.push(link.target.as_str());
+            adj.push(Vec::new());
+            idx
+        });
+        adj[u].push((v, *line_no));
+    }
+
+    // 3-color iterative DFS: 0 = unvisited, 1 = visiting (on stack), 2 = done.
+    let mut color = vec![0u8; names.len()];
+    let mut stack: Vec<(usize, usize)> = Vec::new();
+    for start in 0..names.len() {
+        if color[start] != 0 {
+            continue;
+        }
+        color[start] = 1;
+        stack.push((start, 0));
+        while let Some((u, next_edge)) = stack.last_mut() {
+            let u = *u;
+            if *next_edge < adj[u].len() {
+                let (v, line_no) = adj[u][*next_edge];
+                *next_edge += 1;
+                if color[v] == 1 {
+                    return Err(Error::Mermaid {
+                        line: Some(line_no),
+                        message: format!(
+                            "sankey diagram contains a circular link `{} -> {}`",
+                            names[u], names[v]
+                        ),
+                    });
+                } else if color[v] == 0 {
+                    color[v] = 1;
+                    stack.push((v, 0));
+                }
+            } else {
+                color[u] = 2;
+                stack.pop();
+            }
+        }
+    }
+    Ok(())
+}
+
 pub(crate) fn render(
     chart: &MermaidChart,
     theme_name: &str,
     fm_title: Option<&str>,
     lines: &[SourceLine],
 ) -> Result<(String, f32, f32)> {
-    let mut links = Vec::new();
+    let mut entries = Vec::new();
     for sl in lines {
         let text = sl.text.trim();
         if text.is_empty() {
@@ -109,20 +167,26 @@ pub(crate) fn render(
                 message: format!("sankey link value must be non-negative, got `{}`", cols[2]),
             });
         }
-        links.push(SankeyLink {
-            source: cols[0].clone(),
-            target: cols[1].clone(),
-            value: val,
-        });
+        entries.push((
+            SankeyLink {
+                source: cols[0].clone(),
+                target: cols[1].clone(),
+                value: val,
+            },
+            sl.line_no,
+        ));
     }
 
-    if links.is_empty() {
+    if entries.is_empty() {
         return Err(Error::Mermaid {
             line: lines.first().map(|l| l.line_no),
             message: "sankey diagram has no links".to_string(),
         });
     }
 
+    check_no_cycles(&entries)?;
+
+    let links: Vec<SankeyLink> = entries.into_iter().map(|(l, _)| l).collect();
     let mut sankey = SankeyChart::new_with_theme(vec![], links, theme_name);
     apply_base_options(chart, &mut sankey.base, fm_title, 640.0, 420.0);
     let (w, h) = (sankey.width, sankey.height);

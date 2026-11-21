@@ -334,11 +334,17 @@ impl SankeyChart {
 
         // Longest-path layering: every link pushes its target at least one
         // column to the right of its source (Bellman-Ford style relaxation).
-        for _ in 0..node_count {
+        // In a DAG the longest path has at most `node_count - 1` edges; if
+        // relaxation still makes progress on the `node_count`-th pass, the
+        // graph contains a cycle and cannot be laid out as a Sankey DAG.
+        for pass in 0..node_count {
             let mut changed = false;
             for link in &links {
                 let want = nodes[link.source].layer + 1;
                 if nodes[link.target].layer < want {
+                    if pass + 1 == node_count {
+                        return None;
+                    }
                     nodes[link.target].layer = want;
                     changed = true;
                 }

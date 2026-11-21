@@ -561,3 +561,37 @@ fn mermaid_snapshots() {
         MermaidChart::from_json(include_str!("../asset/mermaid_chart/treemap.json")).unwrap();
     common::assert_snapshot!("mermaid_chart/treemap_json.svg", treemap.svg().unwrap());
 }
+
+#[test]
+fn m02_sankey_cycle_and_self_loop_rejected() {
+    let cycle = "sankey-beta\nA,B,10\nB,C,5\nC,A,2\nB,D,5";
+    let err = mermaid_to_svg(cycle).unwrap_err().to_string();
+    assert!(err.contains("line 4"), "expected line 4, got: {err}");
+    assert!(
+        err.contains("circular link") && err.contains("C -> A"),
+        "expected circular link C -> A, got: {err}"
+    );
+
+    let self_loop = "sankey-beta\nA,B,10\nB,B,5";
+    let err_self = mermaid_to_svg(self_loop).unwrap_err().to_string();
+    assert!(
+        err_self.contains("line 3"),
+        "expected line 3, got: {err_self}"
+    );
+    assert!(
+        err_self.contains("circular link") && err_self.contains("B -> B"),
+        "expected circular link B -> B, got: {err_self}"
+    );
+
+    // Defensive guard in core SankeyChart: a cyclic graph must not produce collapsed ribbons.
+    let chart = charts_rs::SankeyChart::new(
+        vec![],
+        vec![("A", "B", 10.0).into(), ("B", "C", 5.0).into(), ("C", "A", 2.0).into()],
+    );
+    let svg = chart.svg().unwrap();
+    assert_valid_svg(&svg);
+    assert!(
+        !svg.contains("<polygon"),
+        "cyclic SankeyChart should not draw collapsed ribbons: {svg}"
+    );
+}
