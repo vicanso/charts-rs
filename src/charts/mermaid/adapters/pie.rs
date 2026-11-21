@@ -117,19 +117,26 @@ pub(crate) fn render(
         });
     }
 
+    let total: f32 = series_list
+        .iter()
+        .map(|s| s.data.iter().flatten().sum::<f32>())
+        .sum();
+    if !total.is_finite() || total <= 0.0 {
+        return Err(Error::Mermaid {
+            line: lines.first().map(|l| l.line_no),
+            message: "pie diagram has no positive values".to_string(),
+        });
+    }
+
     let mut pie = PieChart::new_with_theme(series_list, theme_name);
     pie.rose_type = Some(false);
     pie.inner_radius = 0.0;
     pie.legend.show = Some(true);
+    pie.avoid_label_overlap = true;
+    pie.min_show_label_angle = 3.0;
     if show_data {
         pie.series.label.formatter = "{a}: {c} ({d})".to_string();
     }
-    let total: f32 = pie
-        .series_list
-        .iter()
-        .map(|s| s.data.iter().flatten().sum::<f32>())
-        .sum::<f32>()
-        .max(1.0);
     let label_font = if !chart.base.font_family.is_empty() {
         chart.base.font_family.as_str()
     } else {

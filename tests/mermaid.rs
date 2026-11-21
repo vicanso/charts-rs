@@ -1217,3 +1217,72 @@ treemap-beta
         );
     }
 }
+
+#[test]
+fn m11_pie_label_collision_avoidance_and_zero_validation() {
+    // 11 small slices (1 each) + 1 large slice (50): outer labels on each side must not overlap.
+    let src = r#"
+pie title Many
+  "a": 1
+  "b": 1
+  "c": 1
+  "d": 1
+  "e": 1
+  "f": 1
+  "g": 1
+  "h": 1
+  "i": 1
+  "j": 1
+  "k": 1
+  "l": 50
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("Many"));
+    // Collect outer slice label `(x, y)` positions (text lines containing `%`).
+    let lines: Vec<&str> = svg.lines().collect();
+    let mut left_ys = Vec::new();
+    let mut right_ys = Vec::new();
+    for (i, line) in lines.iter().enumerate() {
+        if line.contains('%') && i > 0 && lines[i - 1].starts_with("<text ") {
+            let tag = lines[i - 1];
+            let get = |k: &str| -> f32 {
+                let pat = format!("{k}=\"");
+                let s = tag.find(&pat).unwrap() + pat.len();
+                let e = s + tag[s..].find('"').unwrap();
+                tag[s..e].parse().unwrap()
+            };
+            let x = get("x");
+            let y = get("y");
+            if x < 320.0 {
+                left_ys.push(y);
+            } else {
+                // Right-side labels must sit outside the pie circle (center ~320,240, r ~128).
+                let dist = (x - 320.0).hypot(y - 240.0);
+                assert!(
+                    dist > 130.0,
+                    "right-side outer label sits over pie circle: x={x}, y={y}, dist={dist}"
+                );
+                right_ys.push(y);
+            }
+        }
+    }
+    for mut ys in [left_ys, right_ys] {
+        ys.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        for pair in ys.windows(2) {
+            assert!(
+                pair[1] - pair[0] >= 15.0,
+                "pie outer labels overlap vertically: {:?}",
+                ys
+            );
+        }
+    }
+
+    // All-zero pie diagram must return an explicit Error::Mermaid.
+    let zero_pie = "pie\n  \"a\": 0\n  \"b\": 0";
+    let err = mermaid_to_svg(zero_pie).unwrap_err().to_string();
+    assert!(
+        err.contains("no positive values"),
+        "expected 'no positive values' error for all-zero pie, got: {err}"
+    );
+}

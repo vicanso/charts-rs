@@ -39,28 +39,28 @@ Email
 </text>
 </g>
 <path d="M364,228.5 L364,103.3 A8 8 0 0 1 368.6,95.4 A133.2 133.2 0 0 1 432.2,342.9 A8 8 0 0 1 424.3,338.2 L367.9,235.5 Z" fill="#5470C6" data-series="Organic Search" data-value="42" data-percentage="42"/>
-<path d="M493,195.4 C497.9 194.1, 507.5 191, 512.4 190.4 C517.3 189.8, 527.4 190.4, 532.4 190.4" stroke-width="1" fill="none" stroke="#5470C6"/>
-<text font-size="14" x="535.4" y="195.4" font-family="Roboto" fill="#464646">
-Organic Search: 42 (42%)
-</text>
 <path d="M364,228.5 L424.3,338.2 A8 8 0 0 1 424.1,347.4 A133.2 133.2 0 0 1 245.5,289.4 A8 8 0 0 1 250.7,281.8 L356.8,231.9 Z" fill="#91CC75" data-series="Direct" data-value="26" data-percentage="26"/>
-<path d="M322.8,355.2 C321.3 359.9, 319.9 371.8, 316.7 374.2 C313.4 376.6, 301.7 374.2, 296.7 374.2" stroke-width="1" fill="none" stroke="#91CC75"/>
-<text font-size="14" x="192.7" y="379.2" font-family="Roboto" fill="#464646">
-Direct: 26 (26%)
-</text>
 <path d="M364,228.5 L250.7,281.8 A8 8 0 0 1 241.6,281 A133.2 133.2 0 0 1 253.6,154 A8 8 0 0 1 262.7,154.9 L357.5,223.8 Z" fill="#FAC858" data-series="Referral" data-value="17" data-percentage="17"/>
-<path d="M231.4,216 C226.4 215.5, 216.5 214.3, 211.5 214.1 C206.5 213.8, 196.5 214.1, 191.5 214.1" stroke-width="1" fill="none" stroke="#FAC858"/>
-<text font-size="14" x="75.5" y="219.1" font-family="Roboto" fill="#464646">
-Referral: 17 (17%)
-</text>
 <path d="M364,228.5 L262.7,154.9 A8 8 0 0 1 259,146.5 A133.2 133.2 0 0 1 318.4,103.3 A8 8 0 0 1 325.3,109.4 L361.5,220.9 Z" fill="#EE6666" data-series="Social" data-value="10" data-percentage="10"/>
-<path d="M285.7,120.7 C282.8 116.7, 277.9 106.6, 274 104.6 C270 102.5, 259 104.6, 254 104.6" stroke-width="1" fill="none" stroke="#EE6666"/>
-<text font-size="14" x="149" y="109.6" font-family="Roboto" fill="#464646">
-Social: 10 (10%)
-</text>
 <path d="M364,228.5 L325.3,109.4 A8 8 0 0 1 327.3,100.5 A133.2 133.2 0 0 1 359.4,95.4 A8 8 0 0 1 364,103.3 L364,220.5 Z" fill="#73C0DE" data-series="Email" data-value="5" data-percentage="5"/>
 <path d="M343.2,96.9 C342.4 92, 342.9 79.7, 340 77.2 C337.1 74.7, 325 77.2, 320 77.2" stroke-width="1" fill="none" stroke="#73C0DE"/>
 <text font-size="14" x="235" y="82.2" font-family="Roboto" fill="#464646">
 Email: 5 (5%)
+</text>
+<path d="M285.7,120.7 C282.8 116.7, 277.9 106.6, 274 104.6 C270 102.5, 259 104.6, 254 104.6" stroke-width="1" fill="none" stroke="#EE6666"/>
+<text font-size="14" x="149" y="109.6" font-family="Roboto" fill="#464646">
+Social: 10 (10%)
+</text>
+<path d="M231.4,216 C226.4 215.5, 216.5 214.3, 211.5 214.1 C206.5 213.8, 196.5 214.1, 191.5 214.1" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="75.5" y="219.1" font-family="Roboto" fill="#464646">
+Referral: 17 (17%)
+</text>
+<path d="M322.8,355.2 C321.3 359.9, 319.9 371.8, 316.7 374.2 C313.4 376.6, 301.7 374.2, 296.7 374.2" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="192.7" y="379.2" font-family="Roboto" fill="#464646">
+Direct: 26 (26%)
+</text>
+<path d="M493,195.4 C497.9 194.1, 507.5 191, 512.4 190.4 C517.3 189.8, 527.4 190.4, 532.4 190.4" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="535.4" y="195.4" font-family="Roboto" fill="#464646">
+Organic Search: 42 (42%)
 </text>
 </svg>

@@ -61,6 +61,10 @@ pub struct PieChart {
     /// Gap between two rings of nested pies (series with a `ring`), in
     /// pixels; `None` is 6.
     pub ring_gap: Option<f32>,
+    /// When `true`, partitions outer slice labels into left/right columns and
+    /// adjusts their vertical positions so adjacent labels never overlap.
+    /// Default: false.
+    pub avoid_label_overlap: bool,
 }
 
 impl std::ops::Deref for PieChart {
@@ -285,6 +289,17 @@ impl PieChart {
                 .collect()
         };
 
+        struct OuterLabel {
+            anchor: Point,
+            elbow_x: f32,
+            y: f32,
+            is_left: bool,
+            color: Color,
+            label_text: String,
+            label_color: Color,
+            fade_class: Option<String>,
+        }
+        let mut deferred_outer_labels: Vec<OuterLabel> = Vec::new();
         let mut prev_quadrant = u8::MAX;
         let mut prev_end_y = f32::MAX;
         for (index, series) in self.series_list.iter().enumerate() {
@@ -449,6 +464,21 @@ impl PieChart {
                 }
 
                 label_margin
+            } else if self.avoid_label_overlap {
+                let anchor = get_pie_point(cx, cy, cr, angle);
+                let end = get_pie_point(cx, cy, r + label_offset, angle);
+                let is_left = angle.rem_euclid(360.0) > 180.0;
+                deferred_outer_labels.push(OuterLabel {
+                    anchor,
+                    elbow_x: end.x,
+                    y: end.y,
+                    is_left,
+                    color,
+                    label_text,
+                    label_color,
+                    fade_class,
+                });
+                continue;
             } else {
                 let mut points = vec![];
                 points.push(get_pie_point(cx, cy, cr, angle));
@@ -517,6 +547,108 @@ impl PieChart {
                 class: fade_class,
                 ..Default::default()
             });
+        }
+
+        if !deferred_outer_labels.is_empty() {
+            let min_gap = (self.series.label.font.size + 4.0).max(16.0);
+            let min_y = self.series.label.font.size.max(12.0);
+            let max_y = (c.height() - 8.0).max(min_y);
+
+            for side_left in [true, false] {
+                let mut indices: Vec<usize> = deferred_outer_labels
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, l)| (l.is_left == side_left).then_some(i))
+                    .collect();
+                if indices.is_empty() {
+                    continue;
+                }
+                indices.sort_by(|&a, &b| {
+                    deferred_outer_labels[a]
+                        .y
+                        .partial_cmp(&deferred_outer_labels[b].y)
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                });
+
+                // Downward pass: push overlapping labels apart.
+                let first = indices[0];
+                deferred_outer_labels[first].y = deferred_outer_labels[first].y.max(min_y);
+                for k in 1..indices.len() {
+                    let prev_y = deferred_outer_labels[indices[k - 1]].y;
+                    let cur = indices[k];
+                    if deferred_outer_labels[cur].y < prev_y + min_gap {
+                        deferred_outer_labels[cur].y = prev_y + min_gap;
+                    }
+                }
+                // Upward clamp pass: keep labels inside the plot height.
+                let last = *indices.last().unwrap();
+                if deferred_outer_labels[last].y > max_y {
+                    deferred_outer_labels[last].y = max_y;
+                    for k in (0..indices.len() - 1).rev() {
+                        let next_y = deferred_outer_labels[indices[k + 1]].y;
+                        let cur = indices[k];
+                        if deferred_outer_labels[cur].y > next_y - min_gap {
+                            deferred_outer_labels[cur].y = (next_y - min_gap).max(min_y);
+                        }
+                    }
+                }
+
+                for &idx in &indices {
+                    let lbl = &deferred_outer_labels[idx];
+                    let outer_r = r + label_offset;
+                    let dy = (lbl.y - cy).abs();
+                    let min_dx = if dy < outer_r {
+                        (outer_r * outer_r - dy * dy).sqrt()
+                    } else {
+                        0.0
+                    };
+                    let elbow_x = if lbl.is_left {
+                        lbl.elbow_x.min(cx - min_dx)
+                    } else {
+                        lbl.elbow_x.max(cx + min_dx)
+                    };
+                    let elbow = Point::from((elbow_x, lbl.y));
+                    let tail = Point::from((
+                        if lbl.is_left {
+                            elbow.x - label_offset
+                        } else {
+                            elbow.x + label_offset
+                        },
+                        lbl.y,
+                    ));
+                    c.smooth_line(SmoothLine {
+                        color: Some(lbl.color),
+                        points: vec![lbl.anchor, elbow, tail],
+                        symbol: None,
+                        class: lbl.fade_class.clone(),
+                        ..Default::default()
+                    });
+                    let mut label_margin = Box {
+                        left: tail.x,
+                        top: tail.y + 5.0,
+                        ..Default::default()
+                    };
+                    if lbl.is_left {
+                        if let Ok(b) = measure_text_width_family(
+                            &self.font_family,
+                            self.series.label.font.size,
+                            &lbl.label_text,
+                        ) {
+                            label_margin.left -= b.width();
+                        }
+                    } else {
+                        label_margin.left += 3.0;
+                    }
+                    c.child(label_margin).text(Text {
+                        text: lbl.label_text.clone(),
+                        font_family: Some(self.font_family.clone()),
+                        font_size: Some(self.series.label.font.size),
+                        font_color: Some(lbl.label_color),
+                        class: lbl.fade_class.clone(),
+                        ..Default::default()
+                    });
+                }
+            }
         }
 
         let mut css = String::new();
