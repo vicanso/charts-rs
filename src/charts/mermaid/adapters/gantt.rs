@@ -14,7 +14,7 @@
 
 use super::super::super::color::{Color, get_color};
 use super::super::super::error::{Error, Result};
-use super::super::super::gantt_chart::{GanttChart, GanttTask};
+use super::super::super::gantt_chart::{GanttChart, GanttMarker, GanttTask};
 use super::super::super::theme::get_theme;
 use super::super::super::x_axis::{days_from_civil, parse_time};
 use super::super::MermaidChart;
@@ -193,6 +193,7 @@ struct ParsedTask {
     is_active: bool,
     is_crit: bool,
     is_milestone: bool,
+    is_vert: bool,
     start: StartSpec,
     end: EndSpec,
 }
@@ -356,6 +357,7 @@ fn parse_task_line(
     let mut is_active = false;
     let mut is_crit = false;
     let mut is_milestone = false;
+    let mut is_vert = false;
     let mut idx = 0;
 
     while idx < parts.len() {
@@ -364,6 +366,7 @@ fn parse_task_line(
             "active" => is_active = true,
             "crit" => is_crit = true,
             "milestone" => is_milestone = true,
+            "vert" => is_vert = true,
             _ => break,
         }
         idx += 1;
@@ -409,7 +412,7 @@ fn parse_task_line(
                 (None, StartSpec::Sequential, EndSpec::Duration(dur))
             } else {
                 let s = parse_start(rem[0])?;
-                let default_dur = if is_milestone {
+                let default_dur = if is_milestone || is_vert {
                     0.0
                 } else {
                     DEFAULT_DAY_SECONDS
@@ -430,7 +433,7 @@ fn parse_task_line(
                 )
             } else {
                 let s = parse_start(rem[1])?;
-                let default_dur = if is_milestone {
+                let default_dur = if is_milestone || is_vert {
                     0.0
                 } else {
                     DEFAULT_DAY_SECONDS
@@ -464,6 +467,7 @@ fn parse_task_line(
         is_active,
         is_crit,
         is_milestone,
+        is_vert,
         start,
         end,
     })
@@ -518,7 +522,7 @@ fn resolve_task(
     };
     let start = calendar.snap_start(raw_start);
 
-    let end = if task.is_milestone {
+    let end = if task.is_milestone || task.is_vert {
         start
     } else {
         match task.end {
@@ -733,41 +737,48 @@ pub(crate) fn render(
         }
     }
 
-    let tasks: Vec<GanttTask> = parsed_tasks
-        .into_iter()
-        .zip(resolved)
-        .map(|(t, span)| {
-            let (start, end) = span.unwrap_or((0.0, 0.0));
-            let color = match (t.is_crit, t.is_done, t.is_active) {
-                (true, true, _) => Some(crit_done_fill),
-                (true, false, true) => Some(crit_active_fill),
-                (true, false, false) => Some(crit_fill),
-                (false, true, _) => Some(done_fill),
-                (false, false, true) => {
-                    let cat_idx = t
-                        .section
-                        .as_deref()
-                        .and_then(|s| sections.iter().position(|c| c == s))
-                        .unwrap_or(sections.len());
-                    let base = get_color(&theme.series.colors, cat_idx);
-                    Some(mix_color(base, Color::from((255, 255, 255)), 0.28))
-                }
-                (false, false, false) => None,
-            };
-            GanttTask {
-                name: t.name,
-                start,
-                end,
-                row: None,
-                category: t.section,
-                progress: None,
-                color,
+    let mut tasks: Vec<GanttTask> = Vec::new();
+    let mut vertical_markers: Vec<GanttMarker> = Vec::new();
+    for (t, span) in parsed_tasks.into_iter().zip(resolved) {
+        let (start, end) = span.unwrap_or((0.0, 0.0));
+        if t.is_vert {
+            vertical_markers.push(GanttMarker {
+                x: start,
+                label: t.name,
+                color: t.is_crit.then_some(crit_fill),
+            });
+            continue;
+        }
+        let color = match (t.is_crit, t.is_done, t.is_active) {
+            (true, true, _) => Some(crit_done_fill),
+            (true, false, true) => Some(crit_active_fill),
+            (true, false, false) => Some(crit_fill),
+            (false, true, _) => Some(done_fill),
+            (false, false, true) => {
+                let cat_idx = t
+                    .section
+                    .as_deref()
+                    .and_then(|s| sections.iter().position(|c| c == s))
+                    .unwrap_or(sections.len());
+                let base = get_color(&theme.series.colors, cat_idx);
+                Some(mix_color(base, Color::from((255, 255, 255)), 0.28))
             }
-        })
-        .collect();
+            (false, false, false) => None,
+        };
+        tasks.push(GanttTask {
+            name: t.name,
+            start,
+            end,
+            row: None,
+            category: t.section,
+            progress: None,
+            color,
+        });
+    }
 
-    let default_height = (tasks.len() as f32 * 36.0 + 130.0).clamp(240.0, 1200.0);
+    let default_height = (tasks.len().max(1) as f32 * 36.0 + 130.0).clamp(240.0, 1200.0);
     let mut gantt = GanttChart::new_with_theme(tasks, theme_name);
+    gantt.vertical_markers = vertical_markers;
     if let Some(fmt) = axis_format {
         gantt.x_axis.formatter = Some(fmt);
     }

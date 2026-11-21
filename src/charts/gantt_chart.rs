@@ -97,6 +97,18 @@ impl GanttTask {
 
 // ── GanttChart ─────────────────────────────────────────────────────────────────
 
+/// A vertical reference marker line across the Gantt plot area (e.g. a
+/// release freeze or Mermaid `vert` milestone marker).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct GanttMarker {
+    /// Position along the x axis (unix seconds on time axes, or numeric value).
+    pub x: f64,
+    /// Optional label drawn near the top of the marker line.
+    pub label: String,
+    /// Optional stroke/label color; defaults to the chart title color.
+    pub color: Option<Color>,
+}
+
 /// A gantt chart: tasks as bars along a time axis, one row for each task or
 /// several tasks on a row — a project plan, a schedule, a timeline.
 ///
@@ -133,6 +145,9 @@ pub struct GanttChart {
     /// Optional `(start, end)` intervals rendered as subtle shaded background
     /// bands (e.g. excluded weekends or holidays in Mermaid Gantt charts).
     pub excluded_ranges: Vec<(f64, f64)>,
+    /// Optional labeled vertical reference lines across the plot area (e.g.
+    /// Mermaid `vert` markers), drawn without consuming a task row.
+    pub vertical_markers: Vec<GanttMarker>,
 }
 
 impl std::ops::Deref for GanttChart {
@@ -339,6 +354,12 @@ impl GanttChart {
         if let Some(now) = self.now.filter(|v| v.is_finite()) {
             min = min.min(now);
             max = max.max(now);
+        }
+        for m in &self.vertical_markers {
+            if m.x.is_finite() {
+                min = min.min(m.x);
+                max = max.max(m.x);
+            }
         }
         let padding = if max > min {
             (max - min) * RANGE_PADDING
@@ -682,6 +703,58 @@ impl GanttChart {
                 bottom: plot_height,
                 stroke_dash_array: Some("4 3".to_string()),
             });
+        }
+
+        // Optional labeled vertical reference markers (e.g. Mermaid `vert`).
+        let mut placed_marker_labels: Vec<(f32, f32, f32)> = Vec::new();
+        for m in &self.vertical_markers {
+            if !m.x.is_finite() || m.x < min || m.x > max {
+                continue;
+            }
+            let x = scale.px(m.x);
+            let col = m.color.unwrap_or(self.title.font.color);
+            plot.line(Line {
+                color: Some(col),
+                stroke_width: 1.4,
+                left: x,
+                top: 0.0,
+                right: x,
+                bottom: plot_height,
+                stroke_dash_array: Some("4 3".to_string()),
+            });
+            if !m.label.is_empty() {
+                let marker_font = (font_size - 1.5).max(10.0);
+                let lw = measure(&m.label, marker_font);
+                let (lx, anchor, x0, x1) = if x + lw + 8.0 > plot_width {
+                    let rx = (x - 4.0).max(0.0);
+                    (rx, "end", (rx - lw).max(0.0), rx)
+                } else {
+                    let rx = x + 4.0;
+                    (rx, "start", rx, rx + lw)
+                };
+                let step = marker_font + 3.0;
+                let mut ly = 10.0_f32;
+                while ly + marker_font * 0.5 < plot_height
+                    && placed_marker_labels
+                        .iter()
+                        .any(|&(px0, px1, py)| x0 < px1 + 4.0 && px0 < x1 + 4.0 && (ly - py).abs() < step - 0.5)
+                {
+                    ly += step;
+                }
+                placed_marker_labels.push((x0, x1, ly));
+                plot.text_unmeasured(Text {
+                    text: m.label.clone(),
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(col),
+                    font_size: Some(marker_font),
+                    font_weight: Some("bold".to_string()),
+                    x: Some(lx),
+                    y: Some(ly),
+                    text_anchor: Some(anchor.to_string()),
+                    dominant_baseline: Some("central".to_string()),
+                    ..Default::default()
+                });
+            }
         }
 
         let mut css = String::new();

@@ -1286,3 +1286,45 @@ pie title Many
         "expected 'no positive values' error for all-zero pie, got: {err}"
     );
 }
+
+#[test]
+fn m20_gantt_vert_marker() {
+    let src = r#"
+gantt
+  title Release Schedule
+  dateFormat YYYY-MM-DD
+  section Build
+    Alpha       :a1, 2026-01-10, 15d
+    Code Freeze :vert, v1, 2026-02-01, 0d
+    Beta        :after a1, 15d
+    GA Cut      :crit, vert, v2, after v1, 0d
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("Code Freeze"), "expected vert marker label: {svg}");
+    assert!(svg.contains("GA Cut"), "expected second vert marker label: {svg}");
+    // `vert` markers must NOT consume task rows (only `Alpha` and `Beta` have `data-name=`).
+    assert!(svg.contains("data-name=\"Alpha\""));
+    assert!(svg.contains("data-name=\"Beta\""));
+    assert!(!svg.contains("data-name=\"Code Freeze\""));
+    assert!(!svg.contains("data-name=\"GA Cut\""));
+    // Both vertical marker dashed lines (`stroke-width="1.4"`) must be rendered.
+    assert_eq!(
+        svg.matches("stroke-width=\"1.4\"").count(),
+        2,
+        "expected 2 vertical marker lines: {svg}"
+    );
+    // Coincident vertical marker labels (`Code Freeze` and `GA Cut`) must stagger vertically.
+    let lines: Vec<&str> = svg.lines().collect();
+    let y_of = |lbl: &str| -> f32 {
+        let idx = lines.iter().position(|l| *l == lbl).unwrap();
+        let tag = lines[idx - 1];
+        let s = tag.find("y=\"").unwrap() + 3;
+        let e = s + tag[s..].find('"').unwrap();
+        tag[s..e].parse().unwrap()
+    };
+    assert!(
+        (y_of("GA Cut") - y_of("Code Freeze")).abs() >= 10.0,
+        "coincident vert marker labels should stagger vertically"
+    );
+}
