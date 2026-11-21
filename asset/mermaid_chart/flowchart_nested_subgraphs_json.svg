@@ -1,0 +1,43 @@
+<svg width="515" height="518" viewBox="0 0 515 518" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="515" height="518" fill="#09090B"/>
+<text font-size="18" x="145.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#A1A1AA">
+Data Platform Architecture
+</text>
+<rect x="29" y="126" width="308" height="363" rx="6" ry="6" stroke="#5771A9" stroke-width="1.2" fill="#141416"/>
+<text font-size="13" x="41" y="147" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#A1A1AA">
+Data Platform
+</text>
+<rect x="87" y="166" width="232" height="188" rx="6" ry="6" stroke="#5771A9" stroke-width="1.2" fill="#1D1D1F"/>
+<text font-size="13" x="99" y="187" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#A1A1AA">
+Storage Engine
+</text>
+<path d="M198 264 L198 210" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5E5E64" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="203,245 207.9,255.8 198.1,255.8" fill="#5E5E64"/>
+<path d="M116.3 399 L184.2 303" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5E5E64" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="189.2,338 187,349.7 179,344" fill="#5E5E64"/>
+<path d="M383.2 399 L298.1 319" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5E5E64" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="303.1,354 314.3,357.8 307.6,365" fill="#5E5E64"/>
+<path d="M198 171 L198 75" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5E5E64" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="203,110 207.9,120.8 198.1,120.8" fill="#5E5E64"/>
+<rect x="135" y="299" width="136" height="39" stroke="#5181E1" stroke-width="1.6" fill="#0F1D38"/>
+<text font-size="14" x="203" y="318.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
+Write-Ahead Log
+</text>
+<rect x="148" y="206" width="110" height="39" stroke="#5181E1" stroke-width="1.6" fill="#0F1D38"/>
+<text font-size="14" x="203" y="225.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
+B-Tree Index
+</text>
+<rect x="47" y="434" width="121" height="39" stroke="#5181E1" stroke-width="1.6" fill="#0F1D38"/>
+<text font-size="14" x="107.5" y="453.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
+Stream Ingest
+</text>
+<rect x="353" y="434" width="133" height="39" rx="19.5" ry="19.5" stroke="#5181E1" stroke-width="1.6" fill="#0F1D38"/>
+<text font-size="14" x="419.5" y="453.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
+Event Producer
+</text>
+<path d="M113.5 31.1 A 84.5 7.1 0 0 1 282.5 31.1 L 282.5 67.9 A 84.5 7.1 0 0 1 113.5 67.9 Z" transform="translate(5,35)" fill="#0F1D38" stroke-width="1.6" stroke="#5181E1"/>
+<path d="M 113.5 31.1 A 84.5 7.1 0 0 0 282.5 31.1" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#5181E1"/>
+<text font-size="14" x="203" y="84.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
+Analytics Warehouse
+</text>
+</svg>

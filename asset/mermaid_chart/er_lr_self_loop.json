@@ -1,0 +1,4 @@
+{
+  "title_text": "Enterprise Org Schema",
+  "source": "erDiagram\n  direction LR\n  DEPARTMENT {\n    int id PK\n    varchar name UK\n  }\n  EMPLOYEE {\n    int id PK\n    int manager_id FK\n    varchar role\n  }\n  PROJECT {\n    int id PK\n    varchar code UK\n  }\n  TASK {\n    int id PK\n    varchar status\n  }\n  DEPARTMENT ||--|{ EMPLOYEE : employs\n  EMPLOYEE ||--o{ EMPLOYEE : manages\n  EMPLOYEE |o--o| PROJECT : sponsors\n  EMPLOYEE }|..|{ TASK : assigned"
+}

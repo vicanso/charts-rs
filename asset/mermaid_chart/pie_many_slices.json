@@ -1,0 +1,3 @@
+{
+  "source": "pie showData\n  title HTTP Traffic by Client Region\n  \"North America\" : 44\n  \"Western Europe\" : 22\n  \"East Asia\" : 12\n  \"South Asia\" : 6\n  \"Latin America\" : 4\n  \"Oceania\" : 3\n  \"Nordics\" : 2\n  \"Eastern Europe\" : 2\n  \"Middle East\" : 2\n  \"Southeast Asia\" : 1\n  \"Sub-Saharan Africa\" : 1\n  \"Other\" : 1"
+}

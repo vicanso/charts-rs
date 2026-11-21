@@ -1405,6 +1405,46 @@ fn generate_mermaid_image() {
             "mermaid-treemap",
             include_str!("../asset/mermaid_chart/treemap.json"),
         ),
+        (
+            "mermaid-flowchart-v11-shapes",
+            include_str!("../asset/mermaid_chart/flowchart_v11_shapes.json"),
+        ),
+        (
+            "mermaid-flowchart-nested-subgraphs",
+            include_str!("../asset/mermaid_chart/flowchart_nested_subgraphs.json"),
+        ),
+        (
+            "mermaid-sequence-lifecycle",
+            include_str!("../asset/mermaid_chart/sequence_lifecycle.json"),
+        ),
+        (
+            "mermaid-gantt-workdays-vert",
+            include_str!("../asset/mermaid_chart/gantt_workdays_vert.json"),
+        ),
+        (
+            "mermaid-xychart-horizontal",
+            include_str!("../asset/mermaid_chart/xychart_horizontal.json"),
+        ),
+        (
+            "mermaid-xychart-numeric",
+            include_str!("../asset/mermaid_chart/xychart_numeric.json"),
+        ),
+        (
+            "mermaid-er-lr-self-loop",
+            include_str!("../asset/mermaid_chart/er_lr_self_loop.json"),
+        ),
+        (
+            "mermaid-class-parallel-relations",
+            include_str!("../asset/mermaid_chart/class_parallel_relations.json"),
+        ),
+        (
+            "mermaid-treemap-nested",
+            include_str!("../asset/mermaid_chart/treemap_nested.json"),
+        ),
+        (
+            "mermaid-pie-many-slices",
+            include_str!("../asset/mermaid_chart/pie_many_slices.json"),
+        ),
     ] {
         let svg = MermaidChart::from_json(json).unwrap().svg().unwrap();
         let buf = svg_to_png(&svg).unwrap();

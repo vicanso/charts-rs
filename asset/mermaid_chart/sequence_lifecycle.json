@@ -1,0 +1,4 @@
+{
+  "theme": "dark",
+  "source": "%%{init: {'sequence': {'mirrorActors': false}}}%%\nsequenceDiagram\n  title Worker Job Lifecycle\n  participant Client\n  participant Scheduler\n  participant Queue\n  Client->>Scheduler: Submit job\n  create participant Worker\n  Scheduler->>Worker: Spawn worker\n  loop Poll tasks (3x)\n    Worker->>Queue: Fetch next task\n    opt Task available\n      Queue-->>Worker: Task payload\n      Worker->>Worker: Execute job\n    end\n  end\n  destroy Worker\n  Worker-->>Scheduler: Completed & exit\n  Scheduler-->>Client: Job finished"
+}

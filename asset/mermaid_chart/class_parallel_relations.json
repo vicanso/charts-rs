@@ -1,0 +1,4 @@
+{
+  "title_text": "Event Bus Architecture",
+  "source": "classDiagram\n  direction LR\n  class Repository~T~ {\n    <<abstract>>\n    #String table\n    +findById(id UUID)* T\n    +count()$ int\n  }\n  class EventBus~E~ {\n    +publish(event E) void\n    +subscribe(handler Handler) void\n  }\n  class OrderService {\n    +placeOrder(cmd Command) Order\n    +cancel(id UUID) void\n  }\n  Repository <|-- OrderService : extends\n  OrderService --> EventBus : publishes\n  EventBus --> OrderService : dispatches"
+}

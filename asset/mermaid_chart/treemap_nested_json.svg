@@ -1,0 +1,97 @@
+<svg width="700" height="480" viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="700" height="480" fill="#FFFFFF"/>
+<text font-size="18" x="218.5" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Global Engineering Budget ($k)
+</text>
+<rect x="6" y="41" width="688" height="433" rx="3" ry="3" stroke="#5470C6" stroke-width="1.4" fill="#5470C6" fill-opacity="0.15"/>
+<rect x="6" y="41" width="688" height="22" rx="3" ry="3" fill="#5470C6"/>
+<text font-size="12" x="12" y="52" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#FFFFFF">
+Engineering
+</text>
+<rect x="10" y="67" width="383" height="403" rx="3" ry="3" stroke="#5470C6" stroke-width="1.4" fill="#5470C6" fill-opacity="0.15"/>
+<rect x="10" y="67" width="383" height="22" rx="3" ry="3" fill="#5470C6"/>
+<text font-size="12" x="16" y="78" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#FFFFFF">
+Platform
+</text>
+<rect x="14" y="93" width="206.2" height="373" rx="3" ry="3" stroke="#879AD7" stroke-width="1.4" fill="#879AD7" fill-opacity="0.15"/>
+<rect x="14" y="93" width="206.2" height="22" rx="3" ry="3" fill="#879AD7"/>
+<text font-size="12" x="20" y="104" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#FFFFFF">
+Core Infra
+</text>
+<rect x="222.2" y="93" width="166.8" height="373" rx="3" ry="3" stroke="#879AD7" stroke-width="1.4" fill="#879AD7" fill-opacity="0.15"/>
+<rect x="222.2" y="93" width="166.8" height="22" rx="3" ry="3" fill="#879AD7"/>
+<text font-size="12" x="228.2" y="104" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#FFFFFF">
+Data
+</text>
+<rect x="395" y="67" width="295" height="403" rx="3" ry="3" stroke="#91CC75" stroke-width="1.4" fill="#91CC75" fill-opacity="0.15"/>
+<rect x="395" y="67" width="295" height="22" rx="3" ry="3" fill="#91CC75"/>
+<text font-size="12" x="401" y="78" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#1E1E1E">
+Product
+</text>
+<rect x="399" y="93" width="287" height="192.4" rx="3" ry="3" stroke="#B2DB9E" stroke-width="1.4" fill="#B2DB9E" fill-opacity="0.15"/>
+<rect x="399" y="93" width="287" height="22" rx="3" ry="3" fill="#B2DB9E"/>
+<text font-size="12" x="405" y="104" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#1E1E1E">
+Web App
+</text>
+<rect x="399" y="287.4" width="287" height="178.6" rx="3" ry="3" stroke="#B2DB9E" stroke-width="1.4" fill="#B2DB9E" fill-opacity="0.15"/>
+<rect x="399" y="287.4" width="287" height="22" rx="3" ry="3" fill="#B2DB9E"/>
+<text font-size="12" x="405" y="298.4" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#1E1E1E">
+Mobile
+</text>
+<rect x="18" y="119" width="198.2" height="212.1" fill="#BDC7E9" data-series="Kubernetes" data-value="180"/>
+<text font-size="14" x="117.1" y="216.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Kubernetes
+</text>
+<text font-size="11.9" x="117.1" y="234.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+180
+</text>
+<rect x="18" y="333.1" width="198.2" height="128.9" fill="#BDC7E9" data-series="Observability" data-value="110"/>
+<text font-size="14" x="117.1" y="389.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Observability
+</text>
+<text font-size="11.9" x="117.1" y="407.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+110
+</text>
+<rect x="226.2" y="119" width="158.8" height="203.5" fill="#BDC7E9" data-series="Warehouse" data-value="140"/>
+<text font-size="14" x="305.6" y="212.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Warehouse
+</text>
+<text font-size="11.9" x="305.6" y="230.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+140
+</text>
+<rect x="226.2" y="324.5" width="158.8" height="137.5" fill="#BDC7E9" data-series="Streaming" data-value="95"/>
+<text font-size="14" x="305.6" y="384.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Streaming
+</text>
+<text font-size="11.9" x="305.6" y="403.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+95
+</text>
+<rect x="403" y="119" width="165.3" height="162.4" fill="#D4EBC9" data-series="Frontend" data-value="125"/>
+<text font-size="14" x="485.6" y="191.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Frontend
+</text>
+<text font-size="11.9" x="485.6" y="210" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+125
+</text>
+<rect x="570.3" y="119" width="111.7" height="162.4" fill="#D4EBC9" data-series="UI Kit" data-value="85"/>
+<text font-size="14" x="626.1" y="191.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+UI Kit
+</text>
+<text font-size="11.9" x="626.1" y="210" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+85
+</text>
+<rect x="403" y="313.4" width="149.3" height="148.6" fill="#D4EBC9" data-series="iOS" data-value="105"/>
+<text font-size="14" x="477.7" y="379.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+iOS
+</text>
+<text font-size="11.9" x="477.7" y="397.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+105
+</text>
+<rect x="554.3" y="313.4" width="127.7" height="148.6" fill="#D4EBC9" data-series="Android" data-value="90"/>
+<text font-size="14" x="618.2" y="379.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E">
+Android
+</text>
+<text font-size="11.9" x="618.2" y="397.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E1E1E" fill-opacity="0.71">
+90
+</text>
+</svg>

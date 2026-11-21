@@ -560,6 +560,96 @@ fn mermaid_snapshots() {
     let treemap =
         MermaidChart::from_json(include_str!("../asset/mermaid_chart/treemap.json")).unwrap();
     common::assert_snapshot!("mermaid_chart/treemap_json.svg", treemap.svg().unwrap());
+
+    let flowchart_v11_shapes = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/flowchart_v11_shapes.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/flowchart_v11_shapes_json.svg",
+        flowchart_v11_shapes.svg().unwrap()
+    );
+
+    let flowchart_nested_subgraphs = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/flowchart_nested_subgraphs.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/flowchart_nested_subgraphs_json.svg",
+        flowchart_nested_subgraphs.svg().unwrap()
+    );
+
+    let sequence_lifecycle = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/sequence_lifecycle.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/sequence_lifecycle_json.svg",
+        sequence_lifecycle.svg().unwrap()
+    );
+
+    let gantt_workdays_vert = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/gantt_workdays_vert.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/gantt_workdays_vert_json.svg",
+        gantt_workdays_vert.svg().unwrap()
+    );
+
+    let xychart_horizontal = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/xychart_horizontal.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/xychart_horizontal_json.svg",
+        xychart_horizontal.svg().unwrap()
+    );
+
+    let xychart_numeric = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/xychart_numeric.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/xychart_numeric_json.svg",
+        xychart_numeric.svg().unwrap()
+    );
+
+    let er_lr_self_loop = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/er_lr_self_loop.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/er_lr_self_loop_json.svg",
+        er_lr_self_loop.svg().unwrap()
+    );
+
+    let class_parallel_relations = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/class_parallel_relations.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/class_parallel_relations_json.svg",
+        class_parallel_relations.svg().unwrap()
+    );
+
+    let treemap_nested = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/treemap_nested.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/treemap_nested_json.svg",
+        treemap_nested.svg().unwrap()
+    );
+
+    let pie_many_slices = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/pie_many_slices.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/pie_many_slices_json.svg",
+        pie_many_slices.svg().unwrap()
+    );
 }
 
 #[test]

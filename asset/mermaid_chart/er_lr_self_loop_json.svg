@@ -1,0 +1,169 @@
+<svg width="826" height="302" viewBox="0 0 826 302" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="826" height="302" fill="#FFFFFF"/>
+<text font-size="18" x="316" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
+Enterprise Org Schema
+</text>
+<path d="M171 131 L295 131" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.7" x1="182" y1="172.5" x2="182" y2="159.5" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="187" y1="172.5" x2="187" y2="159.5" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="288" y1="166" x2="300" y2="173.5" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="288" y1="166" x2="300" y2="158.5" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="288" y1="159.5" x2="288" y2="172.5" stroke="#5C5D62"/>
+<path d="M351.5 182 C351.5 193,334.5 215,351.5 226 C368.5 237,402.5 237,419.5 226 C436.5 215,419.5 193,419.5 182" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.7" x1="350" y1="223" x2="363" y2="223" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="350" y1="228" x2="363" y2="228" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="424.5" y1="229" x2="432" y2="217" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="424.5" y1="229" x2="417" y2="217" stroke="#5C5D62"/>
+<circle cx="424.5" cy="235" r="4.2" stroke-width="1.5" stroke="#5C5D62" fill="#FFFFFF"/>
+<path d="M476 109.7 L603.5 79.8" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.7" x1="488.3" y1="149.7" x2="485.4" y2="137" stroke="#5C5D62"/>
+<circle cx="495.1" cy="141.4" r="4.2" stroke-width="1.5" stroke="#5C5D62" fill="#FFFFFF"/>
+<line stroke-width="1.7" x1="601.2" y1="109.8" x2="604.1" y2="122.5" stroke="#5C5D62"/>
+<circle cx="594.4" cy="118.1" r="4.2" stroke-width="1.5" stroke="#5C5D62" fill="#FFFFFF"/>
+<path d="M476 152.3 L600 181.4" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.7" x1="492.7" y1="190" x2="482.7" y2="180" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="492.7" y1="190" x2="479.3" y2="194.6" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="491.2" y1="196.3" x2="494.2" y2="183.7" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="593.3" y1="213.6" x2="603.3" y2="223.7" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="593.3" y1="213.6" x2="606.7" y2="209.1" stroke="#5C5D62"/>
+<line stroke-width="1.7" x1="594.8" y1="207.3" x2="591.8" y2="220" stroke="#5C5D62"/>
+<rect x="208.5" y="154.5" width="59" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="238" y="166" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+employs
+</text>
+<rect x="358.5" y="257.8" width="64" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="390.5" y="269.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+manages
+</text>
+<rect x="512.2" y="118.3" width="65" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="544.8" y="129.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+sponsors
+</text>
+<rect x="511.5" y="190.3" width="63" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<text font-size="12" x="543" y="201.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+assigned
+</text>
+<rect x="29" y="127" width="147" height="78" rx="5" ry="5" fill="#FFFFFF"/>
+<rect x="29" y="127" width="147" height="30" rx="5" ry="5" fill="#D2D9ED"/>
+<rect x="29" y="152" width="147" height="5" fill="#D2D9ED"/>
+<text font-size="13.5" x="102.5" y="142" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+DEPARTMENT
+</text>
+<line stroke-width="1.1" x1="29" y1="157" x2="176" y2="157" stroke="#526AB3"/>
+<text font-size="11.5" x="41" y="169" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+int
+</text>
+<text font-size="11.5" x="95" y="169" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+id
+</text>
+<rect x="138" y="161" width="24" height="16" rx="3" ry="3" fill="#E4E8F6"/>
+<text font-size="10" x="150" y="169" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PK
+</text>
+<rect x="29" y="181" width="147" height="24" fill="#F6F8FB"/>
+<line stroke-width="0.7" x1="29" y1="181" x2="176" y2="181" stroke="#B1BCDD"/>
+<text font-size="11.5" x="41" y="193" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+varchar
+</text>
+<text font-size="11.5" x="95" y="193" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+name
+</text>
+<rect x="138" y="185" width="24" height="16" rx="3" ry="3" fill="#E4E8F6"/>
+<text font-size="10" x="150" y="193" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+UK
+</text>
+<rect x="29" y="127" width="147" height="78" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="300" y="115" width="181" height="102" rx="5" ry="5" fill="#FFFFFF"/>
+<rect x="300" y="115" width="181" height="30" rx="5" ry="5" fill="#D2D9ED"/>
+<rect x="300" y="140" width="181" height="5" fill="#D2D9ED"/>
+<text font-size="13.5" x="390.5" y="130" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+EMPLOYEE
+</text>
+<line stroke-width="1.1" x1="300" y1="145" x2="481" y2="145" stroke="#526AB3"/>
+<text font-size="11.5" x="312" y="157" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+int
+</text>
+<text font-size="11.5" x="366" y="157" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+id
+</text>
+<rect x="443" y="149" width="24" height="16" rx="3" ry="3" fill="#E4E8F6"/>
+<text font-size="10" x="455" y="157" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PK
+</text>
+<rect x="300" y="169" width="181" height="24" fill="#F6F8FB"/>
+<line stroke-width="0.7" x1="300" y1="169" x2="481" y2="169" stroke="#B1BCDD"/>
+<text font-size="11.5" x="312" y="181" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+int
+</text>
+<text font-size="11.5" x="366" y="181" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+manager_id
+</text>
+<rect x="443" y="173" width="23" height="16" rx="3" ry="3" fill="#E4E8F6"/>
+<text font-size="10" x="454.5" y="181" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+FK
+</text>
+<line stroke-width="0.7" x1="300" y1="193" x2="481" y2="193" stroke="#B1BCDD"/>
+<text font-size="11.5" x="312" y="205" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+varchar
+</text>
+<text font-size="11.5" x="366" y="205" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+role
+</text>
+<rect x="300" y="115" width="181" height="102" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="608.5" y="59" width="143" height="78" rx="5" ry="5" fill="#FFFFFF"/>
+<rect x="608.5" y="59" width="143" height="30" rx="5" ry="5" fill="#D2D9ED"/>
+<rect x="608.5" y="84" width="143" height="5" fill="#D2D9ED"/>
+<text font-size="13.5" x="680" y="74" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PROJECT
+</text>
+<line stroke-width="1.1" x1="608.5" y1="89" x2="751.5" y2="89" stroke="#526AB3"/>
+<text font-size="11.5" x="620.5" y="101" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+int
+</text>
+<text font-size="11.5" x="674.5" y="101" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+id
+</text>
+<rect x="713.5" y="93" width="24" height="16" rx="3" ry="3" fill="#E4E8F6"/>
+<text font-size="10" x="725.5" y="101" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PK
+</text>
+<rect x="608.5" y="113" width="143" height="24" fill="#F6F8FB"/>
+<line stroke-width="0.7" x1="608.5" y1="113" x2="751.5" y2="113" stroke="#B1BCDD"/>
+<text font-size="11.5" x="620.5" y="125" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+varchar
+</text>
+<text font-size="11.5" x="674.5" y="125" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+code
+</text>
+<rect x="713.5" y="117" width="24" height="16" rx="3" ry="3" fill="#E4E8F6"/>
+<text font-size="10" x="725.5" y="125" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+UK
+</text>
+<rect x="608.5" y="59" width="143" height="78" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="605" y="195" width="150" height="78" rx="5" ry="5" fill="#FFFFFF"/>
+<rect x="605" y="195" width="150" height="30" rx="5" ry="5" fill="#D2D9ED"/>
+<rect x="605" y="220" width="150" height="5" fill="#D2D9ED"/>
+<text font-size="13.5" x="680" y="210" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+TASK
+</text>
+<line stroke-width="1.1" x1="605" y1="225" x2="755" y2="225" stroke="#526AB3"/>
+<text font-size="11.5" x="617" y="237" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+int
+</text>
+<text font-size="11.5" x="671" y="237" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+id
+</text>
+<rect x="717" y="229" width="24" height="16" rx="3" ry="3" fill="#E4E8F6"/>
+<text font-size="10" x="729" y="237" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PK
+</text>
+<rect x="605" y="249" width="150" height="24" fill="#F6F8FB"/>
+<line stroke-width="0.7" x1="605" y1="249" x2="755" y2="249" stroke="#B1BCDD"/>
+<text font-size="11.5" x="617" y="261" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+varchar
+</text>
+<text font-size="11.5" x="671" y="261" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+status
+</text>
+<rect x="605" y="195" width="150" height="78" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+</svg>

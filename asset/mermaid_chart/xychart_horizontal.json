@@ -1,0 +1,4 @@
+{
+  "theme": "grafana",
+  "source": "xychart-beta horizontal\n  title \"Service Throughput vs Target\"\n  x-axis \"Service\" [Auth, Billing, Search, Orders, Notify]\n  y-axis \"Requests (k/s)\" 0 --> 120\n  bar [95, 72, 110, 84, 58]\n  line [85, 70, 100, 80, 65]"
+}

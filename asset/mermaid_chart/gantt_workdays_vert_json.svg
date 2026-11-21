@@ -1,0 +1,93 @@
+<svg width="680" height="310" viewBox="0 0 680 310" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="680" height="310" fill="#FFFFFF"/>
+<text font-size="18" x="202" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+Q2 Platform Release (Workdays)
+</text>
+<g>
+<line stroke-width="2" x1="185.5" y1="50" x2="210.5" y2="50" stroke="#5470C6"/>
+<circle cx="198" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="213.5" y="54" font-family="Roboto" fill="#464646">
+Architecture
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="299.5" y1="50" x2="324.5" y2="50" stroke="#91CC75"/>
+<circle cx="312" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="327.5" y="54" font-family="Roboto" fill="#464646">
+Engineering
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="408.5" y1="50" x2="433.5" y2="50" stroke="#FAC858"/>
+<circle cx="421" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="436.5" y="54" font-family="Roboto" fill="#464646">
+Release
+</text>
+</g>
+<rect x="250.7" y="62" width="32.8" height="213" fill="#E0E6F2" fill-opacity="0.22"/>
+<rect x="365.3" y="62" width="32.8" height="213" fill="#E0E6F2" fill-opacity="0.22"/>
+<rect x="480" y="62" width="32.8" height="213" fill="#E0E6F2" fill-opacity="0.22"/>
+<rect x="594.7" y="62" width="32.8" height="213" fill="#E0E6F2" fill-opacity="0.22"/>
+<line stroke-width="1" x1="168.7" y1="62" x2="168.7" y2="275" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="283.4" y1="62" x2="283.4" y2="275" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="398.1" y1="62" x2="398.1" y2="275" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="512.8" y1="62" x2="512.8" y2="275" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="627.5" y1="62" x2="627.5" y2="275" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="154" y1="104.6" x2="675" y2="104.6" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="154" y1="147.2" x2="675" y2="147.2" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="154" y1="189.8" x2="675" y2="189.8" stroke="#E0E6F2"/>
+<line stroke-width="1" x1="154" y1="232.4" x2="675" y2="232.4" stroke="#E0E6F2"/>
+<g>
+<g stroke="#6E7079" stroke-width="1">
+<line x1="154" y1="275" x2="675" y2="275"/>
+<line x1="168.7" y1="275" x2="168.7" y2="280"/>
+<line x1="283.4" y1="275" x2="283.4" y2="280"/>
+<line x1="398.1" y1="275" x2="398.1" y2="280"/>
+<line x1="512.8" y1="275" x2="512.8" y2="280"/>
+<line x1="627.5" y1="275" x2="627.5" y2="280"/>
+</g>
+<text font-size="14" x="154" y="294" font-family="Roboto" fill="#6E7079">
+04-06
+</text>
+<text font-size="14" x="265.9" y="294" font-family="Roboto" fill="#6E7079">
+04-13
+</text>
+<text font-size="14" x="380.1" y="294" font-family="Roboto" fill="#6E7079">
+04-20
+</text>
+<text font-size="14" x="494.8" y="294" font-family="Roboto" fill="#6E7079">
+04-27
+</text>
+<text font-size="14" x="609.5" y="294" font-family="Roboto" fill="#6E7079">
+05-04
+</text>
+</g>
+<text font-size="14" x="146" y="83.3" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+RFC &amp; Design Review
+</text>
+<text font-size="14" x="146" y="125.9" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Schema Migration
+</text>
+<text font-size="14" x="146" y="168.5" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Core Engine
+</text>
+<text font-size="14" x="146" y="211.1" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Security Audit
+</text>
+<text font-size="14" x="146" y="253.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
+Load Testing
+</text>
+<rect x="168.7" y="70.5" width="81.9" height="25.6" rx="3" ry="3" fill="#C2C3C7" data-name="RFC &amp; Design Review" data-row="RFC &amp; Design Review" data-category="Architecture" data-start="2026-04-06" data-end="2026-04-11"/>
+<rect x="283.4" y="113.1" width="65.5" height="25.6" rx="3" ry="3" fill="#C2C3C7" data-name="Schema Migration" data-row="Schema Migration" data-category="Architecture" data-start="2026-04-13" data-end="2026-04-17"/>
+<rect x="349" y="155.7" width="196.6" height="25.6" rx="3" ry="3" fill="#B0DA9C" data-name="Core Engine" data-row="Core Engine" data-category="Engineering" data-start="2026-04-17" data-end="2026-04-29"/>
+<rect x="283.4" y="198.3" width="147.5" height="25.6" rx="3" ry="3" fill="#DC4444" data-name="Security Audit" data-row="Security Audit" data-category="Engineering" data-start="2026-04-13" data-end="2026-04-22"/>
+<rect x="545.6" y="240.9" width="114.7" height="25.6" rx="3" ry="3" fill="#FAC858" data-name="Load Testing" data-row="Load Testing" data-category="Release" data-start="2026-04-29" data-end="2026-05-06"/>
+<line stroke-width="1.4" x1="512.8" y1="62" x2="512.8" y2="275" stroke="#464646" stroke-dasharray="4 3"/>
+<text font-size="12.5" x="516.8" y="72" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+Code Freeze
+</text>
+<line stroke-width="1.4" x1="660.3" y1="62" x2="660.3" y2="275" stroke="#DC4444" stroke-dasharray="4 3"/>
+<text font-size="12.5" x="656.3" y="87.5" font-weight="bold" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#DC4444">
+GA Launch
+</text>
+</svg>

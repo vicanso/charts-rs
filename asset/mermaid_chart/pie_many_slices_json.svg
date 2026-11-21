@@ -1,0 +1,150 @@
+<svg width="748" height="400" viewBox="0 0 748 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="748" height="400" fill="#FFFFFF"/>
+<text font-size="18" x="249" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#464646">
+HTTP Traffic by Client Region
+</text>
+<g>
+<line stroke-width="2" x1="32" y1="50" x2="57" y2="50" stroke="#5470C6"/>
+<circle cx="44.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="60" y="54" font-family="Roboto" fill="#464646">
+North America
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="160" y1="50" x2="185" y2="50" stroke="#91CC75"/>
+<circle cx="172.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="188" y="54" font-family="Roboto" fill="#464646">
+Western Europe
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="296" y1="50" x2="321" y2="50" stroke="#FAC858"/>
+<circle cx="308.5" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="324" y="54" font-family="Roboto" fill="#464646">
+East Asia
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="391" y1="50" x2="416" y2="50" stroke="#EE6666"/>
+<circle cx="403.5" cy="50" r="5.5" stroke-width="2" stroke="#EE6666" fill="#FFFFFF"/>
+<text font-size="14" x="419" y="54" font-family="Roboto" fill="#464646">
+South Asia
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="495" y1="50" x2="520" y2="50" stroke="#73C0DE"/>
+<circle cx="507.5" cy="50" r="5.5" stroke-width="2" stroke="#73C0DE" fill="#FFFFFF"/>
+<text font-size="14" x="523" y="54" font-family="Roboto" fill="#464646">
+Latin America
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="620" y1="50" x2="645" y2="50" stroke="#3BA272"/>
+<circle cx="632.5" cy="50" r="5.5" stroke-width="2" stroke="#3BA272" fill="#FFFFFF"/>
+<text font-size="14" x="648" y="54" font-family="Roboto" fill="#464646">
+Oceania
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="26" y1="72" x2="51" y2="72" stroke="#FC8452"/>
+<circle cx="38.5" cy="72" r="5.5" stroke-width="2" stroke="#FC8452" fill="#FFFFFF"/>
+<text font-size="14" x="54" y="76" font-family="Roboto" fill="#464646">
+Nordics
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="109" y1="72" x2="134" y2="72" stroke="#9A60B4"/>
+<circle cx="121.5" cy="72" r="5.5" stroke-width="2" stroke="#9A60B4" fill="#FFFFFF"/>
+<text font-size="14" x="137" y="76" font-family="Roboto" fill="#464646">
+Eastern Europe
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="240" y1="72" x2="265" y2="72" stroke="#EA7CCC"/>
+<circle cx="252.5" cy="72" r="5.5" stroke-width="2" stroke="#EA7CCC" fill="#FFFFFF"/>
+<text font-size="14" x="268" y="76" font-family="Roboto" fill="#464646">
+Middle East
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="351" y1="72" x2="376" y2="72" stroke="#5470C6"/>
+<circle cx="363.5" cy="72" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<text font-size="14" x="379" y="76" font-family="Roboto" fill="#464646">
+Southeast Asia
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="484" y1="72" x2="509" y2="72" stroke="#91CC75"/>
+<circle cx="496.5" cy="72" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<text font-size="14" x="512" y="76" font-family="Roboto" fill="#464646">
+Sub-Saharan Africa
+</text>
+</g>
+<g>
+<line stroke-width="2" x1="643" y1="72" x2="668" y2="72" stroke="#FAC858"/>
+<circle cx="655.5" cy="72" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<text font-size="14" x="671" y="76" font-family="Roboto" fill="#464646">
+Other
+</text>
+</g>
+<path d="M374,239.5 L374,123.1 A8 8 0 0 1 378.3,115.2 A124.4 124.4 0 0 1 423.8,353.5 A8 8 0 0 1 416.8,347.7 L376.9,246.9 Z" fill="#5470C6" data-series="North America" data-value="44" data-percentage="44"/>
+<path d="M374,239.5 L416.8,347.7 A8 8 0 0 1 415.7,356.7 A124.4 124.4 0 0 1 271.4,309.8 A8 8 0 0 1 275.7,301.9 L367.2,243.8 Z" fill="#91CC75" data-series="Western Europe" data-value="22" data-percentage="22"/>
+<path d="M374,239.5 L275.7,301.9 A8 8 0 0 1 266.7,302.5 A124.4 124.4 0 0 1 251.1,220.5 A8 8 0 0 1 259.7,217.7 L366.1,238 Z" fill="#FAC858" data-series="East Asia" data-value="12" data-percentage="12"/>
+<path d="M374,239.5 L259.7,217.7 A8 8 0 0 1 252.7,211.9 A124.4 124.4 0 0 1 266.7,176.5 A8 8 0 0 1 275.7,177.1 L367.2,235.2 Z" fill="#EE6666" data-series="South Asia" data-value="6" data-percentage="6"/>
+<path d="M374,239.5 L275.7,177.1 A8 8 0 0 1 271.4,169.2 A124.4 124.4 0 0 1 285.7,151.8 A8 8 0 0 1 294.3,154.6 L368.5,233.7 Z" fill="#73C0DE" data-series="Latin America" data-value="4" data-percentage="4"/>
+<path d="M374,239.5 L294.3,154.6 A8 8 0 0 1 292.1,145.9 A124.4 124.4 0 0 1 303.7,136.9 A8 8 0 0 1 311.6,141.2 L369.7,232.7 Z" fill="#3BA272" data-series="Oceania" data-value="3" data-percentage="3"/>
+<path d="M374,239.5 L311.6,141.2 A8 8 0 0 1 311,132.2 A124.4 124.4 0 0 1 317.1,128.9 A8 8 0 0 1 324.4,134.2 L370.6,232.3 Z" fill="#FC8452" data-series="Nordics" data-value="2" data-percentage="2"/>
+<path d="M374,239.5 L324.4,134.2 A8 8 0 0 1 325,125.2 A124.4 124.4 0 0 1 331.5,122.6 A8 8 0 0 1 338,128.8 L371.5,231.9 Z" fill="#9A60B4" data-series="Eastern Europe" data-value="2" data-percentage="2"/>
+<path d="M374,239.5 L338,128.8 A8 8 0 0 1 339.7,119.9 A124.4 124.4 0 0 1 346.4,118.2 A8 8 0 0 1 352.2,125.2 L372.5,231.6 Z" fill="#EA7CCC" data-series="Middle East" data-value="2" data-percentage="2"/>
+<path d="M374,239.5 L352.2,125.2 A8 8 0 0 1 355,116.6 A124.4 124.4 0 0 1 354.1,116.7 A8 8 0 0 1 359.4,124 L373,231.6 Z" fill="#5470C6" data-series="Southeast Asia" data-value="1" data-percentage="1"/>
+<path d="M374,239.5 L359.4,124 A8 8 0 0 1 362.7,115.6 A124.4 124.4 0 0 1 361.9,115.7 A8 8 0 0 1 366.7,123.3 L373.5,231.5 Z" fill="#91CC75" data-series="Sub-Saharan Africa" data-value="1" data-percentage="1"/>
+<path d="M374,239.5 L366.7,123.3 A8 8 0 0 1 370.5,115.1 A124.4 124.4 0 0 1 369.7,115.2 A8 8 0 0 1 374,123.1 L374,231.5 Z" fill="#FAC858" data-series="Other" data-value="1" data-percentage="1"/>
+<path d="M370.1,115.2 C363.9 110.9, 352 100.6, 345.2 98 C340.7 96.3, 330.2 98, 325.2 98" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="241.2" y="103" font-family="Roboto" fill="#464646">
+Other: 1 (1%)
+</text>
+<path d="M362.3,115.7 C346.5 115.7, 315 115.9, 299.2 116 C294.2 116, 284.2 116, 279.2 116" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="104.2" y="121" font-family="Roboto" fill="#464646">
+Sub-Saharan Africa: 1 (1%)
+</text>
+<path d="M354.5,116.6 C334.8 121, 295.3 130.5, 275.4 134 C270.5 134.9, 260.4 134, 255.4 134" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="106.4" y="139" font-family="Roboto" fill="#464646">
+Southeast Asia: 1 (1%)
+</text>
+<path d="M343.1,119 C322.1 127.3, 280.4 145.2, 259.1 152 C254.4 153.5, 244.1 152, 239.1 152" stroke-width="1" fill="none" stroke="#EA7CCC"/>
+<text font-size="14" x="113.1" y="157" font-family="Roboto" fill="#464646">
+Middle East: 2 (2%)
+</text>
+<path d="M328.2,123.8 C308 135.4, 268.2 160.5, 247.4 170 C243 172, 232.4 170, 227.4 170" stroke-width="1" fill="none" stroke="#9A60B4"/>
+<text font-size="14" x="80.4" y="175" font-family="Roboto" fill="#464646">
+Eastern Europe: 2 (2%)
+</text>
+<path d="M314.1,130.5 C295.3 144.9, 258.7 176.1, 239.1 188 C234.9 190.5, 224.1 188, 219.1 188" stroke-width="1" fill="none" stroke="#FC8452"/>
+<text font-size="14" x="120.1" y="193" font-family="Roboto" fill="#464646">
+Nordics: 2 (2%)
+</text>
+<path d="M297.8,141.2 C281.7 157.4, 250.8 192.7, 233.5 206 C229.8 208.9, 218.5 206, 213.5 206" stroke-width="1" fill="none" stroke="#3BA272"/>
+<text font-size="14" x="111.5" y="211" font-family="Roboto" fill="#464646">
+Oceania: 3 (3%)
+</text>
+<path d="M278.1,160.2 C266.2 176.2, 244 211.3, 230.4 224 C227 227.2, 215.4 224, 210.4 224" stroke-width="1" fill="none" stroke="#73C0DE"/>
+<text font-size="14" x="69.4" y="229" font-family="Roboto" fill="#464646">
+Latin America: 4 (4%)
+</text>
+<path d="M258.3,193.7 C251.2 205.8, 238.6 233.1, 229.6 242 C226.4 245.2, 214.6 242, 209.6 242" stroke-width="1" fill="none" stroke="#EE6666"/>
+<text font-size="14" x="89.6" y="247" font-family="Roboto" fill="#464646">
+South Asia: 6 (6%)
+</text>
+<path d="M251.8,262.8 C246.9 263.7, 237.1 266.1, 232.2 266.6 C227.2 267, 217.2 266.6, 212.2 266.6" stroke-width="1" fill="none" stroke="#FAC858"/>
+<text font-size="14" x="85.2" y="271.6" font-family="Roboto" fill="#464646">
+East Asia: 12 (12%)
+</text>
+<path d="M335.6,357.8 C334 362.6, 332.7 374.5, 329.4 376.8 C326.1 379.2, 314.4 376.8, 309.4 376.8" stroke-width="1" fill="none" stroke="#91CC75"/>
+<text font-size="14" x="141.4" y="381.8" font-family="Roboto" fill="#464646">
+Western Europe: 22 (22%)
+</text>
+<path d="M496.2,216.2 C501.1 215.3, 510.9 212.9, 515.8 212.4 C520.8 212, 530.8 212.4, 535.8 212.4" stroke-width="1" fill="none" stroke="#5470C6"/>
+<text font-size="14" x="538.8" y="217.4" font-family="Roboto" fill="#464646">
+North America: 44 (44%)
+</text>
+</svg>

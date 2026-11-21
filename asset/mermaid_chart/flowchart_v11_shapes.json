@@ -1,0 +1,4 @@
+{
+  "title_text": "Document Processing Pipeline",
+  "source": "flowchart LR\n  Start@{ shape: sm-circ } --> Spec@{ shape: doc, label: \"Intake Spec\" }\n  Spec --> Batch@{ shape: docs, label: \"Doc Batch\" }\n  Batch --> Queue@{ shape: delay, label: \"Rate Limit\" }\n  Batch --> Extract@{ shape: tri, label: \"Extract\" }\n  Queue --> Join@{ shape: f-circ }\n  Extract --> Notify@{ shape: flag, label: \"Emit Alert\" }\n  Notify --> Join\n  Join --> Out[\"`**Verified** _Output_`\"]\n  Join -.-> Note@{ shape: text, label: \"Audit Ready\" }"
+}

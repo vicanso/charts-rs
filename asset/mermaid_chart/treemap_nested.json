@@ -1,0 +1,3 @@
+{
+  "source": "treemap-beta\n  title Global Engineering Budget ($k)\n  \"Engineering\"\n    \"Platform\"\n      \"Core Infra\"\n        \"Kubernetes\": 180\n        \"Observability\": 110\n      \"Data\"\n        \"Warehouse\": 140\n        \"Streaming\": 95\n    \"Product\"\n      \"Web App\"\n        \"Frontend\": 125\n        \"UI Kit\": 85\n      \"Mobile\"\n        \"iOS\": 105\n        \"Android\": 90"
+}

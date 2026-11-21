@@ -1,0 +1,5 @@
+{
+  "theme": "shadcn",
+  "title_text": "Data Platform Architecture",
+  "source": "---\nconfig:\n  flowchart:\n    curve: linear\n---\nflowchart BT\n  subgraph Outer [Data Platform]\n    subgraph Inner [Storage Engine]\n      WAL[Write-Ahead Log] --> Index[B-Tree Index]\n    end\n    Ingest[Stream Ingest] --> WAL\n  end\n  Producer([Event Producer]) --> Inner\n  Index --> Analytics[(Analytics Warehouse)]"
+}

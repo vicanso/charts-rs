@@ -1,0 +1,80 @@
+<svg width="640" height="400" viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="640" height="400" fill="#1F1D1D"/>
+<text font-size="18" x="196" y="5" dy="15" font-weight="bold" dominant-baseline="middle" font-family="Roboto" fill="#D8D9DA">
+Service Throughput vs Target
+</text>
+<g>
+<g stroke="#B9B8CE" stroke-width="1">
+<line x1="75" y1="40" x2="75" y2="345"/>
+<line x1="75" y1="40" x2="70" y2="40"/>
+<line x1="75" y1="101" x2="70" y2="101"/>
+<line x1="75" y1="162" x2="70" y2="162"/>
+<line x1="75" y1="223" x2="70" y2="223"/>
+<line x1="75" y1="284" x2="70" y2="284"/>
+<line x1="75" y1="345" x2="70" y2="345"/>
+</g>
+<text font-size="14" x="31" y="75.5" font-family="Roboto" fill="#B9B8CE">
+Notify
+</text>
+<text font-size="14" x="27" y="136.5" font-family="Roboto" fill="#B9B8CE">
+Orders
+</text>
+<text font-size="14" x="25" y="197.5" font-family="Roboto" fill="#B9B8CE">
+Search
+</text>
+<text font-size="14" x="30" y="258.5" font-family="Roboto" fill="#B9B8CE">
+Billing
+</text>
+<text font-size="14" x="40" y="319.5" font-family="Roboto" fill="#B9B8CE">
+Auth
+</text>
+</g>
+<text font-size="14" x="355" y="391.5" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
+Requests (k/s)
+</text>
+<text font-size="14" transform="translate(16.9,192.5) rotate(-90)" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
+Service
+</text>
+<g>
+
+<text font-size="14" x="71" y="367" font-family="Roboto" fill="#B9B8CE">
+0
+</text>
+<text font-size="14" x="160.3" y="367" font-family="Roboto" fill="#B9B8CE">
+20
+</text>
+<text font-size="14" x="253.7" y="367" font-family="Roboto" fill="#B9B8CE">
+40
+</text>
+<text font-size="14" x="347" y="367" font-family="Roboto" fill="#B9B8CE">
+60
+</text>
+<text font-size="14" x="440.3" y="367" font-family="Roboto" fill="#B9B8CE">
+80
+</text>
+<text font-size="14" x="529.7" y="367" font-family="Roboto" fill="#B9B8CE">
+100
+</text>
+<text font-size="14" x="616" y="367" font-family="Roboto" fill="#B9B8CE">
+120
+</text>
+</g>
+<g stroke="#444343" stroke-width="1">
+<line x1="168.3" y1="40" x2="168.3" y2="345"/><line x1="261.7" y1="40" x2="261.7" y2="345"/><line x1="355" y1="40" x2="355" y2="345"/><line x1="448.3" y1="40" x2="448.3" y2="345"/><line x1="541.7" y1="40" x2="541.7" y2="345"/><line x1="635" y1="40" x2="635" y2="345"/>
+</g>
+<rect x="75" y="289" width="443.3" height="51" fill="#7EB26D" data-series="Bar 1" data-category="Auth" data-value="95"/>
+<rect x="75" y="228" width="336" height="51" fill="#7EB26D" data-series="Bar 1" data-category="Billing" data-value="72"/>
+<rect x="75" y="167" width="513.3" height="51" fill="#7EB26D" data-series="Bar 1" data-category="Search" data-value="110"/>
+<rect x="75" y="106" width="392" height="51" fill="#7EB26D" data-series="Bar 1" data-category="Orders" data-value="84"/>
+<rect x="75" y="45" width="270.7" height="51" fill="#7EB26D" data-series="Bar 1" data-category="Notify" data-value="58"/>
+<g>
+<path d="M 471.7 314.5 L 401.7 253.5 L 541.7 192.5 L 448.3 131.5 L 378.3 70.5" stroke-width="2" fill="none" stroke="#EAB839"/>
+<g stroke-width="2" stroke="#EAB839" fill="#1F1D1D">
+<circle cx="471.7" cy="314.5" r="2"/>
+<circle cx="401.7" cy="253.5" r="2"/>
+<circle cx="541.7" cy="192.5" r="2"/>
+<circle cx="448.3" cy="131.5" r="2"/>
+<circle cx="378.3" cy="70.5" r="2"/>
+</g>
+</g>
+</svg>
