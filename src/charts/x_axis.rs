@@ -198,7 +198,17 @@ impl ChartBase {
         if let Some(step) = scale.tick_step.filter(|s| s.is_finite() && *s > 0.0) {
             let mut multiple = 1.0;
             loop {
-                let ticks = stepped_ticks(scale.min, scale.max, step * multiple, formatter);
+                let ticks = if scale.time {
+                    stepped_time_ticks(
+                        scale.min,
+                        scale.max,
+                        step * multiple,
+                        self.time_offset(),
+                        formatter,
+                    )
+                } else {
+                    stepped_ticks(scale.min, scale.max, step * multiple, formatter)
+                };
                 if fits(&ticks) || ticks.len() <= 2 {
                     return place(ticks);
                 }
@@ -325,6 +335,44 @@ fn stepped_ticks(min: f64, max: f64, step: f64, formatter: &str) -> Vec<(f64, St
             (value, label(value))
         })
         .collect()
+}
+
+/// Time ticks spaced by a fixed `step` (in seconds), aligned to day/week
+/// boundaries and formatted as dates/times.
+fn stepped_time_ticks(
+    min: f64,
+    max: f64,
+    step: f64,
+    offset: f64,
+    formatter: &str,
+) -> Vec<(f64, String)> {
+    let (local_min, local_max) = (min + offset, max + offset);
+    // Weeks start on Monday (1970-01-05 = day 4).
+    let anchor = if step >= 7.0 * DAY { 4.0 * DAY } else { 0.0 };
+    let mut k = ((local_min - anchor) / step - 1e-9).ceil();
+    let mut ticks = Vec::new();
+    while anchor + k * step <= local_max + 1e-6 && ticks.len() < 1000 {
+        let local = anchor + k * step;
+        let label = if formatter.contains('%') {
+            format_time(local, formatter)
+        } else {
+            let pattern = if step < MINUTE {
+                "%H:%M:%S"
+            } else if step < DAY {
+                if local.rem_euclid(DAY) == 0.0 {
+                    "%m-%d"
+                } else {
+                    "%H:%M"
+                }
+            } else {
+                "%m-%d"
+            };
+            format_string(&format_time(local, pattern), formatter)
+        };
+        ticks.push((local - offset, label));
+        k += 1.0;
+    }
+    ticks
 }
 
 /// The next of 1, 2, 5, 10, 20, 50, … after `multiple`.

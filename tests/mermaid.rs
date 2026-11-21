@@ -678,3 +678,54 @@ sequenceDiagram
         "expected D's lifeline from created box bottom to destroy message y: {svg}"
     );
 }
+
+#[test]
+fn m03_gantt_excludes_includes_weekday_tick_interval() {
+    let src = r#"
+gantt
+  dateFormat YYYY-MM-DD
+  excludes weekends
+  weekday monday
+  tickInterval 1week
+  section A
+    Long task :a1, 2026-01-01, 30d
+    Another   :after a1, 20d
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    assert!(svg.contains("Long task"));
+    assert!(svg.contains("Another"));
+    // With `excludes weekends`, 30 workdays from 2026-01-01 ends 2026-02-11 (exclusive 2026-02-12),
+    // and `Another` runs 2026-02-12 .. 2026-03-12 with shaded excluded weekend bands.
+    assert!(
+        svg.contains("data-start=\"2026-01-01\" data-end=\"2026-02-12\""),
+        "expected Long task 2026-01-01..2026-02-12: {svg}"
+    );
+    assert!(
+        svg.contains("data-start=\"2026-02-12\" data-end=\"2026-03-12\""),
+        "expected Another 2026-02-12..2026-03-12: {svg}"
+    );
+    assert!(
+        svg.contains("fill-opacity=") && svg.matches("<rect").count() > 6,
+        "expected shaded excluded weekend bands in gantt SVG: {svg}"
+    );
+    // `tickInterval 1week` must still format axis ticks as dates (e.g. `01-05`, `02-`), not unix numbers.
+    assert!(
+        svg.contains("01-") && svg.contains("02-") && !svg.contains("1767"),
+        "expected formatted date ticks for tickInterval: {svg}"
+    );
+
+    // `includes` overrides `excludes`: excluding weekends + 2026-01-05, but including
+    // 2026-01-03 (Sat) and 2026-01-04 (Sun), should still render cleanly.
+    let with_includes = r#"
+gantt
+  dateFormat YYYY-MM-DD
+  excludes weekends, 2026-01-05
+  includes 2026-01-03, 2026-01-04
+  section A
+    Work :a1, 2026-01-02, 4d
+"#;
+    let inc_svg = mermaid_to_svg(with_includes).unwrap();
+    assert_valid_svg(&inc_svg);
+    assert!(inc_svg.contains("Work"));
+}

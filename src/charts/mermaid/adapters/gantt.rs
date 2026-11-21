@@ -19,9 +19,154 @@ use super::super::super::x_axis::{days_from_civil, parse_time};
 use super::super::MermaidChart;
 use super::super::preprocess::SourceLine;
 use super::apply_base_options;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 const DEFAULT_DAY_SECONDS: f64 = 86_400.0;
+
+#[derive(Clone, Debug, Default)]
+struct GanttCalendar {
+    excluded_weekdays: [bool; 7],
+    included_weekdays: [bool; 7],
+    excluded_dates: HashSet<i64>,
+    included_dates: HashSet<i64>,
+    week_start: u8,
+}
+
+impl GanttCalendar {
+    fn has_excludes(&self) -> bool {
+        self.excluded_weekdays.iter().any(|&b| b) || !self.excluded_dates.is_empty()
+    }
+
+    fn is_excluded(&self, day: i64) -> bool {
+        if self.included_dates.contains(&day) {
+            return false;
+        }
+        if self.excluded_dates.contains(&day) {
+            return true;
+        }
+        // 1970-01-01 (day 0) was Thursday (4); 0 = Sunday .. 6 = Saturday.
+        let wd = (day + 4).rem_euclid(7) as usize;
+        if self.included_weekdays[wd] {
+            return false;
+        }
+        self.excluded_weekdays[wd]
+    }
+
+    fn snap_start(&self, ts: f64) -> f64 {
+        if !self.has_excludes() {
+            return ts;
+        }
+        let mut day = (ts / DEFAULT_DAY_SECONDS).floor() as i64;
+        if !self.is_excluded(day) {
+            return ts;
+        }
+        for _ in 0..3660 {
+            day += 1;
+            if !self.is_excluded(day) {
+                return day as f64 * DEFAULT_DAY_SECONDS;
+            }
+        }
+        ts
+    }
+
+    fn advance_duration(&self, start: f64, dur: f64) -> f64 {
+        if !self.has_excludes() || dur <= 0.0 {
+            return start + dur;
+        }
+        let whole_days = (dur / DEFAULT_DAY_SECONDS).round();
+        if whole_days >= 1.0 && (dur - whole_days * DEFAULT_DAY_SECONDS).abs() < 1e-3 {
+            let mut remaining = whole_days as i64;
+            let mut cur_day = (start / DEFAULT_DAY_SECONDS).floor() as i64;
+            let time_of_day = start - cur_day as f64 * DEFAULT_DAY_SECONDS;
+            let mut guard = 0;
+            while remaining > 0 && guard < 36_600 {
+                if !self.is_excluded(cur_day) {
+                    remaining -= 1;
+                }
+                cur_day += 1;
+                guard += 1;
+            }
+            return cur_day as f64 * DEFAULT_DAY_SECONDS + time_of_day;
+        }
+        let end = start + dur;
+        self.snap_start(end)
+    }
+
+    fn excluded_ranges(&self, min_ts: f64, max_ts: f64) -> Vec<(f64, f64)> {
+        if !self.has_excludes() || !min_ts.is_finite() || !max_ts.is_finite() || max_ts <= min_ts {
+            return Vec::new();
+        }
+        let first_day = (min_ts / DEFAULT_DAY_SECONDS).floor() as i64;
+        let last_day = (max_ts / DEFAULT_DAY_SECONDS).ceil() as i64;
+        if last_day - first_day > 3660 {
+            return Vec::new();
+        }
+        let mut ranges = Vec::new();
+        let mut run_start: Option<i64> = None;
+        for day in first_day..=last_day {
+            if self.is_excluded(day) {
+                if run_start.is_none() {
+                    run_start = Some(day);
+                }
+            } else if let Some(start_day) = run_start.take() {
+                ranges.push((
+                    start_day as f64 * DEFAULT_DAY_SECONDS,
+                    day as f64 * DEFAULT_DAY_SECONDS,
+                ));
+            }
+        }
+        if let Some(start_day) = run_start {
+            ranges.push((
+                start_day as f64 * DEFAULT_DAY_SECONDS,
+                (last_day + 1) as f64 * DEFAULT_DAY_SECONDS,
+            ));
+        }
+        ranges
+    }
+}
+
+fn parse_weekday(token: &str) -> Option<usize> {
+    match token.trim().to_ascii_lowercase().as_str() {
+        "sunday" | "sun" => Some(0),
+        "monday" | "mon" => Some(1),
+        "tuesday" | "tue" => Some(2),
+        "wednesday" | "wed" => Some(3),
+        "thursday" | "thu" => Some(4),
+        "friday" | "fri" => Some(5),
+        "saturday" | "sat" => Some(6),
+        _ => None,
+    }
+}
+
+fn parse_tick_interval(spec: &str) -> Option<f64> {
+    let s = spec.trim();
+    if s.is_empty() {
+        return None;
+    }
+    let split = s
+        .find(|c: char| !c.is_ascii_digit() && c != '.')
+        .unwrap_or(s.len());
+    let num_str = s[..split].trim();
+    let unit = s[split..].trim().to_ascii_lowercase();
+    let count: f64 = if num_str.is_empty() {
+        1.0
+    } else {
+        num_str.parse().ok()?
+    };
+    if !count.is_finite() || count <= 0.0 {
+        return None;
+    }
+    let unit_secs = match unit.as_str() {
+        "s" | "sec" | "second" | "seconds" => 1.0,
+        "m" | "min" | "minute" | "minutes" => 60.0,
+        "h" | "hr" | "hour" | "hours" => 3600.0,
+        "d" | "day" | "days" => DEFAULT_DAY_SECONDS,
+        "w" | "wk" | "week" | "weeks" => DEFAULT_DAY_SECONDS * 7.0,
+        "month" | "months" => DEFAULT_DAY_SECONDS * 30.0,
+        _ => return None,
+    };
+    Some(count * unit_secs)
+}
 
 #[derive(Clone, Debug)]
 enum StartSpec {
@@ -326,6 +471,7 @@ fn resolve_task(
     idx: usize,
     parsed: &[ParsedTask],
     id_map: &HashMap<String, usize>,
+    calendar: &GanttCalendar,
     state: &mut [u8],
     resolved: &mut [Option<(f64, f64)>],
 ) -> Result<(f64, f64)> {
@@ -341,7 +487,7 @@ fn resolve_task(
     state[idx] = 1;
     let task = &parsed[idx];
 
-    let start = match &task.start {
+    let raw_start = match &task.start {
         StartSpec::Timestamp(ts) => *ts,
         StartSpec::Sequential => {
             if idx == 0 {
@@ -350,7 +496,7 @@ fn resolve_task(
                     message: format!("task `{}` has no start date or predecessor", task.name),
                 });
             }
-            resolve_task(idx - 1, parsed, id_map, state, resolved)?.1
+            resolve_task(idx - 1, parsed, id_map, calendar, state, resolved)?.1
         }
         StartSpec::After(deps) => {
             let mut max_end = f64::NEG_INFINITY;
@@ -361,12 +507,14 @@ fn resolve_task(
                         message: format!("unknown task id `{dep}` in `after` clause"),
                     });
                 };
-                let (_, dep_end) = resolve_task(dep_idx, parsed, id_map, state, resolved)?;
+                let (_, dep_end) =
+                    resolve_task(dep_idx, parsed, id_map, calendar, state, resolved)?;
                 max_end = max_end.max(dep_end);
             }
             max_end
         }
     };
+    let start = calendar.snap_start(raw_start);
 
     let end = if task.is_milestone {
         start
@@ -381,7 +529,7 @@ fn resolve_task(
                 }
                 ts
             }
-            EndSpec::Duration(dur) => start + dur,
+            EndSpec::Duration(dur) => calendar.advance_duration(start, dur),
         }
     };
 
@@ -400,6 +548,8 @@ pub(crate) fn render(
     let mut date_format = "YYYY-MM-DD".to_string();
     let mut axis_format: Option<String> = None;
     let mut today_marker: Option<String> = None;
+    let mut tick_interval: Option<f64> = None;
+    let mut calendar = GanttCalendar::default();
     let mut current_section: Option<String> = None;
     let mut parsed_tasks = Vec::new();
     let mut in_acc_descr_block = false;
@@ -413,19 +563,70 @@ pub(crate) fn render(
             continue;
         }
         let lower = text.to_ascii_lowercase();
-        if lower.starts_with("acctitle")
-            || lower.starts_with("excludes")
-            || lower.starts_with("includes")
-            || lower.starts_with("tickinterval")
-            || lower.starts_with("weekday")
-            || lower.starts_with("click ")
-        {
+        if lower.starts_with("acctitle") || lower.starts_with("click ") {
             continue;
         }
         if lower.starts_with("accdescr") {
             if text.contains('{') && !text.contains('}') {
                 in_acc_descr_block = true;
             }
+            continue;
+        }
+        if lower.starts_with("excludes")
+            && text.len() > 8
+            && text[8..].starts_with(char::is_whitespace)
+        {
+            for tok in text[8..].split(',').flat_map(|s| s.split_whitespace()) {
+                let t = tok.trim();
+                if t.is_empty() {
+                    continue;
+                }
+                if t.eq_ignore_ascii_case("weekends") {
+                    calendar.excluded_weekdays[0] = true;
+                    calendar.excluded_weekdays[6] = true;
+                } else if let Some(wd) = parse_weekday(t) {
+                    calendar.excluded_weekdays[wd] = true;
+                } else if let Some(ts) = parse_date_with_format(t, &date_format) {
+                    calendar
+                        .excluded_dates
+                        .insert((ts / DEFAULT_DAY_SECONDS).floor() as i64);
+                }
+            }
+            continue;
+        }
+        if lower.starts_with("includes")
+            && text.len() > 8
+            && text[8..].starts_with(char::is_whitespace)
+        {
+            for tok in text[8..].split(',').flat_map(|s| s.split_whitespace()) {
+                let t = tok.trim();
+                if t.is_empty() {
+                    continue;
+                }
+                if let Some(wd) = parse_weekday(t) {
+                    calendar.included_weekdays[wd] = true;
+                } else if let Some(ts) = parse_date_with_format(t, &date_format) {
+                    calendar
+                        .included_dates
+                        .insert((ts / DEFAULT_DAY_SECONDS).floor() as i64);
+                }
+            }
+            continue;
+        }
+        if lower.starts_with("weekday")
+            && text.len() > 7
+            && text[7..].starts_with(char::is_whitespace)
+        {
+            if let Some(wd) = parse_weekday(&text[7..]) {
+                calendar.week_start = wd as u8;
+            }
+            continue;
+        }
+        if lower.starts_with("tickinterval")
+            && text.len() > 12
+            && text[12..].starts_with(char::is_whitespace)
+        {
+            tick_interval = parse_tick_interval(&text[12..]);
             continue;
         }
         if let Some(rest) = text.strip_prefix("title")
@@ -493,8 +694,20 @@ pub(crate) fn render(
     let mut state = vec![0u8; parsed_tasks.len()];
     let mut resolved = vec![None; parsed_tasks.len()];
     for i in 0..parsed_tasks.len() {
-        resolve_task(i, &parsed_tasks, &id_map, &mut state, &mut resolved)?;
+        resolve_task(
+            i,
+            &parsed_tasks,
+            &id_map,
+            &calendar,
+            &mut state,
+            &mut resolved,
+        )?;
     }
+
+    let (min_ts, max_ts) = resolved.iter().flatten().fold(
+        (f64::INFINITY, f64::NEG_INFINITY),
+        |(lo, hi), &(s, e)| (lo.min(s), hi.max(e)),
+    );
 
     let crit_color: Color = (220, 68, 68).into();
     let tasks: Vec<GanttTask> = parsed_tasks
@@ -526,6 +739,12 @@ pub(crate) fn render(
     if let Some(fmt) = axis_format {
         gantt.x_axis.formatter = Some(fmt);
     }
+    if let Some(interval) = tick_interval {
+        gantt.tick_interval = Some(interval);
+    }
+    if calendar.has_excludes() {
+        gantt.excluded_ranges = calendar.excluded_ranges(min_ts, max_ts);
+    }
     if let Some(marker) = today_marker
         && let Some(ts) = parse_date_with_format(&marker, &date_format)
     {
@@ -541,4 +760,46 @@ pub(crate) fn render(
     );
     let (w, h) = (gantt.width, gantt.height);
     Ok((gantt.svg()?, w, h))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calendar_excludes_weekends_and_includes_override() {
+        let mut cal = GanttCalendar::default();
+        cal.excluded_weekdays[0] = true; // Sun
+        cal.excluded_weekdays[6] = true; // Sat
+
+        // 2026-01-01 (Thu) + 30 workdays -> 30th workday is 2026-02-11 (Wed),
+        // so exclusive end = 2026-02-12 00:00.
+        let jan1 = parse_date_with_format("2026-01-01", "YYYY-MM-DD").unwrap();
+        let feb12 = parse_date_with_format("2026-02-12", "YYYY-MM-DD").unwrap();
+        let mar12 = parse_date_with_format("2026-03-12", "YYYY-MM-DD").unwrap();
+
+        let end1 = cal.advance_duration(jan1, 30.0 * DEFAULT_DAY_SECONDS);
+        assert_eq!(end1, feb12);
+
+        // `after a1` starts 2026-02-12 (Thu) + 20 workdays -> ends 2026-03-12 00:00.
+        let start2 = cal.snap_start(end1);
+        assert_eq!(start2, feb12);
+        let end2 = cal.advance_duration(start2, 20.0 * DEFAULT_DAY_SECONDS);
+        assert_eq!(end2, mar12);
+
+        // Starting on Saturday 2026-01-03 snaps to Monday 2026-01-05.
+        let sat = parse_date_with_format("2026-01-03", "YYYY-MM-DD").unwrap();
+        let mon = parse_date_with_format("2026-01-05", "YYYY-MM-DD").unwrap();
+        assert_eq!(cal.snap_start(sat), mon);
+
+        // `includes` overrides `excludes`.
+        cal.included_dates
+            .insert((sat / DEFAULT_DAY_SECONDS).floor() as i64);
+        assert_eq!(cal.snap_start(sat), sat);
+
+        // Tick interval parsing.
+        assert_eq!(parse_tick_interval("1week"), Some(7.0 * DEFAULT_DAY_SECONDS));
+        assert_eq!(parse_tick_interval("2day"), Some(2.0 * DEFAULT_DAY_SECONDS));
+        assert_eq!(parse_tick_interval("1month"), Some(30.0 * DEFAULT_DAY_SECONDS));
+    }
 }

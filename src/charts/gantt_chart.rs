@@ -126,6 +126,13 @@ pub struct GanttChart {
     pub label_show: bool,
     /// A moment marked by a dashed line across the chart, such as today.
     pub now: Option<f64>,
+    /// Optional fixed tick interval along the x axis (in seconds for time axes,
+    /// or axis units for numeric axes). `None` lets the chart choose ticks
+    /// automatically.
+    pub tick_interval: Option<f64>,
+    /// Optional `(start, end)` intervals rendered as subtle shaded background
+    /// bands (e.g. excluded weekends or holidays in Mermaid Gantt charts).
+    pub excluded_ranges: Vec<(f64, f64)>,
 }
 
 impl std::ops::Deref for GanttChart {
@@ -358,13 +365,39 @@ impl GanttChart {
             width: plot_width,
             band_width: 0.0,
             time: self.is_time(),
-            tick_step: None,
+            tick_step: self.tick_interval.filter(|v| v.is_finite() && *v > 0.0),
         };
 
         let mut plot = c.child(Box {
             left: y_axis_width,
             ..Default::default()
         });
+        // Optional shaded background bands (e.g. excluded weekends/holidays).
+        if !self.excluded_ranges.is_empty() {
+            let shade = self.grid.stroke_color.with_alpha(55);
+            for &(s, e) in &self.excluded_ranges {
+                if !s.is_finite() || !e.is_finite() {
+                    continue;
+                }
+                let lo = s.min(e).max(min);
+                let hi = s.max(e).min(max);
+                if hi <= lo {
+                    continue;
+                }
+                let left = scale.px(lo).clamp(0.0, plot_width);
+                let right = scale.px(hi).clamp(0.0, plot_width);
+                if right > left {
+                    plot.rect(Rect {
+                        fill: Some(shade.into()),
+                        left,
+                        top: 0.0,
+                        width: right - left,
+                        height: plot_height,
+                        ..Default::default()
+                    });
+                }
+            }
+        }
         // The grid: a line at every tick of the axis and between the rows.
         let row_height = plot_height / rows.len() as f32;
         let grid_line = |plot: &mut canvas::Canvas, from: (f32, f32), to: (f32, f32)| {
