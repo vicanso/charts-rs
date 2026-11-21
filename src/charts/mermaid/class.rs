@@ -20,7 +20,7 @@ use super::super::error::{Error, Result};
 use super::super::font::measure_text_width_family;
 use super::super::theme::get_theme;
 use super::super::util::Point;
-use super::MermaidChart;
+use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 use super::draw::{
     EdgeMarker, build_smooth_edge_path, clip_point_to_rect, draw_cardinality_label,
     draw_edge_label, draw_edge_marker, draw_note_box,
@@ -92,6 +92,7 @@ struct ParsedClassDiagram {
     namespaces: Vec<ClassNamespace>,
     namespace_map: HashMap<String, usize>,
     class_defs: HashMap<String, StyleProps>,
+    links: HashMap<String, ClickLink>,
 }
 
 /// Converts balanced Mermaid `~T~` generic syntax into `<T>` while leaving
@@ -185,6 +186,7 @@ impl ParsedClassDiagram {
             namespaces: Vec::new(),
             namespace_map: HashMap::new(),
             class_defs: HashMap::new(),
+            links: HashMap::new(),
         }
     }
 
@@ -482,11 +484,16 @@ fn parse_class_diagram(lines: &[SourceLine]) -> Result<ParsedClassDiagram> {
             }
             continue;
         }
-        if trimmed.starts_with("accTitle")
-            || trimmed.starts_with("link ")
-            || trimmed.starts_with("click ")
-            || trimmed.starts_with("callback ")
+        if let Some(rest) = trimmed
+            .strip_prefix("click ")
+            .or_else(|| trimmed.strip_prefix("link "))
         {
+            if let Some((id, link)) = parse_click_link(rest) {
+                cd.links.insert(id, link);
+            }
+            continue;
+        }
+        if trimmed.starts_with("accTitle") || trimmed.starts_with("callback ") {
             continue;
         }
         if trimmed.starts_with("accDescr") {
@@ -1175,6 +1182,7 @@ pub(crate) fn render(
 
         let x = pos.cx - m.w * 0.5;
         let y = pos.cy - m.h * 0.5;
+        let linked = maybe_open_link(&mut cc, chart, cd.links.get(&n.id));
 
         // Card body fill.
         cc.rect(Rect {
@@ -1340,6 +1348,9 @@ pub(crate) fn render(
             stroke_dash_array: eff_style.stroke_dasharray,
             ..Default::default()
         });
+        if linked {
+            cc.push_link_close();
+        }
     }
 
     let svg = canvas.svg()?;

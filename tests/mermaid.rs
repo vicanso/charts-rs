@@ -1448,3 +1448,67 @@ pie title Budget
     assert!(!plain.contains("<title"));
     assert!(!plain.contains("<desc"));
 }
+
+#[test]
+fn e05_click_links_and_protocol_allowlist() {
+    // Flowchart: href, shorthand, tooltip, target=_blank, unsafe javascript:/data:, callback.
+    let fc = r#"
+flowchart LR
+    A[Docs] --> B[Mail] --> C[Unsafe] --> D[Callback]
+    click A href "https://example.com/docs?a=1&b=2" "Open Docs" _blank
+    click B "mailto:ops@example.com" "Email Ops"
+    click C "javascript:alert(1)" "XSS"
+    click D callback "JS"
+"#;
+    let svg = mermaid_to_svg(fc).unwrap();
+    assert_valid_svg(&svg);
+    assert!(
+        svg.contains(
+            "<a href=\"https://example.com/docs?a=1&amp;b=2\" target=\"_blank\"><title>Open Docs</title>"
+        ),
+        "missing escaped href/target/tooltip: {svg}"
+    );
+    assert!(
+        svg.contains("<a href=\"mailto:ops@example.com\"><title>Email Ops</title>"),
+        "missing mailto link: {svg}"
+    );
+    assert!(!svg.contains("javascript:"), "javascript: URL must be blocked: {svg}");
+    assert!(!svg.contains("XSS"), "blocked link tooltip must not appear: {svg}");
+
+    // allow_links = false disables all emitted hyperlinks.
+    let mut chart = MermaidChart::new(fc);
+    chart.allow_links = false;
+    let disabled_svg = chart.svg().unwrap();
+    assert_valid_svg(&disabled_svg);
+    assert!(
+        !disabled_svg.contains("<a href="),
+        "allow_links=false must suppress all <a> elements: {disabled_svg}"
+    );
+
+    // Class diagram click + link directives.
+    let cls = r#"
+classDiagram
+    class Order
+    class User
+    Order --> User
+    click Order href "/models/order" "Order model" _self
+    link User "https://example.com/user" "User docs"
+"#;
+    let cls_svg = mermaid_to_svg(cls).unwrap();
+    assert_valid_svg(&cls_svg);
+    assert!(cls_svg.contains("<a href=\"/models/order\" target=\"_self\"><title>Order model</title>"));
+    assert!(cls_svg.contains("<a href=\"https://example.com/user\"><title>User docs</title>"));
+
+    // State diagram click directive + data: protocol rejection.
+    let st = r#"
+stateDiagram-v2
+    [*] --> Active
+    Active --> Blocked
+    click Active href "./active.html" "Active state"
+    click Blocked "data:text/html,<script>alert(1)</script>"
+"#;
+    let st_svg = mermaid_to_svg(st).unwrap();
+    assert_valid_svg(&st_svg);
+    assert!(st_svg.contains("<a href=\"./active.html\"><title>Active state</title>"));
+    assert!(!st_svg.contains("data:text/html"));
+}

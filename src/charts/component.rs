@@ -483,6 +483,44 @@ pub enum Component {
     /// An arbitrary SVG path element (used by Mermaid diagrams).
     #[cfg(feature = "mermaid")]
     RawPath(RawPath),
+    /// Opens an SVG `<a href="...">` hyperlink wrapper (used by Mermaid `click` links).
+    #[cfg(feature = "mermaid")]
+    LinkOpen {
+        /// Target URL (already validated by the Mermaid allowlist).
+        href: String,
+        /// Optional SVG link target (`_blank`, `_self`, `_parent`, `_top`).
+        target: Option<String>,
+        /// Optional tooltip emitted as `<title>...</title>`.
+        tooltip: Option<String>,
+    },
+    /// Closes an SVG `</a>` hyperlink wrapper.
+    #[cfg(feature = "mermaid")]
+    LinkClose,
+}
+
+#[cfg(feature = "mermaid")]
+pub(crate) fn write_link_open_svg(
+    out: &mut String,
+    href: &str,
+    target: Option<&str>,
+    tooltip: Option<&str>,
+) {
+    out.push_str("<a href=\"");
+    let _ = push_escaped_attr(out, href);
+    out.push('"');
+    if let Some(t) = target {
+        out.push_str(" target=\"");
+        let _ = push_escaped_attr(out, t);
+        out.push('"');
+    }
+    out.push('>');
+    if let Some(tip) = tooltip
+        && !tip.is_empty()
+    {
+        out.push_str("<title>");
+        let _ = push_escaped_attr(out, tip);
+        out.push_str("</title>");
+    }
 }
 
 /// An arbitrary SVG path element (used internally by Mermaid diagrams).

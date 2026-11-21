@@ -11,7 +11,7 @@
 // limitations under the License.
 
 #[cfg(feature = "mermaid")]
-use super::component::RawPath;
+use super::component::{RawPath, write_link_open_svg};
 use super::component::{
     Arrow, Axis, Bubble, Circle, Component, Grid, LEGEND_WIDTH, Legend, Line, Pie, Polygon,
     Polyline, Rect, Ribbon, Sector, Shape, SmoothBand, SmoothLine, SmoothLineFill, StraightLine,
@@ -485,6 +485,25 @@ impl Canvas {
         path.offset.1 += self.margin.top;
         self.append(Component::RawPath(path));
     }
+    /// Opens an SVG `<a href="...">` hyperlink wrapper around subsequent components.
+    #[cfg(feature = "mermaid")]
+    pub(crate) fn push_link_open(
+        &mut self,
+        href: String,
+        target: Option<String>,
+        tooltip: Option<String>,
+    ) {
+        self.append(Component::LinkOpen {
+            href,
+            target,
+            tooltip,
+        });
+    }
+    /// Closes the most recently opened SVG `<a>` hyperlink wrapper.
+    #[cfg(feature = "mermaid")]
+    pub(crate) fn push_link_close(&mut self) {
+        self.append(Component::LinkClose);
+    }
     /// Appends a component to the canvas.
     pub fn append(&mut self, component: Component) {
         let mut components = self.components.borrow_mut();
@@ -567,6 +586,14 @@ fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<Stri
         Component::Shape(c) => c.write_svg(out),
         #[cfg(feature = "mermaid")]
         Component::RawPath(c) => c.write_svg(out),
+        #[cfg(feature = "mermaid")]
+        Component::LinkOpen {
+            href,
+            target,
+            tooltip,
+        } => write_link_open_svg(out, href, target.as_deref(), tooltip.as_deref()),
+        #[cfg(feature = "mermaid")]
+        Component::LinkClose => out.push_str("</a>"),
     }
     Ok(())
 }

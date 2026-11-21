@@ -54,15 +54,31 @@ use preprocess::{DiagramKind, preprocess};
 /// `erDiagram`, `mindmap`) size their SVG canvas automatically to fit the
 /// laid-out diagram; setting `width` and/or `height` scales the diagram
 /// proportionally via `viewBox`.
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MermaidChart {
     /// Shared chart options (`margin`, `font_family`, `title`, `sub_title`,
     /// `background_color`, `compact`, `texts`); exposed directly via `Deref`.
     pub base: ChartBase,
     /// Mermaid diagram source text.
     pub source: String,
+    /// When `true` (the default), safe `click` link directives wrap nodes in
+    /// SVG `<a href="...">` elements. Set to `false` to disable all emitted
+    /// hyperlinks when rendering untrusted input.
+    pub allow_links: bool,
     theme_name: Option<String>,
     explicit_background: bool,
+}
+
+impl Default for MermaidChart {
+    fn default() -> Self {
+        Self {
+            base: ChartBase::default(),
+            source: String::new(),
+            allow_links: true,
+            theme_name: None,
+            explicit_background: false,
+        }
+    }
 }
 
 impl std::ops::Deref for MermaidChart {
@@ -89,6 +105,7 @@ impl MermaidChart {
         let mut chart = Self {
             base: ChartBase::default(),
             source: source.into(),
+            allow_links: true,
             theme_name: (!theme.is_empty()).then(|| theme.to_string()),
             explicit_background: false,
         };
@@ -261,6 +278,143 @@ impl MermaidChart {
             DEFAULT_FONT_FAMILY.to_string()
         }
     }
+}
+
+/// Parsed `click` hyperlink attached to a diagram node.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct ClickLink {
+    pub(crate) href: String,
+    pub(crate) tooltip: Option<String>,
+    pub(crate) target: Option<String>,
+}
+
+/// Returns `true` if `url` uses an allowed protocol (`http://`, `https://`,
+/// `mailto:`) or is a relative URL without an explicit scheme. Rejects
+/// `javascript:`, `data:`, `vbscript:`, control characters, etc.
+pub(crate) fn is_safe_link_url(url: &str) -> bool {
+    let s = url.trim();
+    if s.is_empty() || s.chars().any(char::is_control) {
+        return false;
+    }
+    let lower = s.to_ascii_lowercase();
+    if lower.starts_with("http://")
+        || lower.starts_with("https://")
+        || lower.starts_with("mailto:")
+    {
+        return true;
+    }
+    if s.starts_with('/') || s.starts_with("./") || s.starts_with("../") || s.starts_with('#') {
+        return true;
+    }
+    // Any `:` before the first `/`, `?`, or `#` denotes a URL scheme.
+    let prefix = s.split(['/', '?', '#']).next().unwrap_or(s);
+    !prefix.contains(':')
+}
+
+/// Tokenizes a `click` directive argument list into `(is_quoted, value)` tokens.
+fn tokenize_click_args(mut s: &str) -> Vec<(bool, String)> {
+    let mut out = Vec::new();
+    while !s.is_empty() {
+        s = s.trim_start();
+        if s.is_empty() {
+            break;
+        }
+        let bytes = s.as_bytes();
+        if bytes[0] == b'"' || bytes[0] == b'\'' {
+            let quote = bytes[0];
+            let mut val = String::new();
+            let mut i = 1;
+            while i < bytes.len() {
+                if bytes[i] == b'\\' && i + 1 < bytes.len() {
+                    let ch = s[i + 1..].chars().next().unwrap();
+                    val.push(ch);
+                    i += 1 + ch.len_utf8();
+                    continue;
+                }
+                if bytes[i] == quote {
+                    i += 1;
+                    break;
+                }
+                let ch = s[i..].chars().next().unwrap();
+                val.push(ch);
+                i += ch.len_utf8();
+            }
+            out.push((true, val));
+            s = &s[i..];
+        } else {
+            let end = s.find(char::is_whitespace).unwrap_or(s.len());
+            out.push((false, s[..end].to_string()));
+            s = &s[end..];
+        }
+    }
+    out
+}
+
+/// Parses a `click <id> [href] "<url>" ["<tooltip>"] [_blank|_self|_parent|_top]`
+/// directive (pass the substring after `click ` or `link `).
+/// Returns `None` for JS callback syntax (e.g. `click A callback`).
+pub(crate) fn parse_click_link(rest: &str) -> Option<(String, ClickLink)> {
+    let tokens = tokenize_click_args(rest);
+    if tokens.len() < 2 {
+        return None;
+    }
+    let id = tokens[0].1.clone();
+    let mut idx = 1usize;
+    let url = if !tokens[idx].0 && tokens[idx].1.eq_ignore_ascii_case("href") {
+        idx += 1;
+        let tok = tokens.get(idx)?;
+        idx += 1;
+        tok.1.clone()
+    } else if tokens[idx].0 {
+        let u = tokens[idx].1.clone();
+        idx += 1;
+        u
+    } else {
+        // JS callback form (`click A callback` / `click A call fn()`) — safely ignored.
+        return None;
+    };
+
+    let mut tooltip = None;
+    let mut target = None;
+    for (quoted, val) in &tokens[idx..] {
+        if *quoted {
+            if tooltip.is_none() && !val.is_empty() {
+                tooltip = Some(val.clone());
+            }
+        } else if matches!(val.as_str(), "_blank" | "_self" | "_parent" | "_top") {
+            target = Some(val.clone());
+        }
+    }
+
+    Some((
+        id,
+        ClickLink {
+            href: url,
+            tooltip,
+            target,
+        },
+    ))
+}
+
+/// Opens an SVG `<a>` link on `canvas` if `chart.allow_links` is true and
+/// `link` has an allowlisted URL. Returns `true` when `push_link_close` must
+/// be called after drawing the node.
+pub(crate) fn maybe_open_link(
+    canvas: &mut Canvas,
+    chart: &MermaidChart,
+    link: Option<&ClickLink>,
+) -> bool {
+    if !chart.allow_links {
+        return false;
+    }
+    let Some(link) = link else {
+        return false;
+    };
+    if !is_safe_link_url(&link.href) {
+        return false;
+    }
+    canvas.push_link_open(link.href.clone(), link.target.clone(), link.tooltip.clone());
+    true
 }
 
 fn escape_xml_text(raw: &str) -> String {

@@ -17,7 +17,7 @@ use std::collections::HashMap;
 use super::super::component::{RawPath, Rect};
 use super::super::error::{Error, Result};
 use super::super::theme::get_theme;
-use super::MermaidChart;
+use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 use super::draw::{
     EdgeMarker, EdgeStroke, NodeShape, build_smooth_edge_path, clip_point_to_rect,
     clip_point_to_shape, draw_edge_label, draw_edge_marker, draw_node,
@@ -73,6 +73,7 @@ struct ParsedFlowchart {
     subgraph_map: HashMap<String, usize>,
     class_defs: HashMap<String, StyleProps>,
     link_styles: Vec<(Option<usize>, StyleProps)>, // None => default
+    links: HashMap<String, ClickLink>,
 }
 
 impl ParsedFlowchart {
@@ -86,6 +87,7 @@ impl ParsedFlowchart {
             subgraph_map: HashMap::new(),
             class_defs: HashMap::new(),
             link_styles: Vec::new(),
+            links: HashMap::new(),
         }
     }
 
@@ -920,7 +922,13 @@ fn parse_flowchart(direction: Direction, lines: &[SourceLine]) -> Result<ParsedF
                 }
                 continue;
             }
-            if trimmed.starts_with("accTitle") || trimmed.starts_with("click ") {
+            if let Some(rest) = trimmed.strip_prefix("click ") {
+                if let Some((id, link)) = parse_click_link(rest) {
+                    fc.links.insert(id, link);
+                }
+                continue;
+            }
+            if trimmed.starts_with("accTitle") {
                 continue;
             }
             if trimmed.starts_with("accDescr") {
@@ -1628,6 +1636,7 @@ pub(crate) fn render(
         let stroke_w = style.stroke_width.unwrap_or(1.6);
         let txt_color = style.color.unwrap_or(palette.text_color);
 
+        let linked = maybe_open_link(&mut content_canvas, chart, fc.links.get(&n.id));
         draw_node(
             &mut content_canvas,
             shape,
@@ -1644,6 +1653,9 @@ pub(crate) fn render(
             &font_family,
             font_size,
         );
+        if linked {
+            content_canvas.push_link_close();
+        }
     }
 
     Ok((canvas.svg()?, out_w, out_h))

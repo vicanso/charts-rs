@@ -19,7 +19,7 @@ use super::super::component::{Circle, Line, Rect};
 use super::super::error::{Error, Result};
 use super::super::theme::get_theme;
 use super::super::util::Point;
-use super::MermaidChart;
+use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 use super::draw::{
     EdgeMarker, NodeShape, build_smooth_edge_path, clip_point_to_rect, clip_point_to_shape,
     draw_edge_label, draw_edge_marker, draw_node, draw_note_box,
@@ -100,6 +100,7 @@ struct ParsedStateDiagram {
     class_defs: HashMap<String, StyleProps>,
     region_starts: HashMap<Option<usize>, usize>,
     region_ends: HashMap<Option<usize>, usize>,
+    links: HashMap<String, ClickLink>,
 }
 
 impl ParsedStateDiagram {
@@ -114,6 +115,7 @@ impl ParsedStateDiagram {
             class_defs: HashMap::new(),
             region_starts: HashMap::new(),
             region_ends: HashMap::new(),
+            links: HashMap::new(),
         }
     }
 
@@ -430,7 +432,13 @@ fn parse_state_diagram(lines: &[SourceLine]) -> Result<ParsedStateDiagram> {
             }
             continue;
         }
-        if trimmed.starts_with("accTitle") || trimmed.starts_with("click ") {
+        if let Some(rest) = trimmed.strip_prefix("click ") {
+            if let Some((id, link)) = parse_click_link(rest) {
+                st.links.insert(id, link);
+            }
+            continue;
+        }
+        if trimmed.starts_with("accTitle") {
             continue;
         }
         if trimmed.starts_with("accDescr") {
@@ -1319,6 +1327,7 @@ pub(crate) fn render(
         let stroke_w = eff_style.stroke_width.unwrap_or(1.6);
         let text_color = eff_style.color.unwrap_or(palette.text_color);
 
+        let linked = maybe_open_link(&mut cc, chart, st.links.get(&n.id));
         match n.kind {
             StateKind::Start => {
                 cc.circle(Circle {
@@ -1479,6 +1488,9 @@ pub(crate) fn render(
                     );
                 }
             }
+        }
+        if linked {
+            cc.push_link_close();
         }
     }
 
