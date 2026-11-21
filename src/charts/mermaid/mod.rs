@@ -30,7 +30,7 @@ use std::sync::Arc;
 
 use super::base::{ChartBase, check_theme_name, overlay_texts};
 use super::canvas::Canvas;
-use super::common::TextConfig;
+use super::common::{Align, TextConfig, TitleConfig};
 use super::component::Text;
 use super::error::{Error, Result};
 use super::font::{DEFAULT_FONT_FAMILY, measure_text_width_family, text_ellipsis};
@@ -136,49 +136,8 @@ impl MermaidChart {
             chart.compact = compact;
         }
 
-        if let Some(t) = get_string_from_value(&value, "title_text") {
-            chart.title.text = t;
-        }
-        if let Some(v) = get_f32_from_value(&value, "title_font_size") {
-            chart.title.font.size = v;
-        }
-        if let Some(v) = get_color_from_value(&value, "title_font_color") {
-            chart.title.font.color = v;
-        }
-        if let Some(v) = get_string_from_value(&value, "title_font_weight") {
-            chart.title.font.weight = Some(v);
-        }
-        if let Some(v) = get_margin_from_value(&value, "title_margin") {
-            chart.title.margin = Some(v);
-        }
-        if let Some(v) = get_align_from_value(&value, "title_align") {
-            chart.title.align = v;
-        }
-        if let Some(v) = get_f32_from_value(&value, "title_height") {
-            chart.title.height = v;
-        }
-
-        if let Some(t) = get_string_from_value(&value, "sub_title_text") {
-            chart.sub_title.text = t;
-        }
-        if let Some(v) = get_f32_from_value(&value, "sub_title_font_size") {
-            chart.sub_title.font.size = v;
-        }
-        if let Some(v) = get_color_from_value(&value, "sub_title_font_color") {
-            chart.sub_title.font.color = v;
-        }
-        if let Some(v) = get_string_from_value(&value, "sub_title_font_weight") {
-            chart.sub_title.font.weight = Some(v);
-        }
-        if let Some(v) = get_margin_from_value(&value, "sub_title_margin") {
-            chart.sub_title.margin = Some(v);
-        }
-        if let Some(v) = get_align_from_value(&value, "sub_title_align") {
-            chart.sub_title.align = v;
-        }
-        if let Some(v) = get_f32_from_value(&value, "sub_title_height") {
-            chart.sub_title.height = v;
-        }
+        apply_title_json(&value, "title", &mut chart.title);
+        apply_title_json(&value, "sub_title", &mut chart.sub_title);
 
         if let Some(texts) = get_texts_from_value(&value, "texts") {
             chart.texts = texts;
@@ -311,6 +270,90 @@ pub fn mermaid_to_svg_with_theme(source: &str, theme: &str) -> Result<String> {
     MermaidChart::new_with_theme(source, theme).svg()
 }
 
+fn apply_title_json(value: &serde_json::Value, prefix: &str, target: &mut TitleConfig) {
+    if let Some(t) = get_string_from_value(value, &format!("{prefix}_text")) {
+        target.text = t;
+    }
+    if let Some(v) = get_f32_from_value(value, &format!("{prefix}_font_size")) {
+        target.font.size = v;
+    }
+    if let Some(v) = get_color_from_value(value, &format!("{prefix}_font_color")) {
+        target.font.color = v;
+    }
+    if let Some(v) = get_string_from_value(value, &format!("{prefix}_font_weight")) {
+        target.font.weight = Some(v);
+    }
+    if let Some(v) = get_margin_from_value(value, &format!("{prefix}_margin")) {
+        target.margin = Some(v);
+    }
+    if let Some(v) = get_align_from_value(value, &format!("{prefix}_align")) {
+        target.align = v;
+    }
+    if let Some(v) = get_f32_from_value(value, &format!("{prefix}_height")) {
+        target.height = v;
+    }
+}
+
+fn title_row_height(cfg: &TitleConfig, theme_cfg: &TitleConfig, min_height: f32) -> f32 {
+    if cfg.height > 0.0 {
+        cfg.height
+    } else {
+        theme_cfg.height.max(min_height)
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn draw_title_row(
+    canvas: &mut Canvas,
+    text: &str,
+    cfg: &TitleConfig,
+    theme_cfg: &TitleConfig,
+    min_height: f32,
+    font_family: &str,
+    margin_left: f32,
+    inner_w: f32,
+    cursor_y: f32,
+) -> f32 {
+    let m = cfg.margin.unwrap_or_default();
+    let size = if cfg.font.size > 0.0 {
+        cfg.font.size
+    } else {
+        theme_cfg.font.size
+    };
+    let color = if !cfg.font.color.is_zero() {
+        cfg.font.color
+    } else {
+        theme_cfg.font.color
+    };
+    let weight = cfg
+        .font
+        .weight
+        .clone()
+        .or_else(|| theme_cfg.font.weight.clone());
+    let row_h = title_row_height(cfg, theme_cfg, min_height);
+    let clipped = text_ellipsis(font_family, size, text, (inner_w - m.left - m.right).max(20.0));
+    let text_w = measure_text_width_family(font_family, size, &clipped)
+        .map(|b| b.width())
+        .unwrap_or_default();
+    let align_x = match cfg.align {
+        Align::Center => (inner_w - text_w) * 0.5,
+        Align::Right => (inner_w - text_w).max(0.0),
+        Align::Left => 0.0,
+    };
+    canvas.text_unmeasured(Text {
+        text: clipped,
+        font_family: Some(font_family.to_string()),
+        font_size: Some(size),
+        font_color: Some(color),
+        font_weight: weight,
+        x: Some(margin_left + m.left + align_x),
+        y: Some(cursor_y + m.top + row_h * 0.5),
+        dominant_baseline: Some("central".to_string()),
+        ..Default::default()
+    });
+    cursor_y + m.top + row_h + m.bottom
+}
+
 pub(crate) fn compute_header_height(
     chart: &MermaidChart,
     title_text: Option<&str>,
@@ -321,21 +364,11 @@ pub(crate) fn compute_header_height(
         && !t.is_empty()
     {
         let m = chart.base.title.margin.unwrap_or_default();
-        let row_h = if chart.base.title.height > 0.0 {
-            chart.base.title.height
-        } else {
-            theme.title.height.max(30.0)
-        };
-        h += m.top + row_h + m.bottom;
+        h += m.top + title_row_height(&chart.base.title, &theme.title, 30.0) + m.bottom;
     }
     if !chart.base.sub_title.text.is_empty() {
         let m = chart.base.sub_title.margin.unwrap_or_default();
-        let row_h = if chart.base.sub_title.height > 0.0 {
-            chart.base.sub_title.height
-        } else {
-            theme.sub_title.height.max(20.0)
-        };
-        h += m.top + row_h + m.bottom;
+        h += m.top + title_row_height(&chart.base.sub_title, &theme.sub_title, 20.0) + m.bottom;
     }
     h
 }
@@ -351,107 +384,34 @@ pub(crate) fn draw_header(
     let inner_w = (content_w - chart.base.margin.left - chart.base.margin.right).max(40.0);
     let mut cursor_y = chart.base.margin.top;
 
-    let place_x = |align: &super::common::Align, text: &str, size: f32| -> f32 {
-        let w = measure_text_width_family(&font_family, size, text)
-            .map(|b| b.width())
-            .unwrap_or_default();
-        match align {
-            super::common::Align::Center => (inner_w - w) * 0.5,
-            super::common::Align::Right => (inner_w - w).max(0.0),
-            super::common::Align::Left => 0.0,
-        }
-    };
-
     if let Some(t) = title_text
         && !t.is_empty()
     {
-        let m = chart.base.title.margin.unwrap_or_default();
-        let size = if chart.base.title.font.size > 0.0 {
-            chart.base.title.font.size
-        } else {
-            theme.title.font.size
-        };
-        let color = if !chart.base.title.font.color.is_zero() {
-            chart.base.title.font.color
-        } else {
-            theme.title.font.color
-        };
-        let weight = chart
-            .base
-            .title
-            .font
-            .weight
-            .clone()
-            .or_else(|| theme.title.font.weight.clone());
-        let row_h = if chart.base.title.height > 0.0 {
-            chart.base.title.height
-        } else {
-            theme.title.height.max(30.0)
-        };
-        let clipped = text_ellipsis(
-            &font_family,
-            size,
+        cursor_y = draw_title_row(
+            canvas,
             t,
-            (inner_w - m.left - m.right).max(20.0),
+            &chart.base.title,
+            &theme.title,
+            30.0,
+            &font_family,
+            chart.base.margin.left,
+            inner_w,
+            cursor_y,
         );
-        let x = chart.base.margin.left + m.left + place_x(&chart.base.title.align, &clipped, size);
-        canvas.text_unmeasured(Text {
-            text: clipped,
-            font_family: Some(font_family.clone()),
-            font_size: Some(size),
-            font_color: Some(color),
-            font_weight: weight,
-            x: Some(x),
-            y: Some(cursor_y + m.top + row_h * 0.5),
-            dominant_baseline: Some("central".to_string()),
-            ..Default::default()
-        });
-        cursor_y += m.top + row_h + m.bottom;
     }
 
     if !chart.base.sub_title.text.is_empty() {
-        let m = chart.base.sub_title.margin.unwrap_or_default();
-        let size = if chart.base.sub_title.font.size > 0.0 {
-            chart.base.sub_title.font.size
-        } else {
-            theme.sub_title.font.size
-        };
-        let color = if !chart.base.sub_title.font.color.is_zero() {
-            chart.base.sub_title.font.color
-        } else {
-            theme.sub_title.font.color
-        };
-        let weight = chart
-            .base
-            .sub_title
-            .font
-            .weight
-            .clone()
-            .or_else(|| theme.sub_title.font.weight.clone());
-        let row_h = if chart.base.sub_title.height > 0.0 {
-            chart.base.sub_title.height
-        } else {
-            theme.sub_title.height.max(20.0)
-        };
-        let clipped = text_ellipsis(
-            &font_family,
-            size,
+        draw_title_row(
+            canvas,
             &chart.base.sub_title.text,
-            (inner_w - m.left - m.right).max(20.0),
+            &chart.base.sub_title,
+            &theme.sub_title,
+            20.0,
+            &font_family,
+            chart.base.margin.left,
+            inner_w,
+            cursor_y,
         );
-        let x =
-            chart.base.margin.left + m.left + place_x(&chart.base.sub_title.align, &clipped, size);
-        canvas.text_unmeasured(Text {
-            text: clipped,
-            font_family: Some(font_family),
-            font_size: Some(size),
-            font_color: Some(color),
-            font_weight: weight,
-            x: Some(x),
-            y: Some(cursor_y + m.top + row_h * 0.5),
-            dominant_baseline: Some("central".to_string()),
-            ..Default::default()
-        });
     }
 }
 
