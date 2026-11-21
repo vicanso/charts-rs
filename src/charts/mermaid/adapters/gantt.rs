@@ -12,12 +12,14 @@
 
 //! Mermaid `gantt` diagram adapter -> [`GanttChart`](crate::GanttChart).
 
-use super::super::super::color::Color;
+use super::super::super::color::{Color, get_color};
 use super::super::super::error::{Error, Result};
 use super::super::super::gantt_chart::{GanttChart, GanttTask};
+use super::super::super::theme::get_theme;
 use super::super::super::x_axis::{days_from_civil, parse_time};
 use super::super::MermaidChart;
 use super::super::preprocess::SourceLine;
+use super::super::style::mix_color;
 use super::apply_base_options;
 use std::collections::{HashMap, HashSet};
 
@@ -709,18 +711,48 @@ pub(crate) fn render(
         |(lo, hi), &(s, e)| (lo.min(s), hi.max(e)),
     );
 
-    let crit_color: Color = (220, 68, 68).into();
+    let theme = get_theme(theme_name);
+    let bg = if theme.background_color.is_transparent() {
+        Color::from((255, 255, 255))
+    } else {
+        theme.background_color
+    };
+    let done_fill = mix_color(theme.y_axis.font.color, bg, 0.58);
+    let crit_fill: Color = (220, 68, 68).into();
+    let crit_done_fill = mix_color(crit_fill, done_fill, 0.65);
+    let crit_active_fill = mix_color(crit_fill, Color::from((255, 255, 255)), 0.18);
+
+    // Match GanttChart's first-seen category order so `active` highlights derive
+    // from the task's section color.
+    let mut sections: Vec<String> = Vec::new();
+    for t in &parsed_tasks {
+        if let Some(ref sec) = t.section
+            && !sections.contains(sec)
+        {
+            sections.push(sec.clone());
+        }
+    }
+
     let tasks: Vec<GanttTask> = parsed_tasks
         .into_iter()
         .zip(resolved)
         .map(|(t, span)| {
             let (start, end) = span.unwrap_or((0.0, 0.0));
-            let progress = if t.is_done {
-                Some(1.0)
-            } else if t.is_active {
-                Some(0.5)
-            } else {
-                None
+            let color = match (t.is_crit, t.is_done, t.is_active) {
+                (true, true, _) => Some(crit_done_fill),
+                (true, false, true) => Some(crit_active_fill),
+                (true, false, false) => Some(crit_fill),
+                (false, true, _) => Some(done_fill),
+                (false, false, true) => {
+                    let cat_idx = t
+                        .section
+                        .as_deref()
+                        .and_then(|s| sections.iter().position(|c| c == s))
+                        .unwrap_or(sections.len());
+                    let base = get_color(&theme.series.colors, cat_idx);
+                    Some(mix_color(base, Color::from((255, 255, 255)), 0.28))
+                }
+                (false, false, false) => None,
             };
             GanttTask {
                 name: t.name,
@@ -728,8 +760,8 @@ pub(crate) fn render(
                 end,
                 row: None,
                 category: t.section,
-                progress,
-                color: t.is_crit.then_some(crit_color),
+                progress: None,
+                color,
             }
         })
         .collect();

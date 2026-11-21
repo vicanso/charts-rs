@@ -834,3 +834,46 @@ xychart-beta horizontal
     assert!(!hsvg.contains("\n3.2\n"));
     assert!(!hsvg.contains("\n7.8\n"));
 }
+
+#[test]
+fn m14_gantt_task_status_styling() {
+    let src = r#"
+gantt
+  title Status Styling
+  dateFormat YYYY-MM-DD
+  section Plan
+    Completed :done, d1, 2026-03-01, 4d
+    InFlight  :active, a1, after d1, 4d
+    Upcoming  :u1, after a1, 4d
+    Critical  :crit, c1, after u1, 4d
+    CritDone  :crit, done, cd1, after c1, 4d
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    // `active` must NOT emit a half-bar progress overlay (`fill-opacity="0.35"` track).
+    assert!(
+        !svg.contains("fill-opacity=\"0.35\""),
+        "gantt active task should not render as a 50% progress bar: {svg}"
+    );
+    // Extract task bar rects (those with `data-name=`) and verify distinct fills for done/active/normal/crit.
+    let fill_for = |name: &str| -> String {
+        let needle = format!("data-name=\"{name}\"");
+        let line = svg
+            .lines()
+            .find(|l| l.contains(&needle))
+            .unwrap_or_else(|| panic!("missing task {name} in {svg}"));
+        let start = line.find("fill=\"").unwrap() + 6;
+        let end = start + line[start..].find('"').unwrap();
+        line[start..end].to_string()
+    };
+    let done_fill = fill_for("Completed");
+    let active_fill = fill_for("InFlight");
+    let normal_fill = fill_for("Upcoming");
+    let crit_fill = fill_for("Critical");
+    let crit_done_fill = fill_for("CritDone");
+
+    assert_ne!(done_fill, normal_fill, "done should be muted grey, distinct from normal");
+    assert_ne!(active_fill, normal_fill, "active should be highlighted, distinct from normal");
+    assert_ne!(crit_fill, normal_fill, "crit should be red, distinct from normal");
+    assert_ne!(crit_done_fill, crit_fill, "crit+done should be muted compared to crit");
+}

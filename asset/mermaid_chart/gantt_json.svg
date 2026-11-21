@@ -67,12 +67,9 @@ Integration Tests
 <text font-size="14" x="117" y="290.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
 Release 2.4
 </text>
-<rect x="140.6" y="70.3" width="109.2" height="24.9" rx="3" ry="3" fill="#5470C6"/>
-<rect x="140.6" y="70.3" width="109.2" height="24.9" rx="3" ry="3" fill="#5470C6" fill-opacity="0.43" data-name="Architecture RFC" data-row="Architecture RFC" data-category="Planning" data-start="2026-04-01" data-end="2026-04-05" data-progress="1"/>
-<rect x="249.8" y="111.8" width="81.9" height="24.9" rx="3" ry="3" fill="#5470C6"/>
-<rect x="249.8" y="111.8" width="81.9" height="24.9" rx="3" ry="3" fill="#5470C6" fill-opacity="0.43" data-name="API Review" data-row="API Review" data-category="Planning" data-start="2026-04-05" data-end="2026-04-08" data-progress="1"/>
-<rect x="331.7" y="153.3" width="109.2" height="24.9" rx="3" ry="3" fill="#91CC75"/>
-<rect x="331.7" y="153.3" width="218.5" height="24.9" rx="3" ry="3" fill="#91CC75" fill-opacity="0.43" data-name="Core Engine" data-row="Core Engine" data-category="Implementation" data-start="2026-04-08" data-end="2026-04-16" data-progress="0.5"/>
+<rect x="140.6" y="70.3" width="109.2" height="24.9" rx="3" ry="3" fill="#C2C3C7" data-name="Architecture RFC" data-row="Architecture RFC" data-category="Planning" data-start="2026-04-01" data-end="2026-04-05"/>
+<rect x="249.8" y="111.8" width="81.9" height="24.9" rx="3" ry="3" fill="#C2C3C7" data-name="API Review" data-row="API Review" data-category="Planning" data-start="2026-04-05" data-end="2026-04-08"/>
+<rect x="331.7" y="153.3" width="218.5" height="24.9" rx="3" ry="3" fill="#B0DA9C" data-name="Core Engine" data-row="Core Engine" data-category="Implementation" data-start="2026-04-08" data-end="2026-04-16"/>
 <rect x="331.7" y="194.8" width="163.9" height="24.9" rx="3" ry="3" fill="#DC4444" data-name="SVG Renderer" data-row="SVG Renderer" data-category="Implementation" data-start="2026-04-08" data-end="2026-04-14"/>
 <rect x="550.2" y="236.3" width="109.2" height="24.9" rx="3" ry="3" fill="#91CC75" data-name="Integration Tests" data-row="Integration Tests" data-category="Implementation" data-start="2026-04-16" data-end="2026-04-20"/>
 <polygon points="659.4,279 670.6,290.2 659.4,301.5 648.2,290.2" fill="#FAC858" data-name="Release 2.4" data-row="Release 2.4" data-category="Launch" data-start="2026-04-20"/>
