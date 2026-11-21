@@ -630,3 +630,51 @@ xychart-beta horizontal
     assert_valid_svg(&line_svg);
     assert!(line_svg.contains("<path d=\"M"));
 }
+
+#[test]
+fn m04_sequence_create_and_destroy_semantics() {
+    let src = r#"
+sequenceDiagram
+  participant C
+  C->>C: start
+  create participant D
+  C->>D: create
+  destroy D
+  D->>C: bye
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    // C has both a top header and a bottom footer (2 occurrences of `\nC\n`).
+    assert_eq!(
+        svg.matches("\nC\n").count(),
+        2,
+        "participant C should have top header and bottom footer: {svg}"
+    );
+    // D is created inline and destroyed (no top header, no bottom footer) -> 1 occurrence.
+    assert_eq!(
+        svg.matches("\nD\n").count(),
+        1,
+        "created+destroyed participant D should render exactly one box (no footer): {svg}"
+    );
+    // Destroy cross (stroke-width="2.2") must be present (2 diagonal lines).
+    assert_eq!(
+        svg.matches("stroke-width=\"2.2\"").count(),
+        2,
+        "expected destroy cross (2 diagonal lines): {svg}"
+    );
+    // C's header box is at y="29" and footer at y="261"; D's box is at y="152" (inline, not top).
+    assert!(
+        svg.contains("x=\"153\" y=\"152\""),
+        "expected D's box inline at creation message y: {svg}"
+    );
+    // Creation arrow terminates at D's left edge (x2="153"), not D's center (195).
+    assert!(
+        svg.contains("x1=\"71\" y1=\"171\" x2=\"153\" y2=\"171\""),
+        "expected creation arrow to terminate at D's box edge: {svg}"
+    );
+    // D's lifeline runs only from bottom of D's box (190) to the destroy message y (233).
+    assert!(
+        svg.contains("x1=\"195\" y1=\"190\" x2=\"195\" y2=\"233\""),
+        "expected D's lifeline from created box bottom to destroy message y: {svg}"
+    );
+}

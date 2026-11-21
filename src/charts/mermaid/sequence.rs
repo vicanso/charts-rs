@@ -47,6 +47,7 @@ struct SeqParticipant {
     label: String,
     kind: ParticipantKind,
     box_idx: Option<usize>,
+    created: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -121,6 +122,7 @@ enum SeqEvent {
     },
     Activate(usize),
     Deactivate(usize),
+    Create(usize),
     Destroy(usize),
     BlockStart {
         kind: BlockKind,
@@ -180,6 +182,7 @@ impl ParsedSequence {
             label: label.unwrap_or(id).to_string(),
             kind: kind.unwrap_or(ParticipantKind::Participant),
             box_idx,
+            created: false,
         });
         if let Some(b_idx) = box_idx
             && !self.boxes[b_idx].members.contains(&idx)
@@ -429,36 +432,44 @@ fn parse_sequence(lines: &[SourceLine]) -> Result<ParsedSequence> {
         }
 
         // `create participant A as Alice` / `create actor U`
-        let decl_text = if let Some(rest) = text.strip_prefix("create")
+        let (is_create, decl_text) = if let Some(rest) = text.strip_prefix("create")
             && rest.starts_with(char::is_whitespace)
         {
-            rest.trim()
+            (true, rest.trim())
         } else {
-            text
+            (false, text)
         };
 
         if let Some(rest) = decl_text.strip_prefix("participant")
             && rest.starts_with(char::is_whitespace)
         {
             let (id, label) = parse_participant_decl(rest, sl.line_no)?;
-            seq.ensure_participant(
+            let idx = seq.ensure_participant(
                 &id,
                 label.as_deref(),
                 Some(ParticipantKind::Participant),
                 current_box,
             );
+            if is_create {
+                seq.participants[idx].created = true;
+                seq.events.push(SeqEvent::Create(idx));
+            }
             continue;
         }
         if let Some(rest) = decl_text.strip_prefix("actor")
             && rest.starts_with(char::is_whitespace)
         {
             let (id, label) = parse_participant_decl(rest, sl.line_no)?;
-            seq.ensure_participant(
+            let idx = seq.ensure_participant(
                 &id,
                 label.as_deref(),
                 Some(ParticipantKind::Actor),
                 current_box,
             );
+            if is_create {
+                seq.participants[idx].created = true;
+                seq.events.push(SeqEvent::Create(idx));
+            }
             continue;
         }
 
@@ -680,6 +691,7 @@ enum PositionedEvent {
         arrow: ArrowSpec,
         y: f32,
         text: FormattedText,
+        created_target: Option<usize>,
     },
     Note {
         pos: NotePos,
@@ -937,7 +949,12 @@ pub(crate) fn render(
                     let lo = (*from).min(*to);
                     let hi = (*from).max(*to);
                     let current: f32 = dists[lo..hi].iter().sum();
-                    let needed = ft.width + 44.0;
+                    let create_extra = if seq.participants[*to].created {
+                        p_widths[*to] * 0.5
+                    } else {
+                        0.0
+                    };
+                    let needed = ft.width + 44.0 + create_extra;
                     if needed > current {
                         let extra = (needed - current) / (hi - lo) as f32;
                         for d in &mut dists[lo..hi] {
@@ -1032,7 +1049,19 @@ pub(crate) fn render(
     let mut active_blocks: Vec<LaidOutBlock> = Vec::new();
     let mut finished_blocks: Vec<LaidOutBlock> = Vec::new();
     let mut positioned_events: Vec<PositionedEvent> = Vec::new();
+    let mut created_box_top: Vec<Option<f32>> = vec![None; n];
+    let mut lifeline_start: Vec<f32> = vec![lifeline_top; n];
     let mut destroyed_y: Vec<Option<f32>> = vec![None; n];
+    let mut pending_create: Option<usize> = None;
+    let mut pending_destroy: Option<usize> = None;
+
+    let participant_h_of = |p_idx: usize| -> f32 {
+        if seq.participants[p_idx].kind == ParticipantKind::Actor {
+            participant_slot_h
+        } else {
+            box_h
+        }
+    };
 
     let start_act = |p: usize, start_y: f32, stacks: &mut Vec<Vec<f32>>| {
         stacks[p].push(start_y);
@@ -1097,14 +1126,24 @@ pub(crate) fn render(
             SeqEvent::Deactivate(p) => {
                 end_act(*p, y, &mut act_stacks, &mut act_spans);
             }
+            SeqEvent::Create(p) => {
+                if let Some(prev) = pending_create.replace(*p) {
+                    let ph = participant_h_of(prev);
+                    created_box_top[prev] = Some(y);
+                    lifeline_start[prev] = y + ph;
+                    y += ph + 14.0;
+                }
+            }
             SeqEvent::Destroy(p) => {
-                let dy = y + 6.0;
-                destroyed_y[*p] = Some(dy);
-                positioned_events.push(PositionedEvent::Destroy {
-                    participant: *p,
-                    y: dy,
-                });
-                y += 14.0;
+                if let Some(prev) = pending_destroy.replace(*p) {
+                    let dy = y + 6.0;
+                    destroyed_y[prev] = Some(dy);
+                    positioned_events.push(PositionedEvent::Destroy {
+                        participant: prev,
+                        y: dy,
+                    });
+                    y += 14.0;
+                }
             }
             SeqEvent::Message {
                 from,
@@ -1116,8 +1155,19 @@ pub(crate) fn render(
             } => {
                 let ft =
                     ft_opt.unwrap_or_else(|| format_and_measure("", &font_family, msg_font_size));
+                let creating = pending_create.take();
+                let created_target = creating.filter(|&cp| cp == *to && from != to);
                 if from == to {
-                    let msg_y = y + 8.0;
+                    let msg_y = if let Some(cp) = creating {
+                        let cp_h = participant_h_of(cp);
+                        let my = (y + 8.0).max(y + cp_h * 0.5);
+                        let btop = my - cp_h * 0.5;
+                        created_box_top[cp] = Some(btop);
+                        lifeline_start[cp] = btop + cp_h;
+                        my
+                    } else {
+                        y + 8.0
+                    };
                     let loop_h = (ft.height + 10.0).max(SELF_LOOP_H);
                     if *activate_to {
                         start_act(*to, msg_y, &mut act_stacks);
@@ -1131,15 +1181,39 @@ pub(crate) fn render(
                         arrow: *arrow,
                         y: msg_y,
                         text: ft,
+                        created_target: None,
                     });
-                    y = msg_y + loop_h + 18.0;
+                    if let Some(dp) = pending_destroy.take() {
+                        let dy = msg_y + loop_h;
+                        destroyed_y[dp] = Some(dy);
+                        positioned_events.push(PositionedEvent::Destroy {
+                            participant: dp,
+                            y: dy,
+                        });
+                    }
+                    let mut next_y = msg_y + loop_h + 18.0;
+                    if let Some(cp) = creating
+                        && let Some(btop) = created_box_top[cp]
+                    {
+                        next_y = next_y.max(btop + participant_h_of(cp) + 14.0);
+                    }
+                    y = next_y;
                 } else {
                     let text_h = if ft.lines.iter().all(|l| l.text.is_empty()) {
                         4.0
                     } else {
                         ft.height + 6.0
                     };
-                    let msg_y = y + text_h + 6.0;
+                    let msg_y = if let Some(cp) = creating {
+                        let cp_h = participant_h_of(cp);
+                        let my = (y + text_h + 6.0).max(y + cp_h * 0.5);
+                        let btop = my - cp_h * 0.5;
+                        created_box_top[cp] = Some(btop);
+                        lifeline_start[cp] = btop + cp_h;
+                        my
+                    } else {
+                        y + text_h + 6.0
+                    };
                     if *activate_to {
                         start_act(*to, msg_y, &mut act_stacks);
                     }
@@ -1152,8 +1226,22 @@ pub(crate) fn render(
                         arrow: *arrow,
                         y: msg_y,
                         text: ft,
+                        created_target,
                     });
-                    y = msg_y + 18.0;
+                    if let Some(dp) = pending_destroy.take() {
+                        destroyed_y[dp] = Some(msg_y);
+                        positioned_events.push(PositionedEvent::Destroy {
+                            participant: dp,
+                            y: msg_y,
+                        });
+                    }
+                    let mut next_y = msg_y + 18.0;
+                    if let Some(cp) = creating
+                        && let Some(btop) = created_box_top[cp]
+                    {
+                        next_y = next_y.max(btop + participant_h_of(cp) + 14.0);
+                    }
+                    y = next_y;
                 }
             }
             SeqEvent::Note { pos, from, to, .. } => {
@@ -1171,6 +1259,23 @@ pub(crate) fn render(
                 y += note_h + 16.0;
             }
         }
+    }
+
+    // Flush any trailing `create` or `destroy` not followed by a message.
+    if let Some(cp) = pending_create.take() {
+        let ph = participant_h_of(cp);
+        created_box_top[cp] = Some(y);
+        lifeline_start[cp] = y + ph;
+        y += ph + 14.0;
+    }
+    if let Some(dp) = pending_destroy.take() {
+        let dy = y + 6.0;
+        destroyed_y[dp] = Some(dy);
+        positioned_events.push(PositionedEvent::Destroy {
+            participant: dp,
+            y: dy,
+        });
+        y += 14.0;
     }
 
     let lifeline_bottom = y + 10.0;
@@ -1279,16 +1384,19 @@ pub(crate) fn render(
 
     // 3. Dashed lifelines.
     for i in 0..n {
+        let start_y = lifeline_start[i];
         let end_y = destroyed_y[i].unwrap_or(lifeline_bottom);
-        content_canvas.line(Line {
-            color: Some(palette.edge_stroke),
-            stroke_width: 1.2,
-            left: col_x[i],
-            top: lifeline_top,
-            right: col_x[i],
-            bottom: end_y,
-            stroke_dash_array: Some("5,4".to_string()),
-        });
+        if end_y > start_y {
+            content_canvas.line(Line {
+                color: Some(palette.edge_stroke),
+                stroke_width: 1.2,
+                left: col_x[i],
+                top: start_y,
+                right: col_x[i],
+                bottom: end_y,
+                stroke_dash_array: Some("5,4".to_string()),
+            });
+        }
     }
 
     // 4. Activation bars.
@@ -1451,6 +1559,7 @@ pub(crate) fn render(
                 arrow,
                 y,
                 text,
+                created_target,
             } => {
                 let dash = arrow.dashed.then(|| "5,4".to_string());
                 if from == to {
@@ -1491,8 +1600,11 @@ pub(crate) fn render(
                     );
                 } else {
                     let x1 = col_x[*from];
-                    let x2 = col_x[*to];
+                    let mut x2 = col_x[*to];
                     let dir = if x2 >= x1 { 1.0 } else { -1.0 };
+                    if *created_target == Some(*to) {
+                        x2 -= dir * (p_widths[*to] * 0.5);
+                    }
                     content_canvas.line(Line {
                         color: Some(palette.edge_stroke),
                         stroke_width: 1.6,
@@ -1538,26 +1650,29 @@ pub(crate) fn render(
         }
     }
 
-    // 7. Top & bottom participant boxes / actors.
+    // 7. Top, inline-created & bottom participant boxes / actors.
     for (i, p) in seq.participants.iter().enumerate() {
+        let header_y = created_box_top[i].unwrap_or(top_participant_y);
         draw_participant_box(
             &mut content_canvas,
             p,
             &p_labels[i],
-            (col_x[i], top_participant_y),
+            (col_x[i], header_y),
             (p_widths[i], box_h),
             &palette,
             (&font_family, font_size),
         );
-        draw_participant_box(
-            &mut content_canvas,
-            p,
-            &p_labels[i],
-            (col_x[i], lifeline_bottom),
-            (p_widths[i], box_h),
-            &palette,
-            (&font_family, font_size),
-        );
+        if destroyed_y[i].is_none() {
+            draw_participant_box(
+                &mut content_canvas,
+                p,
+                &p_labels[i],
+                (col_x[i], lifeline_bottom),
+                (p_widths[i], box_h),
+                &palette,
+                (&font_family, font_size),
+            );
+        }
     }
 
     // 8. Notes on top so they stay crisp over lifelines.
