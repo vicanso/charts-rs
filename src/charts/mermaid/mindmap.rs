@@ -71,11 +71,9 @@ fn is_valid_id(s: &str) -> bool {
 }
 
 fn strip_markdown_quotes(raw: &str) -> String {
-    let mut s = unquote_text(raw.trim());
-    if let Some(inner) = s.strip_prefix('`').and_then(|r| r.strip_suffix('`')) {
-        s = inner.trim().replace("**", "").replace("__", "");
-    }
-    s
+    // Keep inner backticks intact so `format_and_measure` parses Markdown
+    // emphasis (`**bold**`, `*italic*`, `_italic_`) into styled `<tspan>`s.
+    unquote_text(raw.trim())
 }
 
 fn strip_icons(raw: &str) -> String {

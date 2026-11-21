@@ -8,7 +8,7 @@ charts-rs Roadmap
 <path d="M643.9,101 C677.9,101 671.7,89 705.7,89" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#536EC0" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M643.9,101 C679.3,101 672.9,147 708.3,147" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#536EC0" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M453.7,151 C489.1,151 482.7,236 518,236" transform="translate(5,35)" fill="none" stroke-width="2.6" stroke="#91CC75" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M614,236 C646.1,236 640.3,213 672.4,213" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#8DC573" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M614,236 C646,236 640.2,213 672.2,213" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#8DC573" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M614,236 C645.1,236 639.5,259 670.7,259" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#8DC573" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M382.3,151 C346.4,151 352.9,88 317,88" transform="translate(5,35)" fill="none" stroke-width="2.6" stroke="#FAC858" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M207.1,88 C174.2,88 180.2,42 147.3,42" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#F1C257" stroke-linecap="round" stroke-linejoin="round"/>
@@ -43,9 +43,9 @@ Cloud-free Pure SVG
 <text font-size="13.5" x="574.5" y="271" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Backend Core
 </text>
-<rect x="669" y="232" width="140" height="32" rx="8" ry="8" stroke="#ADD998" stroke-width="1.4" fill="#F4FAF1"/>
-<text font-size="12.5" x="739" y="248" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
-Zero External Deps
+<rect x="669" y="232" width="137.4" height="32" rx="8" ry="8" stroke="#ADD998" stroke-width="1.4" fill="#F4FAF1"/>
+<text font-size="12.5" x="737.7" y="248" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
+Zero <tspan font-weight="bold">External</tspan> Deps
 </text>
 <rect x="669" y="278" width="111" height="32" rx="8" ry="8" stroke="#ADD998" stroke-width="1.4" fill="#F4FAF1"/>
 <text font-size="12.5" x="724.5" y="294" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">

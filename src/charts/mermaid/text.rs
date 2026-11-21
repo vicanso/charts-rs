@@ -15,7 +15,7 @@
 
 use super::super::canvas::Canvas;
 use super::super::color::Color;
-use super::super::component::Text;
+use super::super::component::{Text, TextSpan};
 use super::super::font::measure_text_width_family;
 
 /// One processed line of label text.
@@ -24,6 +24,7 @@ pub(crate) struct FormattedLine {
     pub(crate) text: String,
     pub(crate) bold: bool,
     pub(crate) italic: bool,
+    pub(crate) spans: Vec<TextSpan>,
 }
 
 /// Measured multiline text block ready for SVG emission.
@@ -251,12 +252,136 @@ fn strip_inline_html(line: &str, bold_state: &mut bool, italic_state: &mut bool)
         text: strip_fa_icon_tokens(decode_entities(&out)),
         bold: line_bold,
         italic: line_italic,
+        spans: Vec::new(),
+    }
+}
+
+/// Parses inline Markdown emphasis (`***both***`, `**bold**`, `__bold__`,
+/// `*italic*`, `_italic_`) into styled [`TextSpan`]s.
+fn parse_markdown_line(line: &str) -> FormattedLine {
+    let cleaned = strip_fa_icon_tokens(decode_entities(line));
+    let chars: Vec<char> = cleaned.chars().collect();
+    let n = chars.len();
+    let mut spans: Vec<TextSpan> = Vec::new();
+    let mut plain = String::new();
+    let mut i = 0;
+
+    let push_span = |spans: &mut Vec<TextSpan>, text: &str, bold: bool, italic: bool| {
+        if text.is_empty() {
+            return;
+        }
+        if let Some(last) = spans.last_mut()
+            && last.bold == bold
+            && last.italic == italic
+        {
+            last.text.push_str(text);
+            return;
+        }
+        spans.push(TextSpan {
+            text: text.to_string(),
+            bold,
+            italic,
+        });
+    };
+
+    let find_closing = |start: usize, delim: char, count: usize| -> Option<usize> {
+        let mut j = start;
+        while j + count <= n {
+            if (0..count).all(|k| chars[j + k] == delim) {
+                // For single `_`, require not followed by alphanumeric (avoid snake_case).
+                if delim == '_'
+                    && count == 1
+                    && j + 1 < n
+                    && chars[j + 1].is_alphanumeric()
+                {
+                    j += 1;
+                    continue;
+                }
+                if j > start {
+                    return Some(j);
+                }
+            }
+            j += 1;
+        }
+        None
+    };
+
+    while i < n {
+        let ch = chars[i];
+        if ch == '*' || ch == '_' {
+            let prev_alnum = i > 0 && chars[i - 1].is_alphanumeric();
+            let mut matched = false;
+            for (count, bold, italic) in [
+                (3usize, true, true),
+                (2usize, true, false),
+                (1usize, false, true),
+            ] {
+                if count == 1 && ch == '_' && prev_alnum {
+                    continue;
+                }
+                if i + count < n
+                    && (0..count).all(|k| chars[i + k] == ch)
+                    && !chars[i + count].is_whitespace()
+                    && let Some(end) = find_closing(i + count, ch, count)
+                {
+                    push_span(&mut spans, &plain, false, false);
+                    plain.clear();
+                    let inner: String = chars[i + count..end].iter().collect();
+                    push_span(&mut spans, &inner, bold, italic);
+                    i = end + count;
+                    matched = true;
+                    break;
+                }
+            }
+            if matched {
+                continue;
+            }
+        }
+        plain.push(ch);
+        i += 1;
+    }
+    push_span(&mut spans, &plain, false, false);
+
+    let full_text: String = spans.iter().map(|s| s.text.as_str()).collect();
+    let has_styled = spans.iter().any(|s| s.bold || s.italic);
+    if !has_styled {
+        FormattedLine {
+            text: full_text,
+            bold: false,
+            italic: false,
+            spans: Vec::new(),
+        }
+    } else if spans.len() == 1 {
+        let s = &spans[0];
+        FormattedLine {
+            text: full_text,
+            bold: s.bold,
+            italic: s.italic,
+            spans: Vec::new(),
+        }
+    } else {
+        FormattedLine {
+            text: full_text,
+            bold: false,
+            italic: false,
+            spans,
+        }
     }
 }
 
 /// Cleans, wraps (`<br/>` / `\n`) and measures a Mermaid label.
 pub(crate) fn format_and_measure(raw: &str, font_family: &str, font_size: f32) -> FormattedText {
-    let raw_lines = split_lines(raw);
+    let trimmed = raw.trim();
+    let (is_markdown, body) = if let Some(inner) = trimmed
+        .strip_prefix('`')
+        .and_then(|s| s.strip_suffix('`'))
+        && trimmed.len() >= 2
+    {
+        (true, inner)
+    } else {
+        (false, raw)
+    };
+    let raw_lines = split_lines(body);
     let mut bold_state = false;
     let mut italic_state = false;
     let mut lines = Vec::with_capacity(raw_lines.len());
@@ -264,8 +389,24 @@ pub(crate) fn format_and_measure(raw: &str, font_family: &str, font_size: f32) -
     let line_height = (font_size * 1.35).ceil();
 
     for raw_line in raw_lines {
-        let formatted = strip_inline_html(&raw_line, &mut bold_state, &mut italic_state);
-        if !formatted.text.is_empty() {
+        let formatted = if is_markdown {
+            parse_markdown_line(&raw_line)
+        } else {
+            strip_inline_html(&raw_line, &mut bold_state, &mut italic_state)
+        };
+        if !formatted.spans.is_empty() {
+            let mut w = 0.0_f32;
+            for sp in &formatted.spans {
+                let mut sw = measure_text_width_family(font_family, font_size, &sp.text)
+                    .map(|b| b.width())
+                    .unwrap_or_else(|_| sp.text.chars().count() as f32 * font_size * 0.6);
+                if sp.bold {
+                    sw *= 1.05;
+                }
+                w += sw;
+            }
+            max_width = max_width.max(w);
+        } else if !formatted.text.is_empty() {
             let mut w = measure_text_width_family(font_family, font_size, &formatted.text)
                 .map(|b| b.width())
                 .unwrap_or_else(|_| formatted.text.chars().count() as f32 * font_size * 0.6);
@@ -360,6 +501,7 @@ pub(crate) fn draw_multiline_text_styled(
             y: Some(y),
             text_anchor: Some(anchor.to_string()),
             dominant_baseline: Some("central".to_string()),
+            spans: line.spans.clone(),
             ..Default::default()
         });
     }

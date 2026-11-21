@@ -1041,6 +1041,17 @@ impl Bubble {
     }
 }
 
+/// An inline styled text run inside a [`Text`] element, rendered as `<tspan>`.
+#[derive(Clone, PartialEq, Eq, Debug, Default)]
+pub struct TextSpan {
+    /// Text content of this run.
+    pub text: String,
+    /// Emit `font-weight="bold"` on this `<tspan>`.
+    pub bold: bool,
+    /// Emit `font-style="italic"` on this `<tspan>`.
+    pub italic: bool,
+}
+
 #[derive(Clone, PartialEq, Debug, Default)]
 /// A text element.
 pub struct Text {
@@ -1076,6 +1087,9 @@ pub struct Text {
     pub alignment_baseline: Option<String>,
     /// CSS class attribute of the SVG element.
     pub class: Option<String>,
+    /// Optional inline styled spans; when non-empty, rendered as `<tspan>`
+    /// children instead of `text`.
+    pub spans: Vec<TextSpan>,
 }
 
 impl Text {
@@ -1086,7 +1100,7 @@ impl Text {
         out
     }
     pub(crate) fn write_svg(&self, out: &mut String) {
-        if self.text.is_empty() {
+        if self.spans.is_empty() && self.text.is_empty() {
             return;
         }
         let mut w = TagWriter::open(out, TAG_TEXT);
@@ -1104,7 +1118,31 @@ impl Text {
             .opt_text(ATTR_FONT_FAMILY, self.font_family.as_ref())
             .color(ATTR_FILL, ATTR_FILL_OPACITY, self.font_color)
             .opt_text(ATTR_CLASS, self.class.as_ref());
-        w.close_with(&encode_text(&self.text));
+        if self.spans.is_empty() {
+            w.close_with(&encode_text(&self.text));
+        } else {
+            let mut inner = String::new();
+            for span in &self.spans {
+                if span.text.is_empty() {
+                    continue;
+                }
+                if !span.bold && !span.italic {
+                    inner.push_str(&encode_text(&span.text));
+                } else {
+                    inner.push_str("<tspan");
+                    if span.bold {
+                        inner.push_str(" font-weight=\"bold\"");
+                    }
+                    if span.italic {
+                        inner.push_str(" font-style=\"italic\"");
+                    }
+                    inner.push('>');
+                    inner.push_str(&encode_text(&span.text));
+                    inner.push_str("</tspan>");
+                }
+            }
+            w.close_with(&inner);
+        }
     }
 }
 

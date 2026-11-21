@@ -1328,3 +1328,37 @@ gantt
         "coincident vert marker labels should stagger vertically"
     );
 }
+
+#[test]
+fn m17_m22_markdown_strings_bold_italic_and_multiline() {
+    // Flowchart: multiline Markdown string with bold + italic spans.
+    let fc_src = "flowchart LR\n  A[\"`**Bold** and _italic_\n  second line`\"] --> B";
+    let fc_svg = mermaid_to_svg(fc_src).unwrap();
+    assert_valid_svg(&fc_svg);
+    assert!(
+        fc_svg.contains("<tspan font-weight=\"bold\">Bold</tspan>"),
+        "expected bold tspan in flowchart: {fc_svg}"
+    );
+    assert!(
+        fc_svg.contains("<tspan font-style=\"italic\">italic</tspan>"),
+        "expected italic tspan in flowchart: {fc_svg}"
+    );
+    assert!(
+        fc_svg.contains("second line"),
+        "expected second line from multiline Markdown string: {fc_svg}"
+    );
+    assert!(!fc_svg.contains("`**"), "raw markdown backticks leaked: {fc_svg}");
+
+    // Mindmap: Markdown string with bold + italic spans.
+    let mm_src = "mindmap\n  root((Hub))\n    (\"`Zero **External** _Deps_`\")";
+    let mm_svg = mermaid_to_svg(mm_src).unwrap();
+    assert_valid_svg(&mm_svg);
+    assert!(
+        mm_svg.contains("<tspan font-weight=\"bold\">External</tspan>"),
+        "expected bold tspan in mindmap: {mm_svg}"
+    );
+    assert!(
+        mm_svg.contains("<tspan font-style=\"italic\">Deps</tspan>"),
+        "expected italic tspan in mindmap: {mm_svg}"
+    );
+}

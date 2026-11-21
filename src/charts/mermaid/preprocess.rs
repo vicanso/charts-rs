@@ -213,6 +213,28 @@ fn parse_directive(body: &str, init_theme: &mut Option<String>) {
     }
 }
 
+/// Tracks whether scanning `s` toggles `in_md` (inside a `` "`...`" ``
+/// Mermaid Markdown string). Returns the updated `in_md` state at end-of-line.
+fn scan_markdown_string_state(s: &str, mut in_md: bool) -> bool {
+    let bytes = s.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        if !in_md {
+            if bytes[i] == b'"' && i + 1 < bytes.len() && bytes[i + 1] == b'`' {
+                in_md = true;
+                i += 2;
+                continue;
+            }
+        } else if bytes[i] == b'`' && i + 1 < bytes.len() && bytes[i + 1] == b'"' {
+            in_md = false;
+            i += 2;
+            continue;
+        }
+        i += 1;
+    }
+    in_md
+}
+
 /// Finds `%%` outside double-quoted strings, returning the byte offset if present.
 fn find_comment_start(line: &str) -> Option<usize> {
     let bytes = line.as_bytes();
@@ -309,16 +331,34 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
         }
     }
 
-    // Collect logical non-empty lines while extracting `%%{...}%%` directives
-    // and stripping `%%` comments.
+    // Collect logical non-empty lines while extracting `%%{...}%%` directives,
+    // stripping `%%` comments, and joining multiline `` "`...`" `` Markdown strings.
     let mut lines: Vec<SourceLine> = Vec::new();
     let mut in_directive = false;
     let mut directive_start_line = 0;
     let mut directive_buf = String::new();
+    let mut in_md_string = false;
+    let mut md_start_line = 0;
+    let mut md_indent = 0;
+    let mut md_buf = String::new();
 
     while idx < raw_lines.len() {
         let (line_no, mut slice) = raw_lines[idx];
         idx += 1;
+
+        if in_md_string {
+            md_buf.push('\n');
+            md_buf.push_str(slice.trim());
+            if !scan_markdown_string_state(slice, true) {
+                lines.push(SourceLine {
+                    line_no: md_start_line,
+                    indent: md_indent,
+                    text: std::mem::take(&mut md_buf),
+                });
+                in_md_string = false;
+            }
+            continue;
+        }
 
         loop {
             if in_directive {
@@ -367,14 +407,30 @@ pub(crate) fn preprocess(raw: &str) -> Result<Preprocessed> {
             let indent = leading_indent(slice);
             let trimmed = slice.trim();
             if !trimmed.is_empty() {
-                lines.push(SourceLine {
-                    line_no,
-                    indent,
-                    text: trimmed.to_string(),
-                });
+                if scan_markdown_string_state(trimmed, false) {
+                    in_md_string = true;
+                    md_start_line = line_no;
+                    md_indent = indent;
+                    md_buf.clear();
+                    md_buf.push_str(trimmed);
+                } else {
+                    lines.push(SourceLine {
+                        line_no,
+                        indent,
+                        text: trimmed.to_string(),
+                    });
+                }
             }
             break;
         }
+    }
+
+    if in_md_string && !md_buf.is_empty() {
+        lines.push(SourceLine {
+            line_no: md_start_line,
+            indent: md_indent,
+            text: md_buf,
+        });
     }
 
     if in_directive {
