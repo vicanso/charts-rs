@@ -22,6 +22,8 @@ exclude = [
     # Pages of pictures, which are in `asset` and not in the package.
     "theme.md",
     "docs/gallery.md",
+    # Implementation plan for contributors.
+    "docs/mcp-plan.md",
 ]
 readme = "./README.md"
 rust-version = "1.88"
