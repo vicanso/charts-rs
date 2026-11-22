@@ -37,6 +37,8 @@ use super::{
 const MAX_COUNT: u64 = 1000;
 /// Largest accepted data index (`start_index`, palette indexes, …).
 const MAX_INDEX: u64 = 1_000_000;
+/// Maximum number of validation issues returned by [`validate_chart_json`].
+const MAX_VALIDATION_ISSUES: usize = 50;
 
 /// What a field's value must look like.
 #[derive(Clone, Copy)]
@@ -55,6 +57,8 @@ pub(crate) enum Kind {
     /// JSON `null`.
     Null,
     String,
+    /// A registered theme name (or `""` for the default theme).
+    Theme,
     /// A `"YYYY-MM-DD"` date string.
     Date,
     /// A string accepted by [`Color::parse`].
@@ -217,7 +221,7 @@ static ANIMATION_FIELDS: &[Field] = &[
 
 /// The fields every chart shares (`ChartBase`).
 pub(crate) static BASE_FIELDS: &[Field] = &[
-    f("theme", Kind::String),
+    f("theme", Kind::Theme),
     f("width", Kind::Size),
     f("height", Kind::Size),
     f("x", Kind::Number),
@@ -617,7 +621,7 @@ static CELL_STYLE_FIELDS: &[Field] = &[
 ];
 /// The table chart does not embed `ChartBase`, so this is its full field set.
 pub(crate) static TABLE_FIELDS: &[Field] = &[
-    f("theme", Kind::String),
+    f("theme", Kind::Theme),
     f("width", Kind::Size),
     f("height", Kind::Size),
     f("x", Kind::Number),
@@ -668,7 +672,7 @@ pub(crate) static TABLE_FIELDS: &[Field] = &[
 #[cfg_attr(not(feature = "mermaid"), allow(dead_code))]
 pub(crate) static MERMAID_FIELDS: &[Field] = &[
     f("source", Kind::String),
-    f("theme", Kind::String),
+    f("theme", Kind::Theme),
     f("width", Kind::Size),
     f("height", Kind::Size),
     f("x", Kind::Number),
@@ -724,7 +728,7 @@ pub(crate) static WATERFALL_FIELDS: &[Field] = &[
 ];
 
 pub(crate) static MULTI_FIELDS: &[Field] = &[
-    f("theme", Kind::String),
+    f("theme", Kind::Theme),
     f("margin", Kind::Margin),
     f("gap", Kind::Number),
     f("background_color", Kind::Color),
@@ -746,13 +750,42 @@ pub(crate) static CHILD_CHART_FIELDS: &[Field] = &[
 /// (and ignored) everywhere so such documents can be passed through as is.
 static ENVELOPE_FIELDS: &[Field] = &[f("type", Kind::String), f("quality", Kind::Number)];
 
+/// One validation issue reported by [`validate_chart_json`].
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+#[non_exhaustive]
+pub struct ValidationIssue {
+    /// Machine-readable issue category (`"unknown_field"`, `"invalid_type"`,
+    /// `"invalid_enum"`, `"out_of_range"`, `"invalid_color"`,
+    /// `"unknown_theme"`, `"missing_required"`, `"mermaid_syntax"`, …).
+    pub code: &'static str,
+    /// Dotted/indexed field path (e.g. `"series_list[0].lable_show"`), or `""`
+    /// for the root options object.
+    pub path: String,
+    /// Human-readable diagnostic message (matching `Error::Params`).
+    pub message: String,
+    /// Expected value shape or valid options, when applicable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expected: Option<String>,
+    /// Suggested replacement path when an unknown key looks like a typo.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub suggestion: Option<String>,
+    /// 1-based source line number for Mermaid syntax errors.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub line: Option<usize>,
+}
+
 /// Checks a chart's JSON options against the given field tables: unknown
 /// keys, wrongly typed values, unknown enum values and out-of-range sizes
 /// are errors. `null` is accepted for any known key and means "not set".
 pub(crate) fn validate(value: &serde_json::Value, tables: &[&[Field]]) -> Result<()> {
     let mut tables = tables.to_vec();
     tables.push(ENVELOPE_FIELDS);
-    validate_object(value, &tables, "")
+    let mut issues = Vec::new();
+    collect_object(value, &tables, "", &mut issues, 1);
+    match issues.into_iter().next() {
+        Some(issue) => Err(params(issue.message)),
+        None => Ok(()),
+    }
 }
 
 fn params(message: String) -> Error {
@@ -763,48 +796,94 @@ fn lookup<'a>(tables: &[&'a [Field]], key: &str) -> Option<&'a Field> {
     tables.iter().flat_map(|t| t.iter()).find(|f| f.name == key)
 }
 
-fn validate_object(value: &serde_json::Value, tables: &[&[Field]], path: &str) -> Result<()> {
+fn collect_object(
+    value: &serde_json::Value,
+    tables: &[&[Field]],
+    path: &str,
+    issues: &mut Vec<ValidationIssue>,
+    limit: usize,
+) {
+    if issues.len() >= limit {
+        return;
+    }
     let Some(obj) = value.as_object() else {
-        return Err(params(format!(
-            "{} must be a JSON object",
-            if path.is_empty() {
-                "the chart options"
-            } else {
-                path
-            }
-        )));
+        issues.push(ValidationIssue {
+            code: "invalid_type",
+            path: path.to_string(),
+            message: format!(
+                "{} must be a JSON object",
+                if path.is_empty() {
+                    "the chart options"
+                } else {
+                    path
+                }
+            ),
+            expected: Some("a JSON object".to_string()),
+            suggestion: None,
+            line: None,
+        });
+        return;
     };
     for (key, v) in obj {
+        if issues.len() >= limit {
+            break;
+        }
         let Some(field) = lookup(tables, key) else {
             let name = join(path, key);
-            let hint = suggest(tables, key)
-                .map(|s| format!(", did you mean `{}`?", join(path, s)))
+            let suggestion = suggest(tables, key).map(|s| join(path, s));
+            let hint = suggestion
+                .as_deref()
+                .map(|s| format!(", did you mean `{s}`?"))
                 .unwrap_or_default();
-            return Err(params(format!("unknown field `{name}`{hint}")));
+            issues.push(ValidationIssue {
+                code: "unknown_field",
+                path: name.clone(),
+                message: format!("unknown field `{name}`{hint}"),
+                expected: None,
+                suggestion,
+                line: None,
+            });
+            continue;
         };
         if v.is_null() {
             continue;
         }
         let name = join(path, key);
         if let Kind::SelfArray = field.kind {
-            validate_array_of(v, tables, &name)?;
+            collect_array_of(v, tables, &name, issues, limit);
         } else {
-            validate_value(v, field.kind, &name)?;
+            collect_value(v, field.kind, &name, issues, limit);
         }
     }
-    Ok(())
 }
 
-fn validate_array_of(v: &serde_json::Value, tables: &[&[Field]], name: &str) -> Result<()> {
+fn collect_array_of(
+    v: &serde_json::Value,
+    tables: &[&[Field]],
+    name: &str,
+    issues: &mut Vec<ValidationIssue>,
+    limit: usize,
+) {
+    if issues.len() >= limit {
+        return;
+    }
     let Some(items) = v.as_array() else {
-        return Err(params(format!(
-            "field `{name}` must be an array of objects"
-        )));
+        issues.push(ValidationIssue {
+            code: "invalid_type",
+            path: name.to_string(),
+            message: format!("field `{name}` must be an array of objects"),
+            expected: Some("an array of objects".to_string()),
+            suggestion: None,
+            line: None,
+        });
+        return;
     };
     for (i, item) in items.iter().enumerate() {
-        validate_object(item, tables, &format!("{name}[{i}]"))?;
+        if issues.len() >= limit {
+            break;
+        }
+        collect_object(item, tables, &format!("{name}[{i}]"), issues, limit);
     }
-    Ok(())
 }
 
 fn join(path: &str, key: &str) -> String {
@@ -829,126 +908,243 @@ fn is_valid_date(s: &str) -> bool {
     parts.next().is_none() && (1..=12).contains(&month) && (1..=31).contains(&day)
 }
 
-fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
-    let expect = |what: &str| Err(params(format!("field `{name}` must be {what}")));
+fn collect_value(
+    v: &serde_json::Value,
+    kind: Kind,
+    name: &str,
+    issues: &mut Vec<ValidationIssue>,
+    limit: usize,
+) {
+    if issues.len() >= limit {
+        return;
+    }
+    let mut push_expect = |code: &'static str, what: String| {
+        if issues.len() < limit {
+            issues.push(ValidationIssue {
+                code,
+                path: name.to_string(),
+                message: format!("field `{name}` must be {what}"),
+                expected: Some(what),
+                suggestion: None,
+                line: None,
+            });
+        }
+    };
     match kind {
-        Kind::Number if v.is_number() => Ok(()),
-        Kind::Number => expect("a number"),
+        Kind::Number if v.is_number() => {}
+        Kind::Number => push_expect("invalid_type", "a number".to_string()),
         Kind::Size => match v.as_f64() {
-            Some(n) if n.is_finite() && n > 0.0 => Ok(()),
-            _ => expect("a positive number"),
+            Some(n) if n.is_finite() && n > 0.0 => {}
+            _ => push_expect(
+                if v.is_number() {
+                    "out_of_range"
+                } else {
+                    "invalid_type"
+                },
+                "a positive number".to_string(),
+            ),
         },
-        Kind::Uint if v.as_u64().is_some() => Ok(()),
-        Kind::Uint => expect("a non-negative integer"),
+        Kind::Uint => {
+            if v.as_u64().is_none() {
+                push_expect(
+                    if v.is_number() {
+                        "out_of_range"
+                    } else {
+                        "invalid_type"
+                    },
+                    "a non-negative integer".to_string(),
+                );
+            }
+        }
         Kind::Count => match v.as_u64() {
-            Some(n) if n <= MAX_COUNT => Ok(()),
-            _ => expect(&format!("an integer between 0 and {MAX_COUNT}")),
+            Some(n) if n <= MAX_COUNT => {}
+            _ => push_expect(
+                if v.is_number() {
+                    "out_of_range"
+                } else {
+                    "invalid_type"
+                },
+                format!("an integer between 0 and {MAX_COUNT}"),
+            ),
         },
         Kind::Index => match v.as_u64() {
-            Some(n) if n <= MAX_INDEX => Ok(()),
-            _ => expect(&format!("an integer between 0 and {MAX_INDEX}")),
+            Some(n) if n <= MAX_INDEX => {}
+            _ => push_expect(
+                if v.is_number() {
+                    "out_of_range"
+                } else {
+                    "invalid_type"
+                },
+                format!("an integer between 0 and {MAX_INDEX}"),
+            ),
         },
         Kind::IntRange(min, max) => match v.as_u64() {
-            Some(n) if (min..=max).contains(&n) => Ok(()),
-            _ => expect(&format!("an integer between {min} and {max}")),
+            Some(n) if (min..=max).contains(&n) => {}
+            _ => push_expect(
+                if v.is_number() {
+                    "out_of_range"
+                } else {
+                    "invalid_type"
+                },
+                format!("an integer between {min} and {max}"),
+            ),
         },
-        Kind::Bool if v.is_boolean() => Ok(()),
-        Kind::Bool => expect("true or false"),
-        Kind::Null if v.is_null() => Ok(()),
-        Kind::Null => expect("null"),
-        Kind::String if v.is_string() => Ok(()),
-        Kind::String => expect("a string"),
+        Kind::Bool if v.is_boolean() => {}
+        Kind::Bool => push_expect("invalid_type", "true or false".to_string()),
+        Kind::Null if v.is_null() => {}
+        Kind::Null => push_expect("invalid_type", "null".to_string()),
+        Kind::String if v.is_string() => {}
+        Kind::String => push_expect("invalid_type", "a string".to_string()),
+        Kind::Theme => match v.as_str() {
+            Some("") => {}
+            Some(s) => {
+                let registered = super::theme::list_theme_name();
+                if !registered.iter().any(|t| t == s) {
+                    let list = registered.join(", ");
+                    issues.push(ValidationIssue {
+                        code: "unknown_theme",
+                        path: name.to_string(),
+                        message: format!("unknown theme `{s}`; registered themes: {list}"),
+                        expected: Some(list),
+                        suggestion: None,
+                        line: None,
+                    });
+                }
+            }
+            None => push_expect("invalid_type", "a string".to_string()),
+        },
         Kind::Date => match v.as_str() {
-            Some(s) if is_valid_date(s) => Ok(()),
-            _ => expect("a date string such as \"2024-01-05\""),
+            Some(s) if is_valid_date(s) => {}
+            _ => push_expect(
+                "invalid_type",
+                "a date string such as \"2024-01-05\"".to_string(),
+            ),
         },
         Kind::Color => match v.as_str().and_then(Color::parse) {
-            Some(_) => Ok(()),
-            None => expect("a color such as \"#345\", \"#ffcc00\" or \"rgba(255,204,0,0.5)\""),
+            Some(_) => {}
+            None => push_expect(
+                if v.is_string() {
+                    "invalid_color"
+                } else {
+                    "invalid_type"
+                },
+                "a color such as \"#345\", \"#ffcc00\" or \"rgba(255,204,0,0.5)\"".to_string(),
+            ),
         },
         Kind::Enum(values) => match v.as_str() {
-            Some(s) if values.iter().any(|x| x.eq_ignore_ascii_case(s)) => Ok(()),
-            _ => expect(&format!("one of {}", values.join(", "))),
+            Some(s) if values.iter().any(|x| x.eq_ignore_ascii_case(s)) => {}
+            _ => push_expect(
+                if v.is_string() {
+                    "invalid_enum"
+                } else {
+                    "invalid_type"
+                },
+                format!("one of {}", values.join(", ")),
+            ),
         },
         Kind::Margin => {
             if v.is_number() {
-                Ok(())
             } else if v.is_object() {
-                validate_object(v, &[MARGIN_FIELDS], name)
+                collect_object(v, &[MARGIN_FIELDS], name, issues, limit);
             } else {
-                expect("a number or {left, top, right, bottom}")
+                push_expect(
+                    "invalid_type",
+                    "a number or {left, top, right, bottom}".to_string(),
+                );
             }
         }
         Kind::Scale => {
             const SCALES: &[&str] = &["linear", "log", "log10", "log2"];
             match v {
                 serde_json::Value::String(s)
-                    if SCALES.iter().any(|x| x.eq_ignore_ascii_case(s)) =>
-                {
-                    Ok(())
-                }
-                serde_json::Value::Object(_) => validate_object(
+                    if SCALES.iter().any(|x| x.eq_ignore_ascii_case(s)) => {}
+                serde_json::Value::String(_) => push_expect(
+                    "invalid_enum",
+                    "\"linear\", \"log\", \"log2\", \"log10\" or {type, base}".to_string(),
+                ),
+                serde_json::Value::Object(_) => collect_object(
                     v,
                     &[&[
                         f("type", Kind::Enum(&["log", "linear"])),
                         f("base", Kind::Size),
                     ]],
                     name,
+                    issues,
+                    limit,
                 ),
-                _ => expect("\"linear\", \"log\", \"log2\", \"log10\" or {type, base}"),
+                _ => push_expect(
+                    "invalid_type",
+                    "\"linear\", \"log\", \"log2\", \"log10\" or {type, base}".to_string(),
+                ),
             }
         }
-        Kind::XValue => match super::params::get_x_value(v) {
-            Some(_) => Ok(()),
-            None => expect("a number or a date such as \"2024-01-05\" or \"2024-01-05 08:30\""),
-        },
+        Kind::XValue => {
+            if super::params::get_x_value(v).is_none() {
+                push_expect(
+                    "invalid_type",
+                    "a number or a date such as \"2024-01-05\" or \"2024-01-05 08:30\"".to_string(),
+                );
+            }
+        }
         Kind::XValues => match v.as_array() {
             Some(items)
                 if items
                     .iter()
-                    .all(|i| i.is_null() || super::params::get_x_value(i).is_some()) =>
-            {
-                Ok(())
-            }
-            _ => expect(
-                "an array of numbers or dates such as \"2024-01-05\" (null for a missing value)",
+                    .all(|i| i.is_null() || super::params::get_x_value(i).is_some()) => {}
+            _ => push_expect(
+                "invalid_type",
+                "an array of numbers or dates such as \"2024-01-05\" (null for a missing value)"
+                    .to_string(),
             ),
         },
         Kind::MarkValue => match v {
-            serde_json::Value::Number(_) => Ok(()),
+            serde_json::Value::Number(_) => {}
             serde_json::Value::String(s)
                 if ["average", "min", "max"]
                     .iter()
-                    .any(|x| x.eq_ignore_ascii_case(s)) =>
-            {
-                Ok(())
-            }
-            _ => expect("a number or one of average, min, max"),
+                    .any(|x| x.eq_ignore_ascii_case(s)) => {}
+            serde_json::Value::String(_) => push_expect(
+                "invalid_enum",
+                "a number or one of average, min, max".into(),
+            ),
+            _ => push_expect(
+                "invalid_type",
+                "a number or one of average, min, max".into(),
+            ),
         },
-        Kind::Any => Ok(()),
-        Kind::Array if v.is_array() => Ok(()),
-        Kind::Array => expect("an array"),
+        Kind::Any => {}
+        Kind::Array if v.is_array() => {}
+        Kind::Array => push_expect("invalid_type", "an array".to_string()),
         Kind::Items(item_kind) => match v.as_array() {
             Some(items) => {
                 for (i, item) in items.iter().enumerate() {
-                    validate_value(item, *item_kind, &format!("{name}[{i}]"))?;
+                    if issues.len() >= limit {
+                        break;
+                    }
+                    collect_value(item, *item_kind, &format!("{name}[{i}]"), issues, limit);
                 }
-                Ok(())
             }
-            None => expect("an array"),
+            None => push_expect("invalid_type", "an array".to_string()),
         },
         Kind::Tuple(kinds) => match v.as_array() {
             Some(items) if items.len() == kinds.len() => {
                 for (i, (item, item_kind)) in items.iter().zip(kinds.iter()).enumerate() {
-                    validate_value(item, *item_kind, &format!("{name}[{i}]"))?;
+                    if issues.len() >= limit {
+                        break;
+                    }
+                    collect_value(item, *item_kind, &format!("{name}[{i}]"), issues, limit);
                 }
-                Ok(())
             }
-            _ => expect(&format!("an array of {} items", kinds.len())),
+            _ => push_expect("invalid_type", format!("an array of {} items", kinds.len())),
         },
         Kind::AnyOf(variants) => {
-            if variants.iter().any(|k| validate_value(v, *k, name).is_ok()) {
-                return Ok(());
+            let matched = variants.iter().any(|k| {
+                let mut probe = Vec::new();
+                collect_value(v, *k, name, &mut probe, 1);
+                probe.is_empty()
+            });
+            if matched {
+                return;
             }
             let preferred = if v.is_object() {
                 variants.iter().find(|k| matches!(k, Kind::Object(_)))
@@ -972,7 +1168,7 @@ fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
                 None
             };
             if let Some(branch) = preferred {
-                validate_value(v, *branch, name)
+                collect_value(v, *branch, name, issues, limit);
             } else {
                 let choices: Vec<&str> = variants
                     .iter()
@@ -989,31 +1185,44 @@ fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
                         _ => "a valid value",
                     })
                     .collect();
-                expect(&choices.join(" or "))
+                push_expect("invalid_type", choices.join(" or "));
             }
         }
         Kind::NumberArray => match v.as_array() {
-            Some(items) if items.iter().all(|i| i.is_number() || i.is_null()) => Ok(()),
-            _ => expect("an array of numbers (null for a missing value)"),
+            Some(items) if items.iter().all(|i| i.is_number() || i.is_null()) => {}
+            _ => push_expect(
+                "invalid_type",
+                "an array of numbers (null for a missing value)".to_string(),
+            ),
         },
         Kind::StringArray => match v.as_array() {
-            Some(items) if items.iter().all(|i| i.is_string()) => Ok(()),
-            _ => expect("an array of strings"),
+            Some(items) if items.iter().all(|i| i.is_string()) => {}
+            _ => push_expect("invalid_type", "an array of strings".to_string()),
         },
         Kind::ColorArray => match v.as_array() {
-            Some(items)
-                if items
+            Some(items) => {
+                let bad: Vec<_> = items
                     .iter()
-                    .all(|i| i.is_null() || i.as_str().and_then(Color::parse).is_some()) =>
-            {
-                Ok(())
+                    .filter(|i| !i.is_null() && i.as_str().and_then(Color::parse).is_none())
+                    .collect();
+                if !bad.is_empty() {
+                    let code = if bad.iter().all(|i| i.is_string()) {
+                        "invalid_color"
+                    } else {
+                        "invalid_type"
+                    };
+                    push_expect(code, "an array of colors (null keeps the default)".into());
+                }
             }
-            _ => expect("an array of colors (null keeps the default)"),
+            None => push_expect(
+                "invalid_type",
+                "an array of colors (null keeps the default)".to_string(),
+            ),
         },
-        Kind::Object(fields) => validate_object(v, &[fields], name),
-        Kind::ArrayOf(fields) => validate_array_of(v, &[fields], name),
-        // Resolved by `validate_object`, which knows the enclosing tables.
-        Kind::SelfArray => Ok(()),
+        Kind::Object(fields) => collect_object(v, &[fields], name, issues, limit),
+        Kind::ArrayOf(fields) => collect_array_of(v, &[fields], name, issues, limit),
+        // Resolved by `collect_object`, which knows the enclosing tables.
+        Kind::SelfArray => {}
     }
 }
 
@@ -1694,12 +1903,6 @@ impl SchemaBuilder<'_> {
     }
 
     fn property(&mut self, field: &Field, path: &str, filter: Filter) -> serde_json::Value {
-        if field.name == "theme" && matches!(field.kind, Kind::String) {
-            return serde_json::json!({
-                "type": "string",
-                "enum": list_themes(),
-            });
-        }
         if self.chart_type == "multi" && field.name == "child_charts" {
             let reference = super::schema_doc::reference();
             let describe = |key: &str| {
@@ -1748,6 +1951,10 @@ impl SchemaBuilder<'_> {
             Kind::Bool => serde_json::json!({"type": "boolean"}),
             Kind::Null => serde_json::json!({"type": "null"}),
             Kind::String => serde_json::json!({"type": "string"}),
+            Kind::Theme => serde_json::json!({
+                "type": "string",
+                "enum": list_themes(),
+            }),
             Kind::Date => serde_json::json!({
                 "type": "string",
                 "format": "date",
@@ -1970,6 +2177,150 @@ pub fn chart_example(chart_type: &str) -> Result<Option<serde_json::Value>> {
     Ok(super::schema_doc::reference()
         .example(chart_type)
         .and_then(|json| serde_json::from_str(json).ok()))
+}
+
+/// Validates a parsed JSON options document for `chart_type` without
+/// rendering, returning all detected issues (up to 50) in a structured list.
+///
+/// An empty `Vec` means the document is valid. Returns `Err(Error::Params)`
+/// when `chart_type` itself is unknown.
+pub fn validate_chart_json(
+    chart_type: &str,
+    options: &serde_json::Value,
+) -> Result<Vec<ValidationIssue>> {
+    let meta = chart_schema_meta(chart_type)?;
+    let mut issues = Vec::new();
+    let mut tables = meta.tables.clone();
+    tables.push(ENVELOPE_FIELDS);
+    collect_object(options, &tables, "", &mut issues, MAX_VALIDATION_ISSUES);
+
+    if let Some(obj) = options.as_object() {
+        for &req in meta.required {
+            if issues.len() >= MAX_VALIDATION_ISSUES {
+                break;
+            }
+            if obj.get(req).is_none_or(|v| v.is_null()) {
+                issues.push(ValidationIssue {
+                    code: "missing_required",
+                    path: req.to_string(),
+                    message: format!("missing required field `{req}`"),
+                    expected: None,
+                    suggestion: None,
+                    line: None,
+                });
+            }
+        }
+    }
+
+    if chart_type == "multi"
+        && let Some(children) = options.get("child_charts").and_then(|v| v.as_array())
+    {
+        for (i, child) in children.iter().enumerate() {
+            if issues.len() >= MAX_VALIDATION_ISSUES {
+                break;
+            }
+            let child_path = format!("child_charts[{i}]");
+            let Some(obj) = child.as_object() else {
+                collect_object(child, &[], &child_path, &mut issues, MAX_VALIDATION_ISSUES);
+                continue;
+            };
+            let child_type = match obj.get("type") {
+                None | Some(serde_json::Value::Null) => "bar",
+                Some(serde_json::Value::String(s)) if s.is_empty() => "bar",
+                Some(serde_json::Value::String(s)) => {
+                    if !CHILD_CHART_TYPES.contains(&s.as_str()) {
+                        let valid = CHILD_CHART_TYPES.join(", ");
+                        issues.push(ValidationIssue {
+                            code: "invalid_enum",
+                            path: join(&child_path, "type"),
+                            message: format!(
+                                "field `{}` must be one of {valid}",
+                                join(&child_path, "type")
+                            ),
+                            expected: Some(valid),
+                            suggestion: None,
+                            line: None,
+                        });
+                        continue;
+                    }
+                    s.as_str()
+                }
+                Some(_) => {
+                    let type_path = join(&child_path, "type");
+                    issues.push(ValidationIssue {
+                        code: "invalid_type",
+                        path: type_path.clone(),
+                        message: format!("field `{type_path}` must be a string"),
+                        expected: Some("a string".to_string()),
+                        suggestion: None,
+                        line: None,
+                    });
+                    continue;
+                }
+            };
+            let child_meta = chart_schema_meta(child_type)?;
+            let mut child_tables = child_meta.tables.clone();
+            child_tables.push(CHILD_CHART_FIELDS);
+            child_tables.push(ENVELOPE_FIELDS);
+            collect_object(
+                child,
+                &child_tables,
+                &child_path,
+                &mut issues,
+                MAX_VALIDATION_ISSUES,
+            );
+            for &req in child_meta.required {
+                if issues.len() >= MAX_VALIDATION_ISSUES {
+                    break;
+                }
+                if obj.get(req).is_none_or(|v| v.is_null()) {
+                    let req_path = join(&child_path, req);
+                    issues.push(ValidationIssue {
+                        code: "missing_required",
+                        path: req_path,
+                        message: format!("missing required field `{req}`"),
+                        expected: None,
+                        suggestion: None,
+                        line: None,
+                    });
+                }
+            }
+            #[cfg(feature = "mermaid")]
+            if child_type == "mermaid"
+                && issues.len() < MAX_VALIDATION_ISSUES
+                && let Some(src) = obj.get("source").and_then(|v| v.as_str())
+                && let Err(Error::Mermaid { line, message }) = super::mermaid::mermaid_validate(src)
+            {
+                issues.push(ValidationIssue {
+                    code: "mermaid_syntax",
+                    path: join(&child_path, "source"),
+                    message,
+                    expected: None,
+                    suggestion: None,
+                    line,
+                });
+            }
+        }
+    }
+
+    #[cfg(feature = "mermaid")]
+    if chart_type == "mermaid"
+        && issues.len() < MAX_VALIDATION_ISSUES
+        && let Some(src) = options.get("source").and_then(|v| v.as_str())
+        && let Err(Error::Mermaid { line, message }) = super::mermaid::mermaid_validate(src)
+    {
+        issues.push(ValidationIssue {
+            code: "mermaid_syntax",
+            path: "source".to_string(),
+            message,
+            expected: None,
+            suggestion: None,
+            line,
+        });
+    }
+
+    issues.truncate(MAX_VALIDATION_ISSUES);
+    Ok(issues)
 }
 
 /// Parses a JSON options document for `chart_type` and renders it directly to
@@ -2233,6 +2584,7 @@ mod tests {
             Kind::Bool => vec![json!(true), json!(false)],
             Kind::Null => vec![Value::Null],
             Kind::String => vec![json!("zz"), json!("bold")],
+            Kind::Theme => vec![json!("dark")],
             Kind::Date => vec![json!("2024-01-15"), json!("2024-02-20")],
             Kind::Color => vec![json!("#123456"), json!("#654321")],
             Kind::Enum(values) => values.iter().map(|v| json!(v)).collect(),

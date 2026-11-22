@@ -124,6 +124,28 @@ impl std::error::Error for Error {
     }
 }
 
+impl Error {
+    /// Returns a short, machine-readable error code for structured callers.
+    pub fn code(&self) -> &'static str {
+        match self {
+            Error::Params { .. } => "params",
+            Error::Json { .. } => "json",
+            Error::FontNotFound { .. } => "font_not_found",
+            Error::ParseFont { .. } => "parse_font",
+            #[cfg(feature = "raster")]
+            Error::Size { .. } => "image_size",
+            #[cfg(feature = "raster")]
+            Error::Raw { .. } => "image_raw",
+            #[cfg(feature = "raster")]
+            Error::Parse { .. } => "svg_parse",
+            #[cfg(feature = "raster")]
+            Error::Image { .. } => "image_encode",
+            #[cfg(feature = "mermaid")]
+            Error::Mermaid { .. } => "mermaid",
+        }
+    }
+}
+
 impl From<serde_json::Error> for Error {
     fn from(value: serde_json::Error) -> Self {
         Error::Json { source: value }

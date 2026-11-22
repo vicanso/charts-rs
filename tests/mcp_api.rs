@@ -484,3 +484,133 @@ fn all_asset_json_fixtures_render_under_validation() {
         "expected >={min_expected} fixtures, tested {tested}"
     );
 }
+
+#[test]
+fn validate_chart_json_collects_all_issues_and_error_codes() {
+    use charts_rs::validate_chart_json;
+
+    // Unknown chart_type returns Err(Error::Params) with stable code.
+    let err = validate_chart_json("nope", &serde_json::json!({})).unwrap_err();
+    assert_eq!(err.code(), "params");
+    assert_eq!(
+        Error::Json {
+            source: serde_json::from_str::<serde_json::Value>("{").unwrap_err()
+        }
+        .code(),
+        "json"
+    );
+    assert_eq!(
+        Error::FontNotFound { name: "x".into() }.code(),
+        "font_not_found"
+    );
+    assert_eq!(
+        Error::ParseFont {
+            message: "x".into()
+        }
+        .code(),
+        "parse_font"
+    );
+    #[cfg(feature = "raster")]
+    {
+        assert_eq!(
+            Error::Size {
+                width: 0,
+                height: 0
+            }
+            .code(),
+            "image_size"
+        );
+        assert_eq!(Error::Raw { size: 0 }.code(), "image_raw");
+    }
+    #[cfg(feature = "mermaid")]
+    assert_eq!(
+        Error::Mermaid {
+            line: Some(1),
+            message: "bad".into()
+        }
+        .code(),
+        "mermaid"
+    );
+
+    // Every valid chart_example passes validation cleanly.
+    for &chart_type in list_chart_types() {
+        let ex = charts_rs::chart_example(chart_type).unwrap().unwrap();
+        let issues = validate_chart_json(chart_type, &ex).unwrap();
+        assert!(issues.is_empty(), "{chart_type}: {issues:?}");
+    }
+
+    // Multiple simultaneous issues are all reported with structured metadata.
+    let doc = serde_json::json!({
+        "theme": "nope",
+        "title_font_color": "red",
+        "series_list": [{"name": "a", "lable_show": true}]
+    });
+    let issues = validate_chart_json("bar", &doc).unwrap();
+    assert_eq!(issues.len(), 3, "{issues:?}");
+    // serde_json::Map iterates keys in sorted order (`series_list`, `theme`, `title_font_color`).
+    assert_eq!(issues[0].code, "unknown_field");
+    assert_eq!(issues[0].path, "series_list[0].lable_show");
+    assert_eq!(
+        issues[0].suggestion.as_deref(),
+        Some("series_list[0].label_show")
+    );
+    assert_eq!(issues[1].code, "unknown_theme");
+    assert_eq!(issues[1].path, "theme");
+    assert!(
+        issues[1]
+            .expected
+            .as_ref()
+            .is_some_and(|e| e.contains("dark"))
+    );
+    assert_eq!(issues[2].code, "invalid_color");
+    assert_eq!(issues[2].path, "title_font_color");
+    let serialized = serde_json::to_value(&issues).unwrap();
+    assert_eq!(serialized.as_array().unwrap().len(), 3);
+
+    // Unknown theme message is deterministic across repeated calls.
+    let m1 = charts_rs::BarChart::from_json(r#"{"theme":"nope"}"#)
+        .unwrap_err()
+        .to_string();
+    let m2 = charts_rs::BarChart::from_json(r#"{"theme":"nope"}"#)
+        .unwrap_err()
+        .to_string();
+    assert_eq!(m1, m2);
+
+    // Multi child validation reports paths under child_charts[i].
+    let multi_issues = validate_chart_json(
+        "multi",
+        &serde_json::json!({
+            "child_charts": [
+                {"type": "bar", "width": -5},
+                {"type": "unknown_kind"}
+            ]
+        }),
+    )
+    .unwrap();
+    assert_eq!(multi_issues.len(), 2, "{multi_issues:?}");
+    assert_eq!(multi_issues[0].code, "out_of_range");
+    assert_eq!(multi_issues[0].path, "child_charts[0].width");
+    assert_eq!(multi_issues[1].code, "invalid_enum");
+    assert_eq!(multi_issues[1].path, "child_charts[1].type");
+}
+
+#[cfg(feature = "mermaid")]
+#[test]
+fn validate_chart_json_checks_mermaid_required_and_syntax() {
+    use charts_rs::validate_chart_json;
+
+    let missing = validate_chart_json("mermaid", &serde_json::json!({})).unwrap();
+    assert_eq!(missing.len(), 1);
+    assert_eq!(missing[0].code, "missing_required");
+    assert_eq!(missing[0].path, "source");
+
+    let syntax = validate_chart_json(
+        "mermaid",
+        &serde_json::json!({"source": "gitGraph\n  commit"}),
+    )
+    .unwrap();
+    assert_eq!(syntax.len(), 1);
+    assert_eq!(syntax[0].code, "mermaid_syntax");
+    assert_eq!(syntax[0].path, "source");
+    assert!(syntax[0].line.is_some());
+}

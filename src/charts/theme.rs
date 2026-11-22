@@ -1169,7 +1169,9 @@ pub fn list_themes() -> &'static [&'static str] {
 
 /// List the theme name
 pub fn list_theme_name() -> Vec<String> {
-    THEME_MAP.load().keys().cloned().collect()
+    let mut names: Vec<String> = THEME_MAP.load().keys().cloned().collect();
+    names.sort_unstable();
+    names
 }
 
 /// Get default theme
