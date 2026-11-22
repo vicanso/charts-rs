@@ -306,6 +306,13 @@ fn walk_properties(
     if let Some(items) = schema.get("items") {
         walk_properties(items, path, visit);
     }
+    for key in ["anyOf", "oneOf", "prefixItems"] {
+        if let Some(arr) = schema.get(key).and_then(|v| v.as_array()) {
+            for item in arr {
+                walk_properties(item, path, visit);
+            }
+        }
+    }
     if let Some(defs) = schema.get("$defs").and_then(|d| d.as_object()) {
         for (name, def) in defs {
             walk_properties(def, &format!("$defs.{name}"), visit);
@@ -402,4 +409,78 @@ fn essential_schema_is_a_small_open_subset_of_the_full_one() {
     assert_eq!(series["additionalProperties"], true);
     assert!(series["properties"]["stack"].is_object());
     assert!(series["properties"].get("mark_lines").is_none());
+}
+
+#[test]
+fn typed_array_schemas_have_element_constraints() {
+    let cal = chart_json_schema("calendar").unwrap();
+    let prefix = cal["properties"]["data"]["items"]["prefixItems"]
+        .as_array()
+        .unwrap();
+    assert_eq!(prefix.len(), 2);
+    assert_eq!(prefix[0]["format"], "date");
+    assert_eq!(prefix[1]["type"], "number");
+
+    let map = chart_json_schema("map").unwrap();
+    let map_prefix = map["properties"]["data"]["items"]["prefixItems"]
+        .as_array()
+        .unwrap();
+    assert_eq!(map_prefix.len(), 2);
+    assert_eq!(map_prefix[0]["type"], "string");
+    assert_eq!(map_prefix[1]["type"], "number");
+
+    let box_plot = chart_json_schema("box_plot").unwrap();
+    let box_prefix =
+        box_plot["properties"]["box_series"]["items"]["properties"]["data"]["items"]["prefixItems"]
+            .as_array()
+            .unwrap();
+    assert_eq!(box_prefix.len(), 5);
+
+    let table = chart_json_schema("table").unwrap();
+    let idx_prefix =
+        table["properties"]["cell_styles"]["items"]["properties"]["indexes"]["prefixItems"]
+            .as_array()
+            .unwrap();
+    assert_eq!(idx_prefix.len(), 2);
+}
+
+#[test]
+fn all_asset_json_fixtures_render_under_validation() {
+    let asset_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("asset");
+    let mut tested = 0usize;
+    for entry in std::fs::read_dir(&asset_dir).unwrap() {
+        let dir = entry.unwrap().path();
+        if !dir.is_dir() {
+            continue;
+        }
+        let Some(dir_name) = dir.file_name().and_then(|n| n.to_str()) else {
+            continue;
+        };
+        let Some(chart_type) = dir_name.strip_suffix("_chart") else {
+            continue;
+        };
+        #[cfg(not(feature = "mermaid"))]
+        if chart_type == "mermaid" {
+            continue;
+        }
+        for file_entry in std::fs::read_dir(&dir).unwrap() {
+            let path = file_entry.unwrap().path();
+            let Some(fname) = path.file_name().and_then(|n| n.to_str()) else {
+                continue;
+            };
+            if !fname.ends_with(".json") || fname.ends_with(".geo.json") {
+                continue;
+            }
+            let json = std::fs::read_to_string(&path).unwrap();
+            let svg = render_chart_from_json(chart_type, &json)
+                .unwrap_or_else(|e| panic!("{}: render failed: {e}", path.display()));
+            assert!(svg.starts_with("<svg"), "{}", path.display());
+            tested += 1;
+        }
+    }
+    let min_expected = if cfg!(feature = "mermaid") { 60 } else { 40 };
+    assert!(
+        tested >= min_expected,
+        "expected >={min_expected} fixtures, tested {tested}"
+    );
 }

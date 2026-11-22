@@ -52,9 +52,15 @@ pub(crate) enum Kind {
     /// A non-negative integer up to [`MAX_INDEX`].
     Index,
     Bool,
+    /// JSON `null`.
+    Null,
     String,
+    /// A `"YYYY-MM-DD"` date string.
+    Date,
     /// A string accepted by [`Color::parse`].
     Color,
+    /// A non-negative integer in the inclusive range.
+    IntRange(u64, u64),
     /// One of the listed values, matched case-insensitively.
     Enum(&'static [&'static str]),
     /// A margin: a number applied to all sides, or `{left, top, right, bottom}`.
@@ -66,6 +72,12 @@ pub(crate) enum Kind {
     Any,
     /// Any JSON array.
     Array,
+    /// An array whose items match the given kind.
+    Items(&'static Kind),
+    /// A fixed-length array matching each positional kind.
+    Tuple(&'static [Kind]),
+    /// A value matching at least one of the listed kinds.
+    AnyOf(&'static [Kind]),
     /// An array of numbers; `null` marks a missing point.
     NumberArray,
     /// An array of strings.
@@ -108,11 +120,10 @@ pub(crate) static MARGIN_FIELDS: &[Field] = &[
     f("bottom", Kind::Number),
 ];
 
+const SYMBOL_TYPES: &[&str] = &["circle", "rect", "square", "triangle", "diamond", "none"];
+
 static SYMBOL_FIELDS: &[Field] = &[
-    f(
-        "type",
-        Kind::Enum(&["circle", "rect", "square", "triangle", "diamond", "none"]),
-    ),
+    f("type", Kind::Enum(SYMBOL_TYPES)),
     f("size", Kind::Number),
     f("radius", Kind::Number),
     f("color", Kind::Color),
@@ -301,13 +312,22 @@ pub(crate) static BAR_FIELDS: &[Field] = &[
     f("series_label_position", Kind::Enum(&["top", "inside"])),
 ];
 
+static BOX_FIVE: Kind = Kind::Tuple(&[
+    Kind::Number,
+    Kind::Number,
+    Kind::Number,
+    Kind::Number,
+    Kind::Number,
+]);
 static BOX_SERIES_FIELDS: &[Field] = &[
     f("name", Kind::String),
     f("index", Kind::Index),
-    f("data", Kind::Array),
+    f("data", Kind::Items(&BOX_FIVE)),
 ];
 pub(crate) static BOX_PLOT_FIELDS: &[Field] = &[f("box_series", Kind::ArrayOf(BOX_SERIES_FIELDS))];
 
+static DOW_LABEL: Kind = Kind::IntRange(0, 6);
+static CALENDAR_DATUM: Kind = Kind::Tuple(&[Kind::Date, Kind::Number]);
 pub(crate) static CALENDAR_FIELDS: &[Field] = &[
     f("start_date", Kind::String),
     f("end_date", Kind::String),
@@ -323,8 +343,8 @@ pub(crate) static CALENDAR_FIELDS: &[Field] = &[
     f("cell_gap", Kind::Number),
     f("month_label_height", Kind::Number),
     f("week_label_width", Kind::Number),
-    f("show_dow_labels", Kind::Array),
-    f("data", Kind::Array),
+    f("show_dow_labels", Kind::Items(&DOW_LABEL)),
+    f("data", Kind::Items(&CALENDAR_DATUM)),
 ];
 
 pub(crate) static CANDLESTICK_FIELDS: &[Field] = &[
@@ -400,6 +420,7 @@ pub(crate) static GRAPH_FIELDS: &[Field] = &[
     f("categories", Kind::StringArray),
 ];
 
+static HEATMAP_DATUM: Kind = Kind::Tuple(&[Kind::Index, Kind::Number]);
 static HEATMAP_SERIES_FIELDS: &[Field] = &[
     f("min", Kind::Number),
     f("max", Kind::Number),
@@ -411,17 +432,18 @@ static HEATMAP_SERIES_FIELDS: &[Field] = &[
     f("steps", Kind::Count),
     f("thresholds", Kind::NumberArray),
     f("symbol", Kind::Enum(&["rect", "circle"])),
-    f("data", Kind::Array),
+    f("data", Kind::Items(&HEATMAP_DATUM)),
 ];
 pub(crate) static HEATMAP_FIELDS: &[Field] = &[
     f("y_axis_data", Kind::StringArray),
     f("series", Kind::Object(HEATMAP_SERIES_FIELDS)),
 ];
 
+static MAP_DATUM: Kind = Kind::Tuple(&[Kind::String, Kind::Number]);
 pub(crate) static MAP_FIELDS: &[Field] = &[
     f("geo_json", Kind::Any),
     f("name_property", Kind::String),
-    f("data", Kind::Array),
+    f("data", Kind::Items(&MAP_DATUM)),
     f("projection", Kind::Enum(&["mercator", "equirectangular"])),
     f("min", Kind::Number),
     f("max", Kind::Number),
@@ -454,8 +476,17 @@ pub(crate) static BULLET_FIELDS: &[Field] = &[
     f("label_show", Kind::Bool),
 ];
 
+static POINT_2D: Kind = Kind::Tuple(&[Kind::Number, Kind::Number]);
+static COORDS_PAIR: Kind = Kind::Tuple(&[POINT_2D, POINT_2D]);
+static FLOW_LINE_FIELDS: &[Field] = &[
+    f("from", POINT_2D),
+    f("to", POINT_2D),
+    f("coords", COORDS_PAIR),
+    f("value", Kind::Number),
+    f("name", Kind::String),
+];
 pub(crate) static LINES_FIELDS: &[Field] = &[
-    f("lines", Kind::Array),
+    f("lines", Kind::ArrayOf(FLOW_LINE_FIELDS)),
     f("curveness", Kind::Number),
     f("min_width", Kind::Number),
     f("max_width", Kind::Number),
@@ -537,12 +568,13 @@ static MARGINAL_FIELDS: &[Field] = &[
     f("bar_gap", Kind::Number),
 ];
 static CONTOUR_FIELDS: &[Field] = &[f("levels", Kind::Count), f("grid_size", Kind::Count)];
+static SCATTER_SYMBOL: Kind = Kind::AnyOf(&[Kind::Enum(SYMBOL_TYPES), Kind::Object(SYMBOL_FIELDS)]);
 pub(crate) static SCATTER_FIELDS: &[Field] = &[
     f("series_symbol_sizes", Kind::NumberArray),
     f("bubble", Kind::Bool),
     f("bubble_min_size", Kind::Number),
     f("bubble_max_size", Kind::Number),
-    f("series_symbols", Kind::Array),
+    f("series_symbols", Kind::Items(&SCATTER_SYMBOL)),
     f("marginal", Kind::Object(MARGINAL_FIELDS)),
     f("contour", Kind::Object(CONTOUR_FIELDS)),
     f("x_axis_config", Kind::Object(Y_AXIS_FIELDS)),
@@ -568,8 +600,17 @@ pub(crate) static SUNBURST_FIELDS: &[Field] = &[
     f("level_thickness", Kind::NumberArray),
 ];
 
+static TABLE_CELL: Kind = Kind::AnyOf(&[
+    Kind::String,
+    Kind::Number,
+    Kind::Bool,
+    Kind::Null,
+    Kind::NumberArray,
+]);
+static TABLE_ROW: Kind = Kind::Items(&TABLE_CELL);
+static CELL_INDEXES: Kind = Kind::Tuple(&[Kind::Index, Kind::Index]);
 static CELL_STYLE_FIELDS: &[Field] = &[
-    f("indexes", Kind::Array),
+    f("indexes", CELL_INDEXES),
     f("font_color", Kind::Color),
     f("font_weight", Kind::String),
     f("background_color", Kind::Color),
@@ -597,7 +638,7 @@ pub(crate) static TABLE_FIELDS: &[Field] = &[
     f("sub_title_margin", Kind::Margin),
     f("sub_title_align", Kind::Enum(ALIGN)),
     f("sub_title_height", Kind::Number),
-    f("data", Kind::Array),
+    f("data", Kind::Items(&TABLE_ROW)),
     f("spans", Kind::NumberArray),
     f("text_aligns", Kind::StringArray),
     f("sparkline_type", Kind::Enum(&["line", "bar"])),
@@ -669,6 +710,8 @@ pub(crate) static TREEMAP_FIELDS: &[Field] = &[
     f("series_data", Kind::ArrayOf(TREE_NODE_FIELDS)),
 ];
 
+static WATERFALL_DATUM: Kind =
+    Kind::AnyOf(&[Kind::Number, Kind::Tuple(&[Kind::Number, Kind::Bool])]);
 pub(crate) static WATERFALL_FIELDS: &[Field] = &[
     f("label_show", Kind::Bool),
     f("connector_line_show", Kind::Bool),
@@ -677,7 +720,7 @@ pub(crate) static WATERFALL_FIELDS: &[Field] = &[
     f("increase_color", Kind::Color),
     f("decrease_color", Kind::Color),
     f("total_color", Kind::Color),
-    f("data", Kind::Array),
+    f("data", Kind::Items(&WATERFALL_DATUM)),
 ];
 
 pub(crate) static MULTI_FIELDS: &[Field] = &[
@@ -772,6 +815,20 @@ fn join(path: &str, key: &str) -> String {
     }
 }
 
+fn is_valid_date(s: &str) -> bool {
+    let mut parts = s.split('-');
+    let Some(_year) = parts.next().and_then(|p| p.parse::<i32>().ok()) else {
+        return false;
+    };
+    let Some(month) = parts.next().and_then(|p| p.parse::<u32>().ok()) else {
+        return false;
+    };
+    let Some(day) = parts.next().and_then(|p| p.parse::<u32>().ok()) else {
+        return false;
+    };
+    parts.next().is_none() && (1..=12).contains(&month) && (1..=31).contains(&day)
+}
+
 fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
     let expect = |what: &str| Err(params(format!("field `{name}` must be {what}")));
     match kind {
@@ -791,10 +848,20 @@ fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
             Some(n) if n <= MAX_INDEX => Ok(()),
             _ => expect(&format!("an integer between 0 and {MAX_INDEX}")),
         },
+        Kind::IntRange(min, max) => match v.as_u64() {
+            Some(n) if (min..=max).contains(&n) => Ok(()),
+            _ => expect(&format!("an integer between {min} and {max}")),
+        },
         Kind::Bool if v.is_boolean() => Ok(()),
         Kind::Bool => expect("true or false"),
+        Kind::Null if v.is_null() => Ok(()),
+        Kind::Null => expect("null"),
         Kind::String if v.is_string() => Ok(()),
         Kind::String => expect("a string"),
+        Kind::Date => match v.as_str() {
+            Some(s) if is_valid_date(s) => Ok(()),
+            _ => expect("a date string such as \"2024-01-05\""),
+        },
         Kind::Color => match v.as_str().and_then(Color::parse) {
             Some(_) => Ok(()),
             None => expect("a color such as \"#345\", \"#ffcc00\" or \"rgba(255,204,0,0.5)\""),
@@ -861,6 +928,70 @@ fn validate_value(v: &serde_json::Value, kind: Kind, name: &str) -> Result<()> {
         Kind::Any => Ok(()),
         Kind::Array if v.is_array() => Ok(()),
         Kind::Array => expect("an array"),
+        Kind::Items(item_kind) => match v.as_array() {
+            Some(items) => {
+                for (i, item) in items.iter().enumerate() {
+                    validate_value(item, *item_kind, &format!("{name}[{i}]"))?;
+                }
+                Ok(())
+            }
+            None => expect("an array"),
+        },
+        Kind::Tuple(kinds) => match v.as_array() {
+            Some(items) if items.len() == kinds.len() => {
+                for (i, (item, item_kind)) in items.iter().zip(kinds.iter()).enumerate() {
+                    validate_value(item, *item_kind, &format!("{name}[{i}]"))?;
+                }
+                Ok(())
+            }
+            _ => expect(&format!("an array of {} items", kinds.len())),
+        },
+        Kind::AnyOf(variants) => {
+            if variants.iter().any(|k| validate_value(v, *k, name).is_ok()) {
+                return Ok(());
+            }
+            let preferred = if v.is_object() {
+                variants.iter().find(|k| matches!(k, Kind::Object(_)))
+            } else if v.is_array() {
+                variants.iter().find(|k| {
+                    matches!(
+                        k,
+                        Kind::Tuple(_)
+                            | Kind::Items(_)
+                            | Kind::NumberArray
+                            | Kind::StringArray
+                            | Kind::ColorArray
+                            | Kind::XValues
+                    )
+                })
+            } else if v.is_string() {
+                variants
+                    .iter()
+                    .find(|k| matches!(k, Kind::Enum(_) | Kind::Date | Kind::Color))
+            } else {
+                None
+            };
+            if let Some(branch) = preferred {
+                validate_value(v, *branch, name)
+            } else {
+                let choices: Vec<&str> = variants
+                    .iter()
+                    .map(|k| match k {
+                        Kind::String => "a string",
+                        Kind::Number => "a number",
+                        Kind::Bool => "true/false",
+                        Kind::Null => "null",
+                        Kind::NumberArray => "an array of numbers",
+                        Kind::Tuple(_) => "a tuple array",
+                        Kind::Items(_) => "an array",
+                        Kind::Object(_) => "an object",
+                        Kind::Enum(_) => "an allowed name",
+                        _ => "a valid value",
+                    })
+                    .collect();
+                expect(&choices.join(" or "))
+            }
+        }
         Kind::NumberArray => match v.as_array() {
             Some(items) if items.iter().all(|i| i.is_number() || i.is_null()) => Ok(()),
             _ => expect("an array of numbers (null for a missing value)"),
@@ -1200,7 +1331,10 @@ fn margin_schema() -> serde_json::Value {
     for field in MARGIN_FIELDS {
         props.insert(
             field.name.to_string(),
-            serde_json::json!({"type": "number"}),
+            serde_json::json!({
+                "type": "number",
+                "description": format!("{} margin in pixels.", field.name),
+            }),
         );
     }
     serde_json::json!({
@@ -1222,8 +1356,16 @@ fn scale_schema() -> serde_json::Value {
             {
                 "type": "object",
                 "properties": {
-                    "type": {"type": "string", "enum": ["log", "linear"]},
-                    "base": {"type": "number", "exclusiveMinimum": 0}
+                    "type": {
+                        "type": "string",
+                        "enum": ["log", "linear"],
+                        "description": "Axis scale type."
+                    },
+                    "base": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "description": "Logarithm base when `type` is \"log\"."
+                    }
                 },
                 "additionalProperties": false
             }
@@ -1512,8 +1654,15 @@ impl SchemaBuilder<'_> {
                 continue;
             };
             let mut prop = self.property(field, &path, inner);
+            let row = reference
+                .row(self.chart_type, parent, field.name)
+                .or_else(|| {
+                    (tables.len() == 1 && std::ptr::eq(tables[0], SYMBOL_FIELDS))
+                        .then(|| reference.row("base", "series_list.symbol", field.name))
+                        .flatten()
+                });
             if let Some(obj) = prop.as_object_mut()
-                && let Some(row) = reference.row(self.chart_type, parent, field.name)
+                && let Some(row) = row
             {
                 let mut description = super::schema_doc::plain(row.description);
                 match parse_default(row.default) {
@@ -1578,8 +1727,12 @@ impl SchemaBuilder<'_> {
                 }
             });
         }
-        let color = serde_json::json!({"type": "string", "pattern": COLOR_PATTERN});
-        match field.kind {
+        self.kind_schema(field.kind, path, filter)
+    }
+
+    fn kind_schema(&mut self, kind: Kind, path: &str, filter: Filter) -> serde_json::Value {
+        let color = || serde_json::json!({"type": "string", "pattern": COLOR_PATTERN});
+        match kind {
             Kind::Number => serde_json::json!({"type": "number"}),
             Kind::Size => serde_json::json!({"type": "number", "exclusiveMinimum": 0}),
             Kind::Uint => serde_json::json!({"type": "integer", "minimum": 0}),
@@ -1589,14 +1742,47 @@ impl SchemaBuilder<'_> {
             Kind::Index => {
                 serde_json::json!({"type": "integer", "minimum": 0, "maximum": MAX_INDEX})
             }
+            Kind::IntRange(min, max) => {
+                serde_json::json!({"type": "integer", "minimum": min, "maximum": max})
+            }
             Kind::Bool => serde_json::json!({"type": "boolean"}),
+            Kind::Null => serde_json::json!({"type": "null"}),
             Kind::String => serde_json::json!({"type": "string"}),
-            Kind::Color => color,
+            Kind::Date => serde_json::json!({
+                "type": "string",
+                "format": "date",
+                "pattern": r"^\d{4}-\d{1,2}-\d{1,2}$"
+            }),
+            Kind::Color => color(),
             Kind::Enum(values) => serde_json::json!({"type": "string", "enum": values}),
             Kind::Margin => margin_schema(),
             Kind::Scale => scale_schema(),
             Kind::Any => serde_json::json!({}),
             Kind::Array => serde_json::json!({"type": "array"}),
+            Kind::Items(item) => serde_json::json!({
+                "type": "array",
+                "items": self.kind_schema(*item, path, filter),
+            }),
+            Kind::Tuple(items) => {
+                let prefix: Vec<_> = items
+                    .iter()
+                    .map(|k| self.kind_schema(*k, path, filter))
+                    .collect();
+                serde_json::json!({
+                    "type": "array",
+                    "prefixItems": prefix,
+                    "minItems": items.len(),
+                    "maxItems": items.len(),
+                    "items": false,
+                })
+            }
+            Kind::AnyOf(variants) => {
+                let schemas: Vec<_> = variants
+                    .iter()
+                    .map(|k| self.kind_schema(*k, path, filter))
+                    .collect();
+                serde_json::json!({"anyOf": schemas})
+            }
             Kind::NumberArray => serde_json::json!({
                 "type": "array",
                 "items": {"type": ["number", "null"]}
@@ -1607,7 +1793,7 @@ impl SchemaBuilder<'_> {
             }),
             Kind::ColorArray => serde_json::json!({
                 "type": "array",
-                "items": {"anyOf": [color, {"type": "null"}]}
+                "items": {"anyOf": [color(), {"type": "null"}]}
             }),
             Kind::MarkValue => serde_json::json!({
                 "oneOf": [
@@ -2026,6 +2212,9 @@ mod tests {
             ("heatmap", "series.data") => json!([[[0, 1], [1, 5]]]),
             ("scatter", "series_symbols") => json!([["triangle", "diamond"]]),
             ("lines", "lines") => json!([[{"from": [0, 0], "to": [1, 1], "value": 2}]]),
+            ("lines", "lines.from") => json!([[2, 3]]),
+            ("lines", "lines.to") => json!([[4, 5]]),
+            ("lines", "lines.coords") => json!([[[2, 3], [4, 5]]]),
             ("lines", "geo_json") => json!([{"type": "Feature", "properties": {"name": "a"},
                 "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1]]]}}]),
             ("map", "data") => json!([[["a", 3]]]),
@@ -2040,8 +2229,11 @@ mod tests {
             Kind::Number => vec![json!(7.25), json!(0.75)],
             Kind::Size => vec![json!(123.5), json!(77.5)],
             Kind::Uint | Kind::Count | Kind::Index => vec![json!(3), json!(7)],
+            Kind::IntRange(min, max) => vec![json!(min), json!(max)],
             Kind::Bool => vec![json!(true), json!(false)],
+            Kind::Null => vec![Value::Null],
             Kind::String => vec![json!("zz"), json!("bold")],
+            Kind::Date => vec![json!("2024-01-15"), json!("2024-02-20")],
             Kind::Color => vec![json!("#123456"), json!("#654321")],
             Kind::Enum(values) => values.iter().map(|v| json!(v)).collect(),
             Kind::Margin => vec![json!(9), json!(4)],
@@ -2051,6 +2243,20 @@ mod tests {
             Kind::XValues | Kind::NumberArray => vec![json!([1.5, 2.5])],
             Kind::StringArray => vec![json!(["p", "q"])],
             Kind::ColorArray => vec![json!(["#123456"])],
+            Kind::Items(item) => samples(chart, path, *item)
+                .into_iter()
+                .map(|v| json!([v]))
+                .collect(),
+            Kind::Tuple(items) => vec![Value::Array(
+                items
+                    .iter()
+                    .map(|k| samples(chart, path, *k).into_iter().next().unwrap())
+                    .collect(),
+            )],
+            Kind::AnyOf(variants) => variants
+                .iter()
+                .flat_map(|k| samples(chart, path, *k))
+                .collect(),
             Kind::Any | Kind::Array | Kind::Object(_) | Kind::ArrayOf(_) | Kind::SelfArray => {
                 panic!("{chart}: no sample for {path}")
             }
@@ -2077,6 +2283,10 @@ mod tests {
             "tasks" => vec![json!({"name": "t", "start": 1, "end": 5})],
             "indicators" => vec![json!({"name": "i", "max": 10})],
             "series_data" => vec![json!({"name": "n", "value": 1})],
+            "lines" => vec![
+                json!({"from": [0, 0], "to": [1, 1], "value": 1}),
+                json!({"coords": [[0, 0], [1, 1]], "value": 1}),
+            ],
             _ => vec![json!({})],
         }
     }
@@ -2348,6 +2558,76 @@ mod tests {
                     "{chart}: `{path}` is not a key"
                 );
             }
+        }
+    }
+
+    #[test]
+    fn typed_arrays_reject_invalid_elements_with_path() {
+        let cases: &[(&[&[Field]], &str, &str)] = &[
+            (
+                &[BASE_FIELDS, CALENDAR_FIELDS],
+                r#"{"data": [["x", "y"]]}"#,
+                "data[0][0]",
+            ),
+            (
+                &[BASE_FIELDS, CALENDAR_FIELDS],
+                r#"{"data": [["2024-13-01", 1]]}"#,
+                "data[0][0]",
+            ),
+            (
+                &[BASE_FIELDS, CALENDAR_FIELDS],
+                r#"{"show_dow_labels": [7]}"#,
+                "show_dow_labels[0]",
+            ),
+            (
+                &[BASE_FIELDS, WATERFALL_FIELDS],
+                r#"{"data": [[10, "yes"]]}"#,
+                "data[0][1]",
+            ),
+            (
+                &[BASE_FIELDS, MAP_FIELDS],
+                r#"{"data": [[7, 1]]}"#,
+                "data[0][0]",
+            ),
+            (
+                &[BASE_FIELDS, HEATMAP_FIELDS],
+                r#"{"series": {"data": [[-1, 5]]}}"#,
+                "series.data[0][0]",
+            ),
+            (
+                &[BASE_FIELDS, BOX_PLOT_FIELDS],
+                r#"{"box_series": [{"name": "a", "data": [[1, 2, 3]]}]}"#,
+                "box_series[0].data[0]",
+            ),
+            (
+                &[BASE_FIELDS, LINES_FIELDS],
+                r#"{"lines": [{"from": [1], "to": [0, 0]}]}"#,
+                "lines[0].from",
+            ),
+            (&[TABLE_FIELDS], r#"{"data": [[{"bad": 1}]]}"#, "data[0][0]"),
+            (
+                &[TABLE_FIELDS],
+                r#"{"cell_styles": [{"indexes": [1]}]}"#,
+                "cell_styles[0].indexes",
+            ),
+            (
+                &[BASE_FIELDS, SCATTER_FIELDS],
+                r#"{"series_symbols": ["star"]}"#,
+                "series_symbols[0]",
+            ),
+            (
+                &[BASE_FIELDS, SCATTER_FIELDS],
+                r#"{"series_symbols": [{"tpye": "circle"}]}"#,
+                "series_symbols[0].tpye",
+            ),
+        ];
+        for (tables, json, expected_path) in cases {
+            let err =
+                check(json, tables).expect_err(&format!("expected validation failure for {json}"));
+            assert!(
+                err.contains(expected_path),
+                "for {json}: expected `{expected_path}` in `{err}`"
+            );
         }
     }
 }

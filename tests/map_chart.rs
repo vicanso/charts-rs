@@ -304,7 +304,7 @@ fn map_from_json() {
         "label_show": true,
         "visual_map_show": false,
         "steps": 2,
-        "data": [["W", 2], ["E", 9], ["no value"], [7, 1]],
+        "data": [["W", 2], ["E", 9]],
         "geo_json": {"type": "FeatureCollection", "features": [
             {"type": "Feature", "properties": {"code": "W", "name": "West"},
              "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}},
@@ -315,6 +315,11 @@ fn map_from_json() {
         ]}
     }"##;
     let chart = MapChart::from_json(json).unwrap();
+    for bad_data in [r#"{"data": [["no value"]]}"#, r#"{"data": [[7, 1]]}"#] {
+        let err = MapChart::from_json(bad_data).unwrap_err();
+        assert!(matches!(err, Error::Params { .. }), "{err:?}");
+        assert!(err.to_string().contains("data[0]"), "{err}");
+    }
     assert_eq!(
         vec!["W", "E", "X"],
         chart

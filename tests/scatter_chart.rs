@@ -1,6 +1,6 @@
 mod common;
 
-use charts_rs::ScatterChart;
+use charts_rs::{Error, ScatterChart};
 
 #[test]
 fn scatter_chart() {
@@ -80,12 +80,20 @@ fn scatter_series_symbols() {
     assert_eq!(4, names.matches("<polygon").count());
     assert_eq!(0, names.matches(r#" r="3""#).count());
 
-    // The size is `series_symbol_sizes`, not the one of the symbol; an
-    // entry that is no symbol is skipped.
+    // The size is `series_symbol_sizes`, not the one of the symbol;
+    // non-symbol entries are rejected by schema validation.
     let plain = chart(r#"["rect", "diamond"]"#);
-    let sized = chart(r#"[{"type": "rect", "size": 7}, null, 5, "diamond"]"#);
+    let sized = chart(r#"[{"type": "rect", "size": 7}, "diamond"]"#);
     assert_eq!(plain, sized);
     assert_ne!(plain, names);
+    for bad in [
+        r#"{"series_symbols": [null]}"#,
+        r#"{"series_symbols": [5]}"#,
+    ] {
+        let err = ScatterChart::from_json(bad).unwrap_err();
+        assert!(matches!(err, Error::Params { .. }), "{err:?}");
+        assert!(err.to_string().contains("series_symbols[0]"), "{err}");
+    }
     // A color of its own instead of the color of the series.
     let colored = chart(r##"[{"type": "rect", "color": "#123456"}, "diamond"]"##);
     assert_eq!(2, colored.matches(r##"fill="#123456""##).count());

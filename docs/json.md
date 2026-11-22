@@ -478,7 +478,7 @@ A text is placed by its distances from the edges of the chart, in pixels. With a
 | `bubble` | boolean | `false` | Bubble chart: the series data are `[x, y, size]` triples and the area of each marker follows its size. |
 | `bubble_min_size` | number | `4` | Radius of the smallest bubble. |
 | `bubble_max_size` | number | `30` | Radius of the largest bubble. |
-| `series_symbols` | array |  | Marker of each series: its shape as a string (`"circle"`, `"triangle"`, `"rect"`, `"diamond"`), or an object with that `type` and a fill `color`. The size is `series_symbol_sizes`. By default the series cycle through the four shapes, in the color of the series. |
+| `series_symbols` | (string / object)[] |  | Marker of each series: its shape as a string (`"circle"`, `"triangle"`, `"rect"`, `"diamond"`), or an object with that `type` and a fill `color`. The size is `series_symbol_sizes`. By default the series cycle through the four shapes, in the color of the series. |
 | `x_axis_config` | object |  | Configuration of the x axis, which is a value axis here. By default the same as the first of `y_axis_configs`. |
 | `regression` | `"linear"` / `"exponential"` / `"logarithmic"` / `"polynomial"` |  | Draws the curve of this kind that fits the points of each series best (by least squares), in the color of the series. An exponential curve is fitted to the points above 0, a logarithmic one to the points right of 0. |
 | `regression_order` | integer 0–1000 | `2` | Order of a `polynomial` regression, from 1 to 6. |
@@ -577,7 +577,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `sub_title_margin` | margin |  | Margin around the sub-title. |
 | `sub_title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the sub-title. |
 | `sub_title_height` | number | `20` | Height reserved for the sub-title row. |
-| `data` | array |  | The rows of the table, each an array of cells; the first row is the header. A cell is a string, a number (written as it is) or `null` (empty); an array of numbers is a sparkline, drawn in place of text: a small line of the values, from the lowest at the bottom of the cell to the highest at the top, with a dot on the last of them. A `null` in it leaves a gap. |
+| `data` | (string / number / boolean / null / number[])[][] |  | The rows of the table, each an array of cells; the first row is the header. A cell is a string, a number or boolean (written as it is) or `null` (empty); an array of numbers is a sparkline, drawn in place of text: a small line of the values, from the lowest at the bottom of the cell to the highest at the top, with a dot on the last of them. A `null` in it leaves a gap. |
 | `spans` | number[] |  | Width of each column: values below 1 are shares of the table width, larger ones pixels; the other columns share the rest. |
 | `text_aligns` | string[] |  | Alignment of the text of each column: `"left"`, `"center"` or `"right"`. |
 | `sparkline_type` | `"line"` / `"bar"` | `"line"` | What the sparklines are drawn as: a line, or a bar for each value, from 0. |
@@ -607,7 +607,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `indexes` | array |  | The cell as `[row, column]`, counted from 0 with the header as row 0. |
+| `indexes` | [integer, integer] |  | The cell as `[row, column]`, counted from 0 with the header as row 0. |
 | `font_color` | color |  | Font color of the cell. |
 | `font_weight` | string |  | Font weight of the cell. |
 | `background_color` | color |  | Background color of the cell. |
@@ -657,7 +657,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `steps` | integer 0–1000 | `0` | Number of classes of the same width the values are sorted into, each drawn in one color, instead of a continuous scale; `0` and `1` keep it continuous. With as many `colors` as steps, every class has one of them. |
 | `thresholds` | number[] |  | The values where one class ends and the next begins; takes the place of `steps`. A value below the first one is in the first class. |
 | `symbol` | `"rect"` / `"circle"` | `"rect"` | Fills the cells (`rect`), or draws a circle in each cell that has a value, its area following the value — a punch card. The circles of a row lie on a line; they carry no label. |
-| `data` | array |  | The cells as `[index, value]`, where `index` = y index × number of x categories + x index. |
+| `data` | [integer, number][] |  | The cells as `[index, value]`, where `index` = y index × number of x categories + x index. |
 
 <!-- example: heatmap -->
 
@@ -715,7 +715,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `increase_color` | color | theme | Color of the bars that add to the total. |
 | `decrease_color` | color | `#EE6666` | Color of the bars that take from the total. |
 | `total_color` | color | theme | Color of the bars that show the running total. |
-| `data` | array |  | One entry per category: a number (the change), or `[value, is_total]`, where a total shows the sum so far instead of a change. |
+| `data` | (number / [number, boolean])[] |  | One entry per category: a number (the change), or `[value, is_total]`, where a total shows the sum so far instead of a change. |
 
 <!-- example: waterfall -->
 
@@ -748,8 +748,8 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `cell_gap` | number | `3` | Gap between the squares in pixels. |
 | `month_label_height` | number | `20` | Height of the row of month names above the grid. |
 | `week_label_width` | number | `30` | Width of the column of weekday names left of the grid. |
-| `show_dow_labels` | array | `[1, 3, 5]` | The weekdays that are named, as numbers from 0 (Sunday) to 6 (Saturday). |
-| `data` | array |  | The values: `["YYYY-MM-DD", value]` for each day. |
+| `show_dow_labels` | (integer 0–6)[] | `[1, 3, 5]` | The weekdays that are named, as numbers from 0 (Sunday) to 6 (Saturday). |
+| `data` | [date, number][] |  | The values: `["YYYY-MM-DD", value]` for each day. |
 
 <!-- example: calendar -->
 
@@ -896,7 +896,7 @@ The names are written in the font of the x axis, and the scale below each row in
 |---|---|---|---|
 | `name` | string |  | Name of the series, shown in the legend. |
 | `index` | integer ≥ 0 |  | Position in the color palette; by default the position of the series. |
-| `data` | array |  | One box per category: `[min, q1, median, q3, max]`. |
+| `data` | [number, number, number, number, number][] |  | One box per category: `[min, q1, median, q3, max]`. |
 
 <!-- example: box_plot -->
 
@@ -1320,7 +1320,7 @@ The names are written in the font of the x axis, and the scale below each row in
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `lines` | array |  | The flows. Each is `{ "from": [x, y], "to": [x, y], "value": number, "name": "" }`, or `{ "coords": [[x, y], [x, y]], "value": number }`. On a map, `x` is longitude and `y` is latitude. |
+| `lines` | object[] |  | The flows. See [`lines[]`](#lines-1). On a map, `x` is longitude and `y` is latitude. |
 | `curveness` | number | `0` | How far a line bends, as a fraction of its length, to the left of the direction it travels. `0` is straight. Clamped to -1…1. |
 | `min_width` | number | `1` | Width of the smallest value. `0` means 1. |
 | `max_width` | number | `6` | Width of the largest value. `0` means 6. |
@@ -1328,6 +1328,18 @@ The names are written in the font of the x axis, and the scale below each row in
 | `geo_json` | object |  | The regions under the lines: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries. Without it the chart is a plane. |
 | `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region. |
 | `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane, the same way as a map. Ignored when there is no `geo_json`. |
+
+### `lines[]`
+
+<!-- keys: lines.lines -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `from` | [number, number] |  | Start point `[x, y]`, used when `coords` is omitted. |
+| `to` | [number, number] |  | End point `[x, y]`, used when `coords` is omitted. |
+| `coords` | [[number, number], [number, number]] |  | Start and end points `[[x1, y1], [x2, y2]]`; takes precedence over `from` and `to`. |
+| `value` | number | `1` | Flow weight controlling line width. |
+| `name` | string | `""` | Label shown in tooltips. |
 
 <!-- example: lines -->
 
@@ -1352,7 +1364,7 @@ The names are written in the font of the x axis, and the scale below each row in
 |---|---|---|---|
 | `geo_json` | object |  | The regions: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries, with longitudes and latitudes in degrees. Other geometries are left out. |
 | `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region; without it, the `id` of the feature. |
-| `data` | array |  | The values: `["name of the region", value]` for each region that has one. |
+| `data` | [string, number][] |  | The values: `["name of the region", value]` for each region that has one. |
 | `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane: Mercator keeps the shapes (and cuts the map off at 85° north and south), equirectangular takes them as they are. |
 | `min` | number | `0` | Value at the start of the scale. With `min` and `max` both `0` the scale goes from the smallest value to the largest. |
 | `max` | number | `0` | Value at the end of the scale. |
