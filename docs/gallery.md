@@ -222,60 +222,63 @@ every option is described in the [JSON reference](./json.md).
 ## Mermaid
 
 <p align="center">
-  <img src="../asset/image/mermaid-flowchart.png" width="49%" alt="Mermaid flowchart">
-  <img src="../asset/image/mermaid-sequence.png" width="49%" alt="Mermaid sequence diagram">
+  <img src="../asset/image/mermaid-flowchart.png" width="98%" alt="Mermaid flowchart">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-flowchart-v11-shapes.png" width="98%" alt="Mermaid flowchart v11 shapes">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-class-parallel-relations.png" width="98%" alt="Mermaid class diagram with parallel relations">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-mindmap.png" width="49%" alt="Mermaid mindmap">
+  <img src="../asset/image/mermaid-er-lr-self-loop.png" width="49%" alt="Mermaid LR ER diagram with self-loop">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-gantt.png" width="46%" alt="Mermaid gantt chart">
+  <img src="../asset/image/mermaid-gantt-workdays-vert.png" width="52%" alt="Mermaid gantt workdays and vertical markers">
 </p>
 
 <p align="center">
   <img src="../asset/image/mermaid-pie.png" width="49%" alt="Mermaid pie chart">
-  <img src="../asset/image/mermaid-gantt.png" width="49%" alt="Mermaid gantt chart">
+  <img src="../asset/image/mermaid-pie-many-slices.png" width="49%" alt="Mermaid pie chart with many slices">
 </p>
 
 <p align="center">
-  <img src="../asset/image/mermaid-sankey.png" width="49%" alt="Mermaid sankey diagram">
   <img src="../asset/image/mermaid-xychart.png" width="49%" alt="Mermaid xychart">
+  <img src="../asset/image/mermaid-xychart-horizontal.png" width="49%" alt="Mermaid horizontal xychart">
 </p>
 
 <p align="center">
-  <img src="../asset/image/mermaid-state.png" width="49%" alt="Mermaid state diagram">
-  <img src="../asset/image/mermaid-class.png" width="49%" alt="Mermaid class diagram">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-er.png" width="49%" alt="Mermaid ER diagram">
-  <img src="../asset/image/mermaid-mindmap.png" width="49%" alt="Mermaid mindmap">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-quadrant.png" width="49%" alt="Mermaid quadrant chart">
-  <img src="../asset/image/mermaid-radar.png" width="49%" alt="Mermaid radar chart">
+  <img src="../asset/image/mermaid-xychart-numeric.png" width="50%" alt="Mermaid numeric xychart with legend">
+  <img src="../asset/image/mermaid-sankey.png" width="48%" alt="Mermaid sankey diagram">
 </p>
 
 <p align="center">
   <img src="../asset/image/mermaid-treemap.png" width="49%" alt="Mermaid treemap">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-flowchart-v11-shapes.png" width="49%" alt="Mermaid flowchart v11 shapes">
-  <img src="../asset/image/mermaid-flowchart-nested-subgraphs.png" width="49%" alt="Mermaid flowchart nested subgraphs">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-sequence-lifecycle.png" width="49%" alt="Mermaid sequence lifecycle">
-  <img src="../asset/image/mermaid-gantt-workdays-vert.png" width="49%" alt="Mermaid gantt workdays and vertical markers">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-xychart-horizontal.png" width="49%" alt="Mermaid horizontal xychart">
-  <img src="../asset/image/mermaid-xychart-numeric.png" width="49%" alt="Mermaid numeric xychart with legend">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-er-lr-self-loop.png" width="49%" alt="Mermaid LR ER diagram with self-loop">
-  <img src="../asset/image/mermaid-class-parallel-relations.png" width="49%" alt="Mermaid class diagram with parallel relations">
-</p>
-
-<p align="center">
   <img src="../asset/image/mermaid-treemap-nested.png" width="49%" alt="Mermaid nested treemap">
-  <img src="../asset/image/mermaid-pie-many-slices.png" width="49%" alt="Mermaid pie chart with many slices">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-radar.png" width="49%" alt="Mermaid radar chart">
+  <img src="../asset/image/mermaid-class.png" width="49%" alt="Mermaid class diagram">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-quadrant.png" width="51%" alt="Mermaid quadrant chart">
+  <img src="../asset/image/mermaid-sequence-lifecycle.png" width="47%" alt="Mermaid sequence lifecycle">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-flowchart-nested-subgraphs.png" width="52%" alt="Mermaid flowchart nested subgraphs">
+  <img src="../asset/image/mermaid-sequence.png" width="46%" alt="Mermaid sequence diagram">
+</p>
+
+<p align="center">
+  <img src="../asset/image/mermaid-er.png" width="56%" alt="Mermaid ER diagram">
+  <img src="../asset/image/mermaid-state.png" width="31%" alt="Mermaid state diagram">
 </p>
