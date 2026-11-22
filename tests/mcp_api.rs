@@ -216,10 +216,17 @@ fn mermaid_capabilities_matches_renderer_and_serializes_to_json() {
 
     let caps = mermaid_capabilities();
     let json = serde_json::to_value(&caps).expect("MermaidCapabilities must serialize to JSON");
+    assert_eq!(caps.supported_diagrams.len(), 13);
+    assert_eq!(caps.diagram_aliases.len(), 7);
     assert!(
         json["supported_diagrams"]
             .as_array()
-            .is_some_and(|a| !a.is_empty())
+            .is_some_and(|a| a.len() == 13)
+    );
+    assert!(
+        json["diagram_aliases"]
+            .as_array()
+            .is_some_and(|a| a.len() == 7)
     );
     assert!(
         json["unsupported_diagrams"]
@@ -239,8 +246,19 @@ fn mermaid_capabilities_matches_renderer_and_serializes_to_json() {
             .is_some_and(|a| !a.is_empty())
     );
 
-    // Every advertised supported diagram keyword must validate on a minimal diagram.
-    for &kw in caps.supported_diagrams {
+    for &(_, canonical) in caps.diagram_aliases {
+        assert!(
+            caps.supported_diagrams.contains(&canonical),
+            "alias canonical target `{canonical}` not in supported_diagrams"
+        );
+    }
+
+    // Every advertised canonical diagram keyword and alias must validate on a minimal diagram.
+    for &kw in caps
+        .supported_diagrams
+        .iter()
+        .chain(caps.diagram_aliases.iter().map(|(alias, _)| alias))
+    {
         let src = match kw {
             "flowchart" | "graph" => format!("{kw} LR\n  A --> B"),
             "sequenceDiagram" => "sequenceDiagram\n  Alice->>Bob: Hi".to_string(),

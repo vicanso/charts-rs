@@ -2,7 +2,7 @@
 
 [English](./README.md)
 
-**不依赖浏览器的 Rust 图表库。** 几行 Rust 代码或一份 JSON，就能生成 29 种图表的 SVG（开启可选 `mermaid` feature 后还可纯 Rust 渲染 13 种 Mermaid 图表），也可以导出 PNG、JPEG、WebP、AVIF，风格参考 Apache ECharts。
+**不依赖浏览器的 Rust 图表库。** 几行 Rust 代码或一份 JSON，就能生成 28 种图表及 `MultiChart` 拼图容器的 SVG（共 29 个默认类型名；开启可选 `mermaid` feature 后还可纯 Rust 渲染 13 种 Mermaid 图表，共 30 个类型名），也可以导出 PNG、JPEG、WebP、AVIF，风格参考 Apache ECharts。
 
 [![Crates.io][crates-badge]][crates-url]
 [![Apache licensed][apache-badge]][apache-url]
@@ -41,7 +41,7 @@
 
 - **只需要一个 crate。** 不用无头浏览器，也不用 Node.js：生成图表就是一次函数调用，返回 SVG。适合在服务端生成报表、邮件、机器人消息和看板。
 - **快。** 生成 SVG 远低于 1 毫秒，生成 PNG 只需几毫秒（见[性能](#性能)）。
-- **29 种图表 + 13 种 Mermaid 图表**，从柱状图、折线图、饼图，到蜡烛图、热力图、桑基图、甘特图、地图和流向线；开启可选 `mermaid` feature 即可零额外依赖纯 SVG 渲染 Mermaid，还可以把多个图表拼在一张图里。
+- **28 种图表 + `MultiChart` + 13 种 Mermaid 图表**，从柱状图、折线图、饼图，到蜡烛图、热力图、桑基图、甘特图、地图和流向线；开启可选 `mermaid` feature 即可零额外依赖纯 SVG 渲染 Mermaid，还可以把多个图表拼在一张图里。
 - **Rust 或 JSON。** 可以用类型化的 API，也可以传入参数相同的 JSON。每个参数都有[文档](./docs/json-zh.md)并经过校验：写错参数名会报错并给出提示，而不是悄悄被忽略。
 - **主题与字体。** 内置十种主题，可自定义；支持加载自己的字体（TTF、OTF、TTC），包括中日韩字体，占用的内存只有字体文件本身大小。
 

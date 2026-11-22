@@ -561,10 +561,13 @@ pub fn mermaid_to_svg_with_theme(source: &str, theme: &str) -> Result<String> {
 /// servers, editors, and LLM prompts.
 #[cfg_attr(docsrs, doc(cfg(feature = "mermaid")))]
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+#[non_exhaustive]
 pub struct MermaidCapabilities {
-    /// All supported Mermaid diagram header keywords and aliases across the 13
-    /// implemented diagram types.
+    /// Canonical diagram header keywords for the 13 implemented Mermaid
+    /// diagram types.
     pub supported_diagrams: &'static [&'static str],
+    /// Supported alias -> canonical diagram header keyword pairs.
+    pub diagram_aliases: &'static [(&'static str, &'static str)],
     /// Common Mermaid diagram types that are not implemented, listed explicitly
     /// so callers and LLMs do not attempt to generate them.
     pub unsupported_diagrams: &'static [&'static str],
@@ -586,25 +589,27 @@ pub fn mermaid_capabilities() -> MermaidCapabilities {
     MermaidCapabilities {
         supported_diagrams: &[
             "flowchart",
-            "graph",
             "sequenceDiagram",
-            "stateDiagram",
             "stateDiagram-v2",
             "classDiagram",
-            "classDiagram-v2",
             "erDiagram",
             "mindmap",
             "quadrantChart",
             "pie",
             "gantt",
             "sankey-beta",
-            "sankey",
             "xychart-beta",
-            "xychart",
             "radar-beta",
-            "radar",
             "treemap-beta",
-            "treemap",
+        ],
+        diagram_aliases: &[
+            ("graph", "flowchart"),
+            ("stateDiagram", "stateDiagram-v2"),
+            ("classDiagram-v2", "classDiagram"),
+            ("sankey", "sankey-beta"),
+            ("xychart", "xychart-beta"),
+            ("radar", "radar-beta"),
+            ("treemap", "treemap-beta"),
         ],
         unsupported_diagrams: &[
             "gitGraph",

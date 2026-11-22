@@ -60,7 +60,7 @@ fn reference_examples_render() {
         ("docs/json-zh.md", include_str!("../docs/json-zh.md")),
     ] {
         let examples = examples(page);
-        // One for each of the 30 chart types (29 core + mermaid).
+        // One for each of the 30 JSON chart types (28 core charts + multi + mermaid).
         let mut charts: Vec<&str> = examples.iter().map(|(chart, _)| *chart).collect();
         charts.sort_unstable();
         charts.dedup();

@@ -2,8 +2,7 @@
 
 [中文](./README-zh.md)
 
-**Charts for Rust, without a browser.** `charts-rs` draws 29 kinds of charts
-— plus 13 Mermaid diagram types with the optional `mermaid` feature —
+**Charts for Rust, without a browser.** `charts-rs` draws 28 chart types — plus `MultiChart` composition (29 default type names) and 13 Mermaid diagram types with the optional `mermaid` feature —
 as SVG, and as PNG, JPEG, WebP or AVIF, from a few lines of Rust or from a
 JSON document, in the manner of Apache ECharts.
 
@@ -35,7 +34,7 @@ JSON document, in the manner of Apache ECharts.
 </p>
 
 <p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>All 29 chart types &amp; Mermaid diagrams →</b></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>All 28 chart types, MultiChart &amp; Mermaid diagrams →</b></a>
   &nbsp;·&nbsp;
   <a href="https://charts.npmtrend.com/"><b>Try it in the browser →</b></a>
 </p>
@@ -47,7 +46,7 @@ JSON document, in the manner of Apache ECharts.
   and dashboards that are rendered on a server.
 - **Fast.** An SVG in well under a millisecond, a PNG in a few milliseconds
   ([benchmark](#benchmark)).
-- **29 chart types + 13 Mermaid diagrams**, from bars, lines and pies to
+- **28 chart types + `MultiChart` + 13 Mermaid diagrams**, from bars, lines and pies to
   candlesticks, heatmaps, sankey, gantt charts and maps — plus pure-Rust,
   zero-dependency Mermaid rendering under the optional `mermaid` feature — and
   several of them in one picture.

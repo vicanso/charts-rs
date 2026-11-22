@@ -14,10 +14,11 @@
 #![warn(missing_docs)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-//! Charts supports twenty-nine chart types: bar, horizontal bar, line, lines, pie,
-//! radar, scatter, candlestick, table, heatmap, funnel, waterfall, multi
-//! chart, calendar, gauge, bullet, treemap, box plot, sunburst, sankey, tree,
-//! graph, parallel, theme river, histogram, polar bar, chord, gantt and map.
+//! Charts supports twenty-eight chart types plus `MultiChart` composition (29
+//! default type names): bar, horizontal bar, line, lines, pie, radar, scatter,
+//! candlestick, table, heatmap, funnel, waterfall, multi chart, calendar,
+//! gauge, bullet, treemap, box plot, sunburst, sankey, tree, graph, parallel,
+//! theme river, histogram, polar bar, chord, gantt and map.
 //!
 //! With the optional `mermaid` feature enabled (zero extra dependencies), it
 //! also renders 13 Mermaid diagram types (`flowchart` / `graph`,

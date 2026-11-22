@@ -1358,9 +1358,10 @@ const CHILD_CHART_TYPES: &[&str] = &[
 
 /// Returns all supported chart type names in alphabetical order.
 ///
-/// Includes the 29 core chart types (including `"multi"`), plus `"mermaid"`
-/// when the `mermaid` feature is enabled. Every returned name is accepted by
-/// [`chart_json_schema`] and [`render_chart_from_json`].
+/// Includes the 28 core chart types plus `"multi"` composition (29 default
+/// names), and `"mermaid"` (30 total) when the `mermaid` feature is enabled.
+/// Every returned name is accepted by [`chart_json_schema`] and
+/// [`render_chart_from_json`].
 pub fn list_chart_types() -> &'static [&'static str] {
     CHART_TYPES
 }
