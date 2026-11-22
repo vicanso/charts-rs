@@ -614,3 +614,31 @@ fn validate_chart_json_checks_mermaid_required_and_syntax() {
     assert_eq!(syntax[0].path, "source");
     assert!(syntax[0].line.is_some());
 }
+
+#[test]
+fn chart_catalog_and_render_chart_from_value() {
+    use charts_rs::{chart_catalog, render_chart_from_value};
+
+    let catalog = chart_catalog();
+    let types = list_chart_types();
+    assert_eq!(catalog.len(), types.len());
+
+    let serialized = serde_json::to_value(&catalog).unwrap();
+    assert_eq!(serialized.as_array().unwrap().len(), types.len());
+
+    for (info, &expected_name) in catalog.iter().zip(types.iter()) {
+        assert_eq!(info.name, expected_name);
+        assert!(!info.title.is_empty(), "{expected_name}");
+        assert!(!info.description.is_empty(), "{expected_name}");
+        let example = info
+            .example
+            .as_ref()
+            .unwrap_or_else(|| panic!("{expected_name}: missing example"));
+        let svg_from_value = render_chart_from_value(info.name, example).unwrap();
+        let svg_from_json = render_chart_from_json(info.name, &example.to_string()).unwrap();
+        assert_eq!(svg_from_value, svg_from_json, "{expected_name}");
+        assert!(svg_from_value.starts_with("<svg"), "{expected_name}");
+    }
+
+    assert!(render_chart_from_value("nope", &serde_json::json!({})).is_err());
+}

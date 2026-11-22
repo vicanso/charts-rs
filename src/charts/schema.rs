@@ -1915,7 +1915,7 @@ impl SchemaBuilder<'_> {
                 "type": "array",
                 "items": {
                     "type": "object",
-                    "description": "The options of a chart of `type`: get its schema with chart_json_schema(type).",
+                    "description": "Options of a child chart of `type` (defaults to `bar`). Fetch that child type's schema with chart_json_schema_with(type, SchemaLevel::Essential) (or Full).",
                     "properties": {
                         "type": {
                             "type": "string",
@@ -2365,6 +2365,56 @@ pub fn render_chart_from_json(chart_type: &str, json: &str) -> Result<String> {
         "waterfall" => WaterfallChart::from_json(json)?.svg(),
         _ => Err(unknown_chart_type(chart_type)),
     }
+}
+
+/// Renders a pre-parsed JSON options value for `chart_type` directly to SVG.
+///
+/// Equivalent to serializing `options` and passing it to
+/// [`render_chart_from_json`]. Returns [`Error::Params`] listing all valid
+/// chart types when `chart_type` is unknown.
+pub fn render_chart_from_value(chart_type: &str, options: &serde_json::Value) -> Result<String> {
+    chart_schema_meta(chart_type)?;
+    let json = serde_json::to_string(options)?;
+    render_chart_from_json(chart_type, &json)
+}
+
+/// Catalog entry describing a chart type for discovery tools such as MCP
+/// `list_chart_types`.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+#[non_exhaustive]
+pub struct ChartInfo {
+    /// Identifier passed to [`chart_json_schema_with`] and [`render_chart_from_json`].
+    pub name: &'static str,
+    /// Short human-readable title.
+    pub title: &'static str,
+    /// Concise description of the chart type.
+    pub description: String,
+    /// Minimal renderable JSON example from `docs/json.md`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub example: Option<serde_json::Value>,
+}
+
+/// Returns metadata and an example for every supported chart type in the same
+/// alphabetical order as [`list_chart_types`].
+pub fn chart_catalog() -> Vec<ChartInfo> {
+    let reference = super::schema_doc::reference();
+    list_chart_types()
+        .iter()
+        .map(|&name| {
+            let meta = chart_schema_meta(name).expect("listed chart type has metadata");
+            let description = reference
+                .intro(name)
+                .map(super::schema_doc::plain)
+                .unwrap_or_else(|| meta.description.to_string());
+            let example = chart_example(name).ok().flatten();
+            ChartInfo {
+                name,
+                title: meta.title,
+                description,
+                example,
+            }
+        })
+        .collect()
 }
 
 #[cfg(test)]
