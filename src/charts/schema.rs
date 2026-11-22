@@ -21,6 +21,16 @@
 
 use super::color::Color;
 use super::error::{Error, Result};
+use super::theme::list_themes;
+use super::{
+    BarChart, BoxPlotChart, BulletChart, CalendarChart, CandlestickChart, ChordChart, FunnelChart,
+    GanttChart, GaugeChart, GraphChart, HeatmapChart, HistogramChart, HorizontalBarChart,
+    LineChart, LinesChart, MapChart, MultiChart, ParallelChart, PieChart, PolarBarChart,
+    RadarChart, SankeyChart, ScatterChart, SunburstChart, TableChart, ThemeRiverChart, TreeChart,
+    TreemapChart, WaterfallChart,
+};
+#[cfg(feature = "mermaid")]
+use super::MermaidChart;
 
 /// Largest accepted split / tick count. Each tick costs a grid line and a
 /// label, so a huge value would only produce a huge SVG.
@@ -902,6 +912,593 @@ fn edit_distance(a: &str, b: &str) -> usize {
         std::mem::swap(&mut prev, &mut cur);
     }
     prev[b.len()]
+}
+
+/// All supported chart type names accepted by [`chart_json_schema`] and
+/// [`render_chart_from_json`].
+const CHART_TYPES: &[&str] = &[
+    "bar",
+    "box_plot",
+    "bullet",
+    "calendar",
+    "candlestick",
+    "chord",
+    "funnel",
+    "gantt",
+    "gauge",
+    "graph",
+    "heatmap",
+    "histogram",
+    "horizontal_bar",
+    "line",
+    "lines",
+    "map",
+    #[cfg(feature = "mermaid")]
+    "mermaid",
+    "multi",
+    "parallel",
+    "pie",
+    "polar_bar",
+    "radar",
+    "sankey",
+    "scatter",
+    "sunburst",
+    "table",
+    "theme_river",
+    "tree",
+    "treemap",
+    "waterfall",
+];
+
+/// All chart types that can be nested inside a `multi` chart's `child_charts`.
+const CHILD_CHART_TYPES: &[&str] = &[
+    "bar",
+    "box_plot",
+    "bullet",
+    "calendar",
+    "candlestick",
+    "chord",
+    "funnel",
+    "gantt",
+    "gauge",
+    "graph",
+    "heatmap",
+    "histogram",
+    "horizontal_bar",
+    "line",
+    "lines",
+    "map",
+    #[cfg(feature = "mermaid")]
+    "mermaid",
+    "parallel",
+    "pie",
+    "polar_bar",
+    "radar",
+    "sankey",
+    "scatter",
+    "sunburst",
+    "table",
+    "theme_river",
+    "tree",
+    "treemap",
+    "waterfall",
+];
+
+/// Returns all supported chart type names in alphabetical order.
+///
+/// Includes the 29 core chart types (including `"multi"`), plus `"mermaid"`
+/// when the `mermaid` feature is enabled. Every returned name is accepted by
+/// [`chart_json_schema`] and [`render_chart_from_json`].
+pub fn list_chart_types() -> &'static [&'static str] {
+    CHART_TYPES
+}
+
+fn unknown_chart_type(chart_type: &str) -> Error {
+    params(format!(
+        "unknown chart type `{chart_type}`; valid types: {}",
+        list_chart_types().join(", ")
+    ))
+}
+
+struct ChartSchemaMeta {
+    title: &'static str,
+    description: &'static str,
+    tables: Vec<&'static [Field]>,
+    required: &'static [&'static str],
+}
+
+fn chart_schema_meta(chart_type: &str) -> Result<ChartSchemaMeta> {
+    let meta = match chart_type {
+        "bar" => ChartSchemaMeta {
+            title: "Bar chart options",
+            description: "Vertical bar chart (supports grouped, stacked, percent-stacked, bar+line mixin, and error bars).",
+            tables: vec![BASE_FIELDS, BAR_FIELDS],
+            required: &[],
+        },
+        "box_plot" => ChartSchemaMeta {
+            title: "Box plot chart options",
+            description: "Box-and-whisker plot showing distribution quartiles and outliers via `box_series`.",
+            tables: vec![BASE_FIELDS, BOX_PLOT_FIELDS],
+            required: &[],
+        },
+        "bullet" => ChartSchemaMeta {
+            title: "Bullet chart options",
+            description: "Compact KPI bullet chart comparing actual values against targets and qualitative ranges via `bullets`.",
+            tables: vec![BASE_FIELDS, BULLET_FIELDS],
+            required: &[],
+        },
+        "calendar" => ChartSchemaMeta {
+            title: "Calendar heatmap chart options",
+            description: "GitHub-style daily calendar heatmap over a date range (`start_date`, `end_date`, `data`).",
+            tables: vec![BASE_FIELDS, CALENDAR_FIELDS],
+            required: &[],
+        },
+        "candlestick" => ChartSchemaMeta {
+            title: "Candlestick chart options",
+            description: "Financial OHLC candlestick or bar chart (`series_list` with 4-value `[open, close, low, high]` chunks).",
+            tables: vec![BASE_FIELDS, CANDLESTICK_FIELDS],
+            required: &[],
+        },
+        "chord" => ChartSchemaMeta {
+            title: "Chord diagram options",
+            description: "Circular chord diagram showing flows between `nodes` via weighted `links`.",
+            tables: vec![BASE_FIELDS, CHORD_FIELDS],
+            required: &[],
+        },
+        "funnel" => ChartSchemaMeta {
+            title: "Funnel chart options",
+            description: "Conversion funnel chart displaying staged values from `series_list`.",
+            tables: vec![BASE_FIELDS, FUNNEL_FIELDS],
+            required: &[],
+        },
+        "gantt" => ChartSchemaMeta {
+            title: "Gantt chart options",
+            description: "Project schedule timeline rendering `tasks` with start/end dates, rows, progress, and an optional `now` marker.",
+            tables: vec![BASE_FIELDS, GANTT_FIELDS],
+            required: &[],
+        },
+        "gauge" => ChartSchemaMeta {
+            title: "Gauge chart options",
+            description: "Dial/arc gauge chart with configurable min/max, thresholds, pointer, and optional multi-ring mode.",
+            tables: vec![BASE_FIELDS, GAUGE_FIELDS],
+            required: &[],
+        },
+        "graph" => ChartSchemaMeta {
+            title: "Graph chart options",
+            description: "Network graph with force-directed or circular layout defined by `nodes` and `links`.",
+            tables: vec![BASE_FIELDS, GRAPH_FIELDS],
+            required: &[],
+        },
+        "heatmap" => ChartSchemaMeta {
+            title: "Heatmap chart options",
+            description: "2D matrix heatmap or punch-card chart configured via `x_axis_data`, `y_axis_data`, and `series`.",
+            tables: vec![BASE_FIELDS, HEATMAP_FIELDS],
+            required: &[],
+        },
+        "histogram" => ChartSchemaMeta {
+            title: "Histogram chart options",
+            description: "Frequency distribution histogram with configurable `bin_count`, `bin_width`, and `percent` mode.",
+            tables: vec![BASE_FIELDS, HISTOGRAM_FIELDS],
+            required: &[],
+        },
+        "horizontal_bar" => ChartSchemaMeta {
+            title: "Horizontal bar chart options",
+            description: "Horizontal bar chart with category labels on the y-axis and values on the x-axis.",
+            tables: vec![BASE_FIELDS, HORIZONTAL_BAR_FIELDS],
+            required: &[],
+        },
+        "line" => ChartSchemaMeta {
+            title: "Line chart options",
+            description: "Line and area chart supporting smooth curves, step lines, confidence bands, time/value x-axes, and mark lines/points/areas.",
+            tables: vec![BASE_FIELDS],
+            required: &[],
+        },
+        "lines" => ChartSchemaMeta {
+            title: "Lines flow chart options",
+            description: "Origin-destination curved flow lines, optionally overlaid on a `geo_json` map.",
+            tables: vec![BASE_FIELDS, LINES_FIELDS],
+            required: &[],
+        },
+        "map" => ChartSchemaMeta {
+            title: "Choropleth map chart options",
+            description: "Geographic choropleth map rendered from a `geo_json` document and region `data`.",
+            tables: vec![BASE_FIELDS, MAP_FIELDS],
+            required: &[],
+        },
+        #[cfg(feature = "mermaid")]
+        "mermaid" => ChartSchemaMeta {
+            title: "Mermaid diagram options",
+            description: "Pure-Rust Mermaid diagram renderer supporting 13 diagram types from a Mermaid `source` string.",
+            tables: vec![MERMAID_FIELDS],
+            required: &["source"],
+        },
+        "multi" => ChartSchemaMeta {
+            title: "Multi-chart composition options",
+            description: "Composes multiple `child_charts` vertically or at explicit `(x, y)` coordinates into a single SVG.",
+            tables: vec![MULTI_FIELDS],
+            required: &[],
+        },
+        "parallel" => ChartSchemaMeta {
+            title: "Parallel coordinates chart options",
+            description: "Multi-dimensional parallel coordinates chart plotting `series_list` across `x_axis_data` dimensions.",
+            tables: vec![BASE_FIELDS],
+            required: &[],
+        },
+        "pie" => ChartSchemaMeta {
+            title: "Pie / donut chart options",
+            description: "Pie, donut, half-pie, nested-ring, or Nightingale rose chart.",
+            tables: vec![BASE_FIELDS, PIE_FIELDS],
+            required: &[],
+        },
+        "polar_bar" => ChartSchemaMeta {
+            title: "Polar bar chart options",
+            description: "Radial or angular bar chart plotted in polar coordinates.",
+            tables: vec![BASE_FIELDS, POLAR_BAR_FIELDS],
+            required: &[],
+        },
+        "radar" => ChartSchemaMeta {
+            title: "Radar chart options",
+            description: "Spider/radar chart plotting `series_list` across polygon or circular `indicators`.",
+            tables: vec![BASE_FIELDS, RADAR_FIELDS],
+            required: &[],
+        },
+        "sankey" => ChartSchemaMeta {
+            title: "Sankey diagram options",
+            description: "Directed flow diagram showing weighted `links` between `nodes`.",
+            tables: vec![BASE_FIELDS, SANKEY_FIELDS],
+            required: &[],
+        },
+        "scatter" => ChartSchemaMeta {
+            title: "Scatter / bubble chart options",
+            description: "Scatter and bubble plot supporting regression lines, marginal histograms, and density contours.",
+            tables: vec![BASE_FIELDS, SCATTER_FIELDS],
+            required: &[],
+        },
+        "sunburst" => ChartSchemaMeta {
+            title: "Sunburst chart options",
+            description: "Hierarchical radial sunburst chart rendered from recursive `series_data` nodes.",
+            tables: vec![BASE_FIELDS, SUNBURST_FIELDS],
+            required: &[],
+        },
+        "table" => ChartSchemaMeta {
+            title: "Table chart options",
+            description: "Styled SVG data table with optional column spans, cell styles, and inline sparklines.",
+            tables: vec![TABLE_FIELDS],
+            required: &[],
+        },
+        "theme_river" => ChartSchemaMeta {
+            title: "Theme river chart options",
+            description: "Stacked streamgraph / theme river chart showing evolution of categories over time.",
+            tables: vec![BASE_FIELDS, THEME_RIVER_FIELDS],
+            required: &[],
+        },
+        "tree" => ChartSchemaMeta {
+            title: "Tree chart options",
+            description: "Hierarchical orthogonal or radial tree diagram rendered from recursive `series_data`.",
+            tables: vec![BASE_FIELDS, TREE_FIELDS],
+            required: &[],
+        },
+        "treemap" => ChartSchemaMeta {
+            title: "Treemap chart options",
+            description: "Nested rectangular treemap rendered from `series_data` or flat `series_list`.",
+            tables: vec![BASE_FIELDS, TREEMAP_FIELDS],
+            required: &[],
+        },
+        "waterfall" => ChartSchemaMeta {
+            title: "Waterfall chart options",
+            description: "Cumulative bridge / waterfall chart showing positive, negative, and total steps via `data`.",
+            tables: vec![BASE_FIELDS, WATERFALL_FIELDS],
+            required: &[],
+        },
+        _ => return Err(unknown_chart_type(chart_type)),
+    };
+    Ok(meta)
+}
+
+fn field_description(chart_type: &str, name: &str) -> Option<&'static str> {
+    match (chart_type, name) {
+        ("mermaid", "source") => Some("Mermaid diagram source text (one of the 13 supported diagram types)."),
+        ("mermaid", "allow_links") => Some("When true (default), safe `click` directives emit SVG `<a>` links; set false for untrusted input."),
+        ("multi", "child_charts") => Some("Array of child chart objects; each carries `type`, optional `x`/`y`, and that chart type's options."),
+        ("multi", "align_plots") => Some("When true, aligns the left and right plot edges of vertically stacked Cartesian child charts."),
+        ("table", "data") => Some("2D array of table rows; the first row is the header and cells may be strings or sparkline objects."),
+        ("calendar", "data") => Some("Array of `[date, value]` pairs where `date` is `YYYY-MM-DD` and `value` is a number."),
+        ("waterfall", "data") => Some("Array of `[value, is_total]` pairs or numbers representing incremental steps and totals."),
+        ("map", "data") => Some("Array of `[region_name, value]` pairs matching features in `geo_json`."),
+        (_, "theme") => Some("Built-in theme name (defaults to `light`)."),
+        (_, "width") => Some("Canvas width in pixels (must be > 0)."),
+        (_, "height") => Some("Canvas height in pixels (must be > 0)."),
+        (_, "margin") => Some("Outer canvas margin in pixels: a single number or `{left, top, right, bottom}`."),
+        (_, "font_family") => Some("Font family name registered with `charts-rs`."),
+        (_, "title_text") => Some("Main chart title text."),
+        (_, "sub_title_text") => Some("Subtitle text displayed below the main title."),
+        (_, "legend_show") => Some("Whether to display the chart legend."),
+        (_, "x_axis_data") => Some("Category labels along the x-axis."),
+        (_, "y_axis_configs") => Some("Per-y-axis configuration objects (index 0 is primary, 1 is secondary)."),
+        (_, "series_list") => Some("Array of data series to plot."),
+        (_, "series_data") => Some("Hierarchical tree nodes (`{name, value, color, children}`)."),
+        (_, "compact") => Some("When true, emits compact minified SVG output."),
+        (_, "geo_json") => Some("GeoJSON Feature or FeatureCollection object defining map regions."),
+        (_, "tasks") => Some("Array of Gantt task objects (`name`, `start`, `end`, optional `row`, `category`, `progress`, `color`)."),
+        (_, "bullets") => Some("Array of bullet chart items (`name`, `value`, `target`, `ranges`)."),
+        (_, "nodes") => Some("Array of node definitions (`name`, optional `value`, `color`, `category`)."),
+        (_, "links") => Some("Array of directed/weighted links (`source`, `target`, `value`)."),
+        (_, "indicators") => Some("Radar axis indicators (`name`, optional `min`, `max`)."),
+        (_, "box_series") => Some("Array of box plot series (`name`, `data` of 5-number summaries or raw samples)."),
+        _ => None,
+    }
+}
+
+fn margin_schema() -> serde_json::Value {
+    let mut props = serde_json::Map::new();
+    for field in MARGIN_FIELDS {
+        props.insert(field.name.to_string(), serde_json::json!({"type": "number"}));
+    }
+    serde_json::json!({
+        "oneOf": [
+            {"type": "number"},
+            {
+                "type": "object",
+                "properties": props,
+                "additionalProperties": false
+            }
+        ]
+    })
+}
+
+fn scale_schema() -> serde_json::Value {
+    serde_json::json!({
+        "oneOf": [
+            {"type": "string", "enum": ["linear", "log", "log2", "log10"]},
+            {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", "enum": ["log", "linear"]},
+                    "base": {"type": "number", "exclusiveMinimum": 0}
+                },
+                "additionalProperties": false
+            }
+        ]
+    })
+}
+
+fn fields_to_object_schema(
+    chart_type: &str,
+    tables: &[&[Field]],
+    uses_tree_node: &mut bool,
+) -> serde_json::Map<String, serde_json::Value> {
+    let mut properties = serde_json::Map::new();
+    for field in tables.iter().flat_map(|t| t.iter()) {
+        let mut prop = field_to_schema(chart_type, field, uses_tree_node);
+        if let Some(desc) = field_description(chart_type, field.name)
+            && let Some(obj) = prop.as_object_mut()
+            && !obj.contains_key("description")
+        {
+            obj.insert(
+                "description".to_string(),
+                serde_json::Value::String(desc.to_string()),
+            );
+        }
+        properties.insert(field.name.to_string(), prop);
+    }
+    properties
+}
+
+fn field_to_schema(
+    chart_type: &str,
+    field: &Field,
+    uses_tree_node: &mut bool,
+) -> serde_json::Value {
+    if field.name == "theme" && matches!(field.kind, Kind::String) {
+        return serde_json::json!({
+            "type": "string",
+            "enum": list_themes(),
+        });
+    }
+    if chart_type == "multi" && field.name == "child_charts" {
+        return serde_json::json!({
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": CHILD_CHART_TYPES,
+                        "description": "Child chart type (defaults to `bar` when omitted)."
+                    },
+                    "x": {
+                        "type": "number",
+                        "description": "Optional explicit x offset in pixels."
+                    },
+                    "y": {
+                        "type": "number",
+                        "description": "Optional explicit y offset in pixels."
+                    }
+                },
+                "additionalProperties": true
+            }
+        });
+    }
+    match field.kind {
+        Kind::Number => serde_json::json!({"type": "number"}),
+        Kind::Size => serde_json::json!({"type": "number", "exclusiveMinimum": 0}),
+        Kind::Uint => serde_json::json!({"type": "integer", "minimum": 0}),
+        Kind::Count => serde_json::json!({"type": "integer", "minimum": 0, "maximum": MAX_COUNT}),
+        Kind::Index => serde_json::json!({"type": "integer", "minimum": 0, "maximum": MAX_INDEX}),
+        Kind::Bool => serde_json::json!({"type": "boolean"}),
+        Kind::String => serde_json::json!({"type": "string"}),
+        Kind::Color => serde_json::json!({
+            "type": "string",
+            "description": "CSS color string such as \"#345\", \"#5470c6\", \"rgb(84,112,198)\", or \"rgba(255,204,0,0.5)\"."
+        }),
+        Kind::Enum(values) => serde_json::json!({"type": "string", "enum": values}),
+        Kind::Margin => margin_schema(),
+        Kind::Scale => scale_schema(),
+        Kind::Any => serde_json::json!({}),
+        Kind::Array => serde_json::json!({"type": "array"}),
+        Kind::NumberArray => serde_json::json!({
+            "type": "array",
+            "items": {"type": ["number", "null"]}
+        }),
+        Kind::StringArray => serde_json::json!({
+            "type": "array",
+            "items": {"type": "string"}
+        }),
+        Kind::ColorArray => serde_json::json!({
+            "type": "array",
+            "items": {"type": ["string", "null"]}
+        }),
+        Kind::MarkValue => serde_json::json!({
+            "oneOf": [
+                {"type": "number"},
+                {"type": "string", "enum": ["average", "min", "max"]}
+            ]
+        }),
+        Kind::XValue => serde_json::json!({
+            "type": ["number", "string"],
+            "description": "Numeric x value or ISO date/date-time string (e.g. \"2024-01-05\")."
+        }),
+        Kind::XValues => serde_json::json!({
+            "type": "array",
+            "items": {"type": ["number", "string", "null"]}
+        }),
+        Kind::Object(fields) => {
+            let props = fields_to_object_schema(chart_type, &[fields], uses_tree_node);
+            serde_json::json!({
+                "type": "object",
+                "properties": props,
+                "additionalProperties": false
+            })
+        }
+        Kind::ArrayOf(fields) => {
+            if std::ptr::eq(fields, TREE_NODE_FIELDS) {
+                *uses_tree_node = true;
+                serde_json::json!({
+                    "type": "array",
+                    "items": {"$ref": "#/$defs/tree_node"}
+                })
+            } else {
+                let props = fields_to_object_schema(chart_type, &[fields], uses_tree_node);
+                serde_json::json!({
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": props,
+                        "additionalProperties": false
+                    }
+                })
+            }
+        }
+        Kind::SelfArray => {
+            *uses_tree_node = true;
+            serde_json::json!({
+                "type": "array",
+                "items": {"$ref": "#/$defs/tree_node"}
+            })
+        }
+    }
+}
+
+/// Returns a Draft 2020-12 JSON Schema describing the JSON options accepted by
+/// `chart_type`.
+///
+/// Generated directly from the internal validation field tables and
+/// [`list_themes`], so the schema stays in lockstep with `from_json`. Returns
+/// [`Error::Params`] listing all valid chart types when `chart_type` is
+/// unknown.
+pub fn chart_json_schema(chart_type: &str) -> Result<serde_json::Value> {
+    let meta = chart_schema_meta(chart_type)?;
+    let mut uses_tree_node = false;
+    let properties = fields_to_object_schema(chart_type, &meta.tables, &mut uses_tree_node);
+
+    let mut root = serde_json::Map::new();
+    root.insert(
+        "$schema".to_string(),
+        serde_json::Value::String("https://json-schema.org/draft/2020-12/schema".to_string()),
+    );
+    root.insert(
+        "title".to_string(),
+        serde_json::Value::String(meta.title.to_string()),
+    );
+    root.insert(
+        "description".to_string(),
+        serde_json::Value::String(meta.description.to_string()),
+    );
+    root.insert(
+        "type".to_string(),
+        serde_json::Value::String("object".to_string()),
+    );
+    root.insert(
+        "properties".to_string(),
+        serde_json::Value::Object(properties),
+    );
+    if !meta.required.is_empty() {
+        root.insert("required".to_string(), serde_json::json!(meta.required));
+    }
+    root.insert(
+        "additionalProperties".to_string(),
+        serde_json::Value::Bool(false),
+    );
+    if uses_tree_node {
+        let mut dummy = false;
+        let tree_props = fields_to_object_schema(chart_type, &[TREE_NODE_FIELDS], &mut dummy);
+        root.insert(
+            "$defs".to_string(),
+            serde_json::json!({
+                "tree_node": {
+                    "type": "object",
+                    "description": "Recursive hierarchical tree node.",
+                    "properties": tree_props,
+                    "additionalProperties": false
+                }
+            }),
+        );
+    }
+    Ok(serde_json::Value::Object(root))
+}
+
+/// Parses a JSON options document for `chart_type` and renders it directly to
+/// an SVG string.
+///
+/// Supports every chart type returned by [`list_chart_types`] (including
+/// `"multi"` and, with the `mermaid` feature enabled, `"mermaid"`). Returns
+/// [`Error::Params`] listing all valid chart types when `chart_type` is
+/// unknown.
+pub fn render_chart_from_json(chart_type: &str, json: &str) -> Result<String> {
+    match chart_type {
+        "bar" => BarChart::from_json(json)?.svg(),
+        "box_plot" => BoxPlotChart::from_json(json)?.svg(),
+        "bullet" => BulletChart::from_json(json)?.svg(),
+        "calendar" => CalendarChart::from_json(json)?.svg(),
+        "candlestick" => CandlestickChart::from_json(json)?.svg(),
+        "chord" => ChordChart::from_json(json)?.svg(),
+        "funnel" => FunnelChart::from_json(json)?.svg(),
+        "gantt" => GanttChart::from_json(json)?.svg(),
+        "gauge" => GaugeChart::from_json(json)?.svg(),
+        "graph" => GraphChart::from_json(json)?.svg(),
+        "heatmap" => HeatmapChart::from_json(json)?.svg(),
+        "histogram" => HistogramChart::from_json(json)?.svg(),
+        "horizontal_bar" => HorizontalBarChart::from_json(json)?.svg(),
+        "line" => LineChart::from_json(json)?.svg(),
+        "lines" => LinesChart::from_json(json)?.svg(),
+        "map" => MapChart::from_json(json)?.svg(),
+        #[cfg(feature = "mermaid")]
+        "mermaid" => MermaidChart::from_json(json)?.svg(),
+        "multi" => MultiChart::from_json(json)?.svg(),
+        "parallel" => ParallelChart::from_json(json)?.svg(),
+        "pie" => PieChart::from_json(json)?.svg(),
+        "polar_bar" => PolarBarChart::from_json(json)?.svg(),
+        "radar" => RadarChart::from_json(json)?.svg(),
+        "sankey" => SankeyChart::from_json(json)?.svg(),
+        "scatter" => ScatterChart::from_json(json)?.svg(),
+        "sunburst" => SunburstChart::from_json(json)?.svg(),
+        "table" => TableChart::from_json(json)?.svg(),
+        "theme_river" => ThemeRiverChart::from_json(json)?.svg(),
+        "tree" => TreeChart::from_json(json)?.svg(),
+        "treemap" => TreemapChart::from_json(json)?.svg(),
+        "waterfall" => WaterfallChart::from_json(json)?.svg(),
+        _ => Err(unknown_chart_type(chart_type)),
+    }
 }
 
 #[cfg(test)]

@@ -128,7 +128,10 @@ pub use line_chart::LineChart;
 pub use lines_chart::{FlowLine, LinesChart};
 pub use map_chart::{MapChart, MapProjection, MapRegion};
 #[cfg(feature = "mermaid")]
-pub use mermaid::{MermaidChart, mermaid_to_svg, mermaid_to_svg_with_theme, mermaid_validate};
+pub use mermaid::{
+    MermaidCapabilities, MermaidChart, mermaid_capabilities, mermaid_to_svg,
+    mermaid_to_svg_with_theme, mermaid_validate,
+};
 pub use multi_chart::{ChildChart, MultiChart};
 pub use parallel_chart::ParallelChart;
 // Drawing helpers: public for compatibility, but not part of the documented
@@ -140,6 +143,7 @@ pub use polar_bar_chart::{PolarAxis, PolarBarChart};
 pub use radar_chart::{RadarChart, RadarIndicator, RadarShape};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
 pub use scatter_chart::{DensityContour, MarginalHistogram, Regression, ScatterChart};
+pub use schema::{chart_json_schema, list_chart_types, render_chart_from_json};
 pub use sunburst_chart::{SunburstChart, SunburstData};
 pub use table_chart::{
     SparklineType, TableBodyConfig, TableCellStyle, TableChart, TableHeaderConfig, TableSparkline,
@@ -148,6 +152,7 @@ pub use theme::Theme;
 pub use theme::{
     THEME_ANT, THEME_CHALK, THEME_DARK, THEME_GRAFANA, THEME_LIGHT, THEME_SHADCN, THEME_SHINE,
     THEME_VINTAGE, THEME_WALDEN, THEME_WESTEROS, add_theme, get_theme, list_theme_name,
+    list_themes,
 };
 pub use theme_river_chart::ThemeRiverChart;
 pub use tree_chart::{TreeChart, TreeData};

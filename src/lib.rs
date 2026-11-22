@@ -455,6 +455,31 @@
 //! # }
 //! ```
 //!
+//! # Discovery, JSON Schema & unified dispatch (MCP / LLM ready)
+//!
+//! For dynamic callers such as MCP servers or LLM tools, [`list_chart_types`],
+//! [`list_themes`], [`chart_json_schema`], and [`render_chart_from_json`] expose
+//! machine-readable discovery, Draft 2020-12 JSON Schemas generated directly from
+//! the validator tables, and single-entry-point SVG rendering. With the
+//! `mermaid` feature enabled, [`mermaid_capabilities`] also returns a
+//! `Serialize`-able [`MermaidCapabilities`] summary of supported/unsupported
+//! diagram types, v11 shapes, init config keys, features, and limitations:
+//! ```rust
+//! use charts_rs::{
+//!     chart_json_schema, list_chart_types, list_themes, render_chart_from_json,
+//! };
+//! assert!(list_chart_types().contains(&"bar"));
+//! assert!(list_themes().contains(&"light"));
+//! let schema = chart_json_schema("bar").unwrap();
+//! assert_eq!(schema["type"], "object");
+//! let svg = render_chart_from_json(
+//!     "bar",
+//!     r#"{"x_axis_data":["A","B"],"series_list":[{"name":"S","data":[10,20]}]}"#,
+//! )
+//! .unwrap();
+//! assert!(svg.starts_with("<svg"));
+//! ```
+//!
 //! # Compatibility
 //!
 //! Guarantees that hold across all 2.x releases:

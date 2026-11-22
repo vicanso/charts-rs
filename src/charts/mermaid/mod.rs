@@ -544,6 +544,162 @@ pub fn mermaid_to_svg_with_theme(source: &str, theme: &str) -> Result<String> {
     MermaidChart::new_with_theme(source, theme).svg()
 }
 
+/// Machine-readable summary of `charts-rs`'s built-in Mermaid renderer
+/// capabilities, supported syntax, and known limitations.
+///
+/// Returned by [`mermaid_capabilities`] and serializable to JSON for MCP
+/// servers, editors, and LLM prompts.
+#[cfg_attr(docsrs, doc(cfg(feature = "mermaid")))]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+pub struct MermaidCapabilities {
+    /// All supported Mermaid diagram header keywords and aliases across the 13
+    /// implemented diagram types.
+    pub supported_diagrams: &'static [&'static str],
+    /// Common Mermaid diagram types that are not implemented, listed explicitly
+    /// so callers and LLMs do not attempt to generate them.
+    pub unsupported_diagrams: &'static [&'static str],
+    /// All supported Mermaid v11 `@{ shape: ... }` node shape names and aliases
+    /// for flowcharts.
+    pub v11_shapes: &'static [&'static str],
+    /// Configuration keys honored in YAML frontmatter (`config:`) and
+    /// `%%{init: {...}}%%` directives.
+    pub init_config_keys: &'static [&'static str],
+    /// High-level features supported by the pure-Rust Mermaid renderer.
+    pub features: &'static [&'static str],
+    /// Known limitations and unsupported Mermaid behaviors.
+    pub limitations: &'static [&'static str],
+}
+
+/// Returns the static capability metadata for the built-in Mermaid renderer.
+#[cfg_attr(docsrs, doc(cfg(feature = "mermaid")))]
+pub fn mermaid_capabilities() -> MermaidCapabilities {
+    MermaidCapabilities {
+        supported_diagrams: &[
+            "flowchart",
+            "graph",
+            "sequenceDiagram",
+            "stateDiagram",
+            "stateDiagram-v2",
+            "classDiagram",
+            "classDiagram-v2",
+            "erDiagram",
+            "mindmap",
+            "quadrantChart",
+            "pie",
+            "gantt",
+            "sankey-beta",
+            "sankey",
+            "xychart-beta",
+            "xychart",
+            "radar-beta",
+            "radar",
+            "treemap-beta",
+            "treemap",
+        ],
+        unsupported_diagrams: &[
+            "gitGraph",
+            "timeline",
+            "journey",
+            "C4Context",
+            "C4Container",
+            "C4Component",
+            "C4Dynamic",
+            "C4Deployment",
+            "architecture-beta",
+            "kanban",
+            "packet-beta",
+            "block-beta",
+            "requirementDiagram",
+            "zenuml",
+        ],
+        v11_shapes: &[
+            "rect",
+            "process",
+            "rectangle",
+            "rounded",
+            "event",
+            "stadium",
+            "terminal",
+            "pill",
+            "subproc",
+            "fr-rect",
+            "subprocess",
+            "cyl",
+            "cylinder",
+            "database",
+            "db",
+            "circle",
+            "circ",
+            "dbl-circ",
+            "double-circle",
+            "doublecircle",
+            "diam",
+            "diamond",
+            "decision",
+            "hex",
+            "hexagon",
+            "prepare",
+            "lean-r",
+            "in-out",
+            "lean-l",
+            "out-in",
+            "trap-b",
+            "priority",
+            "trap-t",
+            "manual",
+            "odd",
+            "asym",
+            "asymmetric",
+            "doc",
+            "document",
+            "docs",
+            "documents",
+            "delay",
+            "half-rounded-rectangle",
+            "tri",
+            "triangle",
+            "extract",
+            "flag",
+            "notch-pent",
+            "sm-circ",
+            "start",
+            "f-circ",
+            "junction",
+            "text",
+        ],
+        init_config_keys: &[
+            "theme",
+            "fontFamily",
+            "fontSize",
+            "flowchart.curve",
+            "flowchart.nodeSpacing",
+            "flowchart.rankSpacing",
+            "sequence.mirrorActors",
+            "sequence.showSequenceNumbers",
+            "xyChart.showLegend",
+        ],
+        features: &[
+            "YAML frontmatter and %%{init}%% configuration passthrough",
+            "accTitle and accDescr SVG accessibility metadata (<title>/<desc> + ARIA)",
+            "click hyperlinks with protocol allowlist (http, https, mailto, relative; toggleable via allow_links)",
+            "v11 @{ shape, label } node syntax in flowcharts",
+            "multiline Markdown strings (`\"...\"`)",
+            "flowchart nested subgraphs, classDef/class/style, and smooth/linear/step edge curves",
+            "sequence participant lifecycle (create/destroy), boxes, autonumber, and mirrorActors",
+            "gantt excludes/includes workdays and vert milestone markers",
+            "pure-Rust zero-dependency SVG rendering inheriting charts-rs themes",
+        ],
+        limitations: &[
+            "subgraph-level direction overrides inside flowcharts are ignored",
+            "themeVariables color overrides are not yet supported (only fontFamily and fontSize)",
+            "no HTML <foreignObject> rendering; HTML tags are converted/stripped to pure SVG text",
+            "Font Awesome icons (fa:fa-*) are stripped",
+            "JavaScript click callbacks are ignored; only allowlisted URL links are emitted",
+            "hand-drawn / rough look mode is not supported",
+        ],
+    }
+}
+
 fn apply_title_json(value: &serde_json::Value, prefix: &str, target: &mut TitleConfig) {
     if let Some(t) = get_string_from_value(value, &format!("{prefix}_text")) {
         target.text = t;

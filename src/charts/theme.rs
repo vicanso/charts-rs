@@ -71,6 +71,11 @@ pub static THEME_GRAFANA: &str = "grafana";
 /// The "shadcn" theme name.
 pub static THEME_SHADCN: &str = "shadcn";
 
+/// All built-in theme names in canonical order.
+const BUILTIN_THEMES: &[&str] = &[
+    "light", "dark", "ant", "grafana", "vintage", "walden", "westeros", "chalk", "shine", "shadcn",
+];
+
 // Internal alias for the default theme name.
 static LIGHT_THEME_NAME: &str = THEME_LIGHT;
 
@@ -1152,6 +1157,14 @@ pub fn get_theme(theme: &str) -> Arc<Theme> {
     } else {
         Arc::clone(&LIGHT_THEME_ARC)
     }
+}
+
+/// Returns all built-in theme names in deterministic order.
+///
+/// Unlike [`list_theme_name`], this returns a static slice of the 10 built-in
+/// themes without runtime themes registered via [`add_theme`].
+pub fn list_themes() -> &'static [&'static str] {
+    BUILTIN_THEMES
 }
 
 /// List the theme name
