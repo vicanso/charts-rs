@@ -45,6 +45,9 @@ jobs:
     - name: Clippy (png only)
       if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
       run: cargo clippy --features=png --all-targets --all -- --deny=warnings
+    - name: Clippy (all features)
+      if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
+      run: cargo clippy --all-features --all-targets --all -- --deny=warnings
     - name: Docs
       if: matrix.os == 'ubuntu-latest' && matrix.toolchain == 'stable'
       run: cargo doc --no-deps --all-features
@@ -57,12 +60,17 @@ jobs:
     - name: Run tests (image-encoder)
       if: matrix.os == 'ubuntu-latest'
       run: cargo test --verbose --features "image-encoder"
+    - name: Run tests (all features)
+      if: matrix.os == 'ubuntu-latest'
+      run: cargo test --verbose --all-features
     # The lightweight raster feature must work on its own (README doctests
     # run under it).
     - name: Run tests (png only)
       if: matrix.os == 'ubuntu-latest'
       run: cargo test --verbose --features png
     # The SVG output is deterministic, so run it on every platform.
+    - name: Run tests (mermaid)
+      run: cargo test --verbose --features mermaid
     - name: Run tests (default features)
       run: cargo test --verbose --no-default-features
 

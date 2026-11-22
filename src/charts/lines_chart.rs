@@ -501,7 +501,7 @@ mod tests {
         assert!(svg.contains("Migration between regions"), "{svg}");
         assert!(svg.contains("Cedar → Glen: 220"), "{svg}");
         assert_snapshot!("lines_chart/flows.svg", svg);
-        #[cfg(feature = "raster")]
+        #[cfg(feature = "png")]
         super::super::save_test_asset("image/lines.png", &crate::svg_to_png(&svg).unwrap());
     }
 }

@@ -135,7 +135,7 @@ type GeoJsonMap = HashMap<String, Arc<serde_json::Value>>;
 static GEO_JSON_MAP: LazyLock<ArcSwap<GeoJsonMap>> =
     LazyLock::new(|| ArcSwap::from_pointee(HashMap::new()));
 
-/// Registers a named GeoJSON document so [`MapChart`] and [`LinesChart`] can
+/// Registers a named GeoJSON document so [`MapChart`] and [`crate::LinesChart`] can
 /// reference it in JSON via `"geo_json": "<name>"`.
 ///
 /// Useful in HTTP / MCP servers where preloaded maps (such as the files under

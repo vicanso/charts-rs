@@ -22,8 +22,10 @@ exclude = [
     # Pages of pictures, which are in `asset` and not in the package.
     "theme.md",
     "docs/gallery.md",
-    # Implementation plan for contributors.
+    # Implementation plan and Mermaid contributor docs.
     "docs/mcp-plan.md",
+    "docs/mermaid-design.md",
+    "docs/mermaid-issues.md",
     # Concatenated LLM bundle (duplicates docs/guide.md and docs/json.md).
     "llms-full.txt",
 ]
