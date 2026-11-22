@@ -52,7 +52,10 @@ JSON document, in the manner of Apache ECharts.
   several of them in one picture.
 - **Rust or JSON.** A typed API, or a JSON document with the same options.
   Every key is [documented](./docs/json.md) and checked: a typo is an error
-  with a hint, not a chart that silently ignores it.
+  with a hint, not a chart that silently ignores it. Exposes two-tier
+  (`Essential` / `Full`) JSON Schemas, `chart_catalog()`, structured
+  multi-issue validation (`validate_chart_json`), `RenderLimits`, and named
+  GeoJSON registration (`register_geo_json`) for MCP / LLM servers.
 - **Themes and fonts.** Ten themes and your own; your own fonts (TTF, OTF,
   TTC), Chinese, Japanese and Korean ones included, for the memory of the
   file.
@@ -184,6 +187,7 @@ assert!(safe_chart.svg().unwrap().starts_with("<svg"));
 | [Guide](./docs/guide.md) | Building charts in Rust and from JSON, axes, labels, fonts, images |
 | [JSON reference](./docs/json.md) | Every option of every chart: its type, its default, what it does |
 | [llms.txt](./llms.txt) | Compact LLM & MCP-ready reference (APIs, schemas, chart catalog, Mermaid spec) |
+| [llms-full.txt](./llms-full.txt) | Full LLM bundle (`llms.txt` + Guide + JSON reference, built with `make llms`) |
 | [Gallery](./docs/gallery.md) | Every chart type and its variants |
 | [Themes](./theme.md) | The ten built-in themes |
 | [Maps of China](./asset/geo/china/README.md) | GeoJSON of the provinces of China and of the cities of each, ready for a `MapChart` — in the repository, not in the crate |

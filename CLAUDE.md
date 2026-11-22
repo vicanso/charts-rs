@@ -65,6 +65,8 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 | `src/charts/theme.rs` | Theme system: a `Theme` is the canvas defaults plus the same option groups a chart has; global registry via `LazyLock<ArcSwap<HashMap>>`; `get_theme()`, `add_theme()` |
 | `src/charts/common.rs` | Shared types: `Series`, `MarkPoint`, `MarkLine`, `Position`, `Align`, `Symbol`, and the option groups `FontConfig`, `TitleConfig`, `LegendConfig`, `XAxisConfig`, `YAxisConfig`, `GridConfig`, `SeriesConfig`, `TooltipConfig` |
 | `src/charts/params.rs` | JSON parsing utilities (`get_*_from_value()` functions) used in `from_json()` implementations |
+| `src/charts/schema.rs` | JSON validation (`validate_chart_json`), two-tier Draft 2020-12 JSON Schema (`chart_json_schema_with`), `chart_catalog()`, `RenderLimits`, and `render_chart_from_*` dispatch |
+| `src/charts/schema_doc.rs` | Parses `docs/json.md` at runtime (`include_str!`) so schema descriptions, defaults, chart intros, and examples stay single-sourced |
 | `src/charts/color.rs` | `Color` type with hex parsing (`"#345"`, `"#ffcc00"`) and opacity |
 | `src/charts/font.rs` | Font registry and text measurement via `ttf-parser` (glyphs are read lazily from the font bytes); custom TTF/OTF loading; default: embedded `Roboto.ttf` |
 | `src/charts/encoder.rs` | Raster image encoding via `resvg` + `image` (gated on `image-encoder` feature) |

@@ -10,6 +10,12 @@ bench:
 	cargo bench --features "image-encoder"
 changelog:
 	git cliff --config cliff.toml --output CHANGELOG.md
+llms:
+	@cat llms.txt > llms-full.txt
+	@printf '\n---\n\n' >> llms-full.txt
+	@cat docs/guide.md >> llms-full.txt
+	@printf '\n---\n\n' >> llms-full.txt
+	@cat docs/json.md >> llms-full.txt
 
 # Versions. `make version-patch`, `make version-minor` or `make version-major`
 # set the next version in Cargo.toml and Cargo.lock (and, when the major one
@@ -47,4 +53,4 @@ version:
 	@echo "  git commit -am 'chore: version $(NEXT)'"
 	@echo "  git tag v$(NEXT)"
 
-.PHONY: fmt test lint udeps bench changelog version version-patch version-minor version-major
+.PHONY: fmt test lint udeps bench changelog llms version version-patch version-minor version-major

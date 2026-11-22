@@ -796,3 +796,58 @@ fn geo_json_registry_supports_named_maps_in_map_and_lines() {
     assert_eq!(issues[0].path, "geo_json");
     assert!(render_chart_from_json("map", &unknown_doc.to_string()).is_err());
 }
+
+#[test]
+fn llms_full_txt_is_in_sync() {
+    let expected = format!(
+        "{}\n---\n\n{}\n---\n\n{}",
+        include_str!("../llms.txt"),
+        include_str!("../docs/guide.md"),
+        include_str!("../docs/json.md"),
+    );
+    let actual = include_str!("../llms-full.txt");
+    assert!(
+        actual == expected,
+        "llms-full.txt is out of date; run `make llms` to regenerate it"
+    );
+}
+
+#[test]
+fn llms_txt_minimal_examples_validate_and_render() {
+    use charts_rs::{render_chart_from_value, validate_chart_json};
+
+    let llms = include_str!("../llms.txt");
+    let section = llms
+        .split("## Minimal JSON Examples\n")
+        .nth(1)
+        .expect("missing Minimal JSON Examples section in llms.txt")
+        .split("\n## ")
+        .next()
+        .unwrap();
+
+    let mut parsed = Vec::new();
+    for line in section.lines() {
+        if let Some(rest) = line.strip_prefix("- `")
+            && let Some((chart_type, after)) = rest.split_once("`: `")
+            && let Some(json_str) = after.strip_suffix('`')
+        {
+            let value: serde_json::Value = serde_json::from_str(json_str)
+                .unwrap_or_else(|e| panic!("{chart_type}: invalid JSON in llms.txt: {e}"));
+            parsed.push(chart_type);
+            #[cfg(not(feature = "mermaid"))]
+            if chart_type == "mermaid" {
+                continue;
+            }
+            let issues = validate_chart_json(chart_type, &value).unwrap();
+            assert!(issues.is_empty(), "{chart_type}: {issues:?}");
+            let svg = render_chart_from_value(chart_type, &value)
+                .unwrap_or_else(|e| panic!("{chart_type}: render failed: {e}"));
+            assert!(svg.starts_with("<svg"), "{chart_type}");
+        }
+    }
+
+    assert_eq!(parsed.len(), 30, "expected 30 minimal examples in llms.txt");
+    for &t in list_chart_types() {
+        assert!(parsed.contains(&t), "missing minimal example for `{t}`");
+    }
+}

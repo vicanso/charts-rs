@@ -1,14 +1,14 @@
 # charts-rs
 
-> Pure-Rust, zero-browser charting and Mermaid diagram library: render 29 chart types and 13 Mermaid diagrams to SVG — and optionally PNG, JPEG, WebP, or AVIF — from typed Rust APIs or validated JSON documents.
+> Pure-Rust, zero-browser charting and Mermaid diagram library: render 28 chart types plus `MultiChart` composition (29 default type names, 30 with `mermaid`) and 13 Mermaid diagram types to SVG — and optionally PNG, JPEG, WebP, or AVIF — from typed Rust APIs or validated JSON documents.
 
-`charts-rs` (`#![forbid(unsafe_code)]`, Rust 1.88+, edition 2024) has no headless browser or Node.js dependency. Core SVG rendering is fast (tens of microseconds per chart) and ships with 10 built-in themes, custom font loading (TTF/OTF/TTC, including CJK), strict JSON schema validation with typo suggestions, and machine-readable discovery/schema APIs designed for MCP servers and LLM tool calling.
+`charts-rs` (`#![forbid(unsafe_code)]`, Rust 1.88+, edition 2024) has no headless browser or Node.js dependency. Core SVG rendering is fast (tens of microseconds per chart) and ships with 10 built-in themes, custom font loading (TTF/OTF/TTC, including CJK), strict JSON schema validation with typo suggestions and structured multi-issue reporting, resource bounds (`RenderLimits`), named GeoJSON map registration, and machine-readable discovery/schema APIs designed for MCP servers and LLM tool calling.
 
 ## Installation & Feature Flags
 
 ```toml
 [dependencies]
-# Core pure-Rust SVG rendering (29 chart types, minimal deps)
+# Core pure-Rust SVG rendering (28 chart types + MultiChart, minimal deps)
 charts-rs = "2"
 
 # Add pure-Rust Mermaid rendering (13 diagram types, zero extra dependencies)
@@ -18,8 +18,8 @@ charts-rs = { version = "2", features = ["mermaid"] }
 charts-rs = { version = "2", features = ["mermaid", "png"] }
 ```
 
-- `default` (none): 29 core chart types, pure SVG output, JSON validation, JSON Schema & unified dispatch APIs.
-- `mermaid`: Pure-Rust Mermaid parser & SVG renderer (13 diagram types, zero extra dependencies).
+- `default` (none): 28 core chart types + `multi` composition (29 type names), pure SVG output, JSON validation, Draft 2020-12 JSON Schema (`Essential` / `Full`), & unified dispatch APIs.
+- `mermaid`: Pure-Rust Mermaid parser & SVG renderer (13 canonical diagram types + 7 aliases, zero extra dependencies).
 - `png`, `jpeg`, `webp`, `avif`: Per-format raster encoders (`svg_to_png`, `svg_to_jpeg`, `svg_to_webp`, `svg_to_avif`); `avif` pulls in `rav1e`.
 - `image-encoder`: Umbrella feature enabling `png`, `jpeg`, `webp`, and `avif`.
 
@@ -38,27 +38,38 @@ chart.title.text = "Visits".to_string();
 let svg: String = chart.svg()?;
 ```
 
-### Unified JSON Dispatch, Discovery & Schema APIs
+### Unified JSON Discovery, Schema, Validation & Dispatch APIs
 
 ```rust
 use charts_rs::{
-    SchemaLevel, chart_example, chart_json_schema, chart_json_schema_with, list_chart_types,
-    list_themes, render_chart_from_json,
+    ChartInfo, RenderLimits, SchemaLevel, chart_catalog, chart_example,
+    chart_json_schema, chart_json_schema_with, get_font_families, list_chart_types,
+    list_geo_json, list_themes, register_geo_json, render_chart_from_json,
+    render_chart_from_value_with_limits, validate_chart_json,
+    validate_chart_json_with_limits,
 };
 
-let types: &'static [&'static str] = list_chart_types(); // 29 core, or 30 with `mermaid`
+let types: &'static [&'static str] = list_chart_types(); // 29 default, 30 with `mermaid`
+let catalog: Vec<ChartInfo> = chart_catalog();          // name, title, description, example
 let themes: &'static [&'static str] = list_themes();     // 10 built-in themes
-// Draft 2020-12 JSON Schema; every property has the description/default of docs/json.md
-// and the root has the chart's example in `examples`.
-let full: serde_json::Value = chart_json_schema("bar")?;  // == chart_json_schema_with("bar", SchemaLevel::Full)
-// Only the data keys, title, theme and size (~1/5 of the full size); objects that list only
-// some keys are `additionalProperties: true`, the rest is still validated by `from_json`.
-let essential = chart_json_schema_with("bar", SchemaLevel::Essential)?;
-let example: Option<serde_json::Value> = chart_example("bar")?; // renders as is
-let svg: String = render_chart_from_json(
-    "bar",
-    r#"{"theme":"grafana","x_axis_data":["Mon","Tue"],"series_list":[{"name":"Email","data":[120,132]}]}"#,
-)?;
+let fonts: Vec<String> = get_font_families()?;           // loaded font families
+
+// Draft 2020-12 JSON Schema; descriptions, defaults, and examples come from docs/json.md.
+let essential = chart_json_schema_with("bar", SchemaLevel::Essential)?; // ~1.6–4 KB
+let full = chart_json_schema("bar")?;                                   // == SchemaLevel::Full
+let example: Option<serde_json::Value> = chart_example("bar")?;
+
+let options = serde_json::json!({
+    "theme": "grafana",
+    "x_axis_data": ["Mon", "Tue"],
+    "series_list": [{"name": "Email", "data": [120, 132]}]
+});
+let limits = RenderLimits::default();
+let issues = validate_chart_json_with_limits("bar", &options, &limits)?;
+assert!(issues.is_empty());
+
+let svg = render_chart_from_value_with_limits("bar", &options, &limits)?;
+// Or from raw JSON string: render_chart_from_json("bar", &options.to_string())?;
 ```
 
 ### Mermaid API (`features = ["mermaid"]`)
@@ -80,18 +91,101 @@ chart.allow_links = false;                       // disable <a> links for untrus
 let safe_svg = chart.svg()?;
 ```
 
+## Chart Selection Guide
+
+| Data shape / intent | Chart type(s) | Primary data key(s) |
+|---|---|---|
+| Category comparison (vertical / horizontal) | `bar`, `horizontal_bar` | `x_axis_data`, `series_list` |
+| Trend / time series / area / step / band | `line` | `x_axis_data` or `x_axis_values`, `series_list` |
+| Part-to-whole / rings / Nightingale rose | `pie` | `series_list` |
+| Conversion / stage drop-off | `funnel` | `series_list` |
+| Correlation / bubble / regression / density | `scatter` | `series_list` (flat `[x,y,...]`) |
+| Distribution / quartiles | `histogram`, `box_plot` | `series_list` / `x_axis_data` + `box_series` |
+| Bridge / cumulative +/- steps | `waterfall` | `x_axis_data`, `data` |
+| Financial OHLC | `candlestick` | `x_axis_data`, `series_list` (4 per category) |
+| KPI single value / target vs ranges | `gauge`, `bullet` | `series_list` / `bullets` |
+| Multi-metric comparison / radial bars | `radar`, `polar_bar` | `indicators` / `x_axis_data`, `series_list` |
+| 2D matrix / daily calendar activity | `heatmap`, `calendar` | `x_axis_data` + `y_axis_data` + `series.data` / `data` |
+| Hierarchy | `treemap`, `sunburst`, `tree` | `series_data` (recursive) |
+| Directed flow / circular flow / network | `sankey`, `chord`, `graph` | `nodes`, `links` |
+| Multi-dimensional / stream over time | `parallel`, `theme_river` | `x_axis_data`, `series_list` |
+| Project timeline / tasks | `gantt` | `tasks` |
+| Geographic choropleth / origin-destination flows | `map`, `lines` | `geo_json` (object or map name), `data` / `lines` |
+| Tabular data + inline sparklines | `table` | `data` (2D cell array) |
+| Stacked / aligned composite dashboard | `multi` | `child_charts` |
+| Flowcharts, sequence, ER, class, state, mindmap, etc. | `mermaid` | `source` |
+
+## Minimal JSON Examples
+
+All 30 examples below match `docs/json.md`, pass `validate_chart_json`, and render directly:
+
+- `bar`: `{"title_text":"Visits","radius":3,"x_axis_data":["Mon","Tue","Wed"],"series_list":[{"name":"Email","data":[120,132,101],"label_show":true},{"name":"Search","data":[220,182,191],"category":"line"}]}`
+- `box_plot`: `{"x_axis_data":["Mon","Tue"],"box_series":[{"name":"Latency","data":[[655,850,940,980,1175],[672,800,845,885,1012]]}]}`
+- `bullet`: `{"label_show":true,"bullets":[{"name":"Done in time (%)","value":92,"target":95,"ranges":[80,90,100],"max":100},{"name":"Wait (min)","value":12,"target":10,"ranges":[10,20,30]}]}`
+- `calendar`: `{"start_date":"2024-01-01","end_date":"2024-03-31","data":[["2024-01-05",3],["2024-02-10",7],["2024-03-21",5]]}`
+- `candlestick`: `{"x_axis_data":["2024-10-24","2024-10-25","2024-10-28"],"series_list":[{"name":"MA5","data":[20,34,10,38,40,35,30,50,31,38,33,44]}]}`
+- `chord`: `{"link_gradient":true,"links":[{"source":"Asia","target":"Europe","value":60},{"source":"Asia","target":"Americas","value":45},{"source":"Europe","target":"Americas","value":50}]}`
+- `funnel`: `{"series_label_position":"inside","series_list":[{"name":"Show","data":[100]},{"name":"Click","data":[80]},{"name":"Order","data":[20]}]}`
+- `gantt`: `{"now":"2024-03-19","tasks":[{"name":"Research","category":"Plan","start":"2024-03-04","end":"2024-03-08","progress":1},{"name":"Design","category":"Build","start":"2024-03-07","end":"2024-03-22","progress":0.6},{"name":"Sign-off","category":"Build","start":"2024-03-22"},{"name":"Launch","category":"Plan","start":"2024-03-25","end":"2024-03-29"}]}`
+- `gauge`: `{"min":0,"max":100,"value_formatter":"{c}%","series_list":[{"name":"CPU","data":[72]}]}`
+- `graph`: `{"categories":["Team","Tool"],"nodes":[{"name":"Ann","category":0,"value":3},{"name":"Bob","category":0},{"name":"Git","category":1}],"links":[{"source":"Ann","target":"Bob","value":2},{"source":"Ann","target":"Git"},{"source":"Bob","target":"Git"}]}`
+- `heatmap`: `{"x_axis_data":["12a","6a","12p"],"y_axis_data":["Sat","Sun"],"series":{"min":0,"max":10,"data":[[0,9],[1,3],[2,6],[3,8],[4,2],[5,5]]}}`
+- `histogram`: `{"bin_width":5,"x_axis_title":"Height (cm)","series_list":[{"name":"Adults","data":[162.4,171,168.3,175.9,158.2,169.7,173.1,166.8]}]}`
+- `horizontal_bar`: `{"x_axis_data":["Brazil","India","China"],"series_label_position":"inside","series_list":[{"name":"2023","data":[182,234,290],"label_show":true}]}`
+- `line`: `{"series_smooth":true,"x_axis_data":["Mon","Tue","Wed","Thu"],"series_list":[{"name":"Email","data":[120,132,null,134],"mark_lines":[{"category":"average"}]},{"name":"Search","data":[220,182,191,234],"fill":true}]}`
+- `lines`: `{"curveness":0.3,"lines":[{"name":"North","value":80,"from":[0,0],"to":[40,30]},{"name":"East","value":20,"from":[0,0],"to":[50,-10]},{"name":"South","value":50,"from":[10,20],"to":[30,-20]}]}`
+- `map`: `{"label_show":true,"thresholds":[100,300],"colors":["#deebf7","#9ecae1","#3182bd"],"data":[["West",80],["East",420]],"geo_json":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"West"},"geometry":{"type":"Polygon","coordinates":[[[100,20],[106,20],[107,26],[101,27],[100,20]]]}},{"type":"Feature","properties":{"name":"East"},"geometry":{"type":"Polygon","coordinates":[[[106,20],[113,21],[112,27],[107,26],[106,20]]]}}]}}`
+- `mermaid`: `{"title_text":"Request Flow","source":"flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(Database)]"}`
+- `multi`: `{"gap":10,"child_charts":[{"type":"bar","x_axis_data":["Mon","Tue"],"series_list":[{"name":"Email","data":[120,132]}]},{"type":"pie","height":300,"series_list":[{"name":"Email","data":[40]},{"name":"Search","data":[38]}]}]}`
+- `parallel`: `{"x_axis_data":["Price","Weight","Rating"],"series_list":[{"name":"A","data":[120,3.2,4.5]},{"name":"B","data":[90,4.1,3.8]}]}`
+- `pie`: `{"rose_type":false,"radius":120,"inner_radius":60,"series_list":[{"name":"Email","data":[40]},{"name":"Search","data":[38]},{"name":"Direct","data":[32]}]}`
+- `polar_bar`: `{"category_axis":"radius","round_cap":true,"y_axis_configs":[{"axis_max":100}],"x_axis_data":["Sleep","Steps","Water"],"series_list":[{"name":"Done","data":[92,74,61],"label_show":true}]}`
+- `radar`: `{"indicators":[{"name":"Sales","max":6500},{"name":"Marketing","max":16000},{"name":"Support","max":30000}],"series_list":[{"name":"Budget","data":[4200,3000,20000]},{"name":"Spending","data":[5000,14000,28000]}]}`
+- `sankey`: `{"link_gradient":true,"links":[{"source":"Coal","target":"Electricity","value":25},{"source":"Gas","target":"Electricity","value":15},{"source":"Electricity","target":"Homes","value":30},{"source":"Electricity","target":"Industry","value":10}]}`
+- `scatter`: `{"series_symbol_sizes":[6,6],"series_list":[{"name":"Female","data":[161.2,51.6,167.5,59,159.5,49.2]},{"name":"Male","data":[174,65.6,175.3,71.8,193.5,80.7]}]}`
+- `sunburst`: `{"inner_radius":30,"series_data":[{"name":"Grandpa","children":[{"name":"Uncle Leo","value":15},{"name":"Father","children":[{"name":"Me","value":5},{"name":"Brother","value":1}]}]}]}`
+- `table`: `{"title_text":"NASDAQ","data":[["Name","Price","Change"],["Datadog Inc","97.32","-7.49%"],["Hashicorp Inc","28.66","-9.25%"]],"text_aligns":["left","center","right"],"body_font_weight":"bold","cell_styles":[{"indexes":[1,2],"font_color":"#fff","background_color":"#2d7c2b"}]}`
+- `theme_river`: `{"x_axis_data":["Jan","Feb","Mar","Apr"],"series_list":[{"name":"News","data":[10,25,18,30]},{"name":"Sport","data":[15,12,22,16]}]}`
+- `tree`: `{"orient":"TB","series_data":[{"name":"root","children":[{"name":"a","children":[{"name":"a1"},{"name":"a2"}]},{"name":"b"}]}]}`
+- `treemap`: `{"series_data":[{"name":"Docs","children":[{"name":"Guides","value":6},{"name":"API","value":4}]},{"name":"Media","value":5}]}`
+- `waterfall`: `{"x_axis_data":["Revenue","Cost","Tax","Profit"],"data":[[900,false],[-345,false],[-108,false],[0,true]]}`
+
+## Error Format & Self-Correction Loop
+
+- `Error::code(&self)` returns a stable category string: `"params"`, `"json"`, `"font_not_found"`, `"parse_font"`, `"mermaid"` (`mermaid` feature), and `"image_size"` / `"image_raw"` / `"svg_parse"` / `"image_encode"` (`raster` feature).
+- `validate_chart_json` / `validate_chart_json_with_limits` collect up to 50 `ValidationIssue` entries in one pass (`serde::Serialize`):
+  - `code`: `"unknown_field"` | `"invalid_type"` | `"invalid_enum"` | `"out_of_range"` | `"invalid_color"` | `"unknown_theme"` | `"unknown_map"` | `"missing_required"` | `"limit_exceeded"` | `"mermaid_syntax"`
+  - `path`: dotted/indexed path (e.g. `"series_list[0].lable_show"`, `"child_charts[1].width"`, or `""` for root)
+  - `message`: human-readable message (identical to `Error::Params`)
+  - `expected` (optional): allowed values, type, or bound
+  - `suggestion` (optional): full replacement path for typos (e.g. `"series_list[0].label_show"`)
+  - `line` (optional): 1-based line number for Mermaid syntax errors
+- Recommended LLM loop: `validate_chart` -> apply all `suggestion` / `expected` / `line` fixes -> retry `render_chart`.
+
+## Server Deployment & Output Formats
+
+- **Output format (`svg` vs `png`)**: many MCP clients cannot display raw SVG inline. Expose `format?: "svg" | "png"` (default `"png"` when the `png` feature is enabled), rasterize via `svg_to_png(&svg)`, and return PNG as MCP `image` content (base64) or SVG as `text` / resource.
+- **Resource bounds**: always render untrusted requests via `render_chart_from_value_with_limits` / `render_chart_from_json_with_limits` with `RenderLimits` (defaults: `max_json_bytes: 1 MiB`, `max_canvas_side: 8192`, `max_data_points: 100_000`, `max_mermaid_source: 64 KiB`).
+- **Fonts & CJK**: unregistered `font_family` names are NOT rejected — they remain in the SVG while text width measurement silently falls back to `"Roboto"`. Load CJK fonts at server startup with `add_fonts(&[...])`, expose `get_font_families()` via `charts://fonts`, and optionally patch `properties.font_family.enum` in returned schemas.
+- **Named GeoJSON maps**: preload maps once at startup with `register_geo_json(name, geojson)` so models pass `"geo_json": "<name>"` instead of giant polygons (China province/city GeoJSON files live under `asset/geo/china/` in the repository, excluded from the published crate).
+- **Async HTTP isolation**: chart rendering and PNG rasterization are synchronous CPU tasks; run them inside `tokio::task::spawn_blocking` with a request timeout, and set `allow_links = false` on untrusted Mermaid diagrams.
+
 ## MCP Integration Recipe
 
-For an MCP server backed by `charts-rs`, split tools cleanly by intent so models get compact schemas and fast feedback loops:
+Recommended MCP server surface backed by `charts-rs`:
 
-1. `get_chart_schema(chart_type: string, level?: "essential" | "full")` -> calls `chart_json_schema_with(chart_type, level)` (list valid types from `list_chart_types()`, valid themes from `list_themes()`). Default to `SchemaLevel::Essential` (data keys, title, theme, size — a few hundred tokens, with a renderable example in `examples`); let the model ask for `"full"` when it needs styling keys (axes, labels, marks, legend, grid…). Descriptions and defaults come from `docs/json.md`.
-2. `render_chart(chart_type: string, options: object)` -> calls `render_chart_from_json(chart_type, &serde_json::to_string(&options)?)`. Unknown keys return `Error::Params` with typo suggestions. A per-chart tool can use the Essential schema as its `inputSchema` directly: it is open (`additionalProperties: true`), so full-schema keys still pass the client and are validated by the server.
-3. `validate_mermaid(source: string)` -> calls `mermaid_validate(source)`. Returns `Ok(())` or line-numbered `Error::Mermaid { line, message }`; expose `mermaid_capabilities()` in tool metadata or a resource so models know supported/unsupported diagrams and v11 shapes upfront.
-4. `render_mermaid(source: string, theme?: string, allow_links?: bool)` -> builds `MermaidChart::new_with_theme(source, theme)`, sets `chart.allow_links = allow_links.unwrap_or(false)` for untrusted inputs, and calls `chart.svg()` (optionally rasterizing with `svg_to_png` when `png` feature is enabled).
+1. `list_chart_types()` -> returns `chart_catalog()` (`name`, `title`, `description`, `example`).
+2. `get_chart_schema(chart_type: string, level?: "essential" | "full")` -> calls `chart_json_schema_with(chart_type, level)` (default `SchemaLevel::Essential`, open `additionalProperties: true` with `examples`; use `Full` for advanced styling).
+3. `validate_chart(chart_type: string, options: object)` -> calls `validate_chart_json_with_limits(chart_type, &options, &limits)` returning structured `Vec<ValidationIssue>`.
+4. `render_chart(chart_type: string, options: object, format?: "svg" | "png")` -> calls `render_chart_from_value_with_limits(chart_type, &options, &limits)`, optionally rasterizing with `svg_to_png`.
+5. `validate_mermaid(source: string)` -> calls `mermaid_validate(source)` returning line-numbered `Error::Mermaid`.
+6. `render_mermaid(source: string, theme?: string, allow_links?: bool)` -> builds `MermaidChart::new_with_theme(source, theme.unwrap_or_default())`, sets `chart.allow_links = allow_links.unwrap_or(false)`, and renders SVG (or PNG).
+
+Recommended MCP **Resources**: `charts://themes` (`list_themes()`), `charts://fonts` (`get_font_families()`), `charts://maps` (`list_geo_json()`), `charts://mermaid/capabilities` (`mermaid_capabilities()`), `charts://examples/{type}` (`chart_example(type)`).
 
 ## Chart Types & Themes
 
-### 30 Chart Types (`list_chart_types()`)
+### 30 Type Names (`list_chart_types()`)
 
 - Cartesian & statistical: `bar`, `horizontal_bar`, `line`, `scatter`, `candlestick`, `histogram`, `box_plot`, `waterfall`, `theme_river`, `parallel`.
 - Part-to-whole & radial: `pie`, `polar_bar`, `radar`, `funnel`, `gauge`, `bullet`, `sunburst`, `treemap`.
@@ -105,9 +199,10 @@ For an MCP server backed by `charts-rs`, split tools cleanly by intent so models
 
 ## Mermaid Specification (`features = ["mermaid"]`)
 
-### 13 Supported Diagram Types (`supported_diagrams`)
+### 13 Canonical Diagrams (`supported_diagrams`) & 7 Aliases (`diagram_aliases`)
 
-`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`, `classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta` / `sankey`, `xychart-beta` / `xychart`, `radar-beta` / `radar`, `treemap-beta` / `treemap`.
+- Canonical (`supported_diagrams`): `flowchart`, `sequenceDiagram`, `stateDiagram-v2`, `classDiagram`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta`, `treemap-beta`.
+- Aliases (`diagram_aliases`): `graph` -> `flowchart`, `stateDiagram` -> `stateDiagram-v2`, `classDiagram-v2` -> `classDiagram`, `sankey` -> `sankey-beta`, `xychart` -> `xychart-beta`, `radar` -> `radar-beta`, `treemap` -> `treemap-beta`.
 
 ### Explicitly Unsupported Diagrams (`unsupported_diagrams`)
 
@@ -128,13 +223,14 @@ Do not generate these — they return `Error::Mermaid`: `gitGraph`, `timeline`, 
 
 ## Docs
 
+- [llms-full.txt](./llms-full.txt): Concatenated LLM bundle (`llms.txt` + User Guide + JSON Reference, generated via `make llms`).
 - [README](./README.md): Overview, quickstart, feature summary, and benchmarks (English).
 - [README (Chinese)](./README-zh.md): Overview, quickstart, feature summary, and benchmarks (中文).
 - [User Guide](./docs/guide.md): Building charts in Rust and JSON, axes, labels, custom fonts, raster export, and Mermaid diagrams.
 - [User Guide (Chinese)](./docs/guide-zh.md): 使用指南（中文）.
 - [JSON Reference](./docs/json.md): Complete key-by-key reference for every chart type, types, defaults, and examples.
 - [JSON Reference (Chinese)](./docs/json-zh.md): JSON 参数参考（中文）.
-- [Gallery](./docs/gallery.md): Visual catalog of all 29 chart types, variants, and Mermaid diagrams.
+- [Gallery](./docs/gallery.md): Visual catalog of all 28 chart types, `MultiChart`, and Mermaid diagrams.
 - [Themes](./theme.md): Preview of all 10 built-in themes.
 - [Mermaid Architecture & Design](./docs/mermaid-design.md): Pure-Rust Mermaid engine architecture, layout engines, and adapter design.
 - [Mermaid Issues & Roadmap](./docs/mermaid-issues.md): Known Mermaid edge cases, resolved issues, and compatibility tracker.
@@ -146,4 +242,4 @@ Do not generate these — they return `Error::Mermaid`: `gitGraph`, `timeline`, 
 
 - [Examples directory](./examples): Runnable Rust examples (`bar.rs`, `chord.rs`, `gantt.rs`, `histogram.rs`, `line.rs`, `map.rs`, `mermaid.rs`, `pie.rs`, `polar_bar.rs`, `sankey.rs`, `sunburst.rs`, `tree.rs`, `multi_chart/`).
 - [JSON fixtures](./asset): Real JSON chart fixtures under `asset/*_chart/*.json` (e.g. `asset/bar_chart/`, `asset/line_chart/`, `asset/mermaid_chart/`, `asset/multi_chart/`, `asset/scatter_chart/`, `asset/table_chart/`).
-- [China GeoJSON maps](./asset/geo/china/README.md): Province and city GeoJSON files ready for `MapChart` (repository-only).
+- [China GeoJSON maps](./asset/geo/china/README.md): Province and city GeoJSON files ready for `MapChart` and `register_geo_json` (repository-only).

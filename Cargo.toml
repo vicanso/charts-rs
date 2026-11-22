@@ -24,6 +24,8 @@ exclude = [
     "docs/gallery.md",
     # Implementation plan for contributors.
     "docs/mcp-plan.md",
+    # Concatenated LLM bundle (duplicates docs/guide.md and docs/json.md).
+    "llms-full.txt",
 ]
 readme = "./README.md"
 rust-version = "1.88"

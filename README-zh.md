@@ -42,7 +42,7 @@
 - **只需要一个 crate。** 不用无头浏览器，也不用 Node.js：生成图表就是一次函数调用，返回 SVG。适合在服务端生成报表、邮件、机器人消息和看板。
 - **快。** 生成 SVG 远低于 1 毫秒，生成 PNG 只需几毫秒（见[性能](#性能)）。
 - **28 种图表 + `MultiChart` + 13 种 Mermaid 图表**，从柱状图、折线图、饼图，到蜡烛图、热力图、桑基图、甘特图、地图和流向线；开启可选 `mermaid` feature 即可零额外依赖纯 SVG 渲染 Mermaid，还可以把多个图表拼在一张图里。
-- **Rust 或 JSON。** 可以用类型化的 API，也可以传入参数相同的 JSON。每个参数都有[文档](./docs/json-zh.md)并经过校验：写错参数名会报错并给出提示，而不是悄悄被忽略。
+- **Rust 或 JSON。** 可以用类型化的 API，也可以传入参数相同的 JSON。每个参数都有[文档](./docs/json-zh.md)并经过校验：写错参数名会报错并给出提示，而不是悄悄被忽略。提供分档（`Essential` / `Full`）JSON Schema、`chart_catalog()`、结构化多错误校验（`validate_chart_json`）、`RenderLimits` 资源限制与命名地图注册（`register_geo_json`），方便接入 MCP / LLM 服务。
 - **主题与字体。** 内置十种主题，可自定义；支持加载自己的字体（TTF、OTF、TTC），包括中日韩字体，占用的内存只有字体文件本身大小。
 
 ## 快速上手
@@ -153,6 +153,7 @@ let _safe_svg = safe_chart.svg().unwrap();
 | [使用指南](./docs/guide-zh.md) | 用 Rust 和 JSON 创建图表，坐标轴、标签、字体、图片输出 |
 | [JSON 参数参考](./docs/json-zh.md) | 每种图表的每个参数：类型、默认值、作用 |
 | [llms.txt](./llms.txt) | 面向 LLM 与 MCP 的精简索引（API、JSON Schema、图表目录与 Mermaid 规范） |
+| [llms-full.txt](./llms-full.txt) | 完整 LLM 汇总文档（`llms.txt` + 使用指南 + JSON 参考，用 `make llms` 生成） |
 | [图表一览](./docs/gallery.md) | 所有图表类型及其变体 |
 | [Mermaid 架构设计](./docs/mermaid-design.md) | 纯 Rust Mermaid 引擎的架构方案、13 类图表支持范围与分期设计 |
 | [主题](./theme.md) | 十种内置主题 |

@@ -1,0 +1,2691 @@
+# charts-rs
+
+> Pure-Rust, zero-browser charting and Mermaid diagram library: render 28 chart types plus `MultiChart` composition (29 default type names, 30 with `mermaid`) and 13 Mermaid diagram types to SVG — and optionally PNG, JPEG, WebP, or AVIF — from typed Rust APIs or validated JSON documents.
+
+`charts-rs` (`#![forbid(unsafe_code)]`, Rust 1.88+, edition 2024) has no headless browser or Node.js dependency. Core SVG rendering is fast (tens of microseconds per chart) and ships with 10 built-in themes, custom font loading (TTF/OTF/TTC, including CJK), strict JSON schema validation with typo suggestions and structured multi-issue reporting, resource bounds (`RenderLimits`), named GeoJSON map registration, and machine-readable discovery/schema APIs designed for MCP servers and LLM tool calling.
+
+## Installation & Feature Flags
+
+```toml
+[dependencies]
+# Core pure-Rust SVG rendering (28 chart types + MultiChart, minimal deps)
+charts-rs = "2"
+
+# Add pure-Rust Mermaid rendering (13 diagram types, zero extra dependencies)
+charts-rs = { version = "2", features = ["mermaid"] }
+
+# Add per-format raster export (uses resvg + image; pick only what you need)
+charts-rs = { version = "2", features = ["mermaid", "png"] }
+```
+
+- `default` (none): 28 core chart types + `multi` composition (29 type names), pure SVG output, JSON validation, Draft 2020-12 JSON Schema (`Essential` / `Full`), & unified dispatch APIs.
+- `mermaid`: Pure-Rust Mermaid parser & SVG renderer (13 canonical diagram types + 7 aliases, zero extra dependencies).
+- `png`, `jpeg`, `webp`, `avif`: Per-format raster encoders (`svg_to_png`, `svg_to_jpeg`, `svg_to_webp`, `svg_to_avif`); `avif` pulls in `rav1e`.
+- `image-encoder`: Umbrella feature enabling `png`, `jpeg`, `webp`, and `avif`.
+
+## Quickstart
+
+### Typed Rust API
+
+```rust
+use charts_rs::BarChart;
+
+let mut chart = BarChart::new(
+    vec![("Email", vec![120.0, 132.0, 101.0]).into()],
+    vec!["Mon".into(), "Tue".into(), "Wed".into()],
+);
+chart.title.text = "Visits".to_string();
+let svg: String = chart.svg()?;
+```
+
+### Unified JSON Discovery, Schema, Validation & Dispatch APIs
+
+```rust
+use charts_rs::{
+    ChartInfo, RenderLimits, SchemaLevel, chart_catalog, chart_example,
+    chart_json_schema, chart_json_schema_with, get_font_families, list_chart_types,
+    list_geo_json, list_themes, register_geo_json, render_chart_from_json,
+    render_chart_from_value_with_limits, validate_chart_json,
+    validate_chart_json_with_limits,
+};
+
+let types: &'static [&'static str] = list_chart_types(); // 29 default, 30 with `mermaid`
+let catalog: Vec<ChartInfo> = chart_catalog();          // name, title, description, example
+let themes: &'static [&'static str] = list_themes();     // 10 built-in themes
+let fonts: Vec<String> = get_font_families()?;           // loaded font families
+
+// Draft 2020-12 JSON Schema; descriptions, defaults, and examples come from docs/json.md.
+let essential = chart_json_schema_with("bar", SchemaLevel::Essential)?; // ~1.6–4 KB
+let full = chart_json_schema("bar")?;                                   // == SchemaLevel::Full
+let example: Option<serde_json::Value> = chart_example("bar")?;
+
+let options = serde_json::json!({
+    "theme": "grafana",
+    "x_axis_data": ["Mon", "Tue"],
+    "series_list": [{"name": "Email", "data": [120, 132]}]
+});
+let limits = RenderLimits::default();
+let issues = validate_chart_json_with_limits("bar", &options, &limits)?;
+assert!(issues.is_empty());
+
+let svg = render_chart_from_value_with_limits("bar", &options, &limits)?;
+// Or from raw JSON string: render_chart_from_json("bar", &options.to_string())?;
+```
+
+### Mermaid API (`features = ["mermaid"]`)
+
+```rust
+use charts_rs::{
+    MermaidCapabilities, MermaidChart, mermaid_capabilities, mermaid_to_svg,
+    mermaid_to_svg_with_theme, mermaid_validate,
+};
+
+let caps: MermaidCapabilities = mermaid_capabilities(); // serde::Serialize
+let src = "flowchart LR\n  A[Client] --> B@{ shape: diam, label: \"Gateway\" }\n  B -->|OK| C[(DB)]";
+mermaid_validate(src)?;                          // syntax + semantic check with line numbers
+let svg = mermaid_to_svg(src)?;                  // default theme, auto-sized SVG
+let dark_svg = mermaid_to_svg_with_theme(src, "dark")?;
+
+let mut chart = MermaidChart::new(src);
+chart.allow_links = false;                       // disable <a> links for untrusted input
+let safe_svg = chart.svg()?;
+```
+
+## Chart Selection Guide
+
+| Data shape / intent | Chart type(s) | Primary data key(s) |
+|---|---|---|
+| Category comparison (vertical / horizontal) | `bar`, `horizontal_bar` | `x_axis_data`, `series_list` |
+| Trend / time series / area / step / band | `line` | `x_axis_data` or `x_axis_values`, `series_list` |
+| Part-to-whole / rings / Nightingale rose | `pie` | `series_list` |
+| Conversion / stage drop-off | `funnel` | `series_list` |
+| Correlation / bubble / regression / density | `scatter` | `series_list` (flat `[x,y,...]`) |
+| Distribution / quartiles | `histogram`, `box_plot` | `series_list` / `x_axis_data` + `box_series` |
+| Bridge / cumulative +/- steps | `waterfall` | `x_axis_data`, `data` |
+| Financial OHLC | `candlestick` | `x_axis_data`, `series_list` (4 per category) |
+| KPI single value / target vs ranges | `gauge`, `bullet` | `series_list` / `bullets` |
+| Multi-metric comparison / radial bars | `radar`, `polar_bar` | `indicators` / `x_axis_data`, `series_list` |
+| 2D matrix / daily calendar activity | `heatmap`, `calendar` | `x_axis_data` + `y_axis_data` + `series.data` / `data` |
+| Hierarchy | `treemap`, `sunburst`, `tree` | `series_data` (recursive) |
+| Directed flow / circular flow / network | `sankey`, `chord`, `graph` | `nodes`, `links` |
+| Multi-dimensional / stream over time | `parallel`, `theme_river` | `x_axis_data`, `series_list` |
+| Project timeline / tasks | `gantt` | `tasks` |
+| Geographic choropleth / origin-destination flows | `map`, `lines` | `geo_json` (object or map name), `data` / `lines` |
+| Tabular data + inline sparklines | `table` | `data` (2D cell array) |
+| Stacked / aligned composite dashboard | `multi` | `child_charts` |
+| Flowcharts, sequence, ER, class, state, mindmap, etc. | `mermaid` | `source` |
+
+## Minimal JSON Examples
+
+All 30 examples below match `docs/json.md`, pass `validate_chart_json`, and render directly:
+
+- `bar`: `{"title_text":"Visits","radius":3,"x_axis_data":["Mon","Tue","Wed"],"series_list":[{"name":"Email","data":[120,132,101],"label_show":true},{"name":"Search","data":[220,182,191],"category":"line"}]}`
+- `box_plot`: `{"x_axis_data":["Mon","Tue"],"box_series":[{"name":"Latency","data":[[655,850,940,980,1175],[672,800,845,885,1012]]}]}`
+- `bullet`: `{"label_show":true,"bullets":[{"name":"Done in time (%)","value":92,"target":95,"ranges":[80,90,100],"max":100},{"name":"Wait (min)","value":12,"target":10,"ranges":[10,20,30]}]}`
+- `calendar`: `{"start_date":"2024-01-01","end_date":"2024-03-31","data":[["2024-01-05",3],["2024-02-10",7],["2024-03-21",5]]}`
+- `candlestick`: `{"x_axis_data":["2024-10-24","2024-10-25","2024-10-28"],"series_list":[{"name":"MA5","data":[20,34,10,38,40,35,30,50,31,38,33,44]}]}`
+- `chord`: `{"link_gradient":true,"links":[{"source":"Asia","target":"Europe","value":60},{"source":"Asia","target":"Americas","value":45},{"source":"Europe","target":"Americas","value":50}]}`
+- `funnel`: `{"series_label_position":"inside","series_list":[{"name":"Show","data":[100]},{"name":"Click","data":[80]},{"name":"Order","data":[20]}]}`
+- `gantt`: `{"now":"2024-03-19","tasks":[{"name":"Research","category":"Plan","start":"2024-03-04","end":"2024-03-08","progress":1},{"name":"Design","category":"Build","start":"2024-03-07","end":"2024-03-22","progress":0.6},{"name":"Sign-off","category":"Build","start":"2024-03-22"},{"name":"Launch","category":"Plan","start":"2024-03-25","end":"2024-03-29"}]}`
+- `gauge`: `{"min":0,"max":100,"value_formatter":"{c}%","series_list":[{"name":"CPU","data":[72]}]}`
+- `graph`: `{"categories":["Team","Tool"],"nodes":[{"name":"Ann","category":0,"value":3},{"name":"Bob","category":0},{"name":"Git","category":1}],"links":[{"source":"Ann","target":"Bob","value":2},{"source":"Ann","target":"Git"},{"source":"Bob","target":"Git"}]}`
+- `heatmap`: `{"x_axis_data":["12a","6a","12p"],"y_axis_data":["Sat","Sun"],"series":{"min":0,"max":10,"data":[[0,9],[1,3],[2,6],[3,8],[4,2],[5,5]]}}`
+- `histogram`: `{"bin_width":5,"x_axis_title":"Height (cm)","series_list":[{"name":"Adults","data":[162.4,171,168.3,175.9,158.2,169.7,173.1,166.8]}]}`
+- `horizontal_bar`: `{"x_axis_data":["Brazil","India","China"],"series_label_position":"inside","series_list":[{"name":"2023","data":[182,234,290],"label_show":true}]}`
+- `line`: `{"series_smooth":true,"x_axis_data":["Mon","Tue","Wed","Thu"],"series_list":[{"name":"Email","data":[120,132,null,134],"mark_lines":[{"category":"average"}]},{"name":"Search","data":[220,182,191,234],"fill":true}]}`
+- `lines`: `{"curveness":0.3,"lines":[{"name":"North","value":80,"from":[0,0],"to":[40,30]},{"name":"East","value":20,"from":[0,0],"to":[50,-10]},{"name":"South","value":50,"from":[10,20],"to":[30,-20]}]}`
+- `map`: `{"label_show":true,"thresholds":[100,300],"colors":["#deebf7","#9ecae1","#3182bd"],"data":[["West",80],["East",420]],"geo_json":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"West"},"geometry":{"type":"Polygon","coordinates":[[[100,20],[106,20],[107,26],[101,27],[100,20]]]}},{"type":"Feature","properties":{"name":"East"},"geometry":{"type":"Polygon","coordinates":[[[106,20],[113,21],[112,27],[107,26],[106,20]]]}}]}}`
+- `mermaid`: `{"title_text":"Request Flow","source":"flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(Database)]"}`
+- `multi`: `{"gap":10,"child_charts":[{"type":"bar","x_axis_data":["Mon","Tue"],"series_list":[{"name":"Email","data":[120,132]}]},{"type":"pie","height":300,"series_list":[{"name":"Email","data":[40]},{"name":"Search","data":[38]}]}]}`
+- `parallel`: `{"x_axis_data":["Price","Weight","Rating"],"series_list":[{"name":"A","data":[120,3.2,4.5]},{"name":"B","data":[90,4.1,3.8]}]}`
+- `pie`: `{"rose_type":false,"radius":120,"inner_radius":60,"series_list":[{"name":"Email","data":[40]},{"name":"Search","data":[38]},{"name":"Direct","data":[32]}]}`
+- `polar_bar`: `{"category_axis":"radius","round_cap":true,"y_axis_configs":[{"axis_max":100}],"x_axis_data":["Sleep","Steps","Water"],"series_list":[{"name":"Done","data":[92,74,61],"label_show":true}]}`
+- `radar`: `{"indicators":[{"name":"Sales","max":6500},{"name":"Marketing","max":16000},{"name":"Support","max":30000}],"series_list":[{"name":"Budget","data":[4200,3000,20000]},{"name":"Spending","data":[5000,14000,28000]}]}`
+- `sankey`: `{"link_gradient":true,"links":[{"source":"Coal","target":"Electricity","value":25},{"source":"Gas","target":"Electricity","value":15},{"source":"Electricity","target":"Homes","value":30},{"source":"Electricity","target":"Industry","value":10}]}`
+- `scatter`: `{"series_symbol_sizes":[6,6],"series_list":[{"name":"Female","data":[161.2,51.6,167.5,59,159.5,49.2]},{"name":"Male","data":[174,65.6,175.3,71.8,193.5,80.7]}]}`
+- `sunburst`: `{"inner_radius":30,"series_data":[{"name":"Grandpa","children":[{"name":"Uncle Leo","value":15},{"name":"Father","children":[{"name":"Me","value":5},{"name":"Brother","value":1}]}]}]}`
+- `table`: `{"title_text":"NASDAQ","data":[["Name","Price","Change"],["Datadog Inc","97.32","-7.49%"],["Hashicorp Inc","28.66","-9.25%"]],"text_aligns":["left","center","right"],"body_font_weight":"bold","cell_styles":[{"indexes":[1,2],"font_color":"#fff","background_color":"#2d7c2b"}]}`
+- `theme_river`: `{"x_axis_data":["Jan","Feb","Mar","Apr"],"series_list":[{"name":"News","data":[10,25,18,30]},{"name":"Sport","data":[15,12,22,16]}]}`
+- `tree`: `{"orient":"TB","series_data":[{"name":"root","children":[{"name":"a","children":[{"name":"a1"},{"name":"a2"}]},{"name":"b"}]}]}`
+- `treemap`: `{"series_data":[{"name":"Docs","children":[{"name":"Guides","value":6},{"name":"API","value":4}]},{"name":"Media","value":5}]}`
+- `waterfall`: `{"x_axis_data":["Revenue","Cost","Tax","Profit"],"data":[[900,false],[-345,false],[-108,false],[0,true]]}`
+
+## Error Format & Self-Correction Loop
+
+- `Error::code(&self)` returns a stable category string: `"params"`, `"json"`, `"font_not_found"`, `"parse_font"`, `"mermaid"` (`mermaid` feature), and `"image_size"` / `"image_raw"` / `"svg_parse"` / `"image_encode"` (`raster` feature).
+- `validate_chart_json` / `validate_chart_json_with_limits` collect up to 50 `ValidationIssue` entries in one pass (`serde::Serialize`):
+  - `code`: `"unknown_field"` | `"invalid_type"` | `"invalid_enum"` | `"out_of_range"` | `"invalid_color"` | `"unknown_theme"` | `"unknown_map"` | `"missing_required"` | `"limit_exceeded"` | `"mermaid_syntax"`
+  - `path`: dotted/indexed path (e.g. `"series_list[0].lable_show"`, `"child_charts[1].width"`, or `""` for root)
+  - `message`: human-readable message (identical to `Error::Params`)
+  - `expected` (optional): allowed values, type, or bound
+  - `suggestion` (optional): full replacement path for typos (e.g. `"series_list[0].label_show"`)
+  - `line` (optional): 1-based line number for Mermaid syntax errors
+- Recommended LLM loop: `validate_chart` -> apply all `suggestion` / `expected` / `line` fixes -> retry `render_chart`.
+
+## Server Deployment & Output Formats
+
+- **Output format (`svg` vs `png`)**: many MCP clients cannot display raw SVG inline. Expose `format?: "svg" | "png"` (default `"png"` when the `png` feature is enabled), rasterize via `svg_to_png(&svg)`, and return PNG as MCP `image` content (base64) or SVG as `text` / resource.
+- **Resource bounds**: always render untrusted requests via `render_chart_from_value_with_limits` / `render_chart_from_json_with_limits` with `RenderLimits` (defaults: `max_json_bytes: 1 MiB`, `max_canvas_side: 8192`, `max_data_points: 100_000`, `max_mermaid_source: 64 KiB`).
+- **Fonts & CJK**: unregistered `font_family` names are NOT rejected — they remain in the SVG while text width measurement silently falls back to `"Roboto"`. Load CJK fonts at server startup with `add_fonts(&[...])`, expose `get_font_families()` via `charts://fonts`, and optionally patch `properties.font_family.enum` in returned schemas.
+- **Named GeoJSON maps**: preload maps once at startup with `register_geo_json(name, geojson)` so models pass `"geo_json": "<name>"` instead of giant polygons (China province/city GeoJSON files live under `asset/geo/china/` in the repository, excluded from the published crate).
+- **Async HTTP isolation**: chart rendering and PNG rasterization are synchronous CPU tasks; run them inside `tokio::task::spawn_blocking` with a request timeout, and set `allow_links = false` on untrusted Mermaid diagrams.
+
+## MCP Integration Recipe
+
+Recommended MCP server surface backed by `charts-rs`:
+
+1. `list_chart_types()` -> returns `chart_catalog()` (`name`, `title`, `description`, `example`).
+2. `get_chart_schema(chart_type: string, level?: "essential" | "full")` -> calls `chart_json_schema_with(chart_type, level)` (default `SchemaLevel::Essential`, open `additionalProperties: true` with `examples`; use `Full` for advanced styling).
+3. `validate_chart(chart_type: string, options: object)` -> calls `validate_chart_json_with_limits(chart_type, &options, &limits)` returning structured `Vec<ValidationIssue>`.
+4. `render_chart(chart_type: string, options: object, format?: "svg" | "png")` -> calls `render_chart_from_value_with_limits(chart_type, &options, &limits)`, optionally rasterizing with `svg_to_png`.
+5. `validate_mermaid(source: string)` -> calls `mermaid_validate(source)` returning line-numbered `Error::Mermaid`.
+6. `render_mermaid(source: string, theme?: string, allow_links?: bool)` -> builds `MermaidChart::new_with_theme(source, theme.unwrap_or_default())`, sets `chart.allow_links = allow_links.unwrap_or(false)`, and renders SVG (or PNG).
+
+Recommended MCP **Resources**: `charts://themes` (`list_themes()`), `charts://fonts` (`get_font_families()`), `charts://maps` (`list_geo_json()`), `charts://mermaid/capabilities` (`mermaid_capabilities()`), `charts://examples/{type}` (`chart_example(type)`).
+
+## Chart Types & Themes
+
+### 30 Type Names (`list_chart_types()`)
+
+- Cartesian & statistical: `bar`, `horizontal_bar`, `line`, `scatter`, `candlestick`, `histogram`, `box_plot`, `waterfall`, `theme_river`, `parallel`.
+- Part-to-whole & radial: `pie`, `polar_bar`, `radar`, `funnel`, `gauge`, `bullet`, `sunburst`, `treemap`.
+- Relational, hierarchy & matrix: `sankey`, `chord`, `graph`, `tree`, `heatmap`, `calendar`, `gantt`, `table`.
+- Geospatial & flow: `map` (GeoJSON choropleth), `lines` (origin-destination flows, optional GeoJSON underlay).
+- Composition & diagrams: `multi` (`MultiChart`, stacks or positions multiple `child_charts` with optional `align_plots`), `mermaid` (requires `mermaid` feature).
+
+### 10 Built-in Themes (`list_themes()`)
+
+`light` (default), `dark`, `ant`, `grafana`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, `shadcn`. Custom themes can be registered at runtime via `add_theme(name, theme)`.
+
+## Mermaid Specification (`features = ["mermaid"]`)
+
+### 13 Canonical Diagrams (`supported_diagrams`) & 7 Aliases (`diagram_aliases`)
+
+- Canonical (`supported_diagrams`): `flowchart`, `sequenceDiagram`, `stateDiagram-v2`, `classDiagram`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta`, `treemap-beta`.
+- Aliases (`diagram_aliases`): `graph` -> `flowchart`, `stateDiagram` -> `stateDiagram-v2`, `classDiagram-v2` -> `classDiagram`, `sankey` -> `sankey-beta`, `xychart` -> `xychart-beta`, `radar` -> `radar-beta`, `treemap` -> `treemap-beta`.
+
+### Explicitly Unsupported Diagrams (`unsupported_diagrams`)
+
+Do not generate these — they return `Error::Mermaid`: `gitGraph`, `timeline`, `journey`, `C4Context`, `C4Container`, `C4Component`, `C4Dynamic`, `C4Deployment`, `architecture-beta`, `kanban`, `packet-beta`, `block-beta`, `requirementDiagram`, `zenuml`.
+
+### Flowchart v11 `@{ shape, label }` Names (`v11_shapes`)
+
+`rect` / `process` / `rectangle`, `rounded` / `event`, `stadium` / `terminal` / `pill`, `subproc` / `fr-rect` / `subprocess`, `cyl` / `cylinder` / `database` / `db`, `circle` / `circ`, `dbl-circ` / `double-circle` / `doublecircle`, `diam` / `diamond` / `decision`, `hex` / `hexagon` / `prepare`, `lean-r` / `in-out`, `lean-l` / `out-in`, `trap-b` / `priority`, `trap-t` / `manual`, `odd` / `asym` / `asymmetric`, `doc` / `document`, `docs` / `documents`, `delay` / `half-rounded-rectangle`, `tri` / `triangle` / `extract`, `flag` / `notch-pent`, `sm-circ` / `start`, `f-circ` / `junction`, `text`.
+
+### Supported Frontmatter / `%%{init}%%` Keys (`init_config_keys`)
+
+`theme` (`dark`, `forest`, `default`/`base`/`neutral`), `fontFamily`, `fontSize`, `flowchart.curve` (`basis`/`smooth`/`linear`/`step`), `flowchart.nodeSpacing`, `flowchart.rankSpacing`, `sequence.mirrorActors`, `sequence.showSequenceNumbers`, `xyChart.showLegend`.
+
+### Key Mermaid Features & Limitations
+
+- Supported: `accTitle` / `accDescr` SVG `<title>`/`<desc>` + ARIA attributes; `click` links with protocol allowlist (`http://`, `https://`, `mailto:`, relative; disable via `allow_links: false`); multiline Markdown strings (`` "`...`" ``); nested subgraphs, `classDef`/`class`/`style`; sequence `create`/`destroy`, `box`, `autonumber`; gantt `excludes`/`includes`/`vert`.
+- Limitations: subgraph-level `direction` inside flowcharts is ignored; `themeVariables` color overrides are not supported (only `fontFamily` and `fontSize`); no HTML `<foreignObject>` (HTML tags stripped to plain SVG text); Font Awesome icons (`fa:fa-*`) are stripped; JS `click` callbacks are ignored; rough/hand-drawn look mode is not supported.
+
+## Docs
+
+- [llms-full.txt](./llms-full.txt): Concatenated LLM bundle (`llms.txt` + User Guide + JSON Reference, generated via `make llms`).
+- [README](./README.md): Overview, quickstart, feature summary, and benchmarks (English).
+- [README (Chinese)](./README-zh.md): Overview, quickstart, feature summary, and benchmarks (中文).
+- [User Guide](./docs/guide.md): Building charts in Rust and JSON, axes, labels, custom fonts, raster export, and Mermaid diagrams.
+- [User Guide (Chinese)](./docs/guide-zh.md): 使用指南（中文）.
+- [JSON Reference](./docs/json.md): Complete key-by-key reference for every chart type, types, defaults, and examples.
+- [JSON Reference (Chinese)](./docs/json-zh.md): JSON 参数参考（中文）.
+- [Gallery](./docs/gallery.md): Visual catalog of all 28 chart types, `MultiChart`, and Mermaid diagrams.
+- [Themes](./theme.md): Preview of all 10 built-in themes.
+- [Mermaid Architecture & Design](./docs/mermaid-design.md): Pure-Rust Mermaid engine architecture, layout engines, and adapter design.
+- [Mermaid Issues & Roadmap](./docs/mermaid-issues.md): Known Mermaid edge cases, resolved issues, and compatibility tracker.
+- [Migrating to 2.0](./docs/migrating-2.0.md): Breaking changes and upgrade guide from 1.x to 2.0.
+- [Migrating to 1.0](./docs/migrating-1.0.md): Upgrade guide from 0.x to 1.0.
+- [Changelog](./CHANGELOG.md): Release history.
+
+## Examples & Fixtures
+
+- [Examples directory](./examples): Runnable Rust examples (`bar.rs`, `chord.rs`, `gantt.rs`, `histogram.rs`, `line.rs`, `map.rs`, `mermaid.rs`, `pie.rs`, `polar_bar.rs`, `sankey.rs`, `sunburst.rs`, `tree.rs`, `multi_chart/`).
+- [JSON fixtures](./asset): Real JSON chart fixtures under `asset/*_chart/*.json` (e.g. `asset/bar_chart/`, `asset/line_chart/`, `asset/mermaid_chart/`, `asset/multi_chart/`, `asset/scatter_chart/`, `asset/table_chart/`).
+- [China GeoJSON maps](./asset/geo/china/README.md): Province and city GeoJSON files ready for `MapChart` and `register_geo_json` (repository-only).
+
+---
+
+# Guide
+
+[中文](./guide-zh.md)
+
+How to build charts with `charts-rs`: the two ways in, the options that take
+a word of explanation, fonts and output. Every JSON key is listed in the
+[JSON reference](./json.md), and the charts are shown in the
+[gallery](./gallery.md).
+
+- [Building a chart](#building-a-chart): [in Rust](#in-rust),
+  [from JSON](#from-json), [the same options on both paths](#options-in-rust-and-in-json)
+- [Output](#output): [images](#images), [compact SVG](#compact-svg)
+- [Data and labels](#data-and-labels): [null points](#null-data-points),
+  [label formatters](#label-formatters), [overlapping labels](#overlapping-data-labels),
+  [copyright lines and watermarks](#copyright-lines-and-watermarks)
+- [Axes](#axes): [value and time x axes](#value-and-time-x-axes), [titles](#axis-titles)
+- [Charts](#charts): [band around a line](#band-around-a-line),
+  [bubble](#bubble-chart), [marginal histograms](#marginal-histograms),
+  [density contours](#density-contours),
+  [histogram](#histogram), [polar bar](#polar-bar-chart),
+  [chord](#chord-chart), [gantt](#gantt-chart), [map](#map-chart),
+  [lines](#lines-chart), [bullet](#bullet-chart),
+  [sparklines in a table](#sparklines-in-a-table),
+  [charts one above the other](#charts-one-above-the-other),
+  [Mermaid diagrams](#mermaid-diagrams)
+- [Fonts](#fonts)
+- [Development](#development)
+
+## Building a chart
+
+### In Rust
+
+```rust,no_run
+use charts_rs::{
+    BarChart, Box, SeriesCategory, THEME_GRAFANA, svg_to_png
+};
+let mut bar_chart = BarChart::new_with_theme(
+    vec![
+        ("Evaporation", vec![2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6]).into(),
+        (
+            "Precipitation",
+            vec![2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6],
+        )
+            .into(),
+        ("Temperature", vec![2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3]).into(),
+    ],
+    vec![
+        "Mon".to_string(),
+        "Tue".to_string(),
+        "Wed".to_string(),
+        "Thu".to_string(),
+        "Fri".to_string(),
+        "Sat".to_string(),
+        "Sun".to_string(),
+    ],
+    THEME_GRAFANA,
+);
+bar_chart.title.text = "Mixed Line and Bar".to_string();
+bar_chart.legend.margin = Some(Box {
+    top: bar_chart.title.height,
+    bottom: 5.0,
+    ..Default::default()
+});
+bar_chart.series_list[2].category = Some(SeriesCategory::Line);
+bar_chart.series_list[2].y_axis_index = 1;
+bar_chart.series_list[2].label_show = true;
+
+bar_chart
+    .y_axis_configs
+    .push(bar_chart.y_axis_configs[0].clone());
+bar_chart.y_axis_configs[0].formatter = Some("{c} ml".to_string());
+bar_chart.y_axis_configs[1].formatter = Some("{c} °C".to_string());
+
+println!("{}", &bar_chart.svg().unwrap());
+svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+```
+
+### From JSON
+
+Every key such a JSON document may have, for every chart — with its type,
+its default and what it does — is listed in the
+[JSON options reference](./json.md).
+
+```rust,no_run
+use charts_rs::{BarChart, svg_to_png};
+let bar_chart = BarChart::from_json(
+    r###"{
+        "width": 630,
+        "height": 410,
+        "margin": {
+            "left": 10,
+            "top": 5,
+            "right": 10
+        },
+        "title_text": "Bar Chart",
+        "title_font_color": "#345",
+        "title_align": "right",
+        "sub_title_text": "demo",
+        "legend_align": "left",
+        "series_list": [
+            {
+                "name": "Email",
+                "label_show": true,
+                "data": [120.0, 132.0, 101.0, 134.0, 90.0, 230.0, 210.0]
+            },
+            {
+                "name": "Union Ads",
+                "data": [220.0, 182.0, 191.0, 234.0, 290.0, 330.0, 310.0]
+            }
+        ],
+        "x_axis_data": [
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sun"
+        ]
+    }"###,
+).unwrap();
+println!("{}", bar_chart.svg().unwrap());
+svg_to_png(&bar_chart.svg().unwrap()).unwrap();
+```
+
+### Options in Rust and in JSON
+
+The options are the same on both paths, and this README names them by their
+JSON key. In Rust the shared ones are grouped by what they belong to —
+`title`, `sub_title`, `legend`, `x_axis`, `grid`, `series`, `tooltip` — and a
+JSON key is the path of the field joined with `_`:
+
+| JSON | Rust |
+|------|------|
+| `"title_font_size": 18` | `chart.title.font.size = 18.0` |
+| `"legend_position": "bottom"` | `chart.legend.position = Some(Position::Bottom)` |
+| `"x_axis_data": [...]` | `chart.x_axis.data = vec![...]` |
+| `"series_label_font_color": "#333"` | `chart.series.label.font.color = "#333".into()` |
+| `"tooltip_show": true` | `chart.tooltip.show = true` |
+
+The exceptions: `x_boundary_gap` is `x_axis.boundary_gap`, `x_axis_type` is
+`x_axis.kind`, the `axis_` of the keys of a y axis is left out (`"axis_min"`
+is `y_axis_configs[0].min`), and the `series` object of a heatmap is
+`heatmap_series` (`series` being the options of the series, on every chart).
+Every JSON key is described in the [JSON reference](./json.md).
+
+### Runnable examples
+
+Runnable examples live in [`examples/`](../examples); each writes an `svg` file:
+
+```bash
+cargo run --example bar       # basic bar chart
+cargo run --example line      # smooth line with area fill and mark line / points
+cargo run --example pie       # nightingale (rose) chart
+cargo run --example sunburst  # sunburst with label formatter, ring thickness, animation
+cargo run --example sankey     # sankey flow diagram (nodes auto-derived from links)
+cargo run --example tree       # node-link tree with curved links (LR layout)
+cargo run --example histogram  # distribution of a sample over equal-width bins
+cargo run --example polar_bar  # polar bars: stacked around the circle, and rings with round caps
+cargo run --example chord      # chord diagram of the flows between nodes (gradient ribbons)
+cargo run --example gantt      # gantt chart: a project plan with progress, milestones and today
+cargo run --example map        # map of regions (GeoJSON) colored by value, in classes
+cargo run --example mermaid --features mermaid  # Mermaid diagrams (flowchart, sequenceDiagram)
+```
+
+## Output
+
+### Images
+
+SVG output works with the default build. Raster export is opt-in, one
+feature per format: `png`, `jpeg`, `webp` and `avif` enable `svg_to_png`,
+`svg_to_jpeg`, … (and their `_with_size` variants). Pick only what you need —
+`avif` in particular pulls in the heavyweight `rav1e` encoder:
+
+```toml
+[dependencies]
+charts-rs = { version = "2", features = ["png"] }
+```
+
+`image-encoder` is the umbrella feature that turns on all four formats.
+
+An image is as large as its chart, or as large as asked for:
+
+```rust,no_run
+use charts_rs::{BarChart, svg_to_png_with_size};
+let chart = BarChart::from_json(
+    r###"{"series_list": [{"name": "Email", "data": [120, 132, 101]}], "x_axis_data": ["Mon", "Tue", "Wed"]}"###,
+).unwrap();
+let svg = chart.svg().unwrap();
+
+// Scale to exactly 800×400
+let png = svg_to_png_with_size(&svg, Some(800), Some(400)).unwrap();
+
+// Scale to width 800, preserve aspect ratio
+let png = svg_to_png_with_size(&svg, Some(800), None).unwrap();
+```
+
+### Compact SVG
+
+`chart.compact = true` (JSON `"compact": true`) writes the SVG the way an
+optimizer would: no whitespace, relative path data with `h`/`v` shorthands,
+grid lines and ticks merged into single paths, shared attributes hoisted onto
+groups, defaults and long hex colors dropped. The picture is the same and the
+file is typically 20–30% smaller. The same rewrite is available as
+`charts_rs::compact_svg(&svg)` for output you already have.
+
+## Data and labels
+
+### Null data points
+
+Use `null` in JSON arrays to represent missing data; the chart skips rendering for those positions.
+
+```json
+{
+  "series_list": [{
+    "name": "Sales",
+    "data": [120.0, null, 101.0, null, 90.0]
+  }]
+}
+```
+
+In Rust, build the series with `Option<f32>` values (`None` is a missing point):
+
+```rust
+use charts_rs::Series;
+let series = Series::new_nullable(
+    "Sales".to_string(),
+    vec![Some(120.0), None, Some(101.0), None, Some(90.0)],
+);
+// or via the tuple conversion
+let series: Series = ("Sales", vec![Some(120.0), None, Some(101.0)]).into();
+```
+
+The legacy `NIL_VALUE` sentinel (`Series::new` / `Vec<f32>`) still works and is treated as `None`.
+
+### Label formatters
+
+Formatters are supported in `series_label_formatter`, `axis_formatter`, and `value_formatter` (GaugeChart).
+
+| Placeholder | Meaning |
+|-------------|---------|
+| `{c}` | Data value |
+| `{a}` | Series name |
+| `{b}` | Category (x-axis label) |
+| `{d}` | Percentage (pie / funnel) |
+| `{t}` | Thousands notation (1.2K, 5.6M) |
+
+### Overlapping data labels
+
+`"series_label_hide_overlap": true` drops a data label that would be printed
+over another one.
+
+### Copyright lines and watermarks
+
+Every chart takes `texts`: lines of text written over it, wherever they are
+asked for.
+
+<p align="center">
+  <img src="../asset/image/texts.png" width="60%" alt="A chart with a source, a copyright line and a watermark">
+</p>
+
+```json
+{
+  "texts": [
+    { "text": "Source: web analytics", "left": 10, "bottom": 6, "reserve": true },
+    { "text": "© 2026 Example Inc.", "right": 10, "bottom": 6, "reserve": true },
+    { "text": "DRAFT", "font_size": 72, "font_color": "#00000014", "font_weight": "bold", "rotate": -25 }
+  ]
+}
+```
+
+- A text is placed by its distances from the edges of the chart, in pixels:
+  with a `left` it starts there, with a `right` it ends there, and with
+  neither it is centered; `top` and `bottom` do the same from above and from
+  below. Without any of them it is in the very middle, where a watermark
+  goes.
+- `font_size` (12 by default), `font_color` (that of the sub-title) and
+  `font_weight` are its font, and `rotate` turns it by so many degrees. A
+  watermark wants a color with an alpha, such as `"#00000014"`.
+- The texts are written last, over everything else, and a chart leaves no
+  room for them: a watermark is meant to be over the plot. A line that is to
+  be below the axis, or above the title, says `"reserve": true`, and the
+  chart is drawn in what is left: a text with a `top` or a `bottom` takes a
+  band across there, one with a `left` or a `right` only a band down that
+  side. A table, a calendar and a multi chart are larger by that room
+  instead.
+- In a `MultiChart` the `texts` at the top are over the whole picture, and
+  those of a child over that child.
+- A theme can have `texts` too: register one with your copyright line and
+  every chart of that theme carries it. The `texts` of a chart stand in for
+  those of its theme (`"texts": []` for none).
+
+```rust
+use charts_rs::{BarChart, TextConfig};
+
+let mut chart = BarChart::new(
+    vec![("Email", vec![120.0, 132.0, 101.0]).into()],
+    ["Mon", "Tue", "Wed"].map(String::from).to_vec(),
+);
+chart.texts.push(TextConfig {
+    text: "© 2026 Example Inc.".to_string(),
+    right: Some(10.0),
+    bottom: Some(6.0),
+    // below the axis, not over its labels
+    reserve: true,
+    ..Default::default()
+});
+let svg = chart.svg().unwrap();
+```
+
+## Axes
+
+### Value and time x axes
+
+A line or bar chart spaces its points evenly by default (a category axis).
+Give the points x values and the axis becomes continuous: every point sits at
+its value, so irregular samples keep their real spacing.
+
+```json
+{
+  "x_axis_title": "Time (UTC)",
+  "y_axis_configs": [{ "axis_title": "Temperature (°C)" }],
+  "x_axis_values": ["2024-03-01 00:00", "2024-03-01 00:20", "2024-03-01 04:00", "2024-03-01 12:00"],
+  "series_list": [
+    { "name": "Indoor", "data": [21.5, 21.8, 20.1, 24.6] },
+    { "name": "Outdoor", "x_values": ["2024-03-01 02:00", "2024-03-01 11:00"], "data": [8.2, 14.9] }
+  ]
+}
+```
+
+- `x_axis_values` are shared by every series; a series sampled at other
+  moments carries its own `x_values`.
+- Date strings (`2024-03-01`, `2024-03-01 08:30`, `2024-03-01T08:30:00+08:00`)
+  make it a time axis. Numbers are plain values, or unix seconds with
+  `"x_axis_type": "time"`.
+- Ticks fall on round values and round times. `x_axis_min` / `x_axis_max` fix
+  the range, `x_axis_formatter` formats the labels (`"{c} km"`, or a pattern
+  such as `"%m-%d %H:%M"` on a time axis) and `x_axis_time_offset` (minutes
+  east of UTC) shows timestamps in local time.
+
+In Rust, set `chart.x_axis.values` (`Vec<f64>`) and, for timestamps,
+`chart.x_axis.kind = AxisType::Time`.
+
+### Axis titles
+
+`x_axis_title` is written below the x axis; `axis_title` in a y axis config
+is written along that axis.
+
+## Charts
+
+What takes a word of explanation; the options of every chart are in the
+[JSON reference](./json.md).
+
+### Band around a line
+
+A line series can carry a `band`: a lower and an upper bound for each point,
+with the area between them filled in the color of the series — a confidence
+interval, a forecast range, a daily minimum and maximum.
+
+```json
+{
+  "x_axis_data": ["Mon", "Tue", "Wed", "Thu"],
+  "series_list": [{
+    "name": "Forecast",
+    "data": [120, 132, 128, 141],
+    "band": { "lower": [116, 126, 119, 129], "upper": [124, 138, 137, 153] }
+  }]
+}
+```
+
+```rust
+use charts_rs::{Series, SeriesBand};
+let mut series: Series = ("Forecast", vec![120.0, 132.0, 128.0, 141.0]).into();
+series.band = Some(SeriesBand::new(
+    vec![116.0, 126.0, 119.0, 129.0],
+    vec![124.0, 138.0, 137.0, 153.0],
+));
+```
+
+- The band follows its line: smooth when the series is smooth, on a category,
+  value or time x axis, also for the line series of a bar chart. The y axis
+  makes room for the bounds.
+- A `null` bound leaves a gap in the band.
+- A series with a band and no `data` draws the band alone (a min–max range).
+- With `tooltip_show` the tooltip of a point tells its bounds, and the points
+  carry `data-lower` / `data-upper`.
+- The bounds are absolute values: a band is not stacked with its series.
+
+### Bubble chart
+
+A scatter chart with `"bubble": true` reads its series data as `[x, y, size]`
+triples and scales each circle by its size (`bubble_min_size` /
+`bubble_max_size` set the radius range):
+
+```json
+{
+  "bubble": true,
+  "series_list": [{ "name": "Asia", "data": [12, 77, 1400, 40, 84, 125] }]
+}
+```
+
+### Marginal histograms
+
+`"marginal": {}` on a scatter chart draws the distribution of its own points:
+above the plot, how the x values fall, and to the right, how the y values
+fall. The bins run from the axis minimum to its maximum, so each bar is
+exactly over the points it counts. The histograms use this chart's axes
+and its points.
+
+```rust
+use charts_rs::{MarginalHistogram, ScatterChart};
+
+let mut chart = ScatterChart::new(vec![
+    ("Female", vec![161.2, 51.6, 167.5, 59.0, 159.5, 49.2]).into(),
+    ("Male", vec![174.0, 65.6, 175.3, 71.8, 193.5, 80.7]).into(),
+]);
+chart.marginal = Some(MarginalHistogram {
+    bin_count: 8,
+    ..Default::default()
+});
+let _svg = chart.svg().unwrap();
+```
+
+```json
+{
+  "marginal": { "bin_count": 8, "size": 70 },
+  "series_list": [
+    {"name": "Female", "data": [161.2, 51.6, 167.5, 59, 159.5, 49.2]},
+    {"name": "Male", "data": [174, 65.6, 175.3, 71.8, 193.5, 80.7]}
+  ]
+}
+```
+
+- `size` is the height of the top histogram and the width of the right one,
+  in pixels (default 64). The plot keeps at least 40 pixels.
+- `bin_count` of `0` chooses the number of bins; it is never more than 40.
+- Several series share the bins and are drawn over each other, in the color
+  of the series. Each side is scaled to its own tallest bar.
+- A bubble is one point: its size is not a value on either axis. A missing
+  coordinate is left out, and so is a point that falls outside the axis.
+
+### Density contours
+
+`"contour": {}` on a scatter chart draws unfilled density lines of its own
+points. Each series is estimated with a Gaussian kernel, and the lines are
+traced under the points in the color of the series. The contours use this
+chart's axes and its points.
+
+```rust
+use charts_rs::{DensityContour, ScatterChart};
+
+let mut chart = ScatterChart::new(vec![(
+    "A",
+    vec![
+        1.0, 2.1, 1.4, 1.8, 0.8, 2.4, 1.6, 2.0, 1.1, 1.7, 0.9, 2.2, 1.3, 2.5, 1.2, 1.9,
+    ],
+)
+.into()]);
+chart.contour = Some(DensityContour::default());
+let _svg = chart.svg().unwrap();
+```
+
+```json
+{
+  "contour": { "levels": 4, "grid_size": 48 },
+  "series_list": [
+    {"name": "A", "data": [1, 2.1, 1.4, 1.8, 0.8, 2.4, 1.6, 2, 1.1, 1.7, 0.9, 2.2, 1.3, 2.5, 1.2, 1.9]}
+  ]
+}
+```
+
+- `levels` of `4` (the default) draws the lines at 20%, 40%, 60% and 80% of
+  the highest density. `0` is those four, and there are never more than 8.
+- `grid_size` is the number of cells along each axis of the density grid
+  (default 64, from 16 to 128).
+- The bandwidth follows the spread of the points on each axis (Scott's
+  rule). A series with fewer than 8 points on the axes draws no line.
+- A bubble is one point: its size is not a coordinate. A missing coordinate
+  is left out, and so is a point that falls outside the axis. On a
+  logarithmic axis the density is estimated in the log of the values, so
+  the lines stay over the points.
+
+### Histogram
+
+A `HistogramChart` takes the raw sample as the series data and counts it
+into equal-width bins:
+
+```json
+{
+  "x_axis_title": "Height (cm)",
+  "series_list": [{ "name": "Adults", "data": [162.4, 171.0, 168.3, 175.9, 158.2, 169.7] }]
+}
+```
+
+- The bins are chosen from the sample (with round edges) by default;
+  `bin_width` or `bin_count` set them, and `x_axis_min` / `x_axis_max` fix
+  the range.
+- `"percent": true` shows the share of each sample instead of a count.
+- Several series share the bins and are drawn over each other; give them
+  the same `stack` name to pile them up instead.
+
+### Polar bar chart
+
+A `PolarBarChart` draws the bars of a bar chart on polar axes. The categories
+are `x_axis_data`; series sit side by side within a category, or pile up when
+they share a `stack` name.
+
+```json
+{
+  "inner_radius": 30,
+  "x_axis_data": ["Jan", "Feb", "Mar", "Apr"],
+  "series_list": [
+    { "name": "North", "stack": "total", "data": [42, 38, 51, 64] },
+    { "name": "South", "stack": "total", "data": [30, 34, 40, 58] }
+  ]
+}
+```
+
+- By default the categories go around the circle and the bars grow outwards.
+  `"category_axis": "radius"` gives every category a ring instead, and the
+  bars run around the circle: by default over three quarters of it for the
+  largest value on the axis (`end_angle` changes that), with `"round_cap":
+  true` for rounded ends.
+- `start_angle` (degrees clockwise from 12 o'clock) turns the chart,
+  `inner_radius` leaves a hole in the center, `radius` limits the size and
+  `category_gap` (0 to 0.9, default 0.2) sets the space between categories.
+- The value axis is the first of `y_axis_configs` (`axis_min`, `axis_max`,
+  `axis_split_number`, `axis_formatter`); `x_axis_hidden` / `y_axis_hidden`
+  hide the category and the value labels.
+- `label_show`, `colors` (a color per bar), `tooltip_show` and `animation`
+  work as in a bar chart.
+
+In Rust: `PolarBarChart::new(series_list, x_axis_data)`, then
+`chart.category_axis = PolarAxis::Radius`.
+
+### Chord chart
+
+A `ChordChart` shows who exchanges how much with whom: the nodes are arcs of
+a circle, as long as the flows through them, and every link is a ribbon
+across the circle, as wide at both ends as its value.
+
+```json
+{
+  "link_gradient": true,
+  "links": [
+    { "source": "Asia", "target": "Europe", "value": 60 },
+    { "source": "Asia", "target": "Americas", "value": 45 },
+    { "source": "Europe", "target": "Americas", "value": 50 }
+  ]
+}
+```
+
+- The nodes are derived from the names in `links`, in first-seen order;
+  list them in `nodes` (`{"name": ..., "color": ...}`) to fix their order or
+  their colors. A link from a node to itself is allowed.
+- A ribbon takes the color of its source node, or fades to the color of its
+  target with `"link_gradient": true`; `link_opacity` (default 0.5) lets the
+  ribbons show through each other.
+- `node_width` (default 12) is the thickness of the ring, `node_gap`
+  (default 3) the gap between nodes in degrees, `start_angle` turns the
+  chart and `radius` limits its size.
+- The labels are the node names; `series_label_formatter` can add the flow
+  (`{c}`) or the share (`{d}`), e.g. `"{b} ({d})"`. `tooltip_show` and
+  `animation` work as in the other charts.
+
+In Rust: `ChordChart::new(vec![], vec![("Asia", "Europe", 60.0).into()])`.
+
+### Gantt chart
+
+A `GanttChart` draws tasks as bars along a time axis:
+
+```json
+{
+  "now": "2024-03-19",
+  "tasks": [
+    { "name": "Research", "category": "Plan", "start": "2024-03-04", "end": "2024-03-08", "progress": 1 },
+    { "name": "Design", "category": "Build", "start": "2024-03-07", "end": "2024-03-22", "progress": 0.6 },
+    { "name": "Sign-off", "category": "Build", "start": "2024-03-22" }
+  ]
+}
+```
+
+- Every task has a row of its own, named after it; tasks with the same `row`
+  share one (the bookings of a room, the flights at a gate) and are named on
+  their bars.
+- `category` colors the tasks and makes the legend, `progress` (0 to 1) shows
+  how much is done, a task without an `end` is a milestone, and `now` marks
+  a moment across the chart.
+- The x axis is the time axis of the line chart: `x_axis_min` /
+  `x_axis_max`, `x_axis_formatter` and `x_axis_time_offset` apply, and
+  `"x_axis_type": "value"` makes it an axis of plain numbers.
+
+In Rust: `GanttChart::new(vec![("Research", start, end).into()])`, with the
+times as unix seconds.
+
+### Map chart
+
+A `MapChart` colors the regions of a map by their values. The regions are
+GeoJSON that comes with the options — the library has no map data of its own:
+
+```json
+{
+  "label_show": true,
+  "thresholds": [100, 300],
+  "colors": ["#deebf7", "#9ecae1", "#3182bd"],
+  "data": [["West", 80], ["East", 420]],
+  "geo_json": { "type": "FeatureCollection", "features": [] }
+}
+```
+
+- `geo_json` is a `FeatureCollection` of `Polygon` and `MultiPolygon`
+  geometries (holes and islands included); `data` gives the value of a
+  region by its name, the property `name` of its feature (or another one,
+  with `name_property`).
+- The scale is the one of the heatmap: from `min_color` to `max_color`,
+  through several `colors`, or in classes (`steps`, `thresholds`); it is
+  shown beside the map. A region without a value is drawn in `empty_color`.
+- `projection` is `mercator` (the default) or `equirectangular`.
+
+In Rust: `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`.
+
+**Named map registry (HTTP / MCP servers).** Instead of sending large GeoJSON
+documents on every JSON request, preload them once at startup with
+`register_geo_json` and reference them by name (`list_geo_json()` lists
+registered names). Note that the files under `asset/geo/china` are in the
+repository only and are not bundled into the published crate:
+
+```rust,no_run
+use charts_rs::{list_geo_json, register_geo_json, render_chart_from_json};
+
+let geo: serde_json::Value = serde_json::from_str(
+    &std::fs::read_to_string("asset/geo/china/100000_full.json").unwrap(),
+)
+.unwrap();
+register_geo_json("china", geo).unwrap();
+assert!(list_geo_json().contains(&"china".to_string()));
+let svg = render_chart_from_json(
+    "map",
+    r#"{"geo_json": "china", "data": [["北京市", 100]]}"#,
+)
+.unwrap();
+```
+
+**Where to get the regions.** A real map needs a GeoJSON file of its
+regions, which the library does not come with. Some places that have them:
+
+| Source | What it has | Terms |
+|---|---|---|
+| [Natural Earth](https://www.naturalearthdata.com/) | The countries of the world and their states and provinces, at three levels of detail (1:10m, 1:50m, 1:110m); as GeoJSON in the `geojson` folder of [its repository](https://github.com/nvkelso/natural-earth-vector). | Public domain. |
+| [geoBoundaries](https://www.geoboundaries.org/) | The administrative divisions of every country, level by level; as GeoJSON, simplified as well. | CC BY 4.0: say where the boundaries are from. |
+| [GADM](https://gadm.org/) | The administrative areas of every country, several levels deep; in GeoJSON among other formats. | Free for academic and other non-commercial use; redistribution and commercial use need permission. |
+| [DataV.GeoAtlas](https://datav.aliyun.com/portal/school/atlas/area_selector) | The provinces, cities and districts of China, as GeoJSON. The provinces and the cities of each are in this repository as downloaded, in [`asset/geo/china`](../asset/geo/china/README.md), with how they were got. | See the terms of the site. |
+
+Before a file is used, it is worth a look:
+
+- **Format.** What is read is GeoJSON with longitudes and latitudes in
+  degrees, as its standard has them. A Shapefile or a TopoJSON file has to be
+  converted, and coordinates in the metres of a projection turned back into
+  degrees; [mapshaper](https://mapshaper.org/) does both.
+- **Size.** Every point of every border is written into the SVG, so a file
+  of several megabytes makes a picture of several megabytes. Simplify it to
+  what a chart of a few hundred pixels can show:
+
+  ```bash
+  mapshaper provinces.shp -simplify 10% -o precision=0.001 provinces.geojson
+  ```
+
+- **Names.** `data` finds a region by its name, written exactly as in the
+  file. Which property of a feature holds the name differs from source to
+  source — `name`, `NAME`, `NAME_1`, `shapeName` — so look at the
+  `properties` of a feature and give that key as `name_property`.
+- **Terms.** The sources have terms of their own, as the table says. One
+  that asks to be named can be, in a line of
+  [`texts`](#copyright-lines-and-watermarks).
+- **Borders.** Sources draw disputed borders differently, and some countries
+  have rules for the maps that are published in them: in China a map for the
+  public has to pass an official review. Check what applies before a map is
+  published.
+
+### Lines chart
+
+A `LinesChart` draws flows from one point to another. The width of a line
+is its value, between `min_width` and `max_width`. `curveness` bends each
+line (`0` is straight); an arrow at the end shows the direction.
+
+Without `geo_json` the points are on a plane. With it they are longitude
+and latitude, projected like a map, and the regions are drawn underneath.
+
+```json
+{
+  "curveness": 0.3,
+  "lines": [
+    {"name": "North", "value": 80, "from": [0, 0], "to": [40, 30]}
+  ]
+}
+```
+
+In Rust: `LinesChart::new(vec![((0.0, 0.0), (40.0, 30.0), 80.0).into()])`.
+A fuller picture, sixteen flows over the sample country, is
+`asset/lines_chart/flows.json`.
+
+### Bullet chart
+
+A `BulletChart` puts measures against their targets, a row each: a bar for
+the value, a line across it for the target, and bands behind them for what
+is poor, fair and good. Five of them take the room of one gauge, which makes
+them the chart for a report of KPIs.
+
+<p align="center">
+  <img src="../asset/image/bullet.png" width="60%" alt="A bullet chart of five measures">
+</p>
+
+```json
+{
+  "label_show": true,
+  "bullets": [
+    {"name": "Done in time (%)", "value": 92, "target": 95, "ranges": [80, 90, 100], "max": 100},
+    {"name": "Wait (min)", "value": 12, "target": 10, "ranges": [10, 20, 30]}
+  ]
+}
+```
+
+- Every row has a scale of its own, from 0 (or from below it, where a value
+  is) to the first round number past its largest value, unless `min` and
+  `max` say otherwise. Its ticks are round numbers.
+- The bands are shades of the text color, the first one the darkest;
+  `range_colors` gives them colors of their own. A measure for which less is
+  better, a waiting time, wants them the other way round.
+- `label_show` writes the value to the right of each row, in the format of
+  `series_label_formatter`; the scales take the format of the first of
+  `y_axis_configs` (`axis_formatter`), and `x_axis_hidden` leaves them out.
+
+In Rust: `BulletChart::new(vec![("CPU", 72.0, 80.0).into()])` — a name, a
+value and a target; a `Bullet` has the bands, the scale and a color as well.
+
+### Sparklines in a table
+
+A cell of a `TableChart` that is an array of numbers is a sparkline: a
+small line of the values, drawn in place of text, from the lowest at the
+bottom of the cell to the highest at the top, with a dot on the last one.
+
+<p align="center">
+  <img src="../asset/image/table-sparkline.png" width="60%" alt="A table of servers with the trend of each">
+</p>
+
+```json
+{
+  "data": [
+    ["Server", "CPU", "Last 24 hours"],
+    ["api-1", "72%", [42, 45, 51, 48, 60, 66, 63, 71, 69, 74, 70, 72]],
+    ["api-2", "38%", [30, 34, 31, 29, 35, 41, null, null, 37, 38]]
+  ]
+}
+```
+
+- Every sparkline has a scale of its own: it shows the shape of its values,
+  not how they compare with those of the other rows.
+- A `null` leaves a gap. `"sparkline_type": "bar"` draws a bar for each
+  value instead, from 0; `sparkline_color` colors them.
+- A number in a cell is written as it is, and `null` is an empty cell.
+
+In Rust: `table.sparklines.push(TableSparkline { indexes: vec![1, 2],
+values: vec![42.0, 45.0, 51.0] })`, `indexes` being the row and the column.
+
+### Charts one above the other
+
+A `MultiChart` stacks its children; each draws its own axes, and the plot
+of each starts after the labels of its y axis — wider for the volumes of a
+stock than for its prices. With `align_plots` the plots line up: they start
+where the one that starts furthest in starts and end where the one that
+ends furthest in ends, so that a day is in the same place in each.
+
+<p align="center">
+  <img src="../asset/image/multi-aligned.png" width="60%" alt="Prices, volumes and MACD of a month, lined up">
+</p>
+
+```json
+{
+  "align_plots": true,
+  "child_charts": [
+    {"type": "candlestick", "height": 300, "x_axis_hidden": true, "x_axis_data": ["10-01", "10-02"],
+     "series_list": [{"name": "Day", "data": [100, 101.5, 99.2, 102.1, 101.5, 99.8, 99.1, 102.4]}]},
+    {"type": "bar", "height": 120, "legend_show": false, "x_axis_data": ["10-01", "10-02"],
+     "series_list": [{"name": "Volume", "data": [1830000, 2240000]}]}
+  ]
+}
+```
+
+- It works on the bar, line, candlestick, histogram, scatter, box plot and
+  waterfall children that stack; one placed by `x` and `y` keeps its plot
+  where its axes put it.
+- It is done with `grid_left` and `grid_right`, which every one of those
+  charts takes: how far in its plot starts and ends at the least. They line
+  up charts that are drawn apart, too — two SVGs on one page.
+- A child that wants its plot further in (its own `grid_left`) has it
+  there, and the others line up with it.
+
+The example of the gallery is `asset/multi_chart/aligned.json`: a month of
+prices with their moving averages, the volumes below them and the MACD
+below those. The bars of the volumes and of the MACD are red or green with
+the day (`colors` of a series, a color for each bar), and the first color
+of the palette, that of the candles and the bars in the legend, is a grey.
+
+### Mermaid diagrams
+
+Enable the optional `mermaid` feature in `Cargo.toml` to render Mermaid diagrams
+(`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`,
+`classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`,
+`pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta` / `radar`, and
+`treemap-beta` / `treemap`) to pure SVG without a browser:
+
+```toml
+[dependencies]
+charts-rs = { version = "2", features = ["mermaid"] }
+```
+
+```rust
+# #[cfg(feature = "mermaid")]
+# {
+use charts_rs::{MermaidChart, THEME_DARK, mermaid_to_svg, mermaid_validate};
+
+let flow = r#"
+---
+title: Checkout Pipeline
+config:
+  flowchart:
+    curve: linear
+    nodeSpacing: 60
+---
+flowchart LR
+  accTitle: Checkout Pipeline
+  accDescr: Validates cart and writes to the database
+  A["`**Client** _app_`"] --> B@{ shape: diam, label: "Gateway" }
+  B -->|OK| C@{ shape: doc, label: "Receipt" }
+  click A href "https://example.com/docs" "Open docs" _blank
+"#;
+
+// Validate syntax and semantics (with line numbers and typo hints) before rendering.
+mermaid_validate(flow).unwrap();
+let svg = mermaid_to_svg(flow).unwrap();
+assert!(svg.starts_with("<svg"));
+
+// Disable emitted <a> links when rendering untrusted input (also supported in JSON via `"allow_links": false`).
+let mut safe_chart = MermaidChart::new(flow);
+safe_chart.allow_links = false;
+assert!(!safe_chart.svg().unwrap().contains("<a href="));
+
+let mut chart = MermaidChart::new_with_theme(
+    "sequenceDiagram\n  Alice->>Bob: Hello!\n  Bob-->>Alice: Hi!",
+    THEME_DARK,
+);
+chart.width = 720.0;
+let _themed_svg = chart.svg().unwrap();
+# }
+```
+
+- **Auto-sizing & scaling**: `flowchart`, `sequenceDiagram`, `stateDiagram`,
+  `classDiagram`, `erDiagram`, and `mindmap` size automatically to fit the
+  diagram when `width` and `height` are `0.0`; setting either scales
+  proportionally via `viewBox`.
+- **Validation & diagnostics**: `mermaid_validate(source)` runs preprocessing,
+  syntax parsing, and semantic checks (such as Sankey cycle detection and
+  all-zero Pie validation) across all 13 diagram types, returning line-numbered
+  `Error::Mermaid` diagnostics with typo suggestions (e.g. `stateDiagram-v3` ->
+  `stateDiagram-v2`, or `->>` inside a flowchart).
+- **Frontmatter & `%%{init}%%` config passthrough**: supports `title`,
+  `config.theme`, `config.fontFamily`, `config.flowchart.{curve, nodeSpacing,
+  rankSpacing}` (`basis` / `linear` / `step`), `config.sequence.{mirrorActors,
+  showSequenceNumbers}`, and `config.xyChart.showLegend`. Explicit Rust / JSON
+  API options take precedence over frontmatter and `%%{init}%%`.
+- **Accessibility & safe links**: `accTitle:` and `accDescr:` / `accDescr { ... }`
+  emit `role="img"`, `aria-labelledby`, `aria-describedby`, `<title>`, and
+  `<desc>` on the root `<svg>`. `click` / `link` directives in `flowchart`,
+  `classDiagram`, and `stateDiagram` wrap nodes in `<a href="...">` using a
+  strict protocol allowlist (`http://`, `https://`, `mailto:`, and relative
+  URLs; `javascript:` / `data:` are blocked), and can be disabled globally via
+  `chart.allow_links = false` or JSON `"allow_links": false`.
+- **Rich syntax**: styling inherits from the active `charts-rs` theme
+  (`THEME_DARK`, `THEME_SHADCN`, …) and supports `style`, `classDef`, `class`,
+  `:::`, `linkStyle`, v11 `A@{ shape: doc, label: "..." }` node shapes,
+  multiline Markdown strings (`` "`...`" `` with `**bold**` and `*italic*`),
+  and `gantt` `excludes` / `includes` / `weekday` / `tickInterval` / `vert`
+  markers.
+- **Composition**: `MermaidChart` implements [`Chart`](https://docs.rs/charts-rs)
+  and can be composed inside `MultiChart` (`"type": "mermaid"`).
+
+## Fonts
+
+```rust,no_run
+use charts_rs::add_fonts;
+let buf = std::fs::read("path/to/font.ttf").unwrap();
+add_fonts(&[&buf]).unwrap();
+```
+
+A font is known by the names of its family, in every language it gives them
+in: `"font_family": "PingFang SC"` and `"苹方-简"` are the same font. Every
+face of a collection (`.ttc`) is registered, and text is measured with the
+regular face of a family. `get_font_families()` lists the names.
+
+A `font_family` that is not registered is still written to the SVG (the
+viewer resolves it), but text is measured with the default font.
+
+A font is kept as its bytes and its glyphs are read as text is measured with
+them, so a large CJK font costs no more memory than its file.
+
+**Server / HTTP deployment.** When serving charts with CJK text, preload a
+CJK font once at startup via `add_fonts` and expose `get_font_families()` to
+clients or MCP tools. Without loaded CJK fonts, text width measurement falls
+back to `Roboto` (producing inaccurate label spacing) and raster export (`png`,
+etc.) may render missing glyphs.
+
+## Development
+
+The SVG output is covered by snapshot tests under `asset/`. After an
+intentional rendering change, regenerate them and review the diff:
+
+```bash
+UPDATE_SNAPSHOTS=1 cargo test --features image-encoder
+UPDATE_SNAPSHOTS=1 cargo test --features "mermaid,image-encoder" --test mermaid
+git diff --stat asset/
+```
+
+---
+
+# JSON options
+
+[中文](./json-zh.md)
+
+Every chart can be created from a JSON document with its `from_json`, e.g. `BarChart::from_json(json)`. This page lists every key such a document may have.
+
+- A key that is left out, or set to `null`, keeps its default.
+- The document is checked before it is used: an unknown key (with a hint when it looks like a typo), a value of the wrong type, an unknown enum value or a size out of range is an error, not silently ignored.
+- Enum values are matched without regard to case.
+- “theme” as a default means the value comes from the theme.
+- The names of the keys are the names of the fields of the chart structs, so the [API documentation](https://docs.rs/charts-rs) tells the same story for the builder API.
+
+## Contents
+
+- [Value types](#value-types)
+- [Common options](#common-options)
+- Charts: [Bar](#bar), [Horizontal bar](#horizontal-bar), [Line](#line), [Pie](#pie), [Radar](#radar), [Scatter](#scatter), [Candlestick](#candlestick), [Table](#table), [Heatmap](#heatmap), [Funnel](#funnel), [Waterfall](#waterfall), [Calendar](#calendar), [Gauge](#gauge), [Bullet](#bullet), [Treemap](#treemap), [Box plot](#box-plot), [Sunburst](#sunburst), [Sankey](#sankey), [Tree](#tree), [Graph](#graph), [Parallel](#parallel), [Theme river](#theme-river), [Histogram](#histogram), [Polar bar](#polar-bar), [Chord](#chord), [Gantt](#gantt), [Lines](#lines), [Map](#map), [Mermaid](#mermaid), [Multi chart](#multi-chart)
+- [Keys for tools](#keys-for-tools)
+
+## Value types
+
+| Type | Written as |
+|---|---|
+| number | Any JSON number. |
+| integer | A whole number, not negative. Counts of ticks and splits go up to 1000, indexes up to 1 000 000. |
+| color | `"#rgb"`, `"#rgba"`, `"#rrggbb"`, `"#rrggbbaa"`, `"rgb(r, g, b)"`, `"rgba(r, g, b, a)"` or `"transparent"`. |
+| margin | A number for all four sides, or `{"left": 5, "top": 5, "right": 5, "bottom": 5}` (sides left out are `0`). |
+| scale | `"linear"`, `"log"` (base 10), `"log2"`, `"log10"`, or `{"type": "log", "base": 5}`. |
+| x value | A number, or a date as a string: `"2024-03-01"`, `"2024-03-01 08:30"`, `"2024-03-01T08:30:00+08:00"`. Numbers on a time axis are unix seconds. |
+| number[] | An array of numbers; `null` is a missing value. |
+| color[] | An array of colors; `null` keeps the default of that position. |
+
+## Common options
+
+These keys are accepted by every chart except the table and the multi chart. A chart uses the ones that mean something for it: a pie chart has no axes, for instance, and ignores the axis keys.
+
+<!-- keys: base -->
+
+### Canvas
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `theme` | string | `"light"` | Name of the theme: `light`, `dark`, `ant`, `vintage`, `shine`, `walden`, `westeros`, `chalk`, `grafana`, `shadcn`, or one registered with `add_theme`. An unknown name is an error. |
+| `width` | number > 0 | `600` | Width of the chart in pixels. |
+| `height` | number > 0 | `400` | Height of the chart in pixels. |
+| `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
+| `y` | number | `0` | Vertical offset of the chart inside the SVG. |
+| `margin` | margin | `5` | Margin around the whole chart. |
+| `font_family` | string | `"Roboto"` | Font family of every text. Unregistered names are not rejected: they stay in the SVG while text width measurement silently falls back to `"Roboto"` (see [Fonts](./guide.md#fonts)). |
+| `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
+| `empty_text` | string |  | Text shown in the middle of the plot when there is no data to draw. |
+
+### Title
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `title_text` | string |  | Title text; no title is drawn when empty. |
+| `title_font_size` | number | `18` | Title font size. |
+| `title_font_color` | color | theme | Title font color. |
+| `title_font_weight` | string | `"bold"` | Title font weight, e.g. `"bold"`. |
+| `title_margin` | margin |  | Margin around the title. |
+| `title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the title. |
+| `title_height` | number | `30` | Height reserved for the title row. |
+
+### Sub-title
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `sub_title_text` | string |  | Sub-title text, drawn under the title. |
+| `sub_title_font_size` | number | `14` | Sub-title font size. |
+| `sub_title_font_color` | color | theme | Sub-title font color. |
+| `sub_title_font_weight` | string |  | Sub-title font weight, e.g. `"bold"`. |
+| `sub_title_margin` | margin |  | Margin around the sub-title. |
+| `sub_title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the sub-title. |
+| `sub_title_height` | number | `20` | Height reserved for the sub-title row. |
+
+### Legend
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `legend_show` | boolean |  | Shows or hides the legend. It is shown by default, except in pie, theme river and waterfall charts. |
+| `legend_position` | `"top"` / `"bottom"` / `"left"` / `"right"` | `"top"` | Where the legend goes: at the top (the default), at the bottom, or stacked vertically on the left or right of the plot. At the top it shares the row of the title where there is room for both — a title on the left and a legend on the right, say — and goes below the title and the sub-title where it would be written over them. |
+| `legend_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the legend. |
+| `legend_category` | `"normal"` / `"rect"` / `"round_rect"` / `"circle"` | `"normal"` | Shape of the legend markers: a line with a dot (`normal`), a rectangle, a rounded rectangle or a circle. |
+| `legend_font_size` | number | `14` | Legend font size. |
+| `legend_font_color` | color | theme | Legend font color. |
+| `legend_font_weight` | string |  | Legend font weight, e.g. `"bold"`. |
+| `legend_margin` | margin |  | Margin around the legend. A legend at the top with a `top` margin is placed by it, and is not moved below the title. |
+
+### X axis
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `x_axis_data` | string[] |  | Labels of the x axis: the categories of the chart. |
+| `x_axis_type` | `"category"` / `"value"` / `"time"` | `"category"` | How the values of a continuous x axis read: plain numbers (`value`) or timestamps (`time`). The axis is continuous whenever x values are given; date strings select `time` by themselves. |
+| `x_axis_values` | x value[] |  | The x value of each data point, shared by every series. Setting them makes the x axis continuous: points sit at their value instead of in evenly spaced slots (line and bar charts). |
+| `x_axis_min` | x value |  | Fixed start of a continuous x axis; by default the first value. In a histogram: the start of the first bin. |
+| `x_axis_max` | x value |  | Fixed end of a continuous x axis; by default the last value. In a histogram: the end of the last bin. |
+| `x_axis_formatter` | string |  | Format of the x axis labels: `{c}` is the label; on a time axis a pattern of `%Y %y %m %d %H %M %S %b`, e.g. `"%m-%d %H:%M"`. |
+| `x_axis_time_offset` | number | `0` | Minutes east of UTC a time axis is displayed in (480 for UTC+8). |
+| `x_axis_title` | string |  | Title of the x axis, written below its labels. |
+| `x_axis_hidden` | boolean | `false` | Hides the x axis. In a polar bar chart: the category labels. |
+| `x_axis_height` | number | `30` | Height reserved for the x axis. |
+| `x_axis_stroke_color` | color | theme | Color of the x axis line and ticks. |
+| `x_axis_stroke_width` | number | `1` | Width of the x axis line and ticks. |
+| `x_axis_font_size` | number | `14` | Font size of the x axis labels. |
+| `x_axis_font_color` | color | theme | Font color of the x axis labels. |
+| `x_axis_font_weight` | string |  | Font weight of the x axis labels, e.g. `"bold"`. |
+| `x_axis_name_gap` | number | `5` | Gap between the x axis line and its labels. |
+| `x_axis_name_rotate` | number | `0` | Rotation of the x axis labels in radians, e.g. `0.785` for 45°. |
+| `x_axis_margin` | margin |  | Margin around the x axis. |
+| `x_boundary_gap` | boolean | `true` | Leaves a gap at both ends of the x axis, so points sit in the middle of their category (`true`), or puts the first and last point on the ends of the axis (`false`). |
+| `x_axis_label_overflow` | `"thin"` / `"rotate"` / `"ellipsis"` | `"thin"` | What to do with x axis labels that do not fit side by side: leave some out (`thin`), rotate them, or cut them with an ellipsis. |
+
+### Y axis
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `y_axis_hidden` | boolean | `false` | Hides the y axis. In a polar bar chart: the value labels. |
+| `y_axis_configs` | object[] |  | The value axes: the first one is the left y axis, a second one the right y axis. |
+
+### Grid
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `grid_stroke_color` | color | theme | Color of the grid lines. |
+| `grid_stroke_width` | number | `1` | Width of the grid lines. |
+| `grid_stroke_dash_array` | string |  | Dashes of the grid lines, as the `stroke-dasharray` of SVG takes them (e.g. `"4,2"`). Solid lines by default. Applies to the grid of the charts with an x and a y axis, to those of the gantt, radar and polar bar charts, to the lines of a punch card and to the axes of a parallel chart. |
+| `grid_left` | number |  | How far from the left edge of the chart the plot starts, at the least: further in than the y axis puts it, so that the plots of charts one above the other line up (see `align_plots` of a multi chart). Where the axis needs more the plot starts where the axis puts it. In bar, line, candlestick, histogram, scatter, box plot and waterfall charts; the histogram to the right of the plot of a scatter chart stays against the plot. |
+| `grid_right` | number |  | How far from the right edge of the chart the plot ends, at the least, as `grid_left` does on the other side. |
+
+### Series
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `series_list` | object[] |  | The data series of the chart. |
+| `series_colors` | color[] | theme | The color palette: a series takes the color at its position, starting over when the palette runs out. |
+| `series_stroke_width` | number | `2` | Stroke width of the series lines. |
+| `series_symbol` | object |  | Marker drawn on the data points of every line, and on the vertices of a radar polygon; `null` draws none. On a line the default is a circle as large as `series_stroke_width`, filled with the background color. A radar chart that leaves this and every series `symbol` unset keeps a circle of radius 2 on each vertex. |
+| `series_smooth` | boolean | `false` | Draws line series as smooth curves. |
+| `series_fill` | boolean | `false` | Fills the area under line series. |
+| `series_fill_opacity` | number |  | How opaque the fill of an area is, from 0 to 1. Default: `0.39` under a line, `0.2` in a radar chart. |
+| `series_label_formatter` | string |  | Format of the data labels: `{c}` value, `{a}` series name, `{b}` category, `{d}` percentage, `{t}` value in thousands notation. |
+| `series_label_font_size` | number | `14` | Font size of the data labels. |
+| `series_label_font_color` | color | theme | Font color of the data labels. |
+| `series_label_font_weight` | string |  | Font weight of the data labels, e.g. `"bold"`. |
+| `series_label_hide_overlap` | boolean | `false` | Leaves out a data label that would overlap one already drawn. |
+| `stack_percent` | boolean | `false` | Shows the series of a stack as their shares of it: every stack adds up to 100%, on an axis in percent (bar, horizontal bar, line and polar bar charts). |
+
+### Tooltip and animation
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `tooltip_show` | boolean | `false` | Gives every data shape a tooltip that shows on hover (plain CSS, no script), and a `<title>` for assistive tools. Not available in calendar, gauge, parallel, radar and theme river charts. |
+| `tooltip_font_size` | number |  | Font size of the tooltips. Default: that of the data labels (`series_label_font_size`). |
+| `tooltip_font_color` | color |  | Font color of the tooltips. Default: that of the data labels (`series_label_font_color`). |
+| `tooltip_font_weight` | string |  | Font weight of the tooltips, e.g. `"bold"`. None by default. |
+| `texts` | object[] |  | Texts written over the chart, each wherever it is asked for: a copyright line, a watermark. See [`texts[]`](#texts). A theme may have texts as well; these stand in for them. |
+| `animation` | object |  | Animates the chart as it appears; `{}` uses the defaults. Supported by the bar, horizontal bar, line, pie, funnel, sunburst, treemap, sankey, histogram, polar bar and chord charts. |
+
+### `series_list[]`
+
+<!-- keys: base.series_list -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the series, shown in the legend and in tooltips. |
+| `data` | number[] |  | The values of the series, one per category; `null` is a missing point. Some charts read them differently, as told in their sections. |
+| `index` | integer ≥ 0 |  | Position in the color palette; by default the position of the series. |
+| `y_axis_index` | integer ≥ 0 | `0` | The y axis the series belongs to: `0` (left) or `1` (right). |
+| `label_show` | boolean | `false` | Shows the value of every data point as a label. |
+| `category` | `"line"` / `"bar"` |  | In a bar chart: draws this series as a line (`line`) instead of bars. |
+| `start_index` | integer ≥ 0 | `0` | Index of the category the first value belongs to. |
+| `mark_lines` | object[] |  | Lines across the plot at a statistic of the series or at a fixed value. |
+| `mark_points` | object[] |  | Markers on points of the series, each with the value of its point in it: on the smallest, on the largest, or on any one by its index. A series that is drawn as a line has them. |
+| `mark_areas` | object[] |  | Shaded bands across the plot between two values. |
+| `colors` | color[] |  | A color for each data point (bar, horizontal bar and polar bar charts); `null` keeps the color of the series. |
+| `stroke_dash_array` | string |  | Dash pattern of a line series, and of a radar polygon, e.g. `"4 2"`. |
+| `stack` | string |  | Name of a stack: series with the same name (and y axis) are piled on top of each other. |
+| `smooth` | boolean |  | Overrides `series_smooth` for this series. |
+| `fill` | boolean |  | Overrides `series_fill` for this series. |
+| `symbol` | object |  | Overrides `series_symbol` for this series; `null` draws no marker. Used by line series and radar polygons. |
+| `x_values` | x value[] |  | The x value of each data point, for a series that is not sampled at the chart’s `x_axis_values`. |
+| `band` | object |  | A filled band around the line: a lower and an upper bound for each data point. |
+| `step` | `"start"` / `"middle"` / `"end"` |  | Draws the line as steps: level between two points, changing to the next value at the point itself (`start`), half way to the next one (`middle`) or at the next point (`end`). Wins over `smooth`. |
+| `error_bar` | object |  | Error bars: a lower and an upper bound for each data point, drawn as a line with a cap at both ends over the bar or the point (bar, line and scatter charts). The y axis makes room for them, and tooltips tell the bounds. |
+| `ring` | integer ≥ 0 | `0` | In a pie chart: the ring the series is a slice of. The series of a ring share a circle of their own, the lowest ring innermost — nested pies. |
+
+#### `series_list[].mark_lines[]`
+
+<!-- keys: base.series_list.mark_lines -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `category` | `"average"` / `"min"` / `"max"` / `"value"` |  | Where the line is drawn: at the average, the minimum or the maximum of the series, or at `value`. |
+| `value` | number |  | The value of the line when `category` is `value`. |
+| `color` | color |  | Color of the line, its dot and its arrow. Default: the color of the series. |
+| `stroke_width` | number | `1` | Width of the line. |
+| `stroke_dash_array` | string | `"4,2"` | Dashes of the line, as the `stroke-dasharray` of SVG takes them; `""` draws a solid line. |
+
+#### `series_list[].mark_points[]`
+
+<!-- keys: base.series_list.mark_points -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `category` | `"min"` / `"max"` / `"index"` |  | The point that is marked: the smallest value of the series, the largest, or the one whose `index` is given. |
+| `index` | integer |  | With the `"index"` category, which point: its place in the `data` of the series, the first one being 0. A point without a value has no marker. |
+
+A marker is above its point and as large as the value in it; the plot starts lower where one would reach above it. Two peaks of a day are the largest value and one more point:
+
+```json
+{
+  "mark_points": [
+    { "category": "max" },
+    { "category": "index", "index": 28 }
+  ]
+}
+```
+
+#### `series_list[].mark_areas[]`
+
+<!-- keys: base.series_list.mark_areas -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `from` | number / `"average"` / `"min"` / `"max"` |  | One edge of the band. |
+| `to` | number / `"average"` / `"min"` / `"max"` |  | The other edge of the band. |
+| `color` | color |  | Color of the band. Default: the color of the series. |
+| `opacity` | number | `0.16` | How opaque the band is, from 0 to 1. A `color` with an alpha of its own (`"#ff000080"`) keeps it when no opacity is given. |
+
+#### `series_list[].symbol` and `series_symbol`
+
+<!-- keys: base.series_list.symbol -->
+<!-- keys: base.series_symbol = base.series_list.symbol -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `type` | `"circle"` / `"rect"` / `"square"` / `"triangle"` / `"diamond"` / `"none"` |  | Shape of the marker (`square` is the same as `rect`); `"none"` draws no marker, as `null` does. |
+| `size` | number |  | Size of the marker: its radius, or half its side. |
+| `radius` | number |  | The same as `size`, which wins when both are set. |
+| `color` | color |  | Fill color of the marker; without one the marker is hollow. |
+
+#### `series_list[].band`
+
+<!-- keys: base.series_list.band -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `lower` | number[] |  | Lower bound of each point; `null` leaves a gap in the band. |
+| `upper` | number[] |  | Upper bound of each point; `null` leaves a gap in the band. |
+
+#### `series_list[].error_bar`
+
+<!-- keys: base.series_list.error_bar -->
+
+The same two lists as a band: a point has an error bar where both of its bounds are given.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `lower` | number[] |  | Lower end of the error bar of each point; `null` leaves the point without one. |
+| `upper` | number[] |  | Upper end of the error bar of each point; `null` leaves the point without one. |
+| `stroke_width` | number | `1.5` | Width of the error bars. |
+
+### `y_axis_configs[]`
+
+<!-- keys: base.y_axis_configs -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `axis_font_size` | number | `14` | Font size of the axis labels. |
+| `axis_font_color` | color | theme | Font color of the axis labels. |
+| `axis_font_weight` | string |  | Font weight of the axis labels, e.g. `"bold"`. |
+| `axis_stroke_color` | color | `transparent` | Color of the axis line; transparent by default. |
+| `axis_stroke_width` | number | `1` | Width of the axis line and ticks. |
+| `axis_width` | number |  | Width reserved for the axis; by default as wide as its labels need. |
+| `axis_split_number` | integer 0–1000 | `6` | Number of intervals the value range is split into. |
+| `axis_name_gap` | number | `8` | Gap between the axis line and its labels. |
+| `axis_formatter` | string |  | Format of the axis labels: `{c}` value, `{t}` value in thousands notation, e.g. `"{c} ms"`. |
+| `axis_margin` | margin |  | Margin around the axis. |
+| `axis_min` | number |  | Fixed lower bound of the axis; by default derived from the data. |
+| `axis_max` | number |  | Fixed upper bound of the axis; by default derived from the data. |
+| `axis_scale` | scale | `"linear"` | Scale of the axis: linear or logarithmic. |
+| `axis_title` | string |  | Title of the axis, written along it. |
+| `axis_inverse` | boolean | `false` | Turns the axis upside down: the smallest value at the top, the largest at the bottom (a ranking, where 1 is the best place). |
+
+### `texts[]`
+
+<!-- keys: base.texts -->
+<!-- keys: table.texts = base.texts -->
+<!-- keys: mermaid.texts = base.texts -->
+<!-- keys: multi.texts = base.texts -->
+
+A text is placed by its distances from the edges of the chart, in pixels. With a `left` it starts there, with a `right` it ends there, and with neither it is centered; `top` and `bottom` do the same from above and from below. It is written last, over everything else — and over a part of the chart, where it is put on one. A text that is to have room of its own, such as a line of sources below the axis, asks for it with `reserve`.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `text` | string |  | The text, on one line. An entry without text is left out. |
+| `left` | number |  | Distance of the start of the text from the left edge. |
+| `top` | number |  | Distance of the top of the text from the top edge. |
+| `right` | number |  | Distance of the end of the text from the right edge. `left` wins where both are given. |
+| `bottom` | number |  | Distance of the bottom of the text from the bottom edge. `top` wins where both are given. |
+| `font_size` | number | `12` | Font size of the text. |
+| `font_color` | color | theme | Font color of the text; by default that of the sub-title. A watermark wants a color with an alpha, e.g. `"#00000020"`. |
+| `font_weight` | string |  | Font weight of the text, e.g. `"bold"`. |
+| `rotate` | number | `0` | Degrees the text is turned by, clockwise, about the point it is placed by: its start, its end or, centered, its middle. |
+| `reserve` | boolean | `false` | Makes room for the text at the edge it is placed from, instead of writing it over the chart: the chart is drawn in what is left, with its `margin` inside of that. A text with a `top` or a `bottom` takes a band across there, as far in as it reaches (`bottom` and its font size, say); one with a `left` or a `right` only takes a band down that side, as wide as it is. Two at an edge take the room of the one that reaches further in. A text in the middle has no edge to take room at. A table, a calendar and a multi chart, which are as large as what is in them, are larger by the room. |
+
+```json
+{
+  "texts": [
+    { "text": "© 2026 ACME Inc.", "right": 10, "bottom": 6, "reserve": true },
+    { "text": "CONFIDENTIAL", "font_size": 56, "font_color": "#00000018", "rotate": -25 }
+  ]
+}
+```
+
+### `animation`
+
+<!-- keys: base.animation -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `duration` | integer ≥ 0 | `1000` | Duration of the animation in milliseconds. |
+| `easing` | string | `"ease"` | CSS easing function: `ease`, `linear`, `ease-in`, `ease-out`, `ease-in-out`. |
+| `delay` | integer ≥ 0 | `80` | Delay in milliseconds between one element and the next (bars, series, slices, levels). |
+
+## Bar
+
+`BarChart::from_json` — Vertical bars, one group per category of `x_axis_data`. A series with `"category": "line"` is drawn as a line; series with the same `stack` pile up; `y_axis_index` binds a series to the right y axis.
+
+<!-- keys: bar -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `radius` | number |  | Corner radius of the bars. |
+| `series_label_position` | `"top"` / `"inside"` | `"top"` | Where the value labels of the bars go: above their end, or in the middle of the bar, which suits stacked bars (and is the default with `stack_percent`). |
+
+<!-- example: bar -->
+
+```json
+{
+  "title_text": "Visits",
+  "radius": 3,
+  "x_axis_data": ["Mon", "Tue", "Wed"],
+  "series_list": [
+    {"name": "Email", "data": [120, 132, 101], "label_show": true},
+    {"name": "Search", "data": [220, 182, 191], "category": "line"}
+  ]
+}
+```
+
+## Horizontal bar
+
+`HorizontalBarChart::from_json` — Horizontal bars: the categories of `x_axis_data` go down the left side, the values along the bottom.
+
+<!-- keys: horizontal_bar -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `series_label_position` | `"left"` / `"right"` / `"top"` / `"bottom"` / `"inside"` | `"right"` | Where the value labels go; by default to the right of the bars. |
+
+<!-- example: horizontal_bar -->
+
+```json
+{
+  "x_axis_data": ["Brazil", "India", "China"],
+  "series_label_position": "inside",
+  "series_list": [
+    {"name": "2023", "data": [182, 234, 290], "label_show": true}
+  ]
+}
+```
+
+## Line
+
+`LineChart::from_json` — Lines over the categories of `x_axis_data`, or over a continuous x axis when `x_axis_values` are given. It has no keys of its own: smooth curves, steps, area fill, markers, mark lines and bands are all [common options](#common-options).
+
+<!-- example: line -->
+
+```json
+{
+  "series_smooth": true,
+  "x_axis_data": ["Mon", "Tue", "Wed", "Thu"],
+  "series_list": [
+    {
+      "name": "Email",
+      "data": [120, 132, null, 134],
+      "mark_lines": [
+        {"category": "average"}
+      ]
+    },
+    {"name": "Search", "data": [220, 182, 191, 234], "fill": true}
+  ]
+}
+```
+
+## Pie
+
+`PieChart::from_json` — A pie, a donut or a nightingale rose. Every series is one slice: its value is the sum of its `data`. Series with different `ring` numbers make nested pies: every ring shares the turn among its own slices, the rings split the room between `inner_radius` and `radius`, and the slices of the inner rings are named on them.
+
+<!-- keys: pie -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `radius` | number | `150` | Outer radius of the pie in pixels. |
+| `inner_radius` | number | `40` | Inner radius; above `0` the pie is a donut. |
+| `rose_type` | boolean | `true` | Draws a nightingale rose: every slice has the same angle and its radius follows its value. `false` draws a plain pie. |
+| `border_radius` | number |  | Corner radius of the slices. |
+| `start_angle` | number | `0` | Angle the first slice starts at, in degrees clockwise from 12 o’clock. |
+| `end_angle` | number |  | Angle the last slice ends at: the slices share the part of the circle between the two angles (`-90` to `90` is the upper half, a half doughnut). Default: a full turn after `start_angle`. |
+| `series_label_position` | `"inside"` / `"outside"` | `"outside"` | Where the labels go: inside the slices, or outside with a leader line (the default). |
+| `min_show_label_angle` | number | `0` | Slices spanning fewer degrees than this get no label. |
+| `ring_gap` | number | `6` | Gap between two rings of nested pies (series with a `ring`), in pixels. |
+
+<!-- example: pie -->
+
+```json
+{
+  "rose_type": false,
+  "radius": 120,
+  "inner_radius": 60,
+  "series_list": [
+    {"name": "Email", "data": [40]},
+    {"name": "Search", "data": [38]},
+    {"name": "Direct", "data": [32]}
+  ]
+}
+```
+
+## Radar
+
+`RadarChart::from_json` — Every series is a polygon over the `indicators`, with one value for each of them. The polygons are filled unless `series_fill` is `false`; a series can override that with its own `fill`. `"shape": "circle"` draws the rings as circles. The spokes are lines either way.
+
+<!-- keys: radar -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `indicators` | object[] |  | The axes of the radar; every series has one value for each. |
+| `split_number` | integer 0–1000 | `5` | Number of rings of the web; `0` means 5. |
+| `shape` | `"polygon"` / `"circle"` | `"polygon"` | `polygon` draws a straight-sided web. `circle` draws concentric circles. The spokes are lines either way. |
+
+### `indicators[]`
+
+<!-- keys: radar.indicators -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the indicator. |
+| `min` | number | `0` | Value at the center of this axis. A value below it is drawn at the center. |
+| `max` | number |  | Value at the outer ring. Raised to the largest value of the data when that is larger. |
+
+<!-- example: radar -->
+
+```json
+{
+  "indicators": [
+    {"name": "Sales", "max": 6500},
+    {"name": "Marketing", "max": 16000},
+    {"name": "Support", "max": 30000}
+  ],
+  "series_list": [
+    {"name": "Budget", "data": [4200, 3000, 20000]},
+    {"name": "Spending", "data": [5000, 14000, 28000]}
+  ]
+}
+```
+
+## Scatter
+
+`ScatterChart::from_json` — Points on two value axes. The `data` of a series is a flat list of `x, y` pairs (`x, y, size` triples with `bubble`). `x_boundary_gap` is not used: the points always sit on the scale.
+
+<!-- keys: scatter -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `series_symbol_sizes` | number[] |  | Radius of the markers of each series. |
+| `bubble` | boolean | `false` | Bubble chart: the series data are `[x, y, size]` triples and the area of each marker follows its size. |
+| `bubble_min_size` | number | `4` | Radius of the smallest bubble. |
+| `bubble_max_size` | number | `30` | Radius of the largest bubble. |
+| `series_symbols` | (string / object)[] |  | Marker of each series: its shape as a string (`"circle"`, `"triangle"`, `"rect"`, `"diamond"`), or an object with that `type` and a fill `color`. The size is `series_symbol_sizes`. By default the series cycle through the four shapes, in the color of the series. |
+| `x_axis_config` | object |  | Configuration of the x axis, which is a value axis here. By default the same as the first of `y_axis_configs`. |
+| `regression` | `"linear"` / `"exponential"` / `"logarithmic"` / `"polynomial"` |  | Draws the curve of this kind that fits the points of each series best (by least squares), in the color of the series. An exponential curve is fitted to the points above 0, a logarithmic one to the points right of 0. |
+| `regression_order` | integer 0–1000 | `2` | Order of a `polynomial` regression, from 1 to 6. |
+| `regression_label_show` | boolean | `false` | Writes the formula of each fitted curve at its end, e.g. `y = 1.5x + 2`. |
+| `marginal` | object |  | Histograms of the points of this chart: the distribution of x above the plot and the distribution of y to its right. The bins span the axes, so a bar sits over the points it counts. `{}` turns them on. |
+| `contour` | object |  | Unfilled density contours of the points. Each series is estimated with a Gaussian kernel, and the lines are drawn under the points in the color of the series. `{}` turns them on. |
+
+### `marginal`
+
+<!-- keys: scatter.marginal -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `size` | number | `64` | Height of the top histogram and width of the right one, in pixels. The plot keeps at least 40 pixels; a chart too small for that draws neither. |
+| `bin_count` | integer 0–1000 | `0` | Bins along each axis. `0` derives the number from the points. Never more than 40. |
+| `bar_gap` | number | `1` | Gap between adjacent bars, in pixels. |
+
+### `contour`
+
+<!-- keys: scatter.contour -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `levels` | integer 0–1000 | `4` | How many lines to draw, at `k / (levels + 1)` of the highest density. `4` is 20%, 40%, 60% and 80%. `0` is those four. Never more than 8. |
+| `grid_size` | integer 0–1000 | `64` | Cells along each axis of the grid the density is estimated on. `0` is 64. Clamped to 16..=128. |
+
+### `x_axis_config`
+
+<!-- keys: scatter.x_axis_config = base.y_axis_configs -->
+
+The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the values of the axis is used — `axis_min`, `axis_max`, `axis_split_number`, `axis_formatter`; the font, the color and the line width of the x axis are those of the `x_axis_*` options.
+
+<!-- example: scatter -->
+
+```json
+{
+  "series_symbol_sizes": [6, 6],
+  "series_list": [
+    {"name": "Female", "data": [161.2, 51.6, 167.5, 59, 159.5, 49.2]},
+    {"name": "Male", "data": [174, 65.6, 175.3, 71.8, 193.5, 80.7]}
+  ]
+}
+```
+
+## Candlestick
+
+`CandlestickChart::from_json` — One candle per category. The `data` of the series is a flat list of four values per category: open, close, lowest, highest.
+
+<!-- keys: candlestick -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `candlestick_up_color` | color | `#EC0000` | Fill color of the candles that close higher than they open. |
+| `candlestick_up_border_color` | color | `#8A0000` | Border color of those candles. |
+| `candlestick_down_color` | color | `#00DA3C` | Fill color of the candles that close lower than they open. |
+| `candlestick_down_border_color` | color | `#008F28` | Border color of those candles. |
+| `candlestick_style` | `"candle"` / `"ohlc"` | `"candle"` | Draws candles, or OHLC bars: a line from the lowest to the highest price with a tick to its left at the open and one to its right at the close. |
+
+<!-- example: candlestick -->
+
+```json
+{
+  "x_axis_data": ["2024-10-24", "2024-10-25", "2024-10-28"],
+  "series_list": [
+    {"name": "MA5", "data": [20, 34, 10, 38, 40, 35, 30, 50, 31, 38, 33, 44]}
+  ]
+}
+```
+
+## Table
+
+`TableChart::from_json` — A table. It does not take the common options: the keys below are all it accepts.
+
+<!-- keys: table -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `theme` | string | `"light"` | Name of the theme: `light`, `dark`, `ant`, `vintage`, `shine`, `walden`, `westeros`, `chalk`, `grafana`, `shadcn`, or one registered with `add_theme`. An unknown name is an error. |
+| `width` | number > 0 | `600` | Width of the chart in pixels. |
+| `height` | number > 0 |  | Ignored: a table is as high as its rows. |
+| `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
+| `y` | number | `0` | Vertical offset of the chart inside the SVG. |
+| `font_family` | string | `"Roboto"` | Font family of every text. Unregistered names are not rejected: they stay in the SVG while text width measurement silently falls back to `"Roboto"` (see [Fonts](./guide.md#fonts)). |
+| `background_color` | color | theme | Background color behind the title; the rows have `header_background_color` and `body_background_colors`. |
+| `title_text` | string |  | Title text; no title is drawn when empty. |
+| `title_font_size` | number | `18` | Title font size. |
+| `title_font_color` | color | theme | Title font color. |
+| `title_font_weight` | string | `"bold"` | Title font weight, e.g. `"bold"`. |
+| `title_margin` | margin |  | Margin around the title. |
+| `title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the title. |
+| `title_height` | number | `45` | Height reserved for the title row. |
+| `sub_title_text` | string |  | Sub-title text, drawn under the title. |
+| `sub_title_font_size` | number | `14` | Sub-title font size. |
+| `sub_title_font_color` | color | theme | Sub-title font color. |
+| `sub_title_font_weight` | string |  | Sub-title font weight, e.g. `"bold"`. |
+| `sub_title_margin` | margin |  | Margin around the sub-title. |
+| `sub_title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the sub-title. |
+| `sub_title_height` | number | `20` | Height reserved for the sub-title row. |
+| `data` | (string / number / boolean / null / number[])[][] |  | The rows of the table, each an array of cells; the first row is the header. A cell is a string, a number or boolean (written as it is) or `null` (empty); an array of numbers is a sparkline, drawn in place of text: a small line of the values, from the lowest at the bottom of the cell to the highest at the top, with a dot on the last of them. A `null` in it leaves a gap. |
+| `spans` | number[] |  | Width of each column: values below 1 are shares of the table width, larger ones pixels; the other columns share the rest. |
+| `text_aligns` | string[] |  | Alignment of the text of each column: `"left"`, `"center"` or `"right"`. |
+| `sparkline_type` | `"line"` / `"bar"` | `"line"` | What the sparklines are drawn as: a line, or a bar for each value, from 0. |
+| `sparkline_color` | color |  | Color of the sparklines; by default the first color of the palette of the theme. |
+| `border_color` | color | theme | Color of the lines between the rows. |
+| `border_width` | number | `1` | Width of the lines between the rows, and of the outer border. |
+| `header_row_padding` | margin | `{"left": 10, "top": 8, "right": 10, "bottom": 8}` | Padding of the header row. |
+| `header_row_height` | number | `30` | Smallest height of the header row. |
+| `header_font_size` | number | `14` | Font size of the header. |
+| `header_font_color` | color | theme | Font color of the header. |
+| `header_font_weight` | string |  | Font weight of the header, e.g. `"bold"`. |
+| `header_background_color` | color | theme | Background color of the header. |
+| `body_row_padding` | margin | `{"left": 10, "top": 5, "right": 10, "bottom": 5}` | Padding of the body rows. |
+| `body_row_height` | number | `30` | Smallest height of a body row. |
+| `body_font_size` | number | `14` | Font size of the body. |
+| `body_font_color` | color | theme | Font color of the body. |
+| `body_font_weight` | string |  | Font weight of the body, e.g. `"bold"`. |
+| `body_background_colors` | color[] | theme | Background colors of the body rows, taken in turn. |
+| `outlined` | boolean | `false` | Draws a border around the table. |
+| `cell_styles` | object[] |  | Styles of single cells. |
+| `texts` | object[] |  | Texts written over the table: a copyright line, a watermark. See [`texts[]`](#texts). |
+| `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
+
+### `cell_styles[]`
+
+<!-- keys: table.cell_styles -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `indexes` | [integer, integer] |  | The cell as `[row, column]`, counted from 0 with the header as row 0. |
+| `font_color` | color |  | Font color of the cell. |
+| `font_weight` | string |  | Font weight of the cell. |
+| `background_color` | color |  | Background color of the cell. |
+
+<!-- example: table -->
+
+```json
+{
+  "title_text": "NASDAQ",
+  "data": [
+    ["Name", "Price", "Change"],
+    ["Datadog Inc", "97.32", "-7.49%"],
+    ["Hashicorp Inc", "28.66", "-9.25%"]
+  ],
+  "text_aligns": ["left", "center", "right"],
+  "body_font_weight": "bold",
+  "cell_styles": [
+    {"indexes": [1, 2], "font_color": "#fff", "background_color": "#2d7c2b"}
+  ]
+}
+```
+
+## Heatmap
+
+`HeatmapChart::from_json` — A grid of cells over the categories of `x_axis_data` and `y_axis_data`, colored by value. The data are in `series`, not in `series_list`.
+
+<!-- keys: heatmap -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `y_axis_data` | string[] |  | Labels of the y axis: the categories from bottom to top. |
+| `series` | object |  | The cells and how their values map to colors. |
+
+### `series`
+
+<!-- keys: heatmap.series -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `min` | number | `0` | Value shown in `min_color`. |
+| `max` | number | `0` | Value shown in `max_color`; `0` takes the largest value of the data. |
+| `min_color` | color | `#F0D99C` | Color of the smallest value. |
+| `max_color` | color | `#BF444C` | Color of the largest value. |
+| `min_font_color` | color | `#464646` | Font color of the labels on cells with low values; with `colors`, `steps` or `thresholds`, on light cells. |
+| `max_font_color` | color | `#EEEEEE` | Font color of the labels on cells with high values; with `colors`, `steps` or `thresholds`, on dark cells. |
+| `colors` | color[] |  | The colors of the scale, from the smallest value to the largest. Two or more take the place of `min_color` and `max_color`: the scale goes through all of them. |
+| `steps` | integer 0–1000 | `0` | Number of classes of the same width the values are sorted into, each drawn in one color, instead of a continuous scale; `0` and `1` keep it continuous. With as many `colors` as steps, every class has one of them. |
+| `thresholds` | number[] |  | The values where one class ends and the next begins; takes the place of `steps`. A value below the first one is in the first class. |
+| `symbol` | `"rect"` / `"circle"` | `"rect"` | Fills the cells (`rect`), or draws a circle in each cell that has a value, its area following the value — a punch card. The circles of a row lie on a line; they carry no label. |
+| `data` | [integer, number][] |  | The cells as `[index, value]`, where `index` = y index × number of x categories + x index. |
+
+<!-- example: heatmap -->
+
+```json
+{
+  "x_axis_data": ["12a", "6a", "12p"],
+  "y_axis_data": ["Sat", "Sun"],
+  "series": {
+    "min": 0,
+    "max": 10,
+    "data": [[0, 9], [1, 3], [2, 6], [3, 8], [4, 2], [5, 5]]
+  }
+}
+```
+
+## Funnel
+
+`FunnelChart::from_json` — Stages of a process, one above the other. Every series is one stage: its value is the sum of its `data`.
+
+<!-- keys: funnel -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `funnel_gap` | number | `2` | Gap between the stages in pixels. |
+| `min_width` | number | `20` | Width of the narrowest stage in pixels. |
+| `sort_ascending` | boolean | `false` | Puts the smallest value at the top instead of the largest. |
+| `series_label_position` | `"inside"` / `"left"` / `"right"` | `"right"` | Where the labels go: inside the stages, or to their left or right. |
+| `funnel_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the stages. |
+
+<!-- example: funnel -->
+
+```json
+{
+  "series_label_position": "inside",
+  "series_list": [
+    {"name": "Show", "data": [100]},
+    {"name": "Click", "data": [80]},
+    {"name": "Order", "data": [20]}
+  ]
+}
+```
+
+## Waterfall
+
+`WaterfallChart::from_json` — Bars that start where the previous one ended. The values are in `data`, one per category of `x_axis_data`, not in `series_list`.
+
+<!-- keys: waterfall -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `label_show` | boolean | `true` | Shows the value of every bar as a label. |
+| `connector_line_show` | boolean | `true` | Draws a dashed line from each bar to the next. |
+| `connector_line_dash_array` | string | `"4,4"` | Dashes of the connector lines, as the `stroke-dasharray` of SVG takes them; `""` draws solid lines. |
+| `bar_width_ratio` | number | `0.6` | Share of a category’s width taken by its bar, from 0 to 1. |
+| `increase_color` | color | theme | Color of the bars that add to the total. |
+| `decrease_color` | color | `#EE6666` | Color of the bars that take from the total. |
+| `total_color` | color | theme | Color of the bars that show the running total. |
+| `data` | (number / [number, boolean])[] |  | One entry per category: a number (the change), or `[value, is_total]`, where a total shows the sum so far instead of a change. |
+
+<!-- example: waterfall -->
+
+```json
+{
+  "x_axis_data": ["Revenue", "Cost", "Tax", "Profit"],
+  "data": [[900, false], [-345, false], [-108, false], [0, true]]
+}
+```
+
+## Calendar
+
+`CalendarChart::from_json` — A year (or any range of days) as a grid of day squares, colored by value. The chart is as large as its squares: `width` and `height` are not used, set `cell_size` and `cell_gap` instead.
+
+<!-- keys: calendar -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `start_date` | string |  | First day shown, as `"YYYY-MM-DD"`. Default: January 1st of the current year. |
+| `end_date` | string |  | Last day shown, as `"YYYY-MM-DD"`. Default: December 31st of the current year. |
+| `min` | number | `0` | Value shown in `min_color`; `0` takes the smallest value of the data. |
+| `max` | number | `0` | Value shown in `max_color`; `0` takes the largest value of the data. |
+| `min_color` | color | `#EBEDF0` | Color of the days with the smallest value. |
+| `max_color` | color | `#216E39` | Color of the days with the largest value. |
+| `colors` | color[] |  | The colors of the scale, from the smallest value to the largest. Two or more take the place of `min_color` and `max_color`: the scale goes through all of them. |
+| `steps` | integer 0–1000 | `0` | Number of classes of the same width the values are sorted into, each drawn in one color, instead of a continuous scale; `0` and `1` keep it continuous. With as many `colors` as steps, every class has one of them. |
+| `thresholds` | number[] |  | The values where one class ends and the next begins; takes the place of `steps`. A value below the first one is in the first class. |
+| `empty_color` | color | theme | Color of the days without a value. |
+| `cell_size` | number | `13` | Side of a day square in pixels. |
+| `cell_gap` | number | `3` | Gap between the squares in pixels. |
+| `month_label_height` | number | `20` | Height of the row of month names above the grid. |
+| `week_label_width` | number | `30` | Width of the column of weekday names left of the grid. |
+| `show_dow_labels` | (integer 0–6)[] | `[1, 3, 5]` | The weekdays that are named, as numbers from 0 (Sunday) to 6 (Saturday). |
+| `data` | [date, number][] |  | The values: `["YYYY-MM-DD", value]` for each day. |
+
+<!-- example: calendar -->
+
+```json
+{
+  "start_date": "2024-01-01",
+  "end_date": "2024-03-31",
+  "data": [["2024-01-05", 3], ["2024-02-10", 7], ["2024-03-21", 5]]
+}
+```
+
+## Gauge
+
+`GaugeChart::from_json` — A dial. Every series is one value on the scale (the first of its `data`): a pointer each, or a ring each with `multi_ring`.
+
+<!-- keys: gauge -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `min` | number | `0` | Value at the start of the scale. |
+| `max` | number | `100` | Value at the end of the scale. |
+| `start_angle` | number | `225` | Angle the scale starts at, in degrees clockwise from 12 o’clock. `0` selects the default: write `360` to start at 12 o’clock. |
+| `sweep_angle` | number | `270` | Angle the scale spans, in degrees clockwise. |
+| `radius` | number | `0` | Outer radius in pixels; `0` fits the plot. |
+| `arc_width` | number | `15` | Thickness of the arc in pixels. |
+| `background_arc_color` | color | `#E6E6E6` | Color of the part of the arc that is not filled. |
+| `show_pointer` | boolean | `true` | Draws the needle. |
+| `pointer_color` | color |  | Color of the needle; by default the color of the first series. |
+| `show_axis_label` | boolean | `true` | Writes the minimum and maximum at the ends of the arc. |
+| `split_number` | integer 0–1000 | `5` | Number of intervals between the major ticks. |
+| `value_formatter` | string | `"{c}"` | Format of the value shown in the center: `{c}` is the value. |
+| `thresholds` | number[] |  | The values where one segment of the scale ends and the next begins. With thresholds the arc shows the segments, each in a color of its own, instead of the progress, and a pointer takes the color of the segment it points at. |
+| `colors` | color[] |  | The colors of the segments, from the lowest to the highest. Default: the colors of the series. |
+| `multi_ring` | boolean | `false` | Draws every series as a ring of progress of its own, one inside the other, with the values listed in the middle, instead of as pointers on one dial. |
+
+<!-- example: gauge -->
+
+```json
+{
+  "min": 0,
+  "max": 100,
+  "value_formatter": "{c}%",
+  "series_list": [
+    {"name": "CPU", "data": [72]}
+  ]
+}
+```
+
+## Bullet
+
+`BulletChart::from_json` — Measures against their targets, a row each: a bar for the value, a line across it for the target, and bands behind them for what is poor, fair and good, every row on a scale of its own. Several fit where one gauge would. It takes no `series_list`.
+
+<!-- keys: bullet -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bullets` | object[] |  | The measures, one row each, from the top down. See [`bullets[]`](#bullets). |
+| `range_colors` | color[] |  | Colors of the bands, from the first one on. Without them the bands are shades of the text color, the first one the darkest. A measure for which less is better, a waiting time, wants them the other way round. |
+| `target_color` | color |  | Color of the target lines; by default that of the title. |
+| `label_show` | boolean | `false` | Writes the value of each row to the right of it, in the format of `series_label_formatter`: `{c}` is the value and `{b}` the name. |
+
+The names are written in the font of the x axis, and the scale below each row in the font, the color and the format (`axis_formatter`) of the first of `y_axis_configs`, as the value axis of a horizontal bar chart is; `x_axis_hidden` leaves the scales out. The ticks of a scale are round numbers that the chart picks: `axis_split_number` is not used. With `tooltip_show` a bar tells its name and value on hover.
+
+### `bullets[]`
+
+<!-- keys: bullet.bullets -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the measure, written to the left of its row; cut with an ellipsis where it is wider than a third of the chart. |
+| `value` | number |  | The value, drawn as a bar from 0, or from the start of the scale where 0 is not on it. Without one the row has no bar. |
+| `target` | number |  | The value aimed at, drawn as a line across the bar. |
+| `ranges` | number[] |  | Where the bands behind the bar end: the first reaches from the start of the scale to the first of them, the next from there to the second, and so on. Without them there is one band, all along. |
+| `min` | number |  | The start of the scale. Default: 0, or a round number below the smallest value where that is below 0. |
+| `max` | number |  | The end of the scale. Default: the first round number from the largest of the value, the target and the ranges on. |
+| `color` | color |  | Color of the bar; by default the first color of the palette. |
+
+<!-- example: bullet -->
+
+```json
+{
+  "label_show": true,
+  "bullets": [
+    {"name": "Done in time (%)", "value": 92, "target": 95, "ranges": [80, 90, 100], "max": 100},
+    {"name": "Wait (min)", "value": 12, "target": 10, "ranges": [10, 20, 30]}
+  ]
+}
+```
+
+## Treemap
+
+`TreemapChart::from_json` — Rectangles as large as their values. Every series is one rectangle (the first of its `data`); `series_data` nests them.
+
+<!-- keys: treemap -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `item_gap` | number | `2` | Gap between adjacent cells in pixels. |
+| `series_data` | object[] |  | Nested data; when set it takes the place of `series_list`, and every branch is divided into its children. |
+
+### `series_data[]`
+
+<!-- keys: treemap.series_data -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the node, shown as its label. |
+| `value` | number |  | Value of a leaf; a node with children is as large as their sum. |
+| `color` | color |  | Color of the node; by default taken from the palette. |
+| `children` | object[] |  | The child nodes, each with the same keys. |
+
+<!-- example: treemap -->
+
+```json
+{
+  "series_data": [
+    {
+      "name": "Docs",
+      "children": [
+        {"name": "Guides", "value": 6},
+        {"name": "API", "value": 4}
+      ]
+    },
+    {"name": "Media", "value": 5}
+  ]
+}
+```
+
+## Box plot
+
+`BoxPlotChart::from_json` — One box per category of `x_axis_data` and series, from five numbers. The data are in `box_series`, not in `series_list`.
+
+<!-- keys: box_plot -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `box_series` | object[] |  | The series of boxes; takes the place of `series_list`. |
+
+### `box_series[]`
+
+<!-- keys: box_plot.box_series -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the series, shown in the legend. |
+| `index` | integer ≥ 0 |  | Position in the color palette; by default the position of the series. |
+| `data` | [number, number, number, number, number][] |  | One box per category: `[min, q1, median, q3, max]`. |
+
+<!-- example: box_plot -->
+
+```json
+{
+  "x_axis_data": ["Mon", "Tue"],
+  "box_series": [
+    {
+      "name": "Latency",
+      "data": [[655, 850, 940, 980, 1175], [672, 800, 845, 885, 1012]]
+    }
+  ]
+}
+```
+
+## Sunburst
+
+`SunburstChart::from_json` — A hierarchy as rings: every level a ring, every node an arc as long as its value.
+
+<!-- keys: sunburst -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `series_data` | object[] |  | The roots of the hierarchy; several roots share the circle. |
+| `radius` | number | `0` | Outer radius in pixels; `0` fits the plot. |
+| `inner_radius` | number | `0` | Radius of the hole in the center. |
+| `start_angle` | number | `0` | Angle the first root starts at, in degrees clockwise from 12 o’clock. |
+| `level_thickness` | number[] |  | Relative thickness of each ring, from the center outwards; rings without one count as `1`. |
+
+### `series_data[]`
+
+<!-- keys: sunburst.series_data -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the node, shown as its label. The label is written along the arc of the node where the arc is long enough for it. Where it is too short, the label is turned to run along the radius instead, if the ring is thick enough for it and the node as wide as a line of text; a label that fits neither way is left out. |
+| `value` | number |  | Value of a leaf; a node with children is as large as their sum. |
+| `color` | color |  | Color of the node; by default taken from the palette. |
+| `children` | object[] |  | The child nodes, each with the same keys. |
+
+<!-- example: sunburst -->
+
+```json
+{
+  "inner_radius": 30,
+  "series_data": [
+    {
+      "name": "Grandpa",
+      "children": [
+        {"name": "Uncle Leo", "value": 15},
+        {
+          "name": "Father",
+          "children": [
+            {"name": "Me", "value": 5},
+            {"name": "Brother", "value": 1}
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Sankey
+
+`SankeyChart::from_json` — Directed flows from left to right: nodes in columns, links as ribbons as thick as their value.
+
+<!-- keys: sankey -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `nodes` | object[] |  | The nodes. Optional: nodes are derived from the names in `links`, in first-seen order; list them to fix their order or colors. |
+| `links` | object[] |  | The directed flows between the nodes. |
+| `node_width` | number | `16` | Width of the node rectangles in pixels. |
+| `node_gap` | number | `8` | Vertical gap between the nodes of a column in pixels. |
+| `link_opacity` | number | `0.45` | Opacity of the flow ribbons, from 0 to 1. |
+| `node_align` | `"left"` / `"right"` / `"justify"` | `"left"` | Which column a node goes in: as far left as its sources allow (`left`, the default), as far right as its targets allow (`right`), or `left` with the end nodes in the last column (`justify`). |
+| `link_gradient` | boolean | `false` | Fills every link with a gradient from the color of its source to the color of its target, instead of the color of its source. |
+| `orient` | `"horizontal"` / `"vertical"` | `"horizontal"` | Direction of the flows: from left to right, or from top to bottom (the columns of nodes become rows). |
+
+### `nodes[]`
+
+<!-- keys: sankey.nodes -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the node, shown as its label; links refer to it. |
+| `color` | color |  | Color of the node; by default the palette color at its position. |
+
+### `links[]`
+
+<!-- keys: sankey.links -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `source` | string |  | Name of the node the link starts at. |
+| `target` | string |  | Name of the node the link ends at. |
+| `value` | number |  | Volume of the flow; a link without a positive value is left out. |
+
+<!-- example: sankey -->
+
+```json
+{
+  "link_gradient": true,
+  "links": [
+    {"source": "Coal", "target": "Electricity", "value": 25},
+    {"source": "Gas", "target": "Electricity", "value": 15},
+    {"source": "Electricity", "target": "Homes", "value": 30},
+    {"source": "Electricity", "target": "Industry", "value": 10}
+  ]
+}
+```
+
+## Tree
+
+`TreeChart::from_json` — A hierarchy as nodes joined by lines.
+
+<!-- keys: tree -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `series_data` | object[] |  | The roots of the hierarchy; several roots are laid out side by side. |
+| `orient` | `"LR"` / `"RL"` / `"TB"` / `"BT"` | `"LR"` | Where the root is, and which way the tree grows: root on the left (`LR`), on the right (`RL`), at the top (`TB`) or at the bottom (`BT`). |
+| `symbol_size` | number | `6` | Radius of the node circles in pixels. |
+| `layout` | `"orthogonal"` / `"radial"` | `"orthogonal"` | `orthogonal` lays the levels out side by side, by `orient`; `radial` puts the root in the middle and every level on a circle around it. Around the root the names run along the spokes, and a small chart has no room for all of them: a name is cut with an ellipsis before it would be written over a node, over another name or off the chart, and left out where no two letters of it fit. The names of the leaves come first, and those of the nodes they hang from give way to them. With `tooltip_show` every node has its name in full in its tooltip. |
+| `edge_shape` | `"curve"` / `"polyline"` | `"curve"` | Shape of the links: curves, or lines with square corners (straight lines in a radial tree). |
+
+### `series_data[]`
+
+<!-- keys: tree.series_data -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the node, shown as its label. |
+| `value` | number |  | Value of the node, shown in its tooltip; a node with children takes the sum of theirs. |
+| `color` | color |  | Color of the node; by default taken from the palette. |
+| `children` | object[] |  | The child nodes, each with the same keys. |
+
+<!-- example: tree -->
+
+```json
+{
+  "orient": "TB",
+  "series_data": [
+    {
+      "name": "root",
+      "children": [
+        {
+          "name": "a",
+          "children": [
+            {"name": "a1"},
+            {"name": "a2"}
+          ]
+        },
+        {"name": "b"}
+      ]
+    }
+  ]
+}
+```
+
+## Graph
+
+`GraphChart::from_json` — A network: nodes joined by links of any shape.
+
+<!-- keys: graph -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `nodes` | object[] |  | The nodes. Optional: nodes are derived from the names in `links`, in first-seen order. |
+| `links` | object[] |  | The edges between the nodes. |
+| `symbol_size` | number | `10` | Radius of a node circle in pixels; nodes with a `value` are scaled from it. |
+| `layout` | `"force"` / `"circular"` | `"force"` | Placement of the nodes: by a force simulation (`force`, the default) or evenly on a circle (`circular`). |
+| `categories` | string[] |  | Names of the node categories (a node refers to one by `category`); when set they are the legend. |
+
+### `nodes[]`
+
+<!-- keys: graph.nodes -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the node, shown as its label; links refer to it. |
+| `value` | number |  | Importance of the node: larger values draw larger circles. |
+| `color` | color |  | Color of the node; by default the palette color of its category, or of its position. |
+| `category` | integer ≥ 0 |  | Index into `categories`; nodes of a category share a color. |
+
+### `links[]`
+
+<!-- keys: graph.links -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `source` | string |  | Name of the node the link starts at. |
+| `target` | string |  | Name of the node the link ends at. |
+| `value` | number |  | Weight of the edge: larger values draw thicker lines. |
+
+<!-- example: graph -->
+
+```json
+{
+  "categories": ["Team", "Tool"],
+  "nodes": [
+    {"name": "Ann", "category": 0, "value": 3},
+    {"name": "Bob", "category": 0},
+    {"name": "Git", "category": 1}
+  ],
+  "links": [
+    {"source": "Ann", "target": "Bob", "value": 2},
+    {"source": "Ann", "target": "Git"},
+    {"source": "Bob", "target": "Git"}
+  ]
+}
+```
+
+## Parallel
+
+`ParallelChart::from_json` — Parallel coordinates: `x_axis_data` names the dimensions (one vertical axis each), and every series is one record with a value for each dimension. It has no keys of its own.
+
+<!-- example: parallel -->
+
+```json
+{
+  "x_axis_data": ["Price", "Weight", "Rating"],
+  "series_list": [
+    {"name": "A", "data": [120, 3.2, 4.5]},
+    {"name": "B", "data": [90, 4.1, 3.8]}
+  ]
+}
+```
+
+## Theme river
+
+`ThemeRiverChart::from_json` — A streamgraph: every series is a stream over the categories of `x_axis_data`, as thick as its value.
+
+<!-- keys: theme_river -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `stream_opacity` | number | `0.85` | Opacity of the streams, from 0 to 1. |
+
+<!-- example: theme_river -->
+
+```json
+{
+  "x_axis_data": ["Jan", "Feb", "Mar", "Apr"],
+  "series_list": [
+    {"name": "News", "data": [10, 25, 18, 30]},
+    {"name": "Sport", "data": [15, 12, 22, 16]}
+  ]
+}
+```
+
+## Histogram
+
+`HistogramChart::from_json` — The distribution of a sample over equal-width bins. The `data` of a series is the raw sample; `x_axis_min` and `x_axis_max` fix the range of the bins.
+
+<!-- keys: histogram -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bin_count` | integer 0–1000 | `0` | Number of bins; `0` chooses it from the size of the sample, with round bin edges. |
+| `bin_width` | number > 0 |  | Width of a bin; wins over `bin_count`. The bin edges are multiples of it. |
+| `percent` | boolean | `false` | Shows the share of each series’ sample, in percent, instead of a count. |
+| `bar_gap` | number | `1` | Gap between adjacent bars in pixels. |
+
+<!-- example: histogram -->
+
+```json
+{
+  "bin_width": 5,
+  "x_axis_title": "Height (cm)",
+  "series_list": [
+    {
+      "name": "Adults",
+      "data": [162.4, 171, 168.3, 175.9, 158.2, 169.7, 173.1, 166.8]
+    }
+  ]
+}
+```
+
+## Polar bar
+
+`PolarBarChart::from_json` — Bars on polar axes, over the categories of `x_axis_data`. The value axis is the first of `y_axis_configs`.
+
+<!-- keys: polar_bar -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `category_axis` | `"angle"` / `"radius"` | `"angle"` | The axis the categories lie on: around the circle (`angle`, bars grow outwards) or from the center outwards (`radius`, bars run around the circle). |
+| `radius` | number > 0 |  | Largest outer radius; by default the chart fills the plot. |
+| `inner_radius` | number |  | Radius of the hole in the center. Default: `0` with the categories on the angle axis, a quarter of the radius otherwise. |
+| `start_angle` | number | `0` | Angle both axes start at, in degrees clockwise from 12 o’clock. |
+| `end_angle` | number |  | Angle the value axis ends at, with the categories on the radius axis. Default: 270 degrees after `start_angle`; at most a full turn. |
+| `round_cap` | boolean | `false` | Rounds the ends of the bars that run around the circle. |
+| `category_gap` | number | `0.2` | Share of a category’s slot left free between it and its neighbours, from 0 to 0.9. |
+
+<!-- example: polar_bar -->
+
+```json
+{
+  "category_axis": "radius",
+  "round_cap": true,
+  "y_axis_configs": [
+    {"axis_max": 100}
+  ],
+  "x_axis_data": ["Sleep", "Steps", "Water"],
+  "series_list": [
+    {"name": "Done", "data": [92, 74, 61], "label_show": true}
+  ]
+}
+```
+
+## Chord
+
+`ChordChart::from_json` — Flows between nodes around a circle: every node an arc as long as the flows through it, every link a ribbon across the circle.
+
+<!-- keys: chord -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `nodes` | object[] |  | The nodes, clockwise. Optional: nodes are derived from the names in `links`, in first-seen order; list them to fix their order or colors. |
+| `links` | object[] |  | The flows between the nodes. |
+| `radius` | number > 0 |  | Largest outer radius; by default the diagram fills the plot. |
+| `node_width` | number | `12` | Thickness of the ring of nodes in pixels. |
+| `node_gap` | number | `3` | Gap between neighbouring nodes in degrees. |
+| `start_angle` | number | `0` | Angle the first node starts at, in degrees clockwise from 12 o’clock. |
+| `link_opacity` | number | `0.5` | Opacity of the ribbons, from 0 to 1. |
+| `link_gradient` | boolean | `false` | Fills every ribbon with a gradient from the color of its source to the color of its target, instead of the color of its source. |
+
+### `nodes[]`
+
+<!-- keys: chord.nodes -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the node, shown as its label; links refer to it. |
+| `color` | color |  | Color of the node; by default the palette color at its position. |
+
+### `links[]`
+
+<!-- keys: chord.links -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `source` | string |  | Name of the node the link starts at. |
+| `target` | string |  | Name of the node the link ends at. |
+| `value` | number |  | Volume of the flow; a link without a positive value is left out. |
+
+<!-- example: chord -->
+
+```json
+{
+  "link_gradient": true,
+  "links": [
+    {"source": "Asia", "target": "Europe", "value": 60},
+    {"source": "Asia", "target": "Americas", "value": 45},
+    {"source": "Europe", "target": "Americas", "value": 50}
+  ]
+}
+```
+
+## Gantt
+
+`GanttChart::from_json` — Tasks as bars along a time axis: a row for each task, or several tasks on a row. The axis is a time axis (numbers are unix seconds) unless `x_axis_type` is `value`; `x_axis_min` and `x_axis_max` fix its range, `x_axis_formatter` and `x_axis_time_offset` its labels. It takes no `series_list`: the legend is the categories of the tasks.
+
+<!-- keys: gantt -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `tasks` | object[] |  | The tasks; the rows are taken from them, top to bottom in the order they are first met. |
+| `bar_height` | number |  | Height of the bars in pixels; by default 60% of the height of a row. |
+| `radius` | number | `3` | Corner radius of the bars. |
+| `label_show` | boolean | `true` | Writes the name of a task on its bar, or beside it when it does not fit there. A task on a row of its own is not named again: the row tells its name. |
+| `now` | x value |  | A moment marked by a dashed line across the chart, such as today. |
+
+### `tasks[]`
+
+<!-- keys: gantt.tasks -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `name` | string |  | Name of the task. |
+| `start` | x value |  | When the task starts; a task without a start is left out. |
+| `end` | x value |  | When the task ends. Without an end, or with the end at the start, the task is a milestone, drawn as a diamond. |
+| `row` | string |  | The row the task is drawn on; tasks with the same row share it. By default a row of its own, named after the task. |
+| `category` | string |  | Category of the task: the tasks of a category share a color, and the categories are the legend. |
+| `progress` | number |  | How much of the task is done, from 0 to 1: that part of the bar is in the full color, the rest lighter. |
+| `color` | color |  | Color of the task; by default the color of its category. |
+
+<!-- example: gantt -->
+
+```json
+{
+  "now": "2024-03-19",
+  "tasks": [
+    {
+      "name": "Research",
+      "category": "Plan",
+      "start": "2024-03-04",
+      "end": "2024-03-08",
+      "progress": 1
+    },
+    {
+      "name": "Design",
+      "category": "Build",
+      "start": "2024-03-07",
+      "end": "2024-03-22",
+      "progress": 0.6
+    },
+    {"name": "Sign-off", "category": "Build", "start": "2024-03-22"},
+    {"name": "Launch", "category": "Plan", "start": "2024-03-25", "end": "2024-03-29"}
+  ]
+}
+```
+
+## Lines
+
+`LinesChart::from_json` — Flows from one point to another, straight or bent into an arc. The width of a line is its value. Without `geo_json` the points are on a plane, y growing upwards. With it they are longitudes and latitudes, and the regions are drawn under the lines. It takes no `series_list`.
+
+<!-- keys: lines -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `lines` | object[] |  | The flows. See [`lines[]`](#lines-1). On a map, `x` is longitude and `y` is latitude. |
+| `curveness` | number | `0` | How far a line bends, as a fraction of its length, to the left of the direction it travels. `0` is straight. Clamped to -1…1. |
+| `min_width` | number | `1` | Width of the smallest value. `0` means 1. |
+| `max_width` | number | `6` | Width of the largest value. `0` means 6. |
+| `arrow` | boolean | `true` | Draws an arrow at the end of each line. |
+| `geo_json` | object / string |  | The regions under the lines: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries, or the name of a map registered with `register_geo_json`. Without it the chart is a plane. |
+| `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region. |
+| `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane, the same way as a map. Ignored when there is no `geo_json`. |
+
+### `lines[]`
+
+<!-- keys: lines.lines -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `from` | [number, number] |  | Start point `[x, y]`, used when `coords` is omitted. |
+| `to` | [number, number] |  | End point `[x, y]`, used when `coords` is omitted. |
+| `coords` | [[number, number], [number, number]] |  | Start and end points `[[x1, y1], [x2, y2]]`; takes precedence over `from` and `to`. |
+| `value` | number | `1` | Flow weight controlling line width. |
+| `name` | string | `""` | Label shown in tooltips. |
+
+<!-- example: lines -->
+
+```json
+{
+  "curveness": 0.3,
+  "lines": [
+    {"name": "North", "value": 80, "from": [0, 0], "to": [40, 30]},
+    {"name": "East", "value": 20, "from": [0, 0], "to": [50, -10]},
+    {"name": "South", "value": 50, "from": [10, 20], "to": [30, -20]}
+  ]
+}
+```
+
+## Map
+
+`MapChart::from_json` — A map of regions colored by their values. The regions come with the options, as GeoJSON: the chart has no map data of its own. It takes no `series_list`.
+
+<!-- keys: map -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `geo_json` | object / string |  | The regions: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries with longitudes and latitudes in degrees, or the name of a map registered with `register_geo_json`. Other geometries are left out. |
+| `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region; without it, the `id` of the feature. |
+| `data` | [string, number][] |  | The values: `["name of the region", value]` for each region that has one. |
+| `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane: Mercator keeps the shapes (and cuts the map off at 85° north and south), equirectangular takes them as they are. |
+| `min` | number | `0` | Value at the start of the scale. With `min` and `max` both `0` the scale goes from the smallest value to the largest. |
+| `max` | number | `0` | Value at the end of the scale. |
+| `min_color` | color | theme | Color of the smallest value: by default a light tint of the first color of the theme. |
+| `max_color` | color | theme | Color of the largest value: by default the first color of the theme. |
+| `colors` | color[] |  | The colors of the scale, from the smallest value to the largest. Two or more take the place of `min_color` and `max_color`: the scale goes through all of them. |
+| `steps` | integer 0–1000 | `0` | Number of classes of the same width the values are sorted into, each drawn in one color, instead of a continuous scale; `0` and `1` keep it continuous. |
+| `thresholds` | number[] |  | The values where one class ends and the next begins; takes the place of `steps`. A value below the first one is in the first class. |
+| `empty_color` | color | theme | Color of the regions without a value. |
+| `border_color` | color | theme | Color of the borders of the regions: by default the background color. |
+| `border_width` | number | `1` | Width of the borders of the regions; `0` draws none. |
+| `label_show` | boolean | `false` | Writes the name of every region on it; a name that would run into another one is left out. |
+| `visual_map_show` | boolean | `true` | Shows the scale of the colors beside the map: a bar from the smallest value to the largest, or a swatch for every class. |
+
+<!-- example: map -->
+
+```json
+{
+  "label_show": true,
+  "thresholds": [100, 300],
+  "colors": ["#deebf7", "#9ecae1", "#3182bd"],
+  "data": [["West", 80], ["East", 420]],
+  "geo_json": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {"name": "West"},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[100, 20], [106, 20], [107, 26], [101, 27], [100, 20]]]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {"name": "East"},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[106, 20], [113, 21], [112, 27], [107, 26], [106, 20]]]
+        }
+      }
+    ]
+  }
+}
+```
+
+## Mermaid
+
+`MermaidChart::from_json` (requires the `mermaid` feature) — A Mermaid diagram (`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`, `classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta` or `treemap-beta`). It does not use `series_list` or `x_axis_data`: the keys below are all it accepts.
+
+<!-- keys: mermaid -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `source` | string |  | Mermaid diagram source text. |
+| `theme` | string | `"light"` | Name of the theme: `light`, `dark`, `ant`, `vintage`, `shine`, `walden`, `westeros`, `chalk`, `grafana`, `shadcn`, or one registered with `add_theme`. |
+| `width` | number > 0 | auto | Target width in pixels; when omitted, graph and diagram engines (`flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`, `mindmap`) size automatically to the diagram content. |
+| `height` | number > 0 | auto | Target height in pixels; when omitted, graph and diagram engines (`flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`, `mindmap`) size automatically to the diagram content. |
+| `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
+| `y` | number | `0` | Vertical offset of the chart inside the SVG. |
+| `margin` | margin | theme | Margin around the diagram. |
+| `font_family` | string | `"Roboto"` | Font family of every text; unregistered names stay in the SVG while text measurement silently falls back to `"Roboto"`. |
+| `background_color` | color | theme | Background color of the diagram. |
+| `title_text` | string |  | Title text; overrides any frontmatter or diagram title. |
+| `title_font_size` | number | `18` | Title font size. |
+| `title_font_color` | color | theme | Title font color. |
+| `title_font_weight` | string | `"bold"` | Title font weight. |
+| `title_margin` | margin |  | Margin around the title. |
+| `title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the title. |
+| `title_height` | number | `45` | Height reserved for the title row. |
+| `sub_title_text` | string |  | Sub-title text, drawn under the title. |
+| `sub_title_font_size` | number | `14` | Sub-title font size. |
+| `sub_title_font_color` | color | theme | Sub-title font color. |
+| `sub_title_font_weight` | string |  | Sub-title font weight. |
+| `sub_title_margin` | margin |  | Margin around the sub-title. |
+| `sub_title_align` | `"left"` / `"center"` / `"right"` | `"center"` | Horizontal alignment of the sub-title. |
+| `sub_title_height` | number | `20` | Height reserved for the sub-title row. |
+| `texts` | object[] |  | Texts written over the diagram: a copyright line, a watermark. See [`texts[]`](#texts). |
+| `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
+| `allow_links` | boolean | `true` | When `true`, safe `click` / `link` directives wrap nodes in SVG `<a href="...">` elements (allowing `http://`, `https://`, `mailto:`, and relative URLs; blocking `javascript:` / `data:`). Set to `false` to disable all emitted hyperlinks for untrusted input. |
+
+<!-- example: mermaid -->
+
+```json
+{
+  "title_text": "Request Flow",
+  "source": "flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(Database)]"
+}
+```
+
+## Multi chart
+
+`MultiChart::from_json` — Several charts in one SVG, one below the other or at positions of their own. It does not take the common options.
+
+<!-- keys: multi -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `theme` | string |  | Theme of every child that does not set its own. |
+| `margin` | margin | `10` | Margin around the whole composition. |
+| `gap` | number | `10` | Vertical gap between the children that are placed automatically. |
+| `background_color` | color |  | Background color of the whole composition; without one only the children draw their backgrounds. |
+| `child_charts` | array |  | The charts, drawn one below the other: each one the options of its chart type, plus the keys below. |
+| `compact` | boolean | `false` | Emits compact SVG for the composition and every child. |
+| `texts` | object[] |  | Texts written over the whole composition: a copyright line, a watermark. See [`texts[]`](#texts). A child has `texts` of its own, over itself. The room a text reserves is around the `margin`: the children start inside of it, but for those placed by `x` and `y`, which stay where they are put. |
+| `align_plots` | boolean | `false` | Lines up the plots of the children one above the other: they start where the one that starts furthest from the left starts and end where the one that ends furthest from the right ends, whatever their axes take — a candlestick chart and the bars of its volume below it share their x positions. It sets `grid_left` and `grid_right` of the bar, line, candlestick, histogram, scatter, box plot and waterfall children that are not placed by `x` and `y`. |
+
+### `child_charts[]`
+
+<!-- keys: multi.child_charts -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `type` | string |  | Type of the child: `bar` (the default), `line`, `horizontal_bar`, `pie`, `radar`, `table`, `scatter`, `candlestick`, `heatmap`, `funnel`, `waterfall`, `calendar`, `gauge`, `treemap`, `box_plot`, `sunburst`, `sankey`, `tree`, `graph`, `parallel`, `theme_river`, `histogram`, `polar_bar`, `chord`, `gantt`, `map`, `lines`, `bullet` or `mermaid` (with the `mermaid` feature). |
+| `x` | number |  | Horizontal position of the child; with `x` or `y` set, the child is placed there instead of below the previous one. |
+| `y` | number |  | Vertical position of the child. |
+
+<!-- example: multi -->
+
+```json
+{
+  "gap": 10,
+  "child_charts": [
+    {
+      "type": "bar",
+      "x_axis_data": ["Mon", "Tue"],
+      "series_list": [
+        {"name": "Email", "data": [120, 132]}
+      ]
+    },
+    {
+      "type": "pie",
+      "height": 300,
+      "series_list": [
+        {"name": "Email", "data": [40]},
+        {"name": "Search", "data": [38]}
+      ]
+    }
+  ]
+}
+```
+
+## Keys for tools
+
+Two more keys are accepted by every chart and do nothing, so that a tool around the library (the web editor, for one) can keep them in the same document:
+
+<!-- keys: envelope -->
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `type` | string |  | Chart type, for tools that pass one document to several chart types. Ignored by `from_json`. |
+| `quality` | number |  | Image quality, for tools that also encode the image. Ignored by `from_json`. |

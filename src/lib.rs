@@ -459,31 +459,36 @@
 //! # Discovery, JSON Schema & unified dispatch (MCP / LLM ready)
 //!
 //! For dynamic callers such as MCP servers or LLM tools, [`list_chart_types`],
-//! [`list_themes`], [`chart_json_schema`], and [`render_chart_from_json`] expose
-//! machine-readable discovery, Draft 2020-12 JSON Schemas generated directly from
-//! the validator tables, and single-entry-point SVG rendering. The schemas carry
-//! the descriptions, defaults and example of the JSON reference;
-//! [`chart_json_schema_with`] at [`SchemaLevel::Essential`] keeps only the
-//! keys most charts need (for a tool's `inputSchema`), and [`chart_example`]
-//! returns the example on its own. With the
-//! `mermaid` feature enabled, [`mermaid_capabilities`] also returns a
-//! `Serialize`-able [`MermaidCapabilities`] summary of supported/unsupported
-//! diagram types, v11 shapes, init config keys, features, and limitations:
+//! [`chart_catalog`], [`list_themes`], [`get_font_families`],
+//! [`register_geo_json`], [`chart_json_schema_with`],
+//! [`validate_chart_json_with_limits`], and
+//! [`render_chart_from_value_with_limits`] expose machine-readable discovery,
+//! two-tier Draft 2020-12 JSON Schemas (`Essential` and `Full`) populated
+//! from `docs/json.md`, structured multi-issue validation, and resource-bounded
+//! SVG rendering. With the `mermaid` feature enabled, [`mermaid_capabilities`]
+//! also returns a `Serialize`-able [`MermaidCapabilities`] summary of the 13
+//! canonical diagrams, aliases, unsupported diagrams, v11 shapes, init config
+//! keys, features, and limitations:
 //! ```rust
 //! use charts_rs::{
-//!     chart_json_schema, list_chart_types, list_themes, render_chart_from_json,
+//!     RenderLimits, SchemaLevel, chart_catalog, chart_json_schema_with,
+//!     list_chart_types, list_themes, render_chart_from_value_with_limits,
+//!     validate_chart_json_with_limits,
 //! };
 //! assert!(list_chart_types().contains(&"bar"));
+//! assert!(!chart_catalog().is_empty());
 //! assert!(list_themes().contains(&"light"));
-//! let schema = chart_json_schema("bar").unwrap();
-//! assert_eq!(schema["type"], "object");
-//! let small = charts_rs::chart_json_schema_with("bar", charts_rs::SchemaLevel::Essential).unwrap();
-//! assert!(small.to_string().len() < schema.to_string().len());
-//! let svg = render_chart_from_json(
-//!     "bar",
-//!     r#"{"x_axis_data":["A","B"],"series_list":[{"name":"S","data":[10,20]}]}"#,
-//! )
-//! .unwrap();
+//! let full = chart_json_schema_with("bar", SchemaLevel::Full).unwrap();
+//! let small = chart_json_schema_with("bar", SchemaLevel::Essential).unwrap();
+//! assert!(small.to_string().len() < full.to_string().len());
+//!
+//! let options = serde_json::json!({
+//!     "x_axis_data": ["A", "B"],
+//!     "series_list": [{"name": "S", "data": [10, 20]}]
+//! });
+//! let limits = RenderLimits::default();
+//! assert!(validate_chart_json_with_limits("bar", &options, &limits).unwrap().is_empty());
+//! let svg = render_chart_from_value_with_limits("bar", &options, &limits).unwrap();
 //! assert!(svg.starts_with("<svg"));
 //! ```
 //!
