@@ -184,6 +184,7 @@ assert!(safe_chart.svg().unwrap().starts_with("<svg"));
 |---|---|
 | [Guide](./docs/guide.md) | Building charts in Rust and from JSON, axes, labels, fonts, images |
 | [JSON reference](./docs/json.md) | Every option of every chart: its type, its default, what it does |
+| [llms.txt](./llms.txt) | Compact LLM & MCP-ready reference (APIs, schemas, chart catalog, Mermaid spec) |
 | [Gallery](./docs/gallery.md) | Every chart type and its variants |
 | [Themes](./theme.md) | The ten built-in themes |
 | [Maps of China](./asset/geo/china/README.md) | GeoJSON of the provinces of China and of the cities of each, ready for a `MapChart` — in the repository, not in the crate |

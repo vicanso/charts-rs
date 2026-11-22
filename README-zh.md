@@ -152,6 +152,7 @@ let _safe_svg = safe_chart.svg().unwrap();
 |---|---|
 | [使用指南](./docs/guide-zh.md) | 用 Rust 和 JSON 创建图表，坐标轴、标签、字体、图片输出 |
 | [JSON 参数参考](./docs/json-zh.md) | 每种图表的每个参数：类型、默认值、作用 |
+| [llms.txt](./llms.txt) | 面向 LLM 与 MCP 的精简索引（API、JSON Schema、图表目录与 Mermaid 规范） |
 | [图表一览](./docs/gallery.md) | 所有图表类型及其变体 |
 | [Mermaid 架构设计](./docs/mermaid-design.md) | 纯 Rust Mermaid 引擎的架构方案、13 类图表支持范围与分期设计 |
 | [主题](./theme.md) | 十种内置主题 |

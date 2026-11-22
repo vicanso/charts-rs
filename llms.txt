@@ -1,0 +1,142 @@
+# charts-rs
+
+> Pure-Rust, zero-browser charting and Mermaid diagram library: render 29 chart types and 13 Mermaid diagrams to SVG — and optionally PNG, JPEG, WebP, or AVIF — from typed Rust APIs or validated JSON documents.
+
+`charts-rs` (`#![forbid(unsafe_code)]`, Rust 1.88+, edition 2024) has no headless browser or Node.js dependency. Core SVG rendering is fast (tens of microseconds per chart) and ships with 10 built-in themes, custom font loading (TTF/OTF/TTC, including CJK), strict JSON schema validation with typo suggestions, and machine-readable discovery/schema APIs designed for MCP servers and LLM tool calling.
+
+## Installation & Feature Flags
+
+```toml
+[dependencies]
+# Core pure-Rust SVG rendering (29 chart types, minimal deps)
+charts-rs = "2"
+
+# Add pure-Rust Mermaid rendering (13 diagram types, zero extra dependencies)
+charts-rs = { version = "2", features = ["mermaid"] }
+
+# Add per-format raster export (uses resvg + image; pick only what you need)
+charts-rs = { version = "2", features = ["mermaid", "png"] }
+```
+
+- `default` (none): 29 core chart types, pure SVG output, JSON validation, JSON Schema & unified dispatch APIs.
+- `mermaid`: Pure-Rust Mermaid parser & SVG renderer (13 diagram types, zero extra dependencies).
+- `png`, `jpeg`, `webp`, `avif`: Per-format raster encoders (`svg_to_png`, `svg_to_jpeg`, `svg_to_webp`, `svg_to_avif`); `avif` pulls in `rav1e`.
+- `image-encoder`: Umbrella feature enabling `png`, `jpeg`, `webp`, and `avif`.
+
+## Quickstart
+
+### Typed Rust API
+
+```rust
+use charts_rs::BarChart;
+
+let mut chart = BarChart::new(
+    vec![("Email", vec![120.0, 132.0, 101.0]).into()],
+    vec!["Mon".into(), "Tue".into(), "Wed".into()],
+);
+chart.title.text = "Visits".to_string();
+let svg: String = chart.svg()?;
+```
+
+### Unified JSON Dispatch, Discovery & Schema APIs
+
+```rust
+use charts_rs::{
+    chart_json_schema, list_chart_types, list_themes, render_chart_from_json,
+};
+
+let types: &'static [&'static str] = list_chart_types(); // 29 core, or 30 with `mermaid`
+let themes: &'static [&'static str] = list_themes();     // 10 built-in themes
+let schema: serde_json::Value = chart_json_schema("bar")?; // Draft 2020-12 JSON Schema
+let svg: String = render_chart_from_json(
+    "bar",
+    r#"{"theme":"grafana","x_axis_data":["Mon","Tue"],"series_list":[{"name":"Email","data":[120,132]}]}"#,
+)?;
+```
+
+### Mermaid API (`features = ["mermaid"]`)
+
+```rust
+use charts_rs::{
+    MermaidCapabilities, MermaidChart, mermaid_capabilities, mermaid_to_svg,
+    mermaid_to_svg_with_theme, mermaid_validate,
+};
+
+let caps: MermaidCapabilities = mermaid_capabilities(); // serde::Serialize
+let src = "flowchart LR\n  A[Client] --> B@{ shape: diam, label: \"Gateway\" }\n  B -->|OK| C[(DB)]";
+mermaid_validate(src)?;                          // syntax + semantic check with line numbers
+let svg = mermaid_to_svg(src)?;                  // default theme, auto-sized SVG
+let dark_svg = mermaid_to_svg_with_theme(src, "dark")?;
+
+let mut chart = MermaidChart::new(src);
+chart.allow_links = false;                       // disable <a> links for untrusted input
+let safe_svg = chart.svg()?;
+```
+
+## MCP Integration Recipe
+
+For an MCP server backed by `charts-rs`, split tools cleanly by intent so models get compact schemas and fast feedback loops:
+
+1. `get_chart_schema(chart_type: string)` -> calls `chart_json_schema(chart_type)` (list valid types from `list_chart_types()`, valid themes from `list_themes()`). Returns Draft 2020-12 JSON Schema generated directly from the validator tables.
+2. `render_chart(chart_type: string, options: object)` -> calls `render_chart_from_json(chart_type, &serde_json::to_string(&options)?)`. Unknown keys return `Error::Params` with typo suggestions.
+3. `validate_mermaid(source: string)` -> calls `mermaid_validate(source)`. Returns `Ok(())` or line-numbered `Error::Mermaid { line, message }`; expose `mermaid_capabilities()` in tool metadata or a resource so models know supported/unsupported diagrams and v11 shapes upfront.
+4. `render_mermaid(source: string, theme?: string, allow_links?: bool)` -> builds `MermaidChart::new_with_theme(source, theme)`, sets `chart.allow_links = allow_links.unwrap_or(false)` for untrusted inputs, and calls `chart.svg()` (optionally rasterizing with `svg_to_png` when `png` feature is enabled).
+
+## Chart Types & Themes
+
+### 30 Chart Types (`list_chart_types()`)
+
+- Cartesian & statistical: `bar`, `horizontal_bar`, `line`, `scatter`, `candlestick`, `histogram`, `box_plot`, `waterfall`, `theme_river`, `parallel`.
+- Part-to-whole & radial: `pie`, `polar_bar`, `radar`, `funnel`, `gauge`, `bullet`, `sunburst`, `treemap`.
+- Relational, hierarchy & matrix: `sankey`, `chord`, `graph`, `tree`, `heatmap`, `calendar`, `gantt`, `table`.
+- Geospatial & flow: `map` (GeoJSON choropleth), `lines` (origin-destination flows, optional GeoJSON underlay).
+- Composition & diagrams: `multi` (`MultiChart`, stacks or positions multiple `child_charts` with optional `align_plots`), `mermaid` (requires `mermaid` feature).
+
+### 10 Built-in Themes (`list_themes()`)
+
+`light` (default), `dark`, `ant`, `grafana`, `vintage`, `walden`, `westeros`, `chalk`, `shine`, `shadcn`. Custom themes can be registered at runtime via `add_theme(name, theme)`.
+
+## Mermaid Specification (`features = ["mermaid"]`)
+
+### 13 Supported Diagram Types (`supported_diagrams`)
+
+`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`, `classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey-beta` / `sankey`, `xychart-beta` / `xychart`, `radar-beta` / `radar`, `treemap-beta` / `treemap`.
+
+### Explicitly Unsupported Diagrams (`unsupported_diagrams`)
+
+Do not generate these — they return `Error::Mermaid`: `gitGraph`, `timeline`, `journey`, `C4Context`, `C4Container`, `C4Component`, `C4Dynamic`, `C4Deployment`, `architecture-beta`, `kanban`, `packet-beta`, `block-beta`, `requirementDiagram`, `zenuml`.
+
+### Flowchart v11 `@{ shape, label }` Names (`v11_shapes`)
+
+`rect` / `process` / `rectangle`, `rounded` / `event`, `stadium` / `terminal` / `pill`, `subproc` / `fr-rect` / `subprocess`, `cyl` / `cylinder` / `database` / `db`, `circle` / `circ`, `dbl-circ` / `double-circle` / `doublecircle`, `diam` / `diamond` / `decision`, `hex` / `hexagon` / `prepare`, `lean-r` / `in-out`, `lean-l` / `out-in`, `trap-b` / `priority`, `trap-t` / `manual`, `odd` / `asym` / `asymmetric`, `doc` / `document`, `docs` / `documents`, `delay` / `half-rounded-rectangle`, `tri` / `triangle` / `extract`, `flag` / `notch-pent`, `sm-circ` / `start`, `f-circ` / `junction`, `text`.
+
+### Supported Frontmatter / `%%{init}%%` Keys (`init_config_keys`)
+
+`theme` (`dark`, `forest`, `default`/`base`/`neutral`), `fontFamily`, `fontSize`, `flowchart.curve` (`basis`/`smooth`/`linear`/`step`), `flowchart.nodeSpacing`, `flowchart.rankSpacing`, `sequence.mirrorActors`, `sequence.showSequenceNumbers`, `xyChart.showLegend`.
+
+### Key Mermaid Features & Limitations
+
+- Supported: `accTitle` / `accDescr` SVG `<title>`/`<desc>` + ARIA attributes; `click` links with protocol allowlist (`http://`, `https://`, `mailto:`, relative; disable via `allow_links: false`); multiline Markdown strings (`` "`...`" ``); nested subgraphs, `classDef`/`class`/`style`; sequence `create`/`destroy`, `box`, `autonumber`; gantt `excludes`/`includes`/`vert`.
+- Limitations: subgraph-level `direction` inside flowcharts is ignored; `themeVariables` color overrides are not supported (only `fontFamily` and `fontSize`); no HTML `<foreignObject>` (HTML tags stripped to plain SVG text); Font Awesome icons (`fa:fa-*`) are stripped; JS `click` callbacks are ignored; rough/hand-drawn look mode is not supported.
+
+## Docs
+
+- [README](./README.md): Overview, quickstart, feature summary, and benchmarks (English).
+- [README (Chinese)](./README-zh.md): Overview, quickstart, feature summary, and benchmarks (中文).
+- [User Guide](./docs/guide.md): Building charts in Rust and JSON, axes, labels, custom fonts, raster export, and Mermaid diagrams.
+- [User Guide (Chinese)](./docs/guide-zh.md): 使用指南（中文）.
+- [JSON Reference](./docs/json.md): Complete key-by-key reference for every chart type, types, defaults, and examples.
+- [JSON Reference (Chinese)](./docs/json-zh.md): JSON 参数参考（中文）.
+- [Gallery](./docs/gallery.md): Visual catalog of all 29 chart types, variants, and Mermaid diagrams.
+- [Themes](./theme.md): Preview of all 10 built-in themes.
+- [Mermaid Architecture & Design](./docs/mermaid-design.md): Pure-Rust Mermaid engine architecture, layout engines, and adapter design.
+- [Mermaid Issues & Roadmap](./docs/mermaid-issues.md): Known Mermaid edge cases, resolved issues, and compatibility tracker.
+- [Migrating to 2.0](./docs/migrating-2.0.md): Breaking changes and upgrade guide from 1.x to 2.0.
+- [Migrating to 1.0](./docs/migrating-1.0.md): Upgrade guide from 0.x to 1.0.
+- [Changelog](./CHANGELOG.md): Release history.
+
+## Examples & Fixtures
+
+- [Examples directory](./examples): Runnable Rust examples (`bar.rs`, `chord.rs`, `gantt.rs`, `histogram.rs`, `line.rs`, `map.rs`, `mermaid.rs`, `pie.rs`, `polar_bar.rs`, `sankey.rs`, `sunburst.rs`, `tree.rs`, `multi_chart/`).
+- [JSON fixtures](./asset): Real JSON chart fixtures under `asset/*_chart/*.json` (e.g. `asset/bar_chart/`, `asset/line_chart/`, `asset/mermaid_chart/`, `asset/multi_chart/`, `asset/scatter_chart/`, `asset/table_chart/`).
+- [China GeoJSON maps](./asset/geo/china/README.md): Province and city GeoJSON files ready for `MapChart` (repository-only).
