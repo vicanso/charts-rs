@@ -484,13 +484,10 @@ impl TreemapChart {
                     let mut truncated = String::new();
                     for ch in chars {
                         let candidate = format!("{truncated}{ch}…");
-                        let w = measure_text_width_family(
-                            &self.font_family,
-                            hdr_font_size,
-                            &candidate,
-                        )
-                        .map(|m| m.width())
-                        .unwrap_or(f32::MAX);
+                        let w =
+                            measure_text_width_family(&self.font_family, hdr_font_size, &candidate)
+                                .map(|m| m.width())
+                                .unwrap_or(f32::MAX);
                         if w > max_text_w {
                             break;
                         }

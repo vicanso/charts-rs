@@ -927,8 +927,16 @@ fn resolve_collisions(
         }
         let mut order = layer.clone();
         order.sort_by(|&a, &b| {
-            let ka = if by_center { center(&nodes[a]) } else { nodes[a].y };
-            let kb = if by_center { center(&nodes[b]) } else { nodes[b].y };
+            let ka = if by_center {
+                center(&nodes[a])
+            } else {
+                nodes[a].y
+            };
+            let kb = if by_center {
+                center(&nodes[b])
+            } else {
+                nodes[b].y
+            };
             ka.partial_cmp(&kb).unwrap_or(std::cmp::Ordering::Equal)
         });
 

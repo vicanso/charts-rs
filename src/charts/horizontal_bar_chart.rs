@@ -363,8 +363,8 @@ impl HorizontalBarChart {
                         if actual_i >= category_count {
                             continue;
                         }
-                        let mut top = unit_height * (category_count - actual_i - 1) as f32
-                            + bar_chart_margin;
+                        let mut top =
+                            unit_height * (category_count - actual_i - 1) as f32 + bar_chart_margin;
                         top += (bar_height + bar_chart_gap) * slot_index as f32;
 
                         let base = match stack_index {
@@ -437,7 +437,9 @@ impl HorizontalBarChart {
                                 font_color: Some(
                                     self.tooltip_font_color(self.series.label.font.color),
                                 ),
-                                font_size: Some(self.tooltip_font_size(self.series.label.font.size)),
+                                font_size: Some(
+                                    self.tooltip_font_size(self.series.label.font.size),
+                                ),
                                 x: Some(x),
                                 y: Some(top + half_bar_height),
                                 dy: Some(-4.0),

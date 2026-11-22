@@ -266,13 +266,7 @@ pub(crate) fn render(
             hbar.y_axis_configs[0].min = Some(min);
             hbar.y_axis_configs[0].max = Some(max);
         }
-        apply_base_options(
-            chart,
-            &mut hbar.base,
-            title.as_deref(),
-            640.0,
-            400.0,
-        );
+        apply_base_options(chart, &mut hbar.base, title.as_deref(), 640.0, 400.0);
         let (w, h) = (hbar.width, hbar.height);
         return Ok((hbar.svg()?, w, h));
     }
@@ -311,13 +305,7 @@ pub(crate) fn render(
         bar.y_axis_configs[0].min = Some(min);
         bar.y_axis_configs[0].max = Some(max);
     }
-    apply_base_options(
-        chart,
-        &mut bar.base,
-        title.as_deref(),
-        640.0,
-        400.0,
-    );
+    apply_base_options(chart, &mut bar.base, title.as_deref(), 640.0, 400.0);
     let (w, h) = (bar.width, bar.height);
     Ok((bar.svg()?, w, h))
 }

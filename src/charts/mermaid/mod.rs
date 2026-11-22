@@ -218,21 +218,36 @@ impl MermaidChart {
                 &prep.init_config,
                 &prep.lines,
             ),
-            DiagramKind::State => {
-                state::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
-            DiagramKind::Class => {
-                class::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
-            DiagramKind::Er => {
-                er::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
-            DiagramKind::Mindmap => {
-                mindmap::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
-            DiagramKind::Quadrant => {
-                quadrant::render(chart_ref, &effective_theme, prep.title.as_deref(), &prep.lines)
-            }
+            DiagramKind::State => state::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
+            DiagramKind::Class => class::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
+            DiagramKind::Er => er::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
+            DiagramKind::Mindmap => mindmap::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
+            DiagramKind::Quadrant => quadrant::render(
+                chart_ref,
+                &effective_theme,
+                prep.title.as_deref(),
+                &prep.lines,
+            ),
             DiagramKind::Radar => adapters::radar::render(
                 chart_ref,
                 &effective_theme,
@@ -277,11 +292,8 @@ impl MermaidChart {
                 &prep.lines,
             ),
         }?;
-        let svg = inject_svg_accessibility(
-            svg,
-            prep.acc_title.as_deref(),
-            prep.acc_descr.as_deref(),
-        );
+        let svg =
+            inject_svg_accessibility(svg, prep.acc_title.as_deref(), prep.acc_descr.as_deref());
         Ok((svg, w, h))
     }
 
@@ -339,9 +351,7 @@ pub(crate) fn is_safe_link_url(url: &str) -> bool {
         return false;
     }
     let lower = s.to_ascii_lowercase();
-    if lower.starts_with("http://")
-        || lower.starts_with("https://")
-        || lower.starts_with("mailto:")
+    if lower.starts_with("http://") || lower.starts_with("https://") || lower.starts_with("mailto:")
     {
         return true;
     }
@@ -761,7 +771,12 @@ fn draw_title_row(
         .clone()
         .or_else(|| theme_cfg.font.weight.clone());
     let row_h = title_row_height(cfg, theme_cfg, min_height);
-    let clipped = text_ellipsis(font_family, size, text, (inner_w - m.left - m.right).max(20.0));
+    let clipped = text_ellipsis(
+        font_family,
+        size,
+        text,
+        (inner_w - m.left - m.right).max(20.0),
+    );
     let text_w = measure_text_width_family(font_family, size, &clipped)
         .map(|b| b.width())
         .unwrap_or_default();

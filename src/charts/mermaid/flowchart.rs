@@ -17,7 +17,6 @@ use std::collections::HashMap;
 use super::super::component::{RawPath, Rect};
 use super::super::error::{Error, Result};
 use super::super::theme::get_theme;
-use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 use super::draw::{
     EdgeMarker, EdgeStroke, NodeShape, build_edge_path, clip_point_to_rect, clip_point_to_shape,
     draw_edge_label, draw_edge_marker, draw_node,
@@ -28,6 +27,7 @@ use super::layout::{
 use super::preprocess::{Direction, EdgeCurve, MermaidInitConfig, SourceLine};
 use super::style::{MermaidPalette, StyleProps, parse_style_props, unquote_text};
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
+use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 
 #[derive(Clone, Debug)]
 struct FcNode {
@@ -370,7 +370,10 @@ impl<'a> StmtScanner<'a> {
         let Some(end_pos) = end else {
             return Err(Error::Mermaid {
                 line: Some(self.line_no),
-                message: format!("unclosed v11 shape block starting near `{}`", &self.src[open_pos..]),
+                message: format!(
+                    "unclosed v11 shape block starting near `{}`",
+                    &self.src[open_pos..]
+                ),
             });
         };
         let body = &self.src[start..end_pos];
@@ -431,8 +434,10 @@ impl<'a> StmtScanner<'a> {
                 _ => {}
             }
         }
-        if matches!(shape, Some(NodeShape::SmallCircle | NodeShape::FramedCircle))
-            && label.is_none()
+        if matches!(
+            shape,
+            Some(NodeShape::SmallCircle | NodeShape::FramedCircle)
+        ) && label.is_none()
         {
             label = Some(String::new());
         }
@@ -1475,9 +1480,9 @@ pub(crate) fn render(
                 let ry0 = ty - title_ft.height * 0.5 - 4.0;
                 let ry1 = ty + title_ft.height * 0.5 + 4.0;
                 layout.edges.iter().any(|re| {
-                    re.waypoints.windows(2).any(|w| {
-                        segment_intersects_rect(w[0], w[1], tx_left, ry0, tx_right, ry1)
-                    })
+                    re.waypoints
+                        .windows(2)
+                        .any(|w| segment_intersects_rect(w[0], w[1], tx_left, ry0, tx_right, ry1))
                 })
             };
             let cx = b.x + b.width * 0.5;

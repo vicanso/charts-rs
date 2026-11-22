@@ -710,10 +710,12 @@ pub(crate) fn render(
         )?;
     }
 
-    let (min_ts, max_ts) = resolved.iter().flatten().fold(
-        (f64::INFINITY, f64::NEG_INFINITY),
-        |(lo, hi), &(s, e)| (lo.min(s), hi.max(e)),
-    );
+    let (min_ts, max_ts) = resolved
+        .iter()
+        .flatten()
+        .fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &(s, e)| {
+            (lo.min(s), hi.max(e))
+        });
 
     let theme = get_theme(theme_name);
     let bg = if theme.background_color.is_transparent() {
@@ -841,8 +843,14 @@ mod tests {
         assert_eq!(cal.snap_start(sat), sat);
 
         // Tick interval parsing.
-        assert_eq!(parse_tick_interval("1week"), Some(7.0 * DEFAULT_DAY_SECONDS));
+        assert_eq!(
+            parse_tick_interval("1week"),
+            Some(7.0 * DEFAULT_DAY_SECONDS)
+        );
         assert_eq!(parse_tick_interval("2day"), Some(2.0 * DEFAULT_DAY_SECONDS));
-        assert_eq!(parse_tick_interval("1month"), Some(30.0 * DEFAULT_DAY_SECONDS));
+        assert_eq!(
+            parse_tick_interval("1month"),
+            Some(30.0 * DEFAULT_DAY_SECONDS)
+        );
     }
 }

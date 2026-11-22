@@ -334,7 +334,10 @@ fn parse_directive(
 
     if let Some(ff) = root
         .get("fontFamily")
-        .or_else(|| root.get("themeVariables").and_then(|tv| tv.get("fontFamily")))
+        .or_else(|| {
+            root.get("themeVariables")
+                .and_then(|tv| tv.get("fontFamily"))
+        })
         .and_then(|v| v.as_str())
         && !ff.trim().is_empty()
     {

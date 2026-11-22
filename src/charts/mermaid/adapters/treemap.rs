@@ -301,13 +301,7 @@ pub(crate) fn render(
     treemap.show_group_header = true;
 
     let effective_title = parsed.title.as_deref().or(fm_title);
-    apply_base_options(
-        chart,
-        &mut treemap.base,
-        effective_title,
-        700.0,
-        480.0,
-    );
+    apply_base_options(chart, &mut treemap.base, effective_title, 700.0, 480.0);
     let (w, h) = (treemap.width, treemap.height);
     Ok((treemap.svg()?, w, h))
 }

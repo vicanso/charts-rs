@@ -1145,8 +1145,7 @@ pub(crate) fn render(
                         // Ensure header tab + condition label and divider labels fit inside the frame.
                         let mut min_label_w = 0.0_f32;
                         if b.kind != BlockKind::Rect {
-                            let kw_ft =
-                                format_and_measure(b.kind.keyword(), &font_family, 12.0);
+                            let kw_ft = format_and_measure(b.kind.keyword(), &font_family, 12.0);
                             let tab_w = (kw_ft.width + 20.0).max(46.0);
                             let hdr_w = if !b.label.is_empty() {
                                 let lbl = format!("[{}]", b.label);

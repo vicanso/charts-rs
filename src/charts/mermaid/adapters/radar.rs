@@ -461,13 +461,7 @@ pub(crate) fn render(
     radar.legend.show = parsed.show_legend.or(Some(true));
 
     let effective_title = parsed.title.as_deref().or(fm_title);
-    apply_base_options(
-        chart,
-        &mut radar.base,
-        effective_title,
-        700.0,
-        480.0,
-    );
+    apply_base_options(chart, &mut radar.base, effective_title, 700.0, 480.0);
     let (w, h) = (radar.width, radar.height);
     Ok((radar.svg()?, w, h))
 }

@@ -157,13 +157,7 @@ pub(crate) fn render(
         }
     }
     let default_width = (2.0 * (135.0 + 48.0 + max_label_w + 16.0)).clamp(640.0, 960.0);
-    apply_base_options(
-        chart,
-        &mut pie.base,
-        title.as_deref(),
-        default_width,
-        400.0,
-    );
+    apply_base_options(chart, &mut pie.base, title.as_deref(), default_width, 400.0);
     let (w, h) = (pie.width, pie.height);
     Ok((pie.svg()?, w, h))
 }

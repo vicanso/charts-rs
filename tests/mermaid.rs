@@ -2,8 +2,8 @@
 mod common;
 
 use charts_rs::{
-    BarChart, Chart, ChildChart, MermaidChart, MultiChart, THEME_DARK, THEME_GRAFANA,
-    THEME_SHADCN, mermaid_to_svg, mermaid_to_svg_with_theme,
+    BarChart, Chart, ChildChart, MermaidChart, MultiChart, THEME_DARK, THEME_GRAFANA, THEME_SHADCN,
+    mermaid_to_svg, mermaid_to_svg_with_theme,
 };
 
 fn assert_valid_svg(svg: &str) {
@@ -606,19 +606,17 @@ fn mermaid_snapshots() {
         xychart_horizontal.svg().unwrap()
     );
 
-    let xychart_numeric = MermaidChart::from_json(include_str!(
-        "../asset/mermaid_chart/xychart_numeric.json"
-    ))
-    .unwrap();
+    let xychart_numeric =
+        MermaidChart::from_json(include_str!("../asset/mermaid_chart/xychart_numeric.json"))
+            .unwrap();
     common::assert_snapshot!(
         "mermaid_chart/xychart_numeric_json.svg",
         xychart_numeric.svg().unwrap()
     );
 
-    let er_lr_self_loop = MermaidChart::from_json(include_str!(
-        "../asset/mermaid_chart/er_lr_self_loop.json"
-    ))
-    .unwrap();
+    let er_lr_self_loop =
+        MermaidChart::from_json(include_str!("../asset/mermaid_chart/er_lr_self_loop.json"))
+            .unwrap();
     common::assert_snapshot!(
         "mermaid_chart/er_lr_self_loop_json.svg",
         er_lr_self_loop.svg().unwrap()
@@ -633,19 +631,17 @@ fn mermaid_snapshots() {
         class_parallel_relations.svg().unwrap()
     );
 
-    let treemap_nested = MermaidChart::from_json(include_str!(
-        "../asset/mermaid_chart/treemap_nested.json"
-    ))
-    .unwrap();
+    let treemap_nested =
+        MermaidChart::from_json(include_str!("../asset/mermaid_chart/treemap_nested.json"))
+            .unwrap();
     common::assert_snapshot!(
         "mermaid_chart/treemap_nested_json.svg",
         treemap_nested.svg().unwrap()
     );
 
-    let pie_many_slices = MermaidChart::from_json(include_str!(
-        "../asset/mermaid_chart/pie_many_slices.json"
-    ))
-    .unwrap();
+    let pie_many_slices =
+        MermaidChart::from_json(include_str!("../asset/mermaid_chart/pie_many_slices.json"))
+            .unwrap();
     common::assert_snapshot!(
         "mermaid_chart/pie_many_slices_json.svg",
         pie_many_slices.svg().unwrap()
@@ -676,7 +672,11 @@ fn m02_sankey_cycle_and_self_loop_rejected() {
     // Defensive guard in core SankeyChart: a cyclic graph must not produce collapsed ribbons.
     let chart = charts_rs::SankeyChart::new(
         vec![],
-        vec![("A", "B", 10.0).into(), ("B", "C", 5.0).into(), ("C", "A", 2.0).into()],
+        vec![
+            ("A", "B", 10.0).into(),
+            ("B", "C", 5.0).into(),
+            ("C", "A", 2.0).into(),
+        ],
     );
     let svg = chart.svg().unwrap();
     assert_valid_svg(&svg);
@@ -715,7 +715,8 @@ xychart-beta horizontal
     );
 
     // Line-only horizontal xychart should also render cleanly without bars.
-    let line_only = "xychart-beta horizontal\n  x-axis [A, B, C]\n  y-axis 0 --> 50\n  line [10, 35, 25]";
+    let line_only =
+        "xychart-beta horizontal\n  x-axis [A, B, C]\n  y-axis 0 --> 50\n  line [10, 35, 25]";
     let line_svg = mermaid_to_svg(line_only).unwrap();
     assert_valid_svg(&line_svg);
     assert!(line_svg.contains("<path d=\"M"));
@@ -904,8 +905,14 @@ xychart-beta
         "auto-legend Line 1 should be hidden: {svg}"
     );
     // Clean numeric ticks (no awkward `3.2` or `7.8`) and no negative bar x-coordinates.
-    assert!(!svg.contains("\n3.2\n"), "unexpected fractional tick 3.2: {svg}");
-    assert!(!svg.contains("\n7.8\n"), "unexpected fractional tick 7.8: {svg}");
+    assert!(
+        !svg.contains("\n3.2\n"),
+        "unexpected fractional tick 3.2: {svg}"
+    );
+    assert!(
+        !svg.contains("\n7.8\n"),
+        "unexpected fractional tick 7.8: {svg}"
+    );
     assert!(
         !svg.contains("<rect x=\"-"),
         "bars must not overflow past left edge: {svg}"
@@ -962,10 +969,22 @@ gantt
     let crit_fill = fill_for("Critical");
     let crit_done_fill = fill_for("CritDone");
 
-    assert_ne!(done_fill, normal_fill, "done should be muted grey, distinct from normal");
-    assert_ne!(active_fill, normal_fill, "active should be highlighted, distinct from normal");
-    assert_ne!(crit_fill, normal_fill, "crit should be red, distinct from normal");
-    assert_ne!(crit_done_fill, crit_fill, "crit+done should be muted compared to crit");
+    assert_ne!(
+        done_fill, normal_fill,
+        "done should be muted grey, distinct from normal"
+    );
+    assert_ne!(
+        active_fill, normal_fill,
+        "active should be highlighted, distinct from normal"
+    );
+    assert_ne!(
+        crit_fill, normal_fill,
+        "crit should be red, distinct from normal"
+    );
+    assert_ne!(
+        crit_done_fill, crit_fill,
+        "crit+done should be muted compared to crit"
+    );
 }
 
 #[test]
@@ -1000,12 +1019,18 @@ flowchart LR
 "#;
     let svg = mermaid_to_svg(src).unwrap();
     assert_valid_svg(&svg);
-    assert!(svg.contains("\nCar\n"), "fa:fa-car should be stripped: {svg}");
+    assert!(
+        svg.contains("\nCar\n"),
+        "fa:fa-car should be stripped: {svg}"
+    );
     assert!(
         svg.contains("\nRepo: main\n"),
         "fab:fa-github stripped while preserving colon: {svg}"
     );
-    assert!(svg.contains("\nDone\n"), "fas:fa-check should be stripped: {svg}");
+    assert!(
+        svg.contains("\nDone\n"),
+        "fas:fa-check should be stripped: {svg}"
+    );
     assert!(!svg.contains("fa:fa-"), "raw fa:fa-* token leaked: {svg}");
     assert!(!svg.contains("fab:fa-"), "raw fab:fa-* token leaked: {svg}");
     assert!(!svg.contains("fas:fa-"), "raw fas:fa-* token leaked: {svg}");
@@ -1048,7 +1073,11 @@ sequenceDiagram
             (get("x"), get("width"))
         })
         .collect();
-    assert_eq!(frames.len(), 2, "expected 2 fragment frames (loop + opt): {svg}");
+    assert_eq!(
+        frames.len(),
+        2,
+        "expected 2 fragment frames (loop + opt): {svg}"
+    );
     let (loop_x, loop_w) = frames[0];
     let (opt_x, opt_w) = frames[1];
     // `loop` covers only B and C (must start well to the right of A's left edge x=29).
@@ -1101,7 +1130,11 @@ flowchart BT
         .filter(|l| l.starts_with("<rect ") && l.contains("rx=\"6\""))
         .map(parse_rect)
         .collect();
-    assert_eq!(sg_rects.len(), 2, "expected Outer and Inner subgraph rects: {svg}");
+    assert_eq!(
+        sg_rects.len(),
+        2,
+        "expected Outer and Inner subgraph rects: {svg}"
+    );
     let (ox, oy, ow, oh) = sg_rects[0];
 
     // Find c1's <text> position and verify it lies strictly outside Outer's bounding box.
@@ -1204,14 +1237,25 @@ fn m12_sankey_margin_and_reduced_crossings() {
     };
     let mut transport_y = None;
     let mut residential_y = None;
-    for line in svg.lines().filter(|l| l.starts_with("<rect ") && l.contains("data-name=")) {
+    for line in svg
+        .lines()
+        .filter(|l| l.starts_with("<rect ") && l.contains("data-name="))
+    {
         let x = get_attr(line, "x");
         let y = get_attr(line, "y");
         let w = get_attr(line, "width");
         let h = get_attr(line, "height");
         assert!(x >= 12.0, "sankey node touches left edge: x={x}");
-        assert!(x + w <= 628.0, "sankey node touches right edge: right={}", x + w);
-        assert!(y + h <= 406.5, "sankey node touches bottom edge: bottom={}", y + h);
+        assert!(
+            x + w <= 628.0,
+            "sankey node touches right edge: right={}",
+            x + w
+        );
+        assert!(
+            y + h <= 406.5,
+            "sankey node touches bottom edge: bottom={}",
+            y + h
+        );
         if line.contains("data-name=\"Transport\"") {
             transport_y = Some(y);
         }
@@ -1231,8 +1275,7 @@ fn m12_sankey_margin_and_reduced_crossings() {
 
 #[test]
 fn m13_radar_polygon_vertical_centering() {
-    let radar =
-        MermaidChart::from_json(include_str!("../asset/mermaid_chart/radar.json")).unwrap();
+    let radar = MermaidChart::from_json(include_str!("../asset/mermaid_chart/radar.json")).unwrap();
     let svg = radar.svg().unwrap();
     assert_valid_svg(&svg);
 
@@ -1247,9 +1290,18 @@ fn m13_radar_polygon_vertical_centering() {
                 && l.contains("stroke-width=\"1\"")
         })
         .collect();
-    assert!(!grid_paths.is_empty(), "expected radar grid polygons: {svg}");
+    assert!(
+        !grid_paths.is_empty(),
+        "expected radar grid polygons: {svg}"
+    );
     let outer = grid_paths.last().unwrap();
-    let d_attr = outer.split("d=\"").nth(1).unwrap().split('"').next().unwrap();
+    let d_attr = outer
+        .split("d=\"")
+        .nth(1)
+        .unwrap()
+        .split('"')
+        .next()
+        .unwrap();
     let mut min_y = f32::INFINITY;
     let mut max_y = f32::NEG_INFINITY;
     for seg in d_attr.split(['M', 'L', 'Z']) {
@@ -1274,8 +1326,7 @@ fn m13_radar_polygon_vertical_centering() {
 #[test]
 fn m09_treemap_group_headers_and_hierarchy() {
     // Gallery treemap.json: top-level section headers (`Compute`, `Storage`, `Networking`) must render.
-    let tm =
-        MermaidChart::from_json(include_str!("../asset/mermaid_chart/treemap.json")).unwrap();
+    let tm = MermaidChart::from_json(include_str!("../asset/mermaid_chart/treemap.json")).unwrap();
     let svg = tm.svg().unwrap();
     assert_valid_svg(&svg);
     for section in ["Compute", "Storage", "Networking"] {
@@ -1391,8 +1442,14 @@ gantt
 "#;
     let svg = mermaid_to_svg(src).unwrap();
     assert_valid_svg(&svg);
-    assert!(svg.contains("Code Freeze"), "expected vert marker label: {svg}");
-    assert!(svg.contains("GA Cut"), "expected second vert marker label: {svg}");
+    assert!(
+        svg.contains("Code Freeze"),
+        "expected vert marker label: {svg}"
+    );
+    assert!(
+        svg.contains("GA Cut"),
+        "expected second vert marker label: {svg}"
+    );
     // `vert` markers must NOT consume task rows (only `Alpha` and `Beta` have `data-name=`).
     assert!(svg.contains("data-name=\"Alpha\""));
     assert!(svg.contains("data-name=\"Beta\""));
@@ -1437,7 +1494,10 @@ fn m17_m22_markdown_strings_bold_italic_and_multiline() {
         fc_svg.contains("second line"),
         "expected second line from multiline Markdown string: {fc_svg}"
     );
-    assert!(!fc_svg.contains("`**"), "raw markdown backticks leaked: {fc_svg}");
+    assert!(
+        !fc_svg.contains("`**"),
+        "raw markdown backticks leaked: {fc_svg}"
+    );
 
     // Mindmap: Markdown string with bold + italic spans.
     let mm_src = "mindmap\n  root((Hub))\n    (\"`Zero **External** _Deps_`\")";
@@ -1468,7 +1528,15 @@ flowchart LR
 "#;
     let svg = mermaid_to_svg(src).unwrap();
     assert_valid_svg(&svg);
-    for lbl in ["Spec, v1", "Reports", "Wait", "Extract", "Signal", "Plain Note", "Store"] {
+    for lbl in [
+        "Spec, v1",
+        "Reports",
+        "Wait",
+        "Extract",
+        "Signal",
+        "Plain Note",
+        "Store",
+    ] {
         assert!(svg.contains(lbl), "missing v11 node label `{lbl}`: {svg}");
     }
     // Unknown shape returns a clear line-numbered Error::Mermaid.
@@ -1502,7 +1570,9 @@ flowchart LR
         "missing aria-describedby: {svg}"
     );
     assert!(
-        svg.contains("<title id=\"mermaid-title\">Auth &lt;Flow&gt; &amp; &quot;Tokens&quot;</title>"),
+        svg.contains(
+            "<title id=\"mermaid-title\">Auth &lt;Flow&gt; &amp; &quot;Tokens&quot;</title>"
+        ),
         "missing escaped <title>: {svg}"
     );
     assert!(
@@ -1530,7 +1600,10 @@ pie title Budget
     let bad = "flowchart TD\n  accDescr {\n    missing close\n  A --> B";
     let err = mermaid_to_svg(bad).unwrap_err().to_string();
     assert!(err.contains("line 2"), "expected line 2 in error: {err}");
-    assert!(err.contains("unclosed"), "expected unclosed diagnostic: {err}");
+    assert!(
+        err.contains("unclosed"),
+        "expected unclosed diagnostic: {err}"
+    );
 
     // Diagram without accTitle/accDescr must not emit accessibility metadata.
     let plain = mermaid_to_svg("flowchart LR\n  A --> B").unwrap();
@@ -1562,8 +1635,14 @@ flowchart LR
         svg.contains("<a href=\"mailto:ops@example.com\"><title>Email Ops</title>"),
         "missing mailto link: {svg}"
     );
-    assert!(!svg.contains("javascript:"), "javascript: URL must be blocked: {svg}");
-    assert!(!svg.contains("XSS"), "blocked link tooltip must not appear: {svg}");
+    assert!(
+        !svg.contains("javascript:"),
+        "javascript: URL must be blocked: {svg}"
+    );
+    assert!(
+        !svg.contains("XSS"),
+        "blocked link tooltip must not appear: {svg}"
+    );
 
     // allow_links = false disables all emitted hyperlinks.
     let mut chart = MermaidChart::new(fc);
@@ -1618,7 +1697,9 @@ classDiagram
 "#;
     let cls_svg = mermaid_to_svg(cls).unwrap();
     assert_valid_svg(&cls_svg);
-    assert!(cls_svg.contains("<a href=\"/models/order\" target=\"_self\"><title>Order model</title>"));
+    assert!(
+        cls_svg.contains("<a href=\"/models/order\" target=\"_self\"><title>Order model</title>")
+    );
     assert!(cls_svg.contains("<a href=\"https://example.com/user\"><title>User docs</title>"));
 
     // State diagram click directive + data: protocol rejection.

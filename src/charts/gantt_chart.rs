@@ -735,9 +735,9 @@ impl GanttChart {
                 let step = marker_font + 3.0;
                 let mut ly = 10.0_f32;
                 while ly + marker_font * 0.5 < plot_height
-                    && placed_marker_labels
-                        .iter()
-                        .any(|&(px0, px1, py)| x0 < px1 + 4.0 && px0 < x1 + 4.0 && (ly - py).abs() < step - 0.5)
+                    && placed_marker_labels.iter().any(|&(px0, px1, py)| {
+                        x0 < px1 + 4.0 && px0 < x1 + 4.0 && (ly - py).abs() < step - 0.5
+                    })
                 {
                     ly += step;
                 }

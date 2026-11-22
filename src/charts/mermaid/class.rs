@@ -20,7 +20,6 @@ use super::super::error::{Error, Result};
 use super::super::font::measure_text_width_family;
 use super::super::theme::get_theme;
 use super::super::util::Point;
-use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 use super::draw::{
     EdgeMarker, build_smooth_edge_path, clip_point_to_rect, draw_cardinality_label,
     draw_edge_label, draw_edge_marker, draw_note_box,
@@ -34,6 +33,7 @@ use super::style::{
     try_parse_style_directive, unquote_text,
 };
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
+use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
 
 #[derive(Clone, Debug)]
 struct ClassMember {

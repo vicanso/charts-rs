@@ -30,7 +30,10 @@ flowchart LR
     safe_chart.allow_links = false;
     let safe_svg = safe_chart.svg().expect("render flowchart without links");
     assert!(!safe_svg.contains("<a href="));
-    println!("flowchart (allow_links=false) svg bytes: {}", safe_svg.len());
+    println!(
+        "flowchart (allow_links=false) svg bytes: {}",
+        safe_svg.len()
+    );
 
     let seq = r#"
 sequenceDiagram

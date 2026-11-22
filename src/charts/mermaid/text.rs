@@ -195,11 +195,7 @@ fn strip_fa_icon_tokens(text: String) -> String {
             kept.push(tok);
         }
     }
-    if any_stripped {
-        kept.join(" ")
-    } else {
-        text
-    }
+    if any_stripped { kept.join(" ") } else { text }
 }
 
 /// Strips inline HTML tags (`<b>`, `<i>`, `<span ...>`) while keeping `<` in
@@ -289,11 +285,7 @@ fn parse_markdown_line(line: &str) -> FormattedLine {
         while j + count <= n {
             if (0..count).all(|k| chars[j + k] == delim) {
                 // For single `_`, require not followed by alphanumeric (avoid snake_case).
-                if delim == '_'
-                    && count == 1
-                    && j + 1 < n
-                    && chars[j + 1].is_alphanumeric()
-                {
+                if delim == '_' && count == 1 && j + 1 < n && chars[j + 1].is_alphanumeric() {
                     j += 1;
                     continue;
                 }
@@ -372,9 +364,8 @@ fn parse_markdown_line(line: &str) -> FormattedLine {
 /// Cleans, wraps (`<br/>` / `\n`) and measures a Mermaid label.
 pub(crate) fn format_and_measure(raw: &str, font_family: &str, font_size: f32) -> FormattedText {
     let trimmed = raw.trim();
-    let (is_markdown, body) = if let Some(inner) = trimmed
-        .strip_prefix('`')
-        .and_then(|s| s.strip_suffix('`'))
+    let (is_markdown, body) = if let Some(inner) =
+        trimmed.strip_prefix('`').and_then(|s| s.strip_suffix('`'))
         && trimmed.len() >= 2
     {
         (true, inner)

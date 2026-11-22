@@ -742,7 +742,8 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
         }
         let mut max_nested_depth = 0usize;
         for (other_idx, _) in graph.subgraphs.iter().enumerate() {
-            if other_idx != sg_idx && root_subgraph(&graph.subgraphs, Some(other_idx)) == Some(sg_idx)
+            if other_idx != sg_idx
+                && root_subgraph(&graph.subgraphs, Some(other_idx)) == Some(sg_idx)
             {
                 let d = subgraph_depth(&graph.subgraphs, Some(other_idx));
                 max_nested_depth = max_nested_depth.max(d.saturating_sub(1));
@@ -911,8 +912,7 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
                                 != in_subgraph(graph.nodes[e.to].subgraph, sg_idx)
                     });
                 let min_title_w = if has_cross_edge && sg_in.title_width > 0.0 {
-                    (sg_in.title_width + SUBGRAPH_PAD_X * 2.0)
-                        .max((sg_in.title_width + 20.0) * 2.0)
+                    (sg_in.title_width + SUBGRAPH_PAD_X * 2.0).max((sg_in.title_width + 20.0) * 2.0)
                 } else {
                     sg_in.title_width + SUBGRAPH_PAD_X * 2.0
                 };
@@ -949,10 +949,10 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
                 let (nx, ny) = screen_pos[id];
                 let hw = node.width * 0.5;
                 let hh = node.height * 0.5;
-                let overlap_x = (nx + hw) > (b.x - clearance)
-                    && (nx - hw) < (b.x + b.width + clearance);
-                let overlap_y = (ny + hh) > (b.y - clearance)
-                    && (ny - hh) < (b.y + b.height + clearance);
+                let overlap_x =
+                    (nx + hw) > (b.x - clearance) && (nx - hw) < (b.x + b.width + clearance);
+                let overlap_y =
+                    (ny + hh) > (b.y - clearance) && (ny - hh) < (b.y + b.height + clearance);
                 if overlap_x && overlap_y {
                     if !is_horizontal {
                         if nx < sg_cx {

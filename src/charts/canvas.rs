@@ -10,13 +10,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(feature = "mermaid")]
-use super::component::{RawPath, write_link_open_svg};
 use super::component::{
     Arrow, Axis, Bubble, Circle, Component, Grid, LEGEND_WIDTH, Legend, Line, Pie, Polygon,
     Polyline, Rect, Ribbon, Sector, Shape, SmoothBand, SmoothLine, SmoothLineFill, StraightLine,
     StraightLineFill, Text, write_svg_close, write_svg_open_with_view_box,
 };
+#[cfg(feature = "mermaid")]
+use super::component::{RawPath, write_link_open_svg};
 
 use super::common::TextConfig;
 use super::{measure_text_width_family, util::*};
