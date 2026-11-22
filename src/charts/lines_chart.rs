@@ -128,7 +128,7 @@ impl LinesChart {
         if let Some(geo_json) = data.get("geo_json") {
             let name =
                 get_string_from_value(&data, "name_property").unwrap_or_else(|| "name".into());
-            c.regions = super::map_chart::regions_from_value(geo_json, &name);
+            c.regions = super::map_chart::resolve_geo_json(geo_json, &name);
         }
         Ok(c)
     }

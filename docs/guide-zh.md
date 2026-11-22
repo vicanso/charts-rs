@@ -464,6 +464,24 @@ Rust 中使用 `GanttChart::new(vec![("调研", start, end).into()])`，时间�
 
 Rust 中使用 `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`。
 
+**服务端预置命名地图。** 在 HTTP / MCP 服务中，不必每次请求都传输完整的 GeoJSON：可以在启动时调用 `register_geo_json` 预加载，然后在 JSON 中通过名称引用（`list_geo_json()` 可列出已注册的地图名称）。注意仓库中的 `asset/geo/china` 数据仅存在于代码仓库中，不会打包进发布的 crate：
+
+```rust,no_run
+use charts_rs::{list_geo_json, register_geo_json, render_chart_from_json};
+
+let geo: serde_json::Value = serde_json::from_str(
+    &std::fs::read_to_string("asset/geo/china/100000_full.json").unwrap(),
+)
+.unwrap();
+register_geo_json("china", geo).unwrap();
+assert!(list_geo_json().contains(&"china".to_string()));
+let svg = render_chart_from_json(
+    "map",
+    r#"{"geo_json": "china", "data": [["北京市", 100]]}"#,
+)
+.unwrap();
+```
+
 **区域数据从哪里来。** 画真实的地图需要一份对应区域的 GeoJSON 文件，库本身不提供。常见的来源：
 
 | 来源 | 内容 | 使用条款 |
@@ -642,3 +660,5 @@ add_fonts(&[&buf]).unwrap();
 未注册的 `font_family` 仍会写入 SVG（由查看器解析），但文字宽度按默认字体测量。
 
 字体只保留原始字节，字形在测量文字时按需读取，因此加载大体积的中文字体也只占用字体文件本身大小的内存。
+
+**HTTP / MCP 服务端部署提示：** 如果需要渲染包含中文、日文或韩文字符的图表，请在服务启动时用 `add_fonts` 预加载对应字体，并用 `get_font_families()` 向客户端暴露可用字体列表；否则文字宽度测量会回退到 `Roboto` 导致排版偏差，光栅图导出（如 PNG）也可能缺字。

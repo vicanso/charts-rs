@@ -127,7 +127,7 @@ pub use histogram_chart::HistogramChart;
 pub use horizontal_bar_chart::HorizontalBarChart;
 pub use line_chart::LineChart;
 pub use lines_chart::{FlowLine, LinesChart};
-pub use map_chart::{MapChart, MapProjection, MapRegion};
+pub use map_chart::{MapChart, MapProjection, MapRegion, list_geo_json, register_geo_json};
 #[cfg(feature = "mermaid")]
 pub use mermaid::{
     MermaidCapabilities, MermaidChart, mermaid_capabilities, mermaid_to_svg,
@@ -145,9 +145,10 @@ pub use radar_chart::{RadarChart, RadarIndicator, RadarShape};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
 pub use scatter_chart::{DensityContour, MarginalHistogram, Regression, ScatterChart};
 pub use schema::{
-    ChartInfo, SchemaLevel, ValidationIssue, chart_catalog, chart_example, chart_json_schema,
-    chart_json_schema_with, list_chart_types, render_chart_from_json, render_chart_from_value,
-    validate_chart_json,
+    ChartInfo, RenderLimits, SchemaLevel, ValidationIssue, chart_catalog, chart_example,
+    chart_json_schema, chart_json_schema_with, list_chart_types, render_chart_from_json,
+    render_chart_from_json_with_limits, render_chart_from_value,
+    render_chart_from_value_with_limits, validate_chart_json, validate_chart_json_with_limits,
 };
 pub use sunburst_chart::{SunburstChart, SunburstData};
 pub use table_chart::{

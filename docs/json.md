@@ -46,7 +46,7 @@ These keys are accepted by every chart except the table and the multi chart. A c
 | `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
 | `y` | number | `0` | Vertical offset of the chart inside the SVG. |
 | `margin` | margin | `5` | Margin around the whole chart. |
-| `font_family` | string | `"Roboto"` | Font family of every text. The font has to be loaded (see [Fonts](./guide.md#fonts) in the guide) for text to be measured correctly. |
+| `font_family` | string | `"Roboto"` | Font family of every text. Unregistered names are not rejected: they stay in the SVG while text width measurement silently falls back to `"Roboto"` (see [Fonts](./guide.md#fonts)). |
 | `compact` | boolean | `false` | Emits compact SVG: the same picture, typically 20–30% smaller. |
 | `empty_text` | string |  | Text shown in the middle of the plot when there is no data to draw. |
 
@@ -561,7 +561,7 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `height` | number > 0 |  | Ignored: a table is as high as its rows. |
 | `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
 | `y` | number | `0` | Vertical offset of the chart inside the SVG. |
-| `font_family` | string | `"Roboto"` | Font family of every text. The font has to be loaded (see [Fonts](./guide.md#fonts) in the guide) for text to be measured correctly. |
+| `font_family` | string | `"Roboto"` | Font family of every text. Unregistered names are not rejected: they stay in the SVG while text width measurement silently falls back to `"Roboto"` (see [Fonts](./guide.md#fonts)). |
 | `background_color` | color | theme | Background color behind the title; the rows have `header_background_color` and `body_background_colors`. |
 | `title_text` | string |  | Title text; no title is drawn when empty. |
 | `title_font_size` | number | `18` | Title font size. |
@@ -1325,7 +1325,7 @@ The names are written in the font of the x axis, and the scale below each row in
 | `min_width` | number | `1` | Width of the smallest value. `0` means 1. |
 | `max_width` | number | `6` | Width of the largest value. `0` means 6. |
 | `arrow` | boolean | `true` | Draws an arrow at the end of each line. |
-| `geo_json` | object |  | The regions under the lines: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries. Without it the chart is a plane. |
+| `geo_json` | object / string |  | The regions under the lines: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries, or the name of a map registered with `register_geo_json`. Without it the chart is a plane. |
 | `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region. |
 | `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane, the same way as a map. Ignored when there is no `geo_json`. |
 
@@ -1362,7 +1362,7 @@ The names are written in the font of the x axis, and the scale below each row in
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `geo_json` | object |  | The regions: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries, with longitudes and latitudes in degrees. Other geometries are left out. |
+| `geo_json` | object / string |  | The regions: a GeoJSON `FeatureCollection` (or a single `Feature`) of `Polygon` and `MultiPolygon` geometries with longitudes and latitudes in degrees, or the name of a map registered with `register_geo_json`. Other geometries are left out. |
 | `name_property` | string | `"name"` | The property of a GeoJSON feature that is the name of its region; without it, the `id` of the feature. |
 | `data` | [string, number][] |  | The values: `["name of the region", value]` for each region that has one. |
 | `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | How longitudes and latitudes are laid on the plane: Mercator keeps the shapes (and cuts the map off at 85° north and south), equirectangular takes them as they are. |
@@ -1426,7 +1426,7 @@ The names are written in the font of the x axis, and the scale below each row in
 | `x` | number | `0` | Horizontal offset of the chart inside the SVG. |
 | `y` | number | `0` | Vertical offset of the chart inside the SVG. |
 | `margin` | margin | theme | Margin around the diagram. |
-| `font_family` | string | `"Roboto"` | Font family of every text. |
+| `font_family` | string | `"Roboto"` | Font family of every text; unregistered names stay in the SVG while text measurement silently falls back to `"Roboto"`. |
 | `background_color` | color | theme | Background color of the diagram. |
 | `title_text` | string |  | Title text; overrides any frontmatter or diagram title. |
 | `title_font_size` | number | `18` | Title font size. |

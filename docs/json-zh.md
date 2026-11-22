@@ -46,7 +46,7 @@
 | `x` | 数字 | `0` | 图表在 SVG 中的水平偏移。 |
 | `y` | 数字 | `0` | 图表在 SVG 中的垂直偏移。 |
 | `margin` | 边距 | `5` | 图表四周的外边距。 |
-| `font_family` | 字符串 | `"Roboto"` | 所有文字使用的字体。字体需要先加载（见使用指南的[字体](./guide-zh.md#字体)一节），文字宽度才能准确测量。 |
+| `font_family` | 字符串 | `"Roboto"` | 所有文字使用的字体。未注册的字体名不会报错：仍会写入 SVG，但文字宽度测量会静默回退到 `"Roboto"`（见使用指南的[字体](./guide-zh.md#字体)一节）。 |
 | `compact` | 布尔 | `false` | 输出精简的 SVG：画面相同，体积通常小 20–30%。 |
 | `empty_text` | 字符串 |  | 没有数据可画时显示在绘图区中央的文字。 |
 
@@ -561,7 +561,7 @@
 | `height` | 正数 |  | 不生效：表格高度由各行高度决定。 |
 | `x` | 数字 | `0` | 图表在 SVG 中的水平偏移。 |
 | `y` | 数字 | `0` | 图表在 SVG 中的垂直偏移。 |
-| `font_family` | 字符串 | `"Roboto"` | 所有文字使用的字体。字体需要先加载（见使用指南的[字体](./guide-zh.md#字体)一节），文字宽度才能准确测量。 |
+| `font_family` | 字符串 | `"Roboto"` | 所有文字使用的字体。未注册的字体名不会报错：仍会写入 SVG，但文字宽度测量会静默回退到 `"Roboto"`（见使用指南的[字体](./guide-zh.md#字体)一节）。 |
 | `background_color` | 颜色 | 主题 | 标题区域的背景色；表头和表体各行分别使用 `header_background_color` 与 `body_background_colors`。 |
 | `title_text` | 字符串 |  | 标题文字；为空时不绘制标题。 |
 | `title_font_size` | 数字 | `18` | 标题字号。 |
@@ -1325,7 +1325,7 @@
 | `min_width` | 数字 | `1` | 最小流量的线宽。`0` 表示 1。 |
 | `max_width` | 数字 | `6` | 最大流量的线宽。`0` 表示 6。 |
 | `arrow` | 布尔 | `true` | 在每条线的终点画箭头。 |
-| `geo_json` | 对象 |  | 线下面的区域：GeoJSON `FeatureCollection`（或单个 `Feature`），几何类型为 `Polygon` 或 `MultiPolygon`。没有它时图表是平面。 |
+| `geo_json` | 对象 / 字符串 |  | 线下面的区域：GeoJSON `FeatureCollection`（或单个 `Feature`），几何类型为 `Polygon` 或 `MultiPolygon`，或通过 `register_geo_json` 注册的地图名称。没有它时图表是平面。 |
 | `name_property` | 字符串 | `"name"` | GeoJSON 要素里作为区域名的属性。 |
 | `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | 经纬度铺到平面上的方式，与地图相同。没有 `geo_json` 时忽略。 |
 
@@ -1362,7 +1362,7 @@
 
 | 键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `geo_json` | 对象 |  | 区域数据：GeoJSON 的 `FeatureCollection`（或单个 `Feature`），几何类型为 `Polygon` 和 `MultiPolygon`，坐标为经纬度（度）。其它几何类型会被忽略。 |
+| `geo_json` | 对象 / 字符串 |  | 区域数据：GeoJSON 的 `FeatureCollection`（或单个 `Feature`，几何类型为 `Polygon` 和 `MultiPolygon`，坐标为经纬度），或通过 `register_geo_json` 注册的地图名称。其它几何类型会被忽略。 |
 | `name_property` | 字符串 | `"name"` | GeoJSON feature 中作为区域名称的属性；没有该属性时使用 feature 的 `id`。 |
 | `data` | [字符串, 数字][] |  | 数值：每个有数值的区域一项 `["区域名称", 数值]`。 |
 | `projection` | `"mercator"` / `"equirectangular"` | `"mercator"` | 经纬度到平面的投影方式：墨卡托投影保持形状（南北纬 85° 以外被截掉），等距圆柱投影直接使用经纬度。 |
@@ -1426,7 +1426,7 @@
 | `x` | 数字 | `0` | 图表在 SVG 中的水平偏移。 |
 | `y` | 数字 | `0` | 图表在 SVG 中的垂直偏移。 |
 | `margin` | 边距 | 主题 | 图表四周的外边距。 |
-| `font_family` | 字符串 | `"Roboto"` | 所有文字使用的字体。 |
+| `font_family` | 字符串 | `"Roboto"` | 所有文字使用的字体；未注册的字体名不会报错，仍会写入 SVG，但宽度测量会静默回退到 `"Roboto"`。 |
 | `background_color` | 颜色 | 主题 | 图表背景色。 |
 | `title_text` | 字符串 |  | 标题文字；会覆盖源码 frontmatter 或内部声明的标题。 |
 | `title_font_size` | 数字 | `18` | 标题字号。 |

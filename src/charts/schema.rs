@@ -72,8 +72,8 @@ pub(crate) enum Kind {
     /// An axis scale: `"linear"`, `"log"`, `"log2"`, `"log10"` or
     /// `{"type": "log", "base": n}`.
     Scale,
-    /// Any JSON value: a document of its own, such as GeoJSON.
-    Any,
+    /// A GeoJSON object or the name of a map registered via `register_geo_json`.
+    GeoJson,
     /// Any JSON array.
     Array,
     /// An array whose items match the given kind.
@@ -445,7 +445,7 @@ pub(crate) static HEATMAP_FIELDS: &[Field] = &[
 
 static MAP_DATUM: Kind = Kind::Tuple(&[Kind::String, Kind::Number]);
 pub(crate) static MAP_FIELDS: &[Field] = &[
-    f("geo_json", Kind::Any),
+    f("geo_json", Kind::GeoJson),
     f("name_property", Kind::String),
     f("data", Kind::Items(&MAP_DATUM)),
     f("projection", Kind::Enum(&["mercator", "equirectangular"])),
@@ -495,7 +495,7 @@ pub(crate) static LINES_FIELDS: &[Field] = &[
     f("min_width", Kind::Number),
     f("max_width", Kind::Number),
     f("arrow", Kind::Bool),
-    f("geo_json", Kind::Any),
+    f("geo_json", Kind::GeoJson),
     f("name_property", Kind::String),
     f("projection", Kind::Enum(&["mercator", "equirectangular"])),
 ];
@@ -1112,7 +1112,39 @@ fn collect_value(
                 "a number or one of average, min, max".into(),
             ),
         },
-        Kind::Any => {}
+        Kind::GeoJson => match v {
+            serde_json::Value::Object(_) => {}
+            serde_json::Value::String(s) => {
+                if super::map_chart::get_geo_json(s).is_none() {
+                    let registered = super::map_chart::list_geo_json();
+                    let (message, expected) = if registered.is_empty() {
+                        (
+                            format!(
+                                "unknown map `{s}`; no maps are registered (call register_geo_json or pass a GeoJSON object)"
+                            ),
+                            "a GeoJSON object or registered map name".to_string(),
+                        )
+                    } else {
+                        let list = registered.join(", ");
+                        (format!("unknown map `{s}`; registered maps: {list}"), list)
+                    };
+                    if issues.len() < limit {
+                        issues.push(ValidationIssue {
+                            code: "unknown_map",
+                            path: name.to_string(),
+                            message,
+                            expected: Some(expected),
+                            suggestion: None,
+                            line: None,
+                        });
+                    }
+                }
+            }
+            _ => push_expect(
+                "invalid_type",
+                "a GeoJSON object or registered map name".to_string(),
+            ),
+        },
         Kind::Array if v.is_array() => {}
         Kind::Array => push_expect("invalid_type", "an array".to_string()),
         Kind::Items(item_kind) => match v.as_array() {
@@ -1964,7 +1996,9 @@ impl SchemaBuilder<'_> {
             Kind::Enum(values) => serde_json::json!({"type": "string", "enum": values}),
             Kind::Margin => margin_schema(),
             Kind::Scale => scale_schema(),
-            Kind::Any => serde_json::json!({}),
+            Kind::GeoJson => serde_json::json!({
+                "oneOf": [{"type": "object"}, {"type": "string"}]
+            }),
             Kind::Array => serde_json::json!({"type": "array"}),
             Kind::Items(item) => serde_json::json!({
                 "type": "array",
@@ -2378,6 +2412,243 @@ pub fn render_chart_from_value(chart_type: &str, options: &serde_json::Value) ->
     render_chart_from_json(chart_type, &json)
 }
 
+/// Resource bounds enforced by [`render_chart_from_json_with_limits`],
+/// [`render_chart_from_value_with_limits`], and
+/// [`validate_chart_json_with_limits`].
+///
+/// Designed for HTTP / MCP servers rendering untrusted JSON payloads.
+#[derive(Clone, Debug, PartialEq)]
+#[non_exhaustive]
+pub struct RenderLimits {
+    /// Maximum accepted JSON payload size in bytes (default: 1 MiB).
+    pub max_json_bytes: usize,
+    /// Maximum accepted canvas `width` or `height` in pixels (default: 8192).
+    pub max_canvas_side: f32,
+    /// Maximum total elements across all JSON arrays (default: 100,000).
+    pub max_data_points: usize,
+    /// Maximum Mermaid `source` string length in bytes (default: 64 KiB).
+    pub max_mermaid_source: usize,
+}
+
+impl Default for RenderLimits {
+    fn default() -> Self {
+        Self {
+            max_json_bytes: 1024 * 1024,
+            max_canvas_side: 8192.0,
+            max_data_points: 100_000,
+            max_mermaid_source: 64 * 1024,
+        }
+    }
+}
+
+fn count_data_points(value: &serde_json::Value, max: usize, count: &mut usize) {
+    if *count > max {
+        return;
+    }
+    match value {
+        serde_json::Value::Array(items) => {
+            *count = count.saturating_add(items.len());
+            if *count > max {
+                return;
+            }
+            for item in items {
+                count_data_points(item, max, count);
+                if *count > max {
+                    return;
+                }
+            }
+        }
+        serde_json::Value::Object(map) => {
+            for v in map.values() {
+                count_data_points(v, max, count);
+                if *count > max {
+                    return;
+                }
+            }
+        }
+        _ => {}
+    }
+}
+
+fn check_canvas_sides(
+    obj: &serde_json::Map<String, serde_json::Value>,
+    prefix: &str,
+    limits: &RenderLimits,
+    issues: &mut Vec<ValidationIssue>,
+    limit: usize,
+) {
+    for side in ["width", "height"] {
+        if issues.len() >= limit {
+            break;
+        }
+        if let Some(n) = obj.get(side).and_then(|v| v.as_f64())
+            && n > limits.max_canvas_side as f64
+        {
+            let path = join(prefix, side);
+            issues.push(ValidationIssue {
+                code: "limit_exceeded",
+                path: path.clone(),
+                message: format!(
+                    "field `{path}` ({n}) exceeds max_canvas_side ({})",
+                    limits.max_canvas_side
+                ),
+                expected: Some(format!("<= {}", limits.max_canvas_side)),
+                suggestion: None,
+                line: None,
+            });
+        }
+    }
+}
+
+fn check_limits(
+    chart_type: &str,
+    value: &serde_json::Value,
+    limits: &RenderLimits,
+    issues: &mut Vec<ValidationIssue>,
+    limit: usize,
+) {
+    if let Some(obj) = value.as_object() {
+        check_canvas_sides(obj, "", limits, issues, limit);
+        if chart_type == "mermaid"
+            && issues.len() < limit
+            && let Some(src) = obj.get("source").and_then(|v| v.as_str())
+            && src.len() > limits.max_mermaid_source
+        {
+            issues.push(ValidationIssue {
+                code: "limit_exceeded",
+                path: "source".to_string(),
+                message: format!(
+                    "Mermaid source ({} bytes) exceeds max_mermaid_source ({})",
+                    src.len(),
+                    limits.max_mermaid_source
+                ),
+                expected: Some(format!("<= {} bytes", limits.max_mermaid_source)),
+                suggestion: None,
+                line: None,
+            });
+        }
+        if chart_type == "multi"
+            && let Some(children) = obj.get("child_charts").and_then(|v| v.as_array())
+        {
+            for (i, child) in children.iter().enumerate() {
+                if issues.len() >= limit {
+                    break;
+                }
+                if let Some(child_obj) = child.as_object() {
+                    let prefix = format!("child_charts[{i}]");
+                    check_canvas_sides(child_obj, &prefix, limits, issues, limit);
+                    if issues.len() < limit
+                        && child_obj.get("type").and_then(|v| v.as_str()) == Some("mermaid")
+                        && let Some(src) = child_obj.get("source").and_then(|v| v.as_str())
+                        && src.len() > limits.max_mermaid_source
+                    {
+                        issues.push(ValidationIssue {
+                            code: "limit_exceeded",
+                            path: join(&prefix, "source"),
+                            message: format!(
+                                "Mermaid source ({} bytes) exceeds max_mermaid_source ({})",
+                                src.len(),
+                                limits.max_mermaid_source
+                            ),
+                            expected: Some(format!("<= {} bytes", limits.max_mermaid_source)),
+                            suggestion: None,
+                            line: None,
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    if issues.len() < limit {
+        let mut points = 0usize;
+        count_data_points(value, limits.max_data_points, &mut points);
+        if points > limits.max_data_points {
+            issues.push(ValidationIssue {
+                code: "limit_exceeded",
+                path: String::new(),
+                message: format!(
+                    "total array elements exceed max_data_points ({})",
+                    limits.max_data_points
+                ),
+                expected: Some(format!("<= {}", limits.max_data_points)),
+                suggestion: None,
+                line: None,
+            });
+        }
+    }
+}
+
+/// Like [`validate_chart_json`], plus [`RenderLimits`] enforcement
+/// (`max_canvas_side`, `max_data_points`, `max_mermaid_source`), reporting
+/// violations with `code: "limit_exceeded"`.
+pub fn validate_chart_json_with_limits(
+    chart_type: &str,
+    options: &serde_json::Value,
+    limits: &RenderLimits,
+) -> Result<Vec<ValidationIssue>> {
+    let mut issues = validate_chart_json(chart_type, options)?;
+    if issues.len() < MAX_VALIDATION_ISSUES {
+        check_limits(
+            chart_type,
+            options,
+            limits,
+            &mut issues,
+            MAX_VALIDATION_ISSUES,
+        );
+        issues.truncate(MAX_VALIDATION_ISSUES);
+    }
+    Ok(issues)
+}
+
+/// Like [`render_chart_from_json`], enforcing [`RenderLimits`] before
+/// rendering.
+pub fn render_chart_from_json_with_limits(
+    chart_type: &str,
+    json: &str,
+    limits: &RenderLimits,
+) -> Result<String> {
+    chart_schema_meta(chart_type)?;
+    if json.len() > limits.max_json_bytes {
+        return Err(params(format!(
+            "JSON payload ({} bytes) exceeds max_json_bytes ({})",
+            json.len(),
+            limits.max_json_bytes
+        )));
+    }
+    let value: serde_json::Value = serde_json::from_str(json)?;
+    let mut limit_issues = Vec::new();
+    check_limits(chart_type, &value, limits, &mut limit_issues, 1);
+    if let Some(issue) = limit_issues.into_iter().next() {
+        return Err(params(issue.message));
+    }
+    render_chart_from_json(chart_type, json)
+}
+
+/// Like [`render_chart_from_value`], enforcing [`RenderLimits`] before
+/// rendering.
+pub fn render_chart_from_value_with_limits(
+    chart_type: &str,
+    options: &serde_json::Value,
+    limits: &RenderLimits,
+) -> Result<String> {
+    chart_schema_meta(chart_type)?;
+    let mut limit_issues = Vec::new();
+    check_limits(chart_type, options, limits, &mut limit_issues, 1);
+    if let Some(issue) = limit_issues.into_iter().next() {
+        return Err(params(issue.message));
+    }
+    let json = serde_json::to_string(options)?;
+    if json.len() > limits.max_json_bytes {
+        return Err(params(format!(
+            "JSON payload ({} bytes) exceeds max_json_bytes ({})",
+            json.len(),
+            limits.max_json_bytes
+        )));
+    }
+    render_chart_from_json(chart_type, &json)
+}
+
 /// Catalog entry describing a chart type for discovery tools such as MCP
 /// `list_chart_types`.
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
@@ -2659,7 +2930,7 @@ mod tests {
                 .iter()
                 .flat_map(|k| samples(chart, path, *k))
                 .collect(),
-            Kind::Any | Kind::Array | Kind::Object(_) | Kind::ArrayOf(_) | Kind::SelfArray => {
+            Kind::GeoJson | Kind::Array | Kind::Object(_) | Kind::ArrayOf(_) | Kind::SelfArray => {
                 panic!("{chart}: no sample for {path}")
             }
         }

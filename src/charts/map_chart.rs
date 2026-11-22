@@ -19,7 +19,10 @@ use super::params::*;
 use super::theme::{get_default_theme_name, get_theme};
 use super::util::*;
 use crate::charts::measure_text_width_family;
+use arc_swap::ArcSwap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::sync::{Arc, LazyLock};
 
 /// Latitude beyond which a Mercator map is cut off: the poles are
 /// infinitely far away on it.
@@ -125,6 +128,58 @@ pub(crate) fn regions_from_value(value: &serde_json::Value, name_property: &str)
             Some(MapRegion { name, polygons })
         })
         .collect()
+}
+
+type GeoJsonMap = HashMap<String, Arc<serde_json::Value>>;
+
+static GEO_JSON_MAP: LazyLock<ArcSwap<GeoJsonMap>> =
+    LazyLock::new(|| ArcSwap::from_pointee(HashMap::new()));
+
+/// Registers a named GeoJSON document so [`MapChart`] and [`LinesChart`] can
+/// reference it in JSON via `"geo_json": "<name>"`.
+///
+/// Useful in HTTP / MCP servers where preloaded maps (such as the files under
+/// `asset/geo/china/`) are kept on the server rather than sent in every tool
+/// call. Returns [`Error::Params`](crate::Error::Params) if `name` is empty or
+/// `geo_json` is not a JSON object.
+pub fn register_geo_json(name: &str, geo_json: serde_json::Value) -> canvas::Result<()> {
+    if name.trim().is_empty() {
+        return Err(canvas::Error::Params {
+            message: "map name must not be empty".to_string(),
+        });
+    }
+    if !geo_json.is_object() {
+        return Err(canvas::Error::Params {
+            message: "geo_json must be a JSON object".to_string(),
+        });
+    }
+    let data = Arc::new(geo_json);
+    GEO_JSON_MAP.rcu(|maps| {
+        let mut m: GeoJsonMap = (**maps).clone();
+        m.insert(name.to_string(), Arc::clone(&data));
+        m
+    });
+    Ok(())
+}
+
+/// Lists the registered GeoJSON map names in alphabetical order.
+pub fn list_geo_json() -> Vec<String> {
+    let mut names: Vec<String> = GEO_JSON_MAP.load().keys().cloned().collect();
+    names.sort_unstable();
+    names
+}
+
+pub(crate) fn get_geo_json(name: &str) -> Option<Arc<serde_json::Value>> {
+    GEO_JSON_MAP.load().get(name).cloned()
+}
+
+pub(crate) fn resolve_geo_json(value: &serde_json::Value, name_property: &str) -> Vec<MapRegion> {
+    if let Some(name) = value.as_str() {
+        return get_geo_json(name)
+            .map(|geo| regions_from_value(&geo, name_property))
+            .unwrap_or_default();
+    }
+    regions_from_value(value, name_property)
 }
 
 // ── MapChart ───────────────────────────────────────────────────────────────────
@@ -256,7 +311,7 @@ impl MapChart {
         let name_property =
             get_string_from_value(&value, "name_property").unwrap_or_else(|| "name".to_string());
         if let Some(geo_json) = value.get("geo_json") {
-            c.regions = regions_from_value(geo_json, &name_property);
+            c.regions = resolve_geo_json(geo_json, &name_property);
         }
         // [[name, value], ...]
         if let Some(arr) = value.get("data").and_then(|v| v.as_array()) {

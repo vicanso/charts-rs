@@ -642,3 +642,139 @@ fn chart_catalog_and_render_chart_from_value() {
 
     assert!(render_chart_from_value("nope", &serde_json::json!({})).is_err());
 }
+
+#[test]
+fn render_limits_enforce_json_canvas_points_and_mermaid_bounds() {
+    use charts_rs::{
+        RenderLimits, render_chart_from_json_with_limits, render_chart_from_value_with_limits,
+        validate_chart_json_with_limits,
+    };
+
+    let mut limits = RenderLimits::default();
+    assert_eq!(limits.max_json_bytes, 1024 * 1024);
+    assert_eq!(limits.max_canvas_side, 8192.0);
+    assert_eq!(limits.max_data_points, 100_000);
+    assert_eq!(limits.max_mermaid_source, 64 * 1024);
+
+    // 1. max_json_bytes
+    limits.max_json_bytes = 20;
+    let bar = serde_json::json!({
+        "x_axis_data": ["A", "B"],
+        "series_list": [{"name": "S", "data": [1, 2]}]
+    });
+    let err = render_chart_from_json_with_limits("bar", &bar.to_string(), &limits).unwrap_err();
+    assert!(matches!(err, Error::Params { .. }), "{err:?}");
+    assert!(err.to_string().contains("max_json_bytes"), "{err}");
+    let err_v = render_chart_from_value_with_limits("bar", &bar, &limits).unwrap_err();
+    assert!(err_v.to_string().contains("max_json_bytes"), "{err_v}");
+
+    // 2. max_canvas_side (root and multi child)
+    let mut side_limits = RenderLimits::default();
+    side_limits.max_canvas_side = 500.0;
+    let wide = serde_json::json!({
+        "width": 600,
+        "x_axis_data": ["A"],
+        "series_list": [{"name": "S", "data": [1]}]
+    });
+    let issues = validate_chart_json_with_limits("bar", &wide, &side_limits).unwrap();
+    assert_eq!(issues.len(), 1);
+    assert_eq!(issues[0].code, "limit_exceeded");
+    assert_eq!(issues[0].path, "width");
+    assert!(render_chart_from_value_with_limits("bar", &wide, &side_limits).is_err());
+
+    let multi_wide = serde_json::json!({
+        "child_charts": [
+            {"type": "bar", "height": 900, "x_axis_data": ["A"], "series_list": [{"name": "S", "data": [1]}]}
+        ]
+    });
+    let multi_issues = validate_chart_json_with_limits("multi", &multi_wide, &side_limits).unwrap();
+    assert_eq!(multi_issues.len(), 1);
+    assert_eq!(multi_issues[0].code, "limit_exceeded");
+    assert_eq!(multi_issues[0].path, "child_charts[0].height");
+    assert!(render_chart_from_value_with_limits("multi", &multi_wide, &side_limits).is_err());
+
+    // 3. max_data_points
+    let mut point_limits = RenderLimits::default();
+    point_limits.max_data_points = 3;
+    let many = serde_json::json!({
+        "x_axis_data": ["A", "B", "C"],
+        "series_list": [{"name": "S", "data": [1, 2, 3]}]
+    });
+    let point_issues = validate_chart_json_with_limits("bar", &many, &point_limits).unwrap();
+    assert_eq!(point_issues.len(), 1);
+    assert_eq!(point_issues[0].code, "limit_exceeded");
+    assert!(render_chart_from_value_with_limits("bar", &many, &point_limits).is_err());
+
+    // Within limits succeeds.
+    assert!(render_chart_from_value_with_limits("bar", &bar, &RenderLimits::default()).is_ok());
+
+    // 4. max_mermaid_source
+    #[cfg(feature = "mermaid")]
+    {
+        let mut mermaid_limits = RenderLimits::default();
+        mermaid_limits.max_mermaid_source = 16;
+        let doc = serde_json::json!({"source": "flowchart LR\n  A --> B --> C"});
+        let m_issues = validate_chart_json_with_limits("mermaid", &doc, &mermaid_limits).unwrap();
+        assert_eq!(m_issues.len(), 1);
+        assert_eq!(m_issues[0].code, "limit_exceeded");
+        assert_eq!(m_issues[0].path, "source");
+        assert!(render_chart_from_value_with_limits("mermaid", &doc, &mermaid_limits).is_err());
+
+        let multi_doc = serde_json::json!({
+            "child_charts": [{"type": "mermaid", "source": "flowchart LR\n  A --> B --> C"}]
+        });
+        let mm_issues =
+            validate_chart_json_with_limits("multi", &multi_doc, &mermaid_limits).unwrap();
+        assert_eq!(mm_issues.len(), 1);
+        assert_eq!(mm_issues[0].code, "limit_exceeded");
+        assert_eq!(mm_issues[0].path, "child_charts[0].source");
+    }
+}
+
+#[test]
+fn geo_json_registry_supports_named_maps_in_map_and_lines() {
+    use charts_rs::{list_geo_json, register_geo_json, validate_chart_json};
+
+    assert!(register_geo_json("   ", serde_json::json!({})).is_err());
+    assert!(register_geo_json("bad_value", serde_json::json!([])).is_err());
+
+    let geo = serde_json::json!({
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "properties": {"name": "Island"},
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [[[100, 20], [105, 20], [105, 25], [100, 25], [100, 20]]]
+            }
+        }]
+    });
+    register_geo_json("mcp_test_island", geo).unwrap();
+    assert!(list_geo_json().contains(&"mcp_test_island".to_string()));
+
+    let map_doc = serde_json::json!({
+        "geo_json": "mcp_test_island",
+        "data": [["Island", 42]]
+    });
+    assert!(validate_chart_json("map", &map_doc).unwrap().is_empty());
+    let map_svg = render_chart_from_json("map", &map_doc.to_string()).unwrap();
+    assert!(map_svg.contains("Island"));
+
+    let lines_doc = serde_json::json!({
+        "geo_json": "mcp_test_island",
+        "lines": [{"from": [101, 21], "to": [104, 24], "value": 5}]
+    });
+    assert!(validate_chart_json("lines", &lines_doc).unwrap().is_empty());
+    let lines_svg = render_chart_from_json("lines", &lines_doc.to_string()).unwrap();
+    assert!(lines_svg.contains("<path"));
+
+    let unknown_doc = serde_json::json!({
+        "geo_json": "mcp_unregistered_map_xyz",
+        "data": [["Island", 42]]
+    });
+    let issues = validate_chart_json("map", &unknown_doc).unwrap();
+    assert_eq!(issues.len(), 1);
+    assert_eq!(issues[0].code, "unknown_map");
+    assert_eq!(issues[0].path, "geo_json");
+    assert!(render_chart_from_json("map", &unknown_doc.to_string()).is_err());
+}

@@ -619,6 +619,28 @@ GeoJSON that comes with the options — the library has no map data of its own:
 
 In Rust: `MapChart::new(MapRegion::from_geo_json(text, "name")?, data)`.
 
+**Named map registry (HTTP / MCP servers).** Instead of sending large GeoJSON
+documents on every JSON request, preload them once at startup with
+`register_geo_json` and reference them by name (`list_geo_json()` lists
+registered names). Note that the files under `asset/geo/china` are in the
+repository only and are not bundled into the published crate:
+
+```rust,no_run
+use charts_rs::{list_geo_json, register_geo_json, render_chart_from_json};
+
+let geo: serde_json::Value = serde_json::from_str(
+    &std::fs::read_to_string("asset/geo/china/100000_full.json").unwrap(),
+)
+.unwrap();
+register_geo_json("china", geo).unwrap();
+assert!(list_geo_json().contains(&"china".to_string()));
+let svg = render_chart_from_json(
+    "map",
+    r#"{"geo_json": "china", "data": [["北京市", 100]]}"#,
+)
+.unwrap();
+```
+
 **Where to get the regions.** A real map needs a GeoJSON file of its
 regions, which the library does not come with. Some places that have them:
 
@@ -880,6 +902,12 @@ viewer resolves it), but text is measured with the default font.
 
 A font is kept as its bytes and its glyphs are read as text is measured with
 them, so a large CJK font costs no more memory than its file.
+
+**Server / HTTP deployment.** When serving charts with CJK text, preload a
+CJK font once at startup via `add_fonts` and expose `get_font_families()` to
+clients or MCP tools. Without loaded CJK fonts, text width measurement falls
+back to `Roboto` (producing inaccurate label spacing) and raster export (`png`,
+etc.) may render missing glyphs.
 
 ## Development
 
