@@ -488,7 +488,7 @@ treemap-beta
 #[cfg(feature = "png")]
 #[test]
 fn rasterizes_mermaid_diagrams_to_png() {
-    use charts_rs::svg_to_png;
+    use charts_rs::{Error, svg_to_png};
 
     let samples = [
         "flowchart TD\n  A[Start] --> B{Check}\n  B -->|Yes| C[(DB)]\n  B -.-> D([End])",
