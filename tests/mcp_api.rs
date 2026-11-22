@@ -73,8 +73,7 @@ fn chart_json_schema_is_valid_draft_2020_12_for_every_chart_type() {
             .unwrap_or_else(|e| panic!("chart_json_schema({chart_type}) failed: {e}"));
 
         assert_eq!(
-            schema["$schema"],
-            "https://json-schema.org/draft/2020-12/schema",
+            schema["$schema"], "https://json-schema.org/draft/2020-12/schema",
             "{chart_type}: missing Draft 2020-12 $schema"
         );
         assert_eq!(schema["type"], "object", "{chart_type}: root type");
@@ -217,12 +216,28 @@ fn mermaid_capabilities_matches_renderer_and_serializes_to_json() {
 
     let caps = mermaid_capabilities();
     let json = serde_json::to_value(&caps).expect("MermaidCapabilities must serialize to JSON");
-    assert!(json["supported_diagrams"].as_array().is_some_and(|a| !a.is_empty()));
-    assert!(json["unsupported_diagrams"].as_array().is_some_and(|a| !a.is_empty()));
+    assert!(
+        json["supported_diagrams"]
+            .as_array()
+            .is_some_and(|a| !a.is_empty())
+    );
+    assert!(
+        json["unsupported_diagrams"]
+            .as_array()
+            .is_some_and(|a| !a.is_empty())
+    );
     assert!(json["v11_shapes"].as_array().is_some_and(|a| !a.is_empty()));
-    assert!(json["init_config_keys"].as_array().is_some_and(|a| !a.is_empty()));
+    assert!(
+        json["init_config_keys"]
+            .as_array()
+            .is_some_and(|a| !a.is_empty())
+    );
     assert!(json["features"].as_array().is_some_and(|a| !a.is_empty()));
-    assert!(json["limitations"].as_array().is_some_and(|a| !a.is_empty()));
+    assert!(
+        json["limitations"]
+            .as_array()
+            .is_some_and(|a| !a.is_empty())
+    );
 
     // Every advertised supported diagram keyword must validate on a minimal diagram.
     for &kw in caps.supported_diagrams {
@@ -270,4 +285,121 @@ fn mermaid_capabilities_matches_renderer_and_serializes_to_json() {
         mermaid_validate(&src)
             .unwrap_or_else(|e| panic!("v11 shape `{shape}` failed validation: {e}"));
     }
+}
+
+fn walk_properties(
+    schema: &serde_json::Value,
+    path: &str,
+    visit: &mut dyn FnMut(&str, &serde_json::Value),
+) {
+    if let Some(props) = schema.get("properties").and_then(|p| p.as_object()) {
+        for (key, prop) in props {
+            let path = if path.is_empty() {
+                key.clone()
+            } else {
+                format!("{path}.{key}")
+            };
+            visit(&path, prop);
+            walk_properties(prop, &path, visit);
+        }
+    }
+    if let Some(items) = schema.get("items") {
+        walk_properties(items, path, visit);
+    }
+    if let Some(defs) = schema.get("$defs").and_then(|d| d.as_object()) {
+        for (name, def) in defs {
+            walk_properties(def, &format!("$defs.{name}"), visit);
+        }
+    }
+}
+
+#[test]
+fn full_schema_documents_every_property_from_the_reference() {
+    for &chart_type in list_chart_types() {
+        let schema = chart_json_schema(chart_type).unwrap();
+        let mut missing = vec![];
+        walk_properties(&schema, "", &mut |path, prop| {
+            if !prop["description"].as_str().is_some_and(|d| !d.is_empty()) {
+                missing.push(path.to_string());
+            }
+        });
+        assert!(
+            missing.is_empty(),
+            "{chart_type}: properties without description: {missing:?}"
+        );
+        assert!(
+            schema["examples"].as_array().is_some_and(|e| e.len() == 1),
+            "{chart_type}: missing examples"
+        );
+    }
+    // Defaults come from the reference, typed as JSON.
+    let bar = chart_json_schema("bar").unwrap();
+    assert_eq!(bar["properties"]["width"]["default"], 600);
+    assert_eq!(bar["properties"]["title_align"]["default"], "center");
+    assert!(
+        bar["properties"]["title_font_color"]["description"]
+            .as_str()
+            .unwrap()
+            .contains("Default: from the theme")
+    );
+}
+
+#[test]
+fn schema_examples_and_defaults_render() {
+    use charts_rs::chart_example;
+    for &chart_type in list_chart_types() {
+        let example = chart_example(chart_type).unwrap().expect("example");
+        let schema = chart_json_schema(chart_type).unwrap();
+        assert_eq!(schema["examples"][0], example, "{chart_type}");
+        // Every top-level default, set explicitly on the example, is accepted.
+        let mut with_defaults = example.clone();
+        for (key, prop) in schema["properties"].as_object().unwrap() {
+            if let Some(default) = prop.get("default") {
+                with_defaults[key] = default.clone();
+            }
+        }
+        render_chart_from_json(chart_type, &with_defaults.to_string())
+            .unwrap_or_else(|e| panic!("{chart_type}: defaults rejected: {e}"));
+    }
+    assert!(chart_example("nope").is_err());
+}
+
+#[test]
+fn essential_schema_is_a_small_open_subset_of_the_full_one() {
+    use charts_rs::{SchemaLevel, chart_json_schema_with};
+    for &chart_type in list_chart_types() {
+        let full = chart_json_schema_with(chart_type, SchemaLevel::Full).unwrap();
+        let essential = chart_json_schema_with(chart_type, SchemaLevel::Essential).unwrap();
+        assert_eq!(full, chart_json_schema(chart_type).unwrap());
+        assert_eq!(essential["additionalProperties"], true, "{chart_type}");
+        assert_eq!(essential["required"], full["required"], "{chart_type}");
+        let props = essential["properties"].as_object().unwrap();
+        assert!(props.len() >= 2, "{chart_type}: {:?}", props.keys());
+        // Every essential property is a property of the full schema.
+        let mut full_paths = vec![];
+        walk_properties(&full, "", &mut |path, _| full_paths.push(path.to_string()));
+        walk_properties(&essential, "", &mut |path, prop| {
+            assert!(
+                full_paths.iter().any(|p| p == path),
+                "{chart_type}: {path} is not in the full schema"
+            );
+            assert!(prop["description"].is_string(), "{chart_type}: {path}");
+        });
+        let (e, f) = (essential.to_string().len(), full.to_string().len());
+        assert!(e * 2 < f, "{chart_type}: essential {e} bytes vs full {f}");
+        // The example is valid under the essential schema's keys + open objects
+        // and renders.
+        render_chart_from_json(chart_type, &essential["examples"][0].to_string())
+            .unwrap_or_else(|err| panic!("{chart_type}: {err}"));
+    }
+    let pie = chart_json_schema_with("pie", SchemaLevel::Essential).unwrap();
+    assert!(pie["properties"].get("y_axis_configs").is_none());
+    assert!(pie["properties"].get("x_axis_data").is_none());
+    let calendar = chart_json_schema_with("calendar", SchemaLevel::Essential).unwrap();
+    assert!(calendar["properties"].get("width").is_none());
+    let bar = chart_json_schema_with("bar", SchemaLevel::Essential).unwrap();
+    let series = &bar["properties"]["series_list"]["items"];
+    assert_eq!(series["additionalProperties"], true);
+    assert!(series["properties"]["stack"].is_object());
+    assert!(series["properties"].get("mark_lines").is_none());
 }

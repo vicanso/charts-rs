@@ -460,7 +460,11 @@
 //! For dynamic callers such as MCP servers or LLM tools, [`list_chart_types`],
 //! [`list_themes`], [`chart_json_schema`], and [`render_chart_from_json`] expose
 //! machine-readable discovery, Draft 2020-12 JSON Schemas generated directly from
-//! the validator tables, and single-entry-point SVG rendering. With the
+//! the validator tables, and single-entry-point SVG rendering. The schemas carry
+//! the descriptions, defaults and example of the JSON reference;
+//! [`chart_json_schema_with`] at [`SchemaLevel::Essential`] keeps only the
+//! keys most charts need (for a tool's `inputSchema`), and [`chart_example`]
+//! returns the example on its own. With the
 //! `mermaid` feature enabled, [`mermaid_capabilities`] also returns a
 //! `Serialize`-able [`MermaidCapabilities`] summary of supported/unsupported
 //! diagram types, v11 shapes, init config keys, features, and limitations:
@@ -472,6 +476,8 @@
 //! assert!(list_themes().contains(&"light"));
 //! let schema = chart_json_schema("bar").unwrap();
 //! assert_eq!(schema["type"], "object");
+//! let small = charts_rs::chart_json_schema_with("bar", charts_rs::SchemaLevel::Essential).unwrap();
+//! assert!(small.to_string().len() < schema.to_string().len());
 //! let svg = render_chart_from_json(
 //!     "bar",
 //!     r#"{"x_axis_data":["A","B"],"series_list":[{"name":"S","data":[10,20]}]}"#,

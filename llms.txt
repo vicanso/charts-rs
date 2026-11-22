@@ -42,12 +42,19 @@ let svg: String = chart.svg()?;
 
 ```rust
 use charts_rs::{
-    chart_json_schema, list_chart_types, list_themes, render_chart_from_json,
+    SchemaLevel, chart_example, chart_json_schema, chart_json_schema_with, list_chart_types,
+    list_themes, render_chart_from_json,
 };
 
 let types: &'static [&'static str] = list_chart_types(); // 29 core, or 30 with `mermaid`
 let themes: &'static [&'static str] = list_themes();     // 10 built-in themes
-let schema: serde_json::Value = chart_json_schema("bar")?; // Draft 2020-12 JSON Schema
+// Draft 2020-12 JSON Schema; every property has the description/default of docs/json.md
+// and the root has the chart's example in `examples`.
+let full: serde_json::Value = chart_json_schema("bar")?;  // == chart_json_schema_with("bar", SchemaLevel::Full)
+// Only the data keys, title, theme and size (~1/5 of the full size); objects that list only
+// some keys are `additionalProperties: true`, the rest is still validated by `from_json`.
+let essential = chart_json_schema_with("bar", SchemaLevel::Essential)?;
+let example: Option<serde_json::Value> = chart_example("bar")?; // renders as is
 let svg: String = render_chart_from_json(
     "bar",
     r#"{"theme":"grafana","x_axis_data":["Mon","Tue"],"series_list":[{"name":"Email","data":[120,132]}]}"#,
@@ -77,8 +84,8 @@ let safe_svg = chart.svg()?;
 
 For an MCP server backed by `charts-rs`, split tools cleanly by intent so models get compact schemas and fast feedback loops:
 
-1. `get_chart_schema(chart_type: string)` -> calls `chart_json_schema(chart_type)` (list valid types from `list_chart_types()`, valid themes from `list_themes()`). Returns Draft 2020-12 JSON Schema generated directly from the validator tables.
-2. `render_chart(chart_type: string, options: object)` -> calls `render_chart_from_json(chart_type, &serde_json::to_string(&options)?)`. Unknown keys return `Error::Params` with typo suggestions.
+1. `get_chart_schema(chart_type: string, level?: "essential" | "full")` -> calls `chart_json_schema_with(chart_type, level)` (list valid types from `list_chart_types()`, valid themes from `list_themes()`). Default to `SchemaLevel::Essential` (data keys, title, theme, size — a few hundred tokens, with a renderable example in `examples`); let the model ask for `"full"` when it needs styling keys (axes, labels, marks, legend, grid…). Descriptions and defaults come from `docs/json.md`.
+2. `render_chart(chart_type: string, options: object)` -> calls `render_chart_from_json(chart_type, &serde_json::to_string(&options)?)`. Unknown keys return `Error::Params` with typo suggestions. A per-chart tool can use the Essential schema as its `inputSchema` directly: it is open (`additionalProperties: true`), so full-schema keys still pass the client and are validated by the server.
 3. `validate_mermaid(source: string)` -> calls `mermaid_validate(source)`. Returns `Ok(())` or line-numbered `Error::Mermaid { line, message }`; expose `mermaid_capabilities()` in tool metadata or a resource so models know supported/unsupported diagrams and v11 shapes upfront.
 4. `render_mermaid(source: string, theme?: string, allow_links?: bool)` -> builds `MermaidChart::new_with_theme(source, theme)`, sets `chart.allow_links = allow_links.unwrap_or(false)` for untrusted inputs, and calls `chart.svg()` (optionally rasterizing with `svg_to_png` when `png` feature is enabled).
 

@@ -19,6 +19,8 @@
 //! silently ignored, which used to leave the caller with a default-looking
 //! chart and no hint why.
 
+#[cfg(feature = "mermaid")]
+use super::MermaidChart;
 use super::color::Color;
 use super::error::{Error, Result};
 use super::theme::list_themes;
@@ -29,8 +31,6 @@ use super::{
     RadarChart, SankeyChart, ScatterChart, SunburstChart, TableChart, ThemeRiverChart, TreeChart,
     TreemapChart, WaterfallChart,
 };
-#[cfg(feature = "mermaid")]
-use super::MermaidChart;
 
 /// Largest accepted split / tick count. Each tick costs a grid line and a
 /// label, so a huge value would only produce a huge SVG.
@@ -1195,44 +1195,13 @@ fn chart_schema_meta(chart_type: &str) -> Result<ChartSchemaMeta> {
     Ok(meta)
 }
 
-fn field_description(chart_type: &str, name: &str) -> Option<&'static str> {
-    match (chart_type, name) {
-        ("mermaid", "source") => Some("Mermaid diagram source text (one of the 13 supported diagram types)."),
-        ("mermaid", "allow_links") => Some("When true (default), safe `click` directives emit SVG `<a>` links; set false for untrusted input."),
-        ("multi", "child_charts") => Some("Array of child chart objects; each carries `type`, optional `x`/`y`, and that chart type's options."),
-        ("multi", "align_plots") => Some("When true, aligns the left and right plot edges of vertically stacked Cartesian child charts."),
-        ("table", "data") => Some("2D array of table rows; the first row is the header and cells may be strings or sparkline objects."),
-        ("calendar", "data") => Some("Array of `[date, value]` pairs where `date` is `YYYY-MM-DD` and `value` is a number."),
-        ("waterfall", "data") => Some("Array of `[value, is_total]` pairs or numbers representing incremental steps and totals."),
-        ("map", "data") => Some("Array of `[region_name, value]` pairs matching features in `geo_json`."),
-        (_, "theme") => Some("Built-in theme name (defaults to `light`)."),
-        (_, "width") => Some("Canvas width in pixels (must be > 0)."),
-        (_, "height") => Some("Canvas height in pixels (must be > 0)."),
-        (_, "margin") => Some("Outer canvas margin in pixels: a single number or `{left, top, right, bottom}`."),
-        (_, "font_family") => Some("Font family name registered with `charts-rs`."),
-        (_, "title_text") => Some("Main chart title text."),
-        (_, "sub_title_text") => Some("Subtitle text displayed below the main title."),
-        (_, "legend_show") => Some("Whether to display the chart legend."),
-        (_, "x_axis_data") => Some("Category labels along the x-axis."),
-        (_, "y_axis_configs") => Some("Per-y-axis configuration objects (index 0 is primary, 1 is secondary)."),
-        (_, "series_list") => Some("Array of data series to plot."),
-        (_, "series_data") => Some("Hierarchical tree nodes (`{name, value, color, children}`)."),
-        (_, "compact") => Some("When true, emits compact minified SVG output."),
-        (_, "geo_json") => Some("GeoJSON Feature or FeatureCollection object defining map regions."),
-        (_, "tasks") => Some("Array of Gantt task objects (`name`, `start`, `end`, optional `row`, `category`, `progress`, `color`)."),
-        (_, "bullets") => Some("Array of bullet chart items (`name`, `value`, `target`, `ranges`)."),
-        (_, "nodes") => Some("Array of node definitions (`name`, optional `value`, `color`, `category`)."),
-        (_, "links") => Some("Array of directed/weighted links (`source`, `target`, `value`)."),
-        (_, "indicators") => Some("Radar axis indicators (`name`, optional `min`, `max`)."),
-        (_, "box_series") => Some("Array of box plot series (`name`, `data` of 5-number summaries or raw samples)."),
-        _ => None,
-    }
-}
-
 fn margin_schema() -> serde_json::Value {
     let mut props = serde_json::Map::new();
     for field in MARGIN_FIELDS {
-        props.insert(field.name.to_string(), serde_json::json!({"type": "number"}));
+        props.insert(
+            field.name.to_string(),
+            serde_json::json!({"type": "number"}),
+        );
     }
     serde_json::json!({
         "oneOf": [
@@ -1262,172 +1231,517 @@ fn scale_schema() -> serde_json::Value {
     })
 }
 
-fn fields_to_object_schema(
-    chart_type: &str,
-    tables: &[&[Field]],
-    uses_tree_node: &mut bool,
-) -> serde_json::Map<String, serde_json::Value> {
-    let mut properties = serde_json::Map::new();
-    for field in tables.iter().flat_map(|t| t.iter()) {
-        let mut prop = field_to_schema(chart_type, field, uses_tree_node);
-        if let Some(desc) = field_description(chart_type, field.name)
-            && let Some(obj) = prop.as_object_mut()
-            && !obj.contains_key("description")
-        {
-            obj.insert(
-                "description".to_string(),
-                serde_json::Value::String(desc.to_string()),
-            );
-        }
-        properties.insert(field.name.to_string(), prop);
-    }
-    properties
+/// How much of a chart's options [`chart_json_schema_with`] describes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[non_exhaustive]
+pub enum SchemaLevel {
+    /// The keys most charts of the type need: the data keys, the title, the
+    /// theme and the size. A few hundred tokens instead of a few thousand,
+    /// sized for the `inputSchema` of an MCP / LLM tool. Objects that list
+    /// only some of their keys have `"additionalProperties": true`: every
+    /// other documented key is still accepted (and validated) by
+    /// `from_json`.
+    Essential,
+    /// Every accepted key, with `"additionalProperties": false`.
+    #[default]
+    Full,
 }
 
-fn field_to_schema(
-    chart_type: &str,
-    field: &Field,
-    uses_tree_node: &mut bool,
-) -> serde_json::Value {
-    if field.name == "theme" && matches!(field.kind, Kind::String) {
-        return serde_json::json!({
-            "type": "string",
-            "enum": list_themes(),
-        });
+const COMMON_ESSENTIAL: &[&str] = &["theme", "width", "height", "title_text", "sub_title_text"];
+const Y_AXIS_ESSENTIAL: &[&str] = &[
+    "y_axis_configs.axis_title",
+    "y_axis_configs.axis_formatter",
+    "y_axis_configs.axis_min",
+    "y_axis_configs.axis_max",
+];
+
+/// The keys of [`SchemaLevel::Essential`], besides [`COMMON_ESSENTIAL`]: a
+/// path names a key with everything inside it, `a.b` names `b` inside `a`
+/// (and only the keys so named of `a`).
+fn essential_paths(chart_type: &str) -> (bool, &'static [&'static str], &'static [&'static str]) {
+    // (takes the common essential keys, takes the y axis keys, own keys)
+    match chart_type {
+        "bar" => (
+            true,
+            Y_AXIS_ESSENTIAL,
+            &[
+                "x_axis_data",
+                "x_axis_title",
+                "legend_show",
+                "stack_percent",
+                "series_list.name",
+                "series_list.data",
+                "series_list.stack",
+                "series_list.label_show",
+                "series_list.category",
+                "series_list.y_axis_index",
+            ],
+        ),
+        "horizontal_bar" => (
+            true,
+            &[],
+            &[
+                "x_axis_data",
+                "legend_show",
+                "series_list.name",
+                "series_list.data",
+                "series_list.stack",
+                "series_list.label_show",
+            ],
+        ),
+        "line" => (
+            true,
+            Y_AXIS_ESSENTIAL,
+            &[
+                "x_axis_data",
+                "x_axis_type",
+                "x_axis_values",
+                "x_axis_title",
+                "legend_show",
+                "series_list.name",
+                "series_list.data",
+                "series_list.smooth",
+                "series_list.fill",
+                "series_list.label_show",
+                "series_list.y_axis_index",
+            ],
+        ),
+        "pie" => (
+            true,
+            &[],
+            &[
+                "legend_show",
+                "radius",
+                "inner_radius",
+                "rose_type",
+                "series_label_position",
+                "series_list.name",
+                "series_list.data",
+                "series_list.ring",
+            ],
+        ),
+        "radar" => (
+            true,
+            &[],
+            &[
+                "legend_show",
+                "indicators",
+                "shape",
+                "series_list.name",
+                "series_list.data",
+            ],
+        ),
+        "scatter" => (
+            true,
+            &["y_axis_configs.axis_title"],
+            &[
+                "legend_show",
+                "x_axis_title",
+                "bubble",
+                "regression",
+                "series_list.name",
+                "series_list.data",
+            ],
+        ),
+        "candlestick" => (
+            true,
+            &[],
+            &["x_axis_data", "series_list.name", "series_list.data"],
+        ),
+        "table" => (true, &[], &["data", "text_aligns", "spans"]),
+        "heatmap" => (true, &[], &["x_axis_data", "y_axis_data", "series"]),
+        "funnel" => (
+            true,
+            &[],
+            &[
+                "legend_show",
+                "series_label_position",
+                "series_list.name",
+                "series_list.data",
+            ],
+        ),
+        "waterfall" => (true, &[], &["x_axis_data", "data", "label_show"]),
+        // As large as its cells: no `width` / `height`.
+        "calendar" => (
+            false,
+            &[],
+            &[
+                "theme",
+                "title_text",
+                "sub_title_text",
+                "start_date",
+                "end_date",
+                "data",
+                "min_color",
+                "max_color",
+            ],
+        ),
+        "gauge" => (
+            true,
+            &[],
+            &[
+                "min",
+                "max",
+                "value_formatter",
+                "thresholds",
+                "colors",
+                "multi_ring",
+                "series_list.name",
+                "series_list.data",
+            ],
+        ),
+        "bullet" => (true, &[], &["bullets", "label_show"]),
+        "treemap" => (true, &[], &["series_data"]),
+        "box_plot" => (true, &[], &["x_axis_data", "legend_show", "box_series"]),
+        "sunburst" => (true, &[], &["series_data", "inner_radius"]),
+        "sankey" => (true, &[], &["nodes", "links", "orient"]),
+        "tree" => (true, &[], &["series_data", "orient", "layout"]),
+        "graph" => (true, &[], &["nodes", "links", "categories", "layout"]),
+        "parallel" | "theme_river" => (
+            true,
+            &[],
+            &[
+                "x_axis_data",
+                "legend_show",
+                "series_list.name",
+                "series_list.data",
+            ],
+        ),
+        "histogram" => (
+            true,
+            &[],
+            &[
+                "bin_count",
+                "bin_width",
+                "x_axis_title",
+                "x_axis_min",
+                "x_axis_max",
+                "series_list.name",
+                "series_list.data",
+            ],
+        ),
+        "polar_bar" => (
+            true,
+            &[],
+            &[
+                "x_axis_data",
+                "legend_show",
+                "category_axis",
+                "series_list.name",
+                "series_list.data",
+                "series_list.stack",
+                "series_list.label_show",
+            ],
+        ),
+        "chord" => (true, &[], &["nodes", "links"]),
+        "gantt" => (true, &[], &["tasks", "now"]),
+        "lines" => (true, &[], &["lines", "curveness", "geo_json"]),
+        "map" => (
+            true,
+            &[],
+            &["geo_json", "data", "colors", "thresholds", "label_show"],
+        ),
+        "mermaid" => (
+            false,
+            &[],
+            &[
+                "source",
+                "theme",
+                "width",
+                "height",
+                "title_text",
+                "allow_links",
+            ],
+        ),
+        "multi" => (false, &[], &["theme", "gap", "child_charts", "align_plots"]),
+        _ => (true, &[], &[]),
     }
-    if chart_type == "multi" && field.name == "child_charts" {
-        return serde_json::json!({
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "enum": CHILD_CHART_TYPES,
-                        "description": "Child chart type (defaults to `bar` when omitted)."
-                    },
-                    "x": {
-                        "type": "number",
-                        "description": "Optional explicit x offset in pixels."
-                    },
-                    "y": {
-                        "type": "number",
-                        "description": "Optional explicit y offset in pixels."
-                    }
-                },
-                "additionalProperties": true
+}
+
+/// What a property should hold to be accepted by [`Color::parse`].
+const COLOR_PATTERN: &str =
+    r"^\s*(#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})|rgba?\([^)]*\)|[Tt]ransparent)\s*$";
+
+/// Which keys of an object the schema lists.
+#[derive(Clone, Copy)]
+enum Filter {
+    /// Every key.
+    All,
+    /// The keys named by the essential paths, under this dotted path.
+    Essential,
+}
+
+struct SchemaBuilder<'a> {
+    chart_type: &'a str,
+    essential: Vec<&'static str>,
+    uses_tree_node: bool,
+}
+
+impl SchemaBuilder<'_> {
+    /// Whether `path` is listed, and which of its keys are, when it is.
+    fn keep(&self, filter: Filter, path: &str) -> Option<Filter> {
+        match filter {
+            Filter::All => Some(Filter::All),
+            Filter::Essential => {
+                if self.essential.contains(&path) {
+                    Some(Filter::All)
+                } else if self
+                    .essential
+                    .iter()
+                    .any(|e| e.strip_prefix(path).is_some_and(|r| r.starts_with('.')))
+                {
+                    Some(Filter::Essential)
+                } else {
+                    None
+                }
             }
-        });
+        }
     }
-    match field.kind {
-        Kind::Number => serde_json::json!({"type": "number"}),
-        Kind::Size => serde_json::json!({"type": "number", "exclusiveMinimum": 0}),
-        Kind::Uint => serde_json::json!({"type": "integer", "minimum": 0}),
-        Kind::Count => serde_json::json!({"type": "integer", "minimum": 0, "maximum": MAX_COUNT}),
-        Kind::Index => serde_json::json!({"type": "integer", "minimum": 0, "maximum": MAX_INDEX}),
-        Kind::Bool => serde_json::json!({"type": "boolean"}),
-        Kind::String => serde_json::json!({"type": "string"}),
-        Kind::Color => serde_json::json!({
-            "type": "string",
-            "description": "CSS color string such as \"#345\", \"#5470c6\", \"rgb(84,112,198)\", or \"rgba(255,204,0,0.5)\"."
-        }),
-        Kind::Enum(values) => serde_json::json!({"type": "string", "enum": values}),
-        Kind::Margin => margin_schema(),
-        Kind::Scale => scale_schema(),
-        Kind::Any => serde_json::json!({}),
-        Kind::Array => serde_json::json!({"type": "array"}),
-        Kind::NumberArray => serde_json::json!({
-            "type": "array",
-            "items": {"type": ["number", "null"]}
-        }),
-        Kind::StringArray => serde_json::json!({
-            "type": "array",
-            "items": {"type": "string"}
-        }),
-        Kind::ColorArray => serde_json::json!({
-            "type": "array",
-            "items": {"type": ["string", "null"]}
-        }),
-        Kind::MarkValue => serde_json::json!({
-            "oneOf": [
-                {"type": "number"},
-                {"type": "string", "enum": ["average", "min", "max"]}
-            ]
-        }),
-        Kind::XValue => serde_json::json!({
-            "type": ["number", "string"],
-            "description": "Numeric x value or ISO date/date-time string (e.g. \"2024-01-05\")."
-        }),
-        Kind::XValues => serde_json::json!({
-            "type": "array",
-            "items": {"type": ["number", "string", "null"]}
-        }),
-        Kind::Object(fields) => {
-            let props = fields_to_object_schema(chart_type, &[fields], uses_tree_node);
-            serde_json::json!({
-                "type": "object",
-                "properties": props,
-                "additionalProperties": false
-            })
-        }
-        Kind::ArrayOf(fields) => {
-            if std::ptr::eq(fields, TREE_NODE_FIELDS) {
-                *uses_tree_node = true;
-                serde_json::json!({
-                    "type": "array",
-                    "items": {"$ref": "#/$defs/tree_node"}
-                })
-            } else {
-                let props = fields_to_object_schema(chart_type, &[fields], uses_tree_node);
-                serde_json::json!({
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": props,
-                        "additionalProperties": false
+
+    fn object(
+        &mut self,
+        tables: &[&[Field]],
+        parent: &str,
+        filter: Filter,
+    ) -> serde_json::Map<String, serde_json::Value> {
+        let reference = super::schema_doc::reference();
+        let mut properties = serde_json::Map::new();
+        for field in tables.iter().flat_map(|t| t.iter()) {
+            let path = join(parent, field.name);
+            let Some(inner) = self.keep(filter, &path) else {
+                continue;
+            };
+            let mut prop = self.property(field, &path, inner);
+            if let Some(obj) = prop.as_object_mut()
+                && let Some(row) = reference.row(self.chart_type, parent, field.name)
+            {
+                let mut description = super::schema_doc::plain(row.description);
+                match parse_default(row.default) {
+                    DocDefault::None => {}
+                    DocDefault::Value(value) => {
+                        obj.insert("default".to_string(), value);
                     }
-                })
+                    DocDefault::Note(note) => {
+                        description.push_str(&format!(" Default: {note}."));
+                    }
+                }
+                obj.insert(
+                    "description".to_string(),
+                    serde_json::Value::String(description),
+                );
             }
+            properties.insert(field.name.to_string(), prop);
         }
-        Kind::SelfArray => {
-            *uses_tree_node = true;
-            serde_json::json!({
+        properties
+    }
+
+    fn object_schema(&mut self, fields: &[Field], path: &str, filter: Filter) -> serde_json::Value {
+        let props = self.object(&[fields], path, filter);
+        serde_json::json!({
+            "type": "object",
+            "properties": props,
+            "additionalProperties": matches!(filter, Filter::Essential),
+        })
+    }
+
+    fn property(&mut self, field: &Field, path: &str, filter: Filter) -> serde_json::Value {
+        if field.name == "theme" && matches!(field.kind, Kind::String) {
+            return serde_json::json!({
+                "type": "string",
+                "enum": list_themes(),
+            });
+        }
+        if self.chart_type == "multi" && field.name == "child_charts" {
+            let reference = super::schema_doc::reference();
+            let describe = |key: &str| {
+                reference
+                    .row("multi", "child_charts", key)
+                    .map(|row| super::schema_doc::plain(row.description))
+                    .unwrap_or_default()
+            };
+            return serde_json::json!({
                 "type": "array",
-                "items": {"$ref": "#/$defs/tree_node"}
-            })
+                "items": {
+                    "type": "object",
+                    "description": "The options of a chart of `type`: get its schema with chart_json_schema(type).",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": CHILD_CHART_TYPES,
+                            "default": "bar",
+                            "description": describe("type"),
+                        },
+                        "x": {"type": "number", "description": describe("x")},
+                        "y": {"type": "number", "description": describe("y")},
+                    },
+                    "additionalProperties": true
+                }
+            });
+        }
+        let color = serde_json::json!({"type": "string", "pattern": COLOR_PATTERN});
+        match field.kind {
+            Kind::Number => serde_json::json!({"type": "number"}),
+            Kind::Size => serde_json::json!({"type": "number", "exclusiveMinimum": 0}),
+            Kind::Uint => serde_json::json!({"type": "integer", "minimum": 0}),
+            Kind::Count => {
+                serde_json::json!({"type": "integer", "minimum": 0, "maximum": MAX_COUNT})
+            }
+            Kind::Index => {
+                serde_json::json!({"type": "integer", "minimum": 0, "maximum": MAX_INDEX})
+            }
+            Kind::Bool => serde_json::json!({"type": "boolean"}),
+            Kind::String => serde_json::json!({"type": "string"}),
+            Kind::Color => color,
+            Kind::Enum(values) => serde_json::json!({"type": "string", "enum": values}),
+            Kind::Margin => margin_schema(),
+            Kind::Scale => scale_schema(),
+            Kind::Any => serde_json::json!({}),
+            Kind::Array => serde_json::json!({"type": "array"}),
+            Kind::NumberArray => serde_json::json!({
+                "type": "array",
+                "items": {"type": ["number", "null"]}
+            }),
+            Kind::StringArray => serde_json::json!({
+                "type": "array",
+                "items": {"type": "string"}
+            }),
+            Kind::ColorArray => serde_json::json!({
+                "type": "array",
+                "items": {"anyOf": [color, {"type": "null"}]}
+            }),
+            Kind::MarkValue => serde_json::json!({
+                "oneOf": [
+                    {"type": "number"},
+                    {"type": "string", "enum": ["average", "min", "max"]}
+                ]
+            }),
+            Kind::XValue => serde_json::json!({
+                "type": ["number", "string"],
+                "description": "Numeric x value or date / date-time string (e.g. \"2024-01-05\")."
+            }),
+            Kind::XValues => serde_json::json!({
+                "type": "array",
+                "items": {"type": ["number", "string", "null"]}
+            }),
+            Kind::Object(fields) => self.object_schema(fields, path, filter),
+            Kind::ArrayOf(fields) if std::ptr::eq(fields, TREE_NODE_FIELDS) => {
+                self.uses_tree_node = true;
+                serde_json::json!({"type": "array", "items": {"$ref": "#/$defs/tree_node"}})
+            }
+            Kind::ArrayOf(fields) => {
+                let items = self.object_schema(fields, path, filter);
+                serde_json::json!({"type": "array", "items": items})
+            }
+            Kind::SelfArray => {
+                self.uses_tree_node = true;
+                serde_json::json!({"type": "array", "items": {"$ref": "#/$defs/tree_node"}})
+            }
         }
     }
 }
 
-/// Returns a Draft 2020-12 JSON Schema describing the JSON options accepted by
-/// `chart_type`.
+/// What the default column of the reference says.
+enum DocDefault {
+    None,
+    /// A JSON value: `` `600` ``, `` `"light"` ``, `` `[1, 3, 5]` ``, or a
+    /// bare string such as `` `#EE6666` ``.
+    Value(serde_json::Value),
+    /// Words: `theme`, `auto`.
+    Note(&'static str),
+}
+
+fn parse_default(cell: &'static str) -> DocDefault {
+    let cell = cell.trim();
+    if cell.is_empty() {
+        return DocDefault::None;
+    }
+    match cell
+        .strip_prefix('`')
+        .and_then(|c| c.strip_suffix('`'))
+        .filter(|c| !c.contains('`'))
+    {
+        Some(code) => match serde_json::from_str(code) {
+            Ok(value) => DocDefault::Value(value),
+            // Not JSON: a bare string such as `#EE6666`, unless it was meant
+            // to be an object or an array.
+            Err(_) if code.starts_with(['{', '[']) => DocDefault::Note(cell),
+            Err(_) => DocDefault::Value(serde_json::Value::String(code.to_string())),
+        },
+        None if cell == "theme" => DocDefault::Note("from the theme"),
+        None if cell == "auto" => DocDefault::Note("sized to the content"),
+        None => DocDefault::Note(cell),
+    }
+}
+
+/// Returns a Draft 2020-12 JSON Schema of every JSON option accepted by
+/// `chart_type`; the same as [`chart_json_schema_with`] at
+/// [`SchemaLevel::Full`].
 ///
-/// Generated directly from the internal validation field tables and
-/// [`list_themes`], so the schema stays in lockstep with `from_json`. Returns
-/// [`Error::Params`] listing all valid chart types when `chart_type` is
-/// unknown.
+/// Generated from the internal validation field tables and [`list_themes`],
+/// so the schema stays in lockstep with `from_json`; the descriptions,
+/// defaults and the example come from the JSON reference (`docs/json.md`).
+/// Returns [`Error::Params`] listing all valid chart types when `chart_type`
+/// is unknown.
 pub fn chart_json_schema(chart_type: &str) -> Result<serde_json::Value> {
+    chart_json_schema_with(chart_type, SchemaLevel::Full)
+}
+
+/// Returns a Draft 2020-12 JSON Schema of the JSON options of `chart_type`
+/// at the given [`SchemaLevel`].
+///
+/// Every property carries the `description` (and, where there is one, the
+/// `default`) of the JSON reference, and the root carries the chart's
+/// example in `examples`. Use [`SchemaLevel::Essential`] for the
+/// `inputSchema` of an LLM tool and [`SchemaLevel::Full`] when the model
+/// asks for more.
+///
+/// ```
+/// use charts_rs::{SchemaLevel, chart_json_schema_with};
+///
+/// let schema = chart_json_schema_with("bar", SchemaLevel::Essential).unwrap();
+/// assert!(schema["properties"]["series_list"].is_object());
+/// assert!(schema["properties"].get("grid_stroke_color").is_none());
+/// ```
+pub fn chart_json_schema_with(chart_type: &str, level: SchemaLevel) -> Result<serde_json::Value> {
     let meta = chart_schema_meta(chart_type)?;
-    let mut uses_tree_node = false;
-    let properties = fields_to_object_schema(chart_type, &meta.tables, &mut uses_tree_node);
+    let reference = super::schema_doc::reference();
+    let mut builder = SchemaBuilder {
+        chart_type,
+        essential: vec![],
+        uses_tree_node: false,
+    };
+    let filter = match level {
+        SchemaLevel::Full => Filter::All,
+        SchemaLevel::Essential => {
+            let (common, y_axis, own) = essential_paths(chart_type);
+            if common {
+                builder.essential.extend_from_slice(COMMON_ESSENTIAL);
+            }
+            builder.essential.extend_from_slice(y_axis);
+            builder.essential.extend_from_slice(own);
+            Filter::Essential
+        }
+    };
+    let properties = builder.object(&meta.tables, "", filter);
+
+    let mut description = reference
+        .intro(chart_type)
+        .map(super::schema_doc::plain)
+        .unwrap_or_else(|| meta.description.to_string());
+    if level == SchemaLevel::Essential {
+        description.push_str(
+            " Only the essential keys are listed; every other key of the full schema is accepted as well.",
+        );
+    }
 
     let mut root = serde_json::Map::new();
     root.insert(
         "$schema".to_string(),
-        serde_json::Value::String("https://json-schema.org/draft/2020-12/schema".to_string()),
+        "https://json-schema.org/draft/2020-12/schema".into(),
     );
-    root.insert(
-        "title".to_string(),
-        serde_json::Value::String(meta.title.to_string()),
-    );
-    root.insert(
-        "description".to_string(),
-        serde_json::Value::String(meta.description.to_string()),
-    );
-    root.insert(
-        "type".to_string(),
-        serde_json::Value::String("object".to_string()),
-    );
+    root.insert("title".to_string(), meta.title.into());
+    root.insert("description".to_string(), description.into());
+    root.insert("type".to_string(), "object".into());
     root.insert(
         "properties".to_string(),
         serde_json::Value::Object(properties),
@@ -1437,11 +1751,13 @@ pub fn chart_json_schema(chart_type: &str) -> Result<serde_json::Value> {
     }
     root.insert(
         "additionalProperties".to_string(),
-        serde_json::Value::Bool(false),
+        serde_json::Value::Bool(level == SchemaLevel::Essential),
     );
-    if uses_tree_node {
-        let mut dummy = false;
-        let tree_props = fields_to_object_schema(chart_type, &[TREE_NODE_FIELDS], &mut dummy);
+    if let Some(example) = chart_example(chart_type)? {
+        root.insert("examples".to_string(), serde_json::json!([example]));
+    }
+    if builder.uses_tree_node {
+        let tree_props = builder.object(&[TREE_NODE_FIELDS], "series_data", Filter::All);
         root.insert(
             "$defs".to_string(),
             serde_json::json!({
@@ -1455,6 +1771,19 @@ pub fn chart_json_schema(chart_type: &str) -> Result<serde_json::Value> {
         );
     }
     Ok(serde_json::Value::Object(root))
+}
+
+/// Returns the example options of `chart_type` from the JSON reference
+/// (`docs/json.md`): a document that renders as is, handy as a few-shot
+/// example for an LLM. `Ok(None)` when the reference has none.
+///
+/// Returns [`Error::Params`] listing all valid chart types when `chart_type`
+/// is unknown.
+pub fn chart_example(chart_type: &str) -> Result<Option<serde_json::Value>> {
+    chart_schema_meta(chart_type)?;
+    Ok(super::schema_doc::reference()
+        .example(chart_type)
+        .and_then(|json| serde_json::from_str(json).ok()))
 }
 
 /// Parses a JSON options document for `chart_type` and renders it directly to
@@ -1981,6 +2310,42 @@ mod tests {
                 assert!(
                     nested.contains(&name) || tests.contains(name),
                     "{name} is not part of `charts()`"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn every_essential_path_is_a_key() {
+        fn resolves(tables: &[&[Field]], path: &str) -> bool {
+            let (head, rest) = match path.split_once('.') {
+                Some((h, r)) => (h, Some(r)),
+                None => (path, None),
+            };
+            let Some(field) = lookup(tables, head) else {
+                return false;
+            };
+            match (rest, field.kind) {
+                (None, _) => true,
+                (Some(rest), Kind::Object(nested) | Kind::ArrayOf(nested)) => {
+                    resolves(&[nested], rest)
+                }
+                _ => false,
+            }
+        }
+        let mut charts: Vec<&str> = CHART_TYPES.to_vec();
+        charts.push("mermaid");
+        for chart in charts {
+            let Ok(meta) = chart_schema_meta(chart) else {
+                continue;
+            };
+            let (common, y_axis, own) = essential_paths(chart);
+            let common: &[&str] = if common { COMMON_ESSENTIAL } else { &[] };
+            assert!(!own.is_empty(), "{chart}: no essential keys");
+            for path in common.iter().chain(y_axis).chain(own) {
+                assert!(
+                    resolves(&meta.tables, path),
+                    "{chart}: `{path}` is not a key"
                 );
             }
         }

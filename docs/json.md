@@ -584,13 +584,13 @@ The same keys as [`y_axis_configs[]`](#y_axis_configs). What they say of the val
 | `sparkline_color` | color |  | Color of the sparklines; by default the first color of the palette of the theme. |
 | `border_color` | color | theme | Color of the lines between the rows. |
 | `border_width` | number | `1` | Width of the lines between the rows, and of the outer border. |
-| `header_row_padding` | margin | `{left: 10, top: 8, right: 10, bottom: 8}` | Padding of the header row. |
+| `header_row_padding` | margin | `{"left": 10, "top": 8, "right": 10, "bottom": 8}` | Padding of the header row. |
 | `header_row_height` | number | `30` | Smallest height of the header row. |
 | `header_font_size` | number | `14` | Font size of the header. |
 | `header_font_color` | color | theme | Font color of the header. |
 | `header_font_weight` | string |  | Font weight of the header, e.g. `"bold"`. |
 | `header_background_color` | color | theme | Background color of the header. |
-| `body_row_padding` | margin | `{left: 10, top: 5, right: 10, bottom: 5}` | Padding of the body rows. |
+| `body_row_padding` | margin | `{"left": 10, "top": 5, "right": 10, "bottom": 5}` | Padding of the body rows. |
 | `body_row_height` | number | `30` | Smallest height of a body row. |
 | `body_font_size` | number | `14` | Font size of the body. |
 | `body_font_color` | color | theme | Font color of the body. |

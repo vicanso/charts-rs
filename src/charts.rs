@@ -79,6 +79,7 @@ mod radar_chart;
 mod sankey_chart;
 mod scatter_chart;
 mod schema;
+mod schema_doc;
 mod sunburst_chart;
 mod table_chart;
 mod theme;
@@ -143,7 +144,10 @@ pub use polar_bar_chart::{PolarAxis, PolarBarChart};
 pub use radar_chart::{RadarChart, RadarIndicator, RadarShape};
 pub use sankey_chart::{SankeyChart, SankeyLink, SankeyNode};
 pub use scatter_chart::{DensityContour, MarginalHistogram, Regression, ScatterChart};
-pub use schema::{chart_json_schema, list_chart_types, render_chart_from_json};
+pub use schema::{
+    SchemaLevel, chart_example, chart_json_schema, chart_json_schema_with, list_chart_types,
+    render_chart_from_json,
+};
 pub use sunburst_chart::{SunburstChart, SunburstData};
 pub use table_chart::{
     SparklineType, TableBodyConfig, TableCellStyle, TableChart, TableHeaderConfig, TableSparkline,

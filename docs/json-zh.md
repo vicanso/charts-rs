@@ -584,13 +584,13 @@
 | `sparkline_color` | 颜色 |  | 迷你图的颜色；默认取主题调色板的第一个颜色。 |
 | `border_color` | 颜色 | 主题 | 行间分隔线的颜色。 |
 | `border_width` | 数字 | `1` | 行间分隔线及外边框的宽度。 |
-| `header_row_padding` | 边距 | `{left: 10, top: 8, right: 10, bottom: 8}` | 表头行的内边距。 |
+| `header_row_padding` | 边距 | `{"left": 10, "top": 8, "right": 10, "bottom": 8}` | 表头行的内边距。 |
 | `header_row_height` | 数字 | `30` | 表头行的最小高度。 |
 | `header_font_size` | 数字 | `14` | 表头字号。 |
 | `header_font_color` | 颜色 | 主题 | 表头字体颜色。 |
 | `header_font_weight` | 字符串 |  | 表头字重，例如 `"bold"`。 |
 | `header_background_color` | 颜色 | 主题 | 表头背景色。 |
-| `body_row_padding` | 边距 | `{left: 10, top: 5, right: 10, bottom: 5}` | 表体各行的内边距。 |
+| `body_row_padding` | 边距 | `{"left": 10, "top": 5, "right": 10, "bottom": 5}` | 表体各行的内边距。 |
 | `body_row_height` | 数字 | `30` | 表体各行的最小高度。 |
 | `body_font_size` | 数字 | `14` | 表体字号。 |
 | `body_font_color` | 颜色 | 主题 | 表体字体颜色。 |
