@@ -5,7 +5,7 @@
 > - 审查日期：2026-11-21
 > - 审查基线：`v2.3.0` + `0b79107`
 > - 审查方式：`cargo clippy --features mermaid --all-targets`、`cargo test --features mermaid`、逐张检查 `asset/image/mermaid-*.png` 示例图、约 60 个异常 / 边界输入的探测，以及 16 个覆盖较全语法的复杂用例（通过 `svg_to_png` 光栅化后人工检查）。
-> - 当前进展（截至 `11ae027`）：已完成全部 25 项问题修复（`M-07` 子图独立 `direction` 已通过复合图布局实现）以及 4 项近期增强（`E-01`、`E-04`、`E-05`、`E-12`）。
+> - 当前进展（截至 `3240674`）：已完成全部 25 项问题修复（`M-07` 子图独立 `direction` 已通过复合图布局实现，并已完成后续 6 阶段视觉美化与 UI 检视）以及 4 项近期增强（`E-01`、`E-04`、`E-05`、`E-12`）。
 
 ## 目录
 
@@ -272,7 +272,7 @@ flowchart BT
 
 ---
 
-### M-07 flowchart 子图内 `direction` 被忽略
+### M-07 flowchart 子图内 `direction` 被忽略（已完成 `3240674`）
 
 **现象**：在子图内写 `direction LR` 没有效果，子图内仍沿用全局方向。
 
@@ -287,14 +287,14 @@ flowchart TB
   x --> S
 ```
 
-**根因**：[flowchart.rs:848-860](../src/charts/mermaid/flowchart.rs#L848-L860) 只在 `sg_stack.is_empty()` 时才应用 `direction`，子图内的方向被解析后直接丢弃。
+**根因**：[flowchart.rs](../src/charts/mermaid/flowchart.rs) 原先只在 `sg_stack.is_empty()` 时应用 `direction`，子图内的方向被解析后直接丢弃。
 
-**修复建议**：
-1. 在子图结构中记录 `direction: Option<Direction>`。
-2. 布局时，对设置了方向、并且**没有边跨越子图边界连到内部节点**的子图（Mermaid 本身的限制也是这样：有外部边连到内部节点时，子图方向会被忽略），先递归地独立布局子图，再把它当作一个大节点参与外层布局（复合图布局）。
-3. 实现前先在文档中注明该限制。
+**已实施修复（`3240674`）**：
+1. 在 `FcSubgraph` 与 `LayeredSubgraphInput` 中记录 `direction: Option<Direction>`。
+2. 布局时，对设置了方向、并且**没有边跨越子图边界连到内部节点**的子图（与 Mermaid 官方限制一致；连到子图本身的边允许），由 `sugiyama::layout` 递归作为复合块独立布局并嵌入外层。
+3. 已同步更新 `docs/guide.md`、`docs/guide-zh.md`、`llms.txt` 与 `MermaidCapabilities`，并新增 `flowchart_subgraph_direction` 示例图与回归测试。
 
-**验收**：上例中 a、b、c 水平排列，整个子图作为一个块位于 `x` 下方。
+**验收**：上例中 a、b、c 水平排列，整个子图作为一个块位于 `x` 下方；有跨边界节点边时按预期回退到外层方向。
 
 ---
 

@@ -140,7 +140,7 @@ let _safe_svg = safe_chart.svg().unwrap();
 ## 功能一览
 
 - **图表**：柱状图、条形图、折线图、饼图、雷达图、散点图与气泡图、蜡烛图、表格（单元格可内嵌迷你图）、热力图、漏斗图、瀑布图、日历图、仪表盘、矩形树图、箱线图、旭日图、桑基图、树图、关系图、平行坐标图、主题河流图、直方图、极坐标柱状图、和弦图、甘特图、地图、流向线、子弹图，以及把多个图表拼在同一画布上、绘图区上下对齐的 `MultiChart`。
-- **Mermaid**（可选 `mermaid` feature）：零额外依赖、纯 Rust SVG 渲染与语法校验（`mermaid_validate`），覆盖 13 种 Mermaid 图表（`flowchart` / `graph`、`sequenceDiagram`、`stateDiagram` / `stateDiagram-v2`、`classDiagram` / `classDiagram-v2`、`erDiagram`、`mindmap`、`quadrantChart`、`pie`、`gantt`、`sankey-beta`、`xychart-beta`、`radar-beta` / `radar`、`treemap-beta` / `treemap`），自动继承当前主题并可嵌入 `MultiChart`。支持 YAML frontmatter / `%%{init}%%` 配置透传、`accTitle` / `accDescr` 无障碍标签、协议白名单 `click` 链接（`allow_links`）、v11 `@{ shape }` 节点语法、多行 Markdown 富文本标签，以及甘特图 `excludes` / `includes` / `vert`。
+- **Mermaid**（可选 `mermaid` feature）：零额外依赖、纯 Rust SVG 渲染与语法校验（`mermaid_validate`），覆盖 13 种 Mermaid 图表（`flowchart` / `graph`、`sequenceDiagram`、`stateDiagram` / `stateDiagram-v2`、`classDiagram` / `classDiagram-v2`、`erDiagram`、`mindmap`、`quadrantChart`、`pie`、`gantt`、`sankey-beta`、`xychart-beta`、`radar-beta` / `radar`、`treemap-beta` / `treemap`），自动继承当前主题并可嵌入 `MultiChart`。关系图默认采用侧边端口 + 圆角正交折线与子图独立 `direction`，支持 YAML frontmatter / `%%{init}%%` 配置透传、`accTitle` / `accDescr` 无障碍标签、协议白名单 `click` 链接（`allow_links`）、v11 `@{ shape }` 节点语法、多行 Markdown 富文本标签，以及甘特图 `excludes` / `includes` / `vert`。
 - **系列**：堆叠与百分比堆叠、柱线混合、双 y 轴、平滑线与阶梯线、面积、区间带与误差线、标记线 / 标记点 / 标记区域、回归曲线、边际直方图、密度等高线、空值。
 - **坐标轴**：类目轴、数值轴、时间轴和对数轴，支持轴标题与标签格式化。
 - **外观**：主题、渐变填充、图例可放在任意一侧、数据标签自动避让、SVG 动画、悬停提示，以及可放在任意位置的版权声明与水印。

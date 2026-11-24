@@ -165,10 +165,12 @@ assert!(safe_chart.svg().unwrap().starts_with("<svg"));
   `classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`,
   `pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta` / `radar`,
   `treemap-beta` / `treemap`), inheriting the active `charts-rs` theme and
-  composable in `MultiChart`. Supports YAML frontmatter / `%%{init}%%` config
-  passthrough, `accTitle` / `accDescr` SVG accessibility metadata,
-  protocol-allowlisted `click` links (`allow_links`), v11 `@{ shape }` nodes,
-  multiline Markdown labels, and gantt `excludes` / `includes` / `vert`.
+  composable in `MultiChart`. Uses default rounded orthogonal edge routing with
+  side ports (`flowchart`, `state`, `class`, `er`) and per-subgraph `direction`,
+  plus YAML frontmatter / `%%{init}%%` config passthrough, `accTitle` /
+  `accDescr` SVG accessibility metadata, protocol-allowlisted `click` links
+  (`allow_links`), v11 `@{ shape }` nodes, multiline Markdown labels, and gantt
+  `excludes` / `includes` / `vert`.
 - **Series**: stacked and 100% stacked, bars mixed with lines, two y axes,
   smooth and step lines, areas, bands and error bars, mark lines, points and
   areas, regression curves, marginal histograms, density contours, missing values.
@@ -189,6 +191,7 @@ assert!(safe_chart.svg().unwrap().starts_with("<svg"));
 | [llms.txt](./llms.txt) | Compact LLM & MCP-ready reference (APIs, schemas, chart catalog, Mermaid spec) |
 | [llms-full.txt](./llms-full.txt) | Full LLM bundle (`llms.txt` + Guide + JSON reference, built with `make llms`) |
 | [Gallery](./docs/gallery.md) | Every chart type and its variants |
+| [Mermaid architecture & design](./docs/mermaid-design.md) | Pure-Rust Mermaid engine architecture, layout engines, and adapter design |
 | [Themes](./theme.md) | The ten built-in themes |
 | [Maps of China](./asset/geo/china/README.md) | GeoJSON of the provinces of China and of the cities of each, ready for a `MapChart` — in the repository, not in the crate |
 | [Examples](./examples) | `cargo run --example bar`, `cargo run --example mermaid --features mermaid`, and ten more |

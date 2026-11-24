@@ -214,12 +214,12 @@ Do not generate these — they return `Error::Mermaid`: `gitGraph`, `timeline`, 
 
 ### Supported Frontmatter / `%%{init}%%` Keys (`init_config_keys`)
 
-`theme` (`dark`, `forest`, `default`/`base`/`neutral`), `fontFamily`, `fontSize`, `flowchart.curve` (`basis`/`smooth`/`linear`/`step`), `flowchart.nodeSpacing`, `flowchart.rankSpacing`, `sequence.mirrorActors`, `sequence.showSequenceNumbers`, `xyChart.showLegend`.
+`theme` (`dark`, `forest`, `default`/`base`/`neutral`), `fontFamily`, `fontSize`, `flowchart.curve` (`step`/orthogonal default, `basis`/`smooth`, `linear`), `flowchart.nodeSpacing`, `flowchart.rankSpacing`, `sequence.mirrorActors`, `sequence.showSequenceNumbers`, `xyChart.showLegend`.
 
 ### Key Mermaid Features & Limitations
 
-- Supported: `accTitle` / `accDescr` SVG `<title>`/`<desc>` + ARIA attributes; `click` links with protocol allowlist (`http://`, `https://`, `mailto:`, relative; disable via `allow_links: false`); multiline Markdown strings (`` "`...`" ``); nested subgraphs, `classDef`/`class`/`style`; sequence `create`/`destroy`, `box`, `autonumber`; gantt `excludes`/`includes`/`vert`.
-- Limitations: subgraph-level `direction` inside flowcharts is ignored; `themeVariables` color overrides are not supported (only `fontFamily` and `fontSize`); no HTML `<foreignObject>` (HTML tags stripped to plain SVG text); Font Awesome icons (`fa:fa-*`) are stripped; JS `click` callbacks are ignored; rough/hand-drawn look mode is not supported.
+- Supported: default orthogonal rounded edge routing with side ports (`flowchart`, `stateDiagram-v2`, `classDiagram`, `erDiagram`); per-subgraph `direction` (when isolated from outer node edges); `accTitle` / `accDescr` SVG `<title>`/`<desc>` + ARIA attributes; `click` links with protocol allowlist (`http://`, `https://`, `mailto:`, relative; disable via `allow_links: false`); multiline Markdown strings (`` "`...`" ``); nested subgraphs, `classDef`/`class`/`style`; sequence `create`/`destroy`, `box`, `autonumber`; gantt `excludes`/`includes`/`vert`.
+- Limitations: subgraph-level `direction` inside flowcharts is ignored when an edge directly connects an inner node to the outside (matching Mermaid); `themeVariables` color overrides are not supported (only `fontFamily` and `fontSize`); no HTML `<foreignObject>` (HTML tags stripped to plain SVG text); Font Awesome icons (`fa:fa-*`) are stripped; JS `click` callbacks are ignored; rough/hand-drawn look mode is not supported.
 
 ## Docs
 

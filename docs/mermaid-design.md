@@ -46,7 +46,7 @@
 | **画布尺寸策略** | **默认自适应内容尺寸 + 显式设置时等比缩放**：`flowchart`/`sequence` 默认按布局结果自然撑开宽高；数据类图沿用合理默认尺寸；若用户显式设置了 `width` 或 `height`，则通过 `viewBox` 等比缩放适配 |
 | **主题与内联样式** | **默认跟随 `charts-rs` `Theme` + 支持 Mermaid 常用内联样式覆盖**：节点/连线/子图/时序块配色从当前 `Theme` 自动派生，同时支持 `style`/`classDef`/`class`/`:::`/`linkStyle`、YAML frontmatter `title` 与基础 `%%{init}%%` 映射 |
 | **容错与文本处理** | **结构错误严格带行号报错 + 装饰性指令宽松降级**：不支持的图类型、未闭合块、无效语句返回带行号的 `Error`；`click`/`accTitle`/未知 `init` 键或未知 CSS 属性静默忽略；`<br/>`/`\n` 转多行，常见 HTML 实体与内联标签安全还原/剥离 |
-| **Flowchart 视觉** | **平滑曲线（三次贝塞尔穿过分层路径点）+ 标准嵌套 `subgraph`**：支持嵌套子图及子图作为连线端点（子图内部独立 `direction` 可后续迭代补齐） |
+| **Flowchart 视觉** | **侧边端口 + 圆角正交折线（默认）+ 嵌套 `subgraph` 独立 `direction`**：关系图默认走带圆角的正交折线（支持 `basis` 平滑 / `linear` 直线切换）；支持嵌套子图、子图连线端点，以及孤立子图的独立布局方向 |
 
 ---
 
@@ -415,3 +415,22 @@ v3 在**零新增外部依赖**、统一由 Cargo `mermaid` feature 控制的约
    - `treemap-beta` / `treemap` 映射至 `TreemapChart`：借助 `SourceLine.indent` 递归构建 `SunburstData` 分组树，支持节/叶 `classDef` 与内联 `:::` 背景色覆盖。
 5. **跨期回归与视觉验收**：
    - 新增 `asset/mermaid_chart/{mindmap,quadrant,radar,treemap}{.json,_json.svg}` 快照与 `asset/image/mermaid-{mindmap,quadrant,radar,treemap}.png` 预览图并逐张核验视觉布局；校验 v1/v2 既有 9 组 SVG 快照字节级零回归。
+
+## 九、v2.4+ 视觉美化与布局升级
+
+参考 [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) 的工程化视觉风格与 `charts-rs` 自身主题体系，在保持零新增外部依赖和输出完全确定性的前提下，完成了 Mermaid 渲染器的布局与视觉升级（详尽方案与阶段记录见 [mermaid-beautify-plan.md](./mermaid-beautify-plan.md)）：
+
+1. **双色基础调色板与扁平样式（[style.rs](../src/charts/mermaid/style.rs)、[draw.rs](../src/charts/mermaid/draw.rs)）**：
+   - 从画布 `bg` 与前景 `fg` 按比例混合派生背景、描边、中性连线、`muted_text` 与 `edge_label_stroke`（低亮度暗色主题自动提亮辅助线条对比度），节点填充可选轻微叠加主题 `accent`。
+   - 统一扁平无阴影、1px 节点/容器描边、圆角（节点 6px / 子图 8px）、小号实心三角箭头、带细边框的胶囊边标签，以及左对齐弱化字号的子图标题。
+2. **侧边端口分配与圆角正交路由（[layout/sugiyama.rs](../src/charts/mermaid/layout/sugiyama.rs)）**：
+   - `flowchart` / `state` / `class` / `er` 默认采用 6px 圆角的正交折线；边从面向布局方向的节点侧边出入并按对端顺序均匀分布，单边在范围允许时自动对齐对端画直线。
+   - 多出口菱形在同层不遮挡时从侧向顶点直接L形折出；层间横段按区间着色分配互不重叠的轨道并避让直连标签胶囊。
+   - `flowchart` 显式配置 `curve: basis` 时保留平滑曲线（同样垂直出入端口），`curve: linear` 保留既有直线路径。
+3. **Brandes–Köpf 坐标分配与交叉优化（[layout/sugiyama.rs](../src/charts/mermaid/layout/sugiyama.rs)）**：
+   - 阶段 3 升级为加权中位数（weighted median）+ 相邻交换（transpose）配合 Fenwick 树 `O(E log V)` 交叉计数，并保持子图/并发区域连续性。
+   - 阶段 4 替换为四方向 Brandes–Köpf 算法（含 type-1 冲突标记与块压缩），拉直长链并将父节点居中对齐子节点。
+4. **子图独立 `direction`（M-07）**：
+   - 支持在 `flowchart` 子图内设置独立 `direction`，当内部节点无跨边界直连外部的边时，递归作为复合块独立布局并嵌入外层。
+5. **其余图种打磨**：
+   - `sequence`：片段框避开 `box` 边框并保护顶边框不被条件标签背景遮断；`gantt`：done 任务保留淡化分类色并与图例方块颜色对齐；`xychart`：水平模式右侧刻度留白防裁切，整数跨度自动选用整除刻度数。

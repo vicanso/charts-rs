@@ -249,13 +249,18 @@ every option is described in the [JSON reference](./json.md).
 </p>
 
 <p align="center">
+  <img src="../asset/image/mermaid-flowchart-subgraph-direction.png" width="51%" alt="Mermaid flowchart with per-subgraph direction">
+  <img src="../asset/image/mermaid-sankey.png" width="47%" alt="Mermaid sankey diagram">
+</p>
+
+<p align="center">
   <img src="../asset/image/mermaid-xychart.png" width="49%" alt="Mermaid xychart">
   <img src="../asset/image/mermaid-xychart-horizontal.png" width="49%" alt="Mermaid horizontal xychart">
 </p>
 
 <p align="center">
   <img src="../asset/image/mermaid-xychart-numeric.png" width="50%" alt="Mermaid numeric xychart with legend">
-  <img src="../asset/image/mermaid-sankey.png" width="48%" alt="Mermaid sankey diagram">
+  <img src="../asset/image/mermaid-class.png" width="48%" alt="Mermaid class diagram">
 </p>
 
 <p align="center">
@@ -264,25 +269,17 @@ every option is described in the [JSON reference](./json.md).
 </p>
 
 <p align="center">
-  <img src="../asset/image/mermaid-radar.png" width="49%" alt="Mermaid radar chart">
-  <img src="../asset/image/mermaid-class.png" width="49%" alt="Mermaid class diagram">
+  <img src="../asset/image/mermaid-radar.png" width="51%" alt="Mermaid radar chart">
+  <img src="../asset/image/mermaid-quadrant.png" width="47%" alt="Mermaid quadrant chart">
 </p>
 
 <p align="center">
-  <img src="../asset/image/mermaid-quadrant.png" width="51%" alt="Mermaid quadrant chart">
-  <img src="../asset/image/mermaid-sequence-lifecycle.png" width="47%" alt="Mermaid sequence lifecycle">
+  <img src="../asset/image/mermaid-sequence-lifecycle.png" width="53%" alt="Mermaid sequence lifecycle">
+  <img src="../asset/image/mermaid-flowchart-nested-subgraphs.png" width="45%" alt="Mermaid flowchart nested subgraphs">
 </p>
 
 <p align="center">
-  <img src="../asset/image/mermaid-flowchart-nested-subgraphs.png" width="52%" alt="Mermaid flowchart nested subgraphs">
-  <img src="../asset/image/mermaid-sequence.png" width="46%" alt="Mermaid sequence diagram">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-flowchart-subgraph-direction.png" width="70%" alt="Mermaid flowchart with per-subgraph direction">
-</p>
-
-<p align="center">
-  <img src="../asset/image/mermaid-er.png" width="56%" alt="Mermaid ER diagram">
-  <img src="../asset/image/mermaid-state.png" width="31%" alt="Mermaid state diagram">
+  <img src="../asset/image/mermaid-sequence.png" width="40%" alt="Mermaid sequence diagram">
+  <img src="../asset/image/mermaid-er.png" width="34%" alt="Mermaid ER diagram">
+  <img src="../asset/image/mermaid-state.png" width="22%" alt="Mermaid state diagram">
 </p>

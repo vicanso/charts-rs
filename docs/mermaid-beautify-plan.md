@@ -5,7 +5,7 @@
 >
 > - 制定日期：2026-11-24
 > - 基线：`v2.4.0`（`8e22ccb`）
-> - 实施状态（2026-11-24）：六个阶段全部完成——① `c576db6` 配色与样式、② `e9543d2` 端口 + 正交路由、③ `e93aa40` Brandes-Köpf、④ `c556662` median + transpose、⑤ `3240674` M-07 子图方向、⑥ sequence / gantt / mindmap / quadrant（本提交）。未做：sequence 参与者头部压缩、gantt 任务名放进条内（10.2 第 3 项，可选）、正交轨道过多时自动扩大层间距。
+> - 实施状态（2026-11-24）：六个阶段全部完成——① `c576db6` 配色与样式、② `e9543d2` 端口 + 正交路由、③ `e93aa40` Brandes-Köpf、④ `c556662` median + transpose、⑤ `3240674` M-07 子图方向、⑥ `3b9b8c8` sequence / gantt / mindmap / quadrant，并已完成 UI 检视收口优化与文档同步。未做：sequence 参与者头部压缩、gantt 任务名放进条内（10.2 第 3 项，可选）、正交轨道过多时自动扩大层间距。
 > - 视觉参考：[lukilabs/beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid)（ELK 正交路由 + 双色主题）。**目标不是复刻 Mermaid 官方外观**，而是做出 charts-rs 自己的、整洁的风格。
 
 ## 目录
