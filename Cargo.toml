@@ -15,7 +15,7 @@ exclude = [
     "Cargo.lock",
     # Of use in the repository only.
     ".github/*",
-    "CLAUDE.md",
+    "AGENTS.md",
     "Makefile",
     "cliff.toml",
     # Pages of pictures, which are in `asset` and not in the package.

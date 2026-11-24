@@ -1,6 +1,11 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents when working with code in this repository.
+
+## Rules
+
+- **Format before every commit**: Always run `cargo fmt --all` and verify with `cargo fmt --all --check` before every commit (matching CI). Never run bare `rustfmt <file>` without `--edition 2024`, as it applies the wrong edition's import ordering.
+- **Verify before committing**: Run `cargo clippy --all-features --all-targets --all -- --deny=warnings` and `cargo test --features "mermaid,image-encoder"` (or the relevant test targets) before creating a commit.
 
 ## Commands
 
@@ -21,8 +26,9 @@ cargo clippy --features=image-encoder --all-targets --all -- --deny=warnings
 cargo test --features "mermaid,image-encoder"
 cargo clippy --all-features --all-targets --all -- --deny=warnings
 
-# Format
-cargo fmt
+# Format & check format (run before every commit)
+cargo fmt --all
+cargo fmt --all --check
 ```
 
 ## Architecture
