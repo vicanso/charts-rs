@@ -13,6 +13,7 @@
 //! Mermaid `gantt` diagram adapter -> [`GanttChart`](crate::GanttChart).
 
 use super::super::super::color::{Color, get_color};
+use super::super::super::component::LegendCategory;
 use super::super::super::error::{Error, Result};
 use super::super::super::gantt_chart::{GanttChart, GanttMarker, GanttTask};
 use super::super::super::theme::get_theme;
@@ -739,6 +740,14 @@ pub(crate) fn render(
         }
     }
 
+    let section_color = |t: &ParsedTask| -> Color {
+        let cat_idx = t
+            .section
+            .as_deref()
+            .and_then(|s| sections.iter().position(|c| c == s))
+            .unwrap_or(sections.len());
+        get_color(&theme.series.colors, cat_idx)
+    };
     let mut tasks: Vec<GanttTask> = Vec::new();
     let mut vertical_markers: Vec<GanttMarker> = Vec::new();
     for (t, span) in parsed_tasks.into_iter().zip(resolved) {
@@ -755,16 +764,14 @@ pub(crate) fn render(
             (true, true, _) => Some(crit_done_fill),
             (true, false, true) => Some(crit_active_fill),
             (true, false, false) => Some(crit_fill),
-            (false, true, _) => Some(done_fill),
-            (false, false, true) => {
-                let cat_idx = t
-                    .section
-                    .as_deref()
-                    .and_then(|s| sections.iter().position(|c| c == s))
-                    .unwrap_or(sections.len());
-                let base = get_color(&theme.series.colors, cat_idx);
-                Some(mix_color(base, Color::from((255, 255, 255)), 0.28))
-            }
+            // Done tasks keep their section color (so the legend still
+            // matches) but fade toward the background.
+            (false, true, _) => Some(mix_color(section_color(&t), bg, 0.55)),
+            (false, false, true) => Some(mix_color(
+                section_color(&t),
+                Color::from((255, 255, 255)),
+                0.28,
+            )),
             (false, false, false) => None,
         };
         tasks.push(GanttTask {
@@ -803,6 +810,10 @@ pub(crate) fn render(
         680.0,
         default_height,
     );
+    // Solid swatches read as "this bar color" better than line+dot markers.
+    if gantt.legend.category == LegendCategory::Normal {
+        gantt.legend.category = LegendCategory::RoundRect;
+    }
     let (w, h) = (gantt.width, gantt.height);
     Ok((gantt.svg()?, w, h))
 }

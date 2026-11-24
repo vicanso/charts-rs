@@ -4,22 +4,19 @@
 Release 2.4 Roadmap
 </text>
 <g>
-<line stroke-width="2" x1="187" y1="50" x2="212" y2="50" stroke="#5470C6"/>
-<circle cx="199.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<rect x="187" y="45" width="25" height="10" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
 <text font-size="14" x="215" y="54" font-family="Roboto" fill="#464646">
 Planning
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="276" y1="50" x2="301" y2="50" stroke="#91CC75"/>
-<circle cx="288.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<rect x="276" y="45" width="25" height="10" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
 <text font-size="14" x="304" y="54" font-family="Roboto" fill="#464646">
 Implementation
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="412" y1="50" x2="437" y2="50" stroke="#FAC858"/>
-<circle cx="424.5" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<rect x="412" y="45" width="25" height="10" rx="2" ry="2" stroke="#FAC858" fill="#FAC858"/>
 <text font-size="14" x="440" y="54" font-family="Roboto" fill="#464646">
 Launch
 </text>
@@ -67,8 +64,8 @@ Integration Tests
 <text font-size="14" x="117" y="290.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
 Release 2.4
 </text>
-<rect x="140.6" y="70.3" width="109.2" height="24.9" rx="3" ry="3" fill="#C2C3C7" data-name="Architecture RFC" data-row="Architecture RFC" data-category="Planning" data-start="2026-04-01" data-end="2026-04-05"/>
-<rect x="249.8" y="111.8" width="81.9" height="24.9" rx="3" ry="3" fill="#C2C3C7" data-name="API Review" data-row="API Review" data-category="Planning" data-start="2026-04-05" data-end="2026-04-08"/>
+<rect x="140.6" y="70.3" width="109.2" height="24.9" rx="3" ry="3" fill="#B2BFE5" data-name="Architecture RFC" data-row="Architecture RFC" data-category="Planning" data-start="2026-04-01" data-end="2026-04-05"/>
+<rect x="249.8" y="111.8" width="81.9" height="24.9" rx="3" ry="3" fill="#B2BFE5" data-name="API Review" data-row="API Review" data-category="Planning" data-start="2026-04-05" data-end="2026-04-08"/>
 <rect x="331.7" y="153.3" width="218.5" height="24.9" rx="3" ry="3" fill="#B0DA9C" data-name="Core Engine" data-row="Core Engine" data-category="Implementation" data-start="2026-04-08" data-end="2026-04-16"/>
 <rect x="331.7" y="194.8" width="163.9" height="24.9" rx="3" ry="3" fill="#DC4444" data-name="SVG Renderer" data-row="SVG Renderer" data-category="Implementation" data-start="2026-04-08" data-end="2026-04-14"/>
 <rect x="550.2" y="236.3" width="109.2" height="24.9" rx="3" ry="3" fill="#91CC75" data-name="Integration Tests" data-row="Integration Tests" data-category="Implementation" data-start="2026-04-16" data-end="2026-04-20"/>

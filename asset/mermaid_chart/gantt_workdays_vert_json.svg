@@ -4,22 +4,19 @@
 Q2 Platform Release (Workdays)
 </text>
 <g>
-<line stroke-width="2" x1="185.5" y1="50" x2="210.5" y2="50" stroke="#5470C6"/>
-<circle cx="198" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<rect x="185.5" y="45" width="25" height="10" rx="2" ry="2" stroke="#5470C6" fill="#5470C6"/>
 <text font-size="14" x="213.5" y="54" font-family="Roboto" fill="#464646">
 Architecture
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="299.5" y1="50" x2="324.5" y2="50" stroke="#91CC75"/>
-<circle cx="312" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<rect x="299.5" y="45" width="25" height="10" rx="2" ry="2" stroke="#91CC75" fill="#91CC75"/>
 <text font-size="14" x="327.5" y="54" font-family="Roboto" fill="#464646">
 Engineering
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="408.5" y1="50" x2="433.5" y2="50" stroke="#FAC858"/>
-<circle cx="421" cy="50" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<rect x="408.5" y="45" width="25" height="10" rx="2" ry="2" stroke="#FAC858" fill="#FAC858"/>
 <text font-size="14" x="436.5" y="54" font-family="Roboto" fill="#464646">
 Release
 </text>
@@ -77,8 +74,8 @@ Security Audit
 <text font-size="14" x="146" y="253.7" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#6E7079">
 Load Testing
 </text>
-<rect x="168.7" y="70.5" width="81.9" height="25.6" rx="3" ry="3" fill="#C2C3C7" data-name="RFC &amp; Design Review" data-row="RFC &amp; Design Review" data-category="Architecture" data-start="2026-04-06" data-end="2026-04-11"/>
-<rect x="283.4" y="113.1" width="65.5" height="25.6" rx="3" ry="3" fill="#C2C3C7" data-name="Schema Migration" data-row="Schema Migration" data-category="Architecture" data-start="2026-04-13" data-end="2026-04-17"/>
+<rect x="168.7" y="70.5" width="81.9" height="25.6" rx="3" ry="3" fill="#B2BFE5" data-name="RFC &amp; Design Review" data-row="RFC &amp; Design Review" data-category="Architecture" data-start="2026-04-06" data-end="2026-04-11"/>
+<rect x="283.4" y="113.1" width="65.5" height="25.6" rx="3" ry="3" fill="#B2BFE5" data-name="Schema Migration" data-row="Schema Migration" data-category="Architecture" data-start="2026-04-13" data-end="2026-04-17"/>
 <rect x="349" y="155.7" width="196.6" height="25.6" rx="3" ry="3" fill="#B0DA9C" data-name="Core Engine" data-row="Core Engine" data-category="Engineering" data-start="2026-04-17" data-end="2026-04-29"/>
 <rect x="283.4" y="198.3" width="147.5" height="25.6" rx="3" ry="3" fill="#DC4444" data-name="Security Audit" data-row="Security Audit" data-category="Engineering" data-start="2026-04-13" data-end="2026-04-22"/>
 <rect x="545.6" y="240.9" width="114.7" height="25.6" rx="3" ry="3" fill="#FAC858" data-name="Load Testing" data-row="Load Testing" data-category="Release" data-start="2026-04-29" data-end="2026-05-06"/>

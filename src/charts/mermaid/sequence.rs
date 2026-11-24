@@ -22,7 +22,9 @@ use super::super::theme::get_theme;
 use super::super::util::{Point, format_float};
 use super::MermaidChart;
 use super::preprocess::{MermaidInitConfig, SourceLine};
-use super::style::{MermaidPalette, mix_color, parse_css_color};
+use super::style::{
+    EDGE_STROKE_WIDTH, MermaidPalette, NODE_RADIUS, NODE_STROKE_WIDTH, mix_color, parse_css_color,
+};
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 
 const PARTICIPANT_PAD_X: f32 = 16.0;
@@ -718,7 +720,7 @@ fn draw_actor_icon(c: &mut Canvas, cx: f32, top_y: f32, fill: Color, stroke: Col
         r: head_r,
         fill: Some(fill),
         stroke_color: Some(stroke),
-        stroke_width: 1.6,
+        stroke_width: 1.2,
         ..Default::default()
     });
     let neck_y = head_cy + head_r;
@@ -733,7 +735,7 @@ fn draw_actor_icon(c: &mut Canvas, cx: f32, top_y: f32, fill: Color, stroke: Col
     ] {
         c.line(Line {
             color: Some(stroke),
-            stroke_width: 1.6,
+            stroke_width: 1.2,
             left: x1,
             top: y1,
             right: x2,
@@ -762,11 +764,11 @@ fn draw_participant_box(
                 top: top_y,
                 width: box_w,
                 height: box_h,
-                rx: Some(4.0),
-                ry: Some(4.0),
+                rx: Some(NODE_RADIUS),
+                ry: Some(NODE_RADIUS),
                 fill: Some(palette.node_fill.into()),
                 color: Some(palette.node_stroke),
-                stroke_width: Some(1.6),
+                stroke_width: Some(NODE_STROKE_WIDTH),
                 ..Default::default()
             });
             draw_multiline_text(
@@ -1059,6 +1061,26 @@ pub(crate) fn render(
 
     let mut act_stacks: Vec<Vec<f32>> = vec![Vec::new(); n];
     let mut act_spans: Vec<ActivationSpan> = Vec::new();
+    // Horizontal spans of participant `box` groups (as drawn below), used to
+    // keep combined-fragment frames from cutting through a box border.
+    let box_spans: Vec<(f32, f32)> = seq
+        .boxes
+        .iter()
+        .filter(|b| !b.members.is_empty())
+        .map(|b| {
+            let lo = b
+                .members
+                .iter()
+                .map(|&m| col_x[m] - p_widths[m] * 0.5)
+                .fold(f32::MAX, f32::min);
+            let hi = b
+                .members
+                .iter()
+                .map(|&m| col_x[m] + p_widths[m] * 0.5)
+                .fold(f32::MIN, f32::max);
+            (lo - 8.0, hi + 8.0)
+        })
+        .collect();
     let mut active_blocks: Vec<LaidOutBlock> = Vec::new();
     let mut finished_blocks: Vec<LaidOutBlock> = Vec::new();
     let mut positioned_events: Vec<PositionedEvent> = Vec::new();
@@ -1167,6 +1189,25 @@ pub(crate) fn render(
                             right = (left + min_label_w).min(content_w_inner - CANVAS_PAD);
                             if right - left < min_label_w {
                                 left = (right - min_label_w).max(CANVAS_PAD);
+                            }
+                        }
+                        // A frame either stays inside a box (with margin) or
+                        // fully encloses it; never straddle a box border.
+                        const BOX_CLEAR: f32 = 8.0;
+                        for _ in 0..=box_spans.len() {
+                            let mut changed = false;
+                            for &(bl, br) in &box_spans {
+                                let overlaps = left < br && right > bl;
+                                let inside = left >= bl + BOX_CLEAR && right <= br - BOX_CLEAR;
+                                let encloses = left <= bl - BOX_CLEAR && right >= br + BOX_CLEAR;
+                                if overlaps && !inside && !encloses {
+                                    left = left.min(bl - BOX_CLEAR).max(2.0);
+                                    right = right.max(br + BOX_CLEAR);
+                                    changed = true;
+                                }
+                            }
+                            if !changed {
+                                break;
                             }
                         }
                         b.left = left;
@@ -1446,24 +1487,24 @@ pub(crate) fn render(
             top: by,
             width: bw,
             height: bh,
-            rx: Some(4.0),
-            ry: Some(4.0),
+            rx: Some(8.0),
+            ry: Some(8.0),
             fill: Some(fill.into()),
             color: Some(palette.subgraph_stroke),
             stroke_width: Some(1.0),
             ..Default::default()
         });
         if !b.title.is_empty() {
-            let title_ft = format_and_measure(&b.title, &font_family, 12.5);
+            let title_ft = format_and_measure(&b.title, &font_family, 12.0);
             draw_multiline_text(
                 &mut content_canvas,
-                bx + bw * 0.5,
+                bx + 10.0,
                 by + 13.0,
                 &title_ft,
                 &font_family,
-                12.5,
-                palette.text_color,
-                "middle",
+                12.0,
+                palette.muted_text,
+                "start",
                 true,
             );
         }
@@ -1495,7 +1536,7 @@ pub(crate) fn render(
         if end_y > start_y {
             content_canvas.line(Line {
                 color: Some(palette.edge_stroke),
-                stroke_width: 1.2,
+                stroke_width: 1.0,
                 left: col_x[i],
                 top: start_y,
                 right: col_x[i],
@@ -1517,7 +1558,7 @@ pub(crate) fn render(
             ry: Some(2.0),
             fill: Some(palette.activation_fill.into()),
             color: Some(palette.node_stroke),
-            stroke_width: Some(1.2),
+            stroke_width: Some(1.0),
             ..Default::default()
         });
     }
@@ -1680,7 +1721,7 @@ pub(crate) fn render(
                         d,
                         fill: None,
                         stroke: Some(palette.edge_stroke),
-                        stroke_width: 1.6,
+                        stroke_width: EDGE_STROKE_WIDTH,
                         stroke_dash_array: dash,
                         stroke_linejoin: Some("round"),
                         ..Default::default()
@@ -1713,7 +1754,7 @@ pub(crate) fn render(
                     }
                     content_canvas.line(Line {
                         color: Some(palette.edge_stroke),
-                        stroke_width: 1.6,
+                        stroke_width: EDGE_STROKE_WIDTH,
                         left: x1,
                         top: *y,
                         right: x2,

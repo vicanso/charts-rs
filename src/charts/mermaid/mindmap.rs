@@ -773,7 +773,7 @@ pub(crate) fn render(
         let stroke = eff_style.stroke.unwrap_or(default_stroke);
         let stroke_w = eff_style
             .stroke_width
-            .unwrap_or(if node.depth <= 1 { 2.0 } else { 1.4 });
+            .unwrap_or(if node.depth <= 1 { 1.5 } else { 1.0 });
         let text_color = eff_style.color.unwrap_or_else(|| contrast_text(fill));
         let left = cx - m.w * 0.5;
         let top = cy - m.h * 0.5;

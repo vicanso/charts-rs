@@ -3,103 +3,103 @@
 <text font-size="18" x="269.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
 Order Checkout
 </text>
-<rect x="47" y="59" width="239" height="674" rx="4" ry="4" stroke="#413E55" stroke-width="1" fill="#3B82F6" fill-opacity="0.14"/>
-<text font-size="12.5" x="166.5" y="72" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="47" y="59" width="239" height="674" rx="8" ry="8" stroke="#413E55" stroke-width="1" fill="#3B82F6" fill-opacity="0.14"/>
+<text font-size="12" x="57" y="72" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#9A98A4">
 Edge
 </text>
-<line stroke-width="1.2" x1="97" y1="158" x2="97" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
-<line stroke-width="1.2" x1="236" y1="158" x2="236" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
-<line stroke-width="1.2" x1="432" y1="158" x2="432" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
-<line stroke-width="1.2" x1="574" y1="158" x2="574" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
-<rect x="569" y="303" width="10" height="81" rx="2" ry="2" stroke="#5A69A4" stroke-width="1.2" fill="#232856"/>
-<rect x="427" y="256" width="10" height="222" rx="2" ry="2" stroke="#5A69A4" stroke-width="1.2" fill="#232856"/>
-<rect x="231" y="209" width="10" height="417" rx="2" ry="2" stroke="#5A69A4" stroke-width="1.2" fill="#232856"/>
-<rect x="206" y="321" width="398" height="264" stroke="#413E55" stroke-width="1.4" fill="none"/>
-<polygon points="206,321 252,321 252,334 245,341 206,341" stroke="#413E55" fill="#18183D"/>
-<text font-size="12" x="227" y="331" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<line stroke-width="1" x1="97" y1="158" x2="97" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1" x1="236" y1="158" x2="236" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1" x1="432" y1="158" x2="432" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1" x1="574" y1="158" x2="574" y2="654" stroke="#8A8896" stroke-dasharray="5,4"/>
+<rect x="569" y="303" width="10" height="81" rx="2" ry="2" stroke="#5A69A4" stroke-width="1" fill="#232856"/>
+<rect x="427" y="256" width="10" height="222" rx="2" ry="2" stroke="#5A69A4" stroke-width="1" fill="#232856"/>
+<rect x="231" y="209" width="10" height="417" rx="2" ry="2" stroke="#5A69A4" stroke-width="1" fill="#232856"/>
+<rect x="39" y="321" width="565" height="264" stroke="#413E55" stroke-width="1.4" fill="none"/>
+<polygon points="39,321 85,321 85,334 78,341 39,341" stroke="#413E55" fill="#18183D"/>
+<text font-size="12" x="60" y="331" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 alt
 </text>
-<rect x="258" y="320.5" width="85" height="21" rx="3" ry="3" fill="#100C2A"/>
-<text font-size="12" x="262" y="331" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+<rect x="91" y="320.5" width="85" height="21" rx="3" ry="3" fill="#100C2A"/>
+<text font-size="12" x="95" y="331" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Payment OK]
 </text>
-<line stroke-width="1.2" x1="206" y1="496" x2="604" y2="496" stroke="#413E55" stroke-dasharray="5,4"/>
-<rect x="214" y="497.5" width="64" height="21" rx="3" ry="3" fill="#100C2A"/>
-<text font-size="12" x="218" y="508" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+<line stroke-width="1.2" x1="39" y1="496" x2="604" y2="496" stroke="#413E55" stroke-dasharray="5,4"/>
+<rect x="47" y="497.5" width="64" height="21" rx="3" ry="3" fill="#100C2A"/>
+<text font-size="12" x="51" y="508" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Declined]
 </text>
-<line stroke-width="1.6" x1="97" y1="209" x2="236" y2="209" stroke="#8A8896"/>
+<line stroke-width="1.2" x1="97" y1="209" x2="236" y2="209" stroke="#8A8896"/>
 <polygon points="236,209 227,204.5 227,213.5" fill="#8A8896"/>
 <text font-size="12.5" x="166.5" y="195.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 1. Place order
 </text>
-<line stroke-width="1.6" x1="236" y1="256" x2="432" y2="256" stroke="#8A8896"/>
+<line stroke-width="1.2" x1="236" y1="256" x2="432" y2="256" stroke="#8A8896"/>
 <polygon points="432,256 423,251.5 423,260.5" fill="#8A8896"/>
 <text font-size="12.5" x="334" y="242.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 2. POST /orders
 </text>
-<line stroke-width="1.6" x1="432" y1="303" x2="574" y2="303" stroke="#8A8896"/>
+<line stroke-width="1.2" x1="432" y1="303" x2="574" y2="303" stroke="#8A8896"/>
 <polygon points="574,303 565,298.5 565,307.5" fill="#8A8896"/>
 <text font-size="12.5" x="503" y="289.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 3. INSERT order
 </text>
-<line stroke-width="1.6" x1="574" y1="384" x2="432" y2="384" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="574" y1="384" x2="432" y2="384" stroke="#8A8896" stroke-dasharray="5,4"/>
 <polygon points="432,384 441,379.5 441,388.5" fill="#8A8896"/>
 <text font-size="12.5" x="503" y="370.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 4. order_id
 </text>
-<line stroke-width="1.6" x1="432" y1="478" x2="236" y2="478" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="432" y1="478" x2="236" y2="478" stroke="#8A8896" stroke-dasharray="5,4"/>
 <polygon points="236,478 245,473.5 245,482.5" fill="#8A8896"/>
 <text font-size="12.5" x="334" y="464.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 5. 201 Created
 </text>
-<line stroke-width="1.6" x1="432" y1="557" x2="236" y2="557" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="432" y1="557" x2="236" y2="557" stroke="#8A8896" stroke-dasharray="5,4"/>
 <polygon points="236,557 245,552.5 245,561.5" fill="#8A8896"/>
 <text font-size="12.5" x="334" y="543.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 6. 402 Payment Required
 </text>
-<line stroke-width="1.6" x1="236" y1="626" x2="97" y2="626" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="236" y1="626" x2="97" y2="626" stroke="#8A8896" stroke-dasharray="5,4"/>
 <polygon points="97,626 106,621.5 106,630.5" fill="#8A8896"/>
 <text font-size="12.5" x="166.5" y="612.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 7. Show receipt
 </text>
-<circle cx="97" cy="96" r="9" stroke-width="1.6" stroke="#5A69A4" fill="#1B1C43"/>
-<line stroke-width="1.6" x1="97" y1="105" x2="97" y2="120" stroke="#5A69A4"/>
-<line stroke-width="1.6" x1="85" y1="110" x2="109" y2="110" stroke="#5A69A4"/>
-<line stroke-width="1.6" x1="97" y1="120" x2="87" y2="132" stroke="#5A69A4"/>
-<line stroke-width="1.6" x1="97" y1="120" x2="107" y2="132" stroke="#5A69A4"/>
+<circle cx="97" cy="96" r="9" stroke-width="1.2" stroke="#5A69A4" fill="#1B1C43"/>
+<line stroke-width="1.2" x1="97" y1="105" x2="97" y2="120" stroke="#5A69A4"/>
+<line stroke-width="1.2" x1="85" y1="110" x2="109" y2="110" stroke="#5A69A4"/>
+<line stroke-width="1.2" x1="97" y1="120" x2="87" y2="132" stroke="#5A69A4"/>
+<line stroke-width="1.2" x1="97" y1="120" x2="107" y2="132" stroke="#5A69A4"/>
 <text font-size="13.5" x="97" y="142.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 User
 </text>
-<circle cx="97" cy="665" r="9" stroke-width="1.6" stroke="#5A69A4" fill="#1B1C43"/>
-<line stroke-width="1.6" x1="97" y1="674" x2="97" y2="689" stroke="#5A69A4"/>
-<line stroke-width="1.6" x1="85" y1="679" x2="109" y2="679" stroke="#5A69A4"/>
-<line stroke-width="1.6" x1="97" y1="689" x2="87" y2="701" stroke="#5A69A4"/>
-<line stroke-width="1.6" x1="97" y1="689" x2="107" y2="701" stroke="#5A69A4"/>
+<circle cx="97" cy="665" r="9" stroke-width="1.2" stroke="#5A69A4" fill="#1B1C43"/>
+<line stroke-width="1.2" x1="97" y1="674" x2="97" y2="689" stroke="#5A69A4"/>
+<line stroke-width="1.2" x1="85" y1="679" x2="109" y2="679" stroke="#5A69A4"/>
+<line stroke-width="1.2" x1="97" y1="689" x2="87" y2="701" stroke="#5A69A4"/>
+<line stroke-width="1.2" x1="97" y1="689" x2="107" y2="701" stroke="#5A69A4"/>
 <text font-size="13.5" x="97" y="711.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 User
 </text>
-<rect x="194" y="85" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
+<rect x="194" y="85" width="84" height="38" rx="6" ry="6" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
 <text font-size="13.5" x="236" y="104" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Web
 </text>
-<rect x="194" y="654" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
+<rect x="194" y="654" width="84" height="38" rx="6" ry="6" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
 <text font-size="13.5" x="236" y="673" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Web
 </text>
-<rect x="390" y="85" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
+<rect x="390" y="85" width="84" height="38" rx="6" ry="6" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
 <text font-size="13.5" x="432" y="104" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 API
 </text>
-<rect x="390" y="654" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
+<rect x="390" y="654" width="84" height="38" rx="6" ry="6" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
 <text font-size="13.5" x="432" y="673" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 API
 </text>
-<rect x="532" y="85" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
+<rect x="532" y="85" width="84" height="38" rx="6" ry="6" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
 <text font-size="13.5" x="574" y="104" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 DB
 </text>
-<rect x="532" y="654" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
+<rect x="532" y="654" width="84" height="38" rx="6" ry="6" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
 <text font-size="13.5" x="574" y="673" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 DB
 </text>

@@ -502,7 +502,7 @@ pub(crate) fn render(
         right: mid_x,
         bottom: plot_bottom,
         color: Some(axis_stroke),
-        stroke_width: 1.3,
+        stroke_width: 1.0,
         stroke_dash_array: Some("4,4".to_string()),
     });
     cc.line(Line {
@@ -511,7 +511,7 @@ pub(crate) fn render(
         right: plot_right,
         bottom: mid_y,
         color: Some(axis_stroke),
-        stroke_width: 1.3,
+        stroke_width: 1.0,
         stroke_dash_array: Some("4,4".to_string()),
     });
 
@@ -523,7 +523,7 @@ pub(crate) fn render(
         height: plot_h,
         fill: Some(Color::transparent().into()),
         color: Some(palette.node_stroke),
-        stroke_width: Some(1.6),
+        stroke_width: Some(1.0),
         ..Default::default()
     });
 

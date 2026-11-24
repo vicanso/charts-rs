@@ -19,9 +19,9 @@ Fill-Ins
 <text font-size="13" x="472.5" y="269" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#747474">
 Defer
 </text>
-<line stroke-width="1.3" x1="334" y1="49" x2="334" y2="453" stroke="#A9B3D7" stroke-dasharray="4,4"/>
-<line stroke-width="1.3" x1="57" y1="251" x2="611" y2="251" stroke="#A9B3D7" stroke-dasharray="4,4"/>
-<rect x="57" y="49" width="554" height="404" stroke="#8C9ACA" stroke-width="1.6" fill="none"/>
+<line stroke-width="1" x1="334" y1="49" x2="334" y2="453" stroke="#A9B3D7" stroke-dasharray="4,4"/>
+<line stroke-width="1" x1="57" y1="251" x2="611" y2="251" stroke="#A9B3D7" stroke-dasharray="4,4"/>
+<rect x="57" y="49" width="554" height="404" stroke="#8C9ACA" stroke-width="1" fill="none"/>
 <text font-size="13" x="195.5" y="475" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Low Effort
 </text>

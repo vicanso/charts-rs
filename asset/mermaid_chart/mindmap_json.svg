@@ -16,62 +16,62 @@ charts-rs Roadmap
 <path d="M382.3,151 C346.9,151 353.4,224 318,224" transform="translate(5,35)" fill="none" stroke-width="2.6" stroke="#EE6666" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M222.9,224 C190.9,224 196.7,201 164.7,201" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#E66464" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M222.9,224 C190.9,224 196.7,260 164.7,260" transform="translate(5,35)" fill="none" stroke-width="2" stroke="#E66464" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="423" cy="186" r="47" stroke-width="2" stroke="#5168AC" fill="#5470C6"/>
+<circle cx="423" cy="186" r="47" stroke-width="1.5" stroke="#5168AC" fill="#5470C6"/>
 <text font-size="15" x="423" y="175.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#F8FAFC">
 charts-rs
 </text>
 <text font-size="15" x="423" y="196.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#F8FAFC">
 Roadmap
 </text>
-<path d="M 522.5 80.5 L 650.5 80.5 L 662 101 L 650.5 121.5 L 522.5 121.5 L 511 101 Z" transform="translate(5,35)" fill="#DDE2F4" stroke-width="2" stroke="#7F94D4" stroke-linejoin="round"/>
+<path d="M 522.5 80.5 L 650.5 80.5 L 662 101 L 650.5 121.5 L 522.5 121.5 L 511 101 Z" transform="translate(5,35)" fill="#DDE2F4" stroke-width="1.5" stroke="#7F94D4" stroke-linejoin="round"/>
 <text font-size="13.5" x="591.5" y="136" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Render Engines
 </text>
-<rect x="703" y="62" width="127" height="32" rx="3" ry="3" stroke="#7F94D4" stroke-width="1.4" fill="#EEF1F9"/>
+<rect x="703" y="62" width="127" height="32" rx="3" ry="3" stroke="#7F94D4" stroke-width="1" fill="#EEF1F9"/>
 <text font-size="12.5" x="766.5" y="78" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Flow &amp; Sequence
 </text>
-<rect x="703" y="108" width="129" height="32" rx="14.4" ry="14.4" stroke="#7F94D4" stroke-width="1.4" fill="#EEF1F9"/>
+<rect x="703" y="108" width="129" height="32" rx="14.4" ry="14.4" stroke="#7F94D4" stroke-width="1" fill="#EEF1F9"/>
 <text font-size="12.5" x="767.5" y="124" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 State, Class &amp; ER
 </text>
-<path d="M 713.4 149.2 Q 682.4 136.5 718.5 130.8 Q 718.7 119.5 756.1 124 Q 774.7 112.4 798.9 122.9 Q 835.3 116.7 839.9 129.1 Q 878.6 131.6 855.3 144.2 Q 887.1 154.4 851.9 159.9 Q 857.2 171.9 819.4 169.4 Q 805 181 776.7 170.5 Q 742.4 179 735.6 166 Q 690.6 163.7 713.4 149.2Z" transform="translate(5,35)" fill="#EEF1F9" stroke-width="1.4" stroke="#7F94D4" stroke-linejoin="round"/>
+<path d="M 713.4 149.2 Q 682.4 136.5 718.5 130.8 Q 718.7 119.5 756.1 124 Q 774.7 112.4 798.9 122.9 Q 835.3 116.7 839.9 129.1 Q 878.6 131.6 855.3 144.2 Q 887.1 154.4 851.9 159.9 Q 857.2 171.9 819.4 169.4 Q 805 181 776.7 170.5 Q 742.4 179 735.6 166 Q 690.6 163.7 713.4 149.2Z" transform="translate(5,35)" fill="#EEF1F9" stroke-width="1" stroke="#7F94D4" stroke-linejoin="round"/>
 <text font-size="12.5" x="788.5" y="182" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Cloud-free Pure SVG
 </text>
-<rect x="516" y="252.5" width="117" height="37" rx="8" ry="8" stroke="#ADD998" stroke-width="2" fill="#E9F5E3"/>
+<rect x="516" y="252.5" width="117" height="37" rx="8" ry="8" stroke="#ADD998" stroke-width="1.5" fill="#E9F5E3"/>
 <text font-size="13.5" x="574.5" y="271" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Backend Core
 </text>
-<rect x="669" y="232" width="137.4" height="32" rx="8" ry="8" stroke="#ADD998" stroke-width="1.4" fill="#F4FAF1"/>
+<rect x="669" y="232" width="137.4" height="32" rx="8" ry="8" stroke="#ADD998" stroke-width="1" fill="#F4FAF1"/>
 <text font-size="12.5" x="737.7" y="248" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Zero <tspan font-weight="bold">External</tspan> Deps
 </text>
-<rect x="669" y="278" width="111" height="32" rx="8" ry="8" stroke="#ADD998" stroke-width="1.4" fill="#F4FAF1"/>
+<rect x="669" y="278" width="111" height="32" rx="8" ry="8" stroke="#ADD998" stroke-width="1" fill="#F4FAF1"/>
 <text font-size="12.5" x="724.5" y="294" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Theme Palette
 </text>
-<rect x="196" y="104.5" width="134" height="37" rx="8" ry="8" stroke="#FBD682" stroke-width="2" fill="#FEF4DE"/>
+<rect x="196" y="104.5" width="134" height="37" rx="8" ry="8" stroke="#FBD682" stroke-width="1.5" fill="#FEF4DE"/>
 <text font-size="13.5" x="263" y="123" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Analytics Charts
 </text>
-<rect x="31" y="61" width="129" height="32" rx="3" ry="3" stroke="#FBD682" stroke-width="1.4" fill="#FFFAEE"/>
+<rect x="31" y="61" width="129" height="32" rx="3" ry="3" stroke="#FBD682" stroke-width="1" fill="#FFFAEE"/>
 <text font-size="12.5" x="95.5" y="77" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Radar &amp; Quadrant
 </text>
-<circle cx="121" cy="146" r="39" stroke-width="1.4" stroke="#FBD682" fill="#FFFAEE"/>
+<circle cx="121" cy="146" r="39" stroke-width="1" stroke="#FBD682" fill="#FFFAEE"/>
 <text font-size="12.5" x="121" y="146" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Treemap
 </text>
-<rect x="214" y="240.5" width="116" height="37" rx="8" ry="8" stroke="#F28C8C" stroke-width="2" fill="#FCE0E0"/>
+<rect x="214" y="240.5" width="116" height="37" rx="8" ry="8" stroke="#F28C8C" stroke-width="1.5" fill="#FCE0E0"/>
 <text font-size="13.5" x="272" y="259" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Quality Gates
 </text>
-<path d="M 160.6 201 Q 182 208.5 155 211.3 Q 166.6 222 139.3 219.6 Q 138.7 231.3 116.6 224.2 Q 104 234.6 91.4 224.2 Q 69.3 231.3 68.7 219.6 Q 41.4 222 53 211.3 Q 26 208.5 47.4 201 Q 26 193.5 53 190.7 Q 41.4 180 68.7 182.4 Q 69.3 170.7 91.4 177.8 Q 104 167.4 116.6 177.8 Q 138.7 170.7 139.3 182.4 Q 166.6 180 155 190.7 Q 182 193.5 160.6 201Z" transform="translate(5,35)" fill="#EF4444" stroke-width="1.4" stroke="#B91C1C" stroke-linejoin="round"/>
+<path d="M 160.6 201 Q 182 208.5 155 211.3 Q 166.6 222 139.3 219.6 Q 138.7 231.3 116.6 224.2 Q 104 234.6 91.4 224.2 Q 69.3 231.3 68.7 219.6 Q 41.4 222 53 211.3 Q 26 208.5 47.4 201 Q 26 193.5 53 190.7 Q 41.4 180 68.7 182.4 Q 69.3 170.7 91.4 177.8 Q 104 167.4 116.6 177.8 Q 138.7 170.7 139.3 182.4 Q 166.6 180 155 190.7 Q 182 193.5 160.6 201Z" transform="translate(5,35)" fill="#EF4444" stroke-width="1" stroke="#B91C1C" stroke-linejoin="round"/>
 <text font-size="12.5" x="109" y="236" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#FFFFFF">
 Zero Warnings
 </text>
-<rect x="40" y="279" width="138" height="32" rx="8" ry="8" stroke="#F28C8C" stroke-width="1.4" fill="#FDF0F0"/>
+<rect x="40" y="279" width="138" height="32" rx="8" ry="8" stroke="#F28C8C" stroke-width="1" fill="#FDF0F0"/>
 <text font-size="12.5" x="109" y="295" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#1E293B">
 Snapshot PNG Diff
 </text>
