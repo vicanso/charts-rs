@@ -1,4 +1,4 @@
 {
   "theme": "dark",
-  "source": "---\nconfig:\n  xyChart:\n    showLegend: true\n---\nxychart-beta\n  title \"Model Accuracy Across Epochs\"\n  x-axis \"Epoch\" 1 --> 10\n  y-axis \"Score (%)\" 0 --> 100\n  bar [48, 56, 63, 70, 76, 81, 85, 89, 92, 94]\n  line [45, 54, 62, 68, 74, 79, 84, 87, 90, 93]"
+  "source": "---\nconfig:\n  xyChart:\n    showLegend: true\n---\nxychart-beta\n  title \"Model Accuracy Across Epochs\"\n  x-axis \"Epoch\" 1 --> 10\n  y-axis \"Score (%)\" 0 --> 100\n  bar \"Train\" [48, 56, 63, 70, 76, 81, 85, 89, 92, 94]\n  line \"Validation\" [45, 54, 62, 68, 74, 79, 84, 87, 90, 93]"
 }

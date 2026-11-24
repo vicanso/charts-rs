@@ -187,9 +187,12 @@ pub(crate) fn render(
             && rest.starts_with(char::is_whitespace)
         {
             bar_count += 1;
-            let data = parse_number_array(rest, sl.line_no)?;
+            let (name, after) = parse_optional_quoted_title(rest);
+            let data = parse_number_array(after, sl.line_no)?;
             series_list.push(Series {
-                name: format!("Bar {bar_count}"),
+                name: name
+                    .filter(|s| !s.is_empty())
+                    .unwrap_or_else(|| format!("Bar {bar_count}")),
                 data,
                 category: Some(SeriesCategory::Bar),
                 ..Default::default()
@@ -200,9 +203,12 @@ pub(crate) fn render(
             && rest.starts_with(char::is_whitespace)
         {
             line_count += 1;
-            let data = parse_number_array(rest, sl.line_no)?;
+            let (name, after) = parse_optional_quoted_title(rest);
+            let data = parse_number_array(after, sl.line_no)?;
             series_list.push(Series {
-                name: format!("Line {line_count}"),
+                name: name
+                    .filter(|s| !s.is_empty())
+                    .unwrap_or_else(|| format!("Line {line_count}")),
                 data,
                 category: Some(SeriesCategory::Line),
                 ..Default::default()
@@ -318,4 +324,67 @@ pub(crate) fn render(
     apply_base_options(chart, &mut bar.base, title.as_deref(), 640.0, 400.0);
     let (w, h) = (bar.width, bar.height);
     Ok((bar.svg()?, w, h))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::super::preprocess::preprocess;
+    use super::*;
+
+    #[test]
+    fn supports_optional_series_titles_and_unnamed_fallback() {
+        let named_src = r#"
+---
+config:
+  xyChart:
+    showLegend: true
+---
+xychart-beta
+    x-axis [Q1, Q2, Q3]
+    y-axis 0 --> 10
+    bar "Revenue" [1, 2, 3]
+    line "Target" [1, 2, 3]
+"#;
+        let prep = preprocess(named_src).unwrap();
+        let chart = MermaidChart::new(named_src);
+        let (svg, _, _) = render(
+            &chart,
+            "light",
+            prep.title.as_deref(),
+            false,
+            prep.init_config.xychart_show_legend,
+            &prep.lines,
+        )
+        .unwrap();
+        assert!(svg.contains("Revenue"), "{svg}");
+        assert!(svg.contains("Target"), "{svg}");
+        assert!(!svg.contains("Bar 1"), "{svg}");
+        assert!(!svg.contains("Line 1"), "{svg}");
+
+        let unnamed_src = r#"
+---
+config:
+  xyChart:
+    showLegend: true
+---
+xychart-beta
+    x-axis [Q1, Q2, Q3]
+    y-axis 0 --> 10
+    bar [1, 2, 3]
+    line [1, 2, 3]
+"#;
+        let prep = preprocess(unnamed_src).unwrap();
+        let chart = MermaidChart::new(unnamed_src);
+        let (svg, _, _) = render(
+            &chart,
+            "light",
+            prep.title.as_deref(),
+            false,
+            prep.init_config.xychart_show_legend,
+            &prep.lines,
+        )
+        .unwrap();
+        assert!(svg.contains("Bar 1"), "{svg}");
+        assert!(svg.contains("Line 1"), "{svg}");
+    }
 }

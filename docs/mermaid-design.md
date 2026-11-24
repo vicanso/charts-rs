@@ -244,7 +244,7 @@ src/charts/mermaid/
 | `pie [showData]` | [`PieChart`](../src/charts/pie_chart.rs) | `title ...` → `chart.title.text`；`"Label" : value` → `Series`；`showData` 时通过标签 formatter 展示数值与占比 |
 | `gantt` | [`GanttChart`](../src/charts/gantt_chart.rs) | 解析 `title`、`dateFormat`（支持常见 `YYYY-MM-DD` / `YYYY-MM-DD HH:mm` 等纯 Rust 解析）、`section` → `GanttTask::category`、任务属性（`done`/`active`/`crit`/`milestone`、任务 ID、起止日期 / `after <id>` 依赖拓扑推算、时长 `3d`/`2w`/`12h`、`todayMarker` → `chart.now`） |
 | `sankey-beta` | [`SankeyChart`](../src/charts/sankey_chart.rs) | 解析 CSV 三元组 `source,target,value`（处理双引号与空行）→ `SankeyLink`（由 `SankeyChart` 自动派生节点） |
-| `xychart-beta` | [`BarChart`](../src/charts/bar_chart.rs) | 解析 `title`、`x-axis [a, b, ...]` / `min --> max`、`y-axis "Title" min --> max`、`bar [...]`、`line [...]`（利用 `SeriesCategory::Line` 实现柱线混排） |
+| `xychart-beta` | [`BarChart`](../src/charts/bar_chart.rs) | 解析 `title`、`x-axis [a, b, ...]` / `min --> max`、`y-axis "Title" min --> max`、`bar [...]` / `bar "名称" [...]`、`line [...]` / `line "名称" [...]`（支持可选系列标题，并利用 `SeriesCategory::Line` 实现柱线混排） |
 
 ### 5.7 画布尺寸与 `viewBox` 协同规则
 

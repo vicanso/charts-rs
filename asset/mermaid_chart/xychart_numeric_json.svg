@@ -4,17 +4,17 @@
 Model Accuracy Across Epochs
 </text>
 <g>
-<line stroke-width="2" x1="254" y1="50" x2="279" y2="50" stroke="#5470C6"/>
-<circle cx="266.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#5470C6"/>
-<text font-size="14" x="282" y="54" font-family="Roboto" fill="#EEEEEE">
-Bar 1
+<line stroke-width="2" x1="239" y1="50" x2="264" y2="50" stroke="#5470C6"/>
+<circle cx="251.5" cy="50" r="5.5" stroke-width="2" stroke="#5470C6" fill="#5470C6"/>
+<text font-size="14" x="267" y="54" font-family="Roboto" fill="#EEEEEE">
+Train
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="318" y1="50" x2="343" y2="50" stroke="#91CC75"/>
-<circle cx="330.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#91CC75"/>
-<text font-size="14" x="346" y="54" font-family="Roboto" fill="#EEEEEE">
-Line 1
+<line stroke-width="2" x1="305" y1="50" x2="330" y2="50" stroke="#91CC75"/>
+<circle cx="317.5" cy="50" r="5.5" stroke-width="2" stroke="#91CC75" fill="#91CC75"/>
+<text font-size="14" x="333" y="54" font-family="Roboto" fill="#EEEEEE">
+Validation
 </text>
 </g>
 <text font-size="14" x="344.5" y="391.5" text-anchor="middle" font-family="Roboto" fill="#B9B8CE">
@@ -72,16 +72,16 @@ Score (%)
 10
 </text>
 </g>
-<rect x="59" y="209.2" width="48.1" height="135.8" fill="#5470C6" data-series="Bar 1" data-category="1" data-value="48"/>
-<rect x="117.1" y="186.5" width="48.1" height="158.5" fill="#5470C6" data-series="Bar 1" data-category="2" data-value="56"/>
-<rect x="175.2" y="166.7" width="48.1" height="178.3" fill="#5470C6" data-series="Bar 1" data-category="3" data-value="63"/>
-<rect x="233.3" y="146.9" width="48.1" height="198.1" fill="#5470C6" data-series="Bar 1" data-category="4" data-value="70"/>
-<rect x="291.4" y="129.9" width="48.1" height="215.1" fill="#5470C6" data-series="Bar 1" data-category="5" data-value="76"/>
-<rect x="349.5" y="115.8" width="48.1" height="229.2" fill="#5470C6" data-series="Bar 1" data-category="6" data-value="81"/>
-<rect x="407.6" y="104.4" width="48.1" height="240.6" fill="#5470C6" data-series="Bar 1" data-category="7" data-value="85"/>
-<rect x="465.7" y="93.1" width="48.1" height="251.9" fill="#5470C6" data-series="Bar 1" data-category="8" data-value="89"/>
-<rect x="523.8" y="84.6" width="48.1" height="260.4" fill="#5470C6" data-series="Bar 1" data-category="9" data-value="92"/>
-<rect x="581.9" y="79" width="48.1" height="266" fill="#5470C6" data-series="Bar 1" data-category="10" data-value="94"/>
+<rect x="59" y="209.2" width="48.1" height="135.8" fill="#5470C6" data-series="Train" data-category="1" data-value="48"/>
+<rect x="117.1" y="186.5" width="48.1" height="158.5" fill="#5470C6" data-series="Train" data-category="2" data-value="56"/>
+<rect x="175.2" y="166.7" width="48.1" height="178.3" fill="#5470C6" data-series="Train" data-category="3" data-value="63"/>
+<rect x="233.3" y="146.9" width="48.1" height="198.1" fill="#5470C6" data-series="Train" data-category="4" data-value="70"/>
+<rect x="291.4" y="129.9" width="48.1" height="215.1" fill="#5470C6" data-series="Train" data-category="5" data-value="76"/>
+<rect x="349.5" y="115.8" width="48.1" height="229.2" fill="#5470C6" data-series="Train" data-category="6" data-value="81"/>
+<rect x="407.6" y="104.4" width="48.1" height="240.6" fill="#5470C6" data-series="Train" data-category="7" data-value="85"/>
+<rect x="465.7" y="93.1" width="48.1" height="251.9" fill="#5470C6" data-series="Train" data-category="8" data-value="89"/>
+<rect x="523.8" y="84.6" width="48.1" height="260.4" fill="#5470C6" data-series="Train" data-category="9" data-value="92"/>
+<rect x="581.9" y="79" width="48.1" height="266" fill="#5470C6" data-series="Train" data-category="10" data-value="94"/>
 <g>
 <path d="M 83.1 217.6 L 141.1 192.2 L 199.2 169.5 L 257.4 152.6 L 315.5 135.6 L 373.5 121.4 L 431.6 107.3 L 489.8 98.8 L 547.8 90.3 L 606 81.8" stroke-width="2" fill="none" stroke="#91CC75"/>
 <g stroke-width="2" stroke="#91CC75" fill="#100C2A">
