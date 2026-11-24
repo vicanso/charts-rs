@@ -1,10 +1,8 @@
 # charts-rs
 
-[中文](./README-zh.md)
+[中文](./README-zh.md) · [Gallery](./docs/gallery.md) · [Try it in the browser](https://charts.npmtrend.com/)
 
-**Charts for Rust, without a browser.** `charts-rs` draws 28 chart types — plus `MultiChart` composition (29 default type names) and 13 Mermaid diagram types with the optional `mermaid` feature —
-as SVG, and as PNG, JPEG, WebP or AVIF, from a few lines of Rust or from a
-JSON document, in the manner of Apache ECharts.
+**Charts &amp; Mermaid for Rust, without a browser.** `charts-rs` renders 28 chart types, 13 Mermaid diagrams (with the optional `mermaid` feature), and `MultiChart` compositions as SVG, PNG, JPEG, WebP, or AVIF — from a few lines of Rust or an ECharts-style JSON document.
 
 [![Crates.io][crates-badge]][crates-url]
 [![Apache licensed][apache-badge]][apache-url]
@@ -15,22 +13,14 @@ JSON document, in the manner of Apache ECharts.
 [apache-badge]: https://img.shields.io/badge/license-apache2-blue.svg
 [apache-url]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
 
-https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
-
 <p align="center">
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mix-line-bar.png" width="32%" alt="Bars and a line on two y axes"></a>
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie-nested.png" width="32%" alt="Nested pies"></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/map.png" width="32%" alt="Map chart"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/chord.png" width="32%" alt="Chord chart"></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gantt.png" width="32%" alt="Gantt chart"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/candlestick.png" width="32%" alt="Candlestick chart"></a>
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/map.png" width="32%" alt="Map chart"></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sankey.png" width="32%" alt="Sankey chart"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md#mermaid"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mermaid-class.png" width="32%" alt="Mermaid class diagram"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md#polar-bar"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar-radial.png" width="32%" alt="Radial polar bar chart"></a>
 </p>
@@ -45,6 +35,13 @@ https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
   <a href="https://charts.npmtrend.com/"><b>Try it in the browser →</b></a>
 </p>
 
+<details>
+<summary><b>▶ Watch 27s showcase video</b> (charts, Mermaid diagrams &amp; theme switching)</summary>
+
+https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
+
+</details>
+
 ## Why charts-rs
 
 - **Nothing to install but the crate.** No headless browser, no Node.js: a
@@ -57,11 +54,13 @@ https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
   zero-dependency Mermaid rendering under the optional `mermaid` feature — and
   several of them in one picture.
 - **Rust or JSON.** A typed API, or a JSON document with the same options.
-  Every key is [documented](./docs/json.md) and checked: a typo is an error
-  with a hint, not a chart that silently ignores it. Exposes two-tier
-  (`Essential` / `Full`) JSON Schemas, `chart_catalog()`, structured
-  multi-issue validation (`validate_chart_json`), `RenderLimits`, and named
-  GeoJSON registration (`register_geo_json`) for MCP / LLM servers.
+  Every key is [documented](./docs/json.md) and checked: a typo returns an error
+  with a hint instead of silently ignoring options.
+- **Built for servers, bots &amp; AI / MCP.** Exposes two-tier
+  (`Essential` / `Full`) JSON Schemas, `chart_catalog()`, multi-issue
+  validation (`validate_chart_json`), `RenderLimits`, named GeoJSON
+  registration (`register_geo_json`), and [`llms.txt`](./llms.txt) for LLM &amp;
+  MCP workflows.
 - **Themes and fonts.** Ten themes and your own; your own fonts (TTF, OTF,
   TTC), Chinese, Japanese and Korean ones included, for the memory of the
   file.
@@ -143,19 +142,16 @@ charts-rs = { version = "2", features = ["mermaid"] }
 ```rust
 # #[cfg(feature = "mermaid")]
 # {
-use charts_rs::{MermaidChart, mermaid_to_svg, mermaid_validate};
+use charts_rs::{mermaid_to_svg, mermaid_validate};
 
 let src = "flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]";
 mermaid_validate(src).unwrap();
 let svg = mermaid_to_svg(src).unwrap();
 assert!(svg.starts_with("<svg"));
-
-// Disable SVG <a> links for untrusted Mermaid input:
-let mut safe_chart = MermaidChart::new(src);
-safe_chart.allow_links = false;
-assert!(safe_chart.svg().unwrap().starts_with("<svg"));
 # }
 ```
+
+(For untrusted input, `MermaidChart::allow_links = false` disables SVG `<a>` links — see the [Guide](./docs/guide.md#mermaid-diagrams).)
 
 ## Features
 
@@ -167,16 +163,12 @@ assert!(safe_chart.svg().unwrap().starts_with("<svg"));
   plots lined up one above the other.
 - **Mermaid** (optional `mermaid` feature): pure-Rust, zero-extra-dependency
   SVG rendering and syntax validation (`mermaid_validate`) for 13 diagram types
-  (`flowchart` / `graph`, `sequenceDiagram`, `stateDiagram` / `stateDiagram-v2`,
-  `classDiagram` / `classDiagram-v2`, `erDiagram`, `mindmap`, `quadrantChart`,
-  `pie`, `gantt`, `sankey-beta`, `xychart-beta`, `radar-beta` / `radar`,
-  `treemap-beta` / `treemap`), inheriting the active `charts-rs` theme and
-  composable in `MultiChart`. Uses default rounded orthogonal edge routing with
-  side ports (`flowchart`, `state`, `class`, `er`) and per-subgraph `direction`,
-  plus YAML frontmatter / `%%{init}%%` config passthrough, `accTitle` /
-  `accDescr` SVG accessibility metadata, protocol-allowlisted `click` links
-  (`allow_links`), v11 `@{ shape }` nodes, multiline Markdown labels, and gantt
-  `excludes` / `includes` / `vert`.
+  (`flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`,
+  `mindmap`, `quadrantChart`, `pie`, `gantt`, `sankey`, `xychart`, `radar`,
+  `treemap`). Inherits active themes, composes in `MultiChart`, and supports
+  rounded orthogonal routing, per-subgraph `direction`, frontmatter /
+  `%%{init}%%` config, `accTitle` / `accDescr`, v11 shapes, and Markdown labels
+  ([Guide](./docs/guide.md#mermaid-diagrams), [Design](./docs/mermaid-design.md)).
 - **Series**: stacked and 100% stacked, bars mixed with lines, two y axes,
   smooth and step lines, areas, bands and error bars, mark lines, points and
   areas, regression curves, marginal histograms, density contours, missing values.
@@ -200,7 +192,7 @@ assert!(safe_chart.svg().unwrap().starts_with("<svg"));
 | [Mermaid architecture & design](./docs/mermaid-design.md) | Pure-Rust Mermaid engine architecture, layout engines, and adapter design |
 | [Themes](./theme.md) | The ten built-in themes |
 | [Maps of China](./asset/geo/china/README.md) | GeoJSON of the provinces of China and of the cities of each, ready for a `MapChart` — in the repository, not in the crate |
-| [Examples](./examples) | `cargo run --example bar`, `cargo run --example mermaid --features mermaid`, and ten more |
+| [Examples](./examples) | `cargo run --example bar`, `cargo run --example mermaid --features mermaid`, `cargo run --example showcase --features "mermaid,png"`, and more runnable examples |
 | [API docs](https://docs.rs/charts-rs) | The Rust API on docs.rs |
 | [Changelog](./CHANGELOG.md) | What changed, and how to move from 1.x to 2.0 |
 | [Web demo](https://charts.npmtrend.com/) | Edit the JSON, see the chart ([source](https://github.com/vicanso/charts-rs-web)) |

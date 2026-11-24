@@ -1,8 +1,8 @@
 # charts-rs
 
-[English](./README.md)
+[English](./README.md) · [图表一览](./docs/gallery.md) · [在线试用](https://charts.npmtrend.com/)
 
-**不依赖浏览器的 Rust 图表库。** 几行 Rust 代码或一份 JSON，就能生成 28 种图表及 `MultiChart` 拼图容器的 SVG（共 29 个默认类型名；开启可选 `mermaid` feature 后还可纯 Rust 渲染 13 种 Mermaid 图表，共 30 个类型名），也可以导出 PNG、JPEG、WebP、AVIF，风格参考 Apache ECharts。
+**不依赖浏览器的 Rust 图表与 Mermaid 渲染库。** 几行 Rust 代码或一份 JSON，就能生成 28 种图表、13 种 Mermaid 图表（开启可选 `mermaid` feature）以及 `MultiChart` 组合图的 SVG，也可以导出 PNG、JPEG、WebP 或 AVIF，风格参考 Apache ECharts。
 
 [![Crates.io][crates-badge]][crates-url]
 [![Apache licensed][apache-badge]][apache-url]
@@ -13,22 +13,14 @@
 [apache-badge]: https://img.shields.io/badge/license-apache2-blue.svg
 [apache-url]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
 
-https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
-
 <p align="center">
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mix-line-bar.png" width="32%" alt="双 y 轴的柱状图与折线"></a>
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie-nested.png" width="32%" alt="嵌套饼图"></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/map.png" width="32%" alt="地图"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/chord.png" width="32%" alt="和弦图"></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/gantt.png" width="32%" alt="甘特图"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/candlestick.png" width="32%" alt="蜡烛图"></a>
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/map.png" width="32%" alt="地图"></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sankey.png" width="32%" alt="桑基图"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md#mermaid"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mermaid-class.png" width="32%" alt="Mermaid 类图"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md#polar-bar"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar-radial.png" width="32%" alt="极坐标环形柱状图"></a>
 </p>
@@ -43,12 +35,20 @@ https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
   <a href="https://charts.npmtrend.com/"><b>在线试用 →</b></a>
 </p>
 
+<details>
+<summary><b>▶ 观看 27 秒演示视频</b>（图表、Mermaid 与主题切换效果）</summary>
+
+https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
+
+</details>
+
 ## 为什么选择 charts-rs
 
 - **只需要一个 crate。** 不用无头浏览器，也不用 Node.js：生成图表就是一次函数调用，返回 SVG。适合在服务端生成报表、邮件、机器人消息和看板。
 - **快。** 生成 SVG 远低于 1 毫秒，生成 PNG 只需几毫秒（见[性能](#性能)）。
 - **28 种图表 + `MultiChart` + 13 种 Mermaid 图表**，从柱状图、折线图、饼图，到蜡烛图、热力图、桑基图、甘特图、地图和流向线；开启可选 `mermaid` feature 即可零额外依赖纯 SVG 渲染 Mermaid，还可以把多个图表拼在一张图里。
-- **Rust 或 JSON。** 可以用类型化的 API，也可以传入参数相同的 JSON。每个参数都有[文档](./docs/json-zh.md)并经过校验：写错参数名会报错并给出提示，而不是悄悄被忽略。提供分档（`Essential` / `Full`）JSON Schema、`chart_catalog()`、结构化多错误校验（`validate_chart_json`）、`RenderLimits` 资源限制与命名地图注册（`register_geo_json`），方便接入 MCP / LLM 服务。
+- **Rust 或 JSON。** 可以用类型化的 API，也可以传入参数相同的 JSON。每个参数都有[文档](./docs/json-zh.md)并经过校验：写错参数名会报错并给出提示，而不是悄悄被忽略。
+- **面向服务端、机器人与 AI / MCP。** 提供分档（`Essential` / `Full`）JSON Schema、`chart_catalog()`、结构化多错误校验（`validate_chart_json`）、`RenderLimits` 资源限制、命名地图注册（`register_geo_json`）与 [`llms.txt`](./llms.txt)，方便直接接入 LLM / MCP 工作流。
 - **主题与字体。** 内置十种主题，可自定义；支持加载自己的字体（TTF、OTF、TTC），包括中日韩字体，占用的内存只有字体文件本身大小。
 
 ## 快速上手
@@ -131,22 +131,19 @@ charts-rs = { version = "2", features = ["mermaid"] }
 ```
 
 ```rust
-use charts_rs::{MermaidChart, mermaid_to_svg, mermaid_validate};
+use charts_rs::{mermaid_to_svg, mermaid_validate};
 
 let src = "flowchart LR\n  A[Client] --> B{Gateway}\n  B -->|OK| C[(DB)]";
 mermaid_validate(src).unwrap();
 let svg = mermaid_to_svg(src).unwrap();
-
-// 渲染不可信输入时禁用 SVG <a> 超链接：
-let mut safe_chart = MermaidChart::new(src);
-safe_chart.allow_links = false;
-let _safe_svg = safe_chart.svg().unwrap();
 ```
+
+（渲染不可信输入时可通过 `MermaidChart::allow_links = false` 禁用 SVG `<a>` 超链接，详见[使用指南](./docs/guide-zh.md#mermaid-图表)。）
 
 ## 功能一览
 
 - **图表**：柱状图、条形图、折线图、饼图、雷达图、散点图与气泡图、蜡烛图、表格（单元格可内嵌迷你图）、热力图、漏斗图、瀑布图、日历图、仪表盘、矩形树图、箱线图、旭日图、桑基图、树图、关系图、平行坐标图、主题河流图、直方图、极坐标柱状图、和弦图、甘特图、地图、流向线、子弹图，以及把多个图表拼在同一画布上、绘图区上下对齐的 `MultiChart`。
-- **Mermaid**（可选 `mermaid` feature）：零额外依赖、纯 Rust SVG 渲染与语法校验（`mermaid_validate`），覆盖 13 种 Mermaid 图表（`flowchart` / `graph`、`sequenceDiagram`、`stateDiagram` / `stateDiagram-v2`、`classDiagram` / `classDiagram-v2`、`erDiagram`、`mindmap`、`quadrantChart`、`pie`、`gantt`、`sankey-beta`、`xychart-beta`、`radar-beta` / `radar`、`treemap-beta` / `treemap`），自动继承当前主题并可嵌入 `MultiChart`。关系图默认采用侧边端口 + 圆角正交折线与子图独立 `direction`，支持 YAML frontmatter / `%%{init}%%` 配置透传、`accTitle` / `accDescr` 无障碍标签、协议白名单 `click` 链接（`allow_links`）、v11 `@{ shape }` 节点语法、多行 Markdown 富文本标签，以及甘特图 `excludes` / `includes` / `vert`。
+- **Mermaid**（可选 `mermaid` feature）：零额外依赖、纯 Rust SVG 渲染与语法校验（`mermaid_validate`），覆盖 13 种 Mermaid 图表（`flowchart`、`sequenceDiagram`、`stateDiagram`、`classDiagram`、`erDiagram`、`mindmap`、`quadrantChart`、`pie`、`gantt`、`sankey`、`xychart`、`radar`、`treemap`）。自动继承当前主题并可嵌入 `MultiChart`，支持圆角正交路由与子图独立 `direction`、frontmatter / `%%{init}%%` 配置透传、`accTitle` / `accDescr`、v11 节点形状与多行 Markdown 标签（[使用指南](./docs/guide-zh.md#mermaid-图表)、[架构设计](./docs/mermaid-design.md)）。
 - **系列**：堆叠与百分比堆叠、柱线混合、双 y 轴、平滑线与阶梯线、面积、区间带与误差线、标记线 / 标记点 / 标记区域、回归曲线、边际直方图、密度等高线、空值。
 - **坐标轴**：类目轴、数值轴、时间轴和对数轴，支持轴标题与标签格式化。
 - **外观**：主题、渐变填充、图例可放在任意一侧、数据标签自动避让、SVG 动画、悬停提示，以及可放在任意位置的版权声明与水印。
@@ -164,7 +161,7 @@ let _safe_svg = safe_chart.svg().unwrap();
 | [Mermaid 架构设计](./docs/mermaid-design.md) | 纯 Rust Mermaid 引擎的架构方案、13 类图表支持范围与分期设计 |
 | [主题](./theme.md) | 十种内置主题 |
 | [中国地图数据](./asset/geo/china/README.md) | 全国各省及各省下属市的 GeoJSON，可直接用于 `MapChart`；仅在仓库中，不随 crate 发布 |
-| [示例](./examples) | `cargo run --example bar`、`cargo run --example mermaid --features mermaid` 等 12 个可运行示例 |
+| [示例](./examples) | `cargo run --example bar`、`cargo run --example mermaid --features mermaid`、`cargo run --example showcase --features "mermaid,png"` 等可运行示例 |
 | [API 文档](https://docs.rs/charts-rs) | docs.rs 上的 Rust API |
 | [更新日志](./CHANGELOG.md) | 版本变更，以及从 1.x 迁移到 2.0 的说明 |
 | [在线示例](https://charts.npmtrend.com/) | 修改 JSON 即时查看图表（[源码](https://github.com/vicanso/charts-rs-web)） |
@@ -189,6 +186,6 @@ charts-rs 2.x 需要 Rust 1.88 及以上（edition 2024）。
 
 ## 开源协议声明
 
-This project is licensed under the [Apache-2.0 license].
+本项目基于 [Apache-2.0 协议] 开源。
 
-[Apache-2.0 license]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
+[Apache-2.0 协议]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
