@@ -3,34 +3,34 @@
 <text font-size="18" x="135.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
 E-Commerce Schema
 </text>
-<path d="M195.5 126 L147.3 226" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.6" x1="192" y1="163.6" x2="203.7" y2="169.2" stroke="#999999"/>
-<line stroke-width="1.6" x1="189.8" y1="168.1" x2="201.5" y2="173.7" stroke="#999999"/>
-<line stroke-width="1.5" x1="157.5" y1="250.2" x2="145.6" y2="257.7" stroke="#999999"/>
-<line stroke-width="1.5" x1="157.5" y1="250.2" x2="159.1" y2="264.3" stroke="#999999"/>
-<circle cx="160.1" cy="244.8" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
-<path d="M147.3 352 L195.5 452" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.6" x1="149.1" y1="395.2" x2="160.8" y2="389.6" stroke="#999999"/>
-<line stroke-width="1.6" x1="151.2" y1="399.7" x2="162.9" y2="394.1" stroke="#999999"/>
-<line stroke-width="1.5" x1="195.2" y1="476.2" x2="193.7" y2="490.3" stroke="#999999"/>
-<line stroke-width="1.5" x1="195.2" y1="476.2" x2="207.2" y2="483.7" stroke="#999999"/>
-<line stroke-width="1.6" x1="201.1" y1="473.4" x2="189.4" y2="479" stroke="#999999"/>
-<path d="M303.8 340 L246.2 452" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.6" x1="300.3" y1="377.4" x2="311.8" y2="383.3" stroke="#999999"/>
-<line stroke-width="1.6" x1="298" y1="381.8" x2="309.5" y2="387.8" stroke="#999999"/>
-<line stroke-width="1.5" x1="256.7" y1="476.3" x2="244.5" y2="483.6" stroke="#999999"/>
-<line stroke-width="1.5" x1="256.7" y1="476.3" x2="257.9" y2="490.4" stroke="#999999"/>
-<circle cx="259.4" cy="471" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
-<rect x="150.9" y="200" width="51" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="176.4" y="211" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M158.5 126 L158.5 226" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.6" x1="157" y1="167" x2="170" y2="167" stroke="#999999"/>
+<line stroke-width="1.6" x1="157" y1="172" x2="170" y2="172" stroke="#999999"/>
+<line stroke-width="1.5" x1="163.5" y1="249" x2="156" y2="261" stroke="#999999"/>
+<line stroke-width="1.5" x1="163.5" y1="249" x2="171" y2="261" stroke="#999999"/>
+<circle cx="163.5" cy="243" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
+<path d="M117 352 L117 396 Q117 402,123 402 L207 402 Q213 402,213 408 L213 452" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.6" x1="115.5" y1="393" x2="128.5" y2="393" stroke="#999999"/>
+<line stroke-width="1.6" x1="115.5" y1="398" x2="128.5" y2="398" stroke="#999999"/>
+<line stroke-width="1.5" x1="218" y1="475" x2="210.5" y2="487" stroke="#999999"/>
+<line stroke-width="1.5" x1="218" y1="475" x2="225.5" y2="487" stroke="#999999"/>
+<line stroke-width="1.6" x1="224.5" y1="475" x2="211.5" y2="475" stroke="#999999"/>
+<path d="M330 340 L330 396 Q330 402,324 402 L233 402 Q227 402,227 408 L227 452" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.6" x1="328.5" y1="381" x2="341.5" y2="381" stroke="#999999"/>
+<line stroke-width="1.6" x1="328.5" y1="386" x2="341.5" y2="386" stroke="#999999"/>
+<line stroke-width="1.5" x1="232" y1="475" x2="224.5" y2="487" stroke="#999999"/>
+<line stroke-width="1.5" x1="232" y1="475" x2="239.5" y2="487" stroke="#999999"/>
+<circle cx="232" cy="469" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
+<rect x="138" y="200" width="51" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="163.5" y="211" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 places
 </text>
-<rect x="145.4" y="426" width="62" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="176.4" y="437" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="139" y="426" width="62" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="170" y="437" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 contains
 </text>
-<rect x="233" y="420" width="94" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="280" y="431" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="242.5" y="426" width="94" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="289.5" y="437" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 referenced by
 </text>
 <rect x="112" y="59" width="226" height="102" rx="5" ry="5" fill="#FFFFFF"/>

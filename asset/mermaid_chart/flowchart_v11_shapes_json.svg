@@ -7,20 +7,20 @@ Document Processing Pipeline
 <polygon points="103,115 95.2,118.7 95.2,111.3" fill="#999999"/>
 <path d="M205 80 L259 80" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="264,115 256.2,118.7 256.2,111.3" fill="#999999"/>
-<path d="M364 96.2 C391 104.6,417.4 123.5,471.8 129.6 C526.2 135.7,554.1 122.9,581.6 120.7" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="586.6,155.7 579.2,160 578.6,152.6" fill="#999999"/>
-<path d="M364 72.3 L441 61.1" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="446,96.1 438.9,100.9 437.8,93.6" fill="#999999"/>
-<path d="M685.6 100.7 L742.1 83.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="747.1,118.5 740.8,124.3 738.6,117.2" fill="#999999"/>
-<path d="M496.9 54.6 L589.3 47.1" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="594.3,82.1 586.8,86.4 586.3,79" fill="#999999"/>
-<path d="M677.5 56.8 L742.1 76.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="747.1,111.5 738.6,112.8 740.8,105.7" fill="#999999"/>
-<path d="M765.3 77.1 L819.6 63.8" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="824.6,98.8 818,104.2 816.2,97" fill="#999999"/>
-<path d="M765.1 83.3 L836.3 103.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="841.3,138.6 832.9,140 834.9,132.9" fill="#999999"/>
+<path d="M364 80 L376 80 Q382 80,382 86 L382 123.6 Q382 129.6,388 129.6 L546.6 129.6 Q552.6 129.6,552.6 123.6 L552.6 122.5 Q552.6 116.5,558.6 116.5 L581.6 116.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="586.6,151.5 578.8,155.2 578.8,147.8" fill="#999999"/>
+<path d="M364 80 L394 80 Q400 80,400 74 L400 62.6 Q400 56.6,406 56.6 L444.9 56.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="449.9,91.6 442.1,95.3 442.1,87.9" fill="#999999"/>
+<path d="M685.6 116.5 L717.6 116.5 Q723.6 116.5,723.6 110.5 L723.6 86 Q723.6 80,729.6 80 L741.6 80" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="746.6,115 738.8,118.7 738.8,111.3" fill="#999999"/>
+<path d="M498.7 56.6 L546.6 56.6 Q552.6 56.6,552.6 50.6 L552.6 49.5 Q552.6 43.5,558.6 43.5 L591.5 43.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="596.5,78.5 588.7,82.2 588.7,74.8" fill="#999999"/>
+<path d="M687.6 43.5 L699.6 43.5 Q705.6 43.5,705.6 49.5 L705.6 74 Q705.6 80,711.6 80 L741.6 80" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="746.6,115 738.8,118.7 738.8,111.3" fill="#999999"/>
+<path d="M765.6 80 L795.6 80 Q801.6 80,801.6 74 L801.6 54.5 Q801.6 48.5,807.6 48.5 L819.6 48.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="824.6,83.5 816.8,87.2 816.8,79.8" fill="#999999"/>
+<path d="M765.6 80 L777.6 80 Q783.6 80,783.6 86 L783.6 110.5 Q783.6 116.5,789.6 116.5 L836.3 116.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="841.3,151.5 833.6,155.2 833.6,147.8" fill="#999999"/>
 <circle cx="39" cy="115" r="10" stroke-width="1" stroke="#8C9ACA" fill="#8C9ACA"/>
 <path d="M98 56.5 L205 56.5 L205 96 C167.5 85.5, 135.4 108, 98 96 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
 <text font-size="14" x="156.5" y="115" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">

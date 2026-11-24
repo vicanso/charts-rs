@@ -1116,6 +1116,12 @@ let _themed_svg = chart.svg().unwrap();
   rankSpacing}` (`basis` / `linear` / `step`), `config.sequence.{mirrorActors,
   showSequenceNumbers}`, and `config.xyChart.showLegend`. Explicit Rust / JSON
   API options take precedence over frontmatter and `%%{init}%%`.
+- **Edge routing**: flowchart, state, class and ER edges default to orthogonal
+  routes with rounded corners. Edges leave and enter nodes through the sides
+  facing the layout direction and are spread evenly along flat sides.
+  `curve: basis` switches flowcharts to smooth splines (still leaving nodes
+  perpendicularly); `curve: linear` keeps straight center-to-center lines;
+  `curve: step` is the same as the orthogonal default.
 - **Accessibility & safe links**: `accTitle:` and `accDescr:` / `accDescr { ... }`
   emit `role="img"`, `aria-labelledby`, `aria-describedby`, `<title>`, and
   `<desc>` on the root `<svg>`. `click` / `link` directives in `flowchart`,

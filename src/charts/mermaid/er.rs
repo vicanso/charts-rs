@@ -20,10 +20,8 @@ use super::super::error::{Error, Result};
 use super::super::font::measure_text_width_family;
 use super::super::theme::get_theme;
 use super::MermaidChart;
-use super::draw::{
-    EdgeMarker, build_smooth_edge_path, clip_point_to_rect, draw_edge_label, draw_edge_marker,
-};
-use super::layout::{LayeredEdgeInput, LayeredGraph, LayeredNodeInput, sugiyama};
+use super::draw::{EdgeMarker, build_routed_path, draw_edge_label, draw_edge_marker};
+use super::layout::{EdgeRouting, LayeredEdgeInput, LayeredGraph, LayeredNodeInput, sugiyama};
 use super::preprocess::{Direction, SourceLine};
 use super::style::{EDGE_STROKE_WIDTH, NODE_STROKE_WIDTH};
 use super::style::{
@@ -515,6 +513,7 @@ pub(crate) fn render(
                 height: h,
                 subgraph: None,
                 attach_to: None,
+                center_port: false,
             });
             measured.push(MeasuredEntity {
                 title_ft,
@@ -560,6 +559,7 @@ pub(crate) fn render(
             height: h,
             subgraph: None,
             attach_to: None,
+            center_port: false,
         });
         measured.push(MeasuredEntity {
             title_ft,
@@ -579,6 +579,7 @@ pub(crate) fn render(
             to: r.to,
             has_label: r.label.is_some(),
             min_len: 1,
+            hidden: false,
         })
         .collect();
 
@@ -588,6 +589,7 @@ pub(crate) fn render(
     );
     let layout = sugiyama::layout(&LayeredGraph {
         direction: er.direction,
+        routing: EdgeRouting::Orthogonal,
         rank_sep_extra: if is_horizontal { 48.0 } else { 24.0 },
         node_sep_extra: if is_horizontal { 24.0 } else { 0.0 },
         nodes: layout_nodes,
@@ -657,22 +659,9 @@ pub(crate) fn render(
                 super::super::util::Point::from((p.cx + dx, loop_y)),
                 super::super::util::Point::from((p.cx + dx, bottom)),
             ];
-        } else {
-            let n_pts = pts.len();
-            let fp = layout.nodes[r.from];
-            let tp = layout.nodes[r.to];
-            pts[0] =
-                clip_point_to_rect(fp.cx, fp.cy, measured[r.from].w, measured[r.from].h, pts[1]);
-            pts[n_pts - 1] = clip_point_to_rect(
-                tp.cx,
-                tp.cy,
-                measured[r.to].w,
-                measured[r.to].h,
-                pts[n_pts - 2],
-            );
         }
 
-        let (d, mid, start_dir, end_dir) = build_smooth_edge_path(&pts);
+        let (d, mid, start_dir, end_dir) = build_routed_path(&pts, EdgeRouting::Orthogonal);
         cc.raw_path(RawPath {
             d,
             fill: None,

@@ -21,11 +21,12 @@ use super::super::font::measure_text_width_family;
 use super::super::theme::get_theme;
 use super::super::util::Point;
 use super::draw::{
-    EdgeMarker, build_smooth_edge_path, clip_point_to_rect, draw_cardinality_label,
-    draw_edge_label, draw_edge_marker, draw_note_box,
+    EdgeEnd, EdgeMarker, NodeShape, attach_edge_ends, build_routed_path, clip_point_to_rect,
+    draw_cardinality_label, draw_edge_label, draw_edge_marker, draw_note_box,
 };
 use super::layout::{
-    LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, NoteSide, sugiyama,
+    EdgeRouting, LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, NoteSide,
+    sugiyama,
 };
 use super::preprocess::{Direction, SourceLine};
 use super::style::{EDGE_STROKE_WIDTH, NODE_STROKE_WIDTH, SUBGRAPH_RADIUS, SUBGRAPH_STROKE_WIDTH};
@@ -833,6 +834,7 @@ pub(crate) fn render(
                 height: 20.0,
                 subgraph: n.subgraph,
                 attach_to: None,
+                center_port: true,
             });
             measured.push(MeasuredClass {
                 is_anchor: true,
@@ -859,6 +861,7 @@ pub(crate) fn render(
                 height: h,
                 subgraph: n.subgraph,
                 attach_to: n.attach_to,
+                center_port: false,
             });
             measured.push(MeasuredClass {
                 is_anchor: false,
@@ -914,6 +917,7 @@ pub(crate) fn render(
             height: h,
             subgraph: n.subgraph,
             attach_to: None,
+            center_port: false,
         });
         measured.push(MeasuredClass {
             is_anchor: false,
@@ -948,11 +952,13 @@ pub(crate) fn render(
             to: r.to,
             has_label: r.label.is_some() || r.card_left.is_some() || r.card_right.is_some(),
             min_len: 1,
+            hidden: false,
         })
         .collect();
 
     let layout = sugiyama::layout(&LayeredGraph {
         direction: cd.direction,
+        routing: EdgeRouting::Orthogonal,
         rank_sep_extra: 32.0,
         node_sep_extra: 0.0,
         nodes: layout_nodes,
@@ -1077,21 +1083,25 @@ pub(crate) fn render(
         }
         let mut pts = routed.waypoints.clone();
         if !routed.self_loop {
-            let n_pts = pts.len();
-            let fp = layout.nodes[r.from];
-            let tp = layout.nodes[r.to];
-            pts[0] =
-                clip_point_to_rect(fp.cx, fp.cy, measured[r.from].w, measured[r.from].h, pts[1]);
-            pts[n_pts - 1] = clip_point_to_rect(
-                tp.cx,
-                tp.cy,
-                measured[r.to].w,
-                measured[r.to].h,
-                pts[n_pts - 2],
+            let end_of = |u: usize| -> EdgeEnd {
+                let p = layout.nodes[u];
+                EdgeEnd::Shape {
+                    shape: NodeShape::Rect,
+                    cx: p.cx,
+                    cy: p.cy,
+                    w: measured[u].w,
+                    h: measured[u].h,
+                }
+            };
+            attach_edge_ends(
+                &mut pts,
+                EdgeRouting::Orthogonal,
+                end_of(r.from),
+                end_of(r.to),
             );
         }
 
-        let (d, mid, start_dir, end_dir) = build_smooth_edge_path(&pts);
+        let (d, mid, start_dir, end_dir) = build_routed_path(&pts, EdgeRouting::Orthogonal);
         cc.raw_path(RawPath {
             d,
             fill: None,

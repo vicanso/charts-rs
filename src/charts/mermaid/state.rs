@@ -20,11 +20,12 @@ use super::super::error::{Error, Result};
 use super::super::theme::get_theme;
 use super::super::util::Point;
 use super::draw::{
-    EdgeMarker, NodeShape, build_smooth_edge_path, clip_point_to_rect, clip_point_to_shape,
-    draw_edge_label, draw_edge_marker, draw_node, draw_note_box,
+    EdgeEnd, EdgeMarker, NodeShape, attach_edge_ends, build_routed_path, clip_point_to_rect,
+    clip_point_to_shape, draw_edge_label, draw_edge_marker, draw_node, draw_note_box,
 };
 use super::layout::{
-    LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, NoteSide, sugiyama,
+    EdgeRouting, LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, NoteSide,
+    sugiyama,
 };
 use super::preprocess::{Direction, SourceLine};
 use super::style::{EDGE_STROKE_WIDTH, NODE_STROKE_WIDTH, SUBGRAPH_RADIUS, SUBGRAPH_STROKE_WIDTH};
@@ -911,6 +912,11 @@ pub(crate) fn render(
             height: h,
             subgraph: n.subgraph,
             attach_to: n.attach_to,
+            center_port: is_anchor
+                || matches!(
+                    n.kind,
+                    StateKind::Start | StateKind::End | StateKind::Choice
+                ),
         });
         measured.push(MeasuredState {
             title: note_ft,
@@ -1014,6 +1020,7 @@ pub(crate) fn render(
             to: primary_to,
             has_label: e.label.as_ref().is_some_and(|l| !l.is_empty()),
             min_len: 1,
+            hidden: false,
         });
         edge_layout_slot.push(slot);
 
@@ -1028,6 +1035,7 @@ pub(crate) fn render(
                     to: t,
                     has_label: false,
                     min_len: 1,
+                    hidden: true,
                 });
             }
         }
@@ -1035,6 +1043,7 @@ pub(crate) fn render(
 
     let layout = sugiyama::layout(&LayeredGraph {
         direction: st.direction,
+        routing: EdgeRouting::Orthogonal,
         rank_sep_extra: 0.0,
         node_sep_extra: 0.0,
         nodes: layout_nodes,
@@ -1228,58 +1237,38 @@ pub(crate) fn render(
         }
         let mut pts = routed.waypoints.clone();
         if !routed.self_loop {
-            let n_pts = pts.len();
-            let first_target = pts[1];
-            pts[0] = match e.from {
-                StateEndpoint::Node(u) => {
-                    let p = layout.nodes[u];
-                    clip_point_to_shape(
-                        node_shape_for_state(st.nodes[u].kind),
-                        p.cx,
-                        p.cy,
-                        measured[u].w,
-                        measured[u].h,
-                        first_target,
-                    )
-                }
-                StateEndpoint::Subgraph(sg) => {
-                    let b = layout.subgraphs[sg];
-                    clip_point_to_rect(
-                        b.x + b.width * 0.5,
-                        b.y + b.height * 0.5,
-                        b.width,
-                        b.height,
-                        first_target,
-                    )
+            let end_of = |ep: &StateEndpoint| -> EdgeEnd {
+                match *ep {
+                    StateEndpoint::Node(u) => {
+                        let p = layout.nodes[u];
+                        EdgeEnd::Shape {
+                            shape: node_shape_for_state(st.nodes[u].kind),
+                            cx: p.cx,
+                            cy: p.cy,
+                            w: measured[u].w,
+                            h: measured[u].h,
+                        }
+                    }
+                    StateEndpoint::Subgraph(sg) => {
+                        let b = layout.subgraphs[sg];
+                        EdgeEnd::Box {
+                            x: b.x,
+                            y: b.y,
+                            w: b.width,
+                            h: b.height,
+                        }
+                    }
                 }
             };
-            let last_target = pts[n_pts - 2];
-            pts[n_pts - 1] = match e.to {
-                StateEndpoint::Node(v) => {
-                    let p = layout.nodes[v];
-                    clip_point_to_shape(
-                        node_shape_for_state(st.nodes[v].kind),
-                        p.cx,
-                        p.cy,
-                        measured[v].w,
-                        measured[v].h,
-                        last_target,
-                    )
-                }
-                StateEndpoint::Subgraph(sg) => {
-                    let b = layout.subgraphs[sg];
-                    clip_point_to_rect(
-                        b.x + b.width * 0.5,
-                        b.y + b.height * 0.5,
-                        b.width,
-                        b.height,
-                        last_target,
-                    )
-                }
-            };
+            attach_edge_ends(
+                &mut pts,
+                EdgeRouting::Orthogonal,
+                end_of(&e.from),
+                end_of(&e.to),
+            );
         }
 
-        let (d, mid, _, end_dir) = build_smooth_edge_path(&pts);
+        let (d, mid, _, end_dir) = build_routed_path(&pts, EdgeRouting::Orthogonal);
         cc.raw_path(super::super::component::RawPath {
             d,
             fill: None,

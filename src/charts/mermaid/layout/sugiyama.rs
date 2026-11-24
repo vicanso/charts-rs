@@ -17,7 +17,8 @@ use std::collections::{HashMap, VecDeque};
 
 use super::super::super::util::Point;
 use super::{
-    LayeredGraph, LayeredLayout, LayoutDirection, NoteSide, PositionedNode, RoutedEdge, SubgraphBox,
+    EdgeRouting, LayeredGraph, LayeredLayout, LayoutDirection, NoteSide, PositionedNode,
+    RoutedEdge, SubgraphBox,
 };
 
 const CANVAS_PAD: f32 = 24.0;
@@ -1024,97 +1025,113 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
         })
         .collect();
 
-    // Group parallel edges between the same unordered node pair so they curve apart.
-    let mut pair_groups: HashMap<(usize, usize), Vec<usize>> = HashMap::new();
-    for (idx, e) in graph.edges.iter().enumerate() {
-        if e.from != e.to && e.from < n && e.to < n {
-            let key = (e.from.min(e.to), e.from.max(e.to));
-            pair_groups.entry(key).or_default().push(idx);
-        }
-    }
-
-    let mut dag_by_orig: HashMap<usize, usize> = HashMap::new();
-    for (slot, d) in dag_edges.iter().enumerate() {
-        dag_by_orig.insert(d.orig_idx, slot);
-    }
-
-    let mut routed_edges = Vec::with_capacity(graph.edges.len());
-    for (idx, e) in graph.edges.iter().enumerate() {
-        if e.from == e.to && e.from < n {
-            let center = nodes[e.from];
-            let node = &graph.nodes[e.from];
-            let loop_dx = node.width * 0.5 + 36.0;
-            let loop_dy = (node.height * 0.4).max(18.0);
-            let waypoints = vec![
-                Point::from((center.cx + node.width * 0.3, center.cy - node.height * 0.5)),
-                Point::from((center.cx + loop_dx, center.cy - loop_dy)),
-                Point::from((center.cx + loop_dx, center.cy + loop_dy)),
-                Point::from((center.cx + node.width * 0.3, center.cy + node.height * 0.5)),
-            ];
-            routed_edges.push(RoutedEdge {
-                waypoints,
-                self_loop: true,
-            });
-            continue;
-        }
-
-        let Some(&slot) = dag_by_orig.get(&idx) else {
-            routed_edges.push(RoutedEdge {
-                waypoints: vec![],
-                self_loop: false,
-            });
-            continue;
-        };
-
-        let mut pts: Vec<Point> = edge_chains[slot]
-            .iter()
-            .map(|&item_id| Point::from(screen_pos[item_id]))
-            .collect();
-        if dag_edges[slot].reversed {
-            pts.reverse();
-        }
-
-        // Bow parallel edges or back-edges apart using a canonical normal
-        // derived from `(min(u, v), max(u, v))` so opposite-direction edges
-        // (e.g. `A -> B` and `B -> A`) bow to opposite sides rather than
-        // cancelling signs and overlapping.
-        let key = (e.from.min(e.to), e.from.max(e.to));
-        let group = &pair_groups[&key];
-        if group.len() > 1
-            && let Some(pos_in_group) = group.iter().position(|&ei| ei == idx)
-        {
-            let offset_idx = pos_in_group as f32 - (group.len() as f32 - 1.0) * 0.5;
-            if offset_idx.abs() > 1e-3 && pts.len() >= 2 {
-                let first = pts[0];
-                let last = *pts.last().unwrap();
-                let canon_start = nodes[key.0];
-                let canon_end = nodes[key.1];
-                let dx = canon_end.cx - canon_start.cx;
-                let dy = canon_end.cy - canon_start.cy;
-                let len = dx.hypot(dy).max(1.0);
-                let (nx, ny) = (-dy / len, dx / len);
-                let bow = offset_idx * 26.0;
-                if pts.len() == 2 {
-                    let mid = Point::from((
-                        (first.x + last.x) * 0.5 + nx * bow,
-                        (first.y + last.y) * 0.5 + ny * bow,
-                    ));
-                    pts.insert(1, mid);
-                } else {
-                    let n_pts = pts.len();
-                    for p in &mut pts[1..n_pts - 1] {
-                        p.x += nx * bow;
-                        p.y += ny * bow;
-                    }
-                }
+    let routed_edges = if graph.routing == EdgeRouting::Polyline {
+        // Group parallel edges between the same unordered node pair so they curve apart.
+        let mut pair_groups: HashMap<(usize, usize), Vec<usize>> = HashMap::new();
+        for (idx, e) in graph.edges.iter().enumerate() {
+            if e.from != e.to && e.from < n && e.to < n {
+                let key = (e.from.min(e.to), e.from.max(e.to));
+                pair_groups.entry(key).or_default().push(idx);
             }
         }
 
-        routed_edges.push(RoutedEdge {
-            waypoints: pts,
-            self_loop: false,
-        });
-    }
+        let mut dag_by_orig: HashMap<usize, usize> = HashMap::new();
+        for (slot, d) in dag_edges.iter().enumerate() {
+            dag_by_orig.insert(d.orig_idx, slot);
+        }
+
+        let mut routed_edges = Vec::with_capacity(graph.edges.len());
+        for (idx, e) in graph.edges.iter().enumerate() {
+            if e.from == e.to && e.from < n {
+                let center = nodes[e.from];
+                let node = &graph.nodes[e.from];
+                let loop_dx = node.width * 0.5 + 36.0;
+                let loop_dy = (node.height * 0.4).max(18.0);
+                let waypoints = vec![
+                    Point::from((center.cx + node.width * 0.3, center.cy - node.height * 0.5)),
+                    Point::from((center.cx + loop_dx, center.cy - loop_dy)),
+                    Point::from((center.cx + loop_dx, center.cy + loop_dy)),
+                    Point::from((center.cx + node.width * 0.3, center.cy + node.height * 0.5)),
+                ];
+                routed_edges.push(RoutedEdge {
+                    waypoints,
+                    self_loop: true,
+                });
+                continue;
+            }
+
+            let Some(&slot) = dag_by_orig.get(&idx) else {
+                routed_edges.push(RoutedEdge {
+                    waypoints: vec![],
+                    self_loop: false,
+                });
+                continue;
+            };
+
+            let mut pts: Vec<Point> = edge_chains[slot]
+                .iter()
+                .map(|&item_id| Point::from(screen_pos[item_id]))
+                .collect();
+            if dag_edges[slot].reversed {
+                pts.reverse();
+            }
+
+            // Bow parallel edges or back-edges apart using a canonical normal
+            // derived from `(min(u, v), max(u, v))` so opposite-direction edges
+            // (e.g. `A -> B` and `B -> A`) bow to opposite sides rather than
+            // cancelling signs and overlapping.
+            let key = (e.from.min(e.to), e.from.max(e.to));
+            let group = &pair_groups[&key];
+            if group.len() > 1
+                && let Some(pos_in_group) = group.iter().position(|&ei| ei == idx)
+            {
+                let offset_idx = pos_in_group as f32 - (group.len() as f32 - 1.0) * 0.5;
+                if offset_idx.abs() > 1e-3 && pts.len() >= 2 {
+                    let first = pts[0];
+                    let last = *pts.last().unwrap();
+                    let canon_start = nodes[key.0];
+                    let canon_end = nodes[key.1];
+                    let dx = canon_end.cx - canon_start.cx;
+                    let dy = canon_end.cy - canon_start.cy;
+                    let len = dx.hypot(dy).max(1.0);
+                    let (nx, ny) = (-dy / len, dx / len);
+                    let bow = offset_idx * 26.0;
+                    if pts.len() == 2 {
+                        let mid = Point::from((
+                            (first.x + last.x) * 0.5 + nx * bow,
+                            (first.y + last.y) * 0.5 + ny * bow,
+                        ));
+                        pts.insert(1, mid);
+                    } else {
+                        let n_pts = pts.len();
+                        for p in &mut pts[1..n_pts - 1] {
+                            p.x += nx * bow;
+                            p.y += ny * bow;
+                        }
+                    }
+                }
+            }
+
+            routed_edges.push(RoutedEdge {
+                waypoints: pts,
+                self_loop: false,
+            });
+        }
+        routed_edges
+    } else {
+        route_with_ports(&PortRouteInput {
+            graph,
+            dag_edges: &dag_edges,
+            edge_chains: &edge_chains,
+            items: &items,
+            item_rank: &item_rank,
+            real_to_item: &real_to_item,
+            screen_pos: &screen_pos,
+            rank_y: &rank_y,
+            rank_heights: &rank_heights,
+            shift: (shift_x, shift_y),
+        })
+    };
 
     let total_w = ((global_max_x - global_min_x) + CANVAS_PAD * 2.0 + self_loop_extra).max(60.0);
     let total_h = ((global_max_y - global_min_y) + CANVAS_PAD * 2.0).max(60.0);
@@ -1128,17 +1145,418 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
     }
 }
 
+const PORT_GAP: f32 = 14.0;
+const TRACK_CLEARANCE: f32 = 6.0;
+const ORTHO_LOOP_OUT: f32 = 28.0;
+
+/// Inputs for port-based (orthogonal / spline) edge routing, all expressed
+/// in final (shifted) screen coordinates plus the canonical rank geometry.
+struct PortRouteInput<'a> {
+    graph: &'a LayeredGraph,
+    dag_edges: &'a [DagEdge],
+    edge_chains: &'a [Vec<usize>],
+    items: &'a [RankItem],
+    item_rank: &'a [usize],
+    real_to_item: &'a [usize],
+    screen_pos: &'a [(f32, f32)],
+    rank_y: &'a [f32],
+    rank_heights: &'a [f32],
+    shift: (f32, f32),
+}
+
+/// Removes duplicate and collinear interior points from an axis-aligned polyline.
+fn simplify_polyline(pts: &mut Vec<Point>) {
+    let mut out: Vec<Point> = Vec::with_capacity(pts.len());
+    for &p in pts.iter() {
+        if let Some(last) = out.last()
+            && (last.x - p.x).abs() < 0.01
+            && (last.y - p.y).abs() < 0.01
+        {
+            continue;
+        }
+        while out.len() >= 2 {
+            let a = out[out.len() - 2];
+            let b = out[out.len() - 1];
+            let same_x = (a.x - b.x).abs() < 0.01 && (b.x - p.x).abs() < 0.01;
+            let same_y = (a.y - b.y).abs() < 0.01 && (b.y - p.y).abs() < 0.01;
+            if same_x || same_y {
+                out.pop();
+            } else {
+                break;
+            }
+        }
+        out.push(p);
+    }
+    *pts = out;
+}
+
+/// Routes every edge through side ports: edges leave a node through the side
+/// facing the layout flow and enter through the opposite side, spread evenly
+/// along flat sides. In [`EdgeRouting::Orthogonal`] mode, cross-axis jogs run
+/// on horizontal tracks inside the gap between two ranks; overlapping jogs in
+/// the same gap are assigned distinct tracks.
+fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
+    let g = inp.graph;
+    let n = g.nodes.len();
+    let dir = g.direction;
+    let is_horizontal = matches!(dir, LayoutDirection::LeftRight | LayoutDirection::RightLeft);
+    let orthogonal = g.routing == EdgeRouting::Orthogonal;
+    let (shx, shy) = inp.shift;
+
+    let to_canon = |(sx, sy): (f32, f32)| -> (f32, f32) {
+        let (x, y) = (sx - shx, sy - shy);
+        match dir {
+            LayoutDirection::TopBottom => (x, y),
+            LayoutDirection::BottomTop => (x, -y),
+            LayoutDirection::LeftRight => (y, x),
+            LayoutDirection::RightLeft => (y, -x),
+        }
+    };
+    let to_screen = |c: f32, m: f32| -> Point {
+        let (x, y) = match dir {
+            LayoutDirection::TopBottom => (c, m),
+            LayoutDirection::BottomTop => (c, -m),
+            LayoutDirection::LeftRight => (m, c),
+            LayoutDirection::RightLeft => (-m, c),
+        };
+        Point::from((x + shx, y + shy))
+    };
+    let item_c = |id: usize| -> f32 { to_canon(inp.screen_pos[id]).0 };
+    let item_m = |id: usize| -> f32 { inp.rank_y[inp.item_rank[id]] };
+    // (cross half-extent, main half-extent) of an item.
+    let item_half = |id: usize| -> (f32, f32) {
+        match inp.items[id] {
+            RankItem::Real(u) => {
+                let nd = &g.nodes[u];
+                if is_horizontal {
+                    (nd.height * 0.5, nd.width * 0.5)
+                } else {
+                    (nd.width * 0.5, nd.height * 0.5)
+                }
+            }
+            RankItem::Dummy(_) => (0.0, 0.0),
+        }
+    };
+    let port_range = |u: usize| -> f32 {
+        if g.nodes[u].center_port {
+            return 0.0;
+        }
+        let hc = item_half(inp.real_to_item[u]).0;
+        (hc - (hc * 0.35).min(10.0)).max(0.0)
+    };
+    let is_hidden = |slot: usize| -> bool {
+        g.edges
+            .get(inp.dag_edges[slot].orig_idx)
+            .is_none_or(|e| e.hidden)
+    };
+
+    let slots = inp.dag_edges.len();
+    let mut out_lists: Vec<Vec<usize>> = vec![Vec::new(); n];
+    let mut in_lists: Vec<Vec<usize>> = vec![Vec::new(); n];
+    for (slot, d) in inp.dag_edges.iter().enumerate() {
+        if is_hidden(slot) || inp.edge_chains[slot].len() < 2 {
+            continue;
+        }
+        out_lists[d.src].push(slot);
+        in_lists[d.dst].push(slot);
+    }
+    let sort_key = |slot: usize, outgoing: bool| -> (f32, usize) {
+        let ch = &inp.edge_chains[slot];
+        let partner = if outgoing { ch[1] } else { ch[ch.len() - 2] };
+        (item_c(partner), slot)
+    };
+    for list in &mut out_lists {
+        list.sort_by(|&a, &b| {
+            let (ka, kb) = (sort_key(a, true), sort_key(b, true));
+            ka.0.total_cmp(&kb.0).then(ka.1.cmp(&kb.1))
+        });
+    }
+    for list in &mut in_lists {
+        list.sort_by(|&a, &b| {
+            let (ka, kb) = (sort_key(a, false), sort_key(b, false));
+            ka.0.total_cmp(&kb.0).then(ka.1.cmp(&kb.1))
+        });
+    }
+
+    // Pass 1: fixed ports (center-only nodes and multi-edge sides).
+    let mut out_c: Vec<Option<f32>> = vec![None; slots];
+    let mut in_c: Vec<Option<f32>> = vec![None; slots];
+    for u in 0..n {
+        let c = item_c(inp.real_to_item[u]);
+        let range = port_range(u);
+        for (list, ports) in [(&out_lists[u], &mut out_c), (&in_lists[u], &mut in_c)] {
+            let k = list.len();
+            if k == 0 {
+                continue;
+            }
+            if g.nodes[u].center_port || range <= 0.0 {
+                for &s in list {
+                    ports[s] = Some(c);
+                }
+            } else if k > 1 {
+                let step = (2.0 * range / (k as f32 - 1.0)).min(PORT_GAP);
+                let mid = (k as f32 - 1.0) * 0.5;
+                for (i, &s) in list.iter().enumerate() {
+                    ports[s] = Some(c + (i as f32 - mid) * step);
+                }
+            }
+        }
+    }
+
+    // Pass 2: single-edge sides align with their partner when possible so
+    // adjacent nodes connect with a straight line instead of a jog.
+    for slot in 0..slots {
+        if is_hidden(slot) || inp.edge_chains[slot].len() < 2 {
+            continue;
+        }
+        let ch = &inp.edge_chains[slot];
+        let d = inp.dag_edges[slot];
+        let (u, v) = (d.src, d.dst);
+        let cu = item_c(ch[0]);
+        let cv = item_c(ch[ch.len() - 1]);
+        let (ru, rv) = (port_range(u), port_range(v));
+        let fit = |own_c: f32, range: f32, p: f32| -> f32 {
+            if (p - own_c).abs() <= range { p } else { own_c }
+        };
+        if ch.len() > 2 {
+            if out_c[slot].is_none() {
+                out_c[slot] = Some(fit(cu, ru, item_c(ch[1])));
+            }
+            if in_c[slot].is_none() {
+                in_c[slot] = Some(fit(cv, rv, item_c(ch[ch.len() - 2])));
+            }
+            continue;
+        }
+        match (out_c[slot], in_c[slot]) {
+            (Some(_), Some(_)) => {}
+            (Some(p), None) => in_c[slot] = Some(fit(cv, rv, p)),
+            (None, Some(p)) => out_c[slot] = Some(fit(cu, ru, p)),
+            (None, None) => {
+                let lo = (cu - ru).max(cv - rv);
+                let hi = (cu + ru).min(cv + rv);
+                if lo <= hi {
+                    let p = (lo + hi) * 0.5;
+                    out_c[slot] = Some(p);
+                    in_c[slot] = Some(p);
+                } else {
+                    out_c[slot] = Some(cu);
+                    in_c[slot] = Some(cv);
+                }
+            }
+        }
+    }
+
+    // Anchors per chain: (cross, main_at_exit, main_at_entry).
+    let anchors_of = |slot: usize| -> Vec<(f32, f32, f32)> {
+        let ch = &inp.edge_chains[slot];
+        let last = ch.len() - 1;
+        ch.iter()
+            .enumerate()
+            .map(|(i, &id)| {
+                let m = item_m(id);
+                let hm = item_half(id).1;
+                let c = if i == 0 {
+                    out_c[slot].unwrap_or_else(|| item_c(id))
+                } else if i == last {
+                    in_c[slot].unwrap_or_else(|| item_c(id))
+                } else {
+                    item_c(id)
+                };
+                (c, m + hm, m - hm)
+            })
+            .collect()
+    };
+    let gap_bounds = |r: usize| -> (f32, f32) {
+        let top = inp.rank_y[r] + inp.rank_heights[r] * 0.5;
+        let bottom = inp
+            .rank_y
+            .get(r + 1)
+            .map(|&y| y - inp.rank_heights[r + 1] * 0.5)
+            .unwrap_or(top + BASE_RANK_SEP);
+        (top, bottom.max(top + 1.0))
+    };
+
+    // Collect jogs and assign tracks per inter-rank gap.
+    let mut track_y: HashMap<(usize, usize), f32> = HashMap::new();
+    if orthogonal {
+        // (gap rank, from_c, to_c, slot, segment index)
+        let mut jogs: Vec<(usize, f32, f32, usize, usize)> = Vec::new();
+        for slot in 0..slots {
+            if is_hidden(slot) || inp.edge_chains[slot].len() < 2 {
+                continue;
+            }
+            let anchors = anchors_of(slot);
+            let ch = &inp.edge_chains[slot];
+            for i in 0..anchors.len() - 1 {
+                let (a, b) = (anchors[i].0, anchors[i + 1].0);
+                if (a - b).abs() > 0.5 {
+                    jogs.push((inp.item_rank[ch[i]], a, b, slot, i));
+                }
+            }
+        }
+        // Rightward jogs starting further right take upper tracks; leftward
+        // jogs starting further left take upper tracks. This ordering avoids
+        // crossings between same-direction jogs sharing a gap.
+        jogs.sort_by(|x, y| {
+            let x_right = x.2 > x.1;
+            let y_right = y.2 > y.1;
+            x.0.cmp(&y.0)
+                .then(y_right.cmp(&x_right))
+                .then_with(|| {
+                    if x_right {
+                        y.1.total_cmp(&x.1)
+                    } else {
+                        x.1.total_cmp(&y.1)
+                    }
+                })
+                .then(x.3.cmp(&y.3))
+                .then(x.4.cmp(&y.4))
+        });
+        let mut idx = 0;
+        while idx < jogs.len() {
+            let r = jogs[idx].0;
+            let mut end = idx;
+            while end < jogs.len() && jogs[end].0 == r {
+                end += 1;
+            }
+            let mut tracks: Vec<Vec<(f32, f32)>> = Vec::new();
+            let mut assigned: Vec<usize> = Vec::with_capacity(end - idx);
+            for j in &jogs[idx..end] {
+                let lo = j.1.min(j.2) - TRACK_CLEARANCE;
+                let hi = j.1.max(j.2) + TRACK_CLEARANCE;
+                let t = tracks
+                    .iter()
+                    .position(|tr| tr.iter().all(|&(a, b)| hi < a || lo > b))
+                    .unwrap_or_else(|| {
+                        tracks.push(Vec::new());
+                        tracks.len() - 1
+                    });
+                tracks[t].push((lo, hi));
+                assigned.push(t);
+            }
+            let (top, bottom) = gap_bounds(r);
+            let count = tracks.len() as f32;
+            for (j, &t) in jogs[idx..end].iter().zip(&assigned) {
+                let y = top + (bottom - top) * (t as f32 + 1.0) / (count + 1.0);
+                track_y.insert((j.3, j.4), y);
+            }
+            idx = end;
+        }
+    }
+
+    let mut chain_points: Vec<Vec<Point>> = vec![Vec::new(); slots];
+    for slot in 0..slots {
+        let ch = &inp.edge_chains[slot];
+        if ch.len() < 2 {
+            continue;
+        }
+        let mut pts: Vec<Point> = if is_hidden(slot) {
+            ch.iter()
+                .map(|&id| Point::from(inp.screen_pos[id]))
+                .collect()
+        } else {
+            let anchors = anchors_of(slot);
+            let last = anchors.len() - 1;
+            let mut canon: Vec<(f32, f32)> = Vec::with_capacity(anchors.len() * 3);
+            canon.push((anchors[0].0, anchors[0].1));
+            if orthogonal {
+                for i in 0..last {
+                    let (a, b) = (anchors[i], anchors[i + 1]);
+                    if let Some(&y) = track_y.get(&(slot, i)) {
+                        canon.push((a.0, y));
+                        canon.push((b.0, y));
+                    }
+                    canon.push((b.0, b.2));
+                    if i + 1 < last {
+                        canon.push((b.0, b.1));
+                    }
+                }
+            } else {
+                let (top0, bottom0) = gap_bounds(inp.item_rank[ch[0]]);
+                let ext0 = ((bottom0 - top0) * 0.35).min(16.0) + (top0 - anchors[0].1).max(0.0);
+                canon.push((anchors[0].0, anchors[0].1 + ext0));
+                for a in &anchors[1..last] {
+                    canon.push((a.0, a.1));
+                }
+                let (top1, bottom1) = gap_bounds(inp.item_rank[ch[last - 1]]);
+                let ext1 =
+                    ((bottom1 - top1) * 0.35).min(16.0) + (anchors[last].2 - bottom1).max(0.0);
+                canon.push((anchors[last].0, anchors[last].2 - ext1));
+                canon.push((anchors[last].0, anchors[last].2));
+            }
+            let mut pts: Vec<Point> = canon.iter().map(|&(c, m)| to_screen(c, m)).collect();
+            if orthogonal {
+                simplify_polyline(&mut pts);
+            }
+            pts
+        };
+        if inp.dag_edges[slot].reversed {
+            pts.reverse();
+        }
+        chain_points[slot] = pts;
+    }
+
+    let mut dag_by_orig: HashMap<usize, usize> = HashMap::new();
+    for (slot, d) in inp.dag_edges.iter().enumerate() {
+        dag_by_orig.insert(d.orig_idx, slot);
+    }
+
+    g.edges
+        .iter()
+        .enumerate()
+        .map(|(idx, e)| {
+            if e.from == e.to && e.from < n {
+                let (cx, cy) = inp.screen_pos[inp.real_to_item[e.from]];
+                let node = &g.nodes[e.from];
+                let waypoints = if orthogonal {
+                    let x0 = cx + node.width * 0.5;
+                    let dy = (node.height * 0.25).clamp(6.0, 14.0);
+                    let x1 = x0 + ORTHO_LOOP_OUT;
+                    vec![
+                        Point::from((x0, cy - dy)),
+                        Point::from((x1, cy - dy)),
+                        Point::from((x1, cy + dy)),
+                        Point::from((x0, cy + dy)),
+                    ]
+                } else {
+                    let loop_dx = node.width * 0.5 + 36.0;
+                    let loop_dy = (node.height * 0.4).max(18.0);
+                    vec![
+                        Point::from((cx + node.width * 0.3, cy - node.height * 0.5)),
+                        Point::from((cx + loop_dx, cy - loop_dy)),
+                        Point::from((cx + loop_dx, cy + loop_dy)),
+                        Point::from((cx + node.width * 0.3, cy + node.height * 0.5)),
+                    ]
+                };
+                return RoutedEdge {
+                    waypoints,
+                    self_loop: true,
+                };
+            }
+            let waypoints = dag_by_orig
+                .get(&idx)
+                .map(|&slot| chain_points[slot].clone())
+                .unwrap_or_default();
+            RoutedEdge {
+                waypoints,
+                self_loop: false,
+            }
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::charts::mermaid::layout::{
-        LayeredEdgeInput, LayeredNodeInput, LayeredSubgraphInput,
+        EdgeRouting, LayeredEdgeInput, LayeredNodeInput, LayeredSubgraphInput,
     };
 
     #[test]
     fn handles_cycles_and_subgraphs_deterministically() {
         let g = LayeredGraph {
             direction: LayoutDirection::TopBottom,
+            routing: EdgeRouting::Orthogonal,
             rank_sep_extra: 0.0,
             node_sep_extra: 0.0,
             nodes: vec![
@@ -1147,18 +1565,21 @@ mod tests {
                     height: 38.0,
                     subgraph: None,
                     attach_to: None,
+                    center_port: false,
                 },
                 LayeredNodeInput {
                     width: 80.0,
                     height: 38.0,
                     subgraph: Some(0),
                     attach_to: None,
+                    center_port: false,
                 },
                 LayeredNodeInput {
                     width: 80.0,
                     height: 38.0,
                     subgraph: Some(0),
                     attach_to: None,
+                    center_port: false,
                 },
             ],
             edges: vec![
@@ -1167,24 +1588,28 @@ mod tests {
                     to: 1,
                     has_label: false,
                     min_len: 1,
+                    hidden: false,
                 },
                 LayeredEdgeInput {
                     from: 1,
                     to: 2,
                     has_label: true,
                     min_len: 1,
+                    hidden: false,
                 },
                 LayeredEdgeInput {
                     from: 2,
                     to: 1,
                     has_label: false,
                     min_len: 1,
+                    hidden: false,
                 },
                 LayeredEdgeInput {
                     from: 0,
                     to: 0,
                     has_label: false,
                     min_len: 1,
+                    hidden: false,
                 },
             ],
             subgraphs: vec![LayeredSubgraphInput {
@@ -1203,5 +1628,100 @@ mod tests {
         assert!(l1.nodes[1].cy < l1.nodes[2].cy);
         assert!(l1.subgraphs[0].visible);
         assert!(l1.edges[3].self_loop);
+    }
+
+    fn fan_graph(direction: LayoutDirection) -> LayeredGraph {
+        let node = |w: f32| LayeredNodeInput {
+            width: w,
+            height: 36.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: false,
+        };
+        let edge = |from: usize, to: usize| LayeredEdgeInput {
+            from,
+            to,
+            has_label: false,
+            min_len: 1,
+            hidden: false,
+        };
+        LayeredGraph {
+            direction,
+            routing: EdgeRouting::Orthogonal,
+            rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
+            nodes: vec![node(120.0), node(70.0), node(70.0), node(70.0), node(90.0)],
+            edges: vec![
+                edge(0, 1),
+                edge(0, 2),
+                edge(0, 3),
+                edge(1, 4),
+                edge(2, 4),
+                edge(3, 4),
+                edge(0, 4),
+                edge(4, 0),
+            ],
+            subgraphs: vec![],
+        }
+    }
+
+    #[test]
+    fn orthogonal_routes_are_axis_aligned_with_disjoint_tracks() {
+        for dir in [
+            LayoutDirection::TopBottom,
+            LayoutDirection::BottomTop,
+            LayoutDirection::LeftRight,
+            LayoutDirection::RightLeft,
+        ] {
+            let l = layout(&fan_graph(dir));
+            let mut horizontal: Vec<(f32, f32, f32)> = Vec::new();
+            let is_h = matches!(dir, LayoutDirection::LeftRight | LayoutDirection::RightLeft);
+            for e in &l.edges {
+                assert!(e.waypoints.len() >= 2);
+                for w in e.waypoints.windows(2) {
+                    let (dx, dy) = ((w[1].x - w[0].x).abs(), (w[1].y - w[0].y).abs());
+                    assert!(dx < 0.01 || dy < 0.01, "{dir:?}: non-orthogonal {w:?}");
+                    // Cross-axis jog segments (perpendicular to the rank axis).
+                    let (along, across) = if is_h { (dx, dy) } else { (dy, dx) };
+                    if along < 0.01 && across > 0.01 {
+                        let (lvl, a, b) = if is_h {
+                            (w[0].x, w[0].y.min(w[1].y), w[0].y.max(w[1].y))
+                        } else {
+                            (w[0].y, w[0].x.min(w[1].x), w[0].x.max(w[1].x))
+                        };
+                        horizontal.push((lvl, a, b));
+                    }
+                }
+            }
+            for (i, s) in horizontal.iter().enumerate() {
+                for t in &horizontal[i + 1..] {
+                    if (s.0 - t.0).abs() < 0.01 {
+                        assert!(
+                            s.2 <= t.1 || t.2 <= s.1,
+                            "{dir:?}: overlapping jogs {s:?} {t:?}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn orthogonal_ports_spread_along_flat_side() {
+        let l = layout(&fan_graph(LayoutDirection::TopBottom));
+        let hub = l.nodes[0];
+        let mut starts: Vec<f32> = [0usize, 1, 2, 6]
+            .iter()
+            .map(|&i| l.edges[i].waypoints[0].x)
+            .collect();
+        starts.sort_by(f32::total_cmp);
+        starts.dedup_by(|a, b| (*a - *b).abs() < 0.5);
+        assert_eq!(starts.len(), 4, "out ports must be distinct: {starts:?}");
+        assert!(starts.iter().all(|x| (x - hub.cx).abs() <= 60.0));
+        // Every out-edge starts on the hub's bottom side.
+        for i in [0usize, 1, 2, 6] {
+            let p = l.edges[i].waypoints[0];
+            assert!((p.y - (hub.cy + 18.0)).abs() < 0.01);
+        }
     }
 }

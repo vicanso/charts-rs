@@ -18,11 +18,11 @@ use super::super::component::{RawPath, Rect};
 use super::super::error::{Error, Result};
 use super::super::theme::get_theme;
 use super::draw::{
-    EdgeMarker, EdgeStroke, NodeShape, build_edge_path, clip_point_to_rect, clip_point_to_shape,
+    EdgeEnd, EdgeMarker, EdgeStroke, NodeShape, attach_edge_ends, build_routed_path,
     draw_edge_label, draw_edge_marker, draw_node,
 };
 use super::layout::{
-    LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, sugiyama,
+    EdgeRouting, LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, sugiyama,
 };
 use super::preprocess::{Direction, EdgeCurve, MermaidInitConfig, SourceLine};
 use super::style::{
@@ -1328,7 +1328,11 @@ pub(crate) fn render(
         .font_size
         .map(|s| (s - 2.0).max(9.0))
         .unwrap_or(12.0_f32);
-    let edge_curve = init_cfg.flowchart_curve.unwrap_or(EdgeCurve::Smooth);
+    let routing = match init_cfg.flowchart_curve {
+        None | Some(EdgeCurve::Step) => EdgeRouting::Orthogonal,
+        Some(EdgeCurve::Smooth) => EdgeRouting::Spline,
+        Some(EdgeCurve::Linear) => EdgeRouting::Polyline,
+    };
 
     // Measure node labels and subgraph titles.
     let mut node_labels = Vec::with_capacity(fc.nodes.len());
@@ -1352,6 +1356,7 @@ pub(crate) fn render(
             height: h,
             subgraph: n.subgraph,
             attach_to: None,
+            center_port: is_anchor || !shape.spreads_ports(),
         });
     }
 
@@ -1383,6 +1388,7 @@ pub(crate) fn render(
             to,
             has_label: e.label.as_ref().is_some_and(|l| !l.is_empty()),
             min_len: e.min_len,
+            hidden: e.stroke == EdgeStroke::Invisible,
         });
     }
 
@@ -1396,6 +1402,7 @@ pub(crate) fn render(
         .unwrap_or(0.0);
     let layout = sugiyama::layout(&LayeredGraph {
         direction: fc.direction,
+        routing,
         rank_sep_extra,
         node_sep_extra,
         nodes: layout_nodes,
@@ -1544,45 +1551,31 @@ pub(crate) fn render(
 
         let mut pts = routed.waypoints.clone();
         if !routed.self_loop {
-            let n_pts = pts.len();
-            let first_target = pts[1];
-            pts[0] = match e.from {
-                Endpoint::Node(u) => {
-                    let pos = layout.nodes[u];
-                    let (w, h) = node_sizes[u];
-                    let shape = fc.nodes[u].shape.unwrap_or(NodeShape::Rect);
-                    clip_point_to_shape(shape, pos.cx, pos.cy, w, h, first_target)
-                }
-                Endpoint::Subgraph(sg) => {
-                    let b = layout.subgraphs[sg];
-                    clip_point_to_rect(
-                        b.x + b.width * 0.5,
-                        b.y + b.height * 0.5,
-                        b.width,
-                        b.height,
-                        first_target,
-                    )
-                }
-            };
-            let last_target = pts[n_pts - 2];
-            pts[n_pts - 1] = match e.to {
-                Endpoint::Node(v) => {
-                    let pos = layout.nodes[v];
-                    let (w, h) = node_sizes[v];
-                    let shape = fc.nodes[v].shape.unwrap_or(NodeShape::Rect);
-                    clip_point_to_shape(shape, pos.cx, pos.cy, w, h, last_target)
-                }
-                Endpoint::Subgraph(sg) => {
-                    let b = layout.subgraphs[sg];
-                    clip_point_to_rect(
-                        b.x + b.width * 0.5,
-                        b.y + b.height * 0.5,
-                        b.width,
-                        b.height,
-                        last_target,
-                    )
+            let end_of = |ep: &Endpoint| -> EdgeEnd {
+                match *ep {
+                    Endpoint::Node(u) => {
+                        let pos = layout.nodes[u];
+                        let (w, h) = node_sizes[u];
+                        EdgeEnd::Shape {
+                            shape: fc.nodes[u].shape.unwrap_or(NodeShape::Rect),
+                            cx: pos.cx,
+                            cy: pos.cy,
+                            w,
+                            h,
+                        }
+                    }
+                    Endpoint::Subgraph(sg) => {
+                        let b = layout.subgraphs[sg];
+                        EdgeEnd::Box {
+                            x: b.x,
+                            y: b.y,
+                            w: b.width,
+                            h: b.height,
+                        }
+                    }
                 }
             };
+            attach_edge_ends(&mut pts, routing, end_of(&e.from), end_of(&e.to));
         }
 
         let mut style = default_link_style.clone();
@@ -1602,7 +1595,7 @@ pub(crate) fn render(
             .clone()
             .or_else(|| (e.stroke == EdgeStroke::Dotted).then(|| "5,4".to_string()));
 
-        let (d, mid, start_dir, end_dir) = build_edge_path(&pts, edge_curve);
+        let (d, mid, start_dir, end_dir) = build_routed_path(&pts, routing);
         content_canvas.raw_path(RawPath {
             d,
             fill: None,

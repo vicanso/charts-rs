@@ -17,6 +17,7 @@ use super::super::canvas::Canvas;
 use super::super::color::Color;
 use super::super::component::{Circle, Line, Polygon, RawPath, Rect};
 use super::super::util::{Point, format_float, write_float};
+use super::layout::EdgeRouting;
 use super::style::MermaidPalette;
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 
@@ -46,6 +47,17 @@ pub(crate) enum NodeShape {
     SmallCircle,
     FramedCircle,
     TextOnly,
+}
+
+impl NodeShape {
+    /// Whether edges may attach anywhere along the flat sides of this shape
+    /// (otherwise they converge on the side's center point).
+    pub(crate) fn spreads_ports(self) -> bool {
+        matches!(
+            self,
+            NodeShape::Rect | NodeShape::Rounded | NodeShape::Subroutine | NodeShape::TextOnly
+        )
+    }
 }
 
 /// Edge line stroke kind.
@@ -503,20 +515,219 @@ pub(crate) fn draw_node(
     );
 }
 
-/// Converts waypoints into an SVG path (`d`) using the requested [`EdgeCurve`],
-/// returning `(path_d, midpoint, start_out_tangent, end_in_tangent)`.
-pub(crate) fn build_edge_path(
+/// Converts routed waypoints into an SVG path (`d`) for the given routing
+/// style, returning `(path_d, midpoint, start_out_tangent, end_in_tangent)`.
+pub(crate) fn build_routed_path(
     pts: &[Point],
-    curve: super::preprocess::EdgeCurve,
+    routing: EdgeRouting,
 ) -> (String, Point, (f32, f32), (f32, f32)) {
-    match curve {
-        super::preprocess::EdgeCurve::Smooth => build_smooth_edge_path(pts),
-        super::preprocess::EdgeCurve::Linear => build_linear_edge_path(pts),
-        super::preprocess::EdgeCurve::Step => build_step_edge_path(pts),
+    match routing {
+        EdgeRouting::Orthogonal => build_orthogonal_edge_path(pts, ORTHO_CORNER_RADIUS),
+        EdgeRouting::Spline => build_smooth_edge_path(pts),
+        EdgeRouting::Polyline => build_linear_edge_path(pts),
     }
 }
 
-fn build_linear_edge_path(pts: &[Point]) -> (String, Point, (f32, f32), (f32, f32)) {
+const ORTHO_CORNER_RADIUS: f32 = 6.0;
+
+/// Builds an axis-aligned polyline path whose corners are rounded with
+/// quadratic curves of at most `radius` (shrunk on short segments). The
+/// midpoint is measured by arc length.
+pub(crate) fn build_orthogonal_edge_path(
+    pts: &[Point],
+    radius: f32,
+) -> (String, Point, (f32, f32), (f32, f32)) {
+    let n = pts.len();
+    if n < 2 {
+        return (String::new(), Point::default(), (1.0, 0.0), (1.0, 0.0));
+    }
+    let seg_len = |a: Point, b: Point| (b.x - a.x).hypot(b.y - a.y);
+    let mut d = String::new();
+    d.push('M');
+    write_float(&mut d, pts[0].x);
+    d.push(' ');
+    write_float(&mut d, pts[0].y);
+    for i in 1..n - 1 {
+        let (p0, p1, p2) = (pts[i - 1], pts[i], pts[i + 1]);
+        let l_in = seg_len(p0, p1);
+        let l_out = seg_len(p1, p2);
+        let r = radius.min(l_in * 0.5).min(l_out * 0.5);
+        if r < 0.5 || l_in < 1e-3 || l_out < 1e-3 {
+            d.push_str(" L");
+            write_float(&mut d, p1.x);
+            d.push(' ');
+            write_float(&mut d, p1.y);
+            continue;
+        }
+        let a = Point::from((
+            p1.x - (p1.x - p0.x) / l_in * r,
+            p1.y - (p1.y - p0.y) / l_in * r,
+        ));
+        let b = Point::from((
+            p1.x + (p2.x - p1.x) / l_out * r,
+            p1.y + (p2.y - p1.y) / l_out * r,
+        ));
+        d.push_str(" L");
+        write_float(&mut d, a.x);
+        d.push(' ');
+        write_float(&mut d, a.y);
+        d.push_str(" Q");
+        write_float(&mut d, p1.x);
+        d.push(' ');
+        write_float(&mut d, p1.y);
+        d.push(',');
+        write_float(&mut d, b.x);
+        d.push(' ');
+        write_float(&mut d, b.y);
+    }
+    d.push_str(" L");
+    write_float(&mut d, pts[n - 1].x);
+    d.push(' ');
+    write_float(&mut d, pts[n - 1].y);
+
+    let total: f32 = pts.windows(2).map(|w| seg_len(w[0], w[1])).sum();
+    let mut mid = pts[0];
+    let mut acc = 0.0_f32;
+    for w in pts.windows(2) {
+        let l = seg_len(w[0], w[1]);
+        if acc + l >= total * 0.5 && l > 1e-4 {
+            let t = (total * 0.5 - acc) / l;
+            mid = Point::from((
+                w[0].x + (w[1].x - w[0].x) * t,
+                w[0].y + (w[1].y - w[0].y) * t,
+            ));
+            break;
+        }
+        acc += l;
+    }
+    let start_dir = (pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    let end_dir = (pts[n - 1].x - pts[n - 2].x, pts[n - 1].y - pts[n - 2].y);
+    (d, mid, start_dir, end_dir)
+}
+
+/// Geometry an edge endpoint attaches to.
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum EdgeEnd {
+    /// A node of the given shape centered at `(cx, cy)`.
+    Shape {
+        shape: NodeShape,
+        cx: f32,
+        cy: f32,
+        w: f32,
+        h: f32,
+    },
+    /// A subgraph / composite container box.
+    Box { x: f32, y: f32, w: f32, h: f32 },
+}
+
+/// Parametric entry `t` of segment `a -> b` into the rectangle, if `a` lies
+/// outside and the segment reaches the rectangle.
+fn segment_rect_entry(a: Point, b: Point, x: f32, y: f32, w: f32, h: f32) -> Option<f32> {
+    let inside = |p: Point| p.x >= x && p.x <= x + w && p.y >= y && p.y <= y + h;
+    if inside(a) {
+        return None;
+    }
+    let (dx, dy) = (b.x - a.x, b.y - a.y);
+    let mut t0 = 0.0_f32;
+    let mut t1 = 1.0_f32;
+    for (p, q) in [
+        (-dx, a.x - x),
+        (dx, x + w - a.x),
+        (-dy, a.y - y),
+        (dy, y + h - a.y),
+    ] {
+        if p.abs() < 1e-6 {
+            if q < 0.0 {
+                return None;
+            }
+        } else {
+            let r = q / p;
+            if p < 0.0 {
+                t0 = t0.max(r);
+            } else {
+                t1 = t1.min(r);
+            }
+        }
+    }
+    (t0 <= t1).then_some(t0)
+}
+
+/// Truncates `pts` where the polyline first enters the box (target side).
+fn truncate_at_box_entry(pts: &mut Vec<Point>, x: f32, y: f32, w: f32, h: f32) -> bool {
+    for i in 0..pts.len().saturating_sub(1) {
+        let (a, b) = (pts[i], pts[i + 1]);
+        if let Some(t) = segment_rect_entry(a, b, x, y, w, h) {
+            let q = Point::from((a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t));
+            pts.truncate(i + 1);
+            pts.push(q);
+            return true;
+        }
+    }
+    false
+}
+
+/// Snaps routed waypoints onto the endpoint geometry. Legacy polyline routes
+/// (through node centers) are clipped toward the neighbor waypoint; port
+/// routes keep their side ports and only clip non-flat shapes along the port
+/// axis, or truncate where the path crosses a container box border.
+pub(crate) fn attach_edge_ends(
+    pts: &mut Vec<Point>,
+    routing: EdgeRouting,
+    from: EdgeEnd,
+    to: EdgeEnd,
+) {
+    if pts.len() < 2 {
+        return;
+    }
+    let legacy = routing == EdgeRouting::Polyline;
+    let clip_box = |b: EdgeEnd, toward: Point| -> Point {
+        match b {
+            EdgeEnd::Shape {
+                shape,
+                cx,
+                cy,
+                w,
+                h,
+            } => clip_point_to_shape(shape, cx, cy, w, h, toward),
+            EdgeEnd::Box { x, y, w, h } => {
+                clip_point_to_rect(x + w * 0.5, y + h * 0.5, w, h, toward)
+            }
+        }
+    };
+    // Source end.
+    match from {
+        EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports() => {
+            pts[0] = clip_box(from, pts[1]);
+        }
+        EdgeEnd::Box { x, y, w, h } if !legacy => {
+            pts.reverse();
+            if !truncate_at_box_entry(pts, x, y, w, h) {
+                let n = pts.len();
+                pts[n - 1] = clip_box(from, pts[n - 2]);
+            }
+            pts.reverse();
+        }
+        EdgeEnd::Box { .. } => pts[0] = clip_box(from, pts[1]),
+        _ => {}
+    }
+    // Target end.
+    let n = pts.len();
+    match to {
+        EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports() => {
+            pts[n - 1] = clip_box(to, pts[n - 2]);
+        }
+        EdgeEnd::Box { x, y, w, h } if !legacy => {
+            if !truncate_at_box_entry(pts, x, y, w, h) {
+                let n = pts.len();
+                pts[n - 1] = clip_box(to, pts[n - 2]);
+            }
+        }
+        EdgeEnd::Box { .. } => pts[n - 1] = clip_box(to, pts[n - 2]),
+        _ => {}
+    }
+}
+
+pub(crate) fn build_linear_edge_path(pts: &[Point]) -> (String, Point, (f32, f32), (f32, f32)) {
     if pts.len() < 2 {
         return (String::new(), Point::default(), (1.0, 0.0), (1.0, 0.0));
     }
@@ -542,32 +753,6 @@ fn build_linear_edge_path(pts: &[Point]) -> (String, Point, (f32, f32), (f32, f3
     let start_dir = (pts[1].x - pts[0].x, pts[1].y - pts[0].y);
     let end_dir = (pts[n - 1].x - pts[n - 2].x, pts[n - 1].y - pts[n - 2].y);
     (d, mid, start_dir, end_dir)
-}
-
-fn build_step_edge_path(pts: &[Point]) -> (String, Point, (f32, f32), (f32, f32)) {
-    if pts.len() < 2 {
-        return (String::new(), Point::default(), (1.0, 0.0), (1.0, 0.0));
-    }
-    let mut ortho: Vec<Point> = Vec::with_capacity(pts.len() * 3);
-    ortho.push(pts[0]);
-    for w in pts.windows(2) {
-        let a = w[0];
-        let b = w[1];
-        if (a.x - b.x).abs() < 1e-2 || (a.y - b.y).abs() < 1e-2 {
-            ortho.push(b);
-        } else if (b.x - a.x).abs() >= (b.y - a.y).abs() {
-            let mx = (a.x + b.x) * 0.5;
-            ortho.push(Point::from((mx, a.y)));
-            ortho.push(Point::from((mx, b.y)));
-            ortho.push(b);
-        } else {
-            let my = (a.y + b.y) * 0.5;
-            ortho.push(Point::from((a.x, my)));
-            ortho.push(Point::from((b.x, my)));
-            ortho.push(b);
-        }
-    }
-    build_linear_edge_path(&ortho)
 }
 
 /// Converts waypoints into a smooth cubic Bézier SVG path (`d`), returning

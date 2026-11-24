@@ -9,38 +9,38 @@ Enterprise Org Schema
 <line stroke-width="1.5" x1="288" y1="166" x2="300" y2="173.5" stroke="#999999"/>
 <line stroke-width="1.5" x1="288" y1="166" x2="300" y2="158.5" stroke="#999999"/>
 <line stroke-width="1.6" x1="288" y1="159.5" x2="288" y2="172.5" stroke="#999999"/>
-<path d="M351.5 182 C351.5 193,334.5 215,351.5 226 C368.5 237,402.5 237,419.5 226 C436.5 215,419.5 193,419.5 182" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M351.5 182 L351.5 220 Q351.5 226,357.5 226 L413.5 226 Q419.5 226,419.5 220 L419.5 182" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
 <line stroke-width="1.6" x1="350" y1="223" x2="363" y2="223" stroke="#999999"/>
 <line stroke-width="1.6" x1="350" y1="228" x2="363" y2="228" stroke="#999999"/>
 <line stroke-width="1.5" x1="424.5" y1="229" x2="432" y2="217" stroke="#999999"/>
 <line stroke-width="1.5" x1="424.5" y1="229" x2="417" y2="217" stroke="#999999"/>
 <circle cx="424.5" cy="235" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
-<path d="M476 109.7 L603.5 79.8" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.6" x1="488.3" y1="149.7" x2="485.4" y2="137" stroke="#999999"/>
-<circle cx="495.1" cy="141.4" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
-<line stroke-width="1.6" x1="601.2" y1="109.8" x2="604.1" y2="122.5" stroke="#999999"/>
-<circle cx="594.4" cy="118.1" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
-<path d="M476 152.3 L600 181.4" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.5" x1="492.7" y1="190" x2="482.7" y2="180" stroke="#999999"/>
-<line stroke-width="1.5" x1="492.7" y1="190" x2="479.3" y2="194.6" stroke="#999999"/>
-<line stroke-width="1.6" x1="491.2" y1="196.3" x2="494.2" y2="183.7" stroke="#999999"/>
-<line stroke-width="1.5" x1="593.3" y1="213.6" x2="603.3" y2="223.7" stroke="#999999"/>
-<line stroke-width="1.5" x1="593.3" y1="213.6" x2="606.7" y2="209.1" stroke="#999999"/>
-<line stroke-width="1.6" x1="594.8" y1="207.3" x2="591.8" y2="220" stroke="#999999"/>
+<path d="M476 124 L532 124 Q538 124,538 118 L538 69 Q538 63,544 63 L603.5 63" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.6" x1="487" y1="165.5" x2="487" y2="152.5" stroke="#999999"/>
+<circle cx="495.5" cy="159" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
+<line stroke-width="1.6" x1="602.5" y1="91.5" x2="602.5" y2="104.5" stroke="#999999"/>
+<circle cx="594" cy="98" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
+<path d="M476 138 L532 138 Q538 138,538 144 L538 193 Q538 199,544 199 L600 199" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.5" x1="493" y1="173" x2="481" y2="165.5" stroke="#999999"/>
+<line stroke-width="1.5" x1="493" y1="173" x2="481" y2="180.5" stroke="#999999"/>
+<line stroke-width="1.6" x1="493" y1="179.5" x2="493" y2="166.5" stroke="#999999"/>
+<line stroke-width="1.5" x1="593" y1="234" x2="605" y2="241.5" stroke="#999999"/>
+<line stroke-width="1.5" x1="593" y1="234" x2="605" y2="226.5" stroke="#999999"/>
+<line stroke-width="1.6" x1="593" y1="227.5" x2="593" y2="240.5" stroke="#999999"/>
 <rect x="207.5" y="155" width="61" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
 <text font-size="12" x="238" y="166" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 employs
 </text>
-<rect x="357.5" y="258.2" width="66" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="390.5" y="269.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="357.5" y="250" width="66" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="390.5" y="261" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 manages
 </text>
-<rect x="511.2" y="118.8" width="67" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="544.8" y="129.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="509.5" y="115.8" width="67" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="543" y="126.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 sponsors
 </text>
-<rect x="510.5" y="190.8" width="65" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="543" y="201.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="510.5" y="192.5" width="65" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="543" y="203.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 assigned
 </text>
 <rect x="29" y="127" width="147" height="78" rx="5" ry="5" fill="#FFFFFF"/>

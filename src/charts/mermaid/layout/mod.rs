@@ -37,6 +37,10 @@ pub(crate) struct LayeredNodeInput {
     pub(crate) height: f32,
     pub(crate) subgraph: Option<usize>,
     pub(crate) attach_to: Option<(usize, NoteSide)>,
+    /// When `true`, every edge attaches at the center of the node side (for
+    /// diamonds, circles and other shapes without a flat side); otherwise
+    /// edges are spread evenly along the flat side facing the layout flow.
+    pub(crate) center_port: bool,
 }
 
 /// Input directed edge between node indices (or subgraph proxy indices).
@@ -46,6 +50,9 @@ pub(crate) struct LayeredEdgeInput {
     pub(crate) to: usize,
     pub(crate) has_label: bool,
     pub(crate) min_len: usize,
+    /// Layout-only constraint edge that is never drawn (excluded from port
+    /// assignment and channel routing).
+    pub(crate) hidden: bool,
 }
 
 /// Input subgraph container metadata.
@@ -61,11 +68,25 @@ pub(crate) struct LayeredSubgraphInput {
 #[derive(Clone, Debug)]
 pub(crate) struct LayeredGraph {
     pub(crate) direction: LayoutDirection,
+    pub(crate) routing: EdgeRouting,
     pub(crate) rank_sep_extra: f32,
     pub(crate) node_sep_extra: f32,
     pub(crate) nodes: Vec<LayeredNodeInput>,
     pub(crate) edges: Vec<LayeredEdgeInput>,
     pub(crate) subgraphs: Vec<LayeredSubgraphInput>,
+}
+
+/// Edge routing style produced by the layout.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) enum EdgeRouting {
+    /// Axis-aligned polylines leaving / entering nodes through side ports,
+    /// with horizontal channel segments assigned to non-overlapping tracks.
+    #[default]
+    Orthogonal,
+    /// Smooth spline through port stubs and dummy waypoints.
+    Spline,
+    /// Legacy straight polyline through node centers (clipped by renderers).
+    Polyline,
 }
 
 /// Computed center position of a node.

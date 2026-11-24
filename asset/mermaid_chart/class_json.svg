@@ -1,1 +1,113 @@
-<svg height="534" viewBox="0 0 781 534" width="781" xmlns="http://www.w3.org/2000/svg"><path d="m0 0h781v534h-781z" fill="#fff"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="18" font-weight="bold" x="304" y="20">Order Domain Model</text><rect fill="#fbfbfb" height="446" rx="8" stroke="#dedede" width="522" x="230" y="59"/><text dominant-baseline="central" fill="#909090" font-family="Roboto" font-size="13" font-weight="bold" x="240" y="78">Commerce</text><path d="m623 166.5h-18" stroke="#cba34e" stroke-dasharray="4 3" stroke-width="1.2"/><g stroke="#999" stroke-linejoin="round" transform="translate(5 35)"><path d="m301.6 172-145.1 179" fill="none" stroke-dasharray="5 4" stroke-linecap="round" stroke-width="1.2"/><path d="m301.6 172-3.1 14.2-10.1-8.2z" fill="#fff" stroke-width="1.6"/><path d="m549.1 199 42.5 150" fill="none" stroke-linecap="round" stroke-width="1.2"/><path d="m549.1 199 7.4 5.7-3.3 8.7-7.3-5.7z" fill="#999" stroke-width="1.2"/><path d="m460 177.1-267 173.9" fill="none" stroke-dasharray="5 4" stroke-linecap="round" stroke-width="1.2"/><path d="m198.4 340.9-5.4 10.1 11.4-.8" fill="none" stroke-linecap="round" stroke-width="1.6"/></g><rect fill="#fff" height="19" rx="3" width="12" x="567.2" y="244"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="11" text-anchor="middle" x="573.2" y="253.5">1</text><rect fill="#fff" height="19" rx="3" width="26" x="564.6" y="355"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="11" text-anchor="middle" x="577.6" y="364.5">1..*</text><rect fill="#fff" height="22" rx="9" stroke="#e9e9e9" width="80" x="194.1" y="285.5"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" text-anchor="middle" x="234.1" y="296.5">implements</text><rect fill="#fff" height="22" rx="9" stroke="#e9e9e9" width="62" x="544.4" y="298"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" text-anchor="middle" x="575.4" y="309">contains</text><rect fill="#fff" height="22" rx="9" stroke="#e9e9e9" width="41" x="311" y="288"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" text-anchor="middle" x="331.5" y="299">uses</text><rect fill="#f1f4fa" height="81" rx="4" width="183" x="248" y="126"/><rect fill="#e3e7f3" height="51" rx="4" width="183" x="248" y="126"/><path d="m248 173h183v4h-183z" fill="#e3e7f3"/><text dominant-baseline="central" fill="#4b5573" font-family="Roboto" font-size="11.5" text-anchor="middle" x="339.5" y="141">&lt;&lt;interface&gt;&gt;</text><text style="font-size:13.5;font-weight:bold;dominant-baseline:central;text-anchor:middle;font-family:Roboto;fill:#464646" x="339.5" y="160.5">Payable</text><path d="m248 177h183" stroke="#8c9aca"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" font-style="italic" x="262" y="192">+pay(amount Decimal) bool</text><rect fill="none" height="81" rx="4" stroke="#8c9aca" width="183" x="248" y="126"/><rect fill="#f1f4fa" height="135" rx="4" width="140" x="465" y="99"/><rect fill="#e3e7f3" height="35" rx="4" width="140" x="465" y="99"/><path d="m465 130h140v4h-140z" fill="#e3e7f3"/><text style="font-size:13.5;font-weight:bold;dominant-baseline:central;text-anchor:middle;font-family:Roboto;fill:#464646" x="535" y="116.5">Order</text><path d="m465 134h140" stroke="#8c9aca"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="479" y="149">+UUID id</text><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="479" y="169">-OrderStatus status</text><path d="m465 184h140" stroke="#8c9aca"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="479" y="199">+create() Order</text><path d="m479 204.8h89" stroke="#464646"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="479" y="219">+total() Decimal</text><rect fill="none" height="135" rx="4" stroke="#8c9aca" width="140" x="465" y="99"/><rect fill="#f1f4fa" height="105" rx="4" width="112" x="555.5" y="384"/><rect fill="#e3e7f3" height="35" rx="4" width="112" x="555.5" y="384"/><path d="m555.5 415h112v4h-112z" fill="#e3e7f3"/><text style="font-size:13.5;font-weight:bold;dominant-baseline:central;text-anchor:middle;font-family:Roboto;fill:#464646" x="611.5" y="401.5">OrderItem</text><path d="m555.5 419h112" stroke="#8c9aca"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="569.5" y="434">+String sku</text><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="569.5" y="454">+int qty</text><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="569.5" y="474">+Decimal price</text><rect fill="none" height="105" rx="4" stroke="#8c9aca" width="112" x="555.5" y="384"/><rect fill="#f1f4fa" height="101" rx="4" width="183" x="29" y="386"/><rect fill="#e3e7f3" height="51" rx="4" width="183" x="29" y="386"/><path d="m29 433h183v4h-183z" fill="#e3e7f3"/><text dominant-baseline="central" fill="#4b5573" font-family="Roboto" font-size="11.5" text-anchor="middle" x="120.5" y="401">&lt;&lt;service&gt;&gt;</text><text style="font-size:13.5;font-weight:bold;dominant-baseline:central;text-anchor:middle;font-family:Roboto;fill:#464646" x="120.5" y="420.5">PaymentService</text><path d="m29 437h183" stroke="#8c9aca"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="43" y="452">+pay(amount Decimal) bool</text><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" x="43" y="472">+refund(orderId UUID) void</text><rect fill="none" height="101" rx="4" stroke="#8c9aca" width="183" x="29" y="386"/><path d="m618 114.5h101l10 10v24h-111z" fill="#fef8de" stroke="#cba34e" stroke-linejoin="round" transform="translate(5 35)"/><path d="m724 149.5v10" stroke="#cba34e"/><path d="m724 159.5h10" stroke="#cba34e"/><text dominant-baseline="central" fill="#464646" font-family="Roboto" font-size="12" text-anchor="middle" x="678.5" y="166.5">Aggregate root</text></svg>
+<svg width="781" height="534" viewBox="0 0 781 534" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="781" height="534" fill="#FFFFFF"/>
+<text font-size="18" x="304" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
+Order Domain Model
+</text>
+<rect x="230" y="59" width="522" height="446" rx="8" ry="8" stroke="#DEDEDE" stroke-width="1" fill="#FBFBFB"/>
+<text font-size="13" x="240" y="78" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
+Commerce
+</text>
+<line stroke-width="1.2" x1="623" y1="166.5" x2="605" y2="166.5" stroke="#CBA34E" stroke-dasharray="4,3"/>
+<path d="M334.5 172 L334.5 243 Q334.5 249,328.5 249 L114.5 249 Q108.5 249,108.5 255 L108.5 351" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M334.5 172 L341 185 L328 185 Z" transform="translate(5,35)" fill="#FFFFFF" stroke-width="1.6" stroke="#999999" stroke-linejoin="round"/>
+<path d="M537 199 L537 243 Q537 249,543 249 L600.5 249 Q606.5 249,606.5 255 L606.5 349" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M537 199 L542.5 206.5 L537 214 L531.5 206.5 Z" transform="translate(5,35)" fill="#999999" stroke-width="1.2" stroke="#999999" stroke-linejoin="round"/>
+<path d="M523 199 L523 293 Q523 299,517 299 L128.5 299 Q122.5 299,122.5 305 L122.5 351" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M117 341 L122.5 351 L128 341" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="549" y="248.5" width="12" height="19" rx="3" ry="3" fill="#FFFFFF"/>
+<text font-size="11" x="555" y="258" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+1
+</text>
+<rect x="585.5" y="350.5" width="26" height="19" rx="3" ry="3" fill="#FFFFFF"/>
+<text font-size="11" x="598.5" y="360" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+1..*
+</text>
+<rect x="174" y="273" width="80" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="214" y="284" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+implements
+</text>
+<rect x="570.8" y="273" width="62" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="601.8" y="284" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+contains
+</text>
+<rect x="331.2" y="323" width="41" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="351.8" y="334" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+uses
+</text>
+<rect x="248" y="126" width="183" height="81" rx="4" ry="4" fill="#F1F4FA"/>
+<rect x="248" y="126" width="183" height="51" rx="4" ry="4" fill="#E3E7F3"/>
+<rect x="248" y="173" width="183" height="4" fill="#E3E7F3"/>
+<text font-size="11.5" x="339.5" y="141" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#4B5573">
+&lt;&lt;interface&gt;&gt;
+</text>
+<text font-size="13.5" x="339.5" y="160.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Payable
+</text>
+<line stroke-width="1" x1="248" y1="177" x2="431" y2="177" stroke="#8C9ACA"/>
+<text font-size="12" x="262" y="192" font-style="italic" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++pay(amount Decimal) bool
+</text>
+<rect x="248" y="126" width="183" height="81" rx="4" ry="4" stroke="#8C9ACA" stroke-width="1" fill="none"/>
+<rect x="465" y="99" width="140" height="135" rx="4" ry="4" fill="#F1F4FA"/>
+<rect x="465" y="99" width="140" height="35" rx="4" ry="4" fill="#E3E7F3"/>
+<rect x="465" y="130" width="140" height="4" fill="#E3E7F3"/>
+<text font-size="13.5" x="535" y="116.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Order
+</text>
+<line stroke-width="1" x1="465" y1="134" x2="605" y2="134" stroke="#8C9ACA"/>
+<text font-size="12" x="479" y="149" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++UUID id
+</text>
+<text font-size="12" x="479" y="169" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
+-OrderStatus status
+</text>
+<line stroke-width="1" x1="465" y1="184" x2="605" y2="184" stroke="#8C9ACA"/>
+<text font-size="12" x="479" y="199" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++create() Order
+</text>
+<line stroke-width="1" x1="479" y1="204.8" x2="568" y2="204.8" stroke="#464646"/>
+<text font-size="12" x="479" y="219" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++total() Decimal
+</text>
+<rect x="465" y="99" width="140" height="135" rx="4" ry="4" stroke="#8C9ACA" stroke-width="1" fill="none"/>
+<rect x="555.5" y="384" width="112" height="105" rx="4" ry="4" fill="#F1F4FA"/>
+<rect x="555.5" y="384" width="112" height="35" rx="4" ry="4" fill="#E3E7F3"/>
+<rect x="555.5" y="415" width="112" height="4" fill="#E3E7F3"/>
+<text font-size="13.5" x="611.5" y="401.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+OrderItem
+</text>
+<line stroke-width="1" x1="555.5" y1="419" x2="667.5" y2="419" stroke="#8C9ACA"/>
+<text font-size="12" x="569.5" y="434" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++String sku
+</text>
+<text font-size="12" x="569.5" y="454" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++int qty
+</text>
+<text font-size="12" x="569.5" y="474" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++Decimal price
+</text>
+<rect x="555.5" y="384" width="112" height="105" rx="4" ry="4" stroke="#8C9ACA" stroke-width="1" fill="none"/>
+<rect x="29" y="386" width="183" height="101" rx="4" ry="4" fill="#F1F4FA"/>
+<rect x="29" y="386" width="183" height="51" rx="4" ry="4" fill="#E3E7F3"/>
+<rect x="29" y="433" width="183" height="4" fill="#E3E7F3"/>
+<text font-size="11.5" x="120.5" y="401" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#4B5573">
+&lt;&lt;service&gt;&gt;
+</text>
+<text font-size="13.5" x="120.5" y="420.5" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+PaymentService
+</text>
+<line stroke-width="1" x1="29" y1="437" x2="212" y2="437" stroke="#8C9ACA"/>
+<text font-size="12" x="43" y="452" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++pay(amount Decimal) bool
+</text>
+<text font-size="12" x="43" y="472" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
++refund(orderId UUID) void
+</text>
+<rect x="29" y="386" width="183" height="101" rx="4" ry="4" stroke="#8C9ACA" stroke-width="1" fill="none"/>
+<path d="M618 114.5 L719 114.5 L729 124.5 L729 148.5 L618 148.5 Z" transform="translate(5,35)" fill="#FEF8DE" stroke-width="1" stroke="#CBA34E" stroke-linejoin="round"/>
+<line stroke-width="1" x1="724" y1="149.5" x2="724" y2="159.5" stroke="#CBA34E"/>
+<line stroke-width="1" x1="724" y1="159.5" x2="734" y2="159.5" stroke="#CBA34E"/>
+<text font-size="12" x="678.5" y="166.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Aggregate root
+</text>
+</svg>

@@ -834,18 +834,19 @@ classDiagram
     let class_svg = mermaid_to_svg(class_src).unwrap();
     assert_valid_svg(&class_svg);
     assert!(class_svg.contains("eats"));
-    // Extract the two curved edge <path d="..."> attributes (ignoring the open-arrow marker <path>)
-    // and confirm they are distinct separated curves.
+    // Extract the two relationship <path d="..."> attributes (orthogonal routes:
+    // a single straight run or rounded `Q` corners; the open-arrow marker
+    // path has two `L` segments) and confirm they are distinct, separated routes.
     let class_paths: Vec<&str> = class_svg
         .split("<path d=\"")
         .skip(1)
         .filter_map(|s| s.split('"').next())
-        .filter(|d| d.contains(" C"))
+        .filter(|d| d.contains(" Q") || d.matches(" L").count() == 1)
         .collect();
     assert_eq!(
         class_paths.len(),
         2,
-        "expected 2 curved relationship paths in class diagram: {class_svg}"
+        "expected 2 relationship paths in class diagram: {class_svg}"
     );
     assert_ne!(
         class_paths[0], class_paths[1],
