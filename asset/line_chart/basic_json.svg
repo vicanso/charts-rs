@@ -35,147 +35,147 @@ Search Engine
 </text>
 </g>
 <g stroke="#E0E6F2" stroke-width="1">
-<line x1="43" y1="92" x2="550" y2="92"/><line x1="43" y1="136.7" x2="550" y2="136.7"/><line x1="43" y1="181.3" x2="550" y2="181.3"/><line x1="43" y1="226" x2="550" y2="226"/><line x1="43" y1="270.7" x2="550" y2="270.7"/><line x1="43" y1="315.3" x2="550" y2="315.3"/>
+<line x1="43" y1="92" x2="550" y2="92"/><line x1="43" y1="132" x2="550" y2="132"/><line x1="43" y1="172.1" x2="550" y2="172.1"/><line x1="43" y1="212.1" x2="550" y2="212.1"/><line x1="43" y1="252.2" x2="550" y2="252.2"/><line x1="43" y1="292.2" x2="550" y2="292.2"/>
 </g>
 <g>
 
 <text font-size="14" x="7" y="97" font-family="Roboto" fill="#6E7079">
 1.4k
 </text>
-<text font-size="14" x="7" y="141.7" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="7" y="137" font-family="Roboto" fill="#6E7079">
 1.1k
 </text>
-<text font-size="14" x="11" y="186.3" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="11" y="177.1" font-family="Roboto" fill="#6E7079">
 920
 </text>
-<text font-size="14" x="11" y="231" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="11" y="217.1" font-family="Roboto" fill="#6E7079">
 690
 </text>
-<text font-size="14" x="11" y="275.7" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="11" y="257.2" font-family="Roboto" fill="#6E7079">
 460
 </text>
-<text font-size="14" x="11" y="320.3" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="11" y="297.2" font-family="Roboto" fill="#6E7079">
 230
 </text>
-<text font-size="14" x="27" y="365" font-family="Roboto" fill="#6E7079">
+<text font-size="14" x="27" y="337.3" font-family="Roboto" fill="#6E7079">
 0
 </text>
 </g>
 <g>
 <g stroke="#6E7079" stroke-width="1">
-<line x1="43" y1="360" x2="550" y2="360"/>
-<line x1="43" y1="360" x2="43" y2="365"/>
-<line x1="115.4" y1="360" x2="115.4" y2="365"/>
-<line x1="187.9" y1="360" x2="187.9" y2="365"/>
-<line x1="260.3" y1="360" x2="260.3" y2="365"/>
-<line x1="332.7" y1="360" x2="332.7" y2="365"/>
-<line x1="405.1" y1="360" x2="405.1" y2="365"/>
-<line x1="477.6" y1="360" x2="477.6" y2="365"/>
-<line x1="550" y1="360" x2="550" y2="365"/>
+<line x1="43" y1="332.3" x2="550" y2="332.3"/>
+<line x1="43" y1="332.3" x2="43" y2="337.3"/>
+<line x1="115.4" y1="332.3" x2="115.4" y2="337.3"/>
+<line x1="187.9" y1="332.3" x2="187.9" y2="337.3"/>
+<line x1="260.3" y1="332.3" x2="260.3" y2="337.3"/>
+<line x1="332.7" y1="332.3" x2="332.7" y2="337.3"/>
+<line x1="405.1" y1="332.3" x2="405.1" y2="337.3"/>
+<line x1="477.6" y1="332.3" x2="477.6" y2="337.3"/>
+<line x1="550" y1="332.3" x2="550" y2="337.3"/>
 </g>
-<text font-size="14" transform="translate(79,392) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+<text font-size="14" transform="translate(79,364) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Monday
 </text>
-<text font-size="14" transform="translate(151,382) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+<text font-size="14" transform="translate(151,354) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Tue
 </text>
-<text font-size="14" transform="translate(224,383) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+<text font-size="14" transform="translate(224,356) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Wed
 </text>
-<text font-size="14" transform="translate(296,382) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+<text font-size="14" transform="translate(296,354) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Thu
 </text>
-<text font-size="14" transform="translate(368,379) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+<text font-size="14" transform="translate(368,351) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Fri
 </text>
-<text font-size="14" transform="translate(441,381) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+<text font-size="14" transform="translate(441,354) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Sat
 </text>
-<text font-size="14" transform="translate(513,382) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
+<text font-size="14" transform="translate(513,354) rotate(44)" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Sun
 </text>
 </g>
 <g>
-<path d="M 79.2 336.7 L 151.6 334.4 L 224.1 340.4 L 296.5 334 L 368.9 342.5 L 441.4 315.3 L 513.8 319.2" stroke-width="2" fill="none" stroke="#5470C6"/>
+<path d="M 79.2 311.4 L 151.6 309.3 L 224.1 314.7 L 296.5 308.9 L 368.9 316.6 L 441.4 292.2 L 513.8 295.7" stroke-width="2" fill="none" stroke="#5470C6"/>
 <g stroke-width="2" stroke="#5470C6" fill="#FFFFFF">
-<circle cx="79.2" cy="336.7" r="2"/>
-<circle cx="151.6" cy="334.4" r="2"/>
-<circle cx="224.1" cy="340.4" r="2"/>
-<circle cx="296.5" cy="334" r="2"/>
-<circle cx="368.9" cy="342.5" r="2"/>
-<circle cx="441.4" cy="315.3" r="2"/>
-<circle cx="513.8" cy="319.2" r="2"/>
+<circle cx="79.2" cy="311.4" r="2"/>
+<circle cx="151.6" cy="309.3" r="2"/>
+<circle cx="224.1" cy="314.7" r="2"/>
+<circle cx="296.5" cy="308.9" r="2"/>
+<circle cx="368.9" cy="316.6" r="2"/>
+<circle cx="441.4" cy="292.2" r="2"/>
+<circle cx="513.8" cy="295.7" r="2"/>
 </g>
 </g>
 <g>
-<path d="M 79.2 317.3 L 151.6 324.7 L 224.1 322.9 L 296.5 314.6 L 368.9 303.7 L 441.4 295.9 L 513.8 299.8" stroke-width="2" fill="none" stroke="#91CC75"/>
+<path d="M 79.2 294 L 151.6 300.6 L 224.1 299 L 296.5 291.5 L 368.9 281.8 L 441.4 274.8 L 513.8 278.3" stroke-width="2" fill="none" stroke="#91CC75"/>
 <g stroke-width="2" stroke="#91CC75" fill="#FFFFFF">
-<circle cx="79.2" cy="317.3" r="2"/>
-<circle cx="151.6" cy="324.7" r="2"/>
-<circle cx="224.1" cy="322.9" r="2"/>
-<circle cx="296.5" cy="314.6" r="2"/>
-<circle cx="368.9" cy="303.7" r="2"/>
-<circle cx="441.4" cy="295.9" r="2"/>
-<circle cx="513.8" cy="299.8" r="2"/>
+<circle cx="79.2" cy="294" r="2"/>
+<circle cx="151.6" cy="300.6" r="2"/>
+<circle cx="224.1" cy="299" r="2"/>
+<circle cx="296.5" cy="291.5" r="2"/>
+<circle cx="368.9" cy="281.8" r="2"/>
+<circle cx="441.4" cy="274.8" r="2"/>
+<circle cx="513.8" cy="278.3" r="2"/>
 </g>
 </g>
 <g>
-<path d="M 79.2 297.9 L 151.6 295.5 L 224.1 301.5 L 296.5 295.1 L 368.9 284.3 L 441.4 295.9 L 513.8 297.9" stroke-width="2" fill="none" stroke="#FAC858"/>
+<path d="M 79.2 276.6 L 151.6 274.5 L 224.1 279.9 L 296.5 274.1 L 368.9 264.4 L 441.4 274.8 L 513.8 276.6" stroke-width="2" fill="none" stroke="#FAC858"/>
 <g stroke-width="2" stroke="#FAC858" fill="#FFFFFF">
-<circle cx="79.2" cy="297.9" r="2"/>
-<circle cx="151.6" cy="295.5" r="2"/>
-<circle cx="224.1" cy="301.5" r="2"/>
-<circle cx="296.5" cy="295.1" r="2"/>
-<circle cx="368.9" cy="284.3" r="2"/>
-<circle cx="441.4" cy="295.9" r="2"/>
-<circle cx="513.8" cy="297.9" r="2"/>
+<circle cx="79.2" cy="276.6" r="2"/>
+<circle cx="151.6" cy="274.5" r="2"/>
+<circle cx="224.1" cy="279.9" r="2"/>
+<circle cx="296.5" cy="274.1" r="2"/>
+<circle cx="368.9" cy="264.4" r="2"/>
+<circle cx="441.4" cy="274.8" r="2"/>
+<circle cx="513.8" cy="276.6" r="2"/>
 </g>
 </g>
-<path d="M 358.6,265 A 16,16 0,0,1 352.9,252.7 A 16,16 0,0,1 384.9,252.7 A 16,16 0,0,1 379.2,265 L 368.9,276.8 Z" fill="#FAC858"/>
-<text font-size="14" x="368.9" y="252.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M 358.6,245.1 A 16,16 0,0,1 352.9,232.8 A 16,16 0,0,1 384.9,232.8 A 16,16 0,0,1 379.2,245.1 L 368.9,256.9 Z" fill="#FAC858"/>
+<text font-size="14" x="368.9" y="232.8" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 390
 </text>
-<path d="M 214.4,283 A 15,15 0,0,1 209.1,271.5 A 15,15 0,0,1 239.1,271.5 A 15,15 0,0,1 233.7,283 L 224.1,294 Z" fill="#FAC858"/>
-<text font-size="14" x="224.1" y="271.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M 214.4,261.4 A 15,15 0,0,1 209.1,249.9 A 15,15 0,0,1 239.1,249.9 A 15,15 0,0,1 233.7,261.4 L 224.1,272.4 Z" fill="#FAC858"/>
+<text font-size="14" x="224.1" y="249.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 301
 </text>
 <g>
-<path d="M 79.2 200.8 L 151.6 179 L 224.1 185 L 296.5 178.6 L 368.9 109.5 L 441.4 101.7 L 513.8 103.7" stroke-width="2" fill="none" stroke="#EE6666"/>
+<path d="M 79.2 189.5 L 151.6 170 L 224.1 175.4 L 296.5 169.7 L 368.9 107.7 L 441.4 100.7 L 513.8 102.4" stroke-width="2" fill="none" stroke="#EE6666"/>
 <g stroke-width="2" stroke="#EE6666" fill="#FFFFFF">
-<circle cx="79.2" cy="200.8" r="2"/>
-<circle cx="151.6" cy="179" r="2"/>
-<circle cx="224.1" cy="185" r="2"/>
-<circle cx="296.5" cy="178.6" r="2"/>
-<circle cx="368.9" cy="109.5" r="2"/>
-<circle cx="441.4" cy="101.7" r="2"/>
-<circle cx="513.8" cy="103.7" r="2"/>
+<circle cx="79.2" cy="189.5" r="2"/>
+<circle cx="151.6" cy="170" r="2"/>
+<circle cx="224.1" cy="175.4" r="2"/>
+<circle cx="296.5" cy="169.7" r="2"/>
+<circle cx="368.9" cy="107.7" r="2"/>
+<circle cx="441.4" cy="100.7" r="2"/>
+<circle cx="513.8" cy="102.4" r="2"/>
 </g>
 </g>
-<text font-size="14" x="79.2" y="200.8" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="79.2" y="189.5" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
 820
 </text>
-<text font-size="14" x="151.6" y="179" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="151.6" y="170" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
 932
 </text>
-<text font-size="14" x="224.1" y="185" dx="-10.5" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="224.1" y="175.4" dx="-10.5" dy="-8" font-family="Roboto" fill="#464646">
 901
 </text>
-<text font-size="14" x="296.5" y="178.6" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="296.5" y="169.7" dx="-12" dy="-8" font-family="Roboto" fill="#464646">
 934
 </text>
-<text font-size="14" x="368.9" y="109.5" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="368.9" y="107.7" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
 1290
 </text>
-<text font-size="14" x="441.4" y="101.7" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="441.4" y="100.7" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
 1330
 </text>
-<text font-size="14" x="513.8" y="103.7" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
+<text font-size="14" x="513.8" y="102.4" dx="-16" dy="-8" font-family="Roboto" fill="#464646">
 1320
 </text>
-<circle cx="46" cy="151.2" r="3.5" stroke-width="1" stroke="#EE6666" fill="#EE6666"/>
-<line stroke-width="1" x1="51" y1="151.2" x2="540" y2="151.2" stroke="#EE6666" stroke-dasharray="4,2"/>
-<path d="M 540 151.2 L 535 146.2 L 550 151.2 L 535 156.2 Z" stroke-width="1" fill="#EE6666" stroke="#EE6666"/>
-<text font-size="14" x="536" y="151.2" dy="-6" text-anchor="end" font-family="Roboto" fill="#464646">
+<circle cx="46" cy="145.1" r="3.5" stroke-width="1" stroke="#EE6666" fill="#EE6666"/>
+<line stroke-width="1" x1="51" y1="145.1" x2="540" y2="145.1" stroke="#EE6666" stroke-dasharray="4,2"/>
+<path d="M 540 145.1 L 535 140.1 L 550 145.1 L 535 150.1 Z" stroke-width="1" fill="#EE6666" stroke="#EE6666"/>
+<text font-size="14" x="536" y="145.1" dy="-6" text-anchor="end" font-family="Roboto" fill="#464646">
 1075.3
 </text>
 </svg>

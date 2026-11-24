@@ -1284,7 +1284,47 @@ impl ScatterChart {
             }
         }
     }
-    /// Creates a scatter chart with default theme.
+    /// Returns `true` if segment `a..b` intersects the axis-aligned box `[x0, x1] x [y0, y1]`.
+fn segment_intersects_box(a: Point, b: Point, x0: f32, y0: f32, x1: f32, y1: f32) -> bool {
+    let mut t0 = 0.0_f32;
+    let mut t1 = 1.0_f32;
+    let dx = b.x - a.x;
+    let dy = b.y - a.y;
+    for (p, q) in [
+        (-dx, a.x - x0),
+        (dx, x1 - a.x),
+        (-dy, a.y - y0),
+        (dy, y1 - a.y),
+    ] {
+        if p.abs() <= f32::EPSILON {
+            if q < 0.0 {
+                return false;
+            }
+        } else {
+            let t = q / p;
+            if p < 0.0 {
+                t0 = t0.max(t);
+            } else {
+                t1 = t1.min(t);
+            }
+            if t0 > t1 {
+                return false;
+            }
+        }
+    }
+    true
+}
+
+/// Returns `true` if any regression polyline intersects the slightly padded label box.
+fn box_intersects_curves(x: f32, y: f32, w: f32, h: f32, runs: &[Vec<Point>]) -> bool {
+    let (x0, y0, x1, y1) = (x - 2.0, y - 2.0, x + w + 2.0, y + h + 2.0);
+    runs.iter().any(|run| {
+        run.windows(2)
+            .any(|pair| Self::segment_intersects_box(pair[0], pair[1], x0, y0, x1, y1))
+    })
+}
+
+/// Creates a scatter chart with default theme.
     pub fn new(series_list: Vec<Series>) -> ScatterChart {
         ScatterChart::new_with_theme(series_list, &get_default_theme_name())
     }
@@ -1488,6 +1528,8 @@ impl ScatterChart {
         let default_symbol_size = 10.0_f32;
         // Where the formulas of the fitted curves are written.
         let mut formula_boxes = LabelBoxes::new(true);
+        let mut all_curve_runs: Vec<Vec<Point>> = Vec::new();
+        let mut pending_formulas: Vec<(Point, String)> = Vec::new();
         for (index, series) in self.series_list.iter().enumerate() {
             let series_idx = series.index.unwrap_or(index);
             let mut color = get_color(&self.series.colors, series_idx);
@@ -1672,6 +1714,7 @@ impl ScatterChart {
             let mut end = None;
             for run in runs.into_iter().filter(|run| run.len() > 1) {
                 end = run.last().copied();
+                all_curve_runs.push(run.clone());
                 content_canvas.straight_line(StraightLine {
                     color: Some(line_color),
                     points: run,
@@ -1681,33 +1724,65 @@ impl ScatterChart {
                     ..Default::default()
                 });
             }
-            // The formula, at the end of the curve: above it, or below it
-            // where that is off the plot or taken by another formula.
             if self.regression_label_show
                 && let Some(end) = end
             {
-                let text = fit.formula();
-                let font_size = self.series.label.font.size;
-                let width = measure_text_width_family(&self.font_family, font_size, &text)
-                    .map(|b| b.width())
-                    .unwrap_or_default();
-                let left = (end.x - width).max(0.0);
-                let baseline = [end.y - 8.0, end.y + font_size + 6.0]
-                    .into_iter()
-                    .filter(|y| *y - font_size >= 0.0 && *y <= content_height)
-                    .find(|y| formula_boxes.try_place(left, y - font_size, width, font_size));
-                if let Some(baseline) = baseline {
-                    content_canvas.text_unmeasured(Text {
-                        text,
-                        font_family: Some(self.font_family.clone()),
-                        font_color: Some(self.series.label.font.color),
-                        font_size: Some(font_size),
-                        font_weight: self.series.label.font.weight.clone(),
-                        x: Some(left),
-                        y: Some(baseline),
-                        ..Default::default()
-                    });
+                pending_formulas.push((end, fit.formula()));
+            }
+        }
+
+        // Place regression formulas after all curves are collected so labels
+        // avoid intersecting any curve in addition to each other.
+        for (end, text) in pending_formulas {
+            let font_size = self.series.label.font.size;
+            let width = measure_text_width_family(&self.font_family, font_size, &text)
+                .map(|b| b.width())
+                .unwrap_or_default();
+            let base_left = (end.x - width).max(0.0);
+            let max_left = (content_width - width).max(0.0);
+            let y_candidates: Vec<f32> = [end.y - 8.0, end.y + font_size + 6.0]
+                .into_iter()
+                .filter(|y| *y - font_size >= 0.0 && *y <= content_height)
+                .collect();
+            let x_shifts = [
+                0.0_f32, -24.0, 24.0, -48.0, 48.0, -72.0, 72.0, -96.0, -120.0, -144.0, -168.0,
+            ];
+            let mut placed: Option<(f32, f32)> = None;
+            'search: for &y in &y_candidates {
+                for &dx in &x_shifts {
+                    let left = (base_left + dx).clamp(0.0, max_left);
+                    if !Self::box_intersects_curves(
+                        left,
+                        y - font_size,
+                        width,
+                        font_size,
+                        &all_curve_runs,
+                    ) && formula_boxes.try_place(left, y - font_size, width, font_size)
+                    {
+                        placed = Some((left, y));
+                        break 'search;
+                    }
                 }
+            }
+            if placed.is_none() {
+                for &y in &y_candidates {
+                    if formula_boxes.try_place(base_left, y - font_size, width, font_size) {
+                        placed = Some((base_left, y));
+                        break;
+                    }
+                }
+            }
+            if let Some((left, baseline)) = placed {
+                content_canvas.text_unmeasured(Text {
+                    text,
+                    font_family: Some(self.font_family.clone()),
+                    font_color: Some(self.series.label.font.color),
+                    font_size: Some(font_size),
+                    font_weight: self.series.label.font.weight.clone(),
+                    x: Some(left),
+                    y: Some(baseline),
+                    ..Default::default()
+                });
             }
         }
 
@@ -2123,5 +2198,70 @@ mod tests {
             .find(|line| line.level == 1 && line.closed)
             .unwrap();
         assert!(encloses(&outer.points, 0.0, 0.0));
+    }
+
+    #[test]
+    fn regression_formula_labels_avoid_curves() {
+        let chart = ScatterChart::from_json(include_str!("../../asset/scatter_chart/regression.json"))
+            .unwrap();
+        let svg = chart.svg().unwrap();
+        // Parse all ct-regression polyline paths into Vec<Point>.
+        let mut runs: Vec<Vec<crate::Point>> = Vec::new();
+        for chunk in svg.split("<path").skip(1) {
+            let Some(end_tag) = chunk.find("/>") else {
+                continue;
+            };
+            let attrs = &chunk[..end_tag];
+            if !attrs.contains("ct-regression") {
+                continue;
+            }
+            let d_start = attrs.find("d=\"").unwrap() + 3;
+            let d_end = d_start + attrs[d_start..].find('"').unwrap();
+            let d = &attrs[d_start..d_end];
+            let mut pts = Vec::new();
+            for token in d.split(['M', 'L']).map(str::trim).filter(|s| !s.is_empty()) {
+                let mut nums = token.split_whitespace().map(|n| n.parse::<f32>().unwrap());
+                if let (Some(x), Some(y)) = (nums.next(), nums.next()) {
+                    pts.push(crate::Point { x, y });
+                }
+            }
+            if pts.len() > 1 {
+                runs.push(pts);
+            }
+        }
+        assert_eq!(runs.len(), 2, "expected 2 regression curves");
+
+        // Extract both formula <text> labels (`y = ...`).
+        let font_size = chart.series.label.font.size;
+        let mut formulas = 0;
+        for chunk in svg.split("<text ").skip(1) {
+            let Some(close_open) = chunk.find('>') else {
+                continue;
+            };
+            let attrs = &chunk[..close_open];
+            let body_end = chunk[close_open + 1..].find("</text>").unwrap();
+            let body = chunk[close_open + 1..close_open + 1 + body_end].trim();
+            if !body.starts_with("y = ") {
+                continue;
+            }
+            formulas += 1;
+            let x_s = attrs.find("x=\"").unwrap() + 3;
+            let x: f32 = attrs[x_s..x_s + attrs[x_s..].find('"').unwrap()]
+                .parse()
+                .unwrap();
+            let y_s = attrs.find("y=\"").unwrap() + 3;
+            let y: f32 = attrs[y_s..y_s + attrs[y_s..].find('"').unwrap()]
+                .parse()
+                .unwrap();
+            let w = crate::charts::measure_text_width_family(&chart.font_family, font_size, body)
+                .unwrap()
+                .width();
+            assert!(
+                !ScatterChart::box_intersects_curves(x, y - font_size, w, font_size, &runs),
+                "formula `{body}` box ({x}, {}, {w}, {font_size}) intersects a regression curve",
+                y - font_size
+            );
+        }
+        assert_eq!(formulas, 2, "expected both formula labels to be rendered");
     }
 }

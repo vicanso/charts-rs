@@ -2296,7 +2296,7 @@ The names are written in the font of the x axis, and the scale below each row in
 
 ## Parallel
 
-`ParallelChart::from_json` — Parallel coordinates: `x_axis_data` names the dimensions (one vertical axis each), and every series is one record with a value for each dimension. It has no keys of its own.
+`ParallelChart::from_json` — Parallel coordinates: `x_axis_data` names the dimensions (one vertical axis each), and every series is one record with a value for each dimension. It has no keys of its own; optional entries in `y_axis_configs` configure matching dimension indices (`axis_min`, `axis_max`, `axis_formatter`), while unspecified dimensions auto-scale from their data.
 
 <!-- example: parallel -->
 

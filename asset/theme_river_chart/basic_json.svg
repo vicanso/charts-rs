@@ -7,16 +7,16 @@ Traffic Sources
 <polygon points="5,189.1 123,185.4 241,187.3 359,191 477,188.2 595,185.4 595,259 477,252.5 359,242.4 241,242.4 123,233.2 5,225.9" fill="#91CC75" fill-opacity="0.85" data-series="Social"/>
 <polygon points="5,225.9 123,233.2 241,242.4 359,242.4 477,252.5 595,259 595,321.5 477,307.7 359,301.3 241,293.9 123,288.4 5,281" fill="#FAC858" fill-opacity="0.85" data-series="Direct"/>
 <polygon points="5,281 123,288.4 241,293.9 359,301.3 477,307.7 595,321.5 595,358.2 477,340.8 359,330.7 241,319.6 123,310.5 5,299.4" fill="#EE6666" fill-opacity="0.85" data-series="Referral"/>
-<text font-size="14" x="593" y="121.1" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+<text font-size="14" x="589" y="121.1" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#1E1E1E">
 Search
 </text>
-<text font-size="14" x="593" y="222.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+<text font-size="14" x="589" y="222.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#1E1E1E">
 Social
 </text>
-<text font-size="14" x="593" y="290.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+<text font-size="14" x="589" y="290.2" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#1E1E1E">
 Direct
 </text>
-<text font-size="14" x="593" y="339.9" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
+<text font-size="14" x="589" y="339.9" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#1E1E1E">
 Referral
 </text>
 <text font-size="14" x="5" y="386.2" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#6E7079">

@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::base::{ChartBase, get_y_axis_config};
+use super::base::ChartBase;
 use super::canvas;
 use super::color::*;
 use super::common::*;
@@ -32,9 +32,9 @@ pub struct ParallelChart {
     /// The shared chart options (size, series, title/legend, axes); exposed
     /// directly on the chart through `Deref`, e.g. `chart.title.text`.
     pub base: ChartBase,
-    /// One config per dimension (falling back to the first): `min` /
-    /// `max` pin the range of that axis and `formatter` formats
-    /// its min/max labels.
+    /// One config per dimension (`0..n`): `min` / `max` pin the range of that
+    /// axis and `formatter` formats its min/max labels; unspecified
+    /// dimensions auto-scale from their data.
     pub y_axis_configs: Vec<YAxisConfig>,
 }
 
@@ -146,14 +146,14 @@ impl ParallelChart {
                 }
             }
         }
-        let axis_config = |j: usize| get_y_axis_config(&self.y_axis_configs, j);
         for j in 0..n {
-            let config = axis_config(j);
-            if let Some(min) = config.min.filter(|v| v.is_finite()) {
-                mins[j] = min;
-            }
-            if let Some(max) = config.max.filter(|v| v.is_finite()) {
-                maxs[j] = max;
+            if let Some(config) = self.y_axis_configs.get(j) {
+                if let Some(min) = config.min.filter(|v| v.is_finite()) {
+                    mins[j] = min;
+                }
+                if let Some(max) = config.max.filter(|v| v.is_finite()) {
+                    maxs[j] = max;
+                }
             }
             // Empty or flat dimension: fall back to a unit range so the mapping
             // stays finite.
@@ -205,13 +205,17 @@ impl ParallelChart {
             } else {
                 (x + 3.0, "start")
             };
-            let formatter = axis_config(j).formatter.unwrap_or_default();
+            let formatter = self
+                .y_axis_configs
+                .get(j)
+                .and_then(|c| c.formatter.as_deref())
+                .unwrap_or("");
             for (value, y) in [
                 (maxs[j], plot_top + font_size * 0.6),
                 (mins[j], plot_bottom - font_size * 0.6),
             ] {
                 content.text(Text {
-                    text: format_string(&format_float(value), &formatter),
+                    text: format_string(&format_float(value), formatter),
                     font_family: Some(self.font_family.clone()),
                     font_color: Some(self.series.label.font.color),
                     font_size: Some(font_size * 0.85),
@@ -309,6 +313,25 @@ mod tests {
         );
         let svg = chart.svg().unwrap();
         assert!(!svg.contains("NaN") && !svg.contains("inf"));
+    }
+
+    #[test]
+    fn parallel_axis_config_does_not_leak() {
+        let chart = ParallelChart::from_json(
+            r##"{
+                "x_axis_data": ["Price", "Weight"],
+                "y_axis_configs": [{"axis_min": 0, "axis_max": 2000, "axis_formatter": "${c}"}],
+                "series_list": [
+                    {"name": "A", "data": [1200, 1.4]},
+                    {"name": "B", "data": [700, 2.1]}
+                ]
+            }"##,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains("$2000") && svg.contains("$0"), "{svg}");
+        assert!(svg.contains("\n2.1\n") && svg.contains("\n1.4\n"), "{svg}");
+        assert!(!svg.contains("$2.1") && !svg.contains("$1.4"), "{svg}");
     }
 
     #[test]

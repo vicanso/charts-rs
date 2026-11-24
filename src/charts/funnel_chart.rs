@@ -269,15 +269,34 @@ impl FunnelChart {
                     // Center text inside the trapezoid
                     let mid_x = (x_left_top + x_right_top) / 2.0;
                     let mut text_x = mid_x;
+                    let mut text_w = 0.0;
                     if let Ok(b) =
                         measure_text_width_family(&self.font_family, label_font_size, &label_text)
                     {
-                        text_x -= b.width() / 2.0;
+                        text_w = b.width();
+                        text_x -= text_w / 2.0;
                     }
+                    // Use contrasting text when the label fits inside the slice;
+                    // narrow bottom slices whose text spills onto the canvas keep label_color.
+                    let mid_w = (top_w + bot_w) / 2.0;
+                    let inside_color = if text_w <= mid_w {
+                        if color.is_light() {
+                            Color {
+                                r: 30,
+                                g: 30,
+                                b: 30,
+                                a: 255,
+                            }
+                        } else {
+                            Color::white()
+                        }
+                    } else {
+                        label_color
+                    };
                     c.text(Text {
                         text: label_text,
                         font_family: Some(self.font_family.clone()),
-                        font_color: Some(label_color),
+                        font_color: Some(inside_color),
                         font_size: Some(label_font_size),
                         font_weight: self.series.label.font.weight.clone(),
                         dominant_baseline: Some("central".to_string()),
@@ -423,5 +442,37 @@ mod tests {
             "missing class on trapezoid"
         );
         assert!(svg.contains("800ms ease-in"), "missing duration/easing");
+    }
+
+    #[test]
+    fn funnel_inside_label_contrasts_with_slice_fill() {
+        let chart = FunnelChart::from_json(
+            r##"{
+                "theme": "grafana",
+                "legend_show": false,
+                "series_label_position": "inside",
+                "series_list": [
+                    {"name": "WideLight", "data": [100000]},
+                    {"name": "WideDark", "data": [90000]},
+                    {"name": "TinyOverflowingStageName", "data": [1000]}
+                ],
+                "series_colors": ["#EAB839", "#1F78C1", "#7EB26D"]
+            }"##,
+        )
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(
+            svg.contains("fill=\"#1E1E1E\">\nWideLight: 100000"),
+            "light slice inside text should be dark: {svg}"
+        );
+        assert!(
+            svg.contains("fill=\"#FFFFFF\">\nWideDark: 90000"),
+            "dark slice inside text should be white: {svg}"
+        );
+        // Grafana label color is #D8D9DA; narrow overflowing label stays in theme color.
+        assert!(
+            svg.contains("fill=\"#D8D9DA\">\nTinyOverflowingStageName: 1000"),
+            "overflowing narrow slice should keep theme label color: {svg}"
+        );
     }
 }

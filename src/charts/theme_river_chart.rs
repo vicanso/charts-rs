@@ -192,7 +192,7 @@ impl ThemeRiverChart {
                 bottom_pts.push((x, y_bottom).into());
             }
             if self.series.smooth {
-                content.smooth_band(SmoothBand {
+                content.monotone_smooth_band(SmoothBand {
                     top: top_pts,
                     bottom: bottom_pts,
                     fill: Some(color),
@@ -235,16 +235,40 @@ impl ThemeRiverChart {
             // Keep the label inside the plot: anchor the first step's label to
             // the start and the last step's to the end.
             let (lx, la) = if best_t == 0 {
-                (x_at(best_t) + 2.0, "start")
+                (x_at(best_t) + 6.0, "start")
             } else if best_t + 1 == t_count {
-                (x_at(best_t) - 2.0, "end")
+                (x_at(best_t) - 6.0, "end")
             } else {
                 (x_at(best_t), "middle")
+            };
+            let base_color = get_color(&self.series.colors, s.index.unwrap_or(i));
+            let bg = self.background_color;
+            let a = self.stream_opacity.clamp(0.0, 1.0);
+            let blend = |fg: u8, bg_ch: u8| -> u8 {
+                (fg as f32 * a + bg_ch as f32 * (1.0 - a))
+                    .round()
+                    .clamp(0.0, 255.0) as u8
+            };
+            let effective = Color {
+                r: blend(base_color.r, bg.r),
+                g: blend(base_color.g, bg.g),
+                b: blend(base_color.b, bg.b),
+                a: 255,
+            };
+            let label_color = if effective.is_light() {
+                Color {
+                    r: 30,
+                    g: 30,
+                    b: 30,
+                    a: 255,
+                }
+            } else {
+                Color::white()
             };
             content.text(Text {
                 text: s.name.clone(),
                 font_family: Some(self.font_family.clone()),
-                font_color: Some(self.series.label.font.color),
+                font_color: Some(label_color),
                 font_size: Some(font_size),
                 font_weight: self.series.label.font.weight.clone(),
                 x: Some(lx),

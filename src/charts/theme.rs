@@ -827,7 +827,7 @@ static CHALK_THEME: LazyLock<Theme> = LazyLock::new(|| {
     let font_color: Color = (255, 255, 255).into();
     let bg_color: Color = (41, 52, 65).into();
     Theme {
-        is_light: true,
+        is_light: false,
         font_family: DEFAULT_FONT_FAMILY.to_string(),
         margin: (5.0).into(),
         width: DEFAULT_WIDTH,
@@ -1108,7 +1108,7 @@ static SHADCN_THEME: LazyLock<Theme> = LazyLock::new(|| {
                 "#2eb88a".into(),
                 "#e88c30".into(),
                 "#af57db".into(),
-                "#0e2014".into(),
+                "#06b6d4".into(),
                 "#3b86f7".into(),
                 "#f17e92".into(),
             ],
@@ -1177,4 +1177,35 @@ pub fn list_theme_name() -> Vec<String> {
 /// Get default theme
 pub fn get_default_theme_name() -> String {
     LIGHT_THEME_NAME.to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{get_theme, list_themes};
+
+    #[test]
+    fn builtin_themes_have_consistent_luminance_and_visible_colors() {
+        for &name in list_themes() {
+            let theme = get_theme(name);
+            assert_eq!(
+                theme.is_light,
+                theme.background_color.is_light(),
+                "theme {name:?} is_light={} disagrees with background luminance",
+                theme.is_light
+            );
+            let bg = theme.background_color;
+            for (idx, c) in theme.series.colors.iter().enumerate() {
+                let dr = c.r as f32 - bg.r as f32;
+                let dg = c.g as f32 - bg.g as f32;
+                let db = c.b as f32 - bg.b as f32;
+                let dist = (dr * dr + dg * dg + db * db).sqrt();
+                assert!(
+                    dist >= 40.0,
+                    "theme {name:?} series color[{idx}] ({}) has low contrast ({dist:.1}) against bg ({})",
+                    c.hex(),
+                    bg.hex()
+                );
+            }
+        }
+    }
 }

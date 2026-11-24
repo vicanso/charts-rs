@@ -12,25 +12,25 @@
     <img src="./asset/image/theme-light.png" alt="charts-rs">
 </p>
 
-## Dark 
+## Dark
 
 <p align="center">
     <img src="./asset/image/theme-dark.png" alt="charts-rs">
 </p>
 
-## Ant 
+## Ant
 
 <p align="center">
     <img src="./asset/image/theme-ant.png" alt="charts-rs">
 </p>
 
-## Vintage 
+## Vintage
 
 <p align="center">
     <img src="./asset/image/theme-vintage.png" alt="charts-rs">
 </p>
 
-## Walden 
+## Walden
 
 <p align="center">
     <img src="./asset/image/theme-walden.png" alt="charts-rs">
@@ -42,13 +42,13 @@
     <img src="./asset/image/theme-westeros.png" alt="charts-rs">
 </p>
 
-## Chalk 
+## Chalk
 
 <p align="center">
     <img src="./asset/image/theme-chalk.png" alt="charts-rs">
 </p>
 
-## Shine 
+## Shine
 
 <p align="center">
     <img src="./asset/image/theme-shine.png" alt="charts-rs">

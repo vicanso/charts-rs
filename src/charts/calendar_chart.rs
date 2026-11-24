@@ -517,7 +517,7 @@ impl CalendarChart {
                     font_size: Some(month_font_size),
                     dominant_baseline: Some("auto".to_string()),
                     x: Some(x),
-                    y: Some(mlh - 2.0),
+                    y: Some((mlh - 5.0).max(month_font_size * 0.8)),
                     ..Default::default()
                 });
                 last_month_col = Some(col);

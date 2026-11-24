@@ -997,4 +997,45 @@ mod tests {
             "easing should fall back to the safe default"
         );
     }
+
+    #[test]
+    fn rotated_x_axis_labels_stay_within_canvas_height() {
+        let mut chart = BarChart::new(
+            vec![("Sales", vec![10.0, 20.0, 30.0]).into()],
+            vec![
+                "Wednesday".to_string(),
+                "Thursday".to_string(),
+                "Saturday".to_string(),
+            ],
+        );
+        chart.x_axis.name_rotate = std::f32::consts::FRAC_PI_4;
+        let svg = chart.svg().unwrap();
+        // Ensure every rotated label's translate-y plus downward rotated half-projection
+        // fits comfortably inside the canvas height.
+        let font_size = chart.x_axis.font.size;
+        let widest = crate::charts::measure_text_width_family(
+            &chart.font_family,
+            font_size,
+            "Wednesday",
+        )
+        .unwrap()
+        .width();
+        let downward = (widest / 2.0) * chart.x_axis.name_rotate.sin().abs()
+            + font_size * 0.3 * chart.x_axis.name_rotate.cos().abs();
+        let mut found = 0;
+        for part in svg.split("translate(").skip(1) {
+            if let Some(coords) = part.split(')').next()
+                && let Some((_, y_str)) = coords.split_once(',')
+                && let Ok(ty) = y_str.parse::<f32>()
+            {
+                found += 1;
+                assert!(
+                    ty + downward <= chart.height,
+                    "rotated label extends past bottom: ty={ty}, downward={downward}, height={}",
+                    chart.height
+                );
+            }
+        }
+        assert_eq!(found, 3, "expected 3 rotated x-axis labels");
+    }
 }

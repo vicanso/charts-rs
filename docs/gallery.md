@@ -9,55 +9,55 @@ every option is described in the [JSON reference](./json.md).
 ## Bar
 
 <p align="center">
-  <img src="../asset/image/mix-line-bar.png" width="49%" alt="Bar">
-  <img src="../asset/image/bar-stack-percent.png" width="49%" alt="Bar">
+  <img src="../asset/image/mix-line-bar.png" width="49%" alt="Mixed bar and line chart">
+  <img src="../asset/image/bar-stack-percent.png" width="49%" alt="100% stacked bar chart">
 </p>
 
 <p align="center">
-  <img src="../asset/image/bar-error-bar.png" width="49%" alt="Bar">
-  <img src="../asset/image/texts.png" width="49%" alt="Bar">
+  <img src="../asset/image/bar-error-bar.png" width="49%" alt="Bar chart with error bars">
+  <img src="../asset/image/texts.png" width="49%" alt="Bar chart with overlay text">
 </p>
 
 ## Horizontal bar
 
 <p align="center">
-  <img src="../asset/image/horizontal-bar.png" width="49%" alt="Horizontal bar">
+  <img src="../asset/image/horizontal-bar.png" width="49%" alt="Horizontal bar chart">
 </p>
 
 ## Line
 
 <p align="center">
-  <img src="../asset/image/line.png" width="49%" alt="Line">
-  <img src="../asset/image/line-step.png" width="49%" alt="Line">
+  <img src="../asset/image/line.png" width="49%" alt="Smoothed line chart">
+  <img src="../asset/image/line-step.png" width="49%" alt="Step line chart">
 </p>
 
 <p align="center">
-  <img src="../asset/image/line-bump.png" width="49%" alt="Line">
-  <img src="../asset/image/line-band.png" width="49%" alt="Line">
+  <img src="../asset/image/line-bump.png" width="49%" alt="Bump line chart">
+  <img src="../asset/image/line-band.png" width="49%" alt="Line chart with confidence band">
 </p>
 
 ## Pie
 
 <p align="center">
-  <img src="../asset/image/pie.png" width="49%" alt="Pie">
-  <img src="../asset/image/pie-half.png" width="49%" alt="Pie">
+  <img src="../asset/image/pie.png" width="49%" alt="Nightingale rose pie chart">
+  <img src="../asset/image/pie-half.png" width="49%" alt="Half donut pie chart">
 </p>
 
 <p align="center">
-  <img src="../asset/image/pie-nested.png" width="49%" alt="Pie">
+  <img src="../asset/image/pie-nested.png" width="49%" alt="Nested pie chart">
 </p>
 
 ## Radar
 
 <p align="center">
-  <img src="../asset/image/radar.png" width="49%" alt="Radar">
+  <img src="../asset/image/radar.png" width="49%" alt="Radar chart">
 </p>
 
 ## Scatter
 
 <p align="center">
-  <img src="../asset/image/scatter.png" width="49%" alt="Scatter">
-  <img src="../asset/image/scatter-regression.png" width="49%" alt="Scatter">
+  <img src="../asset/image/scatter.png" width="49%" alt="Scatter chart">
+  <img src="../asset/image/scatter-regression.png" width="49%" alt="Scatter chart with polynomial regression">
 </p>
 
 <p align="center">
@@ -68,8 +68,8 @@ every option is described in the [JSON reference](./json.md).
 ## Candlestick
 
 <p align="center">
-  <img src="../asset/image/candlestick.png" width="49%" alt="Candlestick">
-  <img src="../asset/image/candlestick-ohlc.png" width="49%" alt="Candlestick">
+  <img src="../asset/image/candlestick.png" width="49%" alt="Candlestick chart">
+  <img src="../asset/image/candlestick-ohlc.png" width="49%" alt="OHLC bar chart">
 </p>
 
 ## Table
@@ -83,11 +83,11 @@ every option is described in the [JSON reference](./json.md).
 
 <p align="center">
   <img src="../asset/image/heatmap.png" width="49%" alt="Heatmap">
-  <img src="../asset/image/heatmap-scale.png" width="49%" alt="Heatmap">
+  <img src="../asset/image/heatmap-scale.png" width="49%" alt="Heatmap with continuous scale and labels">
 </p>
 
 <p align="center">
-  <img src="../asset/image/heatmap-punch-card.png" width="49%" alt="Heatmap">
+  <img src="../asset/image/heatmap-punch-card.png" width="49%" alt="Punch card heatmap">
 </p>
 
 ## Funnel
@@ -111,12 +111,12 @@ every option is described in the [JSON reference](./json.md).
 ## Gauge
 
 <p align="center">
-  <img src="../asset/image/gauge.png" width="49%" alt="Gauge">
-  <img src="../asset/image/gauge-segments.png" width="49%" alt="Gauge">
+  <img src="../asset/image/gauge.png" width="49%" alt="Gauge chart">
+  <img src="../asset/image/gauge-segments.png" width="49%" alt="Segmented gauge chart">
 </p>
 
 <p align="center">
-  <img src="../asset/image/gauge-rings.png" width="49%" alt="Gauge">
+  <img src="../asset/image/gauge-rings.png" width="49%" alt="Multi-ring gauge chart">
 </p>
 
 ## Bullet
@@ -153,15 +153,15 @@ every option is described in the [JSON reference](./json.md).
 ## Sankey
 
 <p align="center">
-  <img src="../asset/image/sankey.png" width="49%" alt="Sankey">
-  <img src="../asset/image/sankey-vertical.png" width="49%" alt="Sankey">
+  <img src="../asset/image/sankey.png" width="49%" alt="Horizontal Sankey diagram">
+  <img src="../asset/image/sankey-vertical.png" width="49%" alt="Vertical Sankey diagram">
 </p>
 
 ## Tree
 
 <p align="center">
-  <img src="../asset/image/tree.png" width="49%" alt="Tree">
-  <img src="../asset/image/tree-radial.png" width="49%" alt="Tree">
+  <img src="../asset/image/tree.png" width="49%" alt="Vertical tree diagram">
+  <img src="../asset/image/tree-radial.png" width="49%" alt="Radial tree diagram">
 </p>
 
 ## Graph
@@ -191,8 +191,8 @@ every option is described in the [JSON reference](./json.md).
 ## Polar bar
 
 <p align="center">
-  <img src="../asset/image/polar-bar.png" width="49%" alt="Polar bar">
-  <img src="../asset/image/polar-bar-radial.png" width="49%" alt="Polar bar">
+  <img src="../asset/image/polar-bar.png" width="49%" alt="Stacked polar bar chart">
+  <img src="../asset/image/polar-bar-radial.png" width="49%" alt="Radial polar bar chart">
 </p>
 
 ## Chord

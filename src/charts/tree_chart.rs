@@ -423,12 +423,27 @@ impl TreeChart {
             let near = font_size + gap; // top room for the root label
             let far = font_size + gap; // bottom room for leaf labels
             let main = (ch - near - far).max(1.0);
-            let cross = (cw - 2.0 * (r + 2.0)).max(1.0);
+            let mut left_pad = r + 2.0;
+            let mut right_pad = r + 2.0;
+            for _ in 0..2 {
+                let avail = (cw - left_pad - right_pad).max(1.0);
+                for n in &nodes {
+                    let hw = measure(&n.label) / 2.0 + 2.0;
+                    let u = n.cross / leaf_span;
+                    left_pad = left_pad.max(hw - u * avail);
+                    right_pad = right_pad.max(hw - (1.0 - u) * avail);
+                }
+            }
+            if left_pad + right_pad > cw - 2.0 * r {
+                left_pad = (cw - 2.0 * r) * 0.25;
+                right_pad = (cw - 2.0 * r) * 0.25;
+            }
+            let cross = (cw - left_pad - right_pad).max(1.0);
             nodes
                 .iter()
                 .map(|n| {
                     let y = near + n.depth as f32 / depth_span * main;
-                    let x = (r + 2.0) + n.cross / leaf_span * cross;
+                    let x = left_pad + n.cross / leaf_span * cross;
                     (x, y)
                 })
                 .collect()
@@ -939,6 +954,34 @@ mod tests {
             5.0,
             apart(line((0.0, 0.0), (0.0, 0.0)), line((3.0, 4.0), (3.0, 4.0)))
         );
+    }
+
+    #[test]
+    fn tree_tb_labels_stay_within_canvas() {
+        let chart = TreeChart::from_json(include_str!("../../asset/tree_chart/integration.json"))
+            .unwrap();
+        let svg = chart.svg().unwrap();
+        let content_left = chart.margin.left;
+        let content_right = chart.width - chart.margin.right;
+        let font_size = chart.series.label.font.size.max(10.0);
+        for name in ["Backend", "Frontend", "Accounting", "COO"] {
+            let needle = format!(">\n{name}\n</text>");
+            let pos = svg.find(&needle).unwrap_or_else(|| panic!("missing {name}"));
+            let line_start = svg[..pos].rfind("<text").unwrap();
+            let tag = &svg[line_start..pos];
+            let x_start = tag.find("x=\"").unwrap() + 3;
+            let x_end = x_start + tag[x_start..].find('"').unwrap();
+            let x: f32 = tag[x_start..x_end].parse().unwrap();
+            let half_w =
+                crate::charts::measure_text_width_family(&chart.font_family, font_size, name)
+                    .unwrap()
+                    .width()
+                    / 2.0;
+            assert!(
+                x - half_w >= content_left - 0.5 && x + half_w <= content_right + 0.5,
+                "{name} overflows canvas: center={x}, half_w={half_w}, bounds=[{content_left}, {content_right}]"
+            );
+        }
     }
 
     #[test]

@@ -46,43 +46,43 @@ $0
 Weight
 </text>
 <text font-size="11.9" x="173.2" y="90.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
-$2000
+2.1
 </text>
 <text font-size="11.9" x="173.2" y="366.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
-$0
+1.2
 </text>
 <line stroke-width="1" x1="300" y1="82" x2="300" y2="375" stroke="#E0E6F2"/>
 <text font-size="14" x="300" y="73.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Cores
 </text>
 <text font-size="11.9" x="303" y="90.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
-$2000
+12
 </text>
 <text font-size="11.9" x="303" y="366.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
-$0
+4
 </text>
 <line stroke-width="1" x1="429.8" y1="82" x2="429.8" y2="375" stroke="#E0E6F2"/>
 <text font-size="14" x="429.8" y="73.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Storage
 </text>
 <text font-size="11.9" x="432.8" y="90.4" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
-$2000
+1024
 </text>
 <text font-size="11.9" x="432.8" y="366.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
-$0
+256
 </text>
 <line stroke-width="1" x1="559.6" y1="82" x2="559.6" y2="375" stroke="#E0E6F2"/>
 <text font-size="14" x="559.6" y="73.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#6E7079">
 Score
 </text>
 <text font-size="11.9" x="556.6" y="90.4" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
-$2000
+96
 </text>
 <text font-size="11.9" x="556.6" y="366.6" dominant-baseline="central" text-anchor="end" font-family="Roboto" fill="#464646">
-$0
+65
 </text>
-<polyline fill="none" stroke-width="2" points="40.4,199.2 170.2,374.8 300,373.8 429.8,300 559.6,361.5" stroke="#5470C6"/>
-<polyline fill="none" stroke-width="2" points="40.4,235.8 170.2,374.7 300,374.1 429.8,337.5 559.6,363.6" stroke="#91CC75"/>
-<polyline fill="none" stroke-width="2" points="40.4,111.3 170.2,374.8 300,373.2 429.8,225 559.6,360.9" stroke="#FAC858"/>
-<polyline fill="none" stroke-width="2" points="40.4,272.5 170.2,374.7 300,374.4 429.8,337.5 559.6,365.5" stroke="#EE6666"/>
+<polyline fill="none" stroke-width="2" points="40.4,199.2 170.2,309.9 300,228.5 429.8,277.3 559.6,119.8" stroke="#5470C6"/>
+<polyline fill="none" stroke-width="2" points="40.4,235.8 170.2,179.7 300,301.8 429.8,375 559.6,252.1" stroke="#91CC75"/>
+<polyline fill="none" stroke-width="2" points="40.4,111.3 170.2,375 300,82 429.8,82 559.6,82" stroke="#FAC858"/>
+<polyline fill="none" stroke-width="2" points="40.4,272.5 170.2,82 300,375 429.8,375 559.6,375" stroke="#EE6666"/>
 </svg>

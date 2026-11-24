@@ -1113,7 +1113,7 @@
 
 ## Parallel
 
-`ParallelChart::from_json` — 平行坐标图：`x_axis_data` 是各个维度的名称（每个维度一条竖轴），每个系列是一条记录，在每个维度上有一个值。它没有专属参数。
+`ParallelChart::from_json` — 平行坐标图：`x_axis_data` 是各个维度的名称（每个维度一条竖轴），每个系列是一条记录，在每个维度上有一个值。它没有专属参数；可通过 `y_axis_configs` 按下标为指定维度配置范围与格式（`axis_min`、`axis_max`、`axis_formatter`），未配置的维度按数据自动缩放。
 
 <!-- example: parallel -->
 

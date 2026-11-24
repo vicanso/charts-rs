@@ -241,6 +241,12 @@ impl Canvas {
     }
     /// Appends a filled band between two smooth curves.
     pub fn smooth_band(&mut self, band: SmoothBand) -> Box {
+        self.smooth_band_with(band, false)
+    }
+    pub(crate) fn monotone_smooth_band(&mut self, band: SmoothBand) -> Box {
+        self.smooth_band_with(band, true)
+    }
+    fn smooth_band_with(&mut self, band: SmoothBand, monotone: bool) -> Box {
         let mut c = band;
         for p in c.top.iter_mut().chain(c.bottom.iter_mut()) {
             p.x += self.margin.left;
@@ -249,7 +255,11 @@ impl Canvas {
         let mut points = c.top.clone();
         points.extend(c.bottom.iter().copied());
         let b = get_box_of_points(&points);
-        self.append(Component::SmoothBand(c));
+        self.append(if monotone {
+            Component::MonotoneSmoothBand(c)
+        } else {
+            Component::SmoothBand(c)
+        });
         b
     }
     /// Appends polygon widget to canvas.
@@ -368,13 +378,23 @@ impl Canvas {
     }
     /// Appends smooth line points widget to canvas.
     pub fn smooth_line(&mut self, line: SmoothLine) -> Box {
+        self.smooth_line_with(line, false)
+    }
+    pub(crate) fn monotone_smooth_line(&mut self, line: SmoothLine) -> Box {
+        self.smooth_line_with(line, true)
+    }
+    fn smooth_line_with(&mut self, line: SmoothLine, monotone: bool) -> Box {
         let mut c = line;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
             p.y += self.margin.top
         }
         let b = get_box_of_points(&c.points);
-        self.append(Component::SmoothLine(c));
+        self.append(if monotone {
+            Component::MonotoneSmoothLine(c)
+        } else {
+            Component::SmoothLine(c)
+        });
         b
     }
     /// Appends straight line points widget to canvas.
@@ -390,6 +410,12 @@ impl Canvas {
     }
     /// Appends smooth line points with fill color widget to canvas.
     pub fn smooth_line_fill(&mut self, fill: SmoothLineFill) -> Box {
+        self.smooth_line_fill_with(fill, false)
+    }
+    pub(crate) fn monotone_smooth_line_fill(&mut self, fill: SmoothLineFill) -> Box {
+        self.smooth_line_fill_with(fill, true)
+    }
+    fn smooth_line_fill_with(&mut self, fill: SmoothLineFill, monotone: bool) -> Box {
         let mut c = fill;
         for p in c.points.iter_mut() {
             p.x += self.margin.left;
@@ -398,7 +424,11 @@ impl Canvas {
         c.bottom += self.margin.top;
         let mut b = get_box_of_points(&c.points);
         b.bottom = c.bottom;
-        self.append(Component::SmoothLineFill(c));
+        self.append(if monotone {
+            Component::MonotoneSmoothLineFill(c)
+        } else {
+            Component::SmoothLineFill(c)
+        });
         b
     }
     /// Appends straight line points with fill color widget to canvas.
@@ -573,9 +603,12 @@ fn write_component(c: &Component, out: &mut String, grad_seen: &mut HashSet<Stri
         Component::Polygon(c) => c.write_svg(out, Some(grad_seen)),
         Component::Text(c) => c.write_svg(out),
         Component::SmoothLine(c) => c.write_svg(out),
+        Component::MonotoneSmoothLine(c) => c.write_svg_monotone(out),
         Component::StraightLine(c) => c.write_svg(out),
         Component::SmoothLineFill(c) => c.write_svg(out, Some(grad_seen)),
+        Component::MonotoneSmoothLineFill(c) => c.write_svg_monotone(out, Some(grad_seen)),
         Component::SmoothBand(c) => out.push_str(&c.svg()),
+        Component::MonotoneSmoothBand(c) => out.push_str(&c.svg_monotone()),
         Component::StraightLineFill(c) => c.write_svg(out, Some(grad_seen)),
         Component::Grid(c) => out.push_str(&c.svg()),
         Component::Axis(c) => out.push_str(&c.svg()?),

@@ -465,8 +465,12 @@ pub enum Component {
     Polygon(Polygon),
     Text(Text),
     SmoothLine(SmoothLine),
+    #[doc(hidden)]
+    MonotoneSmoothLine(SmoothLine),
     StraightLine(StraightLine),
     SmoothLineFill(SmoothLineFill),
+    #[doc(hidden)]
+    MonotoneSmoothLineFill(SmoothLineFill),
     StraightLineFill(StraightLineFill),
     Grid(Grid),
     Axis(Axis),
@@ -474,6 +478,8 @@ pub enum Component {
     Pie(Pie),
     /// A filled band between two smooth curves.
     SmoothBand(SmoothBand),
+    #[doc(hidden)]
+    MonotoneSmoothBand(SmoothBand),
     /// An annular sector with exact arcs.
     Sector(Sector),
     /// A band between two arcs of a circle.
@@ -1822,6 +1828,7 @@ struct BaseLine<'a> {
     pub stroke_width: f32,
     pub symbol: Option<Symbol>,
     pub is_smooth: bool,
+    pub monotone_y: bool,
     /// Draws the path as steps; the symbols stay on the points.
     pub step: Option<LineStep>,
     pub close: bool,
@@ -1894,7 +1901,11 @@ impl<'a> BaseLine<'a> {
         out.push_str(" d=\"");
         if self.is_smooth {
             // Smooth curves ignore `close`; only straight lines honour it.
-            let _ = SmoothCurve::write_points(self.points, false, out);
+            let _ = if self.monotone_y {
+                SmoothCurve::write_monotone_points(self.points, false, out)
+            } else {
+                SmoothCurve::write_points(self.points, false, out)
+            };
         } else if let Some(step) = self.step {
             write_straight_path(out, &step_points(self.points, step), self.close);
         } else {
@@ -2001,6 +2012,12 @@ impl SmoothLine {
         out
     }
     pub(crate) fn write_svg(&self, out: &mut String) {
+        self.write_svg_with(out, false);
+    }
+    pub(crate) fn write_svg_monotone(&self, out: &mut String) {
+        self.write_svg_with(out, true);
+    }
+    fn write_svg_with(&self, out: &mut String, monotone_y: bool) {
         BaseLine {
             color: self.color,
             fill: None,
@@ -2008,6 +2025,7 @@ impl SmoothLine {
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: true,
+            monotone_y,
             step: None,
             close: false,
             stroke_dash_array: self.stroke_dash_array.clone(),
@@ -2063,13 +2081,32 @@ impl SmoothLineFill {
         out
     }
     pub(crate) fn write_svg(&self, out: &mut String, grad_seen: Option<&mut HashSet<String>>) {
+        self.write_svg_with(out, grad_seen, false);
+    }
+    pub(crate) fn write_svg_monotone(
+        &self,
+        out: &mut String,
+        grad_seen: Option<&mut HashSet<String>>,
+    ) {
+        self.write_svg_with(out, grad_seen, true);
+    }
+    fn write_svg_with(
+        &self,
+        out: &mut String,
+        grad_seen: Option<&mut HashSet<String>>,
+        monotone_y: bool,
+    ) {
         if self.points.is_empty() || self.fill.is_transparent() {
             return;
         }
         let last = self.points[self.points.len() - 1];
         let first = self.points[0];
         write_fill_path(out, &self.fill, grad_seen, |out| {
-            let _ = SmoothCurve::write_points(&self.points, false, out);
+            let _ = if monotone_y {
+                SmoothCurve::write_monotone_points(&self.points, false, out)
+            } else {
+                SmoothCurve::write_points(&self.points, false, out)
+            };
             // The curve does not end with a space; the closing move is
             // concatenated the same way (`…99.1M 555.2`).
             out.push_str("M ");
@@ -2113,15 +2150,26 @@ pub struct SmoothBand {
 impl SmoothBand {
     /// Renders the component to an SVG fragment.
     pub fn svg(&self) -> String {
+        self.svg_with(false)
+    }
+    pub(crate) fn svg_monotone(&self) -> String {
+        self.svg_with(true)
+    }
+    fn svg_with(&self, monotone_y: bool) -> String {
         if self.top.len() < 2 || self.bottom.len() < 2 {
             return String::new();
         }
         let mut d = String::new();
-        let _ = SmoothCurve::write_points(&self.top, false, &mut d);
         let mut bottom = self.bottom.clone();
         bottom.reverse();
         let mut bottom_d = String::new();
-        let _ = SmoothCurve::write_points(&bottom, false, &mut bottom_d);
+        if monotone_y {
+            let _ = SmoothCurve::write_monotone_points(&self.top, false, &mut d);
+            let _ = SmoothCurve::write_monotone_points(&bottom, false, &mut bottom_d);
+        } else {
+            let _ = SmoothCurve::write_points(&self.top, false, &mut d);
+            let _ = SmoothCurve::write_points(&bottom, false, &mut bottom_d);
+        }
         // The lower curve starts with a move; join it with a line instead.
         let (start, rest) = bottom_d.split_once(' ').unwrap_or((&bottom_d, ""));
         d.push_str(" L");
@@ -2207,6 +2255,7 @@ impl StraightLine {
             stroke_width: self.stroke_width,
             symbol: self.symbol.clone(),
             is_smooth: false,
+            monotone_y: false,
             step: self.step,
             close: self.close,
             stroke_dash_array: self.stroke_dash_array.clone(),

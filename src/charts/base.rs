@@ -1914,15 +1914,12 @@ impl ChartBase {
         self.render_x_axis_with_height(c, data, axis_width, self.x_axis.height)
     }
     /// The height the x axis needs for its labels: `x_axis.height`, or more
-    /// when the labels are rotated to fit (`x_axis.label_overflow`).
+    /// when the labels are rotated to fit (`x_axis.label_overflow` or `x_axis.name_rotate`).
     pub(crate) fn x_axis_height_for(&self, axis_width: f32) -> f32 {
         if self.x_axis.hidden {
             return 0.0;
         }
-        if self.x_axis.label_overflow != AxisLabelOverflow::Rotate
-            || self.x_axis.name_rotate != 0.0
-            || self.x_axis.data.is_empty()
-        {
+        if self.x_axis.data.is_empty() {
             return self.x_axis.height;
         }
         let mut total = 0.0;
@@ -1934,7 +1931,16 @@ impl ChartBase {
                 widest = widest.max(b.width());
             }
         }
-        if total <= axis_width {
+        if self.x_axis.name_rotate != 0.0 {
+            let angle = self.x_axis.name_rotate;
+            let needed = self.x_axis.font.size
+                + self.x_axis.name_gap
+                + widest * angle.sin().abs()
+                + self.x_axis.font.size * 0.3 * angle.cos().abs()
+                + 4.0;
+            return self.x_axis.height.max(needed);
+        }
+        if self.x_axis.label_overflow != AxisLabelOverflow::Rotate || total <= axis_width {
             return self.x_axis.height;
         }
         // Rotated 45°: the label's projection plus the tick and gap.
@@ -2420,7 +2426,7 @@ impl ChartBase {
                 }
                 let dataset = vec![("series".to_string(), series.name.clone())];
                 if smooth {
-                    c1.smooth_band(SmoothBand {
+                    c1.monotone_smooth_band(SmoothBand {
                         top,
                         bottom,
                         fill: Some(color),
@@ -2694,7 +2700,7 @@ impl ChartBase {
                             ..Default::default()
                         });
                     } else if series_smooth {
-                        c1.smooth_line_fill(SmoothLineFill {
+                        c1.monotone_smooth_line_fill(SmoothLineFill {
                             fill,
                             points: points.clone(),
                             bottom: fill_bottom,
@@ -2709,7 +2715,7 @@ impl ChartBase {
                     }
                 }
                 if series_smooth {
-                    c1.smooth_line(SmoothLine {
+                    c1.monotone_smooth_line(SmoothLine {
                         points,
                         color: Some(color),
                         stroke_width: self.series.stroke_width,

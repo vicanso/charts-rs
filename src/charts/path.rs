@@ -100,6 +100,25 @@ impl SmoothCurve {
         close: bool,
         out: &mut impl fmt::Write,
     ) -> fmt::Result {
+        Self::write_points_with(points, close, false, out)
+    }
+
+    /// Writes smooth path data with vertical overshoot clamping when `points`
+    /// form an open x-monotonic sequence (both increasing and decreasing x).
+    pub(crate) fn write_monotone_points(
+        points: &[Point],
+        close: bool,
+        out: &mut impl fmt::Write,
+    ) -> fmt::Result {
+        Self::write_points_with(points, close, true, out)
+    }
+
+    fn write_points_with(
+        points: &[Point],
+        close: bool,
+        monotone_y: bool,
+        out: &mut impl fmt::Write,
+    ) -> fmt::Result {
         let tension = 0.25;
         let count = points.len();
         let mut control_points = Vec::with_capacity(count);
@@ -121,6 +140,40 @@ impl SmoothCurve {
                 None
             };
             control_points.push(get_control_points(point, left, right, tension));
+        }
+
+        // Prevent cubic spline overshoot on open x-monotonic series (e.g. bump
+        // charts with flat plateaus or local extrema) by clamping control-point
+        // y values inside their adjacent segment intervals while preserving C1
+        // tangent continuity.
+        let x_monotonic = count >= 3
+            && (points.windows(2).all(|w| w[1].x > w[0].x)
+                || points.windows(2).all(|w| w[1].x < w[0].x));
+        if monotone_y && !close && x_monotonic {
+            for index in 1..count - 1 {
+                let (Some(cpl), Some(cpr)) =
+                    (control_points[index].left, control_points[index].right)
+                else {
+                    continue;
+                };
+                let py = points[index].y;
+                let seg_l = py - points[index - 1].y;
+                let seg_r = points[index + 1].y - py;
+                if seg_l * seg_r <= 0.0 {
+                    control_points[index].left = Some((cpl.x, py).into());
+                    control_points[index].right = Some((cpr.x, py).into());
+                } else {
+                    let dy_l = (py - cpl.y).abs();
+                    let dy_r = (cpr.y - py).abs();
+                    let scale = (seg_l.abs() / dy_l.max(f32::EPSILON))
+                        .min(seg_r.abs() / dy_r.max(f32::EPSILON))
+                        .min(1.0);
+                    control_points[index].left =
+                        Some((cpl.x, py - (py - cpl.y) * scale).into());
+                    control_points[index].right =
+                        Some((cpr.x, py + (cpr.y - py) * scale).into());
+                }
+            }
         }
 
         for (index, point) in points.iter().enumerate() {
@@ -232,5 +285,42 @@ mod tests {
             "M10,10 C6.2 15.1, 17.2 40.1, 20 50 C22.2 57.6, 28.1 81.9, 30 80 C33.1 76.9, 36.5 42.2, 40 30 C41.5 24.7, 52.7 11.8, 50 10 C45.2 6.8, 13.7 5.1, 10 10",
             str
         );
+    }
+
+    #[test]
+    fn smooth_curve_no_y_overshoot_on_monotonic_x() {
+        // Simulates a bump-chart plateau series [1, 2, 2, 1, 1, 3] mapped to pixels,
+        // both forward (ascending x) and reversed (descending x, as used by SmoothBand).
+        let base = vec![
+            (0.0, 20.0).into(),
+            (50.0, 60.0).into(),
+            (100.0, 60.0).into(),
+            (150.0, 20.0).into(),
+            (200.0, 20.0).into(),
+            (250.0, 100.0).into(),
+        ];
+        let reversed: Vec<_> = base.iter().copied().rev().collect();
+        for pts in [base, reversed] {
+            let mut d = String::new();
+            SmoothCurve::write_monotone_points(&pts, false, &mut d).unwrap();
+            let segs: Vec<&str> = d.split(" C").skip(1).collect();
+            assert_eq!(segs.len(), pts.len() - 1);
+            for (i, seg) in segs.iter().enumerate() {
+                let y_lo = pts[i].y.min(pts[i + 1].y);
+                let y_hi = pts[i].y.max(pts[i + 1].y);
+                let coords: Vec<f32> = seg
+                    .replace(',', " ")
+                    .split_whitespace()
+                    .map(|s| s.parse::<f32>().unwrap())
+                    .collect();
+                assert_eq!(coords.len(), 6);
+                for &cy in &[coords[1], coords[3], coords[5]] {
+                    assert!(
+                        cy >= y_lo - 0.05 && cy <= y_hi + 0.05,
+                        "segment {i} y={cy} overshoots [{y_lo}, {y_hi}] in {d}"
+                    );
+                }
+            }
+        }
     }
 }
