@@ -15,6 +15,8 @@ JSON document, in the manner of Apache ECharts.
 [apache-badge]: https://img.shields.io/badge/license-apache2-blue.svg
 [apache-url]: https://github.com/vicanso/charts-rs/blob/main/LICENSE
 
+https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
+
 <p align="center">
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mix-line-bar.png" width="32%" alt="Bars and a line on two y axes"></a>
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/pie-nested.png" width="32%" alt="Nested pies"></a>
