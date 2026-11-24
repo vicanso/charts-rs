@@ -25,6 +25,10 @@ use super::layout::{
     LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, sugiyama,
 };
 use super::preprocess::{Direction, EdgeCurve, MermaidInitConfig, SourceLine};
+use super::style::{
+    EDGE_STROKE_WIDTH, EDGE_THICK_STROKE_WIDTH, NODE_STROKE_WIDTH, SUBGRAPH_RADIUS,
+    SUBGRAPH_STROKE_WIDTH,
+};
 use super::style::{MermaidPalette, StyleProps, parse_style_props, unquote_text};
 use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 use super::{ClickLink, MermaidChart, maybe_open_link, parse_click_link};
@@ -1322,8 +1326,8 @@ pub(crate) fn render(
         .unwrap_or(12.0_f32);
     let sg_font_size = init_cfg
         .font_size
-        .map(|s| (s - 1.0).max(9.0))
-        .unwrap_or(13.0_f32);
+        .map(|s| (s - 2.0).max(9.0))
+        .unwrap_or(12.0_f32);
     let edge_curve = init_cfg.flowchart_curve.unwrap_or(EdgeCurve::Smooth);
 
     // Measure node labels and subgraph titles.
@@ -1456,16 +1460,19 @@ pub(crate) fn render(
             .fill
             .unwrap_or_else(|| palette.subgraph_fill(depth));
         let stroke = sg.inline_style.stroke.unwrap_or(palette.subgraph_stroke);
-        let stroke_w = sg.inline_style.stroke_width.unwrap_or(1.2);
-        let text_color = sg.inline_style.color.unwrap_or(palette.text_color);
+        let stroke_w = sg
+            .inline_style
+            .stroke_width
+            .unwrap_or(SUBGRAPH_STROKE_WIDTH);
+        let text_color = sg.inline_style.color.unwrap_or(palette.muted_text);
 
         content_canvas.rect(Rect {
             left: b.x,
             top: b.y,
             width: b.width,
             height: b.height,
-            rx: Some(6.0),
-            ry: Some(6.0),
+            rx: Some(SUBGRAPH_RADIUS),
+            ry: Some(SUBGRAPH_RADIUS),
             fill: Some(fill.into()),
             color: Some(stroke),
             stroke_width: Some(stroke_w),
@@ -1475,7 +1482,7 @@ pub(crate) fn render(
 
         let title_ft = &sg_labels[sg_idx];
         if !title_ft.lines.is_empty() {
-            let ty = b.y + 12.0 + title_ft.height * 0.5;
+            let ty = b.y + 10.0 + title_ft.height * 0.5;
             let title_intersects_edges = |tx_left: f32, tx_right: f32| -> bool {
                 let ry0 = ty - title_ft.height * 0.5 - 4.0;
                 let ry1 = ty + title_ft.height * 0.5 + 4.0;
@@ -1487,18 +1494,19 @@ pub(crate) fn render(
             };
             let cx = b.x + b.width * 0.5;
             let half_tw = title_ft.width * 0.5 + 6.0;
-            let (tx, anchor) = if !title_intersects_edges(cx - half_tw, cx + half_tw) {
-                (cx, "middle")
-            } else if !title_intersects_edges(b.x + 8.0, b.x + 12.0 + title_ft.width + 6.0) {
-                (b.x + 12.0, "start")
-            } else if !title_intersects_edges(
-                b.x + b.width - 12.0 - title_ft.width - 6.0,
-                b.x + b.width - 8.0,
-            ) {
-                (b.x + b.width - 12.0, "end")
-            } else {
-                (b.x + 12.0, "start")
-            };
+            let (tx, anchor) =
+                if !title_intersects_edges(b.x + 6.0, b.x + 10.0 + title_ft.width + 6.0) {
+                    (b.x + 10.0, "start")
+                } else if !title_intersects_edges(cx - half_tw, cx + half_tw) {
+                    (cx, "middle")
+                } else if !title_intersects_edges(
+                    b.x + b.width - 12.0 - title_ft.width - 6.0,
+                    b.x + b.width - 8.0,
+                ) {
+                    (b.x + b.width - 12.0, "end")
+                } else {
+                    (b.x + 12.0, "start")
+                };
             draw_multiline_text(
                 &mut content_canvas,
                 tx,
@@ -1583,8 +1591,8 @@ pub(crate) fn render(
         }
 
         let base_width = match e.stroke {
-            EdgeStroke::Thick => 3.2,
-            EdgeStroke::Solid | EdgeStroke::Dotted => 1.8,
+            EdgeStroke::Thick => EDGE_THICK_STROKE_WIDTH,
+            EdgeStroke::Solid | EdgeStroke::Dotted => EDGE_STROKE_WIDTH,
             EdgeStroke::Invisible => 0.0,
         };
         let stroke_color = style.stroke.unwrap_or(palette.edge_stroke);
@@ -1663,7 +1671,7 @@ pub(crate) fn render(
         let shape = n.shape.unwrap_or(NodeShape::Rect);
         let fill = style.fill.unwrap_or(palette.node_fill);
         let stroke = style.stroke.unwrap_or(palette.node_stroke);
-        let stroke_w = style.stroke_width.unwrap_or(1.6);
+        let stroke_w = style.stroke_width.unwrap_or(NODE_STROKE_WIDTH);
         let txt_color = style.color.unwrap_or(palette.text_color);
 
         let linked = maybe_open_link(&mut content_canvas, chart, fc.links.get(&n.id));

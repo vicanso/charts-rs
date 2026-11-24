@@ -28,6 +28,7 @@ use super::layout::{
     LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, NoteSide, sugiyama,
 };
 use super::preprocess::{Direction, SourceLine};
+use super::style::{EDGE_STROKE_WIDTH, NODE_STROKE_WIDTH, SUBGRAPH_RADIUS, SUBGRAPH_STROKE_WIDTH};
 use super::style::{
     MermaidPalette, StyleDirective, StyleProps, mix_color, resolve_style, split_inline_classes,
     try_parse_style_directive, unquote_text,
@@ -1000,16 +1001,19 @@ pub(crate) fn render(
             .fill
             .unwrap_or_else(|| palette.subgraph_fill(0));
         let stroke = ns.inline_style.stroke.unwrap_or(palette.subgraph_stroke);
-        let stroke_w = ns.inline_style.stroke_width.unwrap_or(1.2);
-        let text_color = ns.inline_style.color.unwrap_or(palette.text_color);
+        let stroke_w = ns
+            .inline_style
+            .stroke_width
+            .unwrap_or(SUBGRAPH_STROKE_WIDTH);
+        let text_color = ns.inline_style.color.unwrap_or(palette.muted_text);
 
         cc.rect(Rect {
             left: b.x,
             top: b.y,
             width: b.width,
             height: b.height,
-            rx: Some(6.0),
-            ry: Some(6.0),
+            rx: Some(SUBGRAPH_RADIUS),
+            ry: Some(SUBGRAPH_RADIUS),
             fill: Some(fill.into()),
             color: Some(stroke),
             stroke_width: Some(stroke_w),
@@ -1019,13 +1023,13 @@ pub(crate) fn render(
         let title_ft = &ns_labels[ns_idx];
         draw_multiline_text(
             &mut cc,
-            b.x + b.width * 0.5,
-            b.y + 12.0 + title_ft.height * 0.5,
+            b.x + 10.0,
+            b.y + 10.0 + title_ft.height * 0.5,
             title_ft,
             &font_family,
             ns_font_size,
             text_color,
-            "middle",
+            "start",
             true,
         );
     }
@@ -1092,7 +1096,7 @@ pub(crate) fn render(
             d,
             fill: None,
             stroke: Some(palette.edge_stroke),
-            stroke_width: 1.7,
+            stroke_width: EDGE_STROKE_WIDTH,
             stroke_dash_array: r.dashed.then(|| "5,4".to_string()),
             stroke_linecap: Some("round"),
             stroke_linejoin: Some("round"),
@@ -1105,7 +1109,7 @@ pub(crate) fn render(
             (-start_dir.0, -start_dir.1),
             palette.edge_stroke,
             palette.opaque_bg,
-            1.7,
+            EDGE_STROKE_WIDTH,
         );
         draw_edge_marker(
             &mut cc,
@@ -1114,7 +1118,7 @@ pub(crate) fn render(
             end_dir,
             palette.edge_stroke,
             palette.opaque_bg,
-            1.7,
+            EDGE_STROKE_WIDTH,
         );
         if let Some(ref cl) = r.card_left {
             deferred_cards.push((pts[0], (-start_dir.0, -start_dir.1), cl.as_str()));
@@ -1176,7 +1180,7 @@ pub(crate) fn render(
         let eff_style = resolve_style(&n.classes, &n.inline_style, &cd.class_defs);
         let fill = eff_style.fill.unwrap_or(palette.node_fill);
         let stroke = eff_style.stroke.unwrap_or(palette.node_stroke);
-        let stroke_w = eff_style.stroke_width.unwrap_or(1.6);
+        let stroke_w = eff_style.stroke_width.unwrap_or(NODE_STROKE_WIDTH);
         let text_color = eff_style.color.unwrap_or(palette.text_color);
         let header_fill = mix_color(fill, stroke, 0.14);
 

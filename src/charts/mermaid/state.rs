@@ -27,6 +27,7 @@ use super::layout::{
     LayeredEdgeInput, LayeredGraph, LayeredNodeInput, LayeredSubgraphInput, NoteSide, sugiyama,
 };
 use super::preprocess::{Direction, SourceLine};
+use super::style::{EDGE_STROKE_WIDTH, NODE_STROKE_WIDTH, SUBGRAPH_RADIUS, SUBGRAPH_STROKE_WIDTH};
 use super::style::{
     MermaidPalette, StyleDirective, StyleProps, resolve_style, split_inline_classes,
     try_parse_style_directive, unquote_text,
@@ -842,7 +843,7 @@ pub(crate) fn render(
     let desc_font_size = 12.0_f32;
     let edge_font_size = 12.0_f32;
     let note_font_size = 12.0_f32;
-    let sg_font_size = 13.0_f32;
+    let sg_font_size = 12.0_f32;
     let is_horizontal = matches!(st.direction, Direction::LeftRight | Direction::RightLeft);
 
     struct MeasuredState {
@@ -1099,16 +1100,19 @@ pub(crate) fn render(
             .fill
             .unwrap_or_else(|| palette.subgraph_fill(depth));
         let stroke = sg.inline_style.stroke.unwrap_or(palette.subgraph_stroke);
-        let stroke_w = sg.inline_style.stroke_width.unwrap_or(1.3);
-        let text_color = sg.inline_style.color.unwrap_or(palette.text_color);
+        let stroke_w = sg
+            .inline_style
+            .stroke_width
+            .unwrap_or(SUBGRAPH_STROKE_WIDTH);
+        let text_color = sg.inline_style.color.unwrap_or(palette.muted_text);
 
         cc.rect(Rect {
             left: b.x,
             top: b.y,
             width: b.width,
             height: b.height,
-            rx: Some(8.0),
-            ry: Some(8.0),
+            rx: Some(SUBGRAPH_RADIUS),
+            ry: Some(SUBGRAPH_RADIUS),
             fill: Some(fill.into()),
             color: Some(stroke),
             stroke_width: Some(stroke_w),
@@ -1123,13 +1127,13 @@ pub(crate) fn render(
             header_bottom = b.y + hh;
             draw_multiline_text(
                 &mut cc,
-                b.x + b.width * 0.5,
+                b.x + 10.0,
                 b.y + hh * 0.5,
                 title_ft,
                 &font_family,
                 sg_font_size,
                 text_color,
-                "middle",
+                "start",
                 true,
             );
             cc.line(Line {
@@ -1280,7 +1284,7 @@ pub(crate) fn render(
             d,
             fill: None,
             stroke: Some(palette.edge_stroke),
-            stroke_width: 1.7,
+            stroke_width: EDGE_STROKE_WIDTH,
             stroke_dash_array: e.dashed.then(|| "5,4".to_string()),
             stroke_linecap: Some("round"),
             stroke_linejoin: Some("round"),
@@ -1293,7 +1297,7 @@ pub(crate) fn render(
             end_dir,
             palette.edge_stroke,
             palette.opaque_bg,
-            1.7,
+            EDGE_STROKE_WIDTH,
         );
         if let Some(ref lbl) = e.label
             && !lbl.is_empty()
@@ -1324,7 +1328,7 @@ pub(crate) fn render(
         let eff_style = resolve_style(&n.classes, &n.inline_style, &st.class_defs);
         let fill = eff_style.fill.unwrap_or(palette.node_fill);
         let stroke = eff_style.stroke.unwrap_or(palette.node_stroke);
-        let stroke_w = eff_style.stroke_width.unwrap_or(1.6);
+        let stroke_w = eff_style.stroke_width.unwrap_or(NODE_STROKE_WIDTH);
         let text_color = eff_style.color.unwrap_or(palette.text_color);
 
         let linked = maybe_open_link(&mut cc, chart, st.links.get(&n.id));

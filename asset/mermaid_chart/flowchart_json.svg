@@ -1,70 +1,70 @@
-<svg width="1153.7" height="333" viewBox="0 0 1153.7 333" xmlns="http://www.w3.org/2000/svg">
-<rect x="0" y="0" width="1153.7" height="333" fill="#FFFFFF"/>
+<svg width="1153.7" height="331.5" viewBox="0 0 1153.7 331.5" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1153.7" height="331.5" fill="#FFFFFF"/>
 <text font-size="18" x="506.3" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
 Request Pipeline
 </text>
-<rect x="568.7" y="59" width="556" height="188" rx="6" ry="6" stroke="#57648F" stroke-width="1.2" fill="#F7F9FC"/>
-<text font-size="13" x="846.7" y="80" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="568.7" y="59" width="556" height="186.5" rx="8" ry="8" stroke="#DEDEDE" stroke-width="1" fill="#FBFBFB"/>
+<text font-size="12" x="578.7" y="77.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 Backend Services
 </text>
-<path d="M97 147 L151 147" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="156,182 145.2,186.9 145.2,177.1" fill="#5C5D62"/>
-<path d="M263 147 L317 147" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="322,182 311.2,186.9 311.2,177.1" fill="#5C5D62"/>
-<path d="M436.4 136.3 L581.7 102.5" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="586.7,137.5 577.3,144.8 575.1,135.2" fill="#5C5D62"/>
-<path d="M426 161.8 L590.6 230" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5C5D62" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="595.6,265 583.8,265.4 587.5,256.3" fill="#5C5D62"/>
-<path d="M693.7 99.2 L811.7 119.6" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="816.7,154.6 805.2,157.6 806.9,147.9" fill="#5C5D62"/>
-<path d="M693.7 113.5 C736.1 131.6,794.5 173.8,863.2 186 C932 198.2,942.3 168.1,968.7 162.1" transform="translate(5,35)" fill="none" stroke-width="3.2" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="973.7,197.1 963,205.1 960.6,194.4" fill="#5C5D62"/>
-<path d="M914.7 134 L968.7 139.8" transform="translate(5,35)" fill="none" stroke-width="1.8" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="973.7,174.8 962.4,178.6 963.5,168.8" fill="#5C5D62"/>
-<rect x="497.5" y="142.9" width="33" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
-<text font-size="12" x="514" y="154.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M97 145.5 L151 145.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="156,180.5 148.2,184.2 148.2,176.8" fill="#999999"/>
+<path d="M263 145.5 L317 145.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="322,180.5 314.2,184.2 314.2,176.8" fill="#999999"/>
+<path d="M436.5 134.9 L581.7 101.4" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="586.7,136.4 580,141.8 578.3,134.5" fill="#999999"/>
+<path d="M426 160.3 L590.6 228.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="595.6,263.5 587.1,264 589.9,257.1" fill="#999999"/>
+<path d="M693.7 98.1 L811.7 118.2" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="816.7,153.2 808.4,155.6 809.7,148.3" fill="#999999"/>
+<path d="M693.7 112.3 C736.1 130.4,794.5 172.4,863.2 184.5 C932 196.6,942.3 166.6,968.7 160.6" transform="translate(5,35)" fill="none" stroke-width="2.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="973.7,195.6 966.1,201.5 964.3,193.5" fill="#999999"/>
+<path d="M914.7 132.5 L968.7 138.3" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="973.7,173.3 965.6,176.2 966.4,168.8" fill="#999999"/>
+<rect x="496.6" y="142.1" width="35" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="514.1" y="153.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Yes
 </text>
-<rect x="499.3" y="219.4" width="28" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
-<text font-size="12" x="513.3" y="230.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="498.3" y="218.4" width="30" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="513.3" y="229.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 No
 </text>
-<rect x="738.2" y="132.9" width="39" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
-<text font-size="12" x="757.7" y="144.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="737.2" y="132.1" width="41" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="757.7" y="143.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Miss
 </text>
-<rect x="854.2" y="209.5" width="28" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
-<text font-size="12" x="868.2" y="221" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="853.2" y="208.5" width="30" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="868.2" y="219.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Hit
 </text>
-<rect x="29" y="162.5" width="73" height="39" rx="19.5" ry="19.5" stroke="#0284C7" stroke-width="1.6" fill="#E0F2FE"/>
-<text font-size="14" x="65.5" y="182" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#0C4A6E">
+<rect x="29" y="161" width="73" height="39" rx="19.5" ry="19.5" stroke="#0284C7" stroke-width="1" fill="#E0F2FE"/>
+<text font-size="14" x="65.5" y="180.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#0C4A6E">
 Client
 </text>
-<rect x="156" y="162.5" width="112" height="39" stroke="#526AB3" stroke-width="1.6" fill="#EAEEF8"/>
-<text font-size="14" x="212" y="182" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="156" y="161" width="112" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="212" y="180.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 API Gateway
 </text>
-<path d="M390.4 118.3 L463.7 147 L390.4 175.7 L317 147 Z" transform="translate(5,35)" fill="#EAEEF8" stroke-width="1.6" stroke="#526AB3" stroke-linejoin="round"/>
-<text font-size="14" x="395.4" y="182" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<polygon points="395.4,151.8 468.7,180.5 395.4,209.2 322,180.5" stroke="#8C9ACA" fill="#F1F4FA"/>
+<text font-size="14" x="395.4" y="180.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 JWT Valid?
 </text>
-<path d="M581.7 71.1 A 56 7.1 0 0 1 693.7 71.1 L 693.7 107.9 A 56 7.1 0 0 1 581.7 107.9 Z" transform="translate(5,35)" fill="#EAEEF8" stroke-width="1.6" stroke="#526AB3"/>
-<path d="M 581.7 71.1 A 56 7.1 0 0 0 693.7 71.1" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#526AB3"/>
-<text font-size="14" x="642.7" y="124.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M581.7 70.1 A 56 7.1 0 0 1 693.7 70.1 L 693.7 106.9 A 56 7.1 0 0 1 581.7 106.9 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA"/>
+<path d="M 581.7 70.1 A 56 7.1 0 0 0 693.7 70.1" transform="translate(5,35)" fill="none" stroke-width="1" stroke="#8C9ACA"/>
+<text font-size="14" x="642.7" y="123.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Redis Cache
 </text>
-<rect x="568.7" y="265" width="148" height="39" rx="19.5" ry="19.5" stroke="#DC2626" stroke-width="1.6" fill="#FEE2E2"/>
-<text font-size="14" x="642.7" y="284.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#7F1D1D">
+<rect x="568.7" y="263.5" width="148" height="39" rx="19.5" ry="19.5" stroke="#DC2626" stroke-width="1" fill="#FEE2E2"/>
+<text font-size="14" x="642.7" y="283" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#7F1D1D">
 401 Unauthorized
 </text>
-<path d="M811.7 110.1 A 51.5 7.1 0 0 1 914.7 110.1 L 914.7 146.9 A 51.5 7.1 0 0 1 811.7 146.9 Z" transform="translate(5,35)" fill="#EAEEF8" stroke-width="1.6" stroke="#526AB3"/>
-<path d="M 811.7 110.1 A 51.5 7.1 0 0 0 914.7 110.1" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#526AB3"/>
-<text font-size="14" x="868.2" y="163.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M811.7 108.6 A 51.5 7.1 0 0 1 914.7 108.6 L 914.7 145.4 A 51.5 7.1 0 0 1 811.7 145.4 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA"/>
+<path d="M 811.7 108.6 A 51.5 7.1 0 0 0 914.7 108.6" transform="translate(5,35)" fill="none" stroke-width="1" stroke="#8C9ACA"/>
+<text font-size="14" x="868.2" y="162" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Primary DB
 </text>
-<rect x="973.7" y="162.5" width="133" height="39" stroke="#16A34A" stroke-width="1.6" fill="#DCFCE7"/>
-<text font-size="14" x="1040.2" y="182" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#14532D">
+<rect x="973.7" y="161" width="133" height="39" rx="3" ry="3" stroke="#16A34A" stroke-width="1" fill="#DCFCE7"/>
+<text font-size="14" x="1040.2" y="180.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#14532D">
 JSON Response
 </text>
 </svg>

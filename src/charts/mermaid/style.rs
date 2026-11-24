@@ -19,17 +19,37 @@ use super::super::color::Color;
 use super::super::error::{Error, Result};
 use super::super::theme::Theme;
 
+/// Shared visual constants for the native Mermaid engines (flat, thin-stroke
+/// style). Inline `style` / `classDef` overrides still take precedence.
+pub(crate) const NODE_STROKE_WIDTH: f32 = 1.0;
+pub(crate) const EDGE_STROKE_WIDTH: f32 = 1.25;
+pub(crate) const EDGE_THICK_STROKE_WIDTH: f32 = 2.2;
+pub(crate) const NODE_RADIUS: f32 = 6.0;
+pub(crate) const SUBGRAPH_RADIUS: f32 = 8.0;
+pub(crate) const SUBGRAPH_STROKE_WIDTH: f32 = 1.0;
+
+/// Whether nodes are tinted with the theme accent (otherwise neutral fg mix).
+const USE_ACCENT_NODES: bool = true;
+
 /// Harmonious colors derived from a `charts-rs` [`Theme`].
+///
+/// Built from a two-color foundation: every UI color is a ratio mix between
+/// the opaque background (`bg`) and the foreground text color (`fg`), with an
+/// optional accent tint used only for node fills / strokes.
 #[derive(Clone, Debug)]
 pub(crate) struct MermaidPalette {
     pub(crate) is_light: bool,
     pub(crate) bg: Color,
     pub(crate) opaque_bg: Color,
+    pub(crate) fg: Color,
     pub(crate) node_fill: Color,
     pub(crate) node_stroke: Color,
     pub(crate) edge_stroke: Color,
     pub(crate) text_color: Color,
+    pub(crate) muted_text: Color,
     pub(crate) edge_label_bg: Color,
+    pub(crate) edge_label_stroke: Color,
+    pub(crate) header_fill: Color,
     pub(crate) subgraph_stroke: Color,
     pub(crate) note_fill: Color,
     pub(crate) note_stroke: Color,
@@ -63,7 +83,7 @@ impl MermaidPalette {
                 (24, 24, 27).into()
             }
         } else {
-            bg
+            bg.with_alpha(255)
         };
 
         let accent = theme
@@ -74,59 +94,76 @@ impl MermaidPalette {
             .find(|c| !c.is_transparent() && !c.is_zero())
             .unwrap_or((84, 112, 198).into());
 
-        let text_color =
+        let fg: Color =
             if !theme.title.font.color.is_zero() && !theme.title.font.color.is_transparent() {
-                theme.title.font.color
+                theme.title.font.color.with_alpha(255)
             } else if is_light {
                 (32, 37, 46).into()
             } else {
                 (235, 240, 248).into()
             };
+        let m = |t: f32| mix_color(opaque_bg, fg, t);
 
-        let node_fill = if is_light {
-            mix_color(opaque_bg, accent, 0.12)
-        } else {
-            mix_color(opaque_bg, accent, 0.22)
-        };
-        let node_stroke = if is_light {
-            mix_color(accent, text_color, 0.15)
-        } else {
-            mix_color(accent, Color::white(), 0.20)
-        };
-
-        let axis_stroke = theme.x_axis.stroke_color;
-        let edge_stroke = if !axis_stroke.is_zero() && !axis_stroke.is_transparent() {
-            mix_color(axis_stroke, text_color, 0.45)
+        let (node_fill, node_stroke) = if USE_ACCENT_NODES {
+            if is_light {
+                (
+                    mix_color(opaque_bg, accent, 0.08),
+                    mix_color(mix_color(opaque_bg, accent, 0.62), fg, 0.12),
+                )
+            } else {
+                (
+                    mix_color(opaque_bg, accent, 0.16),
+                    mix_color(mix_color(opaque_bg, accent, 0.70), fg, 0.15),
+                )
+            }
         } else if is_light {
-            (85, 95, 110).into()
+            (m(0.04), m(0.38))
         } else {
-            (175, 185, 200).into()
+            (m(0.07), m(0.40))
         };
 
-        let edge_label_bg = opaque_bg.with_alpha(232);
-        let subgraph_stroke = mix_color(node_stroke, edge_stroke, 0.45);
+        let edge_stroke = m(0.55);
+        let muted_text = if is_light { m(0.60) } else { m(0.62) };
+        let edge_label_stroke = if is_light { m(0.12) } else { m(0.18) };
+        let header_fill = if USE_ACCENT_NODES {
+            if is_light {
+                mix_color(opaque_bg, accent, 0.14)
+            } else {
+                mix_color(opaque_bg, accent, 0.26)
+            }
+        } else if is_light {
+            m(0.07)
+        } else {
+            m(0.11)
+        };
+        let subgraph_stroke = if is_light { m(0.18) } else { m(0.22) };
+
         let note_base: Color = (250, 204, 21).into();
         let note_fill = if is_light {
-            mix_color(opaque_bg, note_base, 0.20)
+            mix_color(opaque_bg, note_base, 0.14)
         } else {
-            mix_color(opaque_bg, (180, 140, 30).into(), 0.28)
+            mix_color(opaque_bg, (180, 140, 30).into(), 0.20)
         };
-        let note_stroke = mix_color((202, 138, 4).into(), edge_stroke, 0.30);
+        let note_stroke = mix_color(mix_color(opaque_bg, (202, 138, 4).into(), 0.70), fg, 0.10);
         let activation_fill = if is_light {
-            mix_color(opaque_bg, accent, 0.26)
+            mix_color(opaque_bg, accent, 0.18)
         } else {
-            mix_color(opaque_bg, accent, 0.36)
+            mix_color(opaque_bg, accent, 0.28)
         };
 
         Self {
             is_light,
             bg,
             opaque_bg,
+            fg,
             node_fill,
             node_stroke,
             edge_stroke,
-            text_color,
-            edge_label_bg,
+            text_color: fg,
+            muted_text,
+            edge_label_bg: opaque_bg,
+            edge_label_stroke,
+            header_fill,
             subgraph_stroke,
             note_fill,
             note_stroke,
@@ -136,19 +173,19 @@ impl MermaidPalette {
     }
 
     pub(crate) fn subgraph_fill(&self, depth: usize) -> Color {
-        let step = (depth.min(4) as f32) * 0.035;
+        let d = depth.min(4) as f32;
         if self.is_light {
-            mix_color(self.opaque_bg, self.accent, 0.045 + step)
+            mix_color(self.opaque_bg, self.fg, 0.02 + 0.015 * d)
         } else {
-            mix_color(self.opaque_bg, Color::white(), 0.045 + step)
+            mix_color(self.opaque_bg, self.fg, 0.03 + 0.02 * d)
         }
     }
 
     pub(crate) fn box_fill(&self) -> Color {
         if self.is_light {
-            mix_color(self.opaque_bg, self.accent, 0.06)
+            mix_color(self.opaque_bg, self.fg, 0.035)
         } else {
-            mix_color(self.opaque_bg, Color::white(), 0.06)
+            mix_color(self.opaque_bg, self.fg, 0.05)
         }
     }
 }

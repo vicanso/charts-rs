@@ -3,78 +3,78 @@
 <text font-size="18" x="277" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
 Worker Job Lifecycle
 </text>
-<line stroke-width="1.2" x1="111" y1="97" x2="111" y2="591" stroke="#D1D0DC" stroke-dasharray="5,4"/>
-<line stroke-width="1.2" x1="240" y1="97" x2="240" y2="591" stroke="#D1D0DC" stroke-dasharray="5,4"/>
-<line stroke-width="1.2" x1="369" y1="97" x2="369" y2="591" stroke="#D1D0DC" stroke-dasharray="5,4"/>
-<line stroke-width="1.2" x1="535" y1="214" x2="535" y2="516" stroke="#D1D0DC" stroke-dasharray="5,4"/>
-<rect x="307" y="228" width="396" height="247" stroke="#9FABD6" stroke-width="1.4" fill="none"/>
-<polygon points="307,228 353,228 353,241 346,248 307,248" stroke="#9FABD6" fill="#1B1D44"/>
+<line stroke-width="1.2" x1="111" y1="97" x2="111" y2="591" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="240" y1="97" x2="240" y2="591" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="369" y1="97" x2="369" y2="591" stroke="#8A8896" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="535" y1="214" x2="535" y2="516" stroke="#8A8896" stroke-dasharray="5,4"/>
+<rect x="307" y="228" width="396" height="247" stroke="#413E55" stroke-width="1.4" fill="none"/>
+<polygon points="307,228 353,228 353,241 346,248 307,248" stroke="#413E55" fill="#18183D"/>
 <text font-size="12" x="328" y="238" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 loop
 </text>
-<rect x="359" y="227.5" width="97" height="21" rx="3" ry="3" fill="#100C2A" fill-opacity="0.91"/>
+<rect x="359" y="227.5" width="97" height="21" rx="3" ry="3" fill="#100C2A"/>
 <text font-size="12" x="363" y="238" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Poll tasks (3x)]
 </text>
-<rect x="339" y="309" width="334" height="144" stroke="#9FABD6" stroke-width="1.4" fill="none"/>
-<polygon points="339,309 385,309 385,322 378,329 339,329" stroke="#9FABD6" fill="#1B1D44"/>
+<rect x="339" y="309" width="334" height="144" stroke="#413E55" stroke-width="1.4" fill="none"/>
+<polygon points="339,309 385,309 385,322 378,329 339,329" stroke="#413E55" fill="#18183D"/>
 <text font-size="12" x="360" y="319" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 opt
 </text>
-<rect x="391" y="308.5" width="97" height="21" rx="3" ry="3" fill="#100C2A" fill-opacity="0.91"/>
+<rect x="391" y="308.5" width="97" height="21" rx="3" ry="3" fill="#100C2A"/>
 <text font-size="12" x="395" y="319" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Task available]
 </text>
-<line stroke-width="1.6" x1="111" y1="148" x2="240" y2="148" stroke="#D1D0DC"/>
-<polygon points="240,148 231,143.5 231,152.5" fill="#D1D0DC"/>
+<line stroke-width="1.6" x1="111" y1="148" x2="240" y2="148" stroke="#8A8896"/>
+<polygon points="240,148 231,143.5 231,152.5" fill="#8A8896"/>
 <text font-size="12.5" x="175.5" y="134.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Submit job
 </text>
-<line stroke-width="1.6" x1="240" y1="195" x2="493" y2="195" stroke="#D1D0DC"/>
-<polygon points="493,195 484,190.5 484,199.5" fill="#D1D0DC"/>
+<line stroke-width="1.6" x1="240" y1="195" x2="493" y2="195" stroke="#8A8896"/>
+<polygon points="493,195 484,190.5 484,199.5" fill="#8A8896"/>
 <text font-size="12.5" x="366.5" y="181.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Spawn worker
 </text>
-<line stroke-width="1.6" x1="535" y1="291" x2="369" y2="291" stroke="#D1D0DC"/>
-<polygon points="369,291 378,286.5 378,295.5" fill="#D1D0DC"/>
+<line stroke-width="1.6" x1="535" y1="291" x2="369" y2="291" stroke="#8A8896"/>
+<polygon points="369,291 378,286.5 378,295.5" fill="#8A8896"/>
 <text font-size="12.5" x="452" y="277.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Fetch next task
 </text>
-<line stroke-width="1.6" x1="369" y1="372" x2="535" y2="372" stroke="#D1D0DC" stroke-dasharray="5,4"/>
-<polygon points="535,372 526,367.5 526,376.5" fill="#D1D0DC"/>
+<line stroke-width="1.6" x1="369" y1="372" x2="535" y2="372" stroke="#8A8896" stroke-dasharray="5,4"/>
+<polygon points="535,372 526,367.5 526,376.5" fill="#8A8896"/>
 <text font-size="12.5" x="452" y="358.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Task payload
 </text>
-<path d="M530 363 L568 363 L568 390 L530 390" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#D1D0DC" stroke-linejoin="round"/>
-<polygon points="535,425 544,420.5 544,429.5" fill="#D1D0DC"/>
+<path d="M530 363 L568 363 L568 390 L530 390" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#8A8896" stroke-linejoin="round"/>
+<polygon points="535,425 544,420.5 544,429.5" fill="#8A8896"/>
 <text font-size="12.5" x="581" y="411.5" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 Execute job
 </text>
-<line stroke-width="1.6" x1="535" y1="516" x2="240" y2="516" stroke="#D1D0DC" stroke-dasharray="5,4"/>
-<polygon points="240,516 249,511.5 249,520.5" fill="#D1D0DC"/>
+<line stroke-width="1.6" x1="535" y1="516" x2="240" y2="516" stroke="#8A8896" stroke-dasharray="5,4"/>
+<polygon points="240,516 249,511.5 249,520.5" fill="#8A8896"/>
 <text font-size="12.5" x="387.5" y="502.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Completed &amp; exit
 </text>
-<line stroke-width="2.2" x1="527" y1="508" x2="543" y2="524" stroke="#768DD1"/>
-<line stroke-width="2.2" x1="527" y1="524" x2="543" y2="508" stroke="#768DD1"/>
-<line stroke-width="1.6" x1="240" y1="563" x2="111" y2="563" stroke="#D1D0DC" stroke-dasharray="5,4"/>
-<polygon points="111,563 120,558.5 120,567.5" fill="#D1D0DC"/>
+<line stroke-width="2.2" x1="527" y1="508" x2="543" y2="524" stroke="#5A69A4"/>
+<line stroke-width="2.2" x1="527" y1="524" x2="543" y2="508" stroke="#5A69A4"/>
+<line stroke-width="1.6" x1="240" y1="563" x2="111" y2="563" stroke="#8A8896" stroke-dasharray="5,4"/>
+<polygon points="111,563 120,558.5 120,567.5" fill="#8A8896"/>
 <text font-size="12.5" x="175.5" y="549.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Job finished
 </text>
-<rect x="69" y="59" width="84" height="38" rx="4" ry="4" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
+<rect x="69" y="59" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
 <text font-size="13.5" x="111" y="78" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Client
 </text>
-<rect x="191" y="59" width="98" height="38" rx="4" ry="4" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
+<rect x="191" y="59" width="98" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
 <text font-size="13.5" x="240" y="78" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Scheduler
 </text>
-<rect x="327" y="59" width="84" height="38" rx="4" ry="4" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
+<rect x="327" y="59" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
 <text font-size="13.5" x="369" y="78" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Queue
 </text>
-<rect x="493" y="176" width="84" height="38" rx="4" ry="4" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
+<rect x="493" y="176" width="84" height="38" rx="4" ry="4" stroke="#5A69A4" stroke-width="1.6" fill="#1B1C43"/>
 <text font-size="13.5" x="535" y="195" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Worker
 </text>

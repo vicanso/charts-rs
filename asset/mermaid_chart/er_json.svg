@@ -3,44 +3,44 @@
 <text font-size="18" x="135.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
 E-Commerce Schema
 </text>
-<path d="M195.5 126 L147.3 226" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.7" x1="192" y1="163.6" x2="203.7" y2="169.2" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="189.8" y1="168.1" x2="201.5" y2="173.7" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="157.5" y1="250.2" x2="145.6" y2="257.7" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="157.5" y1="250.2" x2="159.1" y2="264.3" stroke="#5C5D62"/>
-<circle cx="160.1" cy="244.8" r="4.2" stroke-width="1.5" stroke="#5C5D62" fill="#FFFFFF"/>
-<path d="M147.3 352 L195.5 452" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.7" x1="149.1" y1="395.2" x2="160.8" y2="389.6" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="151.2" y1="399.7" x2="162.9" y2="394.1" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="195.2" y1="476.2" x2="193.7" y2="490.3" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="195.2" y1="476.2" x2="207.2" y2="483.7" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="201.1" y1="473.4" x2="189.4" y2="479" stroke="#5C5D62"/>
-<path d="M303.8 340 L246.2 452" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#5C5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<line stroke-width="1.7" x1="300.3" y1="377.4" x2="311.8" y2="383.3" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="298" y1="381.8" x2="309.5" y2="387.8" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="256.7" y1="476.3" x2="244.5" y2="483.6" stroke="#5C5D62"/>
-<line stroke-width="1.7" x1="256.7" y1="476.3" x2="257.9" y2="490.4" stroke="#5C5D62"/>
-<circle cx="259.4" cy="471" r="4.2" stroke-width="1.5" stroke="#5C5D62" fill="#FFFFFF"/>
-<rect x="151.9" y="199.5" width="49" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<path d="M195.5 126 L147.3 226" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.6" x1="192" y1="163.6" x2="203.7" y2="169.2" stroke="#999999"/>
+<line stroke-width="1.6" x1="189.8" y1="168.1" x2="201.5" y2="173.7" stroke="#999999"/>
+<line stroke-width="1.5" x1="157.5" y1="250.2" x2="145.6" y2="257.7" stroke="#999999"/>
+<line stroke-width="1.5" x1="157.5" y1="250.2" x2="159.1" y2="264.3" stroke="#999999"/>
+<circle cx="160.1" cy="244.8" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
+<path d="M147.3 352 L195.5 452" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.6" x1="149.1" y1="395.2" x2="160.8" y2="389.6" stroke="#999999"/>
+<line stroke-width="1.6" x1="151.2" y1="399.7" x2="162.9" y2="394.1" stroke="#999999"/>
+<line stroke-width="1.5" x1="195.2" y1="476.2" x2="193.7" y2="490.3" stroke="#999999"/>
+<line stroke-width="1.5" x1="195.2" y1="476.2" x2="207.2" y2="483.7" stroke="#999999"/>
+<line stroke-width="1.6" x1="201.1" y1="473.4" x2="189.4" y2="479" stroke="#999999"/>
+<path d="M303.8 340 L246.2 452" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<line stroke-width="1.6" x1="300.3" y1="377.4" x2="311.8" y2="383.3" stroke="#999999"/>
+<line stroke-width="1.6" x1="298" y1="381.8" x2="309.5" y2="387.8" stroke="#999999"/>
+<line stroke-width="1.5" x1="256.7" y1="476.3" x2="244.5" y2="483.6" stroke="#999999"/>
+<line stroke-width="1.5" x1="256.7" y1="476.3" x2="257.9" y2="490.4" stroke="#999999"/>
+<circle cx="259.4" cy="471" r="4.2" stroke-width="1.5" stroke="#999999" fill="#FFFFFF"/>
+<rect x="150.9" y="200" width="51" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
 <text font-size="12" x="176.4" y="211" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 places
 </text>
-<rect x="146.4" y="425.5" width="60" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<rect x="145.4" y="426" width="62" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
 <text font-size="12" x="176.4" y="437" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 contains
 </text>
-<rect x="234" y="419.5" width="92" height="23" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.91"/>
+<rect x="233" y="420" width="94" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
 <text font-size="12" x="280" y="431" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 referenced by
 </text>
 <rect x="112" y="59" width="226" height="102" rx="5" ry="5" fill="#FFFFFF"/>
-<rect x="112" y="59" width="226" height="30" rx="5" ry="5" fill="#D2D9ED"/>
-<rect x="112" y="84" width="226" height="5" fill="#D2D9ED"/>
+<rect x="112" y="59" width="226" height="30" rx="5" ry="5" fill="#E7EBF7"/>
+<rect x="112" y="84" width="226" height="5" fill="#E7EBF7"/>
 <text font-size="13.5" x="225" y="74" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Customer
 </text>
-<line stroke-width="1.1" x1="112" y1="89" x2="338" y2="89" stroke="#526AB3"/>
-<text font-size="11.5" x="124" y="101" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="1.1" x1="112" y1="89" x2="338" y2="89" stroke="#8C9ACA"/>
+<text font-size="11.5" x="124" y="101" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 uuid
 </text>
 <text font-size="11.5" x="178" y="101" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -50,9 +50,9 @@ id
 <text font-size="10" x="233" y="101" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 PK
 </text>
-<rect x="112" y="113" width="226" height="24" fill="#F6F8FB"/>
-<line stroke-width="0.7" x1="112" y1="113" x2="338" y2="113" stroke="#B1BCDD"/>
-<text font-size="11.5" x="124" y="125" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<rect x="112" y="113" width="226" height="24" fill="#F9FAFC"/>
+<line stroke-width="0.7" x1="112" y1="113" x2="338" y2="113" stroke="#CBD2E7"/>
+<text font-size="11.5" x="124" y="125" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 varchar
 </text>
 <text font-size="11.5" x="178" y="125" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -62,25 +62,25 @@ email
 <text font-size="10" x="233" y="125" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 UK
 </text>
-<text font-size="11.5" x="259" y="125" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<text font-size="11.5" x="259" y="125" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 unique login
 </text>
-<line stroke-width="0.7" x1="112" y1="137" x2="338" y2="137" stroke="#B1BCDD"/>
-<text font-size="11.5" x="124" y="149" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="0.7" x1="112" y1="137" x2="338" y2="137" stroke="#CBD2E7"/>
+<text font-size="11.5" x="124" y="149" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 varchar
 </text>
 <text font-size="11.5" x="178" y="149" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 name
 </text>
-<rect x="112" y="59" width="226" height="102" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="112" y="59" width="226" height="102" rx="5" ry="5" stroke="#8C9ACA" stroke-width="1" fill="none"/>
 <rect x="29" y="261" width="186" height="126" rx="5" ry="5" fill="#FFFFFF"/>
-<rect x="29" y="261" width="186" height="30" rx="5" ry="5" fill="#D2D9ED"/>
-<rect x="29" y="286" width="186" height="5" fill="#D2D9ED"/>
+<rect x="29" y="261" width="186" height="30" rx="5" ry="5" fill="#E7EBF7"/>
+<rect x="29" y="286" width="186" height="5" fill="#E7EBF7"/>
 <text font-size="13.5" x="122" y="276" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 ORDER
 </text>
-<line stroke-width="1.1" x1="29" y1="291" x2="215" y2="291" stroke="#526AB3"/>
-<text font-size="11.5" x="41" y="303" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="1.1" x1="29" y1="291" x2="215" y2="291" stroke="#8C9ACA"/>
+<text font-size="11.5" x="41" y="303" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 uuid
 </text>
 <text font-size="11.5" x="97" y="303" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -90,9 +90,9 @@ id
 <text font-size="10" x="189" y="303" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 PK
 </text>
-<rect x="29" y="315" width="186" height="24" fill="#F6F8FB"/>
-<line stroke-width="0.7" x1="29" y1="315" x2="215" y2="315" stroke="#B1BCDD"/>
-<text font-size="11.5" x="41" y="327" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<rect x="29" y="315" width="186" height="24" fill="#F9FAFC"/>
+<line stroke-width="0.7" x1="29" y1="315" x2="215" y2="315" stroke="#CBD2E7"/>
+<text font-size="11.5" x="41" y="327" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 uuid
 </text>
 <text font-size="11.5" x="97" y="327" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -102,30 +102,30 @@ customer_id
 <text font-size="10" x="188.5" y="327" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 FK
 </text>
-<line stroke-width="0.7" x1="29" y1="339" x2="215" y2="339" stroke="#B1BCDD"/>
-<text font-size="11.5" x="41" y="351" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="0.7" x1="29" y1="339" x2="215" y2="339" stroke="#CBD2E7"/>
+<text font-size="11.5" x="41" y="351" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 decimal
 </text>
 <text font-size="11.5" x="97" y="351" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 total
 </text>
-<rect x="29" y="363" width="186" height="24" fill="#F6F8FB"/>
-<line stroke-width="0.7" x1="29" y1="363" x2="215" y2="363" stroke="#B1BCDD"/>
-<text font-size="11.5" x="41" y="375" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<rect x="29" y="363" width="186" height="24" fill="#F9FAFC"/>
+<line stroke-width="0.7" x1="29" y1="363" x2="215" y2="363" stroke="#CBD2E7"/>
+<text font-size="11.5" x="41" y="375" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 varchar
 </text>
 <text font-size="11.5" x="97" y="375" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 status
 </text>
-<rect x="29" y="261" width="186" height="126" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="29" y="261" width="186" height="126" rx="5" ry="5" stroke="#8C9ACA" stroke-width="1" fill="none"/>
 <rect x="138.5" y="487" width="173" height="102" rx="5" ry="5" fill="#FFFFFF"/>
-<rect x="138.5" y="487" width="173" height="30" rx="5" ry="5" fill="#D2D9ED"/>
-<rect x="138.5" y="512" width="173" height="5" fill="#D2D9ED"/>
+<rect x="138.5" y="487" width="173" height="30" rx="5" ry="5" fill="#E7EBF7"/>
+<rect x="138.5" y="512" width="173" height="5" fill="#E7EBF7"/>
 <text font-size="13.5" x="225" y="502" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 ORDER_ITEM
 </text>
-<line stroke-width="1.1" x1="138.5" y1="517" x2="311.5" y2="517" stroke="#526AB3"/>
-<text font-size="11.5" x="150.5" y="529" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="1.1" x1="138.5" y1="517" x2="311.5" y2="517" stroke="#8C9ACA"/>
+<text font-size="11.5" x="150.5" y="529" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 uuid
 </text>
 <text font-size="11.5" x="185.5" y="529" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -135,9 +135,9 @@ order_id
 <text font-size="10" x="276.5" y="529" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 PK, FK
 </text>
-<rect x="138.5" y="541" width="173" height="24" fill="#F6F8FB"/>
-<line stroke-width="0.7" x1="138.5" y1="541" x2="311.5" y2="541" stroke="#B1BCDD"/>
-<text font-size="11.5" x="150.5" y="553" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<rect x="138.5" y="541" width="173" height="24" fill="#F9FAFC"/>
+<line stroke-width="0.7" x1="138.5" y1="541" x2="311.5" y2="541" stroke="#CBD2E7"/>
+<text font-size="11.5" x="150.5" y="553" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 uuid
 </text>
 <text font-size="11.5" x="185.5" y="553" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -147,22 +147,22 @@ product_id
 <text font-size="10" x="276.5" y="553" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 PK, FK
 </text>
-<line stroke-width="0.7" x1="138.5" y1="565" x2="311.5" y2="565" stroke="#B1BCDD"/>
-<text font-size="11.5" x="150.5" y="577" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="0.7" x1="138.5" y1="565" x2="311.5" y2="565" stroke="#CBD2E7"/>
+<text font-size="11.5" x="150.5" y="577" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 int
 </text>
 <text font-size="11.5" x="185.5" y="577" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 quantity
 </text>
-<rect x="138.5" y="487" width="173" height="102" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="138.5" y="487" width="173" height="102" rx="5" ry="5" stroke="#8C9ACA" stroke-width="1" fill="none"/>
 <rect x="249" y="273" width="172" height="102" rx="5" ry="5" fill="#FFFFFF"/>
-<rect x="249" y="273" width="172" height="30" rx="5" ry="5" fill="#D2D9ED"/>
-<rect x="249" y="298" width="172" height="5" fill="#D2D9ED"/>
+<rect x="249" y="273" width="172" height="30" rx="5" ry="5" fill="#E7EBF7"/>
+<rect x="249" y="298" width="172" height="5" fill="#E7EBF7"/>
 <text font-size="13.5" x="335" y="288" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 PRODUCT
 </text>
-<line stroke-width="1.1" x1="249" y1="303" x2="421" y2="303" stroke="#526AB3"/>
-<text font-size="11.5" x="261" y="315" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="1.1" x1="249" y1="303" x2="421" y2="303" stroke="#8C9ACA"/>
+<text font-size="11.5" x="261" y="315" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 uuid
 </text>
 <text font-size="11.5" x="317" y="315" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -172,9 +172,9 @@ id
 <text font-size="10" x="395" y="315" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 PK
 </text>
-<rect x="249" y="327" width="172" height="24" fill="#F6F8FB"/>
-<line stroke-width="0.7" x1="249" y1="327" x2="421" y2="327" stroke="#B1BCDD"/>
-<text font-size="11.5" x="261" y="339" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<rect x="249" y="327" width="172" height="24" fill="#F9FAFC"/>
+<line stroke-width="0.7" x1="249" y1="327" x2="421" y2="327" stroke="#CBD2E7"/>
+<text font-size="11.5" x="261" y="339" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 varchar
 </text>
 <text font-size="11.5" x="317" y="339" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
@@ -184,12 +184,12 @@ sku
 <text font-size="10" x="395" y="339" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 UK
 </text>
-<line stroke-width="0.7" x1="249" y1="351" x2="421" y2="351" stroke="#B1BCDD"/>
-<text font-size="11.5" x="261" y="363" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#818181">
+<line stroke-width="0.7" x1="249" y1="351" x2="421" y2="351" stroke="#CBD2E7"/>
+<text font-size="11.5" x="261" y="363" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
 decimal
 </text>
 <text font-size="11.5" x="317" y="363" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 unit_price
 </text>
-<rect x="249" y="273" width="172" height="102" rx="5" ry="5" stroke="#526AB3" stroke-width="1.6" fill="none"/>
+<rect x="249" y="273" width="172" height="102" rx="5" ry="5" stroke="#8C9ACA" stroke-width="1" fill="none"/>
 </svg>

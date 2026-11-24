@@ -241,8 +241,8 @@ pub(crate) fn draw_node(
     match shape {
         NodeShape::Rect | NodeShape::Rounded | NodeShape::Stadium => {
             let rx = match shape {
-                NodeShape::Rect => None,
-                NodeShape::Rounded => Some(6.0),
+                NodeShape::Rect => Some(super::style::NODE_RADIUS * 0.5),
+                NodeShape::Rounded => Some(super::style::NODE_RADIUS * 1.5),
                 NodeShape::Stadium => Some((h * 0.5).min(w * 0.5)),
                 _ => None,
             };
@@ -715,8 +715,8 @@ pub(crate) fn draw_edge_marker(
     match marker {
         EdgeMarker::None => {}
         EdgeMarker::Arrow => {
-            let arrow_len = (9.0 + stroke_width).min(13.0);
-            let half_w = (4.2 + stroke_width * 0.4).min(6.5);
+            let arrow_len = (6.5 + stroke_width).min(11.0);
+            let half_w = (3.2 + stroke_width * 0.4).min(5.5);
             let p1 = pt_at(arrow_len, half_w);
             let p2 = pt_at(arrow_len, -half_w);
             c.polygon(Polygon {
@@ -907,19 +907,21 @@ pub(crate) fn draw_edge_label(
     if label.width <= 0.0 && label.height <= 0.0 {
         return;
     }
-    let pad_x = 6.0;
-    let pad_y = 3.0;
+    let pad_x = 7.0;
+    let pad_y = 2.5;
     let w = label.width + pad_x * 2.0;
     let h = label.height + pad_y * 2.0;
+    let r = (h * 0.5).min(9.0);
     c.rect(Rect {
         left: mid.x - w * 0.5,
         top: mid.y - h * 0.5,
         width: w,
         height: h,
-        rx: Some(4.0),
-        ry: Some(4.0),
+        rx: Some(r),
+        ry: Some(r),
         fill: Some(palette.edge_label_bg.into()),
-        color: None,
+        color: Some(palette.edge_label_stroke),
+        stroke_width: Some(1.0),
         ..Default::default()
     });
     draw_multiline_text(
@@ -962,7 +964,7 @@ pub(crate) fn draw_note_box(
         d: path_from_points(&pts, true),
         fill: Some(palette.note_fill),
         stroke: Some(palette.note_stroke),
-        stroke_width: 1.2,
+        stroke_width: 1.0,
         stroke_linejoin: Some("round"),
         ..Default::default()
     });

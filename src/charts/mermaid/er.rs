@@ -25,6 +25,7 @@ use super::draw::{
 };
 use super::layout::{LayeredEdgeInput, LayeredGraph, LayeredNodeInput, sugiyama};
 use super::preprocess::{Direction, SourceLine};
+use super::style::{EDGE_STROKE_WIDTH, NODE_STROKE_WIDTH};
 use super::style::{
     MermaidPalette, StyleDirective, StyleProps, mix_color, resolve_style, split_inline_classes,
     try_parse_style_directive, unquote_text,
@@ -676,7 +677,7 @@ pub(crate) fn render(
             d,
             fill: None,
             stroke: Some(palette.edge_stroke),
-            stroke_width: 1.7,
+            stroke_width: EDGE_STROKE_WIDTH,
             stroke_dash_array: r.dashed.then(|| "5,4".to_string()),
             stroke_linecap: Some("round"),
             stroke_linejoin: Some("round"),
@@ -689,7 +690,7 @@ pub(crate) fn render(
             (-start_dir.0, -start_dir.1),
             palette.edge_stroke,
             palette.opaque_bg,
-            1.7,
+            EDGE_STROKE_WIDTH,
         );
         draw_edge_marker(
             &mut cc,
@@ -698,7 +699,7 @@ pub(crate) fn render(
             end_dir,
             palette.edge_stroke,
             palette.opaque_bg,
-            1.7,
+            EDGE_STROKE_WIDTH,
         );
         if let Some(ref lbl) = r.label {
             let ft = format_and_measure(lbl, &font_family, edge_font_size);
@@ -724,7 +725,7 @@ pub(crate) fn render(
         let eff_style = resolve_style(&ent.classes, &ent.inline_style, &er.class_defs);
         let base_fill = eff_style.fill.unwrap_or(palette.opaque_bg);
         let stroke = eff_style.stroke.unwrap_or(palette.node_stroke);
-        let stroke_w = eff_style.stroke_width.unwrap_or(1.6);
+        let stroke_w = eff_style.stroke_width.unwrap_or(NODE_STROKE_WIDTH);
         let text_color = eff_style.color.unwrap_or(palette.text_color);
 
         let x = pos.cx - m.w * 0.5;
@@ -759,14 +760,18 @@ pub(crate) fn render(
             continue;
         }
 
-        let header_fill = mix_color(palette.node_fill, stroke, 0.16);
+        let header_fill = eff_style
+            .fill
+            .map_or(palette.header_fill, |f| mix_color(f, stroke, 0.16));
         let zebra_fill = mix_color(
             base_fill,
             stroke,
             if palette.is_light { 0.05 } else { 0.09 },
         );
         let sep_color = mix_color(stroke, base_fill, 0.55);
-        let muted_color = mix_color(text_color, base_fill, 0.32);
+        let muted_color = eff_style
+            .color
+            .map_or(palette.muted_text, |c| mix_color(c, base_fill, 0.32));
         let badge_fill = mix_color(
             base_fill,
             palette.accent,

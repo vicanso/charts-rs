@@ -1,99 +1,99 @@
-<svg width="413" height="1025" viewBox="0 0 413 1025" xmlns="http://www.w3.org/2000/svg">
-<rect x="0" y="0" width="413" height="1025" fill="#100C2A"/>
+<svg width="413" height="1020" viewBox="0 0 413 1020" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="413" height="1020" fill="#100C2A"/>
 <text font-size="18" x="142.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#EEEEEE">
 Order Lifecycle
 </text>
-<rect x="29" y="422" width="322" height="331" rx="8" ry="8" stroke="#9FABD6" stroke-width="1.3" fill="#1B1734"/>
-<text font-size="13" x="190" y="439" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="29" y="420" width="322" height="330" rx="8" ry="8" stroke="#413E55" stroke-width="1" fill="#171330"/>
+<text font-size="12" x="39" y="436.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#9A98A4">
 Processing
 </text>
-<line stroke-width="1" x1="29" y1="456" x2="351" y2="456" stroke="#9FABD6"/>
-<line stroke-width="1.2" x1="191.8" y1="458" x2="191.8" y2="751" stroke="#9FABD6" stroke-dasharray="5,4"/>
-<line stroke-width="1.2" x1="170.5" y1="192.5" x2="152.5" y2="192.5" stroke="#CC9F45" stroke-dasharray="4,3"/>
-<path d="M209.6 39.8 L123.5 139" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="128.5,174 131.9,162.7 139.2,169.1" fill="#D1D0DC"/>
-<path d="M120.8 176 L209.7 299.8" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="214.7,334.8 204.4,329 212.4,323.3" fill="#D1D0DC"/>
-<path d="M208.9 315.4 L201.7 387" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="206.7,422 202.9,410.9 212.6,411.8" fill="#D1D0DC"/>
-<path d="M222.8 314.7 C259.3 348.5,332.4 390.1,369 450 C405.6 509.9,369 500.1,369 554.5 C369 608.9,390.2 605.1,369 667.5 C347.8 729.9,305.3 769.9,284 804" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="289,839 290.5,827.3 298.8,832.5" fill="#D1D0DC"/>
-<path d="M91.5 458.8 L106.8 536" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="111.8,571 105,561.5 114.5,559.6" fill="#D1D0DC"/>
-<path d="M110.7 573 L111.3 649" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="116.3,684 111.4,673.3 121.1,673.3" fill="#D1D0DC"/>
-<path d="M245.5 458.8 L260.8 536" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="265.8,571 259,561.5 268.5,559.6" fill="#D1D0DC"/>
-<path d="M263.3 573 L258.2 649" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="263.2,684 259.1,673 268.8,673.6" fill="#D1D0DC"/>
-<path d="M165.1 718 L154.7 804" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="159.7,839 156.2,827.8 165.9,829" fill="#D1D0DC"/>
-<path d="M161.7 841 L210.2 938.3" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="215.2,973.3 206,965.9 214.7,961.5" fill="#D1D0DC"/>
-<path d="M264.2 841 L220.4 938.1" transform="translate(5,35)" fill="none" stroke-width="1.7" stroke="#D1D0DC" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="225.4,973.1 225.4,961.3 234.3,965.3" fill="#D1D0DC"/>
-<rect x="144.7" y="261.4" width="51" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="170.2" y="272.9" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<line stroke-width="1" x1="29" y1="453" x2="351" y2="453" stroke="#413E55"/>
+<line stroke-width="1.2" x1="191.8" y1="455" x2="191.8" y2="748" stroke="#413E55" stroke-dasharray="5,4"/>
+<line stroke-width="1.2" x1="170.5" y1="191.5" x2="152.5" y2="191.5" stroke="#9B7225" stroke-dasharray="4,3"/>
+<path d="M209.6 39.8 L123.7 138" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="128.7,173 131,164.7 136.6,169.6" fill="#8A8896"/>
+<path d="M120.9 175 L209.6 297.9" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="214.6,332.9 207.1,328.8 213.1,324.4" fill="#8A8896"/>
+<path d="M208.9 313.4 L201.7 385" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="206.7,420 203.8,411.9 211.1,412.7" fill="#8A8896"/>
+<path d="M222.8 312.7 C259.3 346.3,332.4 387.3,369 447 C405.6 506.7,369 497.1,369 551.5 C369 605.9,390.2 602.4,369 664.5 C347.8 726.6,305.3 766.1,284.1 800" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="289.1,835 290.1,826.5 296.3,830.4" fill="#8A8896"/>
+<path d="M91.5 455.8 L106.8 533" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="111.8,568 106.7,561.1 113.9,559.7" fill="#8A8896"/>
+<path d="M110.7 570 L111.3 646" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="116.3,681 112.6,673.3 120,673.2" fill="#8A8896"/>
+<path d="M245.5 455.8 L260.8 533" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="265.8,568 260.7,561.1 267.9,559.7" fill="#8A8896"/>
+<path d="M263.3 570 L258.2 646" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="263.2,681 260,673 267.4,673.5" fill="#8A8896"/>
+<path d="M165 715 L154.7 800" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="159.7,835 157,826.9 164.3,827.8" fill="#8A8896"/>
+<path d="M161.8 837 L210.1 933.3" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="215.1,968.3 208.3,963 214.9,959.7" fill="#8A8896"/>
+<path d="M264.1 837 L220.5 933.1" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="225.5,968.1 225.3,959.5 232,962.5" fill="#8A8896"/>
+<rect x="143.7" y="260.4" width="53" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
+<text font-size="12" x="170.2" y="271.4" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 submit
 </text>
-<rect x="191.8" y="374.7" width="37" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="210.3" y="386.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="190.8" y="373.2" width="39" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
+<text font-size="12" x="210.3" y="384.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 valid
 </text>
-<rect x="350.5" y="578" width="47" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="374" y="589.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="349.5" y="575.5" width="49" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
+<text font-size="12" x="374" y="586.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 invalid
 </text>
-<rect x="98.5" y="634.5" width="35" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="116" y="646" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="97.5" y="632" width="37" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
+<text font-size="12" x="116" y="643" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 paid
 </text>
-<rect x="237.2" y="634.5" width="57" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="265.8" y="646" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="236.2" y="632" width="59" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
+<text font-size="12" x="265.8" y="643" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 in stock
 </text>
-<rect x="142.9" y="784.5" width="44" height="23" rx="4" ry="4" fill="#100C2A" fill-opacity="0.91"/>
-<text font-size="12" x="164.9" y="796" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="141.9" y="781.5" width="46" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
+<text font-size="12" x="164.9" y="792.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 ready
 </text>
-<path d="M215.5 294 L229.5 308 L215.5 322 L201.5 308 Z" transform="translate(5,35)" fill="#1F224C" stroke-width="1.6" stroke="#768DD1" stroke-linejoin="round"/>
-<rect x="72.5" y="174" width="80" height="37" rx="6" ry="6" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
-<text font-size="13.5" x="112.5" y="192.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<polygon points="220.5,327 234.5,341 220.5,355 206.5,341" stroke="#5A69A4" fill="#1B1C43"/>
+<rect x="72.5" y="173" width="80" height="37" rx="9" ry="9" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
+<text font-size="13.5" x="112.5" y="191.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Pending
 </text>
-<path d="M165.5 141 L353.5 141 L363.5 151 L363.5 174 L165.5 174 Z" transform="translate(5,35)" fill="#3E3027" stroke-width="1.2" stroke="#CC9F45" stroke-linejoin="round"/>
-<line stroke-width="1" x1="358.5" y1="176" x2="358.5" y2="186" stroke="#CC9F45"/>
-<line stroke-width="1" x1="358.5" y1="186" x2="368.5" y2="186" stroke="#CC9F45"/>
-<text font-size="12" x="269.5" y="192.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<path d="M165.5 140 L353.5 140 L363.5 150 L363.5 173 L165.5 173 Z" transform="translate(5,35)" fill="#312628" stroke-width="1" stroke="#9B7225" stroke-linejoin="round"/>
+<line stroke-width="1" x1="358.5" y1="175" x2="358.5" y2="185" stroke="#9B7225"/>
+<line stroke-width="1" x1="358.5" y1="185" x2="368.5" y2="185" stroke="#9B7225"/>
+<text font-size="12" x="269.5" y="191.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Awaits customer confirmation
 </text>
 <circle cx="220.5" cy="68" r="9" stroke-width="1" stroke="#EEEEEE" fill="#EEEEEE"/>
-<rect x="231.5" y="839" width="92" height="37" rx="6" ry="6" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
-<text font-size="13.5" x="277.5" y="857.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="231.5" y="835" width="92" height="37" rx="9" ry="9" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
+<text font-size="13.5" x="277.5" y="853.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Cancelled
 </text>
-<circle cx="94.8" cy="485" r="9" stroke-width="1" stroke="#EEEEEE" fill="#EEEEEE"/>
-<rect x="65" y="571" width="101" height="37" rx="6" ry="6" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
-<text font-size="13.5" x="115.5" y="589.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<circle cx="94.8" cy="482" r="9" stroke-width="1" stroke="#EEEEEE" fill="#EEEEEE"/>
+<rect x="65" y="568" width="101" height="37" rx="9" ry="9" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
+<text font-size="13.5" x="115.5" y="586.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Authorizing
 </text>
-<rect x="73.5" y="684" width="86" height="37" rx="6" ry="6" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
-<text font-size="13.5" x="116.5" y="702.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="73.5" y="681" width="86" height="37" rx="9" ry="9" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
+<text font-size="13.5" x="116.5" y="699.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Captured
 </text>
-<circle cx="248.8" cy="485" r="9" stroke-width="1" stroke="#EEEEEE" fill="#EEEEEE"/>
-<rect x="224" y="571" width="91" height="37" rx="6" ry="6" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
-<text font-size="13.5" x="269.5" y="589.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<circle cx="248.8" cy="482" r="9" stroke-width="1" stroke="#EEEEEE" fill="#EEEEEE"/>
+<rect x="224" y="568" width="91" height="37" rx="9" ry="9" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
+<text font-size="13.5" x="269.5" y="586.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Reserving
 </text>
-<rect x="217.5" y="684" width="89" height="37" rx="6" ry="6" stroke="#768DD1" stroke-width="1.6" fill="#1F224C"/>
-<text font-size="13.5" x="262" y="702.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="217.5" y="681" width="89" height="37" rx="9" ry="9" stroke="#5A69A4" stroke-width="1" fill="#1B1C43"/>
+<text font-size="13.5" x="262" y="699.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 Allocated
 </text>
-<rect x="117.5" y="839" width="80" height="37" rx="6" ry="6" stroke="#22C55E" stroke-width="1.6" fill="#14532D"/>
-<text font-size="13.5" x="157.5" y="857.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#DCFCE7">
+<rect x="117.5" y="835" width="80" height="37" rx="9" ry="9" stroke="#22C55E" stroke-width="1" fill="#14532D"/>
+<text font-size="13.5" x="157.5" y="853.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#DCFCE7">
 Shipped
 </text>
-<circle cx="220.5" cy="984" r="12" stroke-width="1.8" stroke="#EEEEEE" fill="#100C2A"/>
-<circle cx="220.5" cy="984" r="7" fill="#EEEEEE"/>
+<circle cx="220.5" cy="979" r="12" stroke-width="1.8" stroke="#EEEEEE" fill="#100C2A"/>
+<circle cx="220.5" cy="979" r="7" fill="#EEEEEE"/>
 </svg>

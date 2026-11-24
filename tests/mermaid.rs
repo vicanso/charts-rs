@@ -1124,10 +1124,10 @@ flowchart BT
         (get("x"), get("y"), get("width"), get("height"))
     };
 
-    // Subgraph rects have `rx="6" ry="6"`; Outer is drawn first (depth 0).
+    // Subgraph rects have `rx="8" ry="8"`; Outer is drawn first (depth 0).
     let sg_rects: Vec<(f32, f32, f32, f32)> = svg
         .lines()
-        .filter(|l| l.starts_with("<rect ") && l.contains("rx=\"6\""))
+        .filter(|l| l.starts_with("<rect ") && l.contains("rx=\"8\""))
         .map(parse_rect)
         .collect();
     assert_eq!(
