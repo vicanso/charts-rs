@@ -68,6 +68,10 @@ mermaid = []
 name = "mermaid"
 required-features = ["mermaid"]
 
+[[example]]
+name = "showcase"
+required-features = ["mermaid", "png"]
+
 [dev-dependencies]
 criterion = "0.8.2"
 pretty_assertions = "1.4.1"
