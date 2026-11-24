@@ -41,6 +41,9 @@ pub(crate) struct LayeredNodeInput {
     /// diamonds, circles and other shapes without a flat side); otherwise
     /// edges are spread evenly along the flat side facing the layout flow.
     pub(crate) center_port: bool,
+    /// When `true`, side branches on multi-exit nodes may exit directly from the
+    /// perpendicular diamond vertices instead of jogging out of the main vertex.
+    pub(crate) diamond_ports: bool,
 }
 
 /// Input directed edge between node indices (or subgraph proxy indices).

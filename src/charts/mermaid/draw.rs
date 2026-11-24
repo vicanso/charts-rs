@@ -50,13 +50,17 @@ pub(crate) enum NodeShape {
 }
 
 impl NodeShape {
-    /// Whether edges may attach anywhere along the flat sides of this shape
-    /// (otherwise they converge on the side's center point).
-    pub(crate) fn spreads_ports(self) -> bool {
-        matches!(
-            self,
-            NodeShape::Rect | NodeShape::Rounded | NodeShape::Subroutine | NodeShape::TextOnly
-        )
+    /// Whether edges may attach anywhere along the sides facing the layout flow
+    /// (otherwise they converge on the side's center point). In horizontal
+    /// layouts, a cylinder's left/right walls are flat vertical segments.
+    pub(crate) fn spreads_ports_in(self, is_horizontal: bool) -> bool {
+        match self {
+            NodeShape::Rect | NodeShape::Rounded | NodeShape::Subroutine | NodeShape::TextOnly => {
+                true
+            }
+            NodeShape::Cylinder => is_horizontal,
+            _ => false,
+        }
     }
 }
 
@@ -502,10 +506,15 @@ pub(crate) fn draw_node(
         }
     }
 
+    let text_y = match shape {
+        NodeShape::Triangle => cy + h * 0.16,
+        NodeShape::Cylinder => cy + (h * 0.14).clamp(5.0, 10.0) * 0.3,
+        _ => cy,
+    };
     draw_multiline_text(
         c,
         cx,
-        cy,
+        text_y,
         label,
         font_family,
         font_size,
@@ -675,6 +684,7 @@ pub(crate) fn attach_edge_ends(
     routing: EdgeRouting,
     from: EdgeEnd,
     to: EdgeEnd,
+    is_horizontal: bool,
 ) {
     if pts.len() < 2 {
         return;
@@ -696,7 +706,7 @@ pub(crate) fn attach_edge_ends(
     };
     // Source end.
     match from {
-        EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports() => {
+        EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports_in(is_horizontal) => {
             pts[0] = clip_box(from, pts[1]);
         }
         EdgeEnd::Box { x, y, w, h } if !legacy => {
@@ -713,7 +723,7 @@ pub(crate) fn attach_edge_ends(
     // Target end.
     let n = pts.len();
     match to {
-        EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports() => {
+        EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports_in(is_horizontal) => {
             pts[n - 1] = clip_box(to, pts[n - 2]);
         }
         EdgeEnd::Box { x, y, w, h } if !legacy => {

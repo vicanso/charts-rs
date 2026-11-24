@@ -14,9 +14,9 @@ Processing
 <polygon points="215.2,173 211.6,165.2 218.9,165.2" fill="#8A8896"/>
 <path d="M210.2 175 L210.2 292" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="215.2,327 211.6,319.2 218.9,319.2" fill="#8A8896"/>
-<path d="M210.2 320 L210.2 385" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="215.2,420 211.6,412.2 218.9,412.2" fill="#8A8896"/>
-<path d="M210.2 320 L210.2 353 Q210.2 359,216.2 359 L369.2 359 Q375.2 359,375.2 365 L375.2 800" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M196.2 306 L116.5 306 Q110.5 306,110.5 312 L110.5 385" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="115.5,420 111.8,412.2 119.2,412.2" fill="#8A8896"/>
+<path d="M224.2 306 L369.2 306 Q375.2 306,375.2 312 L375.2 800" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="380.2,835 376.5,827.2 384,827.2" fill="#8A8896"/>
 <path d="M110.5 456 L110.5 533" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#8A8896" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="115.5,568 111.8,560.2 119.2,560.2" fill="#8A8896"/>
@@ -36,8 +36,8 @@ Processing
 <text font-size="12" x="215.2" y="268.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 submit
 </text>
-<rect x="195.8" y="376.5" width="39" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
-<text font-size="12" x="215.2" y="387.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="99.4" y="330" width="39" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>
+<text font-size="12" x="118.9" y="341" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 valid
 </text>
 <rect x="355.8" y="501.5" width="49" height="22" rx="9" ry="9" stroke="#38354D" stroke-width="1" fill="#100C2A"/>

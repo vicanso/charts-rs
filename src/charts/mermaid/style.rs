@@ -102,7 +102,18 @@ impl MermaidPalette {
             } else {
                 (235, 240, 248).into()
             };
+        let ui_fg = if !is_light {
+            let fg_luma = 0.299 * fg.r as f32 + 0.587 * fg.g as f32 + 0.114 * fg.b as f32;
+            if fg_luma < 190.0 {
+                mix_color(fg, (235, 238, 245).into(), 0.45)
+            } else {
+                fg
+            }
+        } else {
+            fg
+        };
         let m = |t: f32| mix_color(opaque_bg, fg, t);
+        let mui = |t: f32| mix_color(opaque_bg, ui_fg, t);
 
         let (node_fill, node_stroke) = if USE_ACCENT_NODES {
             if is_light {
@@ -122,8 +133,8 @@ impl MermaidPalette {
             (m(0.07), m(0.40))
         };
 
-        let edge_stroke = m(0.55);
-        let muted_text = if is_light { m(0.60) } else { m(0.62) };
+        let edge_stroke = mui(0.55);
+        let muted_text = if is_light { mui(0.60) } else { mui(0.62) };
         let edge_label_stroke = if is_light { m(0.12) } else { m(0.18) };
         let header_fill = if USE_ACCENT_NODES {
             if is_light {
@@ -136,7 +147,7 @@ impl MermaidPalette {
         } else {
             m(0.11)
         };
-        let subgraph_stroke = if is_light { m(0.18) } else { m(0.22) };
+        let subgraph_stroke = if is_light { mui(0.18) } else { mui(0.22) };
 
         let note_base: Color = (250, 204, 21).into();
         let note_fill = if is_light {

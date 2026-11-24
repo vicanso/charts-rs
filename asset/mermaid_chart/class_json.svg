@@ -8,11 +8,11 @@ Order Domain Model
 Commerce
 </text>
 <line stroke-width="1.2" x1="633" y1="166.5" x2="615" y2="166.5" stroke="#CBA34E" stroke-dasharray="4,3"/>
-<path d="M334.5 172 L334.5 243 Q334.5 249,328.5 249 L107.5 249 Q101.5 249,101.5 255 L101.5 351" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M334.5 172 L334.5 229 Q334.5 235,328.5 235 L107.5 235 Q101.5 235,101.5 241 L101.5 351" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M334.5 172 L341 185 L328 185 Z" transform="translate(5,35)" fill="#FFFFFF" stroke-width="1.6" stroke="#999999" stroke-linejoin="round"/>
 <path d="M554 199 L554 349" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M554 199 L559.5 206.5 L554 214 L548.5 206.5 Z" transform="translate(5,35)" fill="#999999" stroke-width="1.2" stroke="#999999" stroke-linejoin="round"/>
-<path d="M526 199 L526 293 Q526 299,520 299 L135.5 299 Q129.5 299,129.5 305 L129.5 351" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M526 199 L526 307 Q526 313,520 313 L135.5 313 Q129.5 313,129.5 319 L129.5 351" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M124 341 L129.5 351 L135 341" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="566" y="248.5" width="12" height="19" rx="3" ry="3" fill="#FFFFFF"/>
 <text font-size="11" x="572" y="258" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
@@ -22,16 +22,16 @@ Commerce
 <text font-size="11" x="546" y="360" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 1..*
 </text>
-<rect x="170.5" y="273" width="80" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="210.5" y="284" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="156.5" y="259" width="80" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="196.5" y="270" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 implements
 </text>
 <rect x="528" y="298" width="62" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
 <text font-size="12" x="559" y="309" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 contains
 </text>
-<rect x="336.2" y="323" width="41" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="356.8" y="334" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="350.2" y="337" width="41" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="370.8" y="348" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 uses
 </text>
 <rect x="248" y="126" width="183" height="81" rx="4" ry="4" fill="#F1F4FA"/>
@@ -65,7 +65,7 @@ Order
 <text font-size="12" x="489" y="199" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 +create() Order
 </text>
-<line stroke-width="1" x1="489" y1="204.8" x2="578" y2="204.8" stroke="#464646"/>
+<line stroke-width="1" x1="489" y1="204.8" x2="570" y2="204.8" stroke="#464646"/>
 <text font-size="12" x="489" y="219" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 +total() Decimal
 </text>

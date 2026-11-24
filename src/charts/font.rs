@@ -753,6 +753,25 @@ pub fn measure_text_width_family(font_family: &str, font_size: f32, text: &str) 
     Ok(b)
 }
 
+/// Measures the exact horizontal pen advance of `text` in `font_family` at
+/// `font_size` without pixel-rounding padding, suitable for underline strokes.
+#[cfg(feature = "mermaid")]
+pub(crate) fn measure_text_advance_family(
+    font_family: &str,
+    font_size: f32,
+    text: &str,
+) -> Result<f32> {
+    let font = get_font(font_family)?;
+    let scale = font_size / font.units_per_em;
+    let mut advance = 0.0_f32;
+    for c in text.chars() {
+        if !matches!(c, '\0'..='\x1F' | '\x7F') {
+            advance += font.glyph(c).advance * scale;
+        }
+    }
+    Ok(advance)
+}
+
 /// One cached width of a joined axis-label row.
 struct LabelRowHit {
     check: u64,

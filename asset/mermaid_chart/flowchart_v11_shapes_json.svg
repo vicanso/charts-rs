@@ -1,57 +1,57 @@
-<svg width="978.1" height="211.7" viewBox="0 0 978.1 211.7" xmlns="http://www.w3.org/2000/svg">
-<rect x="0" y="0" width="978.1" height="211.7" fill="#FFFFFF"/>
-<text font-size="18" x="360" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
+<svg width="998.5" height="215.6" viewBox="0 0 998.5 215.6" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="998.5" height="215.6" fill="#FFFFFF"/>
+<text font-size="18" x="370.2" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
 Document Processing Pipeline
 </text>
-<path d="M44 91.7 L98 91.7" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="103,126.7 95.2,130.4 95.2,123" fill="#999999"/>
-<path d="M205 91.7 L259 91.7" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="264,126.7 256.2,130.4 256.2,123" fill="#999999"/>
-<path d="M364 91.7 L376 91.7 Q382 91.7,382 97.7 L382 122.2 Q382 128.2,388 128.2 L581.6 128.2" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="586.6,163.2 578.8,166.9 578.8,159.5" fill="#999999"/>
-<path d="M364 91.7 L394 91.7 Q400 91.7,400 85.7 L400 61.2 Q400 55.2,406 55.2 L444.9 55.2" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="449.9,90.2 442.1,93.9 442.1,86.5" fill="#999999"/>
-<path d="M685.6 128.2 L717.6 128.2 Q723.6 128.2,723.6 122.2 L723.6 97.7 Q723.6 91.7,729.6 91.7 L741.6 91.7" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="746.6,126.7 738.8,130.4 738.8,123" fill="#999999"/>
-<path d="M498.7 55.2 L591.5 55.2" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="596.5,90.2 588.7,93.9 588.7,86.5" fill="#999999"/>
-<path d="M687.6 55.2 L699.6 55.2 Q705.6 55.2,705.6 61.2 L705.6 85.7 Q705.6 91.7,711.6 91.7 L741.6 91.7" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="746.6,126.7 738.8,130.4 738.8,123" fill="#999999"/>
-<path d="M765.6 91.7 L795.6 91.7 Q801.6 91.7,801.6 85.7 L801.6 63.7 Q801.6 57.7,807.6 57.7 L819.6 57.7" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="824.6,92.7 816.8,96.4 816.8,89" fill="#999999"/>
-<path d="M765.6 91.7 L777.6 91.7 Q783.6 91.7,783.6 97.7 L783.6 119.7 Q783.6 125.7,789.6 125.7 L836.3 125.7" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="841.3,160.7 833.6,164.4 833.6,157" fill="#999999"/>
-<circle cx="39" cy="126.7" r="10" stroke-width="1" stroke="#8C9ACA" fill="#8C9ACA"/>
-<path d="M98 68.2 L205 68.2 L205 107.7 C167.5 97.2, 135.4 119.7, 98 107.7 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
-<text font-size="14" x="156.5" y="126.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M44 95.6 L98 95.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="103,130.6 95.2,134.3 95.2,126.9" fill="#999999"/>
+<path d="M205 95.6 L259 95.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="264,130.6 256.2,134.3 256.2,126.9" fill="#999999"/>
+<path d="M364 95.6 L376 95.6 Q382 95.6,382 101.6 L382 126.1 Q382 132.1,388 132.1 L602 132.1" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="607,167.1 599.2,170.8 599.2,163.4" fill="#999999"/>
+<path d="M364 95.6 L394 95.6 Q400 95.6,400 89.6 L400 65.1 Q400 59.1,406 59.1 L450 59.1" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="455,94.1 447.2,97.8 447.2,90.4" fill="#999999"/>
+<path d="M706 132.1 L738 132.1 Q744 132.1,744 126.1 L744 101.6 Q744 95.6,750 95.6 L762 95.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="767,130.6 759.2,134.3 759.2,126.9" fill="#999999"/>
+<path d="M514 59.1 L611.9 59.1" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="616.9,94.1 609.1,97.8 609.1,90.4" fill="#999999"/>
+<path d="M708 59.1 L720 59.1 Q726 59.1,726 65.1 L726 89.6 Q726 95.6,732 95.6 L762 95.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="767,130.6 759.2,134.3 759.2,126.9" fill="#999999"/>
+<path d="M786 95.6 L816 95.6 Q822 95.6,822 89.6 L822 67.6 Q822 61.6,828 61.6 L840 61.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="845,96.6 837.2,100.3 837.2,92.9" fill="#999999"/>
+<path d="M786 95.6 L798 95.6 Q804 95.6,804 101.6 L804 123.6 Q804 129.6,810 129.6 L856.8 129.6" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="861.8,164.6 854,168.3 854,160.9" fill="#999999"/>
+<circle cx="39" cy="130.6" r="10" stroke-width="1" stroke="#8C9ACA" fill="#8C9ACA"/>
+<path d="M98 72.1 L205 72.1 L205 111.6 C167.5 101.1, 135.4 123.6, 98 111.6 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
+<text font-size="14" x="156.5" y="130.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Intake Spec
 </text>
-<path d="M267 65.2 L364 65.2 L364 103 C330 92.9, 301 114.5, 267 103 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
-<path d="M263 69.2 L360 69.2 L360 107 C326 96.9, 297 118.5, 263 107 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
-<path d="M259 73.2 L356 73.2 L356 111 C322 100.9, 293 122.5, 259 111 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
-<text font-size="14" x="316.5" y="126.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M267 69.1 L364 69.1 L364 106.9 C330 96.8, 301 118.4, 267 106.9 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
+<path d="M263 73.1 L360 73.1 L360 110.9 C326 100.8, 297 122.4, 263 110.9 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
+<path d="M259 77.1 L356 77.1 L356 114.9 C322 104.8, 293 126.4, 259 114.9 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
+<text font-size="14" x="316.5" y="130.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Doc Batch
 </text>
-<path d="M581.6 108.7 L666.1 108.7 A19.5 19.5 0 0 1 666.1 147.7 L581.6 147.7 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
-<text font-size="14" x="638.6" y="163.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<path d="M602 112.6 L686.5 112.6 A19.5 19.5 0 0 1 686.5 151.6 L602 151.6 Z" transform="translate(5,35)" fill="#F1F4FA" stroke-width="1" stroke="#8C9ACA" stroke-linejoin="round"/>
+<text font-size="14" x="659" y="167.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Rate Limit
 </text>
-<polygon points="476.8,59 530.6,121.4 423,121.4" stroke="#8C9ACA" fill="#F1F4FA"/>
-<text font-size="14" x="476.8" y="90.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<polygon points="487,59 551,129.2 423,129.2" stroke="#8C9ACA" fill="#F1F4FA"/>
+<text font-size="14" x="487" y="105.3" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Extract
 </text>
-<circle cx="758.6" cy="126.7" r="12" stroke-width="1" stroke="#8C9ACA" fill="#F1F4FA"/>
-<line stroke-width="1" x1="750.4" y1="118.5" x2="766.8" y2="134.9" stroke="#8C9ACA"/>
-<line stroke-width="1" x1="750.4" y1="134.9" x2="766.8" y2="118.5" stroke="#8C9ACA"/>
-<polygon points="584.6,70.7 677.8,70.7 692.6,90.2 677.8,109.7 584.6,109.7 596.5,90.2" stroke="#8C9ACA" fill="#F1F4FA"/>
-<text font-size="14" x="638.6" y="90.2" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<circle cx="779" cy="130.6" r="12" stroke-width="1" stroke="#8C9ACA" fill="#F1F4FA"/>
+<line stroke-width="1" x1="770.8" y1="122.4" x2="787.2" y2="138.8" stroke="#8C9ACA"/>
+<line stroke-width="1" x1="770.8" y1="138.8" x2="787.2" y2="122.4" stroke="#8C9ACA"/>
+<polygon points="605,74.6 698.2,74.6 713,94.1 698.2,113.6 605,113.6 616.9,94.1" stroke="#8C9ACA" fill="#F1F4FA"/>
+<text font-size="14" x="659" y="94.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Emit Alert
 </text>
-<rect x="824.6" y="73.2" width="124.5" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
-<text font-size="14" x="886.8" y="92.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="845" y="77.1" width="124.5" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="907.2" y="96.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 <tspan font-weight="bold">Verified</tspan> <tspan font-style="italic">Output</tspan>
 </text>
-<text font-size="14" x="886.8" y="160.7" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<text font-size="14" x="907.2" y="164.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 Audit Ready
 </text>
 </svg>

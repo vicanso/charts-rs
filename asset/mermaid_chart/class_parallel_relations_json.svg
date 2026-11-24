@@ -41,7 +41,7 @@ Repository&lt;T&gt;
 <text font-size="12" x="43" y="175" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 +count() int
 </text>
-<line stroke-width="1" x1="43" y1="180.8" x2="109" y2="180.8" stroke="#464646"/>
+<line stroke-width="1" x1="43" y1="180.8" x2="104.8" y2="180.8" stroke="#464646"/>
 <rect x="29" y="59" width="143" height="131" rx="4" ry="4" stroke="#8C9ACA" stroke-width="1" fill="none"/>
 <rect x="618" y="82" width="218" height="85" rx="4" ry="4" fill="#F1F4FA"/>
 <rect x="618" y="82" width="218" height="35" rx="4" ry="4" fill="#E3E7F3"/>

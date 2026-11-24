@@ -14,18 +14,18 @@ Edge
 <rect x="569" y="303" width="10" height="81" rx="2" ry="2" stroke="#5A69A4" stroke-width="1" fill="#232856"/>
 <rect x="427" y="256" width="10" height="222" rx="2" ry="2" stroke="#5A69A4" stroke-width="1" fill="#232856"/>
 <rect x="231" y="209" width="10" height="417" rx="2" ry="2" stroke="#5A69A4" stroke-width="1" fill="#232856"/>
-<rect x="39" y="321" width="565" height="264" stroke="#413E55" stroke-width="1.4" fill="none"/>
-<polygon points="39,321 85,321 85,334 78,341 39,341" stroke="#413E55" fill="#18183D"/>
-<text font-size="12" x="60" y="331" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
+<rect x="206" y="321" width="398" height="264" stroke="#413E55" stroke-width="1.4" fill="none"/>
+<polygon points="206,321 252,321 252,334 245,341 206,341" stroke="#413E55" fill="#18183D"/>
+<text font-size="12" x="227" y="331" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 alt
 </text>
-<rect x="91" y="320.5" width="85" height="21" rx="3" ry="3" fill="#100C2A"/>
-<text font-size="12" x="95" y="331" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+<rect x="258" y="322.5" width="85" height="18.5" rx="3" ry="3" fill="#100C2A"/>
+<text font-size="12" x="262" y="331" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Payment OK]
 </text>
-<line stroke-width="1.2" x1="39" y1="496" x2="604" y2="496" stroke="#413E55" stroke-dasharray="5,4"/>
-<rect x="47" y="497.5" width="64" height="21" rx="3" ry="3" fill="#100C2A"/>
-<text font-size="12" x="51" y="508" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
+<line stroke-width="1.2" x1="206" y1="496" x2="604" y2="496" stroke="#413E55" stroke-dasharray="5,4"/>
+<rect x="214" y="498" width="64" height="20" rx="3" ry="3" fill="#100C2A"/>
+<text font-size="12" x="218" y="508" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Declined]
 </text>
 <line stroke-width="1.2" x1="97" y1="209" x2="236" y2="209" stroke="#8A8896"/>

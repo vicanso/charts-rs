@@ -835,6 +835,7 @@ pub(crate) fn render(
                 subgraph: n.subgraph,
                 attach_to: None,
                 center_port: true,
+                diamond_ports: false,
             });
             measured.push(MeasuredClass {
                 is_anchor: true,
@@ -862,6 +863,7 @@ pub(crate) fn render(
                 subgraph: n.subgraph,
                 attach_to: n.attach_to,
                 center_port: false,
+                diamond_ports: false,
             });
             measured.push(MeasuredClass {
                 is_anchor: false,
@@ -918,6 +920,7 @@ pub(crate) fn render(
             subgraph: n.subgraph,
             attach_to: None,
             center_port: false,
+            diamond_ports: false,
         });
         measured.push(MeasuredClass {
             is_anchor: false,
@@ -1094,11 +1097,13 @@ pub(crate) fn render(
                     h: measured[u].h,
                 }
             };
+            let is_horizontal = matches!(cd.direction, Direction::LeftRight | Direction::RightLeft);
             attach_edge_ends(
                 &mut pts,
                 EdgeRouting::Orthogonal,
                 end_of(r.from),
                 end_of(r.to),
+                is_horizontal,
             );
         }
 
@@ -1297,13 +1302,12 @@ pub(crate) fn render(
                             .lines
                             .first()
                             .and_then(|l| {
-                                super::super::font::measure_text_width_family(
+                                super::super::font::measure_text_advance_family(
                                     &font_family,
                                     member_font_size,
                                     &l.text,
                                 )
                                 .ok()
-                                .map(|b| b.width())
                             })
                             .unwrap_or(ft.width);
                         if measured_w > 0.0 {

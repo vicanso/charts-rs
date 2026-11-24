@@ -12,7 +12,7 @@ Worker Job Lifecycle
 <text font-size="12" x="328" y="238" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 loop
 </text>
-<rect x="359" y="227.5" width="97" height="21" rx="3" ry="3" fill="#100C2A"/>
+<rect x="359" y="229.5" width="97" height="18.5" rx="3" ry="3" fill="#100C2A"/>
 <text font-size="12" x="363" y="238" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Poll tasks (3x)]
 </text>
@@ -21,7 +21,7 @@ loop
 <text font-size="12" x="360" y="319" font-weight="bold" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#EEEEEE">
 opt
 </text>
-<rect x="391" y="308.5" width="97" height="21" rx="3" ry="3" fill="#100C2A"/>
+<rect x="391" y="310.5" width="97" height="18.5" rx="3" ry="3" fill="#100C2A"/>
 <text font-size="12" x="395" y="319" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#EEEEEE">
 [Task available]
 </text>

@@ -1191,18 +1191,30 @@ pub(crate) fn render(
                                 left = (right - min_label_w).max(CANVAS_PAD);
                             }
                         }
-                        // A frame either stays inside a box (with margin) or
-                        // fully encloses it; never straddle a box border.
+                        // Keep fragment vertical borders clear of participant `box`
+                        // borders without forcing the frame across unrelated boxes.
                         const BOX_CLEAR: f32 = 8.0;
                         for _ in 0..=box_spans.len() {
                             let mut changed = false;
                             for &(bl, br) in &box_spans {
-                                let overlaps = left < br && right > bl;
-                                let inside = left >= bl + BOX_CLEAR && right <= br - BOX_CLEAR;
-                                let encloses = left <= bl - BOX_CLEAR && right >= br + BOX_CLEAR;
-                                if overlaps && !inside && !encloses {
-                                    left = left.min(bl - BOX_CLEAR).max(2.0);
-                                    right = right.max(br + BOX_CLEAR);
+                                if (left - bl).abs() < BOX_CLEAR {
+                                    left = (bl - BOX_CLEAR).max(2.0);
+                                    changed = true;
+                                } else if (left - br).abs() < BOX_CLEAR {
+                                    left = (br + BOX_CLEAR).min(b.min_x - pad).max(2.0);
+                                    if (left - br).abs() < BOX_CLEAR {
+                                        left = (bl - BOX_CLEAR).max(2.0);
+                                    }
+                                    changed = true;
+                                }
+                                if (right - br).abs() < BOX_CLEAR {
+                                    right = br + BOX_CLEAR;
+                                    changed = true;
+                                } else if (right - bl).abs() < BOX_CLEAR {
+                                    right = (bl - BOX_CLEAR).max(b.max_x + pad);
+                                    if (right - bl).abs() < BOX_CLEAR {
+                                        right = br + BOX_CLEAR;
+                                    }
                                     changed = true;
                                 }
                             }
@@ -1617,11 +1629,13 @@ pub(crate) fn render(
             let cond_ft = format_and_measure(&cond, &font_family, 12.0);
             let label_x = b.left + tab_w + 10.0;
             let label_y = b.top + tab_h * 0.5;
+            let bg_top = (label_y - cond_ft.height * 0.5 - 1.5).max(b.top + 1.5);
+            let bg_h = (cond_ft.height + 3.0).min((b.top + tab_h - bg_top).max(cond_ft.height));
             content_canvas.rect(Rect {
                 left: label_x - 4.0,
-                top: label_y - cond_ft.height * 0.5 - 2.0,
+                top: bg_top,
                 width: cond_ft.width + 8.0,
-                height: cond_ft.height + 4.0,
+                height: bg_h,
                 rx: Some(3.0),
                 ry: Some(3.0),
                 fill: Some(palette.edge_label_bg.into()),
@@ -1656,11 +1670,12 @@ pub(crate) fn render(
                 let div_ft = format_and_measure(&cond, &font_family, 12.0);
                 let label_x = b.left + 12.0;
                 let label_y = *div_y + 12.0;
+                let bg_top = (label_y - div_ft.height * 0.5 - 1.5).max(*div_y + 1.5);
                 content_canvas.rect(Rect {
                     left: label_x - 4.0,
-                    top: label_y - div_ft.height * 0.5 - 2.0,
+                    top: bg_top,
                     width: div_ft.width + 8.0,
-                    height: div_ft.height + 4.0,
+                    height: div_ft.height + 3.0,
                     rx: Some(3.0),
                     ry: Some(3.0),
                     fill: Some(palette.edge_label_bg.into()),

@@ -3,22 +3,22 @@
 <text font-size="18" x="138.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#A1A1AA">
 Data Platform Architecture
 </text>
-<rect x="29" y="127" width="294" height="360" rx="8" ry="8" stroke="#2A2A2E" stroke-width="1" fill="#0E0E10"/>
-<text font-size="12" x="39" y="145.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#67676E">
+<rect x="29" y="127" width="294" height="360" rx="8" ry="8" stroke="#323235" stroke-width="1" fill="#0E0E10"/>
+<text font-size="12" x="39" y="145.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#7C7D83">
 Data Platform
 </text>
-<rect x="95" y="166" width="210" height="187" rx="8" ry="8" stroke="#2A2A2E" stroke-width="1" fill="#111113"/>
-<text font-size="12" x="105" y="184.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#67676E">
+<rect x="95" y="166" width="210" height="187" rx="8" ry="8" stroke="#323235" stroke-width="1" fill="#111113"/>
+<text font-size="12" x="105" y="184.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#7C7D83">
 Storage Engine
 </text>
-<path d="M195 263 L195 209" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#5D5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="200,244 203.7,251.8 196.3,251.8" fill="#5D5D62"/>
-<path d="M116 397 L181.5 302" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#5D5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="186.5,337 185.2,345.5 179.1,341.3" fill="#5D5D62"/>
-<path d="M370.6 397 L290.2 318" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#5D5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="295.2,353 303.3,355.8 298.1,361.1" fill="#5D5D62"/>
-<path d="M195 170 L195 75" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#5D5D62" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="200,110 203.7,117.8 196.3,117.8" fill="#5D5D62"/>
+<path d="M195 263 L195 209" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="200,244 203.7,251.8 196.3,251.8" fill="#6F7075"/>
+<path d="M116 397 L181.5 302" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="186.5,337 185.2,345.5 179.1,341.3" fill="#6F7075"/>
+<path d="M370.6 397 L290.2 318" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="295.2,353 303.3,355.8 298.1,361.1" fill="#6F7075"/>
+<path d="M195 170 L195 75" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="200,110 203.7,117.8 196.3,117.8" fill="#6F7075"/>
 <rect x="132" y="298" width="136" height="39" rx="3" ry="3" stroke="#31559D" stroke-width="1" fill="#0E172C"/>
 <text font-size="14" x="200" y="317.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
 Write-Ahead Log
@@ -37,7 +37,7 @@ Event Producer
 </text>
 <path d="M110.5 31.1 A 84.5 7.1 0 0 1 279.5 31.1 L 279.5 67.9 A 84.5 7.1 0 0 1 110.5 67.9 Z" transform="translate(5,35)" fill="#0E172C" stroke-width="1" stroke="#31559D"/>
 <path d="M 110.5 31.1 A 84.5 7.1 0 0 0 279.5 31.1" transform="translate(5,35)" fill="none" stroke-width="1" stroke="#31559D"/>
-<text font-size="14" x="200" y="84.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
+<text font-size="14" x="200" y="86.6" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#A1A1AA">
 Analytics Warehouse
 </text>
 </svg>

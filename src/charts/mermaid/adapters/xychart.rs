@@ -267,6 +267,9 @@ pub(crate) fn render(
             hbar.y_axis_configs[0].max = Some(max);
         }
         apply_base_options(chart, &mut hbar.base, title.as_deref(), 640.0, 400.0);
+        if hbar.margin.right < 24.0 {
+            hbar.margin.right = 24.0;
+        }
         let (w, h) = (hbar.width, hbar.height);
         return Ok((hbar.svg()?, w, h));
     }
@@ -304,6 +307,13 @@ pub(crate) fn render(
     if let Some((min, max)) = y_range {
         bar.y_axis_configs[0].min = Some(min);
         bar.y_axis_configs[0].max = Some(max);
+        let span = max - min;
+        if span > 0.0
+            && (span / 5.0 - (span / 5.0).round()).abs() < 1e-4
+            && (span / 6.0 - (span / 6.0).round()).abs() > 1e-4
+        {
+            bar.y_axis_configs[0].split_number = 5;
+        }
     }
     apply_base_options(chart, &mut bar.base, title.as_deref(), 640.0, 400.0);
     let (w, h) = (bar.width, bar.height);

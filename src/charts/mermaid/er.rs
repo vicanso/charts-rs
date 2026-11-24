@@ -514,6 +514,7 @@ pub(crate) fn render(
                 subgraph: None,
                 attach_to: None,
                 center_port: false,
+                diamond_ports: false,
             });
             measured.push(MeasuredEntity {
                 title_ft,
@@ -560,6 +561,7 @@ pub(crate) fn render(
             subgraph: None,
             attach_to: None,
             center_port: false,
+            diamond_ports: false,
         });
         measured.push(MeasuredEntity {
             title_ft,

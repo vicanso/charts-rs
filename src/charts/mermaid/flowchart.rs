@@ -1199,8 +1199,8 @@ fn node_box_size(shape: NodeShape, label: &FormattedText) -> (f32, f32) {
         NodeShape::SmallCircle => (20.0, 20.0),
         NodeShape::FramedCircle => (24.0, 24.0),
         NodeShape::Triangle => (
-            (text_w * 1.6 + 34.0).max(66.0),
-            (text_h * 1.6 + 32.0).max(56.0),
+            (text_w * 2.0 + 36.0).max(76.0),
+            (text_h * 1.8 + 36.0).max(60.0),
         ),
         NodeShape::Doc => ((text_w + 30.0).max(62.0), (text_h + 28.0).max(46.0)),
         NodeShape::Docs => ((text_w + 38.0).max(70.0), (text_h + 34.0).max(52.0)),
@@ -1337,6 +1337,8 @@ pub(crate) fn render(
         Some(EdgeCurve::Linear) => EdgeRouting::Polyline,
     };
 
+    let is_horizontal = matches!(fc.direction, Direction::LeftRight | Direction::RightLeft);
+
     // Measure node labels and subgraph titles.
     let mut node_labels = Vec::with_capacity(fc.nodes.len());
     let mut node_sizes = Vec::with_capacity(fc.nodes.len());
@@ -1359,7 +1361,8 @@ pub(crate) fn render(
             height: h,
             subgraph: n.subgraph,
             attach_to: None,
-            center_port: is_anchor || !shape.spreads_ports(),
+            center_port: is_anchor || !shape.spreads_ports_in(is_horizontal),
+            diamond_ports: !is_anchor && shape == NodeShape::Diamond,
         });
     }
 
@@ -1611,7 +1614,13 @@ pub(crate) fn render(
                     }
                 }
             };
-            attach_edge_ends(&mut pts, routing, end_of(&e.from), end_of(&e.to));
+            attach_edge_ends(
+                &mut pts,
+                routing,
+                end_of(&e.from),
+                end_of(&e.to),
+                is_horizontal,
+            );
         }
 
         let mut style = default_link_style.clone();

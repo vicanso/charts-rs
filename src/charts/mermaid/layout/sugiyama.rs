@@ -378,6 +378,7 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
             subgraph: sgs[c].parent,
             attach_to: None,
             center_port: false,
+            diamond_ports: false,
         });
     }
     let mut outer_edge_of: Vec<Option<usize>> = vec![None; graph.edges.len()];
@@ -1272,6 +1273,7 @@ fn layout_flat(graph: &LayeredGraph) -> LayeredLayout {
             graph,
             dag_edges: &dag_edges,
             edge_chains: &edge_chains,
+            ranks: &ranks,
             items: &items,
             item_rank: &item_rank,
             real_to_item: &real_to_item,
@@ -1740,6 +1742,7 @@ struct PortRouteInput<'a> {
     graph: &'a LayeredGraph,
     dag_edges: &'a [DagEdge],
     edge_chains: &'a [Vec<usize>],
+    ranks: &'a [Vec<usize>],
     items: &'a [RankItem],
     item_rank: &'a [usize],
     real_to_item: &'a [usize],
@@ -1931,6 +1934,56 @@ fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
         }
     }
 
+    // Diamond side-vertex exits: on multi-exit diamond nodes in orthogonal mode,
+    // route the outermost left/right branches directly out of the perpendicular
+    // diamond vertices if the horizontal exit stays clear of same-rank neighbors.
+    let mut side_exit: HashMap<usize, f32> = HashMap::new();
+    if orthogonal {
+        for (u, list) in out_lists.iter().enumerate() {
+            if !g.nodes[u].diamond_ports || list.len() < 2 {
+                continue;
+            }
+            let u_item = inp.real_to_item[u];
+            let r = inp.item_rank[u_item];
+            let cu = item_c(u_item);
+            let hc = item_half(u_item).0;
+            for (slot, side) in [
+                (*list.first().unwrap(), -1.0_f32),
+                (*list.last().unwrap(), 1.0),
+            ] {
+                let ch = &inp.edge_chains[slot];
+                let cn = if ch.len() == 2 {
+                    in_c[slot].unwrap_or_else(|| item_c(ch[1]))
+                } else {
+                    item_c(ch[1])
+                };
+                let outward = if side < 0.0 {
+                    cn <= cu - hc - 4.0
+                } else {
+                    cn >= cu + hc + 4.0
+                };
+                if !outward {
+                    continue;
+                }
+                let clear = inp.ranks[r].iter().all(|&other| {
+                    if other == u_item {
+                        return true;
+                    }
+                    let oc = item_c(other);
+                    let oh = item_half(other).0;
+                    if side < 0.0 {
+                        !(oc < cu && oc + oh + 8.0 > cn)
+                    } else {
+                        !(oc > cu && oc - oh - 8.0 < cn)
+                    }
+                });
+                if clear {
+                    side_exit.insert(slot, side);
+                }
+            }
+        }
+    }
+
     // Anchors per chain: (cross, main_at_exit, main_at_entry).
     let anchors_of = |slot: usize| -> Vec<(f32, f32, f32)> {
         let ch = &inp.edge_chains[slot];
@@ -1964,6 +2017,27 @@ fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
     // Collect jogs and assign tracks per inter-rank gap.
     let mut track_y: HashMap<(usize, usize), f32> = HashMap::new();
     if orthogonal {
+        let mut straight_labels: HashMap<usize, Vec<f32>> = HashMap::new();
+        for slot in 0..slots {
+            if is_hidden(slot) || !inp.dag_edges[slot].has_label || inp.edge_chains[slot].len() < 2
+            {
+                continue;
+            }
+            let anchors = anchors_of(slot);
+            let ch = &inp.edge_chains[slot];
+            for i in 0..anchors.len() - 1 {
+                if i == 0 && side_exit.contains_key(&slot) {
+                    continue;
+                }
+                if (anchors[i].0 - anchors[i + 1].0).abs() <= 0.5 {
+                    straight_labels
+                        .entry(inp.item_rank[ch[i]])
+                        .or_default()
+                        .push(anchors[i].0);
+                }
+            }
+        }
+
         // (gap rank, from_c, to_c, slot, segment index)
         let mut jogs: Vec<(usize, f32, f32, usize, usize)> = Vec::new();
         for slot in 0..slots {
@@ -1973,6 +2047,9 @@ fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
             let anchors = anchors_of(slot);
             let ch = &inp.edge_chains[slot];
             for i in 0..anchors.len() - 1 {
+                if i == 0 && side_exit.contains_key(&slot) {
+                    continue;
+                }
                 let (a, b) = (anchors[i].0, anchors[i + 1].0);
                 if (a - b).abs() > 0.5 {
                     jogs.push((inp.item_rank[ch[i]], a, b, slot, i));
@@ -2020,9 +2097,24 @@ fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
                 assigned.push(t);
             }
             let (top, bottom) = gap_bounds(r);
-            let count = tracks.len() as f32;
+            let count = tracks.len();
+            let label_xs = straight_labels.get(&r);
+            let crosses_label = |tr: &[(f32, f32)]| -> bool {
+                label_xs.is_some_and(|xs| {
+                    xs.iter().any(|&lx| {
+                        tr.iter()
+                            .any(|&(lo, hi)| lx >= lo - 30.0 && lx <= hi + 30.0)
+                    })
+                })
+            };
+            let any_crosses = (0..count).any(|t| crosses_label(&tracks[t]));
             for (j, &t) in jogs[idx..end].iter().zip(&assigned) {
-                let y = top + (bottom - top) * (t as f32 + 1.0) / (count + 1.0);
+                let frac = if any_crosses && count <= 2 {
+                    if count == 1 || t == 0 { 0.24 } else { 0.76 }
+                } else {
+                    (t as f32 + 1.0) / (count as f32 + 1.0)
+                };
+                let y = top + (bottom - top) * frac;
                 track_y.insert((j.3, j.4), y);
             }
             idx = end;
@@ -2047,7 +2139,14 @@ fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
             if orthogonal {
                 for i in 0..last {
                     let (a, b) = (anchors[i], anchors[i + 1]);
-                    if let Some(&y) = track_y.get(&(slot, i)) {
+                    if i == 0
+                        && let Some(&side) = side_exit.get(&slot)
+                    {
+                        let m0 = item_m(ch[0]);
+                        let hc = item_half(ch[0]).0;
+                        canon[0] = (item_c(ch[0]) + side * hc, m0);
+                        canon.push((b.0, m0));
+                    } else if let Some(&y) = track_y.get(&(slot, i)) {
                         canon.push((a.0, y));
                         canon.push((b.0, y));
                     }
@@ -2151,6 +2250,7 @@ mod tests {
                     subgraph: None,
                     attach_to: None,
                     center_port: false,
+                    diamond_ports: false,
                 },
                 LayeredNodeInput {
                     width: 80.0,
@@ -2158,6 +2258,7 @@ mod tests {
                     subgraph: Some(0),
                     attach_to: None,
                     center_port: false,
+                    diamond_ports: false,
                 },
                 LayeredNodeInput {
                     width: 80.0,
@@ -2165,6 +2266,7 @@ mod tests {
                     subgraph: Some(0),
                     attach_to: None,
                     center_port: false,
+                    diamond_ports: false,
                 },
             ],
             edges: vec![
@@ -2223,6 +2325,7 @@ mod tests {
             subgraph: None,
             attach_to: None,
             center_port: false,
+            diamond_ports: false,
         };
         let edge = |from: usize, to: usize| LayeredEdgeInput {
             from,
@@ -2265,6 +2368,7 @@ mod tests {
             subgraph: None,
             attach_to: None,
             center_port: false,
+            diamond_ports: false,
         };
         let edge = |from: usize, to: usize| LayeredEdgeInput {
             from,
@@ -2304,6 +2408,7 @@ mod tests {
             subgraph: None,
             attach_to: None,
             center_port: false,
+            diamond_ports: false,
         };
         let edge = |from: usize, to: usize| LayeredEdgeInput {
             from,
@@ -2411,5 +2516,106 @@ mod tests {
             let p = l.edges[i].waypoints[0];
             assert!((p.y - (hub.cy + 18.0)).abs() < 0.01);
         }
+    }
+
+    #[test]
+    fn diamond_side_vertices_exit_orthogonally_without_overlap() {
+        let diamond = LayeredNodeInput {
+            width: 80.0,
+            height: 50.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: true,
+            diamond_ports: true,
+        };
+        let box_node = LayeredNodeInput {
+            width: 90.0,
+            height: 36.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: false,
+            diamond_ports: false,
+        };
+        let edge = |from: usize, to: usize| LayeredEdgeInput {
+            from,
+            to,
+            has_label: true,
+            min_len: 1,
+            hidden: false,
+        };
+        // LR diamond with two outward branches -> top and bottom vertices.
+        let g = LayeredGraph {
+            direction: LayoutDirection::LeftRight,
+            routing: EdgeRouting::Orthogonal,
+            rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
+            nodes: vec![diamond, box_node.clone(), box_node],
+            edges: vec![edge(0, 1), edge(0, 2)],
+            subgraphs: vec![],
+        };
+        let l = layout(&g);
+        let d = l.nodes[0];
+        let p0 = l.edges[0].waypoints[0];
+        let p1 = l.edges[1].waypoints[0];
+        assert!(
+            (p0.x - d.cx).abs() < 0.01 && (p1.x - d.cx).abs() < 0.01,
+            "side vertices share cx: {p0:?} {p1:?}"
+        );
+        assert!(
+            (p0.y - p1.y).abs() > 40.0,
+            "top and bottom diamond vertices must separate: {p0:?} {p1:?}"
+        );
+        for e in &l.edges {
+            for w in e.waypoints.windows(2) {
+                let (dx, dy) = ((w[1].x - w[0].x).abs(), (w[1].y - w[0].y).abs());
+                assert!(dx < 0.01 || dy < 0.01, "non-orthogonal {w:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn cylinder_horizontal_ports_spread_while_vertical_converges() {
+        use crate::charts::mermaid::draw::NodeShape;
+        assert!(NodeShape::Cylinder.spreads_ports_in(true));
+        assert!(!NodeShape::Cylinder.spreads_ports_in(false));
+        let cyl = LayeredNodeInput {
+            width: 100.0,
+            height: 60.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: !NodeShape::Cylinder.spreads_ports_in(true),
+            diamond_ports: false,
+        };
+        let target = LayeredNodeInput {
+            width: 80.0,
+            height: 36.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: false,
+            diamond_ports: false,
+        };
+        let edge = |from: usize, to: usize| LayeredEdgeInput {
+            from,
+            to,
+            has_label: true,
+            min_len: 1,
+            hidden: false,
+        };
+        let g = LayeredGraph {
+            direction: LayoutDirection::LeftRight,
+            routing: EdgeRouting::Orthogonal,
+            rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
+            nodes: vec![cyl, target.clone(), target],
+            edges: vec![edge(0, 1), edge(0, 2)],
+            subgraphs: vec![],
+        };
+        let l = layout(&g);
+        let y0 = l.edges[0].waypoints[0].y;
+        let y1 = l.edges[1].waypoints[0].y;
+        assert!(
+            (y0 - y1).abs() > 10.0,
+            "LR cylinder out-ports must spread: {y0} vs {y1}"
+        );
     }
 }

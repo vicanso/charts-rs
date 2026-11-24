@@ -917,6 +917,7 @@ pub(crate) fn render(
                     n.kind,
                     StateKind::Start | StateKind::End | StateKind::Choice
                 ),
+            diamond_ports: !is_anchor && n.kind == StateKind::Choice,
         });
         measured.push(MeasuredState {
             title: note_ft,
@@ -1266,6 +1267,7 @@ pub(crate) fn render(
                 EdgeRouting::Orthogonal,
                 end_of(&e.from),
                 end_of(&e.to),
+                is_horizontal,
             );
         }
 
