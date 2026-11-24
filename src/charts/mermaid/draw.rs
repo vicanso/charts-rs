@@ -16,10 +16,10 @@
 use super::super::canvas::Canvas;
 use super::super::color::Color;
 use super::super::component::{Circle, Line, Polygon, RawPath, Rect};
-use super::super::util::{Point, format_float, write_float};
+use super::super::util::{format_float, write_float, Point};
 use super::layout::EdgeRouting;
 use super::style::MermaidPalette;
-use super::text::{FormattedText, draw_multiline_text, format_and_measure};
+use super::text::{draw_multiline_text, format_and_measure, FormattedText};
 
 /// Mermaid flowchart node shapes (classic + v11 `@{ shape: ... }` core subset).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -676,9 +676,10 @@ fn truncate_at_box_entry(pts: &mut Vec<Point>, x: f32, y: f32, w: f32, h: f32) -
 }
 
 /// Snaps routed waypoints onto the endpoint geometry. Legacy polyline routes
-/// (through node centers) are clipped toward the neighbor waypoint; port
+/// (through node centers) clip node shapes toward the neighbor waypoint; port
 /// routes keep their side ports and only clip non-flat shapes along the port
-/// axis, or truncate where the path crosses a container box border.
+/// axis. Container box endpoints always truncate where the routed path enters
+/// the box border (falling back to center-ward clipping if already inside).
 pub(crate) fn attach_edge_ends(
     pts: &mut Vec<Point>,
     routing: EdgeRouting,
@@ -709,7 +710,7 @@ pub(crate) fn attach_edge_ends(
         EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports_in(is_horizontal) => {
             pts[0] = clip_box(from, pts[1]);
         }
-        EdgeEnd::Box { x, y, w, h } if !legacy => {
+        EdgeEnd::Box { x, y, w, h } => {
             pts.reverse();
             if !truncate_at_box_entry(pts, x, y, w, h) {
                 let n = pts.len();
@@ -717,7 +718,6 @@ pub(crate) fn attach_edge_ends(
             }
             pts.reverse();
         }
-        EdgeEnd::Box { .. } => pts[0] = clip_box(from, pts[1]),
         _ => {}
     }
     // Target end.
@@ -726,13 +726,10 @@ pub(crate) fn attach_edge_ends(
         EdgeEnd::Shape { shape, .. } if legacy || !shape.spreads_ports_in(is_horizontal) => {
             pts[n - 1] = clip_box(to, pts[n - 2]);
         }
-        EdgeEnd::Box { x, y, w, h } if !legacy => {
-            if !truncate_at_box_entry(pts, x, y, w, h) {
-                let n = pts.len();
-                pts[n - 1] = clip_box(to, pts[n - 2]);
-            }
+        EdgeEnd::Box { x, y, w, h } if !truncate_at_box_entry(pts, x, y, w, h) => {
+            let n = pts.len();
+            pts[n - 1] = clip_box(to, pts[n - 2]);
         }
-        EdgeEnd::Box { .. } => pts[n - 1] = clip_box(to, pts[n - 2]),
         _ => {}
     }
 }
@@ -1241,4 +1238,61 @@ pub(crate) fn draw_cardinality_label(
         "middle",
         false,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::MermaidChart;
+
+    #[test]
+    fn polyline_box_target_truncates_at_entry_instead_of_corner() {
+        // Center of box (0,0,200,100) is (100,50). A center-ward clip toward
+        // `start = (300,150)` would hit the corner (200,100), whereas truncating
+        // along `start -> orig_end = (50,80)` hits the bottom edge at (~121.43, 100).
+        let start = Point::from((300.0, 150.0));
+        let orig_end = Point::from((50.0, 80.0));
+        let mut pts = vec![start, orig_end];
+        attach_edge_ends(
+            &mut pts,
+            EdgeRouting::Polyline,
+            EdgeEnd::Shape {
+                shape: NodeShape::Stadium,
+                cx: start.x,
+                cy: start.y,
+                w: 80.0,
+                h: 36.0,
+            },
+            EdgeEnd::Box {
+                x: 0.0,
+                y: 0.0,
+                w: 200.0,
+                h: 100.0,
+            },
+            false,
+        );
+        let p_start = pts[0];
+        let p_end = pts[pts.len() - 1];
+        // Crosses the bottom edge (y = 100) strictly inside x in (0, 200).
+        assert!((p_end.y - 100.0).abs() < 1e-3, "end={p_end:?}");
+        assert!(p_end.x > 0.0 && p_end.x < 190.0, "end={p_end:?}");
+        // Lies on the original segment `start -> orig_end`.
+        let dx = orig_end.x - start.x;
+        let dy = orig_end.y - start.y;
+        let cross = (p_end.x - start.x) * dy - (p_end.y - start.y) * dx;
+        assert!(cross.abs() < 1e-2, "cross={cross}, end={p_end:?}");
+        // Source end also clipped onto start node.
+        assert!(p_start.x < start.x && p_start.y < start.y);
+    }
+
+    #[test]
+    fn nested_subgraphs_linear_renders() {
+        let chart = MermaidChart::from_json(include_str!(
+            "../../../asset/mermaid_chart/flowchart_nested_subgraphs.json"
+        ))
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(svg.starts_with("<svg"));
+        assert!(svg.contains("Storage Engine"));
+    }
 }

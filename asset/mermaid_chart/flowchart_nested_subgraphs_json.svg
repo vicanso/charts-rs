@@ -15,8 +15,8 @@ Storage Engine
 <polygon points="200,244 203.7,251.8 196.3,251.8" fill="#6F7075"/>
 <path d="M116 397 L181.5 302" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="186.5,337 185.2,345.5 179.1,341.3" fill="#6F7075"/>
-<path d="M370.6 397 L290.2 318" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon points="295.2,353 303.3,355.8 298.1,361.1" fill="#6F7075"/>
+<path d="M370.6 397 L249.4 318" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="254.4,353 263,354.1 258.9,360.3" fill="#6F7075"/>
 <path d="M195 170 L195 75" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#6F7075" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="200,110 203.7,117.8 196.3,117.8" fill="#6F7075"/>
 <rect x="132" y="298" width="136" height="39" rx="3" ry="3" stroke="#31559D" stroke-width="1" fill="#0E172C"/>
