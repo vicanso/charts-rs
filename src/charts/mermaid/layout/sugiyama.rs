@@ -334,98 +334,15 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
         }
     }
 
-    // Stage 3: Crossing reduction via barycenter sweeps.
-    let mut pos_in_rank = vec![0usize; total_items];
-    let refresh_positions = |ranks: &[Vec<usize>], pos: &mut [usize]| {
-        for r_items in ranks {
-            for (idx, &id) in r_items.iter().enumerate() {
-                pos[id] = idx;
-            }
-        }
-    };
-    refresh_positions(&ranks, &mut pos_in_rank);
-
-    let count_crossings = |ranks: &[Vec<usize>], pos: &[usize]| -> usize {
-        let mut crossings = 0usize;
-        for rank_items in ranks.iter().take(max_rank) {
-            let mut edges_r: Vec<(usize, usize)> = Vec::new();
-            for &u in rank_items {
-                for &v in &down_neighbors[u] {
-                    edges_r.push((pos[u], pos[v]));
-                }
-            }
-            for i in 0..edges_r.len() {
-                for j in (i + 1)..edges_r.len() {
-                    let (u1, v1) = edges_r[i];
-                    let (u2, v2) = edges_r[j];
-                    if (u1 < u2 && v1 > v2) || (u1 > u2 && v1 < v2) {
-                        crossings += 1;
-                    }
-                }
-            }
-        }
-        crossings
-    };
-
-    let mut best_ranks = ranks.clone();
-    let mut best_crossings = count_crossings(&best_ranks, &pos_in_rank);
-
-    for sweep in 0..8 {
-        if sweep % 2 == 0 {
-            for rank_items in ranks.iter_mut().take(max_rank + 1).skip(1) {
-                let mut keyed: Vec<(f32, usize, usize)> = rank_items
-                    .iter()
-                    .enumerate()
-                    .map(|(cur_idx, &id)| {
-                        let nbrs = &up_neighbors[id];
-                        let bc = if nbrs.is_empty() {
-                            cur_idx as f32
-                        } else {
-                            nbrs.iter().map(|&p| pos_in_rank[p] as f32).sum::<f32>()
-                                / nbrs.len() as f32
-                        };
-                        (bc, cur_idx, id)
-                    })
-                    .collect();
-                keyed.sort_by(|a, b| a.0.total_cmp(&b.0).then_with(|| a.1.cmp(&b.1)));
-                *rank_items = keyed.into_iter().map(|t| t.2).collect();
-                for (idx, &id) in rank_items.iter().enumerate() {
-                    pos_in_rank[id] = idx;
-                }
-            }
-        } else {
-            for r in (0..max_rank).rev() {
-                let mut keyed: Vec<(f32, usize, usize)> = ranks[r]
-                    .iter()
-                    .enumerate()
-                    .map(|(cur_idx, &id)| {
-                        let nbrs = &down_neighbors[id];
-                        let bc = if nbrs.is_empty() {
-                            cur_idx as f32
-                        } else {
-                            nbrs.iter().map(|&p| pos_in_rank[p] as f32).sum::<f32>()
-                                / nbrs.len() as f32
-                        };
-                        (bc, cur_idx, id)
-                    })
-                    .collect();
-                keyed.sort_by(|a, b| a.0.total_cmp(&b.0).then_with(|| a.1.cmp(&b.1)));
-                ranks[r] = keyed.into_iter().map(|t| t.2).collect();
-                for (idx, &id) in ranks[r].iter().enumerate() {
-                    pos_in_rank[id] = idx;
-                }
-            }
-        }
-        let c = count_crossings(&ranks, &pos_in_rank);
-        if c < best_crossings {
-            best_crossings = c;
-            best_ranks = ranks.clone();
-        }
-        if best_crossings == 0 {
-            break;
-        }
-    }
-    ranks = best_ranks;
+    // Stage 3: Crossing reduction via weighted-median sweeps + transposition.
+    let group_of = |id: usize| (item_root_sg(id), item_concurrent_sg(id));
+    reduce_crossings(
+        &mut ranks,
+        &up_neighbors,
+        &down_neighbors,
+        total_items,
+        &group_of,
+    );
 
     // Pin attached notes right next to their targets within the same rank so they
     // hug the target without crossing unrelated nodes or edges.
@@ -1106,6 +1023,216 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
         edges: routed_edges,
         subgraphs: sg_boxes,
     }
+}
+
+/// Total edge crossings between adjacent ranks, counted with a Fenwick tree
+/// over target positions (Barth–Jünger–Mutzel style, O(E log V)).
+fn count_crossings(ranks: &[Vec<usize>], down: &[Vec<usize>], pos: &[usize]) -> usize {
+    let mut total = 0usize;
+    for r in 0..ranks.len().saturating_sub(1) {
+        let width = ranks[r + 1].len();
+        if width == 0 {
+            continue;
+        }
+        let mut edges: Vec<(usize, usize)> = Vec::new();
+        for &u in &ranks[r] {
+            for &v in &down[u] {
+                edges.push((pos[u], pos[v]));
+            }
+        }
+        edges.sort_unstable();
+        let mut tree = vec![0usize; width + 1];
+        for (seen, &(_, v)) in edges.iter().enumerate() {
+            // Count already-inserted targets strictly greater than v.
+            let mut le = 0usize;
+            let mut i = v + 1;
+            while i > 0 {
+                le += tree[i];
+                i &= i - 1;
+            }
+            total += seen - le;
+            let mut i = v + 1;
+            while i <= width {
+                tree[i] += 1;
+                i += i & i.wrapping_neg();
+            }
+        }
+    }
+    total
+}
+
+/// Weighted median of sorted neighbor positions (Gansner et al.).
+fn weighted_median(p: &[f32]) -> Option<f32> {
+    let len = p.len();
+    if len == 0 {
+        return None;
+    }
+    let m = len / 2;
+    if len % 2 == 1 {
+        return Some(p[m]);
+    }
+    if len == 2 {
+        return Some((p[0] + p[1]) * 0.5);
+    }
+    let left = p[m - 1] - p[0];
+    let right = p[len - 1] - p[m];
+    if left + right <= f32::EPSILON {
+        Some((p[m - 1] + p[m]) * 0.5)
+    } else {
+        Some((p[m - 1] * right + p[m] * left) / (left + right))
+    }
+}
+
+/// Stage 3: crossing reduction with weighted-median sweeps plus adjacent
+/// transposition, keeping root-subgraph and concurrent-region members
+/// contiguous inside every rank. `group(id)` returns `(root_sg, region)`.
+fn reduce_crossings(
+    ranks: &mut Vec<Vec<usize>>,
+    up: &[Vec<usize>],
+    down: &[Vec<usize>],
+    total_items: usize,
+    group: &dyn Fn(usize) -> (Option<usize>, Option<usize>),
+) {
+    let refresh = |ranks: &[Vec<usize>], pos: &mut [usize]| {
+        for layer in ranks {
+            for (i, &id) in layer.iter().enumerate() {
+                pos[id] = i;
+            }
+        }
+    };
+    let mut pos = vec![0usize; total_items];
+    refresh(ranks, &mut pos);
+    let mut best = ranks.clone();
+    let mut best_c = count_crossings(ranks, down, &pos);
+    if best_c == 0 {
+        return;
+    }
+
+    // Reorders one layer by median of the fixed neighbor layer, keeping groups
+    // (root subgraph, then concurrent region) contiguous.
+    let order_layer = |layer: &[usize], nbrs: &[Vec<usize>], pos: &[usize]| -> Vec<usize> {
+        let vals: Vec<f32> = layer
+            .iter()
+            .enumerate()
+            .map(|(i, &id)| {
+                let mut p: Vec<f32> = nbrs[id].iter().map(|&w| pos[w] as f32).collect();
+                p.sort_by(f32::total_cmp);
+                weighted_median(&p).unwrap_or(i as f32)
+            })
+            .collect();
+        // Mean value per group key at both nesting levels.
+        let mut root_acc: HashMap<usize, (f32, usize)> = HashMap::new();
+        let mut region_acc: HashMap<(usize, usize), (f32, usize)> = HashMap::new();
+        for (i, &id) in layer.iter().enumerate() {
+            let (root, region) = group(id);
+            if let Some(r) = root {
+                let e = root_acc.entry(r).or_insert((0.0, 0));
+                e.0 += vals[i];
+                e.1 += 1;
+                if let Some(c) = region {
+                    let e = region_acc.entry((r, c)).or_insert((0.0, 0));
+                    e.0 += vals[i];
+                    e.1 += 1;
+                }
+            }
+        }
+        let mut keyed: Vec<(f32, usize, f32, usize, f32, usize, usize)> = layer
+            .iter()
+            .enumerate()
+            .map(|(i, &id)| {
+                let (root, region) = group(id);
+                let (k1, g1) = match root {
+                    Some(r) => {
+                        let (s, c) = root_acc[&r];
+                        (s / c as f32, r)
+                    }
+                    None => (vals[i], usize::MAX),
+                };
+                let (k2, g2) = match (root, region) {
+                    (Some(r), Some(c)) => {
+                        let (s, n) = region_acc[&(r, c)];
+                        (s / n as f32, c)
+                    }
+                    _ => (vals[i], usize::MAX),
+                };
+                (k1, g1, k2, g2, vals[i], i, id)
+            })
+            .collect();
+        keyed.sort_by(|a, b| {
+            a.0.total_cmp(&b.0)
+                .then(a.1.cmp(&b.1))
+                .then(a.2.total_cmp(&b.2))
+                .then(a.3.cmp(&b.3))
+                .then(a.4.total_cmp(&b.4))
+                .then(a.5.cmp(&b.5))
+        });
+        keyed.into_iter().map(|k| k.6).collect()
+    };
+
+    // Crossings contributed by the pair (u left of v) w.r.t. both neighbor ranks.
+    let pair_cross = |u: usize, v: usize, pos: &[usize]| -> usize {
+        let mut c = 0usize;
+        for nb in [up, down] {
+            for &a in &nb[u] {
+                for &b in &nb[v] {
+                    if pos[a] > pos[b] {
+                        c += 1;
+                    }
+                }
+            }
+        }
+        c
+    };
+
+    let mut stale = 0;
+    for iter in 0..24 {
+        let downward = iter % 2 == 0;
+        let layer_ids: Vec<usize> = if downward {
+            (1..ranks.len()).collect()
+        } else {
+            (0..ranks.len().saturating_sub(1)).rev().collect()
+        };
+        for r in layer_ids {
+            let nbrs = if downward { up } else { down };
+            ranks[r] = order_layer(&ranks[r], nbrs, &pos);
+            for (i, &id) in ranks[r].iter().enumerate() {
+                pos[id] = i;
+            }
+        }
+        // Transpose adjacent same-group pairs while it strictly helps.
+        for _ in 0..8 {
+            let mut improved = false;
+            for layer in ranks.iter_mut() {
+                for i in 0..layer.len().saturating_sub(1) {
+                    let (u, v) = (layer[i], layer[i + 1]);
+                    if group(u) != group(v) {
+                        continue;
+                    }
+                    if pair_cross(v, u, &pos) < pair_cross(u, v, &pos) {
+                        layer.swap(i, i + 1);
+                        pos[u] = i + 1;
+                        pos[v] = i;
+                        improved = true;
+                    }
+                }
+            }
+            if !improved {
+                break;
+            }
+        }
+        let c = count_crossings(ranks, down, &pos);
+        if c < best_c {
+            best_c = c;
+            best = ranks.clone();
+            stale = 0;
+        } else {
+            stale += 1;
+        }
+        if best_c == 0 || stale >= 4 {
+            break;
+        }
+    }
+    *ranks = best;
 }
 
 /// Brandes–Köpf horizontal coordinate assignment (canonical TB frame).
@@ -1851,6 +1978,51 @@ mod tests {
                 edge(4, 0),
             ],
             subgraphs: vec![],
+        }
+    }
+
+    #[test]
+    fn crossing_counter_and_median_sweeps_remove_avoidable_crossings() {
+        // rank0: [0, 1], rank1: [2, 3]; edges 0->3 and 1->2 cross once.
+        let ranks = vec![vec![0, 1], vec![2, 3]];
+        let down = vec![vec![3], vec![2], vec![], vec![]];
+        let pos = vec![0, 1, 0, 1];
+        assert_eq!(count_crossings(&ranks, &down, &pos), 1);
+
+        let node = LayeredNodeInput {
+            width: 60.0,
+            height: 30.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: false,
+        };
+        let edge = |from: usize, to: usize| LayeredEdgeInput {
+            from,
+            to,
+            has_label: false,
+            min_len: 1,
+            hidden: false,
+        };
+        // Two interleaved fans that a naive id ordering crosses repeatedly.
+        let g = LayeredGraph {
+            direction: LayoutDirection::TopBottom,
+            routing: EdgeRouting::Orthogonal,
+            rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
+            nodes: vec![node.clone(); 6],
+            edges: vec![edge(0, 5), edge(0, 4), edge(1, 3), edge(1, 2)],
+            subgraphs: vec![],
+        };
+        let l = layout(&g);
+        let x = |i: usize| l.nodes[i].cx;
+        // 0's children (4, 5) must sit on the same side as 0 relative to 1's children.
+        let left_parent_is_0 = x(0) < x(1);
+        let kids0 = x(4).max(x(5));
+        let kids1 = x(2).min(x(3));
+        if left_parent_is_0 {
+            assert!(kids0 < kids1);
+        } else {
+            assert!(x(4).min(x(5)) > x(2).max(x(3)));
         }
     }
 
