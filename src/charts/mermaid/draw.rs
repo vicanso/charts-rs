@@ -16,10 +16,10 @@
 use super::super::canvas::Canvas;
 use super::super::color::Color;
 use super::super::component::{Circle, Line, Polygon, RawPath, Rect};
-use super::super::util::{format_float, write_float, Point};
+use super::super::util::{Point, format_float, write_float};
 use super::layout::EdgeRouting;
 use super::style::MermaidPalette;
-use super::text::{draw_multiline_text, format_and_measure, FormattedText};
+use super::text::{FormattedText, draw_multiline_text, format_and_measure};
 
 /// Mermaid flowchart node shapes (classic + v11 `@{ shape: ... }` core subset).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]

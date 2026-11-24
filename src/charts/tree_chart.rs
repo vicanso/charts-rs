@@ -958,15 +958,17 @@ mod tests {
 
     #[test]
     fn tree_tb_labels_stay_within_canvas() {
-        let chart = TreeChart::from_json(include_str!("../../asset/tree_chart/integration.json"))
-            .unwrap();
+        let chart =
+            TreeChart::from_json(include_str!("../../asset/tree_chart/integration.json")).unwrap();
         let svg = chart.svg().unwrap();
         let content_left = chart.margin.left;
         let content_right = chart.width - chart.margin.right;
         let font_size = chart.series.label.font.size.max(10.0);
         for name in ["Backend", "Frontend", "Accounting", "COO"] {
             let needle = format!(">\n{name}\n</text>");
-            let pos = svg.find(&needle).unwrap_or_else(|| panic!("missing {name}"));
+            let pos = svg
+                .find(&needle)
+                .unwrap_or_else(|| panic!("missing {name}"));
             let line_start = svg[..pos].rfind("<text").unwrap();
             let tag = &svg[line_start..pos];
             let x_start = tag.find("x=\"").unwrap() + 3;

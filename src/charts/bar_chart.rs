@@ -1013,13 +1013,10 @@ mod tests {
         // Ensure every rotated label's translate-y plus downward rotated half-projection
         // fits comfortably inside the canvas height.
         let font_size = chart.x_axis.font.size;
-        let widest = crate::charts::measure_text_width_family(
-            &chart.font_family,
-            font_size,
-            "Wednesday",
-        )
-        .unwrap()
-        .width();
+        let widest =
+            crate::charts::measure_text_width_family(&chart.font_family, font_size, "Wednesday")
+                .unwrap()
+                .width();
         let downward = (widest / 2.0) * chart.x_axis.name_rotate.sin().abs()
             + font_size * 0.3 * chart.x_axis.name_rotate.cos().abs();
         let mut found = 0;

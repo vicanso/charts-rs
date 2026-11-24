@@ -1285,46 +1285,46 @@ impl ScatterChart {
         }
     }
     /// Returns `true` if segment `a..b` intersects the axis-aligned box `[x0, x1] x [y0, y1]`.
-fn segment_intersects_box(a: Point, b: Point, x0: f32, y0: f32, x1: f32, y1: f32) -> bool {
-    let mut t0 = 0.0_f32;
-    let mut t1 = 1.0_f32;
-    let dx = b.x - a.x;
-    let dy = b.y - a.y;
-    for (p, q) in [
-        (-dx, a.x - x0),
-        (dx, x1 - a.x),
-        (-dy, a.y - y0),
-        (dy, y1 - a.y),
-    ] {
-        if p.abs() <= f32::EPSILON {
-            if q < 0.0 {
-                return false;
-            }
-        } else {
-            let t = q / p;
-            if p < 0.0 {
-                t0 = t0.max(t);
+    fn segment_intersects_box(a: Point, b: Point, x0: f32, y0: f32, x1: f32, y1: f32) -> bool {
+        let mut t0 = 0.0_f32;
+        let mut t1 = 1.0_f32;
+        let dx = b.x - a.x;
+        let dy = b.y - a.y;
+        for (p, q) in [
+            (-dx, a.x - x0),
+            (dx, x1 - a.x),
+            (-dy, a.y - y0),
+            (dy, y1 - a.y),
+        ] {
+            if p.abs() <= f32::EPSILON {
+                if q < 0.0 {
+                    return false;
+                }
             } else {
-                t1 = t1.min(t);
-            }
-            if t0 > t1 {
-                return false;
+                let t = q / p;
+                if p < 0.0 {
+                    t0 = t0.max(t);
+                } else {
+                    t1 = t1.min(t);
+                }
+                if t0 > t1 {
+                    return false;
+                }
             }
         }
+        true
     }
-    true
-}
 
-/// Returns `true` if any regression polyline intersects the slightly padded label box.
-fn box_intersects_curves(x: f32, y: f32, w: f32, h: f32, runs: &[Vec<Point>]) -> bool {
-    let (x0, y0, x1, y1) = (x - 2.0, y - 2.0, x + w + 2.0, y + h + 2.0);
-    runs.iter().any(|run| {
-        run.windows(2)
-            .any(|pair| Self::segment_intersects_box(pair[0], pair[1], x0, y0, x1, y1))
-    })
-}
+    /// Returns `true` if any regression polyline intersects the slightly padded label box.
+    fn box_intersects_curves(x: f32, y: f32, w: f32, h: f32, runs: &[Vec<Point>]) -> bool {
+        let (x0, y0, x1, y1) = (x - 2.0, y - 2.0, x + w + 2.0, y + h + 2.0);
+        runs.iter().any(|run| {
+            run.windows(2)
+                .any(|pair| Self::segment_intersects_box(pair[0], pair[1], x0, y0, x1, y1))
+        })
+    }
 
-/// Creates a scatter chart with default theme.
+    /// Creates a scatter chart with default theme.
     pub fn new(series_list: Vec<Series>) -> ScatterChart {
         ScatterChart::new_with_theme(series_list, &get_default_theme_name())
     }
@@ -2202,8 +2202,9 @@ mod tests {
 
     #[test]
     fn regression_formula_labels_avoid_curves() {
-        let chart = ScatterChart::from_json(include_str!("../../asset/scatter_chart/regression.json"))
-            .unwrap();
+        let chart =
+            ScatterChart::from_json(include_str!("../../asset/scatter_chart/regression.json"))
+                .unwrap();
         let svg = chart.svg().unwrap();
         // Parse all ct-regression polyline paths into Vec<Point>.
         let mut runs: Vec<Vec<crate::Point>> = Vec::new();

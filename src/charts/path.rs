@@ -168,10 +168,8 @@ impl SmoothCurve {
                     let scale = (seg_l.abs() / dy_l.max(f32::EPSILON))
                         .min(seg_r.abs() / dy_r.max(f32::EPSILON))
                         .min(1.0);
-                    control_points[index].left =
-                        Some((cpl.x, py - (py - cpl.y) * scale).into());
-                    control_points[index].right =
-                        Some((cpr.x, py + (cpr.y - py) * scale).into());
+                    control_points[index].left = Some((cpl.x, py - (py - cpl.y) * scale).into());
+                    control_points[index].right = Some((cpr.x, py + (cpr.y - py) * scale).into());
                 }
             }
         }
