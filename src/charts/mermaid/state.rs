@@ -946,6 +946,7 @@ pub(crate) fn render(
             title_width: ft.width,
             title_height: ft.height,
             concurrent_region: sg.concurrent_region,
+            direction: None,
         });
         sg_labels.push(ft);
     }

@@ -1,0 +1,60 @@
+<svg width="780" height="464" viewBox="0 0 780 464" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="780" height="464" fill="#FFFFFF"/>
+<text font-size="18" x="313.5" y="20" font-weight="bold" dominant-baseline="central" font-family="Roboto" fill="#464646">
+Release Workflow
+</text>
+<rect x="170" y="59" width="463" height="376" rx="8" ry="8" stroke="#DEDEDE" stroke-width="1" fill="#FBFBFB"/>
+<text font-size="12" x="180" y="77.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
+Continuous Integration
+</text>
+<rect x="297" y="325" width="318" height="94" rx="8" ry="8" stroke="#DEDEDE" stroke-width="1" fill="#F9F9F9"/>
+<text font-size="12" x="307" y="343.5" font-weight="bold" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#909090">
+Quality Gates
+</text>
+<path d="M335.8 102 L335.8 156" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="340.8,191 337,183.2 344.5,183.2" fill="#999999"/>
+<path d="M321.8 195 L321.8 236.5 Q321.8 242.5,315.8 242.5 L226.5 242.5 Q220.5 242.5,220.5 248.5 L220.5 317.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="225.5,352.5 221.8,344.8 229.2,344.8" fill="#999999"/>
+<path d="M366 348.5 L420 348.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="425,383.5 417.2,387.2 417.2,379.8" fill="#999999"/>
+<path d="M478 348.5 L532 348.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="537,383.5 529.2,387.2 529.2,379.8" fill="#999999"/>
+<path d="M349.8 195 L349.8 290" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="354.8,325 351,317.2 358.5,317.2" fill="#999999"/>
+<path d="M111 212 L165 212" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="170,247 162.2,250.7 162.2,243.3" fill="#999999"/>
+<path d="M628 212 L682 212" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="687,247 679.2,250.7 679.2,243.3" fill="#999999"/>
+<rect x="312.8" y="98" width="56" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="340.8" y="117.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Plan
+</text>
+<rect x="310.8" y="191" width="60" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="340.8" y="210.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Build
+</text>
+<rect x="188" y="352.5" width="75" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="225.5" y="372" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Review
+</text>
+<rect x="315" y="364" width="56" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="343" y="383.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Lint
+</text>
+<rect x="425" y="364" width="58" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="454" y="383.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Test
+</text>
+<rect x="537" y="364" width="60" height="39" rx="3" ry="3" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="567" y="383.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Scan
+</text>
+<rect x="29" y="227.5" width="87" height="39" rx="19.5" ry="19.5" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="72.5" y="247" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Commit
+</text>
+<rect x="687" y="227.5" width="64" height="39" rx="19.5" ry="19.5" stroke="#8C9ACA" stroke-width="1" fill="#F1F4FA"/>
+<text font-size="14" x="719" y="247" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+Ship
+</text>
+</svg>

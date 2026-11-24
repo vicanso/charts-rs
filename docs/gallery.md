@@ -279,6 +279,10 @@ every option is described in the [JSON reference](./json.md).
 </p>
 
 <p align="center">
+  <img src="../asset/image/mermaid-flowchart-subgraph-direction.png" width="70%" alt="Mermaid flowchart with per-subgraph direction">
+</p>
+
+<p align="center">
   <img src="../asset/image/mermaid-er.png" width="56%" alt="Mermaid ER diagram">
   <img src="../asset/image/mermaid-state.png" width="31%" alt="Mermaid state diagram">
 </p>

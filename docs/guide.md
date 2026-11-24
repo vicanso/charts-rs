@@ -874,6 +874,11 @@ let _themed_svg = chart.svg().unwrap();
   `curve: basis` switches flowcharts to smooth splines (still leaving nodes
   perpendicularly); `curve: linear` keeps straight center-to-center lines;
   `curve: step` is the same as the orthogonal default.
+- **Subgraph direction**: `direction TB|BT|LR|RL` inside a flowchart
+  `subgraph` lays that subgraph out in its own direction as a composite block
+  (nesting supported). As in Mermaid, it is ignored when an edge links one of
+  the subgraph's inner nodes to the outside; edges to the subgraph itself are
+  fine.
 - **Accessibility & safe links**: `accTitle:` and `accDescr:` / `accDescr { ... }`
   emit `role="img"`, `aria-labelledby`, `aria-describedby`, `<title>`, and
   `<desc>` on the root `<svg>`. `click` / `link` directives in `flowchart`,

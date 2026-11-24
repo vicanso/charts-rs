@@ -579,6 +579,15 @@ fn mermaid_snapshots() {
         flowchart_nested_subgraphs.svg().unwrap()
     );
 
+    let flowchart_subgraph_direction = MermaidChart::from_json(include_str!(
+        "../asset/mermaid_chart/flowchart_subgraph_direction.json"
+    ))
+    .unwrap();
+    common::assert_snapshot!(
+        "mermaid_chart/flowchart_subgraph_direction_json.svg",
+        flowchart_subgraph_direction.svg().unwrap()
+    );
+
     let sequence_lifecycle = MermaidChart::from_json(include_str!(
         "../asset/mermaid_chart/sequence_lifecycle.json"
     ))
@@ -1875,4 +1884,61 @@ xychart-beta
         xy_svg.contains("Bar 1"),
         "expected xychart legend when showLegend=true: {xy_svg}"
     );
+}
+
+/// Extracts the `(x, y)` of the `<text>` element whose content is `label`.
+fn text_pos(svg: &str, label: &str) -> (f32, f32) {
+    let needle = format!(">\n{label}\n<");
+    let end = svg
+        .find(&needle)
+        .unwrap_or_else(|| panic!("label {label} missing"));
+    let start = svg[..end].rfind("<text").unwrap();
+    let tag = &svg[start..end];
+    let get = |k: &str| -> f32 {
+        let pat = format!(" {k}=\"");
+        let s = tag.find(&pat).unwrap() + pat.len();
+        let e = s + tag[s..].find('"').unwrap();
+        tag[s..e].parse().unwrap()
+    };
+    (get("x"), get("y"))
+}
+
+#[test]
+fn m07_subgraph_direction_composite_layout() {
+    // Isolated subgraph: its own `direction LR` applies inside a TB flowchart.
+    let src = r#"
+flowchart TB
+  subgraph S
+    direction LR
+    alpha --> beta --> gamma
+  end
+  xray --> S
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    assert_valid_svg(&svg);
+    let (a, b, c, x) = (
+        text_pos(&svg, "alpha"),
+        text_pos(&svg, "beta"),
+        text_pos(&svg, "gamma"),
+        text_pos(&svg, "xray"),
+    );
+    assert!(
+        (a.1 - b.1).abs() < 0.5 && (b.1 - c.1).abs() < 0.5,
+        "{a:?} {b:?} {c:?}"
+    );
+    assert!(a.0 < b.0 && b.0 < c.0);
+    assert!(x.1 < a.1, "xray must sit above the LR block");
+
+    // An edge into an inner node disables the subgraph direction (Mermaid rule).
+    let src = r#"
+flowchart TB
+  subgraph S
+    direction LR
+    alpha --> beta --> gamma
+  end
+  xray --> alpha
+"#;
+    let svg = mermaid_to_svg(src).unwrap();
+    let (a, b) = (text_pos(&svg, "alpha"), text_pos(&svg, "beta"));
+    assert!(b.1 > a.1 + 10.0, "direction must be ignored: {a:?} {b:?}");
 }

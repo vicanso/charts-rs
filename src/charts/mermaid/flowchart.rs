@@ -66,6 +66,7 @@ struct FcSubgraph {
     title: String,
     parent: Option<usize>,
     inline_style: StyleProps,
+    direction: Option<Direction>,
 }
 
 struct ParsedFlowchart {
@@ -978,6 +979,7 @@ fn parse_flowchart(direction: Direction, lines: &[SourceLine]) -> Result<ParsedF
                     title,
                     parent,
                     inline_style: StyleProps::default(),
+                    direction: None,
                 });
                 sg_stack.push((sg_idx, sl.line_no));
                 continue;
@@ -991,8 +993,9 @@ fn parse_flowchart(direction: Direction, lines: &[SourceLine]) -> Result<ParsedF
                     line: Some(sl.line_no),
                     message: format!("unknown direction `{dir_tok}`"),
                 })?;
-                if sg_stack.is_empty() {
-                    fc.direction = dir;
+                match sg_stack.last() {
+                    None => fc.direction = dir,
+                    Some(&(sg_idx, _)) => fc.subgraphs[sg_idx].direction = Some(dir),
                 }
                 continue;
             }
@@ -1362,13 +1365,46 @@ pub(crate) fn render(
 
     let mut sg_labels = Vec::with_capacity(fc.subgraphs.len());
     let mut layout_subgraphs = Vec::with_capacity(fc.subgraphs.len());
-    for sg in &fc.subgraphs {
+    // A subgraph's own `direction` only applies when no edge links one of its
+    // inner nodes (or nested subgraphs) to the outside; edges attached to the
+    // subgraph itself are allowed (Mermaid's documented limitation).
+    let sg_within = |mut cur: Option<usize>, target: usize| -> bool {
+        let mut guard = 0;
+        while let Some(idx) = cur {
+            if idx == target {
+                return true;
+            }
+            cur = fc.subgraphs.get(idx).and_then(|s| s.parent);
+            guard += 1;
+            if guard > fc.subgraphs.len() {
+                break;
+            }
+        }
+        false
+    };
+    let isolated = |sg_idx: usize| -> bool {
+        // `None` = the subgraph itself, `Some(true)` = inside, `Some(false)` = outside.
+        let side = |ep: &Endpoint| -> Option<bool> {
+            match *ep {
+                Endpoint::Subgraph(t) if t == sg_idx => None,
+                Endpoint::Subgraph(t) => Some(sg_within(Some(t), sg_idx)),
+                Endpoint::Node(u) => Some(sg_within(fc.nodes[u].subgraph, sg_idx)),
+            }
+        };
+        fc.edges.iter().all(|e| match (side(&e.from), side(&e.to)) {
+            (Some(a), Some(b)) => a == b,
+            (None, Some(inside)) | (Some(inside), None) => !inside,
+            (None, None) => true,
+        })
+    };
+    for (sg_idx, sg) in fc.subgraphs.iter().enumerate() {
         let ft = format_and_measure(&sg.title, &font_family, sg_font_size);
         layout_subgraphs.push(LayeredSubgraphInput {
             parent: sg.parent,
             title_width: ft.width,
             title_height: ft.height,
             concurrent_region: false,
+            direction: sg.direction.filter(|_| isolated(sg_idx)),
         });
         sg_labels.push(ft);
     }

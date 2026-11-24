@@ -645,6 +645,7 @@ let _themed_svg = chart.svg().unwrap();
 - **语法校验与诊断**：`mermaid_validate(source)` 覆盖全部 13 类图表的预处理、语法与语义校验（如 Sankey 环检测、Pie 全零值校验），出错时返回带行号及拼写提示的 `Error::Mermaid`（如 `stateDiagram-v3` 提示 `stateDiagram-v2`，flowchart 中误用 `->>` 提示改用 `-->`）。
 - **Frontmatter 与 `%%{init}%%` 配置透传**：支持 `title`、`config.theme`、`config.fontFamily`、`config.flowchart.{curve, nodeSpacing, rankSpacing}`（`basis` / `linear` / `step`）、`config.sequence.{mirrorActors, showSequenceNumbers}` 与 `config.xyChart.showLegend`。Rust / JSON API 显式传入的选项优先级高于源码配置。
 - **连线路由**：flowchart、state、class 和 ER 的连线默认是带圆角的正交折线，从节点朝向布局方向的那一侧出入，并在平直的边上均匀分布。flowchart 写 `curve: basis` 时改为平滑曲线（仍然垂直离开节点）；`curve: linear` 保持中心到中心的直线；`curve: step` 等同于默认的正交折线。
+- **子图方向**：在 flowchart 的 `subgraph` 内写 `direction TB|BT|LR|RL`，该子图会按自己的方向独立布局，再作为一个整体放进外层（支持嵌套）。与 Mermaid 一致：如果有边把子图内部节点连到外部，子图方向会被忽略；连到子图本身的边不受影响。
 - **无障碍与安全超链接**：`accTitle:` 与 `accDescr:` / `accDescr { ... }` 会在根 `<svg>` 上输出 `role="img"`、`aria-labelledby`、`aria-describedby`、`<title>` 与 `<desc>`。`flowchart` / `classDiagram` / `stateDiagram` 中的 `click` / `link` 指令会按协议白名单（仅允许 `http://`、`https://`、`mailto:` 和相对路径，拦截 `javascript:` / `data:`）输出 `<a href="...">`，可通过 `chart.allow_links = false` 或 JSON `"allow_links": false` 全局关闭。
 - **语法与样式**：默认继承 `charts-rs` 当前主题配色，支持 `style`、`classDef`、`class`、`:::`、`linkStyle`、v11 `A@{ shape: doc, label: "..." }` 节点语法、多行 Markdown 富文本标签（`` "`...`" ``，支持 `**粗体**` / `*斜体*`），以及甘特图 `excludes` / `includes` / `weekday` / `tickInterval` / `vert` 纵向参考线。
 - **组合图表**：`MermaidChart` 实现了 `Chart` trait，并可直接作为 `"type": "mermaid"` 嵌入 `MultiChart`。

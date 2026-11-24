@@ -940,6 +940,7 @@ pub(crate) fn render(
             title_width: ft.width,
             title_height: ft.height,
             concurrent_region: false,
+            direction: None,
         });
         ns_labels.push(ft);
     }

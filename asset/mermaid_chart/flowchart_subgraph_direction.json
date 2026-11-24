@@ -1,0 +1,5 @@
+{
+  "theme": "light",
+  "title_text": "Release Workflow",
+  "source": "flowchart LR\n  subgraph CI [Continuous Integration]\n    direction TB\n    plan[Plan] --> build[Build]\n    build --> review[Review]\n    subgraph Checks [Quality Gates]\n      direction LR\n      lint[Lint] --> test[Test] --> scan[Scan]\n    end\n    build --> Checks\n  end\n  start([Commit]) --> CI\n  CI --> ship([Ship])"
+}

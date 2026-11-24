@@ -17,8 +17,8 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use super::super::super::util::Point;
 use super::{
-    EdgeRouting, LayeredGraph, LayeredLayout, LayoutDirection, NoteSide, PositionedNode,
-    RoutedEdge, SubgraphBox,
+    EdgeRouting, LayeredGraph, LayeredLayout, LayeredNodeInput, LayoutDirection, NoteSide,
+    PositionedNode, RoutedEdge, SubgraphBox,
 };
 
 const CANVAS_PAD: f32 = 24.0;
@@ -210,7 +210,276 @@ fn assign_ranks(n: usize, dag_edges: &[DagEdge]) -> Vec<usize> {
 }
 
 /// Computes deterministic layered layout for `graph`.
+///
+/// Subgraphs whose own `direction` differs from the enclosing flow are laid
+/// out recursively in their own direction and then placed as a single
+/// composite block in the outer layout (Mermaid's "direction in subgraphs").
 pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
+    let sgs = &graph.subgraphs;
+    let n = graph.nodes.len();
+    let in_tree = |mut cur: Option<usize>, target: usize| -> bool {
+        let mut guard = 0;
+        while let Some(idx) = cur {
+            if idx == target {
+                return true;
+            }
+            cur = sgs.get(idx).and_then(|s| s.parent);
+            guard += 1;
+            if guard > sgs.len() {
+                break;
+            }
+        }
+        false
+    };
+    let differs = |s: usize| sgs[s].direction.is_some_and(|d| d != graph.direction);
+    let candidates: Vec<usize> = (0..sgs.len())
+        .filter(|&s| {
+            differs(s)
+                && {
+                    let mut p = sgs[s].parent;
+                    let mut ok = true;
+                    let mut guard = 0;
+                    while let Some(a) = p {
+                        if differs(a) {
+                            ok = false;
+                            break;
+                        }
+                        p = sgs[a].parent;
+                        guard += 1;
+                        if guard > sgs.len() {
+                            break;
+                        }
+                    }
+                    ok
+                }
+                && graph.nodes.iter().any(|nd| in_tree(nd.subgraph, s))
+        })
+        .collect();
+    if candidates.is_empty() {
+        return layout_flat(graph);
+    }
+
+    let owner: Vec<Option<usize>> = (0..n)
+        .map(|u| {
+            candidates
+                .iter()
+                .position(|&c| in_tree(graph.nodes[u].subgraph, c))
+        })
+        .collect();
+
+    struct Composite {
+        layout: LayeredLayout,
+        members: Vec<usize>,
+        sg_list: Vec<usize>,
+        edge_slots: Vec<usize>,
+        content_w: f32,
+        proxy_w: f32,
+        proxy_h: f32,
+        title_extra: f32,
+    }
+
+    let mut composites: Vec<Composite> = Vec::with_capacity(candidates.len());
+    for (ci, &c) in candidates.iter().enumerate() {
+        let members: Vec<usize> = (0..n).filter(|&u| owner[u] == Some(ci)).collect();
+        let node_map: HashMap<usize, usize> =
+            members.iter().enumerate().map(|(i, &u)| (u, i)).collect();
+        let sg_list: Vec<usize> = (0..sgs.len())
+            .filter(|&s| s != c && in_tree(Some(s), c))
+            .collect();
+        let sg_map: HashMap<usize, usize> =
+            sg_list.iter().enumerate().map(|(i, &s)| (s, i)).collect();
+        let remap_sg = |s: Option<usize>| s.and_then(|s| sg_map.get(&s).copied());
+        let mut edge_slots = Vec::new();
+        let mut edges = Vec::new();
+        for (idx, e) in graph.edges.iter().enumerate() {
+            if let (Some(&f), Some(&t)) = (node_map.get(&e.from), node_map.get(&e.to)) {
+                let mut ne = e.clone();
+                ne.from = f;
+                ne.to = t;
+                edges.push(ne);
+                edge_slots.push(idx);
+            }
+        }
+        let sub = LayeredGraph {
+            direction: sgs[c].direction.unwrap_or(graph.direction),
+            routing: graph.routing,
+            rank_sep_extra: graph.rank_sep_extra,
+            node_sep_extra: graph.node_sep_extra,
+            nodes: members
+                .iter()
+                .map(|&u| {
+                    let nd = &graph.nodes[u];
+                    let mut out = nd.clone();
+                    out.subgraph = remap_sg(nd.subgraph);
+                    out.attach_to = nd
+                        .attach_to
+                        .and_then(|(t, side)| node_map.get(&t).map(|&nt| (nt, side)));
+                    out
+                })
+                .collect(),
+            edges,
+            subgraphs: sg_list
+                .iter()
+                .map(|&s| {
+                    let mut out = sgs[s].clone();
+                    out.parent = remap_sg(sgs[s].parent);
+                    out
+                })
+                .collect(),
+        };
+        let l = layout(&sub);
+        let content_w = (l.width - CANVAS_PAD * 2.0).max(1.0);
+        let content_h = (l.height - CANVAS_PAD * 2.0).max(1.0);
+        let title_extra = if sgs[c].title_height > 0.0 {
+            sgs[c].title_height + SUBGRAPH_TITLE_GAP
+        } else {
+            0.0
+        };
+        let proxy_w =
+            (content_w + SUBGRAPH_PAD_X * 2.0).max(sgs[c].title_width + SUBGRAPH_PAD_X * 2.0);
+        let proxy_h = content_h + SUBGRAPH_PAD_TOP + title_extra + SUBGRAPH_PAD_BOTTOM;
+        composites.push(Composite {
+            layout: l,
+            members,
+            sg_list,
+            edge_slots,
+            content_w,
+            proxy_w,
+            proxy_h,
+            title_extra,
+        });
+    }
+
+    // Outer graph: free nodes followed by one proxy node per composite.
+    let free: Vec<usize> = (0..n).filter(|&u| owner[u].is_none()).collect();
+    let mut outer_idx: Vec<usize> = vec![0; n];
+    for (i, &u) in free.iter().enumerate() {
+        outer_idx[u] = i;
+    }
+    for (u, o) in owner.iter().enumerate() {
+        if let Some(ci) = o {
+            outer_idx[u] = free.len() + ci;
+        }
+    }
+    let mut outer_nodes: Vec<LayeredNodeInput> = free
+        .iter()
+        .map(|&u| {
+            let mut nd = graph.nodes[u].clone();
+            nd.attach_to = nd
+                .attach_to
+                .and_then(|(t, side)| owner[t].is_none().then_some((outer_idx[t], side)));
+            nd
+        })
+        .collect();
+    for (ci, &c) in candidates.iter().enumerate() {
+        outer_nodes.push(LayeredNodeInput {
+            width: composites[ci].proxy_w,
+            height: composites[ci].proxy_h,
+            subgraph: sgs[c].parent,
+            attach_to: None,
+            center_port: false,
+        });
+    }
+    let mut outer_edge_of: Vec<Option<usize>> = vec![None; graph.edges.len()];
+    let mut outer_edges = Vec::new();
+    for (idx, e) in graph.edges.iter().enumerate() {
+        let internal = match (owner.get(e.from), owner.get(e.to)) {
+            (Some(Some(a)), Some(Some(b))) => a == b,
+            _ => false,
+        };
+        if internal || e.from >= n || e.to >= n {
+            continue;
+        }
+        let mut ne = e.clone();
+        ne.from = outer_idx[e.from];
+        ne.to = outer_idx[e.to];
+        outer_edge_of[idx] = Some(outer_edges.len());
+        outer_edges.push(ne);
+    }
+    let outer = layout_flat(&LayeredGraph {
+        direction: graph.direction,
+        routing: graph.routing,
+        rank_sep_extra: graph.rank_sep_extra,
+        node_sep_extra: graph.node_sep_extra,
+        nodes: outer_nodes,
+        edges: outer_edges,
+        subgraphs: sgs.clone(),
+    });
+
+    let mut nodes = vec![PositionedNode { cx: 0.0, cy: 0.0 }; n];
+    let mut edges = vec![
+        RoutedEdge {
+            waypoints: vec![],
+            self_loop: false,
+        };
+        graph.edges.len()
+    ];
+    let mut subgraphs = outer.subgraphs.clone();
+    for &u in &free {
+        nodes[u] = outer.nodes[outer_idx[u]];
+    }
+    for (idx, slot) in outer_edge_of.iter().enumerate() {
+        if let Some(s) = slot {
+            edges[idx] = outer.edges[*s].clone();
+        }
+    }
+    for (ci, &c) in candidates.iter().enumerate() {
+        let comp = &composites[ci];
+        let p = outer.nodes[free.len() + ci];
+        let left = p.cx - comp.proxy_w * 0.5;
+        let top = p.cy - comp.proxy_h * 0.5;
+        let dx = p.cx - comp.content_w * 0.5 - CANVAS_PAD;
+        let dy = top + SUBGRAPH_PAD_TOP + comp.title_extra - CANVAS_PAD;
+        subgraphs[c] = SubgraphBox {
+            x: left,
+            y: top,
+            width: comp.proxy_w,
+            height: comp.proxy_h,
+            visible: true,
+        };
+        for (i, &u) in comp.members.iter().enumerate() {
+            let q = comp.layout.nodes[i];
+            nodes[u] = PositionedNode {
+                cx: q.cx + dx,
+                cy: q.cy + dy,
+            };
+        }
+        for (i, &s) in comp.sg_list.iter().enumerate() {
+            let b = comp.layout.subgraphs[i];
+            subgraphs[s] = if b.visible {
+                SubgraphBox {
+                    x: b.x + dx,
+                    y: b.y + dy,
+                    ..b
+                }
+            } else {
+                b
+            };
+        }
+        for (i, &idx) in comp.edge_slots.iter().enumerate() {
+            let re = &comp.layout.edges[i];
+            edges[idx] = RoutedEdge {
+                waypoints: re
+                    .waypoints
+                    .iter()
+                    .map(|pt| Point::from((pt.x + dx, pt.y + dy)))
+                    .collect(),
+                self_loop: re.self_loop,
+            };
+        }
+    }
+
+    LayeredLayout {
+        width: outer.width,
+        height: outer.height,
+        nodes,
+        edges,
+        subgraphs,
+    }
+}
+
+/// Flat layered layout (single direction) for `graph`.
+fn layout_flat(graph: &LayeredGraph) -> LayeredLayout {
     let n = graph.nodes.len();
     if n == 0 {
         return LayeredLayout {
@@ -1933,6 +2202,7 @@ mod tests {
                 title_width: 60.0,
                 title_height: 18.0,
                 concurrent_region: false,
+                direction: None,
             }],
         };
 

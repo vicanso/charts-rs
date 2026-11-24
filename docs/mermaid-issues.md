@@ -5,7 +5,7 @@
 > - 审查日期：2026-11-21
 > - 审查基线：`v2.3.0` + `0b79107`
 > - 审查方式：`cargo clippy --features mermaid --all-targets`、`cargo test --features mermaid`、逐张检查 `asset/image/mermaid-*.png` 示例图、约 60 个异常 / 边界输入的探测，以及 16 个覆盖较全语法的复杂用例（通过 `svg_to_png` 光栅化后人工检查）。
-> - 当前进展（截至 `11ae027`）：已完成 24/25 项问题修复（`M-01`–`M-06`、`M-08`–`M-25`，仅剩 `M-07` 子图独立 `direction`）以及 4 项近期增强（`E-01`、`E-04`、`E-05`、`E-12`）。
+> - 当前进展（截至 `11ae027`）：已完成全部 25 项问题修复（`M-07` 子图独立 `direction` 已通过复合图布局实现）以及 4 项近期增强（`E-01`、`E-04`、`E-05`、`E-12`）。
 
 ## 目录
 
@@ -56,7 +56,7 @@
 | [M-04](#m-04-sequence-的-create--destroy-语义不正确) | P0 | sequence | `create` / `destroy` 语义不正确 | 已完成 (`5576dc8`) |
 | [M-05](#m-05-class-同一对类之间的多条关系完全重叠) | P0 | class | 同一对类之间的多条关系完全重叠 | 已完成 (`d959002`) |
 | [M-06](#m-06-flowchart-子图外节点压在子图边框上连线穿过子图标题) | P1 | flowchart | 子图外节点压在子图边框上，连线穿过子图标题 | 已完成 (`f5ee2b8`) |
-| [M-07](#m-07-flowchart-子图内-direction-被忽略) | P1 | flowchart | 子图内 `direction` 被忽略 | 待处理 |
+| [M-07](#m-07-flowchart-子图内-direction-被忽略) | P1 | flowchart | 子图内 `direction` 被忽略 | 已完成（复合图布局，见 [mermaid-beautify-plan.md](./mermaid-beautify-plan.md)） |
 | [M-08](#m-08-er-图-lr-方向下拥挤自环渲染不完整) | P1 | er | LR 方向下拥挤，自环渲染不完整 | 已完成 (`b347530`) |
 | [M-09](#m-09-treemap-缺少分组标题与分组边框) | P1 | treemap | 缺少分组（section）标题与边框 | 已完成 (`d650749`) |
 | [M-10](#m-10-xychart-自动图例与数值型-x-轴) | P1 | xychart | 自动图例 `Bar 1` / `Line 1`，数值型 x 轴被当作类目 | 已完成 (`d6cad77`) |

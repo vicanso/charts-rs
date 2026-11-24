@@ -1414,6 +1414,10 @@ fn generate_mermaid_image() {
             include_str!("../asset/mermaid_chart/flowchart_nested_subgraphs.json"),
         ),
         (
+            "mermaid-flowchart-subgraph-direction",
+            include_str!("../asset/mermaid_chart/flowchart_subgraph_direction.json"),
+        ),
+        (
             "mermaid-sequence-lifecycle",
             include_str!("../asset/mermaid_chart/sequence_lifecycle.json"),
         ),

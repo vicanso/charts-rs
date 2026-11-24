@@ -62,6 +62,10 @@ pub(crate) struct LayeredSubgraphInput {
     pub(crate) title_width: f32,
     pub(crate) title_height: f32,
     pub(crate) concurrent_region: bool,
+    /// Own flow direction (`direction XX` inside a flowchart subgraph). When
+    /// it differs from the enclosing direction the subgraph is laid out as an
+    /// independent composite block.
+    pub(crate) direction: Option<LayoutDirection>,
 }
 
 /// Complete layered graph problem passed to [`sugiyama::layout`].
