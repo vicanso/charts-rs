@@ -453,6 +453,10 @@ pub(crate) fn render(
         .collect();
 
     let mut radar = RadarChart::new_with_theme(series_list, indicators, theme_name);
+    // Lighter fills keep overlapping radar polygons and grid rings legible.
+    if radar.series.fill_opacity.is_none() {
+        radar.series.fill_opacity = Some(if parsed.curves.len() >= 3 { 0.10 } else { 0.16 });
+    }
     radar.shape = parsed.shape;
     radar.visual_center = true;
     if let Some(t) = parsed.ticks {
@@ -501,5 +505,14 @@ radar-beta
         let prep = preprocess(src).unwrap();
         let err = parse_radar(&prep.lines).unwrap_err().to_string();
         assert!(err.contains("line 3"), "{err}");
+    }
+
+    #[test]
+    fn three_curve_radar_uses_light_fill_opacity() {
+        let chart =
+            MermaidChart::from_json(include_str!("../../../../asset/mermaid_chart/radar.json"))
+                .unwrap();
+        let svg = chart.svg().unwrap();
+        assert!(svg.contains(r#"fill-opacity="0.1""#), "{svg}");
     }
 }

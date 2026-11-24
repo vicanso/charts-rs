@@ -50,7 +50,7 @@ Safety
 </text>
 <line stroke-width="1" x1="191.6" y1="238.9" x2="350" y2="290.4" stroke="#E0E6F2"/>
 <g>
-<path d="M 350 130.6 L 500.4 241.5 L 426.3 395.5 L 271.7 398.2 L 196.4 240.5 Z" stroke-width="2" fill="#5470C6" fill-opacity="0.2" stroke="#5470C6"/>
+<path d="M 350 130.6 L 500.4 241.5 L 426.3 395.5 L 271.7 398.2 L 196.4 240.5 Z" stroke-width="2" fill="#5470C6" fill-opacity="0.1" stroke="#5470C6"/>
 <g stroke-width="2" stroke="#5470C6" fill="none">
 <circle cx="350" cy="130.6" r="2"/>
 <circle cx="500.4" cy="241.5" r="2"/>
@@ -60,7 +60,7 @@ Safety
 </g>
 </g>
 <g>
-<path d="M 350 147.2 L 479.8 248.2 L 436.1 408.9 L 261.9 411.6 L 217 247.2 Z" stroke-width="2" fill="#91CC75" fill-opacity="0.2" stroke="#91CC75"/>
+<path d="M 350 147.2 L 479.8 248.2 L 436.1 408.9 L 261.9 411.6 L 217 247.2 Z" stroke-width="2" fill="#91CC75" fill-opacity="0.1" stroke="#91CC75"/>
 <g stroke-width="2" stroke="#91CC75" fill="none">
 <circle cx="350" cy="147.2" r="2"/>
 <circle cx="479.8" cy="248.2" r="2"/>
@@ -70,7 +70,7 @@ Safety
 </g>
 </g>
 <g>
-<path d="M 350 173.8 L 448.2 258.5 L 444 419.7 L 259 415.7 L 229.7 251.3 Z" stroke-width="2" fill="#FAC858" fill-opacity="0.2" stroke="#FAC858"/>
+<path d="M 350 173.8 L 448.2 258.5 L 444 419.7 L 259 415.7 L 229.7 251.3 Z" stroke-width="2" fill="#FAC858" fill-opacity="0.1" stroke="#FAC858"/>
 <g stroke-width="2" stroke="#FAC858" fill="none">
 <circle cx="350" cy="173.8" r="2"/>
 <circle cx="448.2" cy="258.5" r="2"/>
