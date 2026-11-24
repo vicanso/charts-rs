@@ -38,7 +38,7 @@
 <details>
 <summary><b>▶ 观看 27 秒演示视频</b>（图表、Mermaid 与主题切换效果）</summary>
 
-https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
+https://github.com/user-attachments/assets/104382e7-1279-4fb1-9598-05c98844fff0
 
 </details>
 

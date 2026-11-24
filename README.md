@@ -38,7 +38,7 @@
 <details>
 <summary><b>▶ Watch 27s showcase video</b> (charts, Mermaid diagrams &amp; theme switching)</summary>
 
-https://github.com/user-attachments/assets/0a191257-4b5e-4562-8501-76db3b5fe7ea
+https://github.com/user-attachments/assets/104382e7-1279-4fb1-9598-05c98844fff0
 
 </details>
 
