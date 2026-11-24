@@ -1,6 +1,6 @@
 # charts-rs
 
-[English](./README.md) · [图表一览](./docs/gallery.md) · [在线试用](https://charts.npmtrend.com/)
+[English](./README.md) · [图表一览](./docs/gallery.md) · [在线试用](https://charts.vicanso.dev/)
 
 **不依赖浏览器的 Rust 图表与 Mermaid 渲染库。** 几行 Rust 代码或一份 JSON，就能生成 28 种图表、13 种 Mermaid 图表（开启可选 `mermaid` feature）以及 `MultiChart` 组合图的 SVG，也可以导出 PNG、JPEG、WebP 或 AVIF，风格参考 Apache ECharts。
 
@@ -32,7 +32,7 @@
 <p align="center">
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>查看全部图表与 Mermaid 示例 →</b></a>
   &nbsp;·&nbsp;
-  <a href="https://charts.npmtrend.com/"><b>在线试用 →</b></a>
+  <a href="https://charts.vicanso.dev/"><b>在线试用 →</b></a>
 </p>
 
 <details>
@@ -164,7 +164,7 @@ let svg = mermaid_to_svg(src).unwrap();
 | [示例](./examples) | `cargo run --example bar`、`cargo run --example mermaid --features mermaid`、`cargo run --example showcase --features "mermaid,png"` 等可运行示例 |
 | [API 文档](https://docs.rs/charts-rs) | docs.rs 上的 Rust API |
 | [更新日志](./CHANGELOG.md) | 版本变更，以及从 1.x 迁移到 2.0 的说明 |
-| [在线示例](https://charts.npmtrend.com/) | 修改 JSON 即时查看图表（[源码](https://github.com/vicanso/charts-rs-web)） |
+| [在线示例](https://charts.vicanso.dev/) | 修改 JSON 即时查看图表（[源码](https://github.com/vicanso/charts-rs-web)） |
 
 ## 性能
 

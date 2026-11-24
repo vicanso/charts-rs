@@ -308,12 +308,12 @@ fn render_outro_slide(lang: Lang, font: &str) -> String {
         Lang::En => (
             "Ship crisp SVG & PNG charts in pure Rust.",
             "Typed Rust builder  ·  ECharts-style JSON  ·  Zero headless browser",
-            "github.com/vicanso/charts-rs   ·   charts.npmtrend.com",
+            "github.com/vicanso/charts-rs   ·   charts.vicanso.dev",
         ),
         Lang::Zh => (
             "用纯 Rust 交付高清 SVG 与 PNG 图表",
             "强类型 Rust API  ·  类 ECharts JSON  ·  零无头浏览器依赖",
-            "github.com/vicanso/charts-rs   ·   charts.npmtrend.com",
+            "github.com/vicanso/charts-rs   ·   charts.vicanso.dev",
         ),
     };
     let cmd = "$ cargo add charts-rs --features \"mermaid,png\"";

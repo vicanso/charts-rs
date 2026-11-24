@@ -1,6 +1,6 @@
 # charts-rs
 
-[中文](./README-zh.md) · [Gallery](./docs/gallery.md) · [Try it in the browser](https://charts.npmtrend.com/)
+[中文](./README-zh.md) · [Gallery](./docs/gallery.md) · [Try it in the browser](https://charts.vicanso.dev/)
 
 **Charts &amp; Mermaid for Rust, without a browser.** `charts-rs` renders 28 chart types, 13 Mermaid diagrams (with the optional `mermaid` feature), and `MultiChart` compositions as SVG, PNG, JPEG, WebP, or AVIF — from a few lines of Rust or an ECharts-style JSON document.
 
@@ -32,7 +32,7 @@
 <p align="center">
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><b>All 28 chart types, MultiChart &amp; Mermaid diagrams →</b></a>
   &nbsp;·&nbsp;
-  <a href="https://charts.npmtrend.com/"><b>Try it in the browser →</b></a>
+  <a href="https://charts.vicanso.dev/"><b>Try it in the browser →</b></a>
 </p>
 
 <details>
@@ -195,7 +195,7 @@ assert!(svg.starts_with("<svg"));
 | [Examples](./examples) | `cargo run --example bar`, `cargo run --example mermaid --features mermaid`, `cargo run --example showcase --features "mermaid,png"`, and more runnable examples |
 | [API docs](https://docs.rs/charts-rs) | The Rust API on docs.rs |
 | [Changelog](./CHANGELOG.md) | What changed, and how to move from 1.x to 2.0 |
-| [Web demo](https://charts.npmtrend.com/) | Edit the JSON, see the chart ([source](https://github.com/vicanso/charts-rs-web)) |
+| [Web demo](https://charts.vicanso.dev/) | Edit the JSON, see the chart ([source](https://github.com/vicanso/charts-rs-web)) |
 
 ## Benchmark
 
