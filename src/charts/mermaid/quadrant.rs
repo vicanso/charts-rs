@@ -665,7 +665,7 @@ pub(crate) fn render(
         });
     }
 
-    for rp in &resolved {
+    for (pi, rp) in resolved.iter().enumerate() {
         cc.circle(Circle {
             cx: rp.px,
             cy: rp.py,
@@ -722,6 +722,19 @@ pub(crate) fn render(
             let mut score = 0.0_f32;
             for occ in &occupied {
                 score += cand_box.overlap_area(occ) * 10.0;
+            }
+            // Keep labels from sitting right next to a neighbouring point.
+            for (qi, q) in resolved.iter().enumerate() {
+                if qi == pi {
+                    continue;
+                }
+                let dx = (cand_box.x0 - q.px).max(0.0).max(q.px - cand_box.x1);
+                let dy = (cand_box.y0 - q.py).max(0.0).max(q.py - cand_box.y1);
+                let d = dx.hypot(dy);
+                let min_dist = q.r + 14.0;
+                if d < min_dist {
+                    score += (min_dist - d) * 40.0;
+                }
             }
             if cand_box.x0 < plot_left + 4.0 {
                 score += (plot_left + 4.0 - cand_box.x0) * 50.0;

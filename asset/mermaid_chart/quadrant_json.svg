@@ -35,7 +35,7 @@ Low Impact
 High Impact
 </text>
 <circle cx="190" cy="105.6" r="9" stroke-width="2" stroke="#FFFFFF" fill="#E11D48"/>
-<text font-size="12" x="190" y="129.1" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<text font-size="12" x="205" y="105.6" dominant-baseline="central" text-anchor="start" font-family="Roboto" fill="#464646">
 PNG Rasterizer
 </text>
 <circle cx="250.9" cy="137.9" r="9" stroke-width="2" stroke="#FFFFFF" fill="#E11D48"/>
