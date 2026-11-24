@@ -5,20 +5,20 @@ Event Bus Architecture
 </text>
 <path d="M167 89.5 L275 89.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M167 89.5 L180 83 L180 96 Z" transform="translate(5,35)" fill="#FFFFFF" stroke-width="1.6" stroke="#999999" stroke-linejoin="round"/>
-<path d="M505 82.5 L613 82.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M603 88 L613 82.5 L603 77" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M613 96.5 L505 96.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M515 91 L505 96.5 L515 102" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M505 75.5 L613 75.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M603 81 L613 75.5 L603 70" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M613 103.5 L505 103.5" transform="translate(5,35)" fill="none" stroke-width="1.2" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M515 98 L505 103.5 L515 109" transform="translate(5,35)" fill="none" stroke-width="1.6" stroke="#999999" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="197" y="113.5" width="58" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
 <text font-size="12" x="226" y="124.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 extends
 </text>
-<rect x="530" y="106.5" width="68" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="564" y="117.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="530" y="99.5" width="68" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="564" y="110.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 publishes
 </text>
-<rect x="526" y="120.5" width="76" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
-<text font-size="12" x="564" y="131.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
+<rect x="526" y="127.5" width="76" height="22" rx="9" ry="9" stroke="#E9E9E9" stroke-width="1" fill="#FFFFFF"/>
+<text font-size="12" x="564" y="138.5" dominant-baseline="central" text-anchor="middle" font-family="Roboto" fill="#464646">
 dispatches
 </text>
 <rect x="29" y="59" width="143" height="131" rx="4" ry="4" fill="#F1F4FA"/>

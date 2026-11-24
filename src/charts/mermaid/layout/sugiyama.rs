@@ -13,7 +13,7 @@
 //! 4-stage deterministic Sugiyama layered graph layout with nested subgraph
 //! bounding boxes, multi-edge separation and self-loop routing.
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use super::super::super::util::Point;
 use super::{
@@ -562,83 +562,46 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
         sep
     };
 
-    let mut canon_x = vec![0.0_f32; total_items];
-    for r_items in &ranks {
-        let mut x = 0.0_f32;
-        for (idx, &id) in r_items.iter().enumerate() {
-            let w = canon_dims(id).0;
-            if idx == 0 {
-                canon_x[id] = w * 0.5;
-                x = w;
-            } else {
-                let prev = r_items[idx - 1];
-                let gap = item_sep(prev, id);
-                canon_x[id] = x + gap + w * 0.5;
-                x = canon_x[id] + w * 0.5;
-            }
-        }
-        let shift = x * 0.5;
-        for &id in r_items {
-            canon_x[id] -= shift;
-        }
-    }
+    let is_dummy_item = |id: usize| matches!(items[id], RankItem::Dummy(_));
+    let item_width = |id: usize| canon_dims(id).0;
+    let mut canon_x = brandes_kopf(
+        &ranks,
+        &up_neighbors,
+        &down_neighbors,
+        total_items,
+        &is_dummy_item,
+        &item_width,
+        &item_sep,
+    );
 
-    // Iterative barycenter X alignment while enforcing non-overlap constraints.
-    for pass in 0..4 {
-        let rank_iter: Vec<usize> = if pass % 2 == 0 {
-            (1..=max_rank).collect()
-        } else {
-            (0..max_rank).rev().collect()
-        };
-        for r in rank_iter {
-            let r_items = &ranks[r];
-            if r_items.is_empty() {
-                continue;
-            }
-            let mut desired: Vec<f32> = r_items
-                .iter()
-                .map(|&id| {
-                    if let RankItem::Real(u) = items[id]
-                        && let Some((target, side)) = graph.nodes[u].attach_to
-                        && target < n
-                    {
-                        let target_id = real_to_item[target];
-                        let delta =
-                            canon_dims(target_id).0 * 0.5 + NOTE_SEP + canon_dims(id).0 * 0.5;
-                        return match side {
-                            NoteSide::Left => canon_x[target_id] - delta,
-                            NoteSide::Right => canon_x[target_id] + delta,
-                        };
-                    }
-                    let nbrs = if pass % 2 == 0 {
-                        &up_neighbors[id]
-                    } else {
-                        &down_neighbors[id]
+    // Snap attached notes next to their targets, then restore non-overlap.
+    if graph.nodes.iter().any(|node| node.attach_to.is_some()) {
+        for r_items in &ranks {
+            let mut moved = false;
+            for &id in r_items {
+                if let RankItem::Real(u) = items[id]
+                    && let Some((target, side)) = graph.nodes[u].attach_to
+                    && target < n
+                {
+                    let target_id = real_to_item[target];
+                    let delta = canon_dims(target_id).0 * 0.5 + NOTE_SEP + canon_dims(id).0 * 0.5;
+                    canon_x[id] = match side {
+                        NoteSide::Left => canon_x[target_id] - delta,
+                        NoteSide::Right => canon_x[target_id] + delta,
                     };
-                    if nbrs.is_empty() {
-                        canon_x[id]
-                    } else {
-                        nbrs.iter().map(|&p| canon_x[p]).sum::<f32>() / nbrs.len() as f32
-                    }
-                })
-                .collect();
-
-            // Left-to-right non-overlap push.
-            for i in 1..r_items.len() {
-                let prev = r_items[i - 1];
-                let cur = r_items[i];
-                let min_dist =
-                    canon_dims(prev).0 * 0.5 + item_sep(prev, cur) + canon_dims(cur).0 * 0.5;
-                if desired[i] < desired[i - 1] + min_dist {
-                    desired[i] = desired[i - 1] + min_dist;
+                    moved = true;
                 }
             }
-            // Pull back toward balanced center so ranks don't drift rightward.
-            let old_mid = (canon_x[r_items[0]] + canon_x[*r_items.last().unwrap()]) * 0.5;
-            let new_mid = (desired[0] + *desired.last().unwrap()) * 0.5;
-            let recenter = old_mid - new_mid;
-            for (i, &id) in r_items.iter().enumerate() {
-                canon_x[id] = desired[i] + recenter;
+            if moved {
+                for i in 1..r_items.len() {
+                    let prev = r_items[i - 1];
+                    let cur = r_items[i];
+                    let min_dist =
+                        canon_dims(prev).0 * 0.5 + item_sep(prev, cur) + canon_dims(cur).0 * 0.5;
+                    if canon_x[cur] < canon_x[prev] + min_dist {
+                        canon_x[cur] = canon_x[prev] + min_dist;
+                    }
+                }
             }
         }
     }
@@ -1145,7 +1108,233 @@ pub(crate) fn layout(graph: &LayeredGraph) -> LayeredLayout {
     }
 }
 
-const PORT_GAP: f32 = 14.0;
+/// Brandes–Köpf horizontal coordinate assignment (canonical TB frame).
+///
+/// Computes four extreme alignments (up/down × left/right) with median
+/// vertical alignment that prefers inner (dummy–dummy) segments, compacts each
+/// alignment into blocks, aligns them to the narrowest one and returns the
+/// average of the two median candidates for every item. `sep(a, b)` is the
+/// required gap between the borders of two adjacent items `a` (left) and `b`.
+fn brandes_kopf(
+    ranks: &[Vec<usize>],
+    up: &[Vec<usize>],
+    down: &[Vec<usize>],
+    total_items: usize,
+    is_dummy: &dyn Fn(usize) -> bool,
+    width: &dyn Fn(usize) -> f32,
+    sep: &dyn Fn(usize, usize) -> f32,
+) -> Vec<f32> {
+    let dedup = |v: &Vec<usize>| -> Vec<usize> {
+        let mut out = v.clone();
+        out.sort_unstable();
+        out.dedup();
+        out
+    };
+    let preds: Vec<Vec<usize>> = up.iter().map(dedup).collect();
+    let succs: Vec<Vec<usize>> = down.iter().map(dedup).collect();
+
+    let mut order = vec![0usize; total_items];
+    for layer in ranks {
+        for (i, &id) in layer.iter().enumerate() {
+            order[id] = i;
+        }
+    }
+
+    // Type-1 conflicts: non-inner segments crossing inner segments.
+    let mut conflicts: HashSet<(usize, usize)> = HashSet::new();
+    let key = |a: usize, b: usize| (a.min(b), a.max(b));
+    for r in 1..ranks.len() {
+        let prev_len = ranks[r - 1].len();
+        let layer = &ranks[r];
+        let Some(&last) = layer.last() else {
+            continue;
+        };
+        let (mut k0, mut scan_pos) = (0usize, 0usize);
+        for (i, &v) in layer.iter().enumerate() {
+            let w = if is_dummy(v) {
+                preds[v].iter().copied().find(|&u| is_dummy(u))
+            } else {
+                None
+            };
+            let k1 = w.map_or(prev_len, |w| order[w]);
+            if w.is_some() || v == last {
+                for &scan in &layer[scan_pos..=i] {
+                    for &u in &preds[scan] {
+                        let p = order[u];
+                        if (p < k0 || k1 < p) && !(is_dummy(u) && is_dummy(scan)) {
+                            conflicts.insert(key(u, scan));
+                        }
+                    }
+                }
+                scan_pos = i + 1;
+                k0 = k1;
+            }
+        }
+    }
+
+    let mut results: Vec<(Vec<f32>, bool)> = Vec::with_capacity(4);
+    for use_up in [true, false] {
+        for to_left in [true, false] {
+            let mut layering: Vec<Vec<usize>> = if use_up {
+                ranks.to_vec()
+            } else {
+                ranks.iter().rev().cloned().collect()
+            };
+            if !to_left {
+                for layer in &mut layering {
+                    layer.reverse();
+                }
+            }
+            let neighbors = if use_up { &preds } else { &succs };
+
+            // Vertical alignment.
+            let mut pos = vec![0usize; total_items];
+            for layer in &layering {
+                for (i, &id) in layer.iter().enumerate() {
+                    pos[id] = i;
+                }
+            }
+            let mut root: Vec<usize> = (0..total_items).collect();
+            let mut align: Vec<usize> = (0..total_items).collect();
+            for layer in &layering {
+                let mut prev_idx: isize = -1;
+                for &v in layer {
+                    let mut ws = neighbors[v].clone();
+                    if ws.is_empty() {
+                        continue;
+                    }
+                    ws.sort_by_key(|&w| pos[w]);
+                    let mp = (ws.len() as f32 - 1.0) * 0.5;
+                    let (lo, hi) = (mp.floor() as usize, mp.ceil() as usize);
+                    for &w in &ws[lo..=hi] {
+                        if align[v] == v
+                            && prev_idx < pos[w] as isize
+                            && !conflicts.contains(&key(v, w))
+                        {
+                            align[w] = v;
+                            root[v] = root[w];
+                            align[v] = root[v];
+                            prev_idx = pos[w] as isize;
+                        }
+                    }
+                }
+            }
+
+            // Horizontal compaction over the block graph.
+            let mut block_succ: Vec<Vec<(usize, f32)>> = vec![Vec::new(); total_items];
+            let mut block_pred: Vec<Vec<(usize, f32)>> = vec![Vec::new(); total_items];
+            for layer in &layering {
+                for pair in layer.windows(2) {
+                    let (u, v) = (pair[0], pair[1]);
+                    let (left, right) = if to_left { (u, v) } else { (v, u) };
+                    let d = width(u) * 0.5 + sep(left, right) + width(v) * 0.5;
+                    let (ru, rv) = (root[u], root[v]);
+                    block_succ[ru].push((rv, d));
+                    block_pred[rv].push((ru, d));
+                }
+            }
+            // Topological order of block roots (Kahn, deterministic by id).
+            let roots: Vec<usize> = (0..total_items).filter(|&v| root[v] == v).collect();
+            let mut indeg = vec![0usize; total_items];
+            for &r0 in &roots {
+                for &(s, _) in &block_succ[r0] {
+                    indeg[s] += 1;
+                }
+            }
+            let mut queue: VecDeque<usize> =
+                roots.iter().copied().filter(|&r0| indeg[r0] == 0).collect();
+            let mut topo: Vec<usize> = Vec::with_capacity(roots.len());
+            while let Some(v) = queue.pop_front() {
+                topo.push(v);
+                for &(s, _) in &block_succ[v] {
+                    indeg[s] -= 1;
+                    if indeg[s] == 0 {
+                        queue.push_back(s);
+                    }
+                }
+            }
+            // Cycles should be impossible; fall back to remaining roots by id.
+            if topo.len() < roots.len() {
+                for &r0 in &roots {
+                    if !topo.contains(&r0) {
+                        topo.push(r0);
+                    }
+                }
+            }
+            let mut xs = vec![0.0_f32; total_items];
+            for &v in &topo {
+                xs[v] = block_pred[v]
+                    .iter()
+                    .map(|&(p, d)| xs[p] + d)
+                    .fold(0.0_f32, f32::max);
+            }
+            for &v in topo.iter().rev() {
+                let min_succ = block_succ[v]
+                    .iter()
+                    .map(|&(s, d)| xs[s] - d)
+                    .fold(f32::INFINITY, f32::min);
+                if min_succ.is_finite() && min_succ > xs[v] {
+                    xs[v] = min_succ;
+                }
+            }
+            let mut out = vec![0.0_f32; total_items];
+            for v in 0..total_items {
+                out[v] = xs[root[v]];
+                if !to_left {
+                    out[v] = -out[v];
+                }
+            }
+            results.push((out, to_left));
+        }
+    }
+
+    // Align to the narrowest layout.
+    let extent = |xs: &[f32]| -> (f32, f32) {
+        let mut lo = f32::MAX;
+        let mut hi = f32::MIN;
+        for layer in ranks {
+            for &id in layer {
+                lo = lo.min(xs[id] - width(id) * 0.5);
+                hi = hi.max(xs[id] + width(id) * 0.5);
+            }
+        }
+        (lo, hi)
+    };
+    let extents: Vec<(f32, f32)> = results.iter().map(|(xs, _)| extent(xs)).collect();
+    let narrowest = (0..results.len())
+        .min_by(|&a, &b| {
+            let wa = extents[a].1 - extents[a].0;
+            let wb = extents[b].1 - extents[b].0;
+            wa.total_cmp(&wb).then(a.cmp(&b))
+        })
+        .unwrap_or(0);
+    let (target_lo, target_hi) = extents[narrowest];
+    for (i, (xs, to_left)) in results.iter_mut().enumerate() {
+        let delta = if *to_left {
+            target_lo - extents[i].0
+        } else {
+            target_hi - extents[i].1
+        };
+        for x in xs.iter_mut() {
+            *x += delta;
+        }
+    }
+
+    (0..total_items)
+        .map(|v| {
+            let mut c = [
+                results[0].0[v],
+                results[1].0[v],
+                results[2].0[v],
+                results[3].0[v],
+            ];
+            c.sort_by(f32::total_cmp);
+            (c[1] + c[2]) * 0.5
+        })
+        .collect()
+}
+
+const PORT_GAP: f32 = 28.0;
 const TRACK_CLEARANCE: f32 = 6.0;
 const ORTHO_LOOP_OUT: f32 = 28.0;
 
@@ -1663,6 +1852,63 @@ mod tests {
             ],
             subgraphs: vec![],
         }
+    }
+
+    #[test]
+    fn brandes_kopf_straightens_chains_and_centers_parents() {
+        let node = |w: f32| LayeredNodeInput {
+            width: w,
+            height: 36.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: false,
+        };
+        let edge = |from: usize, to: usize| LayeredEdgeInput {
+            from,
+            to,
+            has_label: false,
+            min_len: 1,
+            hidden: false,
+        };
+        // Chain 0 -> 1 -> 2 -> 3 -> 4 with a side branch 1 -> 5 -> 6.
+        let chain = LayeredGraph {
+            direction: LayoutDirection::TopBottom,
+            routing: EdgeRouting::Orthogonal,
+            rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
+            nodes: (0..7).map(|i| node(60.0 + i as f32 * 7.0)).collect(),
+            edges: vec![
+                edge(0, 1),
+                edge(1, 2),
+                edge(2, 3),
+                edge(3, 4),
+                edge(1, 5),
+                edge(5, 6),
+            ],
+            subgraphs: vec![],
+        };
+        let l = layout(&chain);
+        let (a, b) = (l.nodes[2].cx, l.nodes[3].cx);
+        assert!((a - b).abs() < 0.5 && (b - l.nodes[4].cx).abs() < 0.5);
+        assert!((l.nodes[5].cx - l.nodes[6].cx).abs() < 0.5);
+
+        // Symmetric binary tree: parent centered between its two children.
+        let tree = LayeredGraph {
+            direction: LayoutDirection::TopBottom,
+            routing: EdgeRouting::Orthogonal,
+            rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
+            nodes: (0..3).map(|_| node(80.0)).collect(),
+            edges: vec![edge(0, 1), edge(0, 2)],
+            subgraphs: vec![],
+        };
+        let t = layout(&tree);
+        let mid = (t.nodes[1].cx + t.nodes[2].cx) * 0.5;
+        assert!(
+            (t.nodes[0].cx - mid).abs() < 0.5,
+            "{} vs {mid}",
+            t.nodes[0].cx
+        );
     }
 
     #[test]
