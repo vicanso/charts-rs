@@ -1280,6 +1280,7 @@ fn layout_flat(graph: &LayeredGraph) -> LayeredLayout {
             screen_pos: &screen_pos,
             rank_y: &rank_y,
             rank_heights: &rank_heights,
+            sg_boxes: &sg_boxes,
             shift: (shift_x, shift_y),
         })
     };
@@ -1735,6 +1736,9 @@ fn brandes_kopf(
 const PORT_GAP: f32 = 28.0;
 const TRACK_CLEARANCE: f32 = 6.0;
 const ORTHO_LOOP_OUT: f32 = 28.0;
+const SNAP_TOL: f32 = 6.0;
+const CORRIDOR_CLEAR: f32 = 8.0;
+const MIN_PORT_SPACING: f32 = 10.0;
 
 /// Inputs for port-based (orthogonal / spline) edge routing, all expressed
 /// in final (shifted) screen coordinates plus the canonical rank geometry.
@@ -1749,6 +1753,7 @@ struct PortRouteInput<'a> {
     screen_pos: &'a [(f32, f32)],
     rank_y: &'a [f32],
     rank_heights: &'a [f32],
+    sg_boxes: &'a [SubgraphBox],
     shift: (f32, f32),
 }
 
@@ -1984,6 +1989,149 @@ fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
         }
     }
 
+    // Straighten near-aligned orthogonal routes instead of jogging slightly or
+    // detouring through intermediate dummy nodes.
+    let mut straight_c: HashMap<usize, f32> = HashMap::new();
+    if orthogonal {
+        let mut dummy_slot: HashMap<usize, usize> = HashMap::new();
+        for (slot, ch) in inp.edge_chains.iter().enumerate() {
+            if ch.len() > 2 {
+                for &id in &ch[1..ch.len() - 1] {
+                    dummy_slot.insert(id, slot);
+                }
+            }
+        }
+        let in_sg = |node: usize, sg: usize| -> bool {
+            let mut cur = g.nodes[node].subgraph;
+            let mut guard = 0;
+            while let Some(idx) = cur {
+                if idx == sg {
+                    return true;
+                }
+                cur = g.subgraphs.get(idx).and_then(|s| s.parent);
+                guard += 1;
+                if guard > g.subgraphs.len() {
+                    break;
+                }
+            }
+            false
+        };
+
+        for slot in 0..slots {
+            let ch = &inp.edge_chains[slot];
+            if is_hidden(slot) || ch.len() < 2 || side_exit.contains_key(&slot) {
+                continue;
+            }
+            let (Some(oc), Some(ic)) = (out_c[slot], in_c[slot]) else {
+                continue;
+            };
+            if (oc - ic).abs() > SNAP_TOL || (ch.len() == 2 && (oc - ic).abs() <= 0.5) {
+                continue;
+            }
+            let d = inp.dag_edges[slot];
+            let (u, v) = (d.src, d.dst);
+            let cu = item_c(inp.real_to_item[u]);
+            let cv = item_c(inp.real_to_item[v]);
+            let ru = port_range(u);
+            let rv = port_range(v);
+            if ru <= 0.0 && rv <= 0.0 {
+                continue;
+            }
+            let lo = (cu - ru).max(cv - rv);
+            let hi = (cu + ru).min(cv + rv);
+            if lo > hi + 0.01 {
+                continue;
+            }
+            let t = ((oc + ic) * 0.5).clamp(lo.min(hi), hi.max(lo));
+
+            // Port checks for any end whose port moves.
+            let port_ok = |cx: f32, rx: f32, p_old: f32, list: &[usize], ports: &[Option<f32>]| {
+                if (t - p_old).abs() <= 0.01 {
+                    return true;
+                }
+                if (t - cx).abs() > rx + 0.01 {
+                    return false;
+                }
+                list.iter().all(|&s2| {
+                    s2 == slot || ports[s2].is_none_or(|p2| (t - p2).abs() >= MIN_PORT_SPACING)
+                })
+            };
+            if !port_ok(cu, ru, oc, &out_lists[u], &out_c)
+                || !port_ok(cv, rv, ic, &in_lists[v], &in_c)
+            {
+                continue;
+            }
+
+            // Corridor checks across intermediate ranks.
+            let mut corridor_ok = true;
+            if ch.len() > 2 {
+                for &id in &ch[1..ch.len() - 1] {
+                    let orig_c = item_c(id);
+                    let r = inp.item_rank[id];
+                    let (lo_c, hi_c) = (orig_c.min(t), orig_c.max(t));
+                    for &other in &inp.ranks[r] {
+                        if other == id {
+                            continue;
+                        }
+                        let ec = match inp.items[other] {
+                            RankItem::Dummy(_) => dummy_slot
+                                .get(&other)
+                                .and_then(|s| straight_c.get(s).copied())
+                                .unwrap_or_else(|| item_c(other)),
+                            RankItem::Real(_) => item_c(other),
+                        };
+                        let need = match inp.items[other] {
+                            RankItem::Real(_) => item_half(other).0 + CORRIDOR_CLEAR,
+                            RankItem::Dummy(_) => TRACK_CLEARANCE + 2.0,
+                        };
+                        if (t - ec).abs() < need {
+                            corridor_ok = false;
+                            break;
+                        }
+                        if let RankItem::Real(_) = inp.items[other] {
+                            let half = item_half(other).0;
+                            if ec - half > lo_c && ec + half < hi_c {
+                                corridor_ok = false;
+                                break;
+                            }
+                        }
+                    }
+                    if !corridor_ok {
+                        break;
+                    }
+                }
+            }
+            if !corridor_ok {
+                continue;
+            }
+
+            // Subgraph check: straight path must stay clear of unrelated boxes.
+            let exit_m = item_m(ch[0]) + item_half(ch[0]).1;
+            let entry_m = item_m(ch[ch.len() - 1]) - item_half(ch[ch.len() - 1]).1;
+            let p0 = to_screen(t, exit_m);
+            let p1 = to_screen(t, entry_m);
+            let seg_x0 = p0.x.min(p1.x) - 4.0;
+            let seg_x1 = p0.x.max(p1.x) + 4.0;
+            let seg_y0 = p0.y.min(p1.y) - 4.0;
+            let seg_y1 = p0.y.max(p1.y) + 4.0;
+            let sg_clear = inp.sg_boxes.iter().enumerate().all(|(sg_idx, b)| {
+                if !b.visible || in_sg(u, sg_idx) || in_sg(v, sg_idx) {
+                    return true;
+                }
+                seg_x1 < b.x || seg_x0 > b.x + b.width || seg_y1 < b.y || seg_y0 > b.y + b.height
+            });
+            if !sg_clear {
+                continue;
+            }
+
+            out_c[slot] = Some(t);
+            in_c[slot] = Some(t);
+            if ch.len() > 2 {
+                straight_c.insert(slot, t);
+            }
+        }
+    }
+
     // Anchors per chain: (cross, main_at_exit, main_at_entry).
     let anchors_of = |slot: usize| -> Vec<(f32, f32, f32)> {
         let ch = &inp.edge_chains[slot];
@@ -1998,7 +2146,7 @@ fn route_with_ports(inp: &PortRouteInput) -> Vec<RoutedEdge> {
                 } else if i == last {
                     in_c[slot].unwrap_or_else(|| item_c(id))
                 } else {
-                    item_c(id)
+                    straight_c.get(&slot).copied().unwrap_or_else(|| item_c(id))
                 };
                 (c, m + hm, m - hm)
             })
@@ -2616,6 +2764,45 @@ mod tests {
         assert!(
             (y0 - y1).abs() > 10.0,
             "LR cylinder out-ports must spread: {y0} vs {y1}"
+        );
+    }
+
+    #[test]
+    fn near_aligned_long_edge_is_straightened() {
+        let node = |w: f32| LayeredNodeInput {
+            width: w,
+            height: 36.0,
+            subgraph: None,
+            attach_to: None,
+            center_port: false,
+            diamond_ports: false,
+        };
+        let edge = |from: usize, to: usize| LayeredEdgeInput {
+            from,
+            to,
+            has_label: false,
+            min_len: 1,
+            hidden: false,
+        };
+        let g = LayeredGraph {
+            direction: LayoutDirection::TopBottom,
+            routing: EdgeRouting::Orthogonal,
+            rank_sep_extra: 0.0,
+            node_sep_extra: 0.0,
+            nodes: vec![node(120.0), node(70.0), node(120.0)],
+            edges: vec![edge(0, 1), edge(1, 2), edge(0, 2)],
+            subgraphs: vec![],
+        };
+        let l = layout(&g);
+        let wps = &l.edges[2].waypoints;
+        assert_eq!(
+            wps.len(),
+            2,
+            "expected 2 waypoints for straight edge: {wps:?}"
+        );
+        assert!(
+            (wps[0].x - wps[1].x).abs() < 0.01,
+            "expected vertical straight edge: {wps:?}"
         );
     }
 }
