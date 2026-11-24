@@ -88,7 +88,7 @@ Chart struct (embeds ChartBase via Deref) → fill_theme() → svg() method
 - **Box margins**: `left, top, right, bottom` (CSS-like padding/margin fields)
 - **`image-encoder` feature**: optional; enables PNG/JPEG/WebP/AVIF export
 - **`mermaid` feature**: optional (zero extra dependencies); enables pure-Rust SVG rendering for 13 Mermaid diagram types via `MermaidChart`, `mermaid_to_svg`, and `mermaid_to_svg_with_theme`
-- **Docs layout**: `README.md` / `README-zh.md` are the landing pages — nine thumbnails, the selling points, a quick start, the benchmark; keep them short. How-to detail goes into `docs/guide.md` (its Rust snippets are compiled as doctests with the README's) and `docs/guide-zh.md`, every picture into `docs/gallery.md`, every JSON key into `docs/json.md` / `docs/json-zh.md`
+- **Docs layout**: `README.md` / `README-zh.md` are the landing pages — nine thumbnails plus a full-width Mermaid flowchart banner, the selling points, a quick start, the benchmark; keep them short. How-to detail goes into `docs/guide.md` (its Rust snippets are compiled as doctests with the README's) and `docs/guide-zh.md`, every picture into `docs/gallery.md`, every JSON key into `docs/json.md` / `docs/json-zh.md`
 - **Options in Rust and JSON**: a JSON key is the Rust field path joined with `_` (`title_font_size` ↔ `title.font.size`); the exceptions are `x_boundary_gap` (`x_axis.boundary_gap`), `x_axis_type` (`x_axis.kind`), the `axis_` prefix of y axis keys, which the Rust fields leave out, and the `series` object of a heatmap (`heatmap_series`). JSON keys never change with the Rust structs
 
 ### Tests

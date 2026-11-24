@@ -29,8 +29,12 @@ JSON document, in the manner of Apache ECharts.
 
 <p align="center">
   <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/sankey.png" width="32%" alt="Sankey chart"></a>
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/heatmap-scale.png" width="32%" alt="Heatmap"></a>
-  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/line.png" width="32%" alt="Line chart"></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md#mermaid"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mermaid-class.png" width="32%" alt="Mermaid class diagram"></a>
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md#polar-bar"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/polar-bar-radial.png" width="32%" alt="Radial polar bar chart"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/vicanso/charts-rs/blob/main/docs/gallery.md#mermaid"><img src="https://raw.githubusercontent.com/vicanso/charts-rs/main/asset/image/mermaid-flowchart.png" width="98%" alt="Mermaid flowchart"></a>
 </p>
 
 <p align="center">
