@@ -67,22 +67,22 @@ Middle East
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="351" y1="72" x2="376" y2="72" stroke="#5470C6"/>
-<circle cx="363.5" cy="72" r="5.5" stroke-width="2" stroke="#5470C6" fill="#FFFFFF"/>
+<line stroke-width="2" x1="351" y1="72" x2="376" y2="72" stroke="#A1B0E0"/>
+<circle cx="363.5" cy="72" r="5.5" stroke-width="2" stroke="#A1B0E0" fill="#FFFFFF"/>
 <text font-size="14" x="379" y="76" font-family="Roboto" fill="#464646">
 Southeast Asia
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="484" y1="72" x2="509" y2="72" stroke="#91CC75"/>
-<circle cx="496.5" cy="72" r="5.5" stroke-width="2" stroke="#91CC75" fill="#FFFFFF"/>
+<line stroke-width="2" x1="484" y1="72" x2="509" y2="72" stroke="#C3E3B3"/>
+<circle cx="496.5" cy="72" r="5.5" stroke-width="2" stroke="#C3E3B3" fill="#FFFFFF"/>
 <text font-size="14" x="512" y="76" font-family="Roboto" fill="#464646">
 Sub-Saharan Africa
 </text>
 </g>
 <g>
-<line stroke-width="2" x1="643" y1="72" x2="668" y2="72" stroke="#FAC858"/>
-<circle cx="655.5" cy="72" r="5.5" stroke-width="2" stroke="#FAC858" fill="#FFFFFF"/>
+<line stroke-width="2" x1="643" y1="72" x2="668" y2="72" stroke="#FCE1A3"/>
+<circle cx="655.5" cy="72" r="5.5" stroke-width="2" stroke="#FCE1A3" fill="#FFFFFF"/>
 <text font-size="14" x="671" y="76" font-family="Roboto" fill="#464646">
 Other
 </text>
@@ -96,18 +96,18 @@ Other
 <path d="M374,239.5 L311.6,141.2 A8 8 0 0 1 311,132.2 A124.4 124.4 0 0 1 317.1,128.9 A8 8 0 0 1 324.4,134.2 L370.6,232.3 Z" fill="#FC8452" data-series="Nordics" data-value="2" data-percentage="2"/>
 <path d="M374,239.5 L324.4,134.2 A8 8 0 0 1 325,125.2 A124.4 124.4 0 0 1 331.5,122.6 A8 8 0 0 1 338,128.8 L371.5,231.9 Z" fill="#9A60B4" data-series="Eastern Europe" data-value="2" data-percentage="2"/>
 <path d="M374,239.5 L338,128.8 A8 8 0 0 1 339.7,119.9 A124.4 124.4 0 0 1 346.4,118.2 A8 8 0 0 1 352.2,125.2 L372.5,231.6 Z" fill="#EA7CCC" data-series="Middle East" data-value="2" data-percentage="2"/>
-<path d="M374,239.5 L352.2,125.2 A8 8 0 0 1 355,116.6 A124.4 124.4 0 0 1 354.1,116.7 A8 8 0 0 1 359.4,124 L373,231.6 Z" fill="#5470C6" data-series="Southeast Asia" data-value="1" data-percentage="1"/>
-<path d="M374,239.5 L359.4,124 A8 8 0 0 1 362.7,115.6 A124.4 124.4 0 0 1 361.9,115.7 A8 8 0 0 1 366.7,123.3 L373.5,231.5 Z" fill="#91CC75" data-series="Sub-Saharan Africa" data-value="1" data-percentage="1"/>
-<path d="M374,239.5 L366.7,123.3 A8 8 0 0 1 370.5,115.1 A124.4 124.4 0 0 1 369.7,115.2 A8 8 0 0 1 374,123.1 L374,231.5 Z" fill="#FAC858" data-series="Other" data-value="1" data-percentage="1"/>
-<path d="M370.1,115.2 C363.9 110.9, 352 100.6, 345.2 98 C340.7 96.3, 330.2 98, 325.2 98" stroke-width="1" fill="none" stroke="#FAC858"/>
+<path d="M374,239.5 L352.2,125.2 A8 8 0 0 1 355,116.6 A124.4 124.4 0 0 1 354.1,116.7 A8 8 0 0 1 359.4,124 L373,231.6 Z" fill="#A1B0E0" data-series="Southeast Asia" data-value="1" data-percentage="1"/>
+<path d="M374,239.5 L359.4,124 A8 8 0 0 1 362.7,115.6 A124.4 124.4 0 0 1 361.9,115.7 A8 8 0 0 1 366.7,123.3 L373.5,231.5 Z" fill="#C3E3B3" data-series="Sub-Saharan Africa" data-value="1" data-percentage="1"/>
+<path d="M374,239.5 L366.7,123.3 A8 8 0 0 1 370.5,115.1 A124.4 124.4 0 0 1 369.7,115.2 A8 8 0 0 1 374,123.1 L374,231.5 Z" fill="#FCE1A3" data-series="Other" data-value="1" data-percentage="1"/>
+<path d="M370.1,115.2 C363.9 110.9, 352 100.6, 345.2 98 C340.7 96.3, 330.2 98, 325.2 98" stroke-width="1" fill="none" stroke="#FCE1A3"/>
 <text font-size="14" x="241.2" y="103" font-family="Roboto" fill="#464646">
 Other: 1 (1%)
 </text>
-<path d="M362.3,115.7 C346.5 115.7, 315 115.9, 299.2 116 C294.2 116, 284.2 116, 279.2 116" stroke-width="1" fill="none" stroke="#91CC75"/>
+<path d="M362.3,115.7 C346.5 115.7, 315 115.9, 299.2 116 C294.2 116, 284.2 116, 279.2 116" stroke-width="1" fill="none" stroke="#C3E3B3"/>
 <text font-size="14" x="104.2" y="121" font-family="Roboto" fill="#464646">
 Sub-Saharan Africa: 1 (1%)
 </text>
-<path d="M354.5,116.6 C334.8 121, 295.3 130.5, 275.4 134 C270.5 134.9, 260.4 134, 255.4 134" stroke-width="1" fill="none" stroke="#5470C6"/>
+<path d="M354.5,116.6 C334.8 121, 295.3 130.5, 275.4 134 C270.5 134.9, 260.4 134, 255.4 134" stroke-width="1" fill="none" stroke="#A1B0E0"/>
 <text font-size="14" x="106.4" y="139" font-family="Roboto" fill="#464646">
 Southeast Asia: 1 (1%)
 </text>

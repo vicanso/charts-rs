@@ -12,6 +12,7 @@
 
 //! Mermaid `pie` diagram adapter -> [`PieChart`](crate::PieChart).
 
+use super::super::super::color::Color;
 use super::super::super::common::Series;
 use super::super::super::error::{Error, Result};
 use super::super::super::font::measure_text_width_family;
@@ -19,7 +20,30 @@ use super::super::super::pie_chart::PieChart;
 use super::super::super::util::format_float;
 use super::super::MermaidChart;
 use super::super::preprocess::SourceLine;
+use super::super::style::mix_color;
 use super::apply_base_options;
+
+/// Extends `colors` to at least `n` entries by mixing wrapped base colors
+/// alternately toward white (odd cycles) and black (even cycles), preserving
+/// alpha.
+fn extend_palette(colors: &[Color], n: usize) -> Vec<Color> {
+    if colors.is_empty() || n <= colors.len() {
+        return colors.to_vec();
+    }
+    let mut out = Vec::with_capacity(n);
+    out.extend_from_slice(colors);
+    for i in colors.len()..n {
+        let k = i / colors.len();
+        let c = colors[i % colors.len()];
+        let derived = if k % 2 == 1 {
+            mix_color(c, (255, 255, 255, c.a).into(), 0.45)
+        } else {
+            mix_color(c, (0, 0, 0, c.a).into(), 0.30)
+        };
+        out.push(derived);
+    }
+    out
+}
 
 fn parse_pie_entry(line: &str, line_no: usize) -> Result<Series> {
     let trimmed = line.trim();
@@ -129,6 +153,10 @@ pub(crate) fn render(
     }
 
     let mut pie = PieChart::new_with_theme(series_list, theme_name);
+    let n = pie.series_list.len();
+    if !pie.series.colors.is_empty() && n > pie.series.colors.len() {
+        pie.series.colors = extend_palette(&pie.series.colors, n);
+    }
     pie.rose_type = Some(false);
     pie.inner_radius = 0.0;
     pie.legend.show = Some(true);
@@ -160,4 +188,55 @@ pub(crate) fn render(
     apply_base_options(chart, &mut pie.base, title.as_deref(), default_width, 400.0);
     let (w, h) = (pie.width, pie.height);
     Ok((pie.svg()?, w, h))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn extend_palette_derives_distinct_tint_and_shade_cycles() {
+        let base = vec![
+            Color::from((84, 112, 198, 200)),
+            Color::from((145, 204, 117, 200)),
+        ];
+        // Short targets return the base palette untouched.
+        assert_eq!(extend_palette(&base, 2), base);
+        assert!(extend_palette(&[], 4).is_empty());
+
+        let extended = extend_palette(&base, 6);
+        assert_eq!(extended.len(), 6);
+        // Cycle 1 (odd) tints toward white, preserving alpha.
+        assert_eq!(extended[2].a, 200);
+        assert!(extended[2].r > base[0].r);
+        // Cycle 2 (even) shades toward black, preserving alpha.
+        assert_eq!(extended[4].a, 200);
+        assert!(extended[4].r < base[0].r);
+
+        let unique: HashSet<(u8, u8, u8, u8)> =
+            extended.iter().map(|c| (c.r, c.g, c.b, c.a)).collect();
+        assert_eq!(unique.len(), 6);
+    }
+
+    #[test]
+    fn many_slice_pie_assigns_distinct_slice_colors() {
+        let chart = MermaidChart::from_json(include_str!(
+            "../../../../asset/mermaid_chart/pie_many_slices.json"
+        ))
+        .unwrap();
+        let svg = chart.svg().unwrap();
+        let fills: Vec<&str> = svg
+            .lines()
+            .filter(|l| l.starts_with("<path ") && l.contains("data-series=\""))
+            .map(|l| {
+                let start = l.find("fill=\"").unwrap() + 6;
+                let end = start + l[start..].find('"').unwrap();
+                &l[start..end]
+            })
+            .collect();
+        assert_eq!(fills.len(), 12, "{svg}");
+        let unique: HashSet<&str> = fills.iter().copied().collect();
+        assert_eq!(unique.len(), 12, "fills={fills:?}");
+    }
 }
